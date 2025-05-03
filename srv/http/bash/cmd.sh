@@ -254,7 +254,7 @@ color )
 		sed -i -e '/^\t--c[gm].*hsl/ d
 ' -e "/^\t*--cw.*hsl/ a\
 $css" $filecss
-		. <( sed -nE '/cg75|cm35/ {s/--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $CSS ) # $cg75, $cm35
+		. <( sed -nE '/cg75|cm35/ {s/--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $css ) # $cg75, $cm35
 	else # reset
 		rm -f $dirsystem/csscolor
 		sed -i -e '/^\t--c[gm].*hsl/ d
