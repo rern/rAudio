@@ -249,12 +249,12 @@ color )
 	filecss=$dircss/colors.css
 	if [[ $CSS ]]; then
 		css=$( echo -e "$CSS" | tee $dirsystem/csscolor )
+		. <( sed -nE '/cg75|cm35/ {s/--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $css ) # $cg75, $cm35 for svg
 		! grep -q 'DEFAULT*/$' $filecss && sed -i '/^\t--c[gm].*hsl/ {s|^|/*|; s|$|DEFAULT*/|}' $filecss
 		css='\'$( sed 's/^/\t/; $!s/$/\\/' <<< $css ) # '\' - fix 1st tab
 		sed -i -e '/^\t--c[gm].*hsl/ d
 ' -e "/^\t*--cw.*hsl/ a\
 $css" $filecss
-		. <( sed -nE '/cg75|cm35/ {s/--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $css ) # $cg75, $cm35
 	else # reset
 		rm -f $dirsystem/csscolor
 		sed -i -e '/^\t--c[gm].*hsl/ d
