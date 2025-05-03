@@ -1,21 +1,28 @@
 :root {
 	--cd   : hsl(200, 100%, 35%); /* default main*/
 	--cw   : hsl(  0,   0%, 90%); /* white */
-/* DO NOT CHANGE comments - used for color setting >>> */
-	--cm60 : hsl(200, 100%, 60%); /* main-60%    60*/
-	--cml  : hsl(200, 100%, 40%); /* main-light  40*/
-	--cm   : hsl(200, 100%, 35%); /* main        35*/
-	--cma  : hsl(200, 100%, 30%); /* main-active 30*/
-	--cmd  : hsl(200, 100%, 20%); /* main-dark   20*/
-	--cg75 : hsl(200, 3%, 75%); /* gray 75*/
-	--cg70 : hsl(200, 3%, 70%); /* gray 70*/
-	--cg60 : hsl(200, 3%, 60%); /* gray 60*/
-	--cg50 : hsl(200, 3%, 50%); /* gray 50*/
-	--cgl  : hsl(200, 3%, 40%); /* gray 40*/
-	--cg   : hsl(200, 3%, 30%); /* gray 30*/
-	--cga  : hsl(200, 3%, 20%); /* gray 20*/
-	--cgd  : hsl(200, 3%, 10%); /* gray 10*/
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+	--cg75 : hsl(200, 3%, 75%);
+	--cg70 : hsl(200, 3%, 70%);
+	--cg60 : hsl(200, 3%, 60%);
+	--cg50 : hsl(200, 3%, 50%);
+	--cg40 : hsl(200, 3%, 40%);
+	--cg30 : hsl(200, 3%, 30%);
+	--cg20 : hsl(200, 3%, 20%);
+	--cg10 : hsl(200, 3%, 10%);
+	--cm60 : hsl(200, 100%, 60%);
+	--cm40 : hsl(200, 100%, 40%);
+	--cm35 : hsl(200, 100%, 35%);
+	--cm30 : hsl(200, 100%, 30%);
+	--cm20 : hsl(200, 100%, 20%);
+	--cml  : var( --cm40 );
+	--cm   : var( --cm35 );
+	--cma  : var( --cm30 );
+	--cmd  : var( --cm20 );
+	--cgl  : var( --cg40 );
+	--cg   : var( --cg30 );
+	--cga  : var( --cg20 );
+	--cgd  : var( --cg10 );
+	
 	--shadow-btn    : -2px  2px 4px      #000;
 	--shadow-btn-u  : -2px -2px 4px      #000;
 	--shadow-bar    :  0    0   10px 4px #000;

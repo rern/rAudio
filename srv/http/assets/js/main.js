@@ -286,9 +286,11 @@ $( '#displayplaylist' ).on( 'click', function() {
 	DISPLAY.option.playlist();
 } );
 $( 'body' ).on( 'click', '#colorok', function() {
-	COLOR.set( V.hsl );
+	COLOR.set();
 } ).on( 'click', '#colorreset', function() {
-	COLOR.set( 'reset' );
+	BASH( [ 'color' ] );
+	COLOR.destroy();
+	COMMON.loader();
 } ).on( 'click', '#colorcancel', function() {
 	COLOR.destroy();
 	if ( S.player === 'mpd' ) {

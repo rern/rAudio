@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+dircss=/srv/http/assets/css
 dirimg=/srv/http/assets/img
 
 args2var "$1" # $2 $3 ... if any, still valid
@@ -234,7 +235,7 @@ bookmarkrename )
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"
-	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
+	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" $dircss/common.css
 	if [[ $TIME ]]; then
 		hashtime="?v='.time()"
 		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
@@ -245,47 +246,35 @@ cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
-	hsl=( 200 100 35 ) # default
-	file=$dirsystem/color
-	if [[ $HSL == reset ]]; then
-		rm -f $file
-	elif [[ $HSL ]]; then
-		hsl=( $HSL )
-		echo $HSL > $file
-	elif [[ -e $file ]]; then # restore
-		hsl=( $( < $file ) )
+	filecss=$dircss/colors.css
+	if [[ $CSS ]]; then
+		css=$( echo -e "$CSS" | tee $dirsystem/csscolor )
+		! grep -q 'DEFAULT*/$' $filecss && sed -i '/^\t*--c[gm].*hsl/ {s|^|/*|; s|$|DEFAULT*/|}' $filecss
+		css='\'$( sed 's/^/\t/; $!s/$/\\/' <<< $css ) # '\' - fix 1st tab
+		sed -i -e '/^\t*--c[gm].*hsl/ d
+' -e "/^\t*--cw.*hsl/ a\
+$css" $filecss
+		. <( sed -nE '/cg75|cm35/ {s/.*--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $css ) # $cg75, $cm35
+	else # reset
+		rm -f $dirsystem/csscolor
+		sed -i -e '/^\t*--c[gm].*hsl/ d
+' -e '/^\/.*--c[gm].*hsl/ {s|^/\*||; s|DEFAULT\*/$||}
+' $filecss
+		cg75='hsl(200,3%,75%)'
+		cm35='hsl(200,100%,35%)'
 	fi
-	h=${hsl[0]}
-	s=${hsl[1]}
-	l=${hsl[2]}
-	cmcg=$( jq <<< $CMCG | sed -E -e '/\{|}/ d' -e 's/[ ":,]//g' )
-	for k_v in $cmcg; do
-		k=${k_v:0:-2}
-		v=${k_v: -2}
-		if [[ ${k:0:2} == cm ]]; then
-			S=$s
-			L=$(( l + v - 35 ))
-		else
-			S=3
-			L=$v
-		fi
-		regex+='s|(--'$k' *: *hsl).*;|\1('$h', '$S'%, '$L'%);|;'
-	done
-	sed -i -E "$regex" /srv/http/assets/css/colors.css
-	sed -i -E '
-s|(rect.*hsl).*;|\1('$h', '$s'%, '$l'%);|
-s|(path.*hsl).*;|\1('$h', 3%, 75%);|
-' $dirimg/icon.svg
-	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg | magick -density 96 -background none - $dirimg/icon.png
-	splashRotate
+	sed -i -E 's|(rect.*fill:).*;|\1'$cm35'|; s|(path.*fill:).*;|\1'$cg75'|' $dirimg/icon.svg
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
+	sed -E 's|(path.*)75%|\190%|' $dirimg/icon.svg | magick -density 96 -background none - $dirimg/icon.png
+	splashRotate
 	pushData reload
 	;;
 colorcss )
-	css=$( sed -n -E '/^\s*--c[mg]/ {s|.*--([^ ]*).*(..)..|,"\1":\2|; p}' /srv/http/assets/css/colors.css )
-	cm=$( grep cm <<< $css )
-	cg=$( grep cg <<< $css )
-	echo '{ "cm": { '${cm:1}' }, "cg": { '${cg:1}' } }'
+	css=$( sed -n -E '/^\t*--c[gm].*hsl/ {s/.*--([^ ]*) .*/\1/; p}' $dircss/colors.css )
+	for k in cg cm; do
+		printf -v $k '%s' $( sed -n "/$k/ {s/^..//; s/^/, /; p}" <<< $css )
+	done
+	echo '{ "cm": [ '${cm:1}' ], "cg": [ '${cg:1}' ] }'
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd

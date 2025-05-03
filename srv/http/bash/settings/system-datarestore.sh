@@ -22,7 +22,9 @@ fi
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 bsdtar xpf $backupfile -C /srv/http
 dirPermissions
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ -e $dirsystem/csscolor ]] && $dirbash/cmd.sh 'color
+$( < $dirsystem/csscolor )
+CMD CSS'
 partuuid=$( grep -m1 ^PARTUUID /etc/fstab | cut -d- -f1 )
 for file in boot/cmdline.txt etc/fstab; do
 	sed -i "s/PARTUUID=.*-/$partuuid-/" $dirconfig/$file
