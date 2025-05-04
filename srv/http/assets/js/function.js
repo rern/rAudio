@@ -217,9 +217,10 @@ var COLOR     = {
 		COLOR.destroy();
 	}
 	, set     : ( h, s, l ) => {
-		var $root = $( ':root' );
-		V.color.cg.forEach( v => $root.css( '--cg'+ v, 'hsl( '+ h +', 3%, '+ v +'% )' ) );
-		V.color.cm.forEach( v => $root.css( '--cm'+ v, 'hsl( '+ h +', '+ s +'%, '+ ( l + v - 35 ) +'% )' ) );
+		var css = {};
+		V.color.cg.forEach( v => { css[ '--cg'+ v ] = 'hsl( '+ h +', 3%, '+ v +'% )' } );
+		V.color.cm.forEach( v => { css[ '--cm'+ v ] = 'hsl( '+ h +', '+ s +'%, '+ ( l + v - 35 ) +'% )' } );
+		$( ':root' ).css( css );
 	}
 }
 var COVERART  = {
