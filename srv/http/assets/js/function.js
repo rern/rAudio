@@ -2369,7 +2369,11 @@ var UTIL      = {
 			DISPLAY.pageScroll( 0 );
 			PLAYBACK.vu();
 		} else if ( V.library ) {
-			V.librarylist ? DISPLAY.pageScroll( V.liscrolltop ) : LIBRARY.get();
+			if ( V.librarylist ) {
+				V.color ? COLOR.picker() : DISPLAY.pageScroll( V.liscrolltop );
+			} else {
+				LIBRARY.get();
+			}
 		} else {
 			if ( ! V.playlisthome ) DISPLAY.pageScroll( V.plscrolltop );
 		}
