@@ -77,3 +77,8 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+[[ $hsl ]] && echo "
+$info Data for color setting was changed.
+Please update your backup.
+"
