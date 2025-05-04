@@ -245,13 +245,10 @@ cachetype )
 	;;
 color )
 	filecolor=$dirsystem/color
-	if [[ $HSL ]]; then
-		echo $HSL > $filecolor
-	elif [[ $RESET || ! -e $filecolor ]]; then
-		HSL='200 100 20' # default
-	else
-		HSL=$( < $filecolor )
+	if [[ ! $HSL ]]; then
+		[[ -e $filecolor ]] && HSL=$( < $filecolor ) || HSL='200 100 35' # default
 	fi
+	[[ $HSL == '200 100 35' ]] && rm -f $filecolor || echo $HSL > $filecolor
 	HSL=( $HSL ) # --cm20
 	h=${HSL[0]}
 	s=${HSL[1]}
@@ -259,15 +256,14 @@ color )
 	colorscss=/srv/http/assets/css/colors.css
 	cml=$( sed -n -E '/^\t*--cm.*hsl/ {s/.*cm([^ ]*) .*/\1/; p}' $colorscss ) # hsl(200, 3%, 75%)
 	for ml in $cml; do # hsl(200, 100%, 20%)
-		L=$(( l + ml - 20 ))
+		L=$(( l + ml - 35 ))
 		regex+="s/^(\t*--cm$ml.*hsl).*/\1( $h, $s%, $L% );/; "
 	done
 	sed -i -E -e "/^\t*--cg.*hsl/ s/hsl[^,]*/hsl( $h/
 " -e "$regex
 " $colorscss
 	iconsvg=/srv/http/assets/img/icon.svg
-	cm35="($h,$s%,$(( l + 15 ))%)"
-	sed -i -E "s|(rect.*hsl).*;|\1$cm35;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
+	sed -i -E "s|(rect.*hsl).*;|\1($h,$s%,$l%);|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	splashRotate

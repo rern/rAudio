@@ -5,12 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250504
-file=$dirsystem/color
-if [[ -e $file ]] && ! grep -q -m1 ^colorcss $dirbash.cmd.sh; then
-	hsl=$( < $file )
-	l=$(( ${hsl/* } - 15 ))
-	awk '{print $1" "$2" $l"}' <<< $hsl > $file
-fi
 
 # 20250502
 file=/etc/pacman.conf
@@ -77,8 +71,3 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-[[ $hsl ]] && echo "
-$info Data for color setting was changed.
-Please update your backup.
-"

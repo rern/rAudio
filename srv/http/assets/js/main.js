@@ -286,12 +286,13 @@ $( '#displayplaylist' ).on( 'click', function() {
 	DISPLAY.option.playlist();
 } );
 $( 'body' ).on( 'click', '#colorok', function() {
-	COLOR.set();
+	COLOR.save();
 } ).on( 'click', '#colorreset', function() {
-	BASH( [ 'color', true, 'CMD RESET' ] );
-	COLOR.destroy();
-	COMMON.loader();
+	COLOR.set( 200, 100, 35 );
+	COLOR.save();
 } ).on( 'click', '#colorcancel', function() {
+	delete V.color;
+	$( 'html' ).removeAttr( 'style' );
 	COLOR.destroy();
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();

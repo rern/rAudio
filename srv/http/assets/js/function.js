@@ -161,10 +161,8 @@ var BIO       = {
 }
 var COLOR     = {
 	  destroy : () => {
-		$( 'html' ).removeAttr( 'style' );
 		V.colorpicker.destroy();
 		delete V.colorpicker;
-		delete V.color;
 		$( '#colorpicker' ).remove();
 	}
 	, picker  : () => {
@@ -208,18 +206,20 @@ var COLOR     = {
 					var m     = Math.min( l, 1 - l );
 					var s     = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
 					l         = Math.round( l * 100 );
-					var $root = $( ':root' );
-					V.color.cg.forEach( v => $root.css( '--cg'+ v, 'hsl( '+ h +', 3%, '+ v +'% )' ) );
-					V.color.cm.forEach( v => $root.css( '--cm'+ v, 'hsl( '+ h +', '+ s +'%, '+ ( l + v - 35 ) +'% )' ) );
+					COLOR.set( h, s, l );
 				}
 			}
 		} );
 	}
-	, set     : () => {
-		var hsl = $( ':root' ).css( '--cm20' ).replace( /[^0-9 ]/g, '' ).trim();
+	, save    : () => {
+		var hsl = $( ':root' ).css( '--cm35' ).replace( /[^0-9 ]/g, '' ).trim();
 		BASH( [ 'color', hsl, 'CMD HSL' ] );
 		COLOR.destroy();
-		COMMON.loader();
+	}
+	, set     : ( h, s, l ) => {
+		var $root = $( ':root' );
+		V.color.cg.forEach( v => $root.css( '--cg'+ v, 'hsl( '+ h +', 3%, '+ v +'% )' ) );
+		V.color.cm.forEach( v => $root.css( '--cm'+ v, 'hsl( '+ h +', '+ s +'%, '+ ( l + v - 35 ) +'% )' ) );
 	}
 }
 var COVERART  = {
