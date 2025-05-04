@@ -55,7 +55,10 @@ over_voltage=2"
 
 echo "$config" > /boot/config.txt
 # css color
-[[ -e $dirsystem/csscolor ]] && $dirbash/cmd.sh color
+if [[ -e $dirsystem/color ]]; then
+	rm $dirsystem/color
+	$dirbash/cmd.sh color
+fi
 # lcd
 sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
 # nas

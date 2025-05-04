@@ -4,6 +4,14 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250504
+file=$dirsystem/color
+if [[ -e $file ]] && ! grep -q -m1 ^colorcss $dirbash.cmd.sh; then
+	hsl=$( < $file )
+	l=$(( ${hsl/* } - 15 ))
+	awk '{print $1" "$2" $l"}' <<< $hsl > $file
+fi
+
 # 20250502
 file=/etc/pacman.conf
 ! grep -q mpd $file && sed -i '/IgnorePkg *=/ {s/^#//; s/$/ mpd/}' $file
@@ -66,17 +74,6 @@ getinstallzip
 . $dirbash/common.sh
 dirPermissions
 $dirbash/cmd.sh cachebust
-[[ -e $dirsystem/csscolor ]] && $dirbash/cmd.sh "color
-restore
-CMD CSS"
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20250503
-[[ -e $dirsystem/color ]] && exit
-
-rm $dirsystem/color
-echo "
-$info Color setting was reset.
-Please set your color again.
-"

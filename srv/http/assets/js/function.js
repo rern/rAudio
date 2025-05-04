@@ -216,15 +216,8 @@ var COLOR     = {
 		} );
 	}
 	, set     : () => {
-		var ckv;
-		var css = '';
-		[ 'cg', 'cm' ].forEach( k => {
-			V.color[ k ].forEach( v => {
-				ckv = '--'+ k + v;
-				css += ckv +' : '+ $( ':root' ).css( ckv ) +';\\\\n';
-			} );
-		} );
-		BASH( [ 'color', css, 'CMD CSS' ] );
+		var hsl = $( ':root' ).css( '--cm20' ).replace( /[^0-9 ]/g, '' ).trim();
+		BASH( [ 'color', hsl, 'CMD HSL' ] );
 		COLOR.destroy();
 		COMMON.loader();
 	}

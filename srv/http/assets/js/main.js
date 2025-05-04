@@ -288,7 +288,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 $( 'body' ).on( 'click', '#colorok', function() {
 	COLOR.set();
 } ).on( 'click', '#colorreset', function() {
-	BASH( [ 'color' ] );
+	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.destroy();
 	COMMON.loader();
 } ).on( 'click', '#colorcancel', function() {
