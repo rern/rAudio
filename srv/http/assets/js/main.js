@@ -241,7 +241,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			}
 			break;
 		case 'color':
-			BASH( [ 'colorcss' ], css => {
+			BASH( [ 'colorlist' ], css => {
 				V.color = css;
 				if ( V.library ) {
 					V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );

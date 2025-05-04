@@ -270,7 +270,7 @@ color )
 	splashRotate
 	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'" }'
 	;;
-colorcss )
+colorlist )
 	css=$( sed -n -E '/^\t*--c[gm].*hsl/ {s/.*--([^ ]*) .*/\1/; p}' /srv/http/assets/css/colors.css )
 	for k in cg cm; do
 		printf -v $k '%s' $( sed -n "/$k/ {s/^..//; s/^/, /; p}" <<< $css )
