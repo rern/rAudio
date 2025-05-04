@@ -249,8 +249,15 @@ W          = {  // ws push
 			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 		}, 1000 );
 	}
-	, reload    : () => {
-		V.color ? delete V.color : location.reload();
+	, reload    : data => {
+		if ( V.color ) {
+			delete V.color;
+			$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
+			$( '#loader rect' ).css( 'fill', data.cm );
+			$( '#loader path' ).css( 'fill', data.cg );
+		} else {
+			location.reload();
+		}
 	}
 	, restore   : data => {
 		if ( data.restore === 'done' ) {
