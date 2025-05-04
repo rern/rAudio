@@ -1715,8 +1715,14 @@ var PLAYLIST  = {
 			, replaceplay : 'Replace Playlist and play'
 		}
 		V.title       = cmd_title[ V.action ];
-		V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
-		if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
+		if ( MODE.file() ) {
+			V.msg = '<a class="li1">'+ V.list.name +'</a>';
+			if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
+		} else if ( $LI.data( 'mode' ) === 'lsmode' ) {
+			V.msg  = '<a class="li1">'+ $( '#lib-path' ).text() +'</a><a class="li2">'+ $LI.find( '.name' ).text() +'</a>';
+		} else {
+			V.msg = V.list.path;
+		}
 		BANNER( 'playlist', V.title, V.msg );
 		var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
 		BASH( cmd );
