@@ -246,10 +246,9 @@ cachetype )
 color )
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
-	cdgm=$( sed -n '/^\t*--c[dgm].*hsl/ {s/^\t--//; p}' <<< $css )
-	cgl=$( sed -n '/^cg/ {s/^cg/,/; s/ .*//;p}' <<< $cdgm )
-	cml=$( sed -n '/^cm/ {s/^cm/,/; s/ .*//;p}' <<< $cdgm )
-	[[ $LIST ]] && echo '{ "cg" : [ '${cgl:1}' ], "cm" : [ '${cml:1}' ] }' && exit
+	cd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $css )
+	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
+	[[ $LIST ]] && echo '{ "cd": [ '$cd' ], "ml": [ '${ml:1}' ] }' && exit
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
@@ -259,25 +258,25 @@ color )
 		if [[ -e $filecolor ]]; then
 			HSL=$( < $filecolor )
 		else
-			cd=$( sed -n '/^cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $cdgm )
-			HSL=${cd//,/ }
+			HSL=${cd//,/ } # n, n, n, ... > n n n
+			color=false
 		fi
 	fi
 	HSL=( $HSL )
 	h=${HSL[0]}
 	s=${HSL[1]}
 	l=${HSL[2]}
-	for ml in ${cml//,/ }; do # ,n, n, n, ... > n n n
-		L=$(( l + ml - 35 ))
-		regex+="s/(--ml$ml *: ).*/\1$L%;/; "
+	for m in ${ml//,/ }; do # ,n, n, n, ... > n n n
+		L=$(( l + m - 35 ))
+		regex+="s/(--ml$m *: ).*/\1$L%;/; "
 	done
-	sed -E "/^\t--[hsm][ l]/ {s/(--h *: ).*/\1$h;/; s/(--s *: ).*/\1$s%;/; $regex}" <<< $css > $filecss
+	sed -E "s/(--h *: ).*/\1$h;/; s/(--s *: ).*/\1$s%;/; $regex" <<< $css > $filecss
 	iconsvg=/srv/http/assets/img/icon.svg
 	cm="($h,$s%,$l%)"
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
 	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
-	color=$( [[ $cd ]] && echo false || echo true )
+	[[ ! $color ]] && color=true
 	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'", "color": '$color' }'
 	splashRotate
 	;;

@@ -241,8 +241,8 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			}
 			break;
 		case 'color':
-			BASH( [ 'color', true, 'CMD LIST' ], css => {
-				V.color = css;
+			BASH( [ 'color', true, 'CMD LIST' ], data => {
+				V.color = data;
 				if ( V.library ) {
 					V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
 				} else if ( V.playlist && S.pllength ) {
@@ -288,11 +288,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 $( 'body' ).on( 'click', '#colorok', function() {
 	COLOR.save();
 } ).on( 'click', '#colorreset', function() {
-	var cd = $( ':root' ).css( '--cd' )
-				.replace( /[^0-9,]/g, '' )
-				.split( ',' )
-				.map( Number );
-	COLOR.set( ...cd );
+	COLOR.set( ...V.color.cd );
 	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.destroy();
 } ).on( 'click', '#colorcancel', function() {
