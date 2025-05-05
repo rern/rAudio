@@ -1,6 +1,7 @@
 :root {
 	--cd   : hsl( 200, 100%, 35% ); /* default main*/
 	--cw   : hsl(   0,   0%, 90% );
+	
 	--h    : 200;
 	--s    : 100%;
 	--ml60 : 60%;
@@ -8,27 +9,20 @@
 	--ml35 : 35%;
 	--ml30 : 30%;
 	--ml20 : 20%;
+	
 	--cg75 : hsl( var( --h ), 3%, 75% );
 	--cg70 : hsl( var( --h ), 3%, 70% );
 	--cg60 : hsl( var( --h ), 3%, 60% );
 	--cg50 : hsl( var( --h ), 3%, 50% );
-	--cg40 : hsl( var( --h ), 3%, 40% );
-	--cg30 : hsl( var( --h ), 3%, 30% );
-	--cg20 : hsl( var( --h ), 3%, 20% );
-	--cg10 : hsl( var( --h ), 3%, 10% );
+	--cgl  : hsl( var( --h ), 3%, 40% );
+	--cg   : hsl( var( --h ), 3%, 30% );
+	--cga  : hsl( var( --h ), 3%, 20% );
+	--cgd  : hsl( var( --h ), 3%, 10% );
 	--cm60 : hsl( var( --h ), var( --s ), var( --ml60 ) );
-	--cm40 : hsl( var( --h ), var( --s ), var( --ml40 ) );
-	--cm35 : hsl( var( --h ), var( --s ), var( --ml35 ) );
-	--cm30 : hsl( var( --h ), var( --s ), var( --ml30 ) );
-	--cm20 : hsl( var( --h ), var( --s ), var( --ml20 ) );
-	--cml  : var( --cm40 );
-	--cm   : var( --cm35 );
-	--cma  : var( --cm30 );
-	--cmd  : var( --cm20 );
-	--cgl  : var( --cg40 );
-	--cg   : var( --cg30 );
-	--cga  : var( --cg20 );
-	--cgd  : var( --cg10 );
+	--cml  : hsl( var( --h ), var( --s ), var( --ml40 ) );
+	--cm   : hsl( var( --h ), var( --s ), var( --ml35 ) );
+	--cma  : hsl( var( --h ), var( --s ), var( --ml30 ) );
+	--cmd  : hsl( var( --h ), var( --s ), var( --ml20 ) );
 	
 	--shadow-btn    : -2px  2px 4px      #000;
 	--shadow-btn-u  : -2px -2px 4px      #000;
