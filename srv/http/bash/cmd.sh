@@ -244,24 +244,41 @@ cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
-	filecolor=$dirsystem/color
-	if [[ ! $HSL ]]; then
-		[[ -e $filecolor ]] && HSL=$( < $filecolor ) || HSL='200 100 35' # default
+	filecss=/srv/http/assets/css/colors.css
+	css=$( < $filecss )
+	cdgm=$( sed -n '/^\t*--c[dgm].*hsl/ {s/^\t--//; p}' <<< $css )
+	cd=$( sed -n '/^cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $cdgm )
+	cgl=$( sed -n '/^cg/ {s/^cg/,/; s/ .*//;p}' <<< $cdgm )
+	cml=$( sed -n '/^cm/ {s/^cm/,/; s/ .*//;p}' <<< $cdgm )
+	if [[ $LIST ]]; then
+		echo '{
+  "cd" : [ '${cd}' ]
+, "cg" : [ '${cgl:1}' ]
+, "cm" : [ '${cml:1}' ]
+ }'
+		exit
+# --------------------------------------------------------------------
 	fi
-	[[ $HSL == '200 100 35' ]] && rm -f $filecolor || echo $HSL > $filecolor
-	HSL=( $HSL ) # --cm20
+	filecolor=$dirsystem/color
+	if [[ $HSL ]]; then
+		echo $HSL > $filecolor
+	else
+		if [[ $RESET || ! -e $filecolor ]]; then
+			HSL=${cd//,/ }
+			rm -f $filecolor
+		else
+			HSL=$( < $filecolor )
+		fi
+	fi
+	HSL=( $HSL )
 	h=${HSL[0]}
 	s=${HSL[1]}
 	l=${HSL[2]}
-	colorscss=/srv/http/assets/css/colors.css
-	cml=$( sed -n -E '/^\t*--cm.*hsl/ {s/.*cm([^ ]*) .*/\1/; p}' $colorscss ) # hsl(200, 3%, 75%)
-	for ml in $cml; do # hsl(200, 100%, 20%)
+	for ml in ${cml//,/ }; do # ,n, n, n, ... > n n n
 		L=$(( l + ml - 35 ))
-		regex+="s/^(\t*--cm$ml.*hsl).*/\1( $h, $s%, $L% );/; "
+		regex+="s/(--l$ml *: ).*/\1$L%;/; "
 	done
-	sed -i -E -e "/^\t*--cg.*hsl/ s/hsl[^,]*/hsl( $h/
-" -e "$regex
-" $colorscss
+	sed -E "/^\t--[hsl][ 0-9]/ {s/(--h *: ).*/\1$h;/; s/(--s *: ).*/\1$s%;/; $regex}" <<< $css > $filecss
 	iconsvg=/srv/http/assets/img/icon.svg
 	cm="($h,$s%,$l%)"
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
@@ -269,13 +286,6 @@ color )
 	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
 	splashRotate
 	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'" }'
-	;;
-colorlist )
-	css=$( sed -n -E '/^\t*--c[gm].*hsl/ {s/.*--([^ ]*) .*/\1/; p}' /srv/http/assets/css/colors.css )
-	for k in cg cm; do
-		printf -v $k '%s' $( sed -n "/$k/ {s/^..//; s/^/, /; p}" <<< $css )
-	done
-	echo '{ "cm": [ '${cm:1}' ], "cg": [ '${cg:1}' ] }'
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd

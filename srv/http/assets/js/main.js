@@ -241,7 +241,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			}
 			break;
 		case 'color':
-			BASH( [ 'colorlist' ], css => {
+			BASH( [ 'color', true, 'CMD LIST' ], css => {
 				V.color = css;
 				if ( V.library ) {
 					V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
@@ -288,8 +288,9 @@ $( '#displayplaylist' ).on( 'click', function() {
 $( 'body' ).on( 'click', '#colorok', function() {
 	COLOR.save();
 } ).on( 'click', '#colorreset', function() {
-	COLOR.set( 200, 100, 35 );
-	COLOR.save();
+	COLOR.set( ...V.color.cd );
+	BASH( [ 'color', true, 'CMD RESET' ] );
+	COLOR.destroy();
 } ).on( 'click', '#colorcancel', function() {
 	delete V.color;
 	$( 'html' ).removeAttr( 'style' );
