@@ -212,7 +212,9 @@ var COLOR     = {
 		} );
 	}
 	, save    : () => {
-		var hsl = $( ':root' ).css( '--cm35' ).replace( /[^0-9 ]/g, '' ).trim();
+		var hsl = $( ':root' ).css( '--cm35' )
+					.replace( /[^0-9,]/g, '' )
+					.replace( /,/g, ' ' );
 		BASH( [ 'color', hsl, 'CMD HSL' ] );
 		COLOR.destroy();
 	}
