@@ -247,24 +247,21 @@ color )
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
 	cdgm=$( sed -n '/^\t*--c[dgm].*hsl/ {s/^\t--//; p}' <<< $css )
-	cd=$( sed -n '/^cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $cdgm )
 	cgl=$( sed -n '/^cg/ {s/^cg/,/; s/ .*//;p}' <<< $cdgm )
 	cml=$( sed -n '/^cm/ {s/^cm/,/; s/ .*//;p}' <<< $cdgm )
-	if [[ $LIST ]]; then
-		echo '{
-  "cd" : [ '${cd}' ]
-, "cg" : [ '${cgl:1}' ]
-, "cm" : [ '${cml:1}' ]
- }'
-		exit
+	[[ $LIST ]] && echo '{ "cg" : [ '${cgl:1}' ], "cm" : [ '${cml:1}' ] }' && exit
 # --------------------------------------------------------------------
-	fi
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
 		echo $HSL > $filecolor
 	else
 		[[ $RESET ]] && rm -f $filecolor
-		[[ -e $filecolor ]] && HSL=$( < $filecolor ) || HSL=${cd//,/ }
+		if [[ -e $filecolor ]]; then
+			HSL=$( < $filecolor )
+		else
+			cd=$( sed -n '/^cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $cdgm )
+			HSL=${cd//,/ }
+		fi
 	fi
 	HSL=( $HSL )
 	h=${HSL[0]}

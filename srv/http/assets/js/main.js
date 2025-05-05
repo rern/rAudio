@@ -288,7 +288,11 @@ $( '#displayplaylist' ).on( 'click', function() {
 $( 'body' ).on( 'click', '#colorok', function() {
 	COLOR.save();
 } ).on( 'click', '#colorreset', function() {
-	COLOR.set( ...V.color.cd );
+	var cd = $( ':root' ).css( '--cd' )
+				.replace( /[^0-9,]/g, '' )
+				.split( ',' )
+				.map( Number );
+	COLOR.set( ...cd );
 	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.destroy();
 } ).on( 'click', '#colorcancel', function() {
