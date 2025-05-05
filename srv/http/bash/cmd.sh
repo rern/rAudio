@@ -263,12 +263,8 @@ color )
 	if [[ $HSL ]]; then
 		echo $HSL > $filecolor
 	else
-		if [[ $RESET || ! -e $filecolor ]]; then
-			HSL=${cd//,/ }
-			rm -f $filecolor
-		else
-			HSL=$( < $filecolor )
-		fi
+		[[ $RESET ]] && rm -f $filecolor
+		[[ -e $filecolor ]] && HSL=$( < $filecolor ) || HSL=${cd//,/ }
 	fi
 	HSL=( $HSL )
 	h=${HSL[0]}
