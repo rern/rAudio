@@ -277,8 +277,9 @@ color )
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
 	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
+	color=$( [[ $cd ]] && echo false || echo true )
+	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'", "color": '$color' }'
 	splashRotate
-	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'" }'
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd

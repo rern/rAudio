@@ -252,6 +252,7 @@ W          = {  // ws push
 	, reload    : data => {
 		if ( V.color ) {
 			delete V.color;
+			D.color = data.color;
 			$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
 			$( '#loader rect' ).css( 'fill', data.cm );
 			$( '#loader path' ).css( 'fill', data.cg );
