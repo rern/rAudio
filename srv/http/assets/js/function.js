@@ -212,14 +212,12 @@ var COLOR     = {
 		} );
 	}
 	, save    : () => {
-		var hsl = $( ':root' ).css( '--cm' )
-					.replace( /[^0-9,]/g, '' )
-					.replace( /,/g, ' ' );
-		BASH( [ 'color', hsl, 'CMD HSL' ] );
+		BASH( [ 'color', V.color.hsl, 'CMD HSL' ] );
 		COLOR.destroy();
 	}
 	, set     : ( h, s, l ) => {
-		var css = { '--h': h, '--s': s +'%' };
+		V.color.hsl = h +' '+ s +' '+ l;
+		var css     = { '--h': h, '--s': s +'%' };
 		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
