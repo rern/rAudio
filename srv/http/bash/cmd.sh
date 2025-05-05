@@ -272,9 +272,9 @@ color )
 	l=${HSL[2]}
 	for ml in ${cml//,/ }; do # ,n, n, n, ... > n n n
 		L=$(( l + ml - 35 ))
-		regex+="s/(--l$ml *: ).*/\1$L%;/; "
+		regex+="s/(--ml$ml *: ).*/\1$L%;/; "
 	done
-	sed -E "/^\t--[hsl][ 0-9]/ {s/(--h *: ).*/\1$h;/; s/(--s *: ).*/\1$s%;/; $regex}" <<< $css > $filecss
+	sed -E "/^\t--[hsm][ l]/ {s/(--h *: ).*/\1$h;/; s/(--s *: ).*/\1$s%;/; $regex}" <<< $css > $filecss
 	iconsvg=/srv/http/assets/img/icon.svg
 	cm="($h,$s%,$l%)"
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
