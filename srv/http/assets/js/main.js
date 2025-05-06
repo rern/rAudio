@@ -292,7 +292,6 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.destroy();
 } ).on( 'click', '#colorcancel', function() {
-	delete V.color;
 	$( 'html' ).removeAttr( 'style' );
 	COLOR.destroy();
 	if ( S.player === 'mpd' ) {

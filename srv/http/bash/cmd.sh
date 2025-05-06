@@ -259,7 +259,7 @@ color )
 			HSL=$( < $filecolor )
 		else
 			HSL=${cd//,/ } # n, n, n, ... > n n n
-			color=false
+			default=1
 		fi
 	fi
 	HSL=( $HSL )
@@ -281,7 +281,14 @@ s/(--ml$m *: ).*/\1$L%;/"
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
 	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
 	[[ ! $color ]] && color=true
-	pushData reload '{ "cg": "hsl('$h',3%,75%)", "cm": "hsl'$cm'", "color": '$color' }'
+	color='{
+  "cg"    : "hsl('$h',3%,75%)"
+, "cm"    : "hsl'$cm'"
+, "color" : '$( [[ $default ]] && echo false || echo true )'
+, "hsl"   : [ '$h', '$s', '$l' ]
+, "ml"    : [ '${ml:1}' ]
+}'
+	pushData color "$color"
 	splashRotate
 	;;
 coverartonline )

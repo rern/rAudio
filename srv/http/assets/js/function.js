@@ -162,6 +162,7 @@ var BIO       = {
 var COLOR     = {
 	  destroy : () => {
 		V.colorpicker.destroy();
+		delete V.color;
 		delete V.colorpicker;
 		$( '#colorpicker' ).remove();
 	}
@@ -200,13 +201,14 @@ var COLOR     = {
 			, size       : 230
 			, userEvents : {
 				change : e => {
-					var hsv   = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
-					var h     = Math.round( 360 * hsv.h );
-					var l     = hsv.v - hsv.v * hsv.s / 2;
-					var m     = Math.min( l, 1 - l );
-					var s     = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
-					l         = Math.round( l * 100 );
+					var hsv = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
+					var h   = Math.round( 360 * hsv.h );
+					var l   = hsv.v - hsv.v * hsv.s / 2;
+					var m   = Math.min( l, 1 - l );
+					var s   = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
+					l       = Math.round( l * 100 );
 					COLOR.set( h, s, l );
+					V.color.hsl = h +' '+ s +' '+ l;
 				}
 			}
 		} );
@@ -216,7 +218,6 @@ var COLOR     = {
 		COLOR.destroy();
 	}
 	, set     : ( h, s, l ) => {
-		V.color.hsl = h +' '+ s +' '+ l;
 		var css     = { '--h': h, '--s': s +'%' };
 		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );

@@ -163,7 +163,16 @@ W          = {  // ws push
 		}
 		BANNER_HIDE();
 	}
-	, notify : data => {
+	, color     : data => {
+		D.color = data.color !== false;
+		V.color = data;
+		COLOR.set( ...data.hsl );
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
+		$( '#loader rect' ).css( 'fill', data.cm );
+		$( '#loader path' ).css( 'fill', data.cg );
+		delete V.color;
+	}
+	, notify    : data => {
 		if ( data === false ) {
 			BANNER_HIDE();
 			return
@@ -193,7 +202,7 @@ W          = {  // ws push
 		}
 		BANNER( icon, title, message, delay );
 	}
-	, power  : data => {
+	, power     : data => {
 		var action  = data.type;
 		V[ action ] = true;
 		WS          = null;
@@ -209,7 +218,7 @@ W          = {  // ws push
 			setTimeout( WEBSOCKET.reConnect, data.startup + 8000 ); // add shutdown 8s
 		}
 	}
-	, relays : data => {
+	, relays    : data => {
 		if ( 'reset' in data ) {
 			$( '#infoX' ).trigger( 'click' );
 			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
@@ -248,17 +257,6 @@ W          = {  // ws push
 		V.intervalrelays = setInterval( () => {
 			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 		}, 1000 );
-	}
-	, reload    : data => {
-		if ( V.color ) {
-			delete V.color;
-			D.color = data.color;
-			$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
-			$( '#loader rect' ).css( 'fill', data.cm );
-			$( '#loader path' ).css( 'fill', data.cg );
-		} else {
-			location.reload();
-		}
 	}
 	, restore   : data => {
 		if ( data.restore === 'done' ) {
