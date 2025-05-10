@@ -48,8 +48,8 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'html5kellycolorpicker', 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
-	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
+	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
+	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut', 'colorpicker' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
 		$css    = [ ...$css, 'select2', 'equalizer' ];

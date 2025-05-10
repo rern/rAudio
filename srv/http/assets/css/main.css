@@ -1853,9 +1853,14 @@ li.active .li2 bl {
 	touch-action: none;
 	box-shadow: var( --shadow-bar );
 }
+#hue,
+#sat {
+	position: absolute;
+	cursor: crosshair;
+}
 #colorcancel {
 	position: absolute;
-	right: 0;
+	right: -5px;
 	width: 36px;
 	height: 36px;
 	font-size: 24px;
@@ -1864,7 +1869,8 @@ li.active .li2 bl {
 	color: var( --cm );
 	background: #000;
 	text-shadow: var( --shadow-btn );
-	box-shadow: 0 0 6px 5px #000000;
+	box-shadow: 0 0 6px 5px #000;
+	z-index: 1;
 }
 .tagmessage {
 	display: flex;

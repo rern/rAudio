@@ -145,18 +145,7 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		if ( ! $( '#color canvas' ).length ) { // color icon
 			$( '#color' ).html( '<canvas></canvas>' );
-			var canvas = $( '#color canvas' )[ 0 ];
-			var ctx    = canvas.getContext( '2d' );
-			var cw     = canvas.width / 2;
-			var ch     = canvas.height / 2;
-			for ( var i = 0; i < 360; i += 0.25 ) {
-				var rad         = i * Math.PI / 180;
-				ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
-				ctx.beginPath();
-				ctx.moveTo( cw, ch );
-				ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
-				ctx.stroke();
-			}
+			COLOR.wheel( '#color canvas', 20 );
 		}
 		MENU.hide();
 		$( '#settings' )
@@ -284,21 +273,6 @@ $( '#displayplayback' ).on( 'click', function() {
 } );
 $( '#displayplaylist' ).on( 'click', function() {
 	DISPLAY.option.playlist();
-} );
-$( 'body' ).on( 'click', '#colorok', function() {
-	COLOR.save();
-} ).on( 'click', '#colorreset', function() {
-	COLOR.set( ...V.color.cd );
-	BASH( [ 'color', true, 'CMD RESET' ] );
-	COLOR.destroy();
-} ).on( 'click', '#colorcancel', function() {
-	$( 'html' ).removeAttr( 'style' );
-	COLOR.destroy();
-	if ( S.player === 'mpd' ) {
-		if ( V.playlist ) PLAYLIST.render.scroll();
-	} else {
-		UTIL.switchPage( 'playback' );
-	}
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
