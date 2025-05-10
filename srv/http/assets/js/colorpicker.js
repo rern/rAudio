@@ -5,13 +5,13 @@ var COLOR = {
 				if ( ! hue ) hue = hsl.h;
 				V.ctx.base.save();
 				V.ctx.base.translate( box0, box0 );
-				for( var i = 0; i <= box_wh; i++ ){
-					var gradient = V.ctx.base.createLinearGradient( 0, 0, box_wh, 0 );
-					var iy       = i / box_wh * 100;
+				for( var i = 0; i <= box_w; i++ ){
+					var gradient = V.ctx.base.createLinearGradient( 0, 0, box_w, 0 );
+					var iy       = i / box_w * 100;
 					gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                   // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
 					gradient.addColorStop( 1, 'hsl('+ hue +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
 					V.ctx.base.fillStyle = gradient;
-					V.ctx.base.fillRect( 0, box_wh - i, box_wh, 1 );
+					V.ctx.base.fillRect( 0, box_w - i, box_w, 1 );
 				}
 				V.ctx.base.restore();
 			}
@@ -58,12 +58,11 @@ var COLOR = {
 		
 		var canvas_w = 230;
 		var canvas_o = canvas_w / 2;
-		var box_wh   = 120;
-		var box0     = ( canvas_w - box_wh ) / 2;
-		var box_br   = box0 + box_wh;
-		var wheel_ri = 95;
-		var wheel_w  = canvas_w / 2 - wheel_ri;
-		var wheel_rc = wheel_ri + wheel_w / 2;
+		var box_w    = 120;
+		var box0     = ( canvas_w - box_w ) / 2;
+		var box_br   = box0 + box_w;
+		var wheel_r  = 95;
+		var wheel_w  = canvas_w / 2 - wheel_r;
 		var hsl      = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
 		hsl          = { h: +hsl[ 0 ], s: +hsl[ 1 ], l: +hsl[ 2 ] };
 		
@@ -88,7 +87,7 @@ var COLOR = {
 		} );
 		V.ctx.base.fillStyle = '#000';
 		V.ctx.base.beginPath();
-		V.ctx.base.arc( canvas_o, canvas_o, wheel_ri, 0, 2 * Math.PI );
+		V.ctx.base.arc( canvas_o, canvas_o, wheel_r, 0, 2 * Math.PI );
 		V.ctx.base.fill();
 		pick.gradient();
 		// hue point
@@ -123,10 +122,10 @@ var COLOR = {
 		}
 		var tl  = $( '#canvascolor' ).position();
 		var cxy = { x: tl.left + canvas_w /2, y: tl.top + canvas_w / 2 }
-		$( '#colorpicker' ).on( 'touchstart mousedown', 'canvas', e => {
+		$( '#colorpicker canvas' ).on( 'touchstart mousedown', e => {
 			var x   = tl.left + e.offsetX;
 			var y   = tl.top + e.offsetY;
-			var hue =  x < box0 || x > box0 + box_wh || y < box0 || y >  + box_wh;
+			var hue =  x < box0 || x > box0 + box_w || y < box0 || y >  + box_w;
 			if ( hue ) {
 				var p = pick.pixelData( x, y );
 				if ( p[ 0 ] || p[ 1 ] || p[ 2 ] ) pick.hueRotate( x, y );
@@ -134,13 +133,13 @@ var COLOR = {
 				V.sat = true;
 				V.ctx.sat.clearRect( 0, 0, canvas_w, canvas_w );
 			}
-		} ).on( 'mousemove', 'canvas', e => {
+		} ).on( 'mousemove', e => {
 			if ( 'hue' in V ) {
 				pick.hueRotate( tl.left + e.offsetX, tl.top + e.offsetY );
 			} else if ( 'sat' in V ) {
 				pick.satMove( e.offsetX, e.offsetY );
 			}
-		} ).on( 'touchend mouseup', 'canvas', e => {
+		} ).on( 'touchend mouseup', e => {
 			if ( 'hue' in V ) {
 				hsl.h = Math.round( V.hue );
 				if ( hsl.h < 0 ) hsl.h += 360;
@@ -150,14 +149,16 @@ var COLOR = {
 				delete V.sat;
 			}
 		} );
-		$( 'body' ).on( 'click', '#colorok', function() {
+		$( '#colorok' ).on( 'click', function() {
 			COLOR.save( hsl );
 			$( '#colorpicker' ).remove();
-		} ).on( 'click', '#colorreset', function() {
+		} );
+		$( '#colorreset' ).on( 'click', function() {
 			COLOR.set( ...V.color.cd );
 			BASH( [ 'color', true, 'CMD RESET' ] );
 			$( '#colorpicker' ).remove();
-		} ).on( 'click', '#colorcancel', function() {
+		} );
+		$( '#colorcancel' ).on( 'click', function() {
 			$( 'html' ).removeAttr( 'style' );
 			$( '#colorpicker' ).remove();
 			if ( S.player === 'mpd' ) {
