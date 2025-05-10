@@ -103,7 +103,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
-				if ( V.color ) $( '#colorcancel' ).trigger( 'click' );
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}

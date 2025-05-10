@@ -1101,7 +1101,6 @@ var MENU      = {
 		}
 		V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
 		if ( ( D.tapaddplay || D.tapreplaceplay )
-			&& ! V.color
 			&& ! $target.hasClass( 'li-icon' )
 			&& ! V.list.licover
 			&& S.player === 'mpd'
