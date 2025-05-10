@@ -165,10 +165,12 @@ W          = {  // ws push
 	}
 	, color     : data => {
 		D.color = data.color !== false;
-		V.color ? delete V.color : COLOR.set( ...data.hsl );
+		V.color = data;
+		COLOR.set( ...data.hsl );
 		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
 		$( '#loader rect' ).css( 'fill', data.cm );
 		$( '#loader path' ).css( 'fill', data.cg );
+		delete V.color;
 	}
 	, notify    : data => {
 		if ( data === false ) {
