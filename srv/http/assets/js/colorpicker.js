@@ -156,6 +156,7 @@ var COLOR = {
 		} ).on( 'click', '#colorreset', function() {
 			COLOR.set( ...V.color.cd );
 			BASH( [ 'color', true, 'CMD RESET' ] );
+			$( '#colorpicker' ).remove();
 		} ).on( 'click', '#colorcancel', function() {
 			$( 'html' ).removeAttr( 'style' );
 			$( '#colorpicker' ).remove();
