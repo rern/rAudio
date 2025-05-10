@@ -167,12 +167,12 @@ var COLOR = {
 			} else {
 				UTIL.switchPage( 'playback' );
 			}
-			delete V.color;
 		} );
 	}
 	, remove : () => {
 		$( '#colorpicker' ).remove();
 		$( 'body' ).css( 'overflow', '' );
+		delete V.color;
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
 	, set    : ( h, s, l ) => {
