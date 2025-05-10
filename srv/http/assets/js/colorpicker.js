@@ -129,10 +129,7 @@ var COLOR = {
 			var hue =  x < box0 || x > box0 + box_wh || y < box0 || y >  + box_wh;
 			if ( hue ) {
 				var p = pick.pixelData( x, y );
-				if ( p[ 0 ] || p[ 1 ] || p[ 2 ] ) {
-					pick.hueRotate( x, y );
-					V.hue = true;
-				}
+				if ( p[ 0 ] || p[ 1 ] || p[ 2 ] ) pick.hueRotate( x, y );
 			} else {
 				V.sat = true;
 				V.ctx.sat.clearRect( 0, 0, canvas_w, canvas_w );
@@ -167,6 +164,7 @@ var COLOR = {
 			} else {
 				UTIL.switchPage( 'playback' );
 			}
+			delete V.color;
 		} );
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
