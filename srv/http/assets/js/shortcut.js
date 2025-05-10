@@ -32,7 +32,7 @@ function menuLibraryPlaylist( $tabs, click ) {
 }
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
-	if ( V.local || I.active || V.colorpicker ) return
+	if ( V.local || I.active || V.color ) return
 	
 	var key      = e.key;
 	var $search  = $( '.search:not( .hide )' );
@@ -103,7 +103,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
-				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
+				if ( V.color ) $( '#colorcancel' ).trigger( 'click' );
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}

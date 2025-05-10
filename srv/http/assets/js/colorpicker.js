@@ -66,6 +66,9 @@ var COLOR = {
 		var wheel_rc = wheel_ri + wheel_w / 2;
 		var hsl      = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
 		hsl          = { h: +hsl[ 0 ], s: +hsl[ 1 ], l: +hsl[ 2 ] };
+		
+		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
+		
 		$( '#lyrics' ).before( `
 <div id="colorpicker">
 <div id="divcolor">
@@ -152,6 +155,7 @@ var COLOR = {
 		} );
 		$( 'body' ).on( 'click', '#colorok', function() {
 			COLOR.save( hsl );
+			$( '#colorpicker' ).remove();
 		} ).on( 'click', '#colorreset', function() {
 			COLOR.set( ...V.color.cd );
 			BASH( [ 'color', true, 'CMD RESET' ] );

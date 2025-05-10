@@ -2293,7 +2293,6 @@ var UTIL      = {
 			} else {
 				V.modescrolltop = $( window ).scrollTop();
 			}
-			if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
 		} else if ( V.playlist ) {
 			if ( ! V.playlisthome ) V.plscrolltop = $( window ).scrollTop();
 		}

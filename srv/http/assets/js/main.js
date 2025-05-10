@@ -90,7 +90,7 @@ window.addEventListener( 'touchend', function( e ) {
 } );
 
 $( 'body' ).on( 'click', function( e ) {
-	if ( I.active || V.colorpicker ) return
+	if ( I.active || V.color ) return
 	
 	var $target = $( e.target );
 	if ( ! $target.is( '.bkcoverart, .bkradio, .disabled, .savedlist' ) ) MENU.hide();
