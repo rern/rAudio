@@ -1,8 +1,8 @@
 *:focus-visible {
 	outline: none;
 }
-#bio { z-index: 107 }
-#colorpicker,
+#bio,
+#colorpicker { z-index: 107 }
 #lyrics,
 #lyricsfade,
 #bar-top,

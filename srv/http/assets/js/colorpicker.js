@@ -67,8 +67,9 @@ var COLOR = {
 		hsl          = { h: +hsl[ 0 ], s: +hsl[ 1 ], l: +hsl[ 2 ] };
 		
 		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
+		$( 'body' ).css( 'overflow', 'hidden' );
 		
-		$( '#lyrics' ).before( `
+		$( '#lyrics' ).after( `
 <div id="colorpicker">
 <div id="divcolor">
 <i id="colorcancel" class="i-close"></i>
@@ -151,16 +152,16 @@ var COLOR = {
 		} );
 		$( '#colorok' ).on( 'click', function() {
 			COLOR.save( hsl );
-			$( '#colorpicker' ).remove();
+			COLOR.remove();
 		} );
 		$( '#colorreset' ).on( 'click', function() {
 			COLOR.set( ...V.color.cd );
 			BASH( [ 'color', true, 'CMD RESET' ] );
-			$( '#colorpicker' ).remove();
+			COLOR.remove();
 		} );
 		$( '#colorcancel' ).on( 'click', function() {
+			COLOR.remove();
 			$( 'html' ).removeAttr( 'style' );
-			$( '#colorpicker' ).remove();
 			if ( S.player === 'mpd' ) {
 				if ( V.playlist ) PLAYLIST.render.scroll();
 			} else {
@@ -168,6 +169,10 @@ var COLOR = {
 			}
 			delete V.color;
 		} );
+	}
+	, remove : () => {
+		$( '#colorpicker' ).remove();
+		$( 'body' ).css( 'overflow', '' );
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
 	, set    : ( h, s, l ) => {
