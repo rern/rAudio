@@ -1,5 +1,6 @@
 var COLOR = {
 	  picker : () => {
+// function
 		var pick = {
 			  gradient  : () => {
 				V.ctx.base.save();
@@ -44,7 +45,7 @@ var COLOR = {
 				COLOR.set( hsl.h, s, l );
 			}
 		}
-		
+// common
 		var canvas_w = 230;
 		var canvas_o = canvas_w / 2;
 		var box_w    = 120;
@@ -54,24 +55,23 @@ var COLOR = {
 		var wheel_w  = canvas_w / 2 - wheel_r;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
 		hsl          = { h: +h, s: +s, l: +l };
-		
+// page background
 		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
 		$( 'body' ).css( 'overflow', 'hidden' );
-		
+// html
+		var canvas   = '';
+		[ 'hue', 'sat', 'base' ].forEach( id => canvas += '<canvas id="'+ id +'" width="'+ canvas_w +'" height="'+ canvas_w +'"></canvas>' );
 		$( '#lyrics' ).after( `
 <div id="colorpicker">
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
-		<canvas id="hue"></canvas>
-		<canvas id="sat"></canvas>
-		<canvas id="canvascolor"></canvas>
+		${ canvas }
 		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
 ` );
-		$( '#hue, #sat' ).attr( { width: 230, height: 230 } );
 // hue wheel
-		V.ctx        = { base: COLOR.wheel( '#canvascolor', 230 ) };
+		V.ctx        = { base: COLOR.wheel( '#base' ) };
 		
 		[ 'hue', 'sat' ].forEach( id => {
 			V.ctx[ id ]             = $( '#'+ id )[ 0 ].getContext( '2d' );
@@ -84,12 +84,12 @@ var COLOR = {
 		V.ctx.base.fill();
 // sat box
 		pick.gradient();
-// hue point
+// point - hue
 		V.ctx.hue.beginPath();
 		V.ctx.hue.arc( canvas_w - wheel_w / 2, canvas_o, wheel_w / 2, 0, 2 * Math.PI );
 		V.ctx.hue.stroke();
 		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
-// sat point
+// point - sat
 		var a, b, bp, g, gp, k, l, p, r, r_g_b, rp, v, x, y;
 		l = hsl.l / 100;
 		a = hsl.s / 100 * Math.min( l, 1 - l );
@@ -114,7 +114,8 @@ var COLOR = {
 				}
 			}
 		}
-		var tl  = $( '#canvascolor' ).position();
+// pick
+		var tl  = $( '#base' ).position();
 		var cxy = { x: tl.left + canvas_w /2, y: tl.top + canvas_w / 2 }
 		$( '#colorpicker canvas' ).on( 'touchstart mousedown', e => {
 			var x = tl.left + e.offsetX;
@@ -143,6 +144,7 @@ var COLOR = {
 				delete V.sat;
 			}
 		} );
+// action
 		$( '#colorok' ).on( 'click', function() {
 			COLOR.save( hsl );
 			COLOR.remove();
@@ -173,8 +175,7 @@ var COLOR = {
 		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
-	, wheel  : ( el, wh ) => {
-		$( el ).attr( { width: wh, height: wh } );
+	, wheel  : el => { // for picker and color menu
 		var canvas   = $( el )[ 0 ];
 		var ctx      = canvas.getContext( '2d', { willReadFrequently: true } );
 		var canvas_o = canvas.width / 2;
