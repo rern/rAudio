@@ -35,16 +35,12 @@ var COLOR = {
 				COLOR.set( ...Object.values( hsl ) );
 			}
 			, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
-			, point     : ( x, y ) => {
-				var c = ctx.sat;
-				c.clearRect( 0, 0, canvas_w, canvas_w );
-				c.beginPath();
-				c.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
-				c.stroke();
-			}
 			, satMove   : ( x, y ) => { // pixel > rgb > hsl
 				var b, d, f, g, l, m, r, s;
 				[ r, g, b ] = pick.pixelData( x, y );
+				if ( r + g + b === 0 ) return
+				
+				pick.satPoint( x, y );
 				r    /= 255;
 				g    /= 255;
 				b    /= 255;
@@ -55,18 +51,27 @@ var COLOR = {
 				hsl.s = f ? Math.round( d / f * 100 ) : 0;
 				COLOR.set( ...Object.values( hsl ) );
 			}
-			, xy        : e => {
-				if ( e.offsetX ) return [ e.offsetX, e.offsetY ]
+			, satPoint  : ( x, y ) => {
+				[ r, g, b ] = pick.pixelData( x, y );
+				if ( r + g + b === 0 ) return
 				
-				var x = e.changedTouches[ 0 ].pageX - canvas_b.x;
-				var y = e.changedTouches[ 0 ].pageY - canvas_b.y;
-				return [ x, y ]
+				var c = ctx.sat;
+				c.clearRect( 0, 0, canvas_w, canvas_w );
+				c.beginPath();
+				c.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
+				c.stroke();
+			}
+			, xy        : ( e, hs ) => {
+				var x = e.offsetX || e.changedTouches[ 0 ].pageX - canvas_b.x;
+				var y = e.offsetY || e.changedTouches[ 0 ].pageY - canvas_b.y;
+				if ( ! hs ) return [ x, y ]
+				
+				pick[ hs ]( x, y );
 			}
 		}
 // common
 		var canvas_w = 230;
 		var canvas_c = canvas_w / 2;
-		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect(); // x, y for subtract from e.changedTouches[ 0 ].pageX/Y
 		var sat      = false;
 		var sat_w    = 120;
 		var sat_tl   = ( canvas_w - sat_w ) / 2;
@@ -92,7 +97,7 @@ var COLOR = {
 		ctx.base.fill();
 // hue point
 		ctx.hue.beginPath();
-		ctx.hue.arc( canvas_w - hue_w / 2, canvas_c, hue_w / 2, 0, 2 * Math.PI );
+		ctx.hue.arc( canvas_w - hue_w / 2, canvas_c, hue_w / 2 - 1, 0, 2 * Math.PI );
 		ctx.hue.stroke();
 		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 // sat box
@@ -117,12 +122,13 @@ var COLOR = {
 				  && Math.abs( g - pg ) < 2
 				  && Math.abs( b - pb ) < 2
 				) {
-					pick.point( x, y );
+					pick.satPoint( x, y );
 					break;
 				}
 			}
 		}
-// pick / move
+// pick / move - get canvas_b after all set
+		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect(); // x, y for subtract from e.changedTouches[ 0 ].pageX/Y
 		$( '#divcolor canvas' ).on( 'touchstart mousedown', e => {
 			var [ x, y ] = pick.xy( e );
 			if ( x < sat_tl || x > sat_br || y < sat_tl || y > sat_br ) {
@@ -137,19 +143,14 @@ var COLOR = {
 				pick.satMove( x, y );
 			}
 		} ).on( 'touchmove mousemove', e => {
-			var [ x, y ] = pick.xy( e );
-			if ( hue ) {
-				pick.hueRotate( x, y );
-			} else if ( sat ) {
-				pick.satMove( x, y );
-			}
+			if ( hue || sat ) pick.xy( e, hue ? 'hueRotate' : 'satMove' );
 		} ).on( 'touchend mouseup', e => {
 			if ( hue ) {
 				if ( hsl.h < 0 ) hsl.h += 360;
 				hue = false;
 			} else if ( sat ) {
 				var [ x, y ] = pick.xy( e );
-				pick.point( x, y );
+				pick.satPoint( x, y );
 				sat = false;
 			}
 		} );
