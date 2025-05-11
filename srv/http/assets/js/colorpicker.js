@@ -123,9 +123,11 @@ var COLOR = {
 		$( '#divcolor canvas' ).on( 'touchstart mousedown', e => {
 			var [ x, y ] = pick.xy( e );
 			if ( x < sat_tl || x > sat_br || y < sat_tl || y > sat_br ) {
-				hue = true;
 				var [ r, g, b ] = pick.pixelData( x, y );
-				if ( r || g || b ) pick.hueRotate( x, y );
+				if ( r || g || b ) {
+					hue = true;
+					pick.hueRotate( x, y );
+				}
 			} else {
 				sat = true;
 				ctx.sat.clearRect( 0, 0, canvas_w, canvas_w );

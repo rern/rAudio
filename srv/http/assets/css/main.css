@@ -86,6 +86,7 @@ a {
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
+	position: relative;
 	margin: 10px 5px;
 	width: 90px;
 	box-shadow: var( --shadow-bar );
