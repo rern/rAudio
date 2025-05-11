@@ -246,9 +246,12 @@ cachetype )
 color )
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
-	cd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; p}' <<< $css )
+	cd=( $( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css ) )
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
-	[[ $LIST ]] && echo '{ "cd": [ '$cd' ], "ml": [ '${ml:1}' ] }' && exit
+	[[ $LIST ]] && echo '{
+  "cd" : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "ml" : [ '${ml:1}' ]
+}' && exit
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
@@ -258,7 +261,7 @@ color )
 		if [[ -e $filecolor ]]; then
 			HSL=$( < $filecolor )
 		else
-			HSL=${cd//,/ } # n, n, n, ... > n n n
+			HSL=${cd[@]}
 			default=1
 		fi
 	fi
@@ -285,7 +288,7 @@ s/(--ml$m *: ).*/\1$L%;/"
   "cg"    : "hsl('$h',3%,75%)"
 , "cm"    : "hsl'$cm'"
 , "color" : '$( [[ $default ]] && echo false || echo true )'
-, "hsl"   : [ '$h', '$s', '$l' ]
+, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
 , "ml"    : [ '${ml:1}' ]
 }'
 	pushData color "$color"

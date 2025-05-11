@@ -12,66 +12,66 @@ var COLOR = {
 </div>
 ` );
 // function
-		var pick     = {
-			  gradient  : () => {
-				ctx.base.save();
-				ctx.base.translate( sat_tl, sat_tl );
-				for( var i = 0; i <= sat_w; i++ ){
-					var gradient = ctx.base.createLinearGradient( 0, 0, sat_w, 0 );
-					var iy       = i / sat_w * 100;
-					gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                   // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
-					gradient.addColorStop( 1, 'hsl('+ hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
-					ctx.base.fillStyle = gradient;
-					ctx.base.fillRect( 0, sat_w - i, sat_w, 1 );
-				}
-				ctx.base.restore();
+	var pick     = {
+		  gradient  : () => {
+			ctx.base.save();
+			ctx.base.translate( sat_tl, sat_tl );
+			for( var i = 0; i <= sat_w; i++ ){
+				var gradient = ctx.base.createLinearGradient( 0, 0, sat_w, 0 );
+				var iy       = i / sat_w * 100;
+				gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                     // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
+				gradient.addColorStop( 1, 'hsl('+ hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
+				ctx.base.fillStyle = gradient;
+				ctx.base.fillRect( 0, sat_w - i, sat_w, 1 );
 			}
-			, hueRotate : ( x, y ) => {
-				var ori = canvas_w /2;
-				var rad = Math.atan2( x - ori, y - ori );
-				hsl.h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
-				pick.gradient();
-				$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
-				COLOR.set( ...Object.values( hsl ) );
-			}
-			, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
-			, satMove   : ( x, y ) => { // pixel > rgb > hsl
-				if ( pick.satOut( x, y ) ) return
-				
-				var b, d, f, g, l, m, r, s;
-				[ r, g, b ] = pick.pixelData( x, y );
-				if ( r + g + b === 0 ) return
-				
-				pick.satPoint( x, y );
-				r    /= 255;
-				g    /= 255;
-				b    /= 255;
-				m     = Math.max( r, g, b );
-				d     = m - Math.min( r, g, b );
-				f     = 1 - Math.abs( m + m - d - 1 ); 
-				hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
-				hsl.s = f ? Math.round( d / f * 100 ) : 0;
-				COLOR.set( ...Object.values( hsl ) );
-			}
-			, satOut    : ( x, y ) => x < sat_tl || x > sat_br || y < sat_tl || y > sat_br
-			, satPoint  : ( x, y ) => {
-				[ r, g, b ] = pick.pixelData( x, y );
-				if ( r + g + b === 0 ) return
-				
-				var c = ctx.sat;
-				c.clearRect( 0, 0, canvas_w, canvas_w );
-				c.beginPath();
-				c.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
-				c.stroke();
-			}
-			, xy        : ( e, hs ) => {
-				var x = e.offsetX || e.changedTouches[ 0 ].pageX - canvas_b.x;
-				var y = e.offsetY || e.changedTouches[ 0 ].pageY - canvas_b.y;
-				if ( ! hs ) return [ x, y ]
-				
-				pick[ hs ]( x, y );
-			}
+			ctx.base.restore();
 		}
+		, hueRotate : ( x, y ) => {
+			var ori = canvas_w /2;
+			var rad = Math.atan2( x - ori, y - ori );
+			hsl.h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
+			pick.gradient();
+			$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
+			COLOR.set( hsl );
+		}
+		, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
+		, satMove   : ( x, y ) => { // pixel > rgb > hsl
+			if ( pick.satOut( x, y ) ) return
+			
+			var b, d, f, g, l, m, r, s;
+			[ r, g, b ] = pick.pixelData( x, y );
+			if ( r + g + b === 0 ) return
+			
+			pick.satPoint( x, y );
+			r    /= 255;
+			g    /= 255;
+			b    /= 255;
+			m     = Math.max( r, g, b );
+			d     = m - Math.min( r, g, b );
+			f     = 1 - Math.abs( m + m - d - 1 ); 
+			hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
+			hsl.s = f ? Math.round( d / f * 100 ) : 0;
+			COLOR.set( hsl );
+		}
+		, satOut    : ( x, y ) => x < sat_tl || x > sat_br || y < sat_tl || y > sat_br
+		, satPoint  : ( x, y ) => {
+			[ r, g, b ] = pick.pixelData( x, y );
+			if ( r + g + b === 0 ) return
+			
+			var c = ctx.sat;
+			c.clearRect( 0, 0, canvas_w, canvas_w );
+			c.beginPath();
+			c.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
+			c.stroke();
+		}
+		, xy        : ( e, hs ) => {
+			var x = e.offsetX || e.changedTouches[ 0 ].pageX - canvas_b.x;
+			var y = e.offsetY || e.changedTouches[ 0 ].pageY - canvas_b.y;
+			if ( ! hs ) return [ x, y ]
+			
+			pick[ hs ]( x, y );
+		}
+	}
 // common
 		var canvas_w = 230;
 		var canvas_c = canvas_w / 2;
@@ -163,7 +163,7 @@ var COLOR = {
 			COLOR.remove();
 		} );
 		$( '#colorreset' ).on( 'click', function() {
-			COLOR.set( ...V.color.cd );
+			COLOR.set( V.color.cd );
 			BASH( [ 'color', true, 'CMD RESET' ] );
 			COLOR.remove();
 		} );
@@ -183,9 +183,9 @@ var COLOR = {
 		delete V.color;
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
-	, set    : ( h, s, l ) => {
-		var css = { '--h': h, '--s': s +'%' };
-		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( l + v - 35 ) +'%' } );
+	, set    : hsl => {
+		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
+		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
 	, wheel  : el => { // for picker and color menu
