@@ -1562,7 +1562,8 @@ var PLAYBACK  = {
 			$( '#time-bar' ).css( 'width', w +'%' );
 		}
 	}
-	, seekBar  : pageX => {
+	, seekBar  : e => {
+		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
 		var $timeband  = $( '#time-band' );
 		var posX       = pageX - $timeband.offset().left;
 		var bandW      = $timeband.width();
@@ -2344,8 +2345,9 @@ var VOLUME    = {
 			}, nodelay ? 0 : 3000 );
 		}
 		, hideClear : () => clearTimeout( V.volumebar )
-		, set : pagex => {
-			V.volume.x = pagex - V.volume.min;
+		, set : e => {
+			var pageX  = e.pageX || e.changedTouches[ 0 ].pageX;
+			V.volume.x = pageX - V.volume.min;
 			S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
 			VOLUME.max();
 			VOLUME.setValue();

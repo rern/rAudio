@@ -58,13 +58,14 @@ if ( navigator.maxTouchPoints ) { // swipe
 }
 var xstart;
 window.addEventListener( 'touchstart', function( e ) {
+	if ( I.active || V.color ) return
+	
 	var $target = $( e.target );
-	if ( I.active
-		|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-		|| $target.parents( '#time-knob' ).length
+	if ( $target.parents( '#time-knob' ).length
 		|| $target.parents( '#volume-knob' ).length
-		|| ! $( '#bio' ).hasClass( 'hide' )
 		|| $( '#data' ).length
+		|| ! $( '#bio' ).hasClass( 'hide' )
+		|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
 	) return
 	
 	xstart      = e.changedTouches[ 0 ].pageX;
@@ -409,12 +410,12 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	if ( ! V.start ) return
 	
 	V.drag = true;
-	PLAYBACK.seekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+	PLAYBACK.seekBar( e );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
 	V.start = V.drag = false;
-	PLAYBACK.seekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+	PLAYBACK.seekBar( e );
 } ).on( 'mouseleave', function() {
 	V.start = V.drag = false;
 } );
@@ -517,7 +518,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	VOLUME.bar.hideClear();
 	V.drag = true;
-	VOLUME.bar.set( e.pageX || e.changedTouches[ 0 ].pageX );
+	VOLUME.bar.set( e );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
 	VOLUME.set();
 } ).on( 'touchend mouseup', function( e ) {
@@ -529,7 +530,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( V.drag ) {
 		VOLUME.push();
 	} else { // click
-		VOLUME.bar.set( e.pageX || e.changedTouches[ 0 ].pageX );
+		VOLUME.bar.set( e );
 		VOLUME.animate( S.volume, V.volume.current );
 		VOLUME.set();
 	}

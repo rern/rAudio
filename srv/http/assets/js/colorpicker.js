@@ -2,25 +2,27 @@ var COLOR = {
 	  picker : () => {
 // function
 		var pick = {
-			  gradient  : () => {
+			  gradient  : hue => {
+				if ( ! hue ) hue = hsl.h;
 				V.ctx.base.save();
 				V.ctx.base.translate( box0, box0 );
 				for( var i = 0; i <= box_w; i++ ){
 					var gradient = V.ctx.base.createLinearGradient( 0, 0, box_w, 0 );
 					var iy       = i / box_w * 100;
 					gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                   // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
-					gradient.addColorStop( 1, 'hsl('+ hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
+					gradient.addColorStop( 1, 'hsl('+ hue +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
 					V.ctx.base.fillStyle = gradient;
 					V.ctx.base.fillRect( 0, box_w - i, box_w, 1 );
 				}
 				V.ctx.base.restore();
 			}
 			, hueRotate : ( x, y ) => {
-				var rad = Math.atan2( x - cxy.x, y - cxy.y );
-				hsl.h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
-				pick.gradient();
-				$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
-				COLOR.set( hsl.h, hsl.s, hsl.l );
+				var ori = canvas_w /2;
+				var rad = Math.atan2( x - ori, y - ori );
+				V.hue   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
+				pick.gradient( V.hue );
+				$( '#hue' ).css( 'transform', 'rotate( '+ V.hue +'deg )' );
+				COLOR.set( V.hue, hsl.s, hsl.l );
 			}
 			, pixelData : ( x, y ) => V.ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
 			, point     : ( x, y ) => {
@@ -31,7 +33,7 @@ var COLOR = {
 				c.stroke();
 			}
 			, satMove   : ( x, y ) => { // pixel > rgb > hsl
-				var b, d, f, g, l, m, p, r, s;
+				var b, d, f, g, l, m, r, s;
 				[ r, g, b ] = pick.pixelData( x, y );
 				r  /= 255;
 				g  /= 255;
@@ -43,6 +45,10 @@ var COLOR = {
 				s   = f ? Math.round( d / f * 100 ) : 0;
 				hsl = { h: hsl.h, s: s, l: l }
 				COLOR.set( hsl.h, s, l );
+			}
+			, xy        : e => {
+				if ( ! e.offsetX ) e = e.changedTouches[ 0 ];
+				return [ e.offsetX, e.offsetY ]
 			}
 		}
 // common
@@ -90,7 +96,7 @@ var COLOR = {
 		V.ctx.hue.stroke();
 		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 // point - sat
-		var a, b, bp, g, gp, k, l, p, r, r_g_b, rp, v, x, y;
+		var a, b, g, k, l, pb, pg, pr, r, r_g_b, v, x, y;
 		l = hsl.l / 100;
 		a = hsl.s / 100 * Math.min( l, 1 - l );
 		[ r, g, b ] = ( () => { // hsl > rgb
@@ -104,35 +110,33 @@ var COLOR = {
 		} )();
 		for ( y = box0; y < box_br; y++ ) { // find pixel with rgb +/- 1
 			for ( x = box0; x < box_br; x++ ) {
-				[ rp, gp, bp ] = pick.pixelData( x, y );
-				if ( Math.abs( r - rp ) < 2
-				  && Math.abs( g - gp ) < 2
-				  && Math.abs( b - bp ) < 2
+				[ pr, pg, pb ] = pick.pixelData( x, y );
+				if ( Math.abs( r - pr ) < 2
+				  && Math.abs( g - pg ) < 2
+				  && Math.abs( b - pb ) < 2
 				) {
 					pick.point( x, y );
 					break;
 				}
 			}
 		}
-// pick
-		var tl  = $( '#base' ).position();
-		var cxy = { x: tl.left + canvas_w /2, y: tl.top + canvas_w / 2 }
-		$( '#colorpicker canvas' ).on( 'touchstart mousedown', e => {
-			var x = tl.left + e.offsetX;
-			var y = tl.top + e.offsetY;
-			if ( x < box0 || x > box0 + box_w || y < box0 || y >  + box_w ) {
-				V.hue           = true;
+// pick / move
+		$( '#divcolor canvas' ).on( 'touchstart mousedown', e => {
+			var [ x, y ] = pick.xy( e );
+			if ( x < box0 || x > box_br || y < box0 || y > box_br ) {
 				var [ r, g, b ] = pick.pixelData( x, y );
 				if ( r || g || b ) pick.hueRotate( x, y );
 			} else {
-				V.sat           = true;
+				V.sat = true;
 				V.ctx.sat.clearRect( 0, 0, canvas_w, canvas_w );
+				pick.satMove( x, y );
 			}
 		} ).on( 'touchmove mousemove', e => {
+			var [ x, y ] = pick.xy( e );
 			if ( 'hue' in V ) {
-				pick.hueRotate( tl.left + e.offsetX, tl.top + e.offsetY );
+				pick.hueRotate( x, y );
 			} else if ( 'sat' in V ) {
-				pick.satMove( e.offsetX, e.offsetY );
+				pick.satMove( x, y );
 			}
 		} ).on( 'touchend mouseup', e => {
 			if ( 'hue' in V ) {
@@ -140,7 +144,8 @@ var COLOR = {
 				if ( hsl.h < 0 ) hsl.h += 360;
 				delete V.hue;
 			} else if ( 'sat' in V ) {
-				pick.point( e.offsetX, e.offsetY );
+				var [ x, y ] = pick.xy( e );
+				pick.point( x, y );
 				delete V.sat;
 			}
 		} );
