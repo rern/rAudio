@@ -59,8 +59,8 @@ var COLOR = {
 		var hue      = false;
 		var hue_r    = 95;
 		var hue_w    = canvas_w / 2 - hue_r;
-		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
-		var hsl      = { h: +h, s: +s, l: +l };
+		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		var hsl      = { h, s, l }
 // page background
 		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
 		$( 'body' ).css( 'overflow', 'hidden' );
@@ -175,7 +175,7 @@ var COLOR = {
 		$( 'body' ).css( 'overflow', '' );
 		delete V.color;
 	}
-	, save   : hsl => BASH( [ 'color', hsl.h +' '+ hsl.s +' '+ hsl.l, 'CMD HSL' ] )
+	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
 	, set    : ( h, s, l ) => {
 		var css = { '--h': h, '--s': s +'%' };
 		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( l + v - 35 ) +'%' } );
