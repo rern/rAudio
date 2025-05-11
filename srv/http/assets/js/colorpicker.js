@@ -36,6 +36,8 @@ var COLOR = {
 			}
 			, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
 			, satMove   : ( x, y ) => { // pixel > rgb > hsl
+				if ( pick.satOut( x, y ) ) return
+				
 				var b, d, f, g, l, m, r, s;
 				[ r, g, b ] = pick.pixelData( x, y );
 				if ( r + g + b === 0 ) return
@@ -51,6 +53,7 @@ var COLOR = {
 				hsl.s = f ? Math.round( d / f * 100 ) : 0;
 				COLOR.set( ...Object.values( hsl ) );
 			}
+			, satOut    : ( x, y ) => x < sat_tl || x > sat_br || y < sat_tl || y > sat_br
 			, satPoint  : ( x, y ) => {
 				[ r, g, b ] = pick.pixelData( x, y );
 				if ( r + g + b === 0 ) return
@@ -131,7 +134,7 @@ var COLOR = {
 		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect(); // x, y for subtract from e.changedTouches[ 0 ].pageX/Y
 		$( '#divcolor canvas' ).on( 'touchstart mousedown', e => {
 			var [ x, y ] = pick.xy( e );
-			if ( x < sat_tl || x > sat_br || y < sat_tl || y > sat_br ) {
+			if ( pick.satOut( x, y ) ) {
 				var [ r, g, b ] = pick.pixelData( x, y );
 				if ( r || g || b ) {
 					hue = true;
