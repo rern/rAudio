@@ -21,10 +21,7 @@ var COLOR = {
 				$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 				COLOR.set( hsl.h, hsl.s, hsl.l );
 			}
-			, pixelData : ( x, y ) => {
-				var p = V.ctx.base.getImageData( x, y, 1, 1 ).data;
-				return [ p[ 0 ], p[ 1 ], p[ 2 ] ]
-			}
+			, pixelData : ( x, y ) => V.ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
 			, point     : ( x, y ) => {
 				var c = V.ctx.sat;
 				c.clearRect( 0, 0, canvas_w, canvas_w );
@@ -33,28 +30,18 @@ var COLOR = {
 				c.stroke();
 			}
 			, satMove   : ( x, y ) => { // pixel > rgb > hsl
-				var b, d, f, g, h, l, m, p, r, s;
+				var b, d, f, g, l, m, p, r, s;
 				[ r, g, b ] = pick.pixelData( x, y );
-				r /= 255;
-				g /= 255;
-				b /= 255;
-				m = Math.max( r, g, b );
-				d = m - Math.min( r, g, b );
-				f = 1 - Math.abs( m + m - d - 1 ); 
-				h = 0;
-				s = 0;
-				l = Math.round( ( m + m - d ) / 2 * 100 );
-				if ( d ) {
-					h = m === r
-							? ( g - b ) / d
-							: ( ( m === g )
-									? 2 + ( b - r ) / d
-									: 4 + ( r - g ) / d );
-					h = Math.round( ( h < 0 ? h + 6 : h ) * 60 );
-				}
-				if ( f ) s = Math.round( d / f * 100 );
-				COLOR.set( h, s, l );
-				hsl = { h: h, s: s, l: l }
+				r  /= 255;
+				g  /= 255;
+				b  /= 255;
+				m   = Math.max( r, g, b );
+				d   = m - Math.min( r, g, b );
+				f   = 1 - Math.abs( m + m - d - 1 ); 
+				l   = Math.round( ( m + m - d ) / 2 * 100 );
+				s   = f ? Math.round( d / f * 100 ) : 0;
+				hsl = { h: hsl.h, s: s, l: l }
+				COLOR.set( hsl.h, s, l );
 			}
 		}
 		
@@ -65,8 +52,8 @@ var COLOR = {
 		var box_br   = box0 + box_w;
 		var wheel_r  = 95;
 		var wheel_w  = canvas_w / 2 - wheel_r;
-		var hsl      = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
-		hsl          = { h: +hsl[ 0 ], s: +hsl[ 1 ], l: +hsl[ 2 ] };
+		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' );
+		hsl          = { h: +h, s: +s, l: +l };
 		
 		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
 		$( 'body' ).css( 'overflow', 'hidden' );
@@ -78,7 +65,7 @@ var COLOR = {
 		<canvas id="hue"></canvas>
 		<canvas id="sat"></canvas>
 		<canvas id="canvascolor"></canvas>
-		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
+		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
 ` );
