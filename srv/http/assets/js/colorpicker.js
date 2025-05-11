@@ -1,5 +1,16 @@
 var COLOR = {
 	  picker : () => {
+		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
+		$( 'body' ).css( 'overflow', 'hidden' );
+		$( '#lyrics' ).after(  `
+<div id="colorpicker">
+	<div id="divcolor">
+		<i id="colorcancel" class="i-close"></i>
+		<canvas id="hue"></canvas><canvas id="sat"></canvas><canvas id="base"></canvas>
+		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
+	</div>
+</div>
+` );
 // function
 		var pick     = {
 			  gradient  : () => {
@@ -45,13 +56,17 @@ var COLOR = {
 				COLOR.set( ...Object.values( hsl ) );
 			}
 			, xy        : e => {
-				if ( ! e.offsetX ) e = e.changedTouches[ 0 ];
-				return [ e.offsetX, e.offsetY ]
+				if ( e.offsetX ) return [ e.offsetX, e.offsetY ]
+				
+				var x = e.changedTouches[ 0 ].pageX - canvas_b.x;
+				var y = e.changedTouches[ 0 ].pageY - canvas_b.y;
+				return [ x, y ]
 			}
 		}
 // common
 		var canvas_w = 230;
 		var canvas_c = canvas_w / 2;
+		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect(); // x, y for subtract from e.changedTouches[ 0 ].pageX/Y
 		var sat      = false;
 		var sat_w    = 120;
 		var sat_tl   = ( canvas_w - sat_w ) / 2;
@@ -61,21 +76,9 @@ var COLOR = {
 		var hue_w    = canvas_w / 2 - hue_r;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		var hsl      = { h, s, l }
-// page background
-		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
-		$( 'body' ).css( 'overflow', 'hidden' );
-// html
-		var canvas   = '';
-		[ 'hue', 'sat', 'base' ].forEach( id => canvas += '<canvas id="'+ id +'" width="'+ canvas_w +'" height="'+ canvas_w +'"></canvas>' );
-		$( '#lyrics' ).after( `
-<div id="colorpicker">
-	<div id="divcolor">
-		<i id="colorcancel" class="i-close"></i>
-		${ canvas }
-		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
-	</div>
-</div>
-` );
+		
+		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
+// context
 		var ctx      = { base: COLOR.wheel( '#base' ) }; // hue wheel
 		[ 'hue', 'sat' ].forEach( id => {
 			ctx[ id ]             = $( '#'+ id )[ 0 ].getContext( '2d' );
