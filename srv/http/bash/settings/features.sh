@@ -95,7 +95,7 @@ camilladsp )
 		fi
 	fi
 	enableFlagSet
-	pushRestartMpd camilladsp $TF
+	pushRestartMpd camilladsp $TF &> /dev/null &
 	;;
 dabradio )
 	enableFlagSet
@@ -119,7 +119,7 @@ equalizer )
   "active" : "Flat"
 , "preset" : { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] }
 }' > $dirsystem/equalizer.json
-	pushRestartMpd equalizer $TF
+	pushRestartMpd equalizer $TF &> /dev/null & # send to bg - suppress stdout
 	;;
 httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
