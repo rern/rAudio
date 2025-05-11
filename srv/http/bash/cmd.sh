@@ -246,7 +246,8 @@ cachetype )
 color )
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
-	cd=( $( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css ) )
+	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
+	cd=( $hslcd )
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
 	[[ $LIST ]] && echo '{
   "cd" : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
@@ -256,16 +257,16 @@ color )
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
 		echo $HSL > $filecolor
+		HSL=( $HSL )
 	else
 		[[ $RESET ]] && rm -f $filecolor
 		if [[ -e $filecolor ]]; then
-			HSL=$( < $filecolor )
+			HSL=( $( < $filecolor ) )
 		else
-			HSL=${cd[@]}
+			HSL=( $hslcd )
 			default=1
 		fi
 	fi
-	HSL=( $HSL )
 	h=${HSL[0]}
 	s=${HSL[1]}
 	l=${HSL[2]}
