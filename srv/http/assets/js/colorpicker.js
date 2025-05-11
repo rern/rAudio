@@ -181,7 +181,7 @@ var COLOR = {
 	}
 	, wheel  : el => { // for picker and color menu
 		var canvas   = $( el )[ 0 ];
-		var ctx      = canvas.getContext( '2d', { willReadFrequently: true } );
+		var ctx      = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );
 		var canvas_c = canvas.width / 2;
 		for ( var i = 0; i < 360; i += 0.25 ) {
 			var rad         = i * Math.PI / 180;
