@@ -32,7 +32,6 @@ V = {   // var global
 		}
 	}
 	, page          : 'playback'
-	, vumeter       : '<img class="imgicon" src="'+ V.covervu +'"> '
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 };
