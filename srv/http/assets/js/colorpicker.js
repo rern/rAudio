@@ -7,39 +7,39 @@ var COLOR = {
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
 		<div id="pickhue"></div><div id="picknone"></div><div id="picksat"></div>
-		<div id="wheel"></div><div id="hue"></div><canvas id="sat"></canvas><canvas id="base"></canvas>
+		<div id="wheel"></div><div id="hue"><div></div></div><div id="sat"></div><canvas id="base"></canvas>
 		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary ${ D.color ? '' : 'disabled' }">OK</a>
 	</div>
 </div>
 ` );
 // common
-		var canvas_w = 230;
+		var canvas_w = $( '#hue' ).width();
 		var canvas_c = canvas_w / 2;
-		var sat_w    = 120;
+		var sat_w    = canvas_w - 110;
 		var sat_tl   = ( canvas_w - sat_w ) / 2;
 		var sat_br   = sat_tl + sat_w;
-		var hue_r    = 95;
+		var hue_r    = sat_w - 25;
 		var hue_w    = canvas_w / 2 - hue_r;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		var hsl      = { h, s, l }
 		
-		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
+		$( '#base' ).attr( { width: canvas_w, height: canvas_w } );
 		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 // function
 		var pick     = {
 			  gradient : () => {
-				ctx.base.save();
-				ctx.base.translate( sat_tl, sat_tl );
+				ctx.save();
+				ctx.translate( sat_tl, sat_tl );
 				for( var i = 0; i <= sat_w; i++ ){                                         // each line
-					var gradient = ctx.base.createLinearGradient( 0, 0, sat_w, 0 );        // 0                  ---               width
+					var gradient = ctx.createLinearGradient( 0, 0, sat_w, 0 );             // 0                  ---               width
 					var iy       = i / sat_w * 100;
 					gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                     // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
 					gradient.addColorStop( 1, 'hsl('+ hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
-					ctx.base.fillStyle = gradient;
-					ctx.base.fillRect( 0, sat_w - i, sat_w, 1 );
+					ctx.fillStyle = gradient;
+					ctx.fillRect( 0, sat_w - i, sat_w, 1 );
 				}
-				ctx.base.restore();
+				ctx.restore();
 			}
 			, hue      : ( x, y ) => {
 				var ori = canvas_w /2;
@@ -51,7 +51,7 @@ var COLOR = {
 					.toggleClass( 'dark', hsl.h > 45 && hsl.h < 180 );
 				COLOR.set( hsl );
 			}
-			, pixelRgb : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data
+			, pixelRgb : ( x, y ) => ctx.getImageData( x, y, 1, 1 ).data
 			, sat      : ( x, y ) => {
 				x    += sat_tl;
 				y    += sat_tl;
@@ -71,12 +71,11 @@ var COLOR = {
 				sat_xy = { x: x, y: y }
 			}
 			, satPoint : ( x, y ) => {
-				pick.satClear();
-				ctx.sat.beginPath();
-				ctx.sat.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
-				ctx.sat.stroke();
+				$( '#sat' )
+					.css( { left: ( x - 5 ) +'px', top: ( y - 5 ) +'px' } )
+					.removeClass( 'hide' );
 			}
-			, satClear : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
+			, satClear : () => $( '#sat' ).addClass( 'hide' )
 			, xy       : ( e, hue_sat, clear ) => {
 				if ( clear ) pick.satClear();
 				var x = e.offsetX || e.changedTouches[ 0 ].pageX - tl[ hue_sat ].x;
@@ -84,21 +83,15 @@ var COLOR = {
 				pick[ hue_sat ]( x, y );
 			}
 		}
-// context
-		var ctx      = {
-			  base : COLOR.wheel( '#base' ) // hue wheel
-			, sat  : $( '#sat' )[ 0 ].getContext( '2d' )
-		}
 // hue ring
-		ctx.base.fillStyle = '#000';
-		ctx.base.beginPath();
-		ctx.base.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI );
-		ctx.base.fill();
+		var ctx      = COLOR.wheel( '#base' ); // hue wheel
+		ctx.fillStyle = '#000';
+		ctx.beginPath();
+		ctx.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI );
+		ctx.fill();
 // sat box
 		pick.gradient();
 // sat point
-		ctx.sat.lineWidth   = 2;
-		ctx.sat.strokeStyle = '#fff';
 		var a, b, g, k, l, pb, pg, pr, r, rgb, v, x, y;
 		l = hsl.l / 100;
 		a = hsl.s / 100 * Math.min( l, 1 - l );
@@ -111,15 +104,13 @@ var COLOR = {
 			} );
 			return rgb
 		} )();
+		match:
 		for ( y = sat_tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
 			for ( x = sat_tl; x < sat_br; x++ ) {
 				[ pr, pg, pb ] = pick.pixelRgb( x, y );
-				if ( Math.abs( r - pr ) < 2
-				  && Math.abs( g - pg ) < 2
-				  && Math.abs( b - pb ) < 2
-				) {
+				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 					pick.satPoint( x, y );
-					break;
+					break match;
 				}
 			}
 		}
@@ -133,8 +124,8 @@ var COLOR = {
 		$( '#pickhue' ).on( 'touchstart mousedown', e => {
 			hue = true;
 			pick.xy( e, 'hue' );
-			$( '#pickhue' ).css( 'border-radius', 0 );     // allow outside drag
-			$( '#picknone, #picksat' ).addClass( 'hide' ); // allow inside drag
+			$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
+			$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
 			$( '#colorok' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
 			if ( hue ) pick.xy( e, 'hue' );
@@ -168,7 +159,7 @@ var COLOR = {
 		} ).on( 'mouseenter', () => {
 			if ( sat ) pick.satClear();
 		} );
-		$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow stop both inside and outside of #picksat
+		$( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and outside #picksat
 			if ( ! sat ) return
 			
 			sat = false;

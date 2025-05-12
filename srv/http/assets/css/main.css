@@ -1877,9 +1877,7 @@ li.active .li2 bl {
 	border: 1px solid #000;
 	border-radius: 50%;
 }
-#hue::after {
-	content: '';
-	display: block;
+#hue div {
 	margin-left: 210px;
 	margin-top: 105px;
 	width: 20px;
@@ -1887,13 +1885,19 @@ li.active .li2 bl {
 	border: 2px solid #fff;
 	border-radius: 50%;
 }
-#hue.dark::after {
+#hue.dark div {
 	border-color: #000;
 }
 #hue,
 #pickhue {
 	width: 230px;
 	height: 230px;
+}
+#sat {
+	width: 10px;
+	height: 10px;
+	border: 2px solid #fff;
+	border-radius: 50%;
 }
 #picknone {
 	margin: 20px;
