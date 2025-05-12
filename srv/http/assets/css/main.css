@@ -1862,6 +1862,20 @@ li.active .li2 bl {
 #sat {
 	position: absolute;
 }
+#hue::after {
+	content: '';
+	display: block;
+	margin-left: 210px;
+	margin-top: 105px;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+}
+#hue.dark::after {
+	border-color: #000;
+}
+#hue,
 #pickhue {
 	width: 230px;
 	height: 230px;

@@ -7,7 +7,7 @@ var COLOR = {
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
 		<div id="pickhue"></div><div id="picknone"></div><div id="picksat"></div>
-		<canvas id="hue"></canvas><canvas id="sat"></canvas><canvas id="base"></canvas>
+		<div id="hue"></div><canvas id="sat"></canvas><canvas id="base"></canvas>
 		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary ${ D.color ? '' : 'disabled' }">OK</a>
 	</div>
@@ -25,6 +25,7 @@ var COLOR = {
 		var hsl      = { h, s, l }
 		
 		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
+		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 // function
 		var pick     = {
 			  gradient : () => {
@@ -45,7 +46,9 @@ var COLOR = {
 				var rad = Math.atan2( x - ori, y - ori );
 				hsl.h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
 				pick.gradient();
-				$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
+				$( '#hue' )
+					.css( 'transform', 'rotate( '+ hsl.h +'deg )' )
+					.toggleClass( 'dark', hsl.h > 45 && hsl.h < 180 );
 				COLOR.set( hsl );
 			}
 			, pixelRgb : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data
@@ -82,25 +85,20 @@ var COLOR = {
 			}
 		}
 // context
-		var ctx      = { base: COLOR.wheel( '#base' ) }; // hue wheel
-		[ 'hue', 'sat' ].forEach( id => {
-			ctx[ id ]             = $( '#'+ id )[ 0 ].getContext( '2d' );
-			ctx[ id ].lineWidth   = 2;
-			ctx[ id ].strokeStyle = '#fff';
-		} );
+		var ctx      = {
+			  base : COLOR.wheel( '#base' ) // hue wheel
+			, sat  : $( '#sat' )[ 0 ].getContext( '2d' )
+		}
 // hue ring
 		ctx.base.fillStyle = '#000';
 		ctx.base.beginPath();
 		ctx.base.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI );
 		ctx.base.fill();
-// hue point
-		ctx.hue.beginPath();
-		ctx.hue.arc( canvas_w - hue_w / 2, canvas_c, hue_w / 2 - 1, 0, 2 * Math.PI );
-		ctx.hue.stroke();
-		$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 // sat box
 		pick.gradient();
 // sat point
+		ctx.sat.lineWidth   = 2;
+		ctx.sat.strokeStyle = '#fff';
 		var a, b, g, k, l, pb, pg, pr, r, rgb, v, x, y;
 		l = hsl.l / 100;
 		a = hsl.s / 100 * Math.min( l, 1 - l );
