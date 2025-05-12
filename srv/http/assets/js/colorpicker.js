@@ -153,7 +153,7 @@ var COLOR = {
 				if ( hsl.h < 0 ) hsl.h += 360;
 				hue = false;
 			} else if ( sat ) {
-				var [ x, y ] = pick.xy( e, 'satPoint' );
+				pick.xy( e, 'satPoint' );
 				sat = false;
 			}
 		} );
