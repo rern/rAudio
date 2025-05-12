@@ -1855,10 +1855,39 @@ li.active .li2 bl {
 	touch-action: none;
 	box-shadow: var( --shadow-bar );
 }
+#pickhue,
+#picknone,
+#picksat,
 #hue,
 #sat {
 	position: absolute;
+}
+#pickhue {
+	width: 230px;
+	height: 230px;
+}
+#picknone {
+	margin: 20px;
+	width: 190px;
+	height: 190px;
+}
+#picksat {
+	margin: 55px;
+	width: 120px;
+	height: 120px;
+}
+#pickhue,
+#picknone,
+#picksat {
+	border-radius: 50%;
+	z-index: 1;
 	cursor: crosshair;
+}
+#picknone {
+	cursor: default;
+}
+#picksat {
+	border-radius: unset;
 }
 #colorcancel {
 	position: absolute;

@@ -6,6 +6,7 @@ var COLOR = {
 <div id="colorpicker">
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
+		<div id="pickhue"></div><div id="picknone"></div><div id="picksat"></div>
 		<canvas id="hue"></canvas><canvas id="sat"></canvas><canvas id="base"></canvas>
 		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary ${ D.color ? '' : 'disabled' }">OK</a>
@@ -37,13 +38,12 @@ var COLOR = {
 			}
 			, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
 			, satMove   : ( x, y ) => { // pixel > rgb > hsl
-				if ( pick.satOut( x, y ) ) return
-				
+				x    += sat_tl;
+				y    += sat_tl;
 				var b, d, f, g, l, m, r, s;
 				[ r, g, b ] = pick.pixelData( x, y );
 				if ( r + g + b === 0 ) return
 				
-				pick.satPoint( x, y );
 				r    /= 255;
 				g    /= 255;
 				b    /= 255;
@@ -53,24 +53,20 @@ var COLOR = {
 				hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
 				hsl.s = f ? Math.round( d / f * 100 ) : 0;
 				COLOR.set( hsl );
+				sat_xy = { x: x, y: y }
 			}
-			, satOut    : ( x, y ) => x < sat_tl || x > sat_br || y < sat_tl || y > sat_br
 			, satPoint  : ( x, y ) => {
 				[ r, g, b ] = pick.pixelData( x, y );
-				if ( r + g + b === 0 ) return
-				
-				var c = ctx.sat;
-				c.clearRect( 0, 0, canvas_w, canvas_w );
-				c.beginPath();
-				c.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
-				c.stroke();
+				pick.satClear();
+				ctx.sat.beginPath();
+				ctx.sat.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
+				ctx.sat.stroke();
 			}
-			, xy        : ( e, hs ) => {
+			, satClear  : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
+			, xy        : e => {
 				var x = e.offsetX || e.changedTouches[ 0 ].pageX - canvas_b.x;
 				var y = e.offsetY || e.changedTouches[ 0 ].pageY - canvas_b.y;
-				if ( ! hs ) return [ x, y ]
-				
-				pick[ hs ]( x, y );
+				pick[ hue ? 'hueRotate' : 'satMove' ]( x, y );
 			}
 		}
 // common
@@ -131,31 +127,40 @@ var COLOR = {
 				}
 			}
 		}
-// pick / move - get canvas_b after all set : e.changedTouches[ 0 ].pageX/Y - canvas_b.x/y = e.offsetX/Y
+// pick - get canvas_b after all set : e.changedTouches[ 0 ].pageX/Y - canvas_b.x/y = e.offsetX/Y
 		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect();
-		$( '#divcolor canvas' ).on( 'touchstart mousedown', e => {
-			var [ x, y ] = pick.xy( e );
-			if ( pick.satOut( x, y ) ) {
-				var [ r, g, b ] = pick.pixelData( x, y );
-				if ( r || g || b ) {
-					hue = true;
-					pick.hueRotate( x, y );
-				}
-			} else {
-				sat = true;
-				pick.satMove( x, y );
-			}
-			if ( hue || sat ) $( '#colorok' ).removeClass( 'disabled' );
+		var sat_xy;
+		$( '#pickhue' ).on( 'touchstart mousedown', e => {
+			hue = true;
+			pick.xy( e );
+			$( '#pickhue' ).css( 'border-radius', 0 );     // allow outside drag
+			$( '#picknone, #picksat' ).addClass( 'hide' ); // allow inside drag
+			$( '#infoOk' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
-			if ( hue || sat ) pick.xy( e, hue ? 'hueRotate' : 'satMove' );
-		} ).on( 'touchend mouseup', e => {
-			if ( hue ) {
-				if ( hsl.h < 0 ) hsl.h += 360;
-				hue = false;
-			} else if ( sat ) {
-				pick.xy( e, 'satPoint' );
-				sat = false;
-			}
+			if ( hue ) pick.xy( e );
+		} ).on( 'touchend mouseup', () => {
+			if ( hsl.h < 0 ) hsl.h += 360;
+			$( '#pickhue' ).css( 'border-radius', '' );
+			$( '#picknone, #picksat' ).removeClass( 'hide' );
+			hue = false;
+		} );
+		$( '#picksat' ).on( 'touchstart mousedown', e => {
+			sat = true;
+			pick.satClear();
+			pick.xy( e );
+			$( '#infoOk' ).removeClass( 'disabled' );
+		} ).on( 'touchmove mousemove', e => {
+			if ( sat ) pick.xy( e );
+		} ).on( 'touchleave mouseleave', () => {
+			if ( sat ) pick.satPoint( sat_xy.x, sat_xy.y );
+		} ).on( 'touchenter mouseenter', () => {
+			if ( sat ) pick.satClear();
+		} );
+		$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow stop both inside and outside of #picksat
+			if ( ! sat ) return
+			
+			pick.satPoint( sat_xy.x, sat_xy.y );
+			sat = false;
 		} );
 // action
 		$( '#colorok' ).on( 'click', function() {
