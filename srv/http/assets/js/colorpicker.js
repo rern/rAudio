@@ -13,7 +13,21 @@ var COLOR = {
 	</div>
 </div>
 ` );
-	// function
+// common
+		var canvas_w = 230;
+		var canvas_c = canvas_w / 2;
+		var sat      = false;
+		var sat_w    = 120;
+		var sat_tl   = ( canvas_w - sat_w ) / 2;
+		var sat_br   = sat_tl + sat_w;
+		var hue      = false;
+		var hue_r    = 95;
+		var hue_w    = canvas_w / 2 - hue_r;
+		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		var hsl      = { h, s, l }
+		
+		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
+// function
 		var pick     = {
 			  gradient  : () => {
 				ctx.base.save();
@@ -69,20 +83,6 @@ var COLOR = {
 				pick[ hue ? 'hueRotate' : 'satMove' ]( x, y );
 			}
 		}
-// common
-		var canvas_w = 230;
-		var canvas_c = canvas_w / 2;
-		var sat      = false;
-		var sat_w    = 120;
-		var sat_tl   = ( canvas_w - sat_w ) / 2;
-		var sat_br   = sat_tl + sat_w;
-		var hue      = false;
-		var hue_r    = 95;
-		var hue_w    = canvas_w / 2 - hue_r;
-		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
-		var hsl      = { h, s, l }
-		
-		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
 // context
 		var ctx      = { base: COLOR.wheel( '#base' ) }; // hue wheel
 		[ 'hue', 'sat' ].forEach( id => {
@@ -135,7 +135,7 @@ var COLOR = {
 			pick.xy( e );
 			$( '#pickhue' ).css( 'border-radius', 0 );     // allow outside drag
 			$( '#picknone, #picksat' ).addClass( 'hide' ); // allow inside drag
-			$( '#infoOk' ).removeClass( 'disabled' );
+			$( '#colorok' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
 			if ( hue ) pick.xy( e );
 		} ).on( 'touchend mouseup', () => {
@@ -148,7 +148,7 @@ var COLOR = {
 			sat = true;
 			pick.satClear();
 			pick.xy( e );
-			$( '#infoOk' ).removeClass( 'disabled' );
+			$( '#colorok' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
 			if ( sat ) pick.xy( e );
 		} ).on( 'touchleave mouseleave', () => {
