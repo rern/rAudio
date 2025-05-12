@@ -68,7 +68,6 @@ var COLOR = {
 				sat_xy = { x: x, y: y }
 			}
 			, satPoint : ( x, y ) => {
-				[ r, g, b ] = pick.pixelRgb( x, y );
 				pick.satClear();
 				ctx.sat.beginPath();
 				ctx.sat.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
@@ -76,9 +75,9 @@ var COLOR = {
 			}
 			, satClear : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
 			, xy       : ( e, hue_sat, clear ) => {
+				if ( clear ) pick.satClear();
 				var x = e.offsetX || e.changedTouches[ 0 ].pageX - tl[ hue_sat ].x;
 				var y = e.offsetY || e.changedTouches[ 0 ].pageY - tl[ hue_sat ].y;
-				if( clear ) pick.satClear();
 				pick[ hue_sat ]( x, y );
 			}
 		}
@@ -126,9 +125,9 @@ var COLOR = {
 				}
 			}
 		}
-// pick - get canvas_b after all set : e.changedTouches[ 0 ].pageX/Y - canvas_b.x/y = e.offsetX/Y
+// pick - get base_xy after all set
 		var base_xy = $( '#base' )[ 0 ].getBoundingClientRect();
-		var tl       = {
+		var tl      = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 			  hue : { x: base_xy.x,          y: base_xy.y }
 			, sat : { x: base_xy.x + sat_tl, y: base_xy.y + sat_tl }
 		}
