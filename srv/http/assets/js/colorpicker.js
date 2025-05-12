@@ -75,9 +75,10 @@ var COLOR = {
 				ctx.sat.stroke();
 			}
 			, satClear : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
-			, xy       : ( e, hue_sat ) => {
+			, xy       : ( e, hue_sat, clear ) => {
 				var x = e.offsetX || e.changedTouches[ 0 ].pageX - tl[ hue_sat ].x;
 				var y = e.offsetY || e.changedTouches[ 0 ].pageY - tl[ hue_sat ].y;
+				if( clear ) pick.satClear();
 				pick[ hue_sat ]( x, y );
 			}
 		}
@@ -126,14 +127,12 @@ var COLOR = {
 			}
 		}
 // pick - get canvas_b after all set : e.changedTouches[ 0 ].pageX/Y - canvas_b.x/y = e.offsetX/Y
-		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect();
-		var hue      = false;
-		var sat      = false;
-		var sat_xy;
+		var base_xy = $( '#base' )[ 0 ].getBoundingClientRect();
 		var tl       = {
-			  hue : { x: canvas_b.x,          y: canvas_b.y }
-			, sat : { x: canvas_b.x + sat_tl, y: canvas_b.y + sat_tl }
+			  hue : { x: base_xy.x,          y: base_xy.y }
+			, sat : { x: base_xy.x + sat_tl, y: base_xy.y + sat_tl }
 		}
+		var hue, sat, satout, sat_xy;
 		$( '#pickhue' ).on( 'touchstart mousedown', e => {
 			hue = true;
 			pick.xy( e, 'hue' );
@@ -143,6 +142,8 @@ var COLOR = {
 		} ).on( 'touchmove mousemove', e => {
 			if ( hue ) pick.xy( e, 'hue' );
 		} ).on( 'touchend mouseup', () => {
+			if ( ! hue ) return
+			
 			hue = false;
 			if ( hsl.h < 0 ) hsl.h += 360;
 			$( '#pickhue' ).css( 'border-radius', '' );
@@ -150,14 +151,24 @@ var COLOR = {
 		} );
 		$( '#picksat' ).on( 'touchstart mousedown', e => {
 			sat = true;
-			pick.satClear();
-			pick.xy( e, 'sat' );
+			pick.xy( e, 'sat', 'clear' );
 			$( '#colorok' ).removeClass( 'disabled' );
-		} ).on( 'touchmove mousemove', e => {
+		} ).on( 'touchmove', e => {
+			if ( ! sat  ) return
+			
+			var et = e.touches[ 0 ];
+			if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
+				pick.xy( e, 'sat', satout );
+				if ( satout ) satout = false;
+			} else {
+				satout = true;
+				pick.satPoint( sat_xy.x, sat_xy.y );
+			}
+		} ).on( 'mousemove', e => {
 			if ( sat ) pick.xy( e, 'sat' );
-		} ).on( 'touchleave mouseleave', () => {
+		} ).on( 'mouseleave', () => {
 			if ( sat ) pick.satPoint( sat_xy.x, sat_xy.y );
-		} ).on( 'touchenter mouseenter', () => {
+		} ).on( 'mouseenter', () => {
 			if ( sat ) pick.satClear();
 		} );
 		$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow stop both inside and outside of #picksat
