@@ -16,11 +16,9 @@ var COLOR = {
 // common
 		var canvas_w = 230;
 		var canvas_c = canvas_w / 2;
-		var sat      = false;
 		var sat_w    = 120;
 		var sat_tl   = ( canvas_w - sat_w ) / 2;
 		var sat_br   = sat_tl + sat_w;
-		var hue      = false;
 		var hue_r    = 95;
 		var hue_w    = canvas_w / 2 - hue_r;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
@@ -29,11 +27,11 @@ var COLOR = {
 		$( '#divcolor canvas' ).attr( { width: canvas_w, height: canvas_w } );
 // function
 		var pick     = {
-			  gradient  : () => {
+			  gradient : () => {
 				ctx.base.save();
 				ctx.base.translate( sat_tl, sat_tl );
-				for( var i = 0; i <= sat_w; i++ ){
-					var gradient = ctx.base.createLinearGradient( 0, 0, sat_w, 0 );
+				for( var i = 0; i <= sat_w; i++ ){                                         // each line
+					var gradient = ctx.base.createLinearGradient( 0, 0, sat_w, 0 );        // 0                  ---               width
 					var iy       = i / sat_w * 100;
 					gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                     // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
 					gradient.addColorStop( 1, 'hsl('+ hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
@@ -42,7 +40,7 @@ var COLOR = {
 				}
 				ctx.base.restore();
 			}
-			, hueRotate : ( x, y ) => {
+			, hue      : ( x, y ) => {
 				var ori = canvas_w /2;
 				var rad = Math.atan2( x - ori, y - ori );
 				hsl.h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
@@ -50,14 +48,14 @@ var COLOR = {
 				$( '#hue' ).css( 'transform', 'rotate( '+ hsl.h +'deg )' );
 				COLOR.set( hsl );
 			}
-			, pixelData : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data.slice( 0, 3 )
-			, satMove   : ( x, y ) => { // pixel > rgb > hsl
+			, pixelRgb : ( x, y ) => ctx.base.getImageData( x, y, 1, 1 ).data
+			, sat      : ( x, y ) => {
 				x    += sat_tl;
 				y    += sat_tl;
 				var b, d, f, g, l, m, r, s;
-				[ r, g, b ] = pick.pixelData( x, y );
+				[ r, g, b ] = pick.pixelRgb( x, y );
 				if ( r + g + b === 0 ) return
-				
+				 // rgb > s l
 				r    /= 255;
 				g    /= 255;
 				b    /= 255;
@@ -69,18 +67,18 @@ var COLOR = {
 				COLOR.set( hsl );
 				sat_xy = { x: x, y: y }
 			}
-			, satPoint  : ( x, y ) => {
-				[ r, g, b ] = pick.pixelData( x, y );
+			, satPoint : ( x, y ) => {
+				[ r, g, b ] = pick.pixelRgb( x, y );
 				pick.satClear();
 				ctx.sat.beginPath();
 				ctx.sat.arc( x, y, hue_w / 4, 0, 2 * Math.PI );
 				ctx.sat.stroke();
 			}
-			, satClear  : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
-			, xy        : e => {
-				var x = e.offsetX || e.changedTouches[ 0 ].pageX - canvas_b.x;
-				var y = e.offsetY || e.changedTouches[ 0 ].pageY - canvas_b.y;
-				pick[ hue ? 'hueRotate' : 'satMove' ]( x, y );
+			, satClear : () => ctx.sat.clearRect( 0, 0, canvas_w, canvas_w )
+			, xy       : ( e, hue_sat ) => {
+				var x = e.offsetX || e.changedTouches[ 0 ].pageX - tl[ hue_sat ].x;
+				var y = e.offsetY || e.changedTouches[ 0 ].pageY - tl[ hue_sat ].y;
+				pick[ hue_sat ]( x, y );
 			}
 		}
 // context
@@ -117,7 +115,7 @@ var COLOR = {
 		} )();
 		for ( y = sat_tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
 			for ( x = sat_tl; x < sat_br; x++ ) {
-				[ pr, pg, pb ] = pick.pixelData( x, y );
+				[ pr, pg, pb ] = pick.pixelRgb( x, y );
 				if ( Math.abs( r - pr ) < 2
 				  && Math.abs( g - pg ) < 2
 				  && Math.abs( b - pb ) < 2
@@ -129,28 +127,34 @@ var COLOR = {
 		}
 // pick - get canvas_b after all set : e.changedTouches[ 0 ].pageX/Y - canvas_b.x/y = e.offsetX/Y
 		var canvas_b = $( '#base' )[ 0 ].getBoundingClientRect();
+		var hue      = false;
+		var sat      = false;
 		var sat_xy;
+		var tl       = {
+			  hue : { x: canvas_b.x,          y: canvas_b.y }
+			, sat : { x: canvas_b.x + sat_tl, y: canvas_b.y + sat_tl }
+		}
 		$( '#pickhue' ).on( 'touchstart mousedown', e => {
 			hue = true;
-			pick.xy( e );
+			pick.xy( e, 'hue' );
 			$( '#pickhue' ).css( 'border-radius', 0 );     // allow outside drag
 			$( '#picknone, #picksat' ).addClass( 'hide' ); // allow inside drag
 			$( '#colorok' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
-			if ( hue ) pick.xy( e );
+			if ( hue ) pick.xy( e, 'hue' );
 		} ).on( 'touchend mouseup', () => {
+			hue = false;
 			if ( hsl.h < 0 ) hsl.h += 360;
 			$( '#pickhue' ).css( 'border-radius', '' );
 			$( '#picknone, #picksat' ).removeClass( 'hide' );
-			hue = false;
 		} );
 		$( '#picksat' ).on( 'touchstart mousedown', e => {
 			sat = true;
 			pick.satClear();
-			pick.xy( e );
+			pick.xy( e, 'sat' );
 			$( '#colorok' ).removeClass( 'disabled' );
 		} ).on( 'touchmove mousemove', e => {
-			if ( sat ) pick.xy( e );
+			if ( sat ) pick.xy( e, 'sat' );
 		} ).on( 'touchleave mouseleave', () => {
 			if ( sat ) pick.satPoint( sat_xy.x, sat_xy.y );
 		} ).on( 'touchenter mouseenter', () => {
@@ -159,8 +163,8 @@ var COLOR = {
 		$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow stop both inside and outside of #picksat
 			if ( ! sat ) return
 			
-			pick.satPoint( sat_xy.x, sat_xy.y );
 			sat = false;
+			pick.satPoint( sat_xy.x, sat_xy.y );
 		} );
 // action
 		$( '#colorok' ).on( 'click', function() {
