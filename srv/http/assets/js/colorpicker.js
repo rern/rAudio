@@ -7,7 +7,7 @@ var COLOR = {
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
 		<div id="pickhue"></div><div id="picknone"></div><div id="picksat"></div>
-		<div id="hue"></div><canvas id="sat"></canvas><canvas id="base"></canvas>
+		<div id="wheel"></div><div id="hue"></div><canvas id="sat"></canvas><canvas id="base"></canvas>
 		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary ${ D.color ? '' : 'disabled' }">OK</a>
 	</div>

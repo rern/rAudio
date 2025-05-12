@@ -1821,17 +1821,7 @@ li.active .li2 bl {
 	text-align: center;
 	font-size: 30px;
 }
-/* flags */
-.flag {
-	margin-left: 5px;
-}
-.flag f {
-	background: url( /assets/img/flags.png ) no-repeat;
-	display: inline-block;
-	width: 16px;
-	height: 12px;
-}
-/* color */
+/* ---------------------- colorpicker ----------------------*/
 #colorpicker {
 	position: absolute;
 	top: 0;
@@ -1849,18 +1839,43 @@ li.active .li2 bl {
 	width: 230px;
 	margin: auto;
 }
-#canvascolor {
-	background: #000000;
-	border-radius: 50%;
-	touch-action: none;
-	box-shadow: var( --shadow-bar );
-}
-#pickhue,
-#picknone,
-#picksat,
-#hue,
+#colorcancel,
+#divcolor div,
 #sat {
 	position: absolute;
+}
+#colorcancel {
+	right: -5px;
+	width: 36px;
+	height: 36px;
+	font-size: 24px;
+	line-height: 36px;
+	color: var( --cm );
+	background: #000;
+	text-shadow: var( --shadow-btn );
+}
+#wheel {
+	top: -1px;
+	left: -1px;
+	width: 232px;
+	height: 232px;
+}
+#colorcancel,
+#wheel {
+	box-shadow: var( --shadow-bar );
+}
+#wheel::after {
+	content: '';
+	display: block;
+	margin-left: 20px;
+	margin-top: 20px;
+	width: 190px;
+	height: 190px;
+}
+#wheel,
+#wheel::after {
+	border: 1px solid #000;
+	border-radius: 50%;
 }
 #hue::after {
 	content: '';
@@ -1890,6 +1905,7 @@ li.active .li2 bl {
 	width: 120px;
 	height: 120px;
 }
+#colorcancel,
 #pickhue,
 #picknone,
 #picksat {
@@ -1897,26 +1913,14 @@ li.active .li2 bl {
 	z-index: 1;
 	cursor: crosshair;
 }
+#colorcancel,
 #picknone {
 	cursor: default;
 }
 #picksat {
 	border-radius: unset;
 }
-#colorcancel {
-	position: absolute;
-	right: -5px;
-	width: 36px;
-	height: 36px;
-	font-size: 24px;
-	line-height: 36px;
-	border-radius: 50%;
-	color: var( --cm );
-	background: #000;
-	text-shadow: var( --shadow-btn );
-	box-shadow: 0 0 6px 5px #000;
-	z-index: 1;
-}
+/* ---------------------- tag ----------------------*/
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
