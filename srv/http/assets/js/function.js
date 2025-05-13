@@ -160,7 +160,12 @@ var BIO       = {
 	}
 }
 var COLOR     = {
-	  hide   : () => {
+	  cssSet : hsl => {
+		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
+		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
+		$( ':root' ).css( css );
+	}
+	, hide   : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
 		delete V.color;
@@ -186,7 +191,7 @@ var COLOR     = {
 			V.ctx.hsl.h = h;
 			COLOR.pick.rotate( h );
 			COLOR.pick.gradient();
-			COLOR.set( V.ctx.hsl );
+			COLOR.cssSet( V.ctx.hsl );
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
@@ -213,7 +218,7 @@ var COLOR     = {
 			f  = 1 - Math.abs( m + m - d - 1 ); 
 			V.ctx.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
 			V.ctx.hsl.s = f ? Math.round( d / f * 100 ) : 0;
-			COLOR.set( V.ctx.hsl );
+			COLOR.cssSet( V.ctx.hsl );
 			V.ctx.sat.x = x;
 			V.ctx.sat.y = y;
 		}
@@ -288,11 +293,6 @@ var COLOR     = {
 		COLOR.pick.set();
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
-	, set    : hsl => {
-		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
-		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
-		$( ':root' ).css( css );
-	}
 	, wheel  : el => { // for picker and color menu
 		var canvas  = $( el )[ 0 ];
 		var ctx     = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );

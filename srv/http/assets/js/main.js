@@ -1732,13 +1732,13 @@ $( '#colorok' ).on( 'click', function() {
 	COLOR.hide();
 } );
 $( '#colorreset' ).on( 'click', function() {
-	COLOR.set( V.color.cd );
+	COLOR.cssSet( V.color.cd );
 	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.hide();
 } );
 $( '#colorcancel' ).on( 'click', function() {
 	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl0 );
-	COLOR.set( V.ctx.hsl );
+	COLOR.cssSet( V.ctx.hsl );
 	COLOR.hide();
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();

@@ -166,7 +166,7 @@ W          = {  // ws push
 	, color     : data => {
 		D.color = data.color !== false;
 		V.color = data;
-		COLOR.set( data.hsl );
+		COLOR.cssSet( data.hsl );
 		if ( V.ctx ) {
 			V.ctx.hsl  = data.hsl;
 			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
