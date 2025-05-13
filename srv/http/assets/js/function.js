@@ -291,10 +291,10 @@ var COLOR = {
 		var ctx     = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );
 		var c       = canvas.width / 2;
 		var deg_rad = Math.PI / 180;
-		for ( var i = 0; i < 360; i += 0.5 ) {
+		for ( var i = 0; i < 360; i++ ) {
 			ctx.beginPath();
 			ctx.moveTo( c, c );
-			ctx.arc( c, c, c, i * deg_rad, ( i + 1 ) * deg_rad );
+			ctx.arc( c, c, c, i * deg_rad, ( i + 2 ) * deg_rad ); // fix moire - +2 (overlap)
 			ctx.fillStyle = 'hsl('+ i +', 100%, 50%)';
 			ctx.fill();
 		}
