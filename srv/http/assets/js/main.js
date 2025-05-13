@@ -1726,6 +1726,147 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 		}
 	}
 } );
+// color /////////////////////////////////////////////////////////////////////////////////////
+$( '#colorok' ).on( 'click', function() {
+	COLOR.save( V.color.hsl );
+	COLOR.hide();
+} );
+$( '#colorreset' ).on( 'click', function() {
+	COLOR.set( V.color.cd );
+	BASH( [ 'color', true, 'CMD RESET' ] );
+	COLOR.hide();
+} );
+$( '#colorcancel' ).on( 'click', function() {
+	COLOR.hide();
+	$( 'html' ).removeAttr( 'style' );
+	if ( S.player === 'mpd' ) {
+		if ( V.playlist ) PLAYLIST.render.scroll();
+	} else {
+		UTIL.switchPage( 'playback' );
+	}
+} );
+$( '#pickhue' ).on( 'touchstart mousedown', e => {
+	V.hue = true;
+	COLOR.pick.xy( e, 'hue' );
+	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
+	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
+	$( '#colorok' ).removeClass( 'disabled' );
+} ).on( 'touchmove mousemove', e => {
+	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
+} ).on( 'touchend mouseup', () => {
+	if ( ! V.hue ) return
+	
+	V.hue = false;
+	if ( V.color.hsl.h < 0 ) V.color.hsl.h += 360;
+	$( '#pickhue' ).css( 'border-radius', '' );
+	$( '#picknone, #picksat' ).removeClass( 'hide' );
+} );
+$( '#picksat' ).on( 'touchstart mousedown', e => {
+	V.sat = true;
+	COLOR.pick.xy( e, 'sat', 'clear' );
+	$( '#colorok' ).removeClass( 'disabled' );
+} ).on( 'touchmove', e => {
+	if ( ! V.sat  ) return
+	
+	var et = e.touches[ 0 ];
+	if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
+		COLOR.pick.xy( e, 'sat', V.satout );
+		if ( V.satout ) V.satout = false;
+	} else {
+		V.satout = true;
+		COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+	}
+} ).on( 'mousemove', e => {
+	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
+} ).on( 'mouseleave', () => {
+	if ( V.sat ) COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+} ).on( 'mouseenter', () => {
+	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
+} );
+$( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and outside #picksat
+	if ( ! V.sat ) return
+	
+	V.sat = false;
+	COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+} );
+// eq /////////////////////////////////////////////////////////////////////////////////////
+$( '#infoOverlay' ).on( 'click', '#eqnew', function() {
+	$( '#eqedit, #eq .select2-container, #eqnew' ).addClass( 'hide' );
+	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
+	$( '#eqname' )
+		.css( 'display', 'inline-block' )
+		.val( E.active );
+} ).on( 'click', '#eqedit', function() {
+	var list    = [];
+	var values  = [];
+	var presets = Object.keys( E.preset ).sort();
+	presets.forEach( k => {
+		if ( k === 'Flat' ) return
+		
+		list.push( [ '', 'text', { suffix: ICON( 'remove' ) } ] );
+		values.push( k );
+	} );
+	var e = COMMON.json.clone( E );
+	INFO( {
+		  icon         : 'equalizer'
+		, title        : 'Presets'
+		, list         : list
+		, values       : values
+		, checkchanged : true
+		, beforeshow   : () => {
+			$( '#infoList input' ).on( 'blur', function() {
+				var index = $( this ).parents( 'tr' ).index();
+				var name0 = values[ index ];
+				var name1 = $( this ).val();
+				if ( name0 !== name1 ) {
+					if ( e.active === name0 ) e.active = name1;
+					e.preset[ name1 ] = e.preset[ name0 ];
+					delete e.preset[ name0 ];
+				}
+			} );
+			$( '#infoList i' ).on( 'click', function() {
+				var $tr   = $( this ).parents( 'tr' );
+				var name1 = $tr.find( 'input' ).val();
+				if ( e.active === name1 ) e.active = 'Flat';
+				delete e.preset[ name1 ];
+				$tr.remove();
+				if ( ! $( '#infoList tr' ).length ) $( '#infoList table' ).append( '<tr><td><gr>(empty)<gr></td></tr>' );
+				$( '#infoOk' ).removeClass( 'disabled' );
+			} );
+		}
+		, cancel       : () => EQ.info( E )
+		, ok           : () => {
+			COMMON.json.save( 'equalizer', e );
+			EQ.info( e );
+		}
+	} );
+} ).on( 'click', '#eqback', function() {
+	$( '#eqedit, #eq .select2-container, #eqnew' ).removeClass( 'hide' );
+	$( '#eqsave, #eqname, #eqback' ).addClass( 'hide' );
+	$( '#eqname' ).empty();
+} ).on( 'input', '#eqname', function( e ) {
+	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val() in E.preset );
+	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
+} ).on( 'input', '#eqpreset', function() { // preset
+	var name   = $( this ).val();
+	E.active   = name;
+	var values = E.preset[ name ];
+	BASH( [ 'equalizer', values.join( ' ' ), EQ.user, 'CMD VALUES USR' ] );
+	I.values = [ ...values, name ];
+	_INFO.setValues();
+	EQ.level();
+	COMMON.json.save( 'equalizer', E );
+} ).on( 'click', '#eqsave', function() {
+	var name         = $( '#eqname' ).val();
+	E.preset[ name ] = E.preset[ E.active ];
+	E.active         = name;
+	COMMON.json.save( 'equalizer', E );
+	$( '#eqback' ).trigger( 'click' );
+	$( '#eqpreset' )
+		.html( COMMON.htmlOption( Object.keys( E.preset ) ) )
+		.val( name )
+		.trigger( 'change' );
+} );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {
 	if ( V.lyrics === $( this ).val()  ) {
@@ -1812,69 +1953,6 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#colorok' ).on( 'click', function() {
-	COLOR.save( V.color.hsl );
-	COLOR.hide();
-} );
-$( '#colorreset' ).on( 'click', function() {
-	COLOR.set( V.color.cd );
-	BASH( [ 'color', true, 'CMD RESET' ] );
-	COLOR.hide();
-} );
-$( '#colorcancel' ).on( 'click', function() {
-	COLOR.hide();
-	$( 'html' ).removeAttr( 'style' );
-	if ( S.player === 'mpd' ) {
-		if ( V.playlist ) PLAYLIST.render.scroll();
-	} else {
-		UTIL.switchPage( 'playback' );
-	}
-} );
-$( '#pickhue' ).on( 'touchstart mousedown', e => {
-	V.hue = true;
-	COLOR.pick.xy( e, 'hue' );
-	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
-	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
-	$( '#colorok' ).removeClass( 'disabled' );
-} ).on( 'touchmove mousemove', e => {
-	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
-} ).on( 'touchend mouseup', () => {
-	if ( ! V.hue ) return
-	
-	V.hue = false;
-	if ( V.color.hsl.h < 0 ) V.color.hsl.h += 360;
-	$( '#pickhue' ).css( 'border-radius', '' );
-	$( '#picknone, #picksat' ).removeClass( 'hide' );
-} );
-$( '#picksat' ).on( 'touchstart mousedown', e => {
-	V.sat = true;
-	COLOR.pick.xy( e, 'sat', 'clear' );
-	$( '#colorok' ).removeClass( 'disabled' );
-} ).on( 'touchmove', e => {
-	if ( ! V.sat  ) return
-	
-	var et = e.touches[ 0 ];
-	if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
-		COLOR.pick.xy( e, 'sat', V.satout );
-		if ( V.satout ) V.satout = false;
-	} else {
-		V.satout = true;
-		COLOR.pick.point( V.color.sat.x, V.color.sat.y );
-	}
-} ).on( 'mousemove', e => {
-	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
-} ).on( 'mouseleave', () => {
-	if ( V.sat ) COLOR.pick.point( V.color.sat.x, V.color.sat.y );
-} ).on( 'mouseenter', () => {
-	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
-} );
-$( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and outside #picksat
-	if ( ! V.sat ) return
-	
-	V.sat = false;
-	COLOR.pick.point( V.color.sat.x, V.color.sat.y );
-} );
-
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ...V.option.sortable

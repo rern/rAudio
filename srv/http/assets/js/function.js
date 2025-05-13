@@ -762,6 +762,71 @@ var DISPLAY   = {
 		if ( V.localhost ) $( '#power' ).addClass( 'sub' );
 	}
 }
+var EQ        = {
+	  flat   : new Array( 10 ).fill( 62 )
+	, freq   : [ 31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ]
+	, bands  : []
+	, bottom : ICON( 'edit', 'eqedit' )
+			 + ICON( 'save disabled hide', 'eqsave' )
+			 +'<div id="divpreset"><select id="eqpreset">PRESETS</select><input id="eqname" type="text" class="hide"></div>'
+			 + ICON( 'add', 'eqnew' ) + ICON( 'back bl hide', 'eqback' )
+	, level : () => {
+		E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );
+	}
+}
+EQ            = {
+	  ...EQ
+	, bands : ( () => {
+		var bands = [];
+		EQ.freq.forEach( ( hz, i ) => {
+			var band = hz < 1000 ? hz +' Hz' : ( hz / 1000 ) +' kHz';
+			bands.push( '0'+ i +'. '+ band );
+		} );
+		return bands
+	} )()
+	, info  : data => {
+		E = data;
+		EQ.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+		var opt  = COMMON.htmlOption( Object.keys( E.preset ) );
+		INFO( {
+			  icon       : 'equalizer'
+			, title      : 'Equalizer'
+			, list       : COMMON.eq.html( 42, 82, EQ.freq, EQ.bottom.replace( 'PRESETS', opt ) )
+			, values     : [ ...E.preset[ E.active ], E.active ]
+			, beforeshow : () => {
+				COMMON.eq.beforShow( {
+					  init  : () => {
+						EQ.level();
+						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
+					}
+					, input : ( i, v ) => {
+						BASH( [ 'equalizerset', EQ.bands[ i ], v, EQ.user, 'CMD BAND VAL USR' ] );
+						$( '#eq .label.dn a' ).eq( i ).text( v - 62 );
+					}
+					, end   : () => {
+						if ( E.active === 'Flat' ) {
+							for ( var i = 1; i < 10; i++ ) {
+								var name = 'New '+ i;
+								if ( ! ( name in E.preset ) ) break;
+							}
+							E.active         = name;
+							E.preset[ name ] = EQ.flat;
+						}
+						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
+						$( '#eqedit' ).removeClass( 'disabled' );
+						$( '#eqpreset' ).html( COMMON.htmlOption( Object.keys( E.preset ) ) );
+						I.values = [ ...E.preset[ E.active ], E.active ];
+						_INFO.setValues();
+						COMMON.select.set();
+						COMMON.json.save( 'equalizer', E );
+					}
+				} );
+			}
+			, cancel     : () => E = {}
+			, okno       : true
+		} );
+	}
+}
 var FILEIMAGE = {
 	  get    : () => {
 		$( '#infoButton a' ).addClass( 'disabled' );

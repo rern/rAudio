@@ -54,7 +54,6 @@ if ( ! $page ) { // main
 		$cssp[] = 'select2';
 		$css    = [ ...$css, 'select2', 'equalizer' ];
 		$jsp[]  = 'select2';
-		$js[]   = 'equalizer';
 	}
 	$title = 'STATUS';
 } else {         // settings
