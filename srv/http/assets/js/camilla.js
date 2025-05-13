@@ -415,7 +415,7 @@ var D         = {
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
-var COLOR     = {
+var CLR       = {
 	  g   : 'hsl( 100, 90%,  40% )'
 	, gd  : 'hsl( 100, 90%,  20% )'
 	, gr  : 'hsl( 200, 3%,   30% )'
@@ -436,67 +436,67 @@ var TICKTEXT  = [ 20, 50, 100, 500, '1k', '5k', '10k', '20k' ];
 var AXES      = {
 	  freq       : {
 		  filters  : {
-			  tickfont  : { color: COLOR.wl }
+			  tickfont  : { color: CLR.wl }
 			, tickvals  : [ 235, 393, 462, 624, 694, 858, 926, 995 ] // 235>|  ...  | 69 |  163  | 69 |  163  | 69 | .. |<995
 			, ticktext  : TICKTEXT
 			, range     : [ 235, 995 ]
-			, gridcolor : COLOR.grd
+			, gridcolor : CLR.grd
 		}
 		, pipeline : {
-			  tickfont  : { color: COLOR.wl }
+			  tickfont  : { color: CLR.wl }
 			, tickvals  : [ 4, 210, 300, 511, 602, 816, 905, 995 ]   //   4>|  ...  | 90 |  213  | 90 |  213  | 90 | .. |<995
 			, ticktext  : TICKTEXT
 			, range     : [ 4, 995 ]
-			, gridcolor : COLOR.grd
+			, gridcolor : CLR.grd
 		}
 	}
 	, time       : {
 		  title      : {
 			  text     : 'Time'
-			, font     : { color: COLOR.grl }
+			, font     : { color: CLR.grl }
 			, standoff : 0
 		}
-		, tickfont   : { color: COLOR.grl }
-		, gridcolor  : COLOR.grk
+		, tickfont   : { color: CLR.grl }
+		, gridcolor  : CLR.grk
 		, overlaying : 'x'
 		, side       : 'top'
 	}
 	, gain       : {
 		  title        : {
 			  text     : 'Gain'
-			, font     : { color: COLOR.m }
+			, font     : { color: CLR.m }
 			, standoff : 0
 		}
-		, tickfont      : { color: COLOR.m }
-		, zerolinecolor : COLOR.w
-		, linecolor     : COLOR.md
-		, gridcolor     : COLOR.md
+		, tickfont      : { color: CLR.m }
+		, zerolinecolor : CLR.w
+		, linecolor     : CLR.md
+		, gridcolor     : CLR.md
 	}
 	, phase      : {
 		  title      : {
 			  text     : 'Phase'
-			, font     : { color: COLOR.r }
+			, font     : { color: CLR.r }
 			, standoff : 0
 		}
-		, tickfont   : { color: COLOR.r }
+		, tickfont   : { color: CLR.r }
 		, overlaying : 'y'
 		, side       : 'right'
 		, range      : [ -180, 180 ]
 		, dtick      : 90
 		, zeroline   : false
-		, linecolor  : COLOR.rd
-		, gridcolor  : COLOR.rd
+		, linecolor  : CLR.rd
+		, gridcolor  : CLR.rd
 	}
 	, groupdelay : {
 		  title      : {
 			  text     : 'Delay'
-			, font     : { color: COLOR.o }
+			, font     : { color: CLR.o }
 			, standoff : 0
 		}
-		, tickfont   : { color: COLOR.o }
+		, tickfont   : { color: CLR.o }
 		, zeroline   : false
-		, linecolor  : COLOR.od
-		, gridcolor  : COLOR.od
+		, linecolor  : CLR.od
+		, gridcolor  : CLR.od
 		, overlaying : 'y'
 		, side       : 'right'
 		, anchor     : 'free'
@@ -506,13 +506,13 @@ var AXES      = {
 	, impulse    : {
 		  title      : {
 			  text     : 'Impulse'
-			, font     : { color: COLOR.g }
+			, font     : { color: CLR.g }
 			, standoff : 0
 		}
-		, tickfont   : { color: COLOR.g }
+		, tickfont   : { color: CLR.g }
 		, zeroline   : false
-		, linecolor  : COLOR.gd
-		, gridcolor  : COLOR.gd
+		, linecolor  : CLR.gd
+		, gridcolor  : CLR.gd
 		, overlaying : 'y'
 		, side       : 'left'
 		, anchor     : 'free'
@@ -525,14 +525,14 @@ var PLOTS     = {
 		  yaxis : 'y3'
 		, type  : 'scatter'
 		, name  : 'Delay'
-		, line  : { width : 2, color: COLOR.o }
+		, line  : { width : 2, color: CLR.o }
 	}
 	, impulse    : {
 		  xaxis : 'x2'
 		, yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Impulse'
-		, line  : { width : 1, color: COLOR.g }
+		, line  : { width : 1, color: CLR.g }
 	}
 	, layout     : {
 		  margin        : { t: 10, r: 40, b: 40, l: 40 }
@@ -547,7 +547,7 @@ var PLOTS     = {
 		  yaxis : 'y'
 		, type  : 'scatter'
 		, name  : 'Gain'
-		, line  : { width : 3, color: COLOR.m }
+		, line  : { width : 3, color: CLR.m }
 	}
 	, options    : {
 		  displayModeBar : false
@@ -559,7 +559,7 @@ var PLOTS     = {
 		  yaxis : 'y2'
 		, type  : 'scatter'
 		, name  : 'Phase'
-		, line  : { width : 2, color : COLOR.r }
+		, line  : { width : 2, color : CLR.r }
 	}
 }
 
@@ -626,10 +626,10 @@ var GRAPH     = {
 		, addBox    : ( txt, ch, gain ) => {
 			var nodb = gain === false;
 			var c    = {
-				  Filter   : nodb ? COLOR.gd : COLOR.md
-				, Capture  : COLOR.grl
-				, Mixer    : COLOR.od
-				, Playback : COLOR.gr
+				  Filter   : nodb ? CLR.gd : CLR.md
+				, Capture  : CLR.grl
+				, Mixer    : CLR.od
+				, Playback : CLR.gr
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
 			var y    = X.h + X.h * 2 * ch; // y > down - each channel
@@ -698,7 +698,7 @@ var GRAPH     = {
 				, w : X.w + X.p * 2
 				, h : X.h * ( ch * 2 - 1 ) + X.p * 2
 				, r : X.p
-				, c : COLOR.grd
+				, c : CLR.grd
 			} );
 			X.text.push( { //----
 				  x : Math.round( X.x + X.w / 2 )
@@ -715,9 +715,9 @@ var GRAPH     = {
 			ctx.shadowColor   = '#000';
 		}
 		, dbText    : gain => {
-			var c = COLOR.grl;
-			if ( gain > 0 )      c = COLOR.wl;
-			else if ( gain < 0 ) c = COLOR.r;
+			var c = CLR.grl;
+			if ( gain > 0 )      c = CLR.wl;
+			else if ( gain < 0 ) c = CLR.r;
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
 		}
@@ -798,8 +798,8 @@ var GRAPH     = {
 				GRAPH.flowchart.ctxShadow( ctx, 2 );
 			} );
 			ctx.restore();
-			ctx.strokeStyle  = COLOR.gr;
-			ctx.fillStyle    = COLOR.grl;
+			ctx.strokeStyle  = CLR.gr;
+			ctx.fillStyle    = CLR.grl;
 			ctx.beginPath();
 			var ay = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
@@ -823,7 +823,7 @@ var GRAPH     = {
 			var gain;
 			X.text.forEach( t => { //-------------------------------
 				gain          = 'a' in t;
-				ctx.fillStyle = t.c || COLOR.wl;
+				ctx.fillStyle = t.c || CLR.wl;
 				ctx.font = ( gain ? 12 : 15 ) +'px Inconsolata';
 				GRAPH.flowchart.ctxShadow( ctx, gain ? 1 : 0 );
 				if ( t.a ) { // cross gain
@@ -2659,7 +2659,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, title   : title
 						, message : '<wh>'+ name +'</wh> ?'
 						, oklabel : ICON( 'remove' ) +'Delete'
-						, okcolor : COLOR.red
+						, okcolor : CLR.red
 						, ok      : () => {
 							file ? BASH( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							SETTING.save( title, 'Delete ...' );
@@ -2694,7 +2694,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, title   : title
 						, message : message
 						, oklabel : ICON( 'remove' ) +'Delete'
-						, okcolor : COLOR.red
+						, okcolor : CLR.red
 						, ok      : () => {
 							if ( main ) {
 								delete MIX[ name ];
@@ -2801,7 +2801,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, title   : title
 						, message : '<c>'+ name +'</c>'
 						, oklabel : ICON( 'remove' ) +'Delete'
-						, okcolor : COLOR.red
+						, okcolor : CLR.red
 						, ok      : () => {
 							BASH( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
 							NOTIFY( icon, title, 'Delete ...' );

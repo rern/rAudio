@@ -232,6 +232,11 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'color':
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
 				V.color = data;
+				$( 'body' ).css( 'overflow', 'hidden' );
+				$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
+				$( '#colorreset' ).toggleClass( 'hide', ! D.color );
+				$( '#colorok' ).toggleClass( 'disabled', ! D.color );
+				$( '#colorpicker' ).removeClass( 'hide' );
 				COLOR.picker();
 				if ( V.playback ) {
 					$( '#library' ).trigger( 'click' );
@@ -1808,16 +1813,16 @@ $( '#lyricsdelete' ).on( 'click', function() {
 	} );
 } );
 $( '#colorok' ).on( 'click', function() {
-	COLOR.save( hsl );
-	COLOR.remove();
+	COLOR.save( V.color.hsl );
+	COLOR.hide();
 } );
 $( '#colorreset' ).on( 'click', function() {
 	COLOR.set( V.color.cd );
 	BASH( [ 'color', true, 'CMD RESET' ] );
-	COLOR.remove();
+	COLOR.hide();
 } );
 $( '#colorcancel' ).on( 'click', function() {
-	COLOR.remove();
+	COLOR.hide();
 	$( 'html' ).removeAttr( 'style' );
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();
@@ -1827,12 +1832,12 @@ $( '#colorcancel' ).on( 'click', function() {
 } );
 $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	V.hue = true;
-	COLOR.xy( e, 'hue' );
+	COLOR.pick.xy( e, 'hue' );
 	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
 	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
 	$( '#colorok' ).removeClass( 'disabled' );
 } ).on( 'touchmove mousemove', e => {
-	if ( V.hue ) COLOR.xy( e, 'hue' );
+	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
 } ).on( 'touchend mouseup', () => {
 	if ( ! V.hue ) return
 	
@@ -1843,23 +1848,23 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
 	V.sat = true;
-	COLOR.xy( e, 'sat', 'clear' );
+	COLOR.pick.xy( e, 'sat', 'clear' );
 	$( '#colorok' ).removeClass( 'disabled' );
 } ).on( 'touchmove', e => {
 	if ( ! V.sat  ) return
 	
 	var et = e.touches[ 0 ];
 	if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
-		COLOR.xy( e, 'sat', V.satout );
+		COLOR.pick.xy( e, 'sat', V.satout );
 		if ( V.satout ) V.satout = false;
 	} else {
 		V.satout = true;
-		COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+		COLOR.pick.point( V.color.sat.x, V.color.sat.y );
 	}
 } ).on( 'mousemove', e => {
-	if ( V.sat ) COLOR.xy( e, 'sat' );
+	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
-	if ( V.sat ) COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+	if ( V.sat ) COLOR.pick.point( V.color.sat.x, V.color.sat.y );
 } ).on( 'mouseenter', () => {
 	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
 } );
@@ -1867,7 +1872,7 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 	if ( ! V.sat ) return
 	
 	V.sat = false;
-	COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+	COLOR.pick.point( V.color.sat.x, V.color.sat.y );
 } );
 
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
