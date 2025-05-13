@@ -167,11 +167,8 @@ var COLOR = {
 	}
 	, pick   : {
 		  gradient : () => {
-			var c  = V.color.ctx;
-			var tl = V.color.sat.tl;
-			var w  = V.color.sat.w;
-			c.save();
-			c.translate( tl, tl );
+			var c = V.color.ctx;
+			var w = V.color.sat.w;
 			for( var i = 0; i <= w; i++ ){                                         // each line
 				var gradient = c.createLinearGradient( 0, 0, w, 0 );             // 0                  ---               width
 				var iy       = i / w * 100;
@@ -180,7 +177,6 @@ var COLOR = {
 				c.fillStyle = gradient;
 				c.fillRect( 0, w - i, w, 1 );
 			}
-			c.restore();
 		}
 		, hue      : ( x, y ) => {
 			var c   = V.color.canvas.c;
@@ -236,7 +232,7 @@ var COLOR = {
 			, ctx    : COLOR.wheel( '#base' )
 			, hsl    : { h, s, l }
 			, hue    : { r: sat_w - 25 }
-			, sat    : { tl: sat_tl, w : canvas_w - 110 }
+			, sat    : { w: sat_w }
 			, tl     : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,          y: ty }
 				, sat : { x: tx + sat_tl, y: ty + sat_tl }
@@ -247,6 +243,7 @@ var COLOR = {
 		ctx.beginPath();
 		ctx.arc( V.color.canvas.c, V.color.canvas.c, V.color.hue.r, 0, 2 * Math.PI ); // hue cutout
 		ctx.fill();
+		ctx.translate( sat_tl, sat_tl );
 		COLOR.pick.gradient(); // sat box
 		var l           = V.color.hsl.l / 100;
 		var a           = V.color.hsl.s / 100 * Math.min( l, 1 - l );
