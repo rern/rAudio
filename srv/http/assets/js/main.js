@@ -232,12 +232,11 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'color':
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
 				V.color = data;
-				if ( V.library ) {
-					V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
-				} else if ( V.playlist && S.pllength ) {
-					COLOR.picker();
-				} else {
+				COLOR.picker();
+				if ( V.playback ) {
 					$( '#library' ).trigger( 'click' );
+				} else if ( V.library && V.libraryhome ) {
+					$( '.mode.webradio' ).trigger( 'click' );
 				}
 			}, 'json' );
 			break;
@@ -1808,6 +1807,69 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		}
 	} );
 } );
+$( '#colorok' ).on( 'click', function() {
+	COLOR.save( hsl );
+	COLOR.remove();
+} );
+$( '#colorreset' ).on( 'click', function() {
+	COLOR.set( V.color.cd );
+	BASH( [ 'color', true, 'CMD RESET' ] );
+	COLOR.remove();
+} );
+$( '#colorcancel' ).on( 'click', function() {
+	COLOR.remove();
+	$( 'html' ).removeAttr( 'style' );
+	if ( S.player === 'mpd' ) {
+		if ( V.playlist ) PLAYLIST.render.scroll();
+	} else {
+		UTIL.switchPage( 'playback' );
+	}
+} );
+$( '#pickhue' ).on( 'touchstart mousedown', e => {
+	V.hue = true;
+	COLOR.xy( e, 'hue' );
+	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
+	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
+	$( '#colorok' ).removeClass( 'disabled' );
+} ).on( 'touchmove mousemove', e => {
+	if ( V.hue ) COLOR.xy( e, 'hue' );
+} ).on( 'touchend mouseup', () => {
+	if ( ! V.hue ) return
+	
+	V.hue = false;
+	if ( V.color.hsl.h < 0 ) V.color.hsl.h += 360;
+	$( '#pickhue' ).css( 'border-radius', '' );
+	$( '#picknone, #picksat' ).removeClass( 'hide' );
+} );
+$( '#picksat' ).on( 'touchstart mousedown', e => {
+	V.sat = true;
+	COLOR.xy( e, 'sat', 'clear' );
+	$( '#colorok' ).removeClass( 'disabled' );
+} ).on( 'touchmove', e => {
+	if ( ! V.sat  ) return
+	
+	var et = e.touches[ 0 ];
+	if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
+		COLOR.xy( e, 'sat', V.satout );
+		if ( V.satout ) V.satout = false;
+	} else {
+		V.satout = true;
+		COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+	}
+} ).on( 'mousemove', e => {
+	if ( V.sat ) COLOR.xy( e, 'sat' );
+} ).on( 'mouseleave', () => {
+	if ( V.sat ) COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+} ).on( 'mouseenter', () => {
+	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
+} );
+$( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and outside #picksat
+	if ( ! V.sat ) return
+	
+	V.sat = false;
+	COLOR.satPoint( V.color.sat.x, V.color.sat.y );
+} );
+
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ...V.option.sortable

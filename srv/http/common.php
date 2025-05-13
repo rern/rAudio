@@ -49,7 +49,7 @@ if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
-	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut', 'colorpicker' ];
+	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
 		$css    = [ ...$css, 'select2', 'equalizer' ];
