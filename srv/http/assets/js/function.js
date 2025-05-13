@@ -252,8 +252,8 @@ var COLOR = {
 		var sat_br      = sat_tl + sat_w;
 		var pb, pg, pr;
 		match:
-		for ( var y = V.color.sat.tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
-			for ( var x = V.color.sat.tl; x < sat_br; x++ ) {
+		for ( var y = sat_tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
+			for ( var x = sat_tl; x < sat_br; x++ ) {
 				[ pr, pg, pb ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
 				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 					COLOR.satPoint( x, y );
