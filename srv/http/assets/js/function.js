@@ -159,7 +159,7 @@ var BIO       = {
 		COMMON.loaderHide();
 	}
 }
-var COLOR = {
+var COLOR     = {
 	  hide   : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
