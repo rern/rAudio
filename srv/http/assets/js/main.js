@@ -1737,9 +1737,9 @@ $( '#colorreset' ).on( 'click', function() {
 	COLOR.hide();
 } );
 $( '#colorcancel' ).on( 'click', function() {
+	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl0 );
+	COLOR.set( V.ctx.hsl );
 	COLOR.hide();
-	V.ctx.hsl = V.ctx.hsl0;
-	$( 'html' ).removeAttr( 'style' );
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();
 	} else {

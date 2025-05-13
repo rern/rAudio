@@ -167,6 +167,7 @@ W          = {  // ws push
 		D.color = data.color !== false;
 		V.color = data;
 		COLOR.set( data.hsl );
+		if ( V.ctx ) V.ctx.hsl0 = COMMON.json.clone( data.hsl );
 		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
 		$( '#loader rect' ).css( 'fill', data.cm );
 		$( '#loader path' ).css( 'fill', data.cg );
