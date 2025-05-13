@@ -209,43 +209,38 @@ var COLOR = {
 		}
 	}
 	, picker : () => {
-		var canvas_w  = 230;
-		var sat_w     = canvas_w - 110;
-		var sat_tl    = ( canvas_w - sat_w ) / 2;
-		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
-		V.color       = {
-			  ...V.color
-			, canvas : {
-				  w : canvas_w
-				, c : canvas_w / 2
-			}
-			, ctx    : COLOR.wheel( '#base' )
-			, hsl    : { h, s, l }
-			, hue    : { r: sat_w - 25 }
-			, sat    : {
-				  br : sat_tl + sat_w
-				, tl : sat_tl
-				, w  : canvas_w - 110
-			}
-		}
-		
 		$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
 		$( 'body' ).css( 'overflow', 'hidden' );
-		$( '#hue' ).css( 'transform', 'rotate( '+ V.color.hsl.h +'deg )' );
 		$( '#colorreset' ).toggleClass( 'hide', ! D.color );
 		$( '#colorok' ).toggleClass( 'disabled', ! D.color );
 		$( '#colorpicker' ).removeClass( 'hide' );
-		var ctx       = V.color.ctx;
-		ctx.fillStyle = '#000';
+		var base_xy     = $( '#base' )[ 0 ].getBoundingClientRect();
+		var canvas_w    = 230;
+		var sat_w       = canvas_w - 110;
+		var sat_tl      = ( canvas_w - sat_w ) / 2;
+		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		V.color         = {
+			  ...V.color
+			, canvas : { w: canvas_w, c: canvas_w / 2 }
+			, ctx    : COLOR.wheel( '#base' )
+			, hsl    : { h, s, l }
+			, hue    : { r: sat_w - 25 }
+			, sat    : { tl: sat_tl, w : canvas_w - 110 }
+			, tl     : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
+				  hue : { x: base_xy.x,                  y: base_xy.y }
+				, sat : { x: base_xy.x + sat_tl, y: base_xy.y + sat_tl }
+			}
+		}
+		var ctx         = V.color.ctx;
+		ctx.fillStyle   = '#000';
 		ctx.beginPath();
 		ctx.arc( V.color.canvas.c, V.color.canvas.c, V.color.hue.r, 0, 2 * Math.PI ); // hue cutout
 		ctx.fill();
 		COLOR.gradient(); // sat box
-
-		var b, g, k, pb, pg, pr, r, rgb, v, x, y;
-		var l         = V.color.hsl.l / 100;
-		var a         = V.color.hsl.s / 100 * Math.min( l, 1 - l );
-		[ r, g, b ]   = ( () => { // hsl > rgb
+		var l           = V.color.hsl.l / 100;
+		var a           = V.color.hsl.s / 100 * Math.min( l, 1 - l );
+		var k, rgb, v;
+		var [ r, g, b ] = ( () => { // hsl > rgb
 			rgb = [];
 			[ 0, 8, 4 ].forEach( n => {
 				k = ( n + V.color.hsl.h / 30 ) % 12;
@@ -254,20 +249,18 @@ var COLOR = {
 			} );
 			return rgb
 		} )();
+		var sat_br      = sat_tl + sat_w;
+		var pb, pg, pr;
 		match:
-		for ( y = V.color.sat.tl; y < V.color.sat.br; y++ ) { // find pixel with rgb +/- 1
-			for ( x = V.color.sat.tl; x < V.color.sat.br; x++ ) {
+		for ( var y = V.color.sat.tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
+			for ( var x = V.color.sat.tl; x < sat_br; x++ ) {
 				[ pr, pg, pb ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
 				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 					COLOR.satPoint( x, y );
+					$( '#hue' ).css( 'transform', 'rotate( '+ V.color.hsl.h +'deg )' );
 					break match;
 				}
 			}
-		}
-		var base_xy = $( '#base' )[ 0 ].getBoundingClientRect();
-		V.color.tl  = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
-			  hue : { x: base_xy.x,                  y: base_xy.y }
-			, sat : { x: base_xy.x + V.color.sat.tl, y: base_xy.y + V.color.sat.tl }
 		}
 	}
 	, remove : () => {
