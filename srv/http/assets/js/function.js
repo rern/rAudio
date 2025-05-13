@@ -223,17 +223,18 @@ var COLOR     = {
 	}
 	, picker : () => {
 		var canvas_w    = 230;
-		var sat_w       = canvas_w - 110;
+		var canvas_c    = canvas_w / 2;
+		var hue_r       = 95;
+		var sat_w       = 120;
 		var sat_tl      = ( canvas_w - sat_w ) / 2;
 		var sat_br      = sat_tl + sat_w;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		var [ ty, tx ]  = Object.values( $( '#base' ).offset() );
 		V.color         = {
 			  ...V.color
-			, canvas : { w: canvas_w, c: canvas_w / 2 }
+			, canvas : { w: canvas_w, c: canvas_c }
 			, ctx    : COLOR.wheel( '#base' )
 			, hsl    : { h, s, l }
-			, hue    : { r: sat_w - 25 }
 			, sat    : { tl: sat_tl, w: sat_w }
 			, tl     : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,          y: ty }
@@ -243,7 +244,7 @@ var COLOR     = {
 		var ctx         = V.color.ctx;
 		ctx.fillStyle   = '#000';
 		ctx.beginPath();
-		ctx.arc( V.color.canvas.c, V.color.canvas.c, V.color.hue.r, 0, 2 * Math.PI ); // hue cutout
+		ctx.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI ); // hue cutout
 		ctx.fill();
 		ctx.translate( sat_tl, sat_tl );
 		COLOR.pick.gradient(); // sat box
