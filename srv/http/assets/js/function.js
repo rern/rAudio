@@ -167,15 +167,16 @@ var COLOR = {
 	}
 	, pick   : {
 		  gradient : () => {
-			var c = V.color.ctx;
-			var w = V.color.sat.w;
-			for( var i = 0; i <= w; i++ ){                                         // each line
-				var gradient = c.createLinearGradient( 0, 0, w, 0 );             // 0                  ---               width
-				var iy       = i / w * 100;
-				gradient.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                     // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
-				gradient.addColorStop( 1, 'hsl('+ V.color.hsl.h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
-				c.fillStyle = gradient;
-				c.fillRect( 0, w - i, w, 1 );
+			var ctx = V.color.ctx;
+			var h   = V.color.hsl.h;
+			var w   = V.color.sat.w;
+			for( var i = 0; i <= w; i++ ){                                     // each line
+				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
+				var iy        = i / w * 100;
+				grad.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                 // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
+				grad.addColorStop( 1, 'hsl('+ h +',100%,'+ ( iy / 2 ) +'%)' ); // hsl( 0, 0%, 100% ) --- hsl( h, 100%, 50% )
+				ctx.fillStyle = grad;
+				ctx.fillRect( 0, w - i, w, 1 );
 			}
 		}
 		, hue      : ( x, y ) => {
@@ -195,18 +196,18 @@ var COLOR = {
 				.removeClass( 'hide' );
 		}
 		, sat      : ( x, y ) => {
-			x    += V.color.sat.tl;
-			y    += V.color.sat.tl;
-			var b, d, f, g, m, r;
-			[ r, g, b ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
+			x += V.color.sat.tl;
+			y += V.color.sat.tl;
+			var d, f, m;
+			var [ r, g, b ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
 			if ( r + g + b === 0 ) return
 			 // rgb > s l
-			r    /= 255;
-			g    /= 255;
-			b    /= 255;
-			m     = Math.max( r, g, b );
-			d     = m - Math.min( r, g, b );
-			f     = 1 - Math.abs( m + m - d - 1 ); 
+			r /= 255;
+			g /= 255;
+			b /= 255;
+			m  = Math.max( r, g, b );
+			d  = m - Math.min( r, g, b );
+			f  = 1 - Math.abs( m + m - d - 1 ); 
 			V.color.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
 			V.color.hsl.s = f ? Math.round( d / f * 100 ) : 0;
 			COLOR.set( V.color.hsl );
@@ -224,6 +225,7 @@ var COLOR = {
 		var canvas_w    = 230;
 		var sat_w       = canvas_w - 110;
 		var sat_tl      = ( canvas_w - sat_w ) / 2;
+		var sat_br      = sat_tl + sat_w;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		var [ ty, tx ]  = Object.values( $( '#base' ).offset() );
 		V.color         = {
@@ -232,7 +234,7 @@ var COLOR = {
 			, ctx    : COLOR.wheel( '#base' )
 			, hsl    : { h, s, l }
 			, hue    : { r: sat_w - 25 }
-			, sat    : { w: sat_w }
+			, sat    : { tl: sat_tl, w: sat_w }
 			, tl     : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,          y: ty }
 				, sat : { x: tx + sat_tl, y: ty + sat_tl }
@@ -257,7 +259,6 @@ var COLOR = {
 			} );
 			return rgb
 		} )();
-		var sat_br      = sat_tl + sat_w;
 		var pb, pg, pr;
 		match:
 		for ( var y = sat_tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
