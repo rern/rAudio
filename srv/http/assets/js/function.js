@@ -167,9 +167,9 @@ var COLOR     = {
 	}
 	, pick   : {
 		  gradient : () => {
-			var ctx = V.color.ctx;
-			var h   = V.color.hsl.h;
-			var w   = V.color.sat.w;
+			var ctx = V.ctx.context;
+			var h   = V.ctx.hsl.h;
+			var w   = V.ctx.sat.w;
 			for( var i = 0; i <= w; i++ ){                                     // each line
 				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
 				var iy        = i / w * 100;
@@ -180,26 +180,29 @@ var COLOR     = {
 			}
 		}
 		, hue      : ( x, y ) => {
-			var c   = V.color.canvas.c;
-			var rad = Math.atan2( x - c, y - c );
-			var h   = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
-			$( '#hue' )
-				.css( 'transform', 'rotate( '+ h +'deg )' )
-				.toggleClass( 'dark', h > 45 && h < 180 );
-			V.color.hsl.h = h;
+			var c       = V.ctx.canvas.c;
+			var rad     = Math.atan2( x - c, y - c );
+			var h       = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
+			V.ctx.hsl.h = h;
+			COLOR.pick.rotate( h );
 			COLOR.pick.gradient();
-			COLOR.set( V.color.hsl );
+			COLOR.set( V.ctx.hsl );
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
 				.css( { left: ( x - 5 ) +'px', top: ( y - 5 ) +'px' } )
 				.removeClass( 'hide' );
 		}
+		, rotate   : h => {
+			$( '#hue' )
+				.css( 'transform', 'rotate( '+ h +'deg )' )
+				.toggleClass( 'dark', h > 45 && h < 180 );
+		}
 		, sat      : ( x, y ) => {
-			x += V.color.sat.tl;
-			y += V.color.sat.tl;
+			x += V.ctx.sat.tl;
+			y += V.ctx.sat.tl;
 			var d, f, m;
-			var [ r, g, b ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
+			var [ r, g, b ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 			if ( r + g + b === 0 ) return
 			 // rgb > s l
 			r /= 255;
@@ -208,20 +211,55 @@ var COLOR     = {
 			m  = Math.max( r, g, b );
 			d  = m - Math.min( r, g, b );
 			f  = 1 - Math.abs( m + m - d - 1 ); 
-			V.color.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
-			V.color.hsl.s = f ? Math.round( d / f * 100 ) : 0;
-			COLOR.set( V.color.hsl );
-			V.color.sat.x = x;
-			V.color.sat.y = y;
+			V.ctx.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
+			V.ctx.hsl.s = f ? Math.round( d / f * 100 ) : 0;
+			COLOR.set( V.ctx.hsl );
+			V.ctx.sat.x = x;
+			V.ctx.sat.y = y;
+		}
+		, set      : () => {
+			COLOR.pick.gradient(); // sat box
+			var l = V.ctx.hsl.l / 100;
+			var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
+			var k, rgb, v;
+			var [ r, g, b ] = ( () => { // hsl > rgb
+				rgb = [];
+				[ 0, 8, 4 ].forEach( n => {
+					k = ( n + V.ctx.hsl.h / 30 ) % 12;
+					v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
+					rgb.push( Math.round( v * 255 ) );
+				} );
+				return rgb
+			} )();
+			var br = V.ctx.sat.br
+			var tl = V.ctx.sat.tl;
+			var h  = V.ctx.hsl.h;
+			var pb, pg, pr;
+			match:
+			for ( var y = tl; y < br; y++ ) { // find pixel with rgb +/- 1
+				for ( var x = tl; x < br; x++ ) {
+					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
+					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
+						COLOR.pick.rotate( h );
+						COLOR.pick.point( x, y );
+						break match;
+					}
+				}
+			}
 		}
 		, xy       : ( e, hue_sat, clear ) => {
 			if ( clear ) $( '#sat' ).addClass( 'hide' )
-			var x = e.offsetX || e.changedTouches[ 0 ].pageX - V.color.tl[ hue_sat ].x;
-			var y = e.offsetY || e.changedTouches[ 0 ].pageY - V.color.tl[ hue_sat ].y;
+			var x = e.offsetX || e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
+			var y = e.offsetY || e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
 			COLOR.pick[ hue_sat ]( x, y );
 		}
 	}
 	, picker : () => {
+		if ( V.ctx ) {
+			COLOR.pick.set();
+			return
+		}
+		
 		var canvas_w    = 230;
 		var canvas_c    = canvas_w / 2;
 		var hue_r       = 95;
@@ -230,48 +268,24 @@ var COLOR     = {
 		var sat_br      = sat_tl + sat_w;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		var [ ty, tx ]  = Object.values( $( '#base' ).offset() );
-		V.color         = {
-			  ...V.color
-			, canvas : { w: canvas_w, c: canvas_c }
-			, ctx    : COLOR.wheel( '#base' )
-			, hsl    : { h, s, l }
-			, sat    : { tl: sat_tl, w: sat_w }
-			, tl     : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
+		V.ctx           = {
+			  canvas  : { w: canvas_w, c: canvas_c }
+			, context : COLOR.wheel( '#base' )
+			, hsl     : { h, s, l }
+			, hsl0    : { h, s, l } // for #colorcancel
+			, sat     : { br: sat_br, tl: sat_tl, w: sat_w }
+			, tl      : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,          y: ty }
 				, sat : { x: tx + sat_tl, y: ty + sat_tl }
 			}
 		}
-		var ctx         = V.color.ctx;
+		var ctx         = V.ctx.context;
 		ctx.fillStyle   = '#000';
 		ctx.beginPath();
 		ctx.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI ); // hue cutout
 		ctx.fill();
 		ctx.translate( sat_tl, sat_tl );
-		COLOR.pick.gradient(); // sat box
-		var l           = V.color.hsl.l / 100;
-		var a           = V.color.hsl.s / 100 * Math.min( l, 1 - l );
-		var k, rgb, v;
-		var [ r, g, b ] = ( () => { // hsl > rgb
-			rgb = [];
-			[ 0, 8, 4 ].forEach( n => {
-				k = ( n + V.color.hsl.h / 30 ) % 12;
-				v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
-				rgb.push( Math.round( v * 255 ) );
-			} );
-			return rgb
-		} )();
-		var pb, pg, pr;
-		match:
-		for ( var y = sat_tl; y < sat_br; y++ ) { // find pixel with rgb +/- 1
-			for ( var x = sat_tl; x < sat_br; x++ ) {
-				[ pr, pg, pb ] = V.color.ctx.getImageData( x, y, 1, 1 ).data;
-				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
-					COLOR.pick.point( x, y );
-					$( '#hue' ).css( 'transform', 'rotate( '+ V.color.hsl.h +'deg )' );
-					break match;
-				}
-			}
-		}
+		COLOR.pick.set();
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
 	, set    : hsl => {

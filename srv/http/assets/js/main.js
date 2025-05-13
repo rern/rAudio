@@ -1728,7 +1728,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 } );
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {
-	COLOR.save( V.color.hsl );
+	COLOR.save( V.ctx.hsl );
 	COLOR.hide();
 } );
 $( '#colorreset' ).on( 'click', function() {
@@ -1738,6 +1738,7 @@ $( '#colorreset' ).on( 'click', function() {
 } );
 $( '#colorcancel' ).on( 'click', function() {
 	COLOR.hide();
+	V.ctx.hsl = V.ctx.hsl0;
 	$( 'html' ).removeAttr( 'style' );
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();
@@ -1757,7 +1758,7 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	if ( ! V.hue ) return
 	
 	V.hue = false;
-	if ( V.color.hsl.h < 0 ) V.color.hsl.h += 360;
+	if ( V.ctx.hsl.h < 0 ) V.ctx.hsl.h += 360;
 	$( '#pickhue' ).css( 'border-radius', '' );
 	$( '#picknone, #picksat' ).removeClass( 'hide' );
 } );
@@ -1774,12 +1775,12 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 		if ( V.satout ) V.satout = false;
 	} else {
 		V.satout = true;
-		COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+		COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
 	}
 } ).on( 'mousemove', e => {
 	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
-	if ( V.sat ) COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+	if ( V.sat ) COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
 } ).on( 'mouseenter', () => {
 	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
 } );
@@ -1787,7 +1788,7 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 	if ( ! V.sat ) return
 	
 	V.sat = false;
-	COLOR.pick.point( V.color.sat.x, V.color.sat.y );
+	COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
