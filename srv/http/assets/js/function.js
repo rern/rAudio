@@ -287,16 +287,16 @@ var COLOR = {
 		$( ':root' ).css( css );
 	}
 	, wheel  : el => { // for picker and color menu
-		var canvas   = $( el )[ 0 ];
-		var ctx      = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );
-		var canvas_c = canvas.width / 2;
-		for ( var i = 0; i < 360; i += 0.25 ) {
-			var rad         = i * Math.PI / 180;
-			ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
+		var canvas  = $( el )[ 0 ];
+		var ctx     = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );
+		var c       = canvas.width / 2;
+		var deg_rad = Math.PI / 180;
+		for ( var i = 0; i < 360; i += 0.5 ) {
 			ctx.beginPath();
-			ctx.moveTo( canvas_c, canvas_c );
-			ctx.lineTo( canvas_c + canvas_c * Math.cos( rad ), canvas_c + canvas_c * Math.sin( rad ) );
-			ctx.stroke();
+			ctx.moveTo( c, c );
+			ctx.arc( c, c, c, i * deg_rad, ( i + 1 ) * deg_rad );
+			ctx.fillStyle = 'hsl('+ i +', 100%, 50%)';
+			ctx.fill();
 		}
 		return ctx // for picker
 	}
