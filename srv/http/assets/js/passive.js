@@ -9,8 +9,7 @@ W = {
 		
 		O.order        = data.order;
 		V.html.library = data.html;
-		var html       = UTIL.htmlHash( data.html );
-		$( '#lib-mode-list' ).html( html );
+		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
 	, cover     : data => {
@@ -32,8 +31,8 @@ W = {
 					var path0 = S.file.replace( /\//g, '|' ); // http://url                        > http:||url
 					var path1 = cover.slice( 19, -4 );        // /data/webradio/img/http:||url.ext > http:||url
 				} else {
-					var path0 = UTIL.dirName( S.file );            // dir/file.ext  > dir
-					var path1 = UTIL.dirName( cover );             // dir/cover.ext > dir
+					var path0 = UTIL.dirName( S.file );       // dir/file.ext  > dir
+					var path1 = UTIL.dirName( cover );        // dir/cover.ext > dir
 				}
 				data.current = path0 === path1;
 			}

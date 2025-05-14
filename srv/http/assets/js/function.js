@@ -1073,15 +1073,11 @@ var LIBRARY   = {
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
 			[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
-			if ( data.html !== V.html.library ) {
-				V.html.library = data.html;
-				var html       = UTIL.htmlHash( data.html );
-				$( '#lib-mode-list' ).html( html );
-			}
+			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
 				if ( V.librarylist ) V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
-				LIBRARY.home();
+				LIBRARY.home( data.html );
 			} else {
 				UTIL.switchPage( 'library' );
 				if ( S.updating_db ) BANNER( 'refresh-library blink', 'Library Database', 'Update ...' );
@@ -1089,7 +1085,7 @@ var LIBRARY   = {
 			if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 		}, 'json' );
 	}
-	, home       : () => { // V.libraryhome
+	, home       : html => { // V.libraryhome
 		V.libraryhome = true;
 		V.search      = false;
 		V.mode        = '';
@@ -1097,6 +1093,7 @@ var LIBRARY   = {
 		V.query       = [];
 		var title     = 'LIBRARY';
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
+		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) );
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
 			IMAGE.error( this, $( this ).prev().text() );
 		} );
@@ -1202,22 +1199,21 @@ var LIBRARY   = {
 	, order      : () => {
 		if ( O.order === false ) return
 		
+		$list = $( '#lib-mode-list' );
+		$bk   = $( '.mode.bookmark' );
 		O.order.forEach( mode => {
-			var $libmode = false;
 			if ( O.modes.includes( mode ) ) {
-				$libmode = $( '.mode.'+ mode );
+				$list.append( $( '.mode.'+ mode ) );
 			} else {
-				$( '.mode.bookmark' ).filter( ( i, el ) => {
+				$bk.filter( ( i, el ) => {
 					var $el = $( el );
 					var cl  = $el.hasClass( 'bkradio' ) ? '.name' : '.lipath';
 					if ( $el.find( cl ).text() === mode ) {
-						$libmode = $el;
+						$list.append( $el );
 						return false
 					}
 				} );
 			}
-			$libmode.detach();
-			$( '#lib-mode-list' ).append( $libmode );
 		} );
 	}
 	, padding    : coverartH => {
