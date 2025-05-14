@@ -233,15 +233,19 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
 				V.color = data;
 				$( 'body' ).css( 'overflow', 'hidden' );
-				$( '.page:not( .hide ) .list:not( .hide ) li' ).eq( 0 ).addClass( 'active' );
 				$( '#colorreset' ).toggleClass( 'hide', ! D.color );
 				$( '#colorok' ).toggleClass( 'disabled', ! D.color );
 				$( '#colorpicker' ).removeClass( 'hide' );
 				COLOR.picker();
+				if ( V.playlist && V.playlisthome ) return
+				
+				var $list = $( '.page:not( .hide ) .list:not( .hide )' );
 				if ( V.playback ) {
 					$( '#library' ).trigger( 'click' );
-				} else if ( V.library && V.libraryhome ) {
-					$( '.mode.webradio' ).trigger( 'click' );
+				} else if ( ! $list.find( '.li2' ).length ) {
+					$( V.library ? '.mode.webradio' : '#button-pl-back' ).trigger( 'click' );
+				} else {
+					$list.find( 'li:not( .licover )' ).eq( 0 ).addClass( 'active' );
 				}
 			}, 'json' );
 			break;
