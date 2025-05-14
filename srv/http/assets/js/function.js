@@ -196,12 +196,13 @@ var COLOR     = {
 		, point    : ( x, y ) => {
 			$( '#sat' )
 				.css( { left: ( x - 5 ) +'px', top: ( y - 5 ) +'px' } )
+				.toggleClass( 'dark', x < 80 && y < 80 )
 				.removeClass( 'hide' );
 		}
 		, rotate   : h => {
 			$( '#hue' )
 				.css( 'transform', 'rotate( '+ h +'deg )' )
-				.toggleClass( 'dark', h > 45 && h < 180 );
+				.toggleClass( 'dark', h > 45 && h < 190 );
 		}
 		, sat      : ( x, y ) => {
 			x += V.ctx.sat.tl;
