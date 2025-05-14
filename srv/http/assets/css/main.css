@@ -1867,8 +1867,7 @@ li.active .li2 bl {
 #wheel::after {
 	content: '';
 	display: block;
-	margin-left: 20px;
-	margin-top: 20px;
+	margin: 20px auto;
 	width: 190px;
 	height: 190px;
 }
