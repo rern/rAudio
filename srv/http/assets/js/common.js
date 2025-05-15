@@ -455,7 +455,7 @@ function INFO( json ) {
 				, width    : N
 			}*/
 			colspan  = param.colspan || 0;
-			width    = param.width && type !== 'select' ? ' style="width='+ param.width +'px"' : '';
+			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
@@ -928,8 +928,8 @@ var _INFO       = {
 				default: // hidden, select
 					val = $this.val();
 			}
-			if ( val === '0' ) val = 0;
-			if ( typeof val !== 'string'                    // boolean
+			if ( type === 'text'
+				|| typeof val !== 'string'                  // boolean
 				|| val === ''                               // empty
 				|| isNaN( val )                             // Not a Number 
 				|| ( val[ 0 ] === '0' && val[ 1 ] !== '.' ) // '0123' not 0.123
@@ -974,7 +974,7 @@ var _INFO       = {
 		}
 		$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
 			var $el = $( el );
-			if ( ! $el.attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
+			if ( ! $el.attr( 'style' ) && ! $el.parent().attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
 		} );
 		if ( I.headeralign || I.messagealign || I.footeralign ) {
 			$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
