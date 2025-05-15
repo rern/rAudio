@@ -765,6 +765,7 @@ webradioadd )
 	file+="$DIR/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 # --------------------------------------------------------------------
+	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	echo "\
 $NAME
 
@@ -781,16 +782,16 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	newurlname=${NEWURL//\//|}
-	urlname=${URL//\//|}
+	newurlname=${URL//\//|}
+	urlname=${OLDURL//\//|}
 	newfile="$DIR/$newurlname"
 	prevfile="$DIR/$urlname"
-	if [[ $NEWURL == $URL ]]; then
+	if [[ $URL == $OLDURL ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 # --------------------------------------------------------------------
-		webradioM3uPlsVerify $NEWURL
+		webradioM3uPlsVerify $URL
 		rm "$prevfile"
 		# stationcover
 		imgurl="$dirwebradio/img/$urlname"
@@ -805,6 +806,7 @@ webradioedit )
 			[[ ! $( find $dirwebradio -name "$urlname" ) ]] && rm -f "$imgurl".* "$thumb"
 		fi
 	fi
+	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	echo "\
 $NAME
 $sampling

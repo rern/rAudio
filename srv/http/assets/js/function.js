@@ -2618,23 +2618,7 @@ var VOLUME    = {
 	}
 }
 var WEBRADIO  = {
-	  button : () => {
-		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );
-		$( '#infoList input' ).last().css( 'width', '' );
-		$( '#infoList td' ).last()
-			.css( { 'text-align': 'right', cursor: 'pointer' } )
-			.on( 'click', function() {
-				INFO( {
-					  icon       : 'webradio'
-					, title      : 'Add New Folder'
-					, list       : [ 'Name', 'text' ]
-					, checkblank : true
-					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-					, ok         : () => BASH( [ 'dirnew', $( '#lib-path' ).text() +'/'+ _INFO.val(), 'CMD DIR' ] )
-				} );
-			} );
-	}
-	, exists : ( error, name, url, charset ) => {
+	  exists : ( error, name, url, charset ) => {
 		INFO( {
 			  icon    : 'webradio'
 			, title   : 'Add Web Radio'
@@ -2646,9 +2630,11 @@ var WEBRADIO  = {
 	, list   : [
 		  [ 'Name',    'text', { colspan: 3 } ]
 		, [ 'URL',     'text', { colspan: 3 } ]
-		, [ 'Charset', 'text', { sameline: true } ]
+		, [ 'Charset', 'text', { sameline: true, width: 190 } ]
 		, [ '',        '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ICON( 'help gr' ), { sameline: true } ]
 		, [ '',        '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' ]
+		, [ '',        'hidden' ] // DIR
+		, [ '',        'hidden' ] // OLDURL
 	]
 	, new    : ( name, url, charset ) => {
 		INFO( {
@@ -2656,21 +2642,34 @@ var WEBRADIO  = {
 			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 			, boxwidth   : 'max'
 			, list       : WEBRADIO.list
-			, values     : [ name, url, charset || 'UTF-8' ]
+			, values     : {
+				  NAME    : name
+				, URL     : url
+				, CHARSET : charset || 'UTF-8'
+				, DIR     : $( '#lib-path' ).text()
+			}
 			, checkblank : [ 0, 1 ]
 			, beforeshow : () => {
-				WEBRADIO.button()
 				if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
+				$( '#infoList tr:eq( 2 ) td' ).last()
+					.css( { 'text-align': 'right', cursor: 'pointer' } )
+					.on( 'click', function() {
+						INFO( {
+							  icon       : 'webradio'
+							, title      : 'Add Folder'
+							, list       : [ 'Name', 'text' ]
+							, checkblank : true
+							, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
+							, ok         : () => BASH( [ 'dirnew', $( '#lib-path' ).text() +'/'+ _INFO.val(), 'CMD DIR' ] )
+						} );
+					} );
 			}
 			, ok         : () => {
-				var values  = _INFO.val();
-				var name    = values[ 0 ];
-				var url     = values[ 1 ];
-				var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
-				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) BANNER( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
-				BASH( [ 'webradioadd', $( '#lib-path' ).text(), name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
+				var val = _INFO.val();
+				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) BANNER( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
+				BASH( COMMON.cmd_json2args( 'webradioadd', val ), error => {
 					BANNER_HIDE();
-					if ( error ) WEBRADIO.exists( error, name, url, charset );
+					if ( error ) WEBRADIO.exists( error, val.NAME, val.URL, val.CHARSET );
 				} );
 			}
 		} );

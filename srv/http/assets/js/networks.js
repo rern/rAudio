@@ -238,7 +238,7 @@ var SETTING = {
 				var val  = _INFO.val();
 				$li.find( 'i' ).addClass( 'blink' );
 				NOTIFY( icon, title, 'Change ...' );
-				BASH( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], result => {
+				BASH( COMMON.cmd_json2args( 'lanedit', val ), result => {
 					changeIp( result, icon, title, val, SETTING.lan );
 				} );
 				changeIpSwitch( val.ADDRESS );

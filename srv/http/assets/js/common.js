@@ -986,6 +986,7 @@ var _INFO       = {
 
 var COMMON      = {
 	  capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
+	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
 		var pos   = msg.replace( /.* position /, '' );
 		if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );

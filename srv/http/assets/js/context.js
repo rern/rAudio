@@ -312,13 +312,13 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
-					var infoval  = _INFO.val();
-					$.each( infoval, ( k, v ) => {
-						if ( values[ k ] === v ) delete infoval[ k ];
+					var val  = _INFO.val();
+					$.each( val, ( k, v ) => {
+						if ( values[ k ] === v ) delete val[ k ];
 					} );
-					infoval.FILE = file;
+					val.FILE = file;
 					BANNER( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-					BASH( [ 'tageditor.sh', 'edit', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
+					BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
 				}
 			} );
 		}, 'json' );
@@ -492,25 +492,28 @@ var CONTEXT  = {
 			, title        : 'Edit Web Radio'
 			, message      : '<img src="'+ ( $LI.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
 			, list         : WEBRADIO.list
-			, values       : [ V.list.name, V.list.path, $LI.data( 'charset' ) || 'UTF-8' ]
+			, values       : {
+				  NAME    : V.list.name
+				, URL     : V.list.path
+				, CHARSET : $LI.data( 'charset' ) || 'UTF-8'
+				, DIR     : $( '#lib-path' ).text()
+				, OLDURL  : V.list.path
+			}
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
 			, boxwidth     : 'max'
 			, beforeshow   : () => {
+				$( '#infoList tr:eq( 2 ) td' ).last().addClass( 'hide' );
 				if ( /stream.radioparadise.com|icecast.radiofrance.fr/.test( V.list.path ) ) {
+					$( '#infoList input' ).eq( 1 ).addClass( 'disabled' );
 					$( '#infoList tr' ).eq( 2 ).addClass( 'hide' );
-				} else {
-					WEBRADIO.button();
 				}
 			}
 			, oklabel      : ICON( 'save' ) +'Save'
 			, ok           : () => {
-				var values  = _INFO.val();
-				var name    = values[ 0 ];
-				var newurl  = values[ 1 ];
-				var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
-				BASH( [ 'webradioedit', $( '#lib-path' ).text(), name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
-					if ( error ) WEBRADIO.exists( error, '', newurl );
+				var val = _INFO.val();
+				BASH( COMMON.cmd_json2args( 'webradioedit', val ), error => {
+					if ( error ) WEBRADIO.exists( error, '', val.URL );
 				} );
 			}
 		} );
