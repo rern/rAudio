@@ -235,7 +235,7 @@ W          = {  // ws push
 			$( '#infoX' ).trigger( 'click' );
 			if ( ! PAGE ) {
 				$( '#relays' ).toggleClass( 'on', S.relayson );
-				$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+				$( ( $TIME.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
 			}
 		}
 		if ( 'done' in data ) {
