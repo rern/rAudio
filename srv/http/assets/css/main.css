@@ -1855,9 +1855,13 @@ li.active .li2 bl {
 	box-shadow: var( --shadow-bar );
 	text-shadow: var( --shadow-btn );
 }
+#hue,
+#pickhue,
 #wheel {
 	width: 230px;
 	height: 230px;
+}
+#wheel {
 	border-radius: 50%;
 	border: 1px solid #000;
 	box-shadow: var( --shadow-bar );
@@ -1872,27 +1876,20 @@ li.active .li2 bl {
 	border: 2px solid #000;
 }
 #hue div {
-	margin-left: 210px;
-	margin-top: 105px;
-	width: 20px;
-	height: 20px;
+	right: -1px;
+	top: 104px;
+	width: 22px;
+	height: 22px;
 	border: 2px solid #fff;
 	border-radius: 50%;
-}
-#hue.dark div,
-#sat.dark {
-	border-color: #000;
-}
-#hue,
-#pickhue {
-	width: 230px;
-	height: 230px;
+	box-shadow: 0 0 4px 1px #000;
 }
 #sat {
 	width: 10px;
 	height: 10px;
-	border: 2px solid #fff;
+	border: 1px solid #fff;
 	border-radius: 50%;
+	box-shadow: 0 0 2px 1px #666;
 }
 #picknone {
 	margin: 20px;
@@ -1910,11 +1907,10 @@ li.active .li2 bl {
 #picksat {
 	border-radius: 50%;
 	z-index: 1;
-	cursor: crosshair;
 }
-#colorcancel,
-#picknone {
-	cursor: default;
+#pickhue,
+#picksat {
+	cursor: crosshair;
 }
 #picksat {
 	border-radius: unset;
