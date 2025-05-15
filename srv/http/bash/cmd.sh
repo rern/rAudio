@@ -312,13 +312,15 @@ coverfileslimit )
 	;;
 dirdelete )
 	dir="$DIR/$NAME"
-	[[ ! $CONFIRM && $( ls "$dir" ) ]] && echo -1 && exit
+	lsdir=$( ls "$dir" )
+	[[ ! $CONFIRM && $lsdir ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	stations=$( find "$dir" -type f -exec basename {} \; )
 	rm -rf "$dir"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
-	pushRadioList
+	pushData radiolist '{ "dirdelete": "'$DIR'", "name": "'$NAME'" }'
+	[[ $lsdir ]] && webradioCount
 	while read s; do
 		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
 		

@@ -186,12 +186,27 @@ W = {
 		$( '.mode.playlists gr' ).text( count ? count.toLocaleString() : '' );
 	}
 	, radiolist : data => {
+		if ( 'dirdelete' in data ) {
+			var path = $( '#lib-path' ).text();
+			if ( path === data.dirdelete +'/'+ data.name ) {
+				$( '#button-lib-back' ).trigger( 'click' );
+			} else if ( path === data.dirdelete ) {
+				$( '#lib-list li' ).each( ( i, el ) => {
+					var $el = $( el );
+					if ( $el.find( '.lipath' ).text() === data.name ) $el.remove();
+				} );
+			}
+			return
+		}
+		
 		if ( 'count' in data ) {
 			var count      = data.count;
 			C[ data.type ] = count;
 			$( '.mode.'+ data.type +' gr' ).text( count ? count.toLocaleString() : '' );
 		}
 		if ( V.library ) {
+			if ( ! V.query ) return // dirdelete - back 1 level
+			
 			if ( V.librarylist && V.mode === data.type ) {
 				if ( V.query.length === 1 ) {
 					$( '.mode.'+ V.mode ).trigger( 'click' );
