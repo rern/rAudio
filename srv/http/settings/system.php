@@ -358,10 +358,6 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
-	    'HTML5-Color-Picker'
-	  , 'A scaleable color picker implemented using HTML5'
-	  , 'https://github.com/NC22/HTML5-Color-Picker'
-	],[
 	    'Inconsolata font'
 	  , 'A monospace font designed for printed code listings and the like'
 	  , 'https://fonts.google.com/specimen/Inconsolata'

@@ -84,12 +84,11 @@ case 'findartist': // artist, albumartist
 	}
 	sortList( $array );
 	foreach( $array as $each ) {
-		$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 		$dataindex = dataIndex( $each->sort );
 		$path      = $each->path;
 		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$html     .= '
-<li data-mode="'.$mode.'"'.$dataindex.'>
+<li data-mode="lsmode"'.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>

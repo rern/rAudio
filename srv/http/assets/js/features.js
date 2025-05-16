@@ -1,29 +1,29 @@
 /*
-switch - setting icon: ID in config
+switch - setting icon: ID in CONFIG
 	- hide        : S.ID === false
 	- always show : S.ID !== false                    (configuration mixer timezone)
-ID in config   : info() >> enable          >> disable
-! ID in config :        >> enable          >> disable
+ID in CONFIG   : info() >> enable          >> disable
+! ID in CONFIG :        >> enable          >> disable
 _prompt        : info() >> enable          >> disable (backup i2s novolume restore shareddata)
 _disable       :        >> enable - info() >> disable (login mixertype novolume shareddata)
 */
-var config       = {
+var CONFIG       = {
 	  _disable     : {
 		login : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, message    : 'Disable:'
 				, list       : [ 'Password', 'password' ]
 				, checkblank : true
-				, cancel     : switchCancel
+				, cancel     : SWITCH.cancel
 				, ok         : () => {
-					notifyCommon( false );
+					NOTIFY_COMMON( false );
 					$.post( 'cmd.php', {
 						  cmd     : 'login'
 						, disable : true
-						, pwd     : infoVal()
+						, pwd     : _INFO.val()
 					}, verified => {
-						if ( verified == -1 ) util.passwordWrong();
+						if ( verified == -1 ) UTIL.passwordWrong();
 					} );
 				}
 			} );
@@ -31,10 +31,10 @@ var config       = {
 	}
 	, _prompt      : {}
 	, ap           : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, message      : '<wh>Wi-Fi</wh> is currently connected to:'
-							+'<br>'+ ico( 'wifi gr' ) +' <wh>'+ S.ssid +'</wh>'
+							+'<br>'+ ICON( 'wifi gr' ) +' <wh>'+ S.ssid +'</wh>'
 							+'<br><br>Enable and disconnect?'
 			, list         : [
 				  [ 'SSID',     'text' ]
@@ -51,7 +51,7 @@ var config       = {
 			, checkblank   : true
 			, checkip      : [ 1 ]
 			, checklength  : { 2: [ 8, 'min' ] }
-			, cancel       : switchCancel
+			, cancel       : SWITCH.cancel
 			, ok           : () => {
 				if ( S.ssid && $( '.infomessage' ).hasClass( 'hide' ) ) {
 					I.oknoreset = true;
@@ -59,13 +59,13 @@ var config       = {
 					$( '.infomessage' ).removeClass( 'hide' );
 				} else {
 					I.oknoreset = false;
-					switchEnable();
+					SWITCH.enable();
 				}
 			}
 		} );
 	}
 	, autoplay     : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Bluetooth connected',        'checkbox' ]
@@ -73,22 +73,22 @@ var config       = {
 			]
 			, values       : values
 			, checkchanged : S.autoplay
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
 	, dabradio     : () => {
 		if ( S.dabradio ) {
-			infoDabScan();
+			COMMON.dabScan();
 		} else {
-			notifyCommon( true );
-			bash( [ SW.id ] );
+			NOTIFY_COMMON( true );
+			BASH( [ SW.id ] );
 		}
 	}
 	, localbrowser : data => {
 		var rotate = { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 }
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Rotation',                  'select', { kv: rotate, nosort : true, colspan : 2, width : 120 } ]
@@ -99,7 +99,7 @@ var config       = {
 				, [ '',                          'checkbox' ]
 				, [ '',                          'checkbox' ]
 			]
-			, footer       : infoFooterIcon( {
+			, footer       : _INFO.footerIcon( {
 				  Reload     : 'reload'
 				, Screenoff  : 'screenoff'
 				, Brightness : 'brightness'
@@ -126,29 +126,29 @@ var config       = {
 				$span.on( 'click', function() {
 					var i = $( this ).index();
 					if ( i === 0 ) {
-						ws.send( '{ "channel": "reload", "data": 1 }' );
-						banner( SW.icon, SW.title, 'Reloaded.' );
+						WS.send( '{ "channel": "reload", "data": 1 }' );
+						BANNER( SW.icon, SW.title, 'Reloaded.' );
 					} else if ( i === 1 ) {
-						bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
+						BASH( [ 'screentoggle' ], onoff => BANNER( SW.icon, SW.title, onoff ) );
 					} else {
-						info( {
+						INFO( {
 							  ...SW
 							, list        : [ 'Brightness', 'range' ]
 							, values      : data.brightness
 							, beforeshow  : () => {
 								$( '#infoList input' ).on( 'input', function() {
-									bash( [ 'brightness', +this.value, 'CMD VAL' ] )
+									BASH( [ 'brightness', +this.value, 'CMD VAL' ] )
 								} );
 							}
 							, okno        : true
 						} );
-						switchCancel();
+						SWITCH.cancel();
 					}
 				} );
 			}
-			, cancel       : switchCancel
+			, cancel       : SWITCH.cancel
 			, ok           : () => {
-				var v          = infoVal();
+				var v          = _INFO.val();
 				var values     = data.values;
 				var $r_changed = $( '#infoList input' ).eq( 4 );
 				var $restart   = $( '#infoList input' ).eq( 5 );
@@ -158,13 +158,13 @@ var config       = {
 				} else {
 					if ( v.ZOOM !== values.ZOOM || v.CURSOR !== values.CURSOR ) $restart.prop( 'checked', true );
 				}
-				switchEnable();
+				SWITCH.enable();
 			}
 			, fileconf     : true
 		} );
 	}
 	, login        : () => {
-		info( {
+		INFO( {
 			  ...SW
 			, list       : [
 				  [ S.login ? 'Existing' : 'Password', 'password' ]
@@ -174,17 +174,17 @@ var config       = {
 			, footer     : S.login ? '(<wh>New</wh> = (blank) - No password change)' : ''
 			, checkblank : [ 0 ]
 			, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
-			, cancel     : switchCancel
+			, cancel     : SWITCH.cancel
 			, ok         : () => {
-				notifyCommon();
-				$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
-					if ( verified == -1 ) util.passwordWrong();
+				NOTIFY_COMMON();
+				$.post( 'cmd.php', { cmd: 'login', ..._INFO.val() }, verified => {
+					if ( verified == -1 ) UTIL.passwordWrong();
 				} );
 			}
 		} );
 	}
 	, lyrics       : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'URL',             'text' ]
@@ -197,8 +197,8 @@ var config       = {
 			, values       : values
 			, checkchanged : S.lyrics
 			, checkblank   : true
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
@@ -219,12 +219,12 @@ var config       = {
 			var iL     = values.length / 2 - 1;
 		} else {
 			list.push( listname, listip, listname, listip );
-			values     = [ S.hostname, S.ip, '', ipSub( S.ip ) ];
+			values     = [ S.hostname, S.ip, '', COMMON.ipSub( S.ip ) ];
 		}
 		function checkIpList( ar ) {
 			return [ ...Array( ar.length ).keys() ].filter( ( i, el ) => el % 2 )
 		}
-		info( {
+		INFO( {
 			  ...SW
 			, list         : list
 			, boxwidth     : 160
@@ -237,11 +237,11 @@ var config       = {
 				$( '#infoList td' ).css( { width: '160px', 'text-align': 'left' } );
 				$( '#infoList td:last-child' ).css( 'width', '40px' );
 				$( '#infoList tr:first-child td' ).css( 'padding-left', '5px' );
-				infoListAddRemove( add => {
+				_INFO.addRemove( add => {
 					if ( add ) {
 						var $last = $( '#infoList input' ).slice( -2 );
 						$last.eq( 0 ).val( '' );
-						$last.eq( 1 ).val( ipSub( S.ip ) );
+						$last.eq( 1 ).val( COMMON.ipSub( S.ip ) );
 						$last.removeClass( 'disabled' );
 						$( '.edit' ).last().removeClass( 'hide' );
 					}
@@ -257,13 +257,13 @@ var config       = {
 					}
 				} );
 			}
-			, cancel       : switchCancel
+			, cancel       : SWITCH.cancel
 			, ok           : () => {
-				var infoval = infoVal();
+				var infoval = _INFO.val();
 				if ( infoval.length < 3 ) {
 					if ( S.multiraudio ) {
-						notifyCommon( 'Disable ...' );
-						bash( [ 'multiraudioreset' ] );
+						NOTIFY_COMMON( 'Disable ...' );
+						BASH( [ 'multiraudioreset' ] );
 					} else {
 						$( '#infoX' ).trigger( 'click' );
 					}
@@ -275,17 +275,17 @@ var config       = {
 				keys = Object.keys( val ).sort();
 				data = {}
 				keys.forEach( k => data[ k ] = val[ k ] );
-				notifyCommon();
-				jsonSave( 'multiraudio', data );
-				bash( [ 'multiraudio' ] );
+				NOTIFY_COMMON();
+				COMMON.json.save( 'multiraudio', data );
+				BASH( [ 'multiraudio' ] );
 			}
 		} );
 	}
 	, scrobble     : data => {
-		data.key ? util.scrobble.player( data.values ) : util.scrobble.key();
+		data.key ? UTIL.scrobble.player( data.values ) : UTIL.scrobble.key();
 	}
 	, smb          : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, message      : '<wh>Write</wh> permission:'
 			, list         : [
@@ -294,8 +294,8 @@ var config       = {
 			]
 			, values       : values
 			, checkchanged : S.smb
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
 	, snapclient   : () => {
@@ -303,22 +303,22 @@ var config       = {
 			if ( S.snapclientserver ) {
 				window.open( 'http://'+ S.ip +':1780', '_blank' );
 			} else {
-				infoSetting( 'snapclient', values => {
+				SETTING( 'snapclient', values => {
 					if ( values.length ) {
 						if ( values.length > 1 ) {
-							info( {
+							INFO( {
 								  ...SW
 								, message : 'Select server:'
 								, list    : [ '', 'radio', { kv: values } ]
 								, ok      : () => {
-									window.open( infoVal().replace( /.* /, 'http://' ) +':1780', '_blank' );
+									window.open( _INFO.val().replace( /.* /, 'http://' ) +':1780', '_blank' );
 								}
 							} );
 						} else {
 							window.open( values[ 0 ].replace( /.* /, 'http://' ) +':1780', '_blank' );
 						}
 					} else {
-						info( {
+						INFO( {
 							  ...SW
 							, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
 						} );
@@ -326,38 +326,38 @@ var config       = {
 				} );
 			}
 		} else {
-			notifyCommon( true );
-			bash( [ SW.id ] );
+			NOTIFY_COMMON( true );
+			BASH( [ SW.id ] );
 		}
 	}
 	, snapserver   : () => {
 		if ( S.snapserver ) {
 			window.open( 'http://'+ S.ip +':1780', '_blank' );
 		} else {
-			notifyCommon( true );
-			bash( [ SW.id ] );
+			NOTIFY_COMMON( true );
+			BASH( [ SW.id ] );
 		}
 	}
 	, spotifyd     : spotifykey => {
 		if ( ! S.spotifyd && spotifykey ) {
-			bash( [ 'spotifyd' ] );
-			notifyCommon( 'Enable ...' );
+			BASH( [ 'spotifyd' ] );
+			NOTIFY_COMMON( 'Enable ...' );
 		} else if ( spotifykey ) {
-			S.camilladsp ? util.spotify.keys() : util.spotify.output();
+			S.camilladsp ? UTIL.spotify.keys() : UTIL.spotify.output();
 		} else {
 			if ( navigator.userAgent.includes( 'Firefox' ) ) {
-				infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
+				_INFO.warning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
 				$( '#spotifyd' ).prop( 'checked', false );
 				return
 			}
 			
-			info( {
+			INFO( {
 				  ...SW
 				, list        : [
 					  [ 'ID',     'text' ]
 					, [ 'Secret', 'text' ]
 				]
-				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
+				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ICON( 'help help' )
 				, footeralign : 'right'
 				, boxwidth    : 320
 				, checklength : { 0: 32, 1: 32 }
@@ -367,17 +367,17 @@ var config       = {
 						$( '#infoX' ).trigger( 'click' );
 					} );
 				}
-				, cancel      : switchCancel
+				, cancel      : SWITCH.cancel
 				, ok          : () => {
-					var infoval = infoVal();
+					var infoval = _INFO.val();
 					var id      = infoval[ 0 ];
 					var secret  = infoval[ 1 ];
-					bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
+					BASH( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
 					var data    = {
 						  response_type : 'code'
 						, client_id     : id
 						, scope         : 'user-read-currently-playing user-read-playback-position'
-						, redirect_uri  : util.spotify.redirect
+						, redirect_uri  : UTIL.spotify.redirect
 						, state         : window.location.hostname
 					}
 					window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -386,7 +386,7 @@ var config       = {
 		}
 	}
 	, stoptimer    : data => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
@@ -395,14 +395,14 @@ var config       = {
 			, boxwidth     : 70
 			, values       : data.values
 			, checkchanged : data.active
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
 	, volumelimit  : values => {
 		var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Startup default', 'number', param ]
@@ -411,107 +411,107 @@ var config       = {
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.volumelimit
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
 }
-var util        = {
+var UTIL        = {
 	  passwordWrong : () => {
-		bannerHide();
-		info( {
+		BANNER_HIDE();
+		INFO( {
 			  ...SW
 			, message : 'Wrong existing password.'
 		} );
 		$( '#login' ).prop( 'checked', S.login );
 	}
-	, redirect : () => { // authorization: spotify, scrobble - from settings.js -  refreshData()
+	, redirect : () => { // authorization: spotify, scrobble - from settings.js -  REFRESHDATA()
 		var url   = new URL( window.location.href );
 		window.history.replaceState( '', '', '/settings.php?p=features' );
 		var token = url.searchParams.get( 'token' );
 		var code  = url.searchParams.get( 'code' );
 		var error = url.searchParams.get( 'error' );
 		if ( token ) {
-			bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
-				if ( error ) infoWarning( 'scrobble', 'Scrobbler', 'Authorization failed:<br>'+ error );
+			BASH( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
+				if ( error ) _INFO.warning( 'scrobble', 'Scrobbler', 'Authorization failed:<br>'+ error );
 			} );
 		} else if ( code ) {
-			bash( [ 'spotifytoken', code, util.spotify.redirect, 'CMD CODE REDIRECT' ] );
+			BASH( [ 'spotifytoken', code, UTIL.spotify.redirect, 'CMD CODE REDIRECT' ] );
 		} else if ( error ) {
-			infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
+			_INFO.warning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 		}
 	}
 	, scrobble : {
 		  key    : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, message : 'Open <wh>Last.fm</wh> for authorization?'
-				, cancel  : switchCancel
+				, cancel  : SWITCH.cancel
 				, ok      : () => { // api account page: https://www.last.fm/api/accounts
-					bash( [ 'lastfmkey' ], function( apikey ) {
+					BASH( [ 'lastfmkey' ], function( apikey ) {
 						location.href =  'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler?ip='+ location.host;
 					} );
 				}
 			} );
 		}
 		, player : values => {
-			info( {
+			INFO( {
 				  ...SW
 				, list         : [
-					  [ ico( 'airplay' ) +'AirPlay',        'checkbox' ]
-					, [ ico( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
-					, [ ico( 'spotify' ) +'Spotify',        'checkbox' ]
-					, [ ' '+ ico( 'upnp' ) +' UPnP / DLNA', 'checkbox' ]
+					  [ ICON( 'airplay' ) +'AirPlay',        'checkbox' ]
+					, [ ICON( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
+					, [ ICON( 'spotify' ) +'Spotify',        'checkbox' ]
+					, [ ' '+ ICON( 'upnp' ) +' UPnP / DLNA', 'checkbox' ]
 				]
 				, boxwidth     : 170
 				, values       : values
 				, checkchanged : S.scrobble
-				, buttonlabel  : ico( 'remove' ) +'Keys'
-				, buttoncolor  : red
+				, buttonlabel  : ICON( 'remove' ) +'Keys'
+				, buttoncolor  : V.red
 				, button       : () => {
-					switchCancel();
-					info( {
+					SWITCH.cancel();
+					INFO( {
 						  icon    : 'scrobble'
 						, title   : 'Scrobbler'
 						, message : 'Remove authorization?'
-						, ok      : () => bash( [ 'scrobblekeyremove' ] )
+						, ok      : () => BASH( [ 'scrobblekeyremove' ] )
 					} );
 				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.enable
 				, fileconf     : true
 			} );
 		}
 	}
 	, spotify  : {
 		  keys     : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, tablabel : [ 'Output', 'Client Keys' ]
-				, tab      : [ util.spotify.output, '' ]
+				, tab      : [ UTIL.spotify.output, '' ]
 				, message  : 'Remove client <wh>ID</wh> and <wh>Secret</wh> ?'
-				, oklabel  : ico( 'remove' ) +'Remove'
-				, okcolor  : red
+				, oklabel  : ICON( 'remove' ) +'Remove'
+				, okcolor  : V.red
 				, ok       : () => {
-					bash( [ 'spotifykeyremove' ] );
-					notifyCommon( 'Remove keys ...' );
+					BASH( [ 'spotifykeyremove' ] );
+					NOTIFY_COMMON( 'Remove keys ...' );
 				}
 			} );
 		}
 		, output   : () => {
 			if ( S.camilladsp ) {
-				info( {
+				INFO( {
 					  ...SW
-					, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
+					, message  : LABEL_ICON( 'DSP', 'camilladsp' ) +' is currently set as output device'
 				} );
 				return
 			}
-			infoSetting( 'spotifyoutput', data => {
-				info( {
+			SETTING( 'spotifyoutput', data => {
+				INFO( {
 					  ...SW
 					, tablabel     : [ 'Output', 'Client Keys' ]
-					, tab          : [ '', util.spotify.keys ]
+					, tab          : [ '', UTIL.spotify.keys ]
 					, list         : [
 						  [ 'Device', 'select', data.devices ]
 						, [ 'Volume', 'radio',  { kv: { Default: 'alsa', Linear: 'alsa_linear', None: 'none' } } ]
@@ -519,7 +519,7 @@ var util        = {
 					, boxwidth     : 300
 					, values       : data.values
 					, checkchanged : true
-					, ok           : switchEnable
+					, ok           : SWITCH.enable
 				} );
 			} );
 			
@@ -530,7 +530,7 @@ var util        = {
 function renderPage() {
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
-		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
+		var nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
 		$( '#nfsserver' ).addClass( 'disabled' );
 		if ( S.smb ) {
 			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
@@ -549,5 +549,5 @@ function renderPage() {
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
-	showContent();
+	CONTENT();
 }

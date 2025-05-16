@@ -348,6 +348,22 @@ $htmlsearch   = '
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
+
+<div id="colorpicker" class="hide">
+	<div id="divcolor">
+		<i id="colorcancel" class="i-close"></i>
+		<div id="pickhue"></div>
+		<div id="picknone"></div>
+		<div id="picksat"></div>
+		<div id="wheel"></div>
+		<div id="hue"><div></div></div>
+		<div id="sat"></div>
+		<canvas id="base" width="230" height="230"></canvas>
+		<a id="colorreset" class="infobtn"><i class="i-set0"></i>Default</a>
+		<a id="colorok" class="infobtn infobtn-primary">OK</a>
+	</div>
+</div>
+
 <div id="bio" class="hide"></div>
 <?php
 $htmlbar = buttonSet( [ 'library', 'playback', 'playlist' ] );

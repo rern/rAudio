@@ -1,8 +1,8 @@
 *:focus-visible {
 	outline: none;
 }
-#bio { z-index: 107 }
-#colorpicker,
+#bio,
+#colorpicker { z-index: 107 }
 #lyrics,
 #lyricsfade,
 #bar-top,
@@ -40,6 +40,7 @@ div.pagerefresh { z-index: 100 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
 img,
+#colorpicker,
 #map-cover {
 	user-select: none;
 	-webkit-user-select: none;
@@ -86,6 +87,7 @@ a {
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
+	position: relative;
 	margin: 10px 5px;
 	width: 90px;
 	box-shadow: var( --shadow-bar );
@@ -1677,10 +1679,12 @@ li.active .iconthumb {
 #pl-savedlist {
 	width: calc( 100% - 38px );
 }
-.list li.active:not(.licover),
-#lib-list .active a {
-	color: var( --cw );
+.list li.active:not(.licover) {
 	background: var( --cm );
+}
+#lib-list li.active a {
+	color: var( --cw );
+
 }
 #pl-list .pl-remove {
 	float: right;
@@ -1817,17 +1821,7 @@ li.active .li2 bl {
 	text-align: center;
 	font-size: 30px;
 }
-/* flags */
-.flag {
-	margin-left: 5px;
-}
-.flag f {
-	background: url( /assets/img/flags.png ) no-repeat;
-	display: inline-block;
-	width: 16px;
-	height: 12px;
-}
-/* color */
+/* ---------------------- colorpicker ----------------------*/
 #colorpicker {
 	position: absolute;
 	top: 0;
@@ -1845,25 +1839,83 @@ li.active .li2 bl {
 	width: 230px;
 	margin: auto;
 }
-#canvascolor {
-	background: #000000;
-	border-radius: 50%;
-	touch-action: none;
-	box-shadow: var( --shadow-bar );
+#colorcancel,
+#divcolor div,
+#sat {
+	position: absolute;
 }
 #colorcancel {
-	position: absolute;
-	right: 0;
+	right: -5px;
 	width: 36px;
 	height: 36px;
 	font-size: 24px;
 	line-height: 36px;
-	border-radius: 50%;
 	color: var( --cm );
 	background: #000;
+	box-shadow: var( --shadow-bar );
 	text-shadow: var( --shadow-btn );
-	box-shadow: 0 0 6px 5px #000000;
 }
+#hue,
+#pickhue,
+#wheel {
+	width: 230px;
+	height: 230px;
+}
+#wheel {
+	border-radius: 50%;
+	border: 1px solid #000;
+	box-shadow: var( --shadow-bar );
+}
+#wheel::after {
+	content: '';
+	display: block;
+	margin: 18px auto;
+	width: 192px;
+	height: 192px;
+	border-radius: 50%;
+	border: 2px solid #000;
+}
+#hue div {
+	right: -1px;
+	top: 104px;
+	width: 22px;
+	height: 22px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	box-shadow: 0 0 4px 1px #000;
+}
+#sat {
+	width: 10px;
+	height: 10px;
+	border: 1px solid #fff;
+	border-radius: 50%;
+	box-shadow: 0 0 2px 1px #666;
+}
+#picknone {
+	margin: 20px;
+	width: 190px;
+	height: 190px;
+}
+#picksat {
+	margin: 55px;
+	width: 120px;
+	height: 120px;
+}
+#colorcancel,
+#pickhue,
+#picknone,
+#picksat {
+	border-radius: 50%;
+	z-index: 1;
+}
+#pickhue,
+#picksat {
+	cursor: crosshair;
+}
+#picksat {
+	border-radius: unset;
+}
+/* ---------------------- tag ----------------------*/
 .tagmessage {
 	display: flex;
 	align-items: flex-end;

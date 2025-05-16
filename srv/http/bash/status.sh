@@ -44,7 +44,7 @@ display+='
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
 , "camilladsp"   : '$( exists $dirsystem/camilladsp )'
-, "color"        : "'$( getContent $dirsystem/color )'"
+, "color"        : '$( exists $dirsystem/color )'
 , "dabradio"     : '$( exists $dirsystem/dabradio )'
 , "equalizer"    : '$( exists $dirsystem/equalizer )'
 , "loginsetting" : '$loginsetting'

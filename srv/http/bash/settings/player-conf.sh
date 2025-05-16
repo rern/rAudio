@@ -18,6 +18,10 @@ pushStatus() {
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 }
+pushVolumeNone() {
+	pushData display '{ "volumenone": '$1' }'
+	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
+}
 
 if [[ $1 ]]; then
 	usbdac=$1
@@ -81,18 +85,13 @@ fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
-	if [[ $usbdac == remove ]]; then
-		pushData display '{ "volumenone": true }'
-		pushData refresh '{ "page": "features", "nosound": true }'
-	fi
+	[[ $usbdac == remove ]] && pushVolumeNone true
 elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
-		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		pushData display '{ "volumenone": '$volumenone' }'
-		pushData refresh '{ "page": "features", "nosound": '$volumenone' }'
+		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	fi
 	if [[ $CAMILLADSP ]]; then
 		hw=hw:Loopback,1

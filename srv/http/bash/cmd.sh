@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-dirimg=/srv/http/assets/img
 
 args2var "$1" # $2 $3 ... if any, still valid
 
@@ -207,7 +206,8 @@ bookmarkadd )
 # --------------------------------------------------------------------
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
-	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${DIR//\"/\\\\\"}\"" $file_order
+	[[ NSU == *${DIR:0:1}* ]] && order=$DIR || order=$NAME
+	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
 	dir="/mnt/MPD/$DIR"
 	if [[ -d $dir  ]] && ! ls "$dir/coverart".* 2> /dev/null; then
 		target=$( coverFileGet "$dir" raw )
@@ -245,47 +245,56 @@ cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
-	file=$dirsystem/color
-	[[ $HSL == reset ]] && rm -f $file && HSL=
+	filecss=/srv/http/assets/css/colors.css
+	css=$( < $filecss )
+	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
+	cd=( $hslcd )
+	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
+	[[ $LIST ]] && echo '{
+  "cd" : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "ml" : [ '${ml:1}' ]
+}' && exit
+# --------------------------------------------------------------------
+	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
-		echo $HSL > $file
-		hsl=( $HSL )
+		echo $HSL > $filecolor
+		HSL=( $HSL )
 	else
-		if [[ -e $file ]]; then
-			hsl=( $( < $file ) )
+		[[ $RESET ]] && rm -f $filecolor
+		if [[ -e $filecolor ]]; then
+			HSL=( $( < $filecolor ) )
 		else
-			hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
-						| sed 's/.*(\(.*\)).*/\1/' \
-						| tr ',' ' ' \
-						| tr -d % ) )
+			HSL=( $hslcd )
+			default=1
 		fi
 	fi
-	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
-	hs="$h,$s%,"
-	hsg="$h,3%,"
-	hsl="${hs}$l%"
-	sed -i -E "
-s|(--cm60 *: *hsl).*;|\1(${hs}$(( l + 25 ))%);|
- s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
-  s|(--cm *: *hsl).*;|\1($hsl);|
- s|(--cma *: *hsl).*;|\1(${hs}$(( l - 5 ))%);|
- s|(--cmd *: *hsl).*;|\1(${hs}$(( l - 15 ))%);|
-s|(--cg75 *: *hsl).*;|\1(${hsg}75%);|
-s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
- s|(--cgl *: *hsl).*;|\1(${hsg}40%);|
-  s|(--cg *: *hsl).*;|\1(${hsg}30%);|
- s|(--cga *: *hsl).*;|\1(${hsg}20%);|
- s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
-" /srv/http/assets/css/colors.css
-	sed -i -E "
-s|(rect.*hsl).*;|\1($hsl);|
-s|(path.*hsl).*;|\1(${hsg}75%);|
-" $dirimg/icon.svg
-	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
-		| magick -density 96 -background none - $dirimg/icon.png
+	h=${HSL[0]}
+	s=${HSL[1]}
+	l=${HSL[2]}
+	regex="\
+s/(--h *: ).*/\1$h;/
+s/(--s *: ).*/\1$s%;/"
+	for m in ${ml//,/ }; do
+		L=$(( l + m - 35 ))
+		regex+="
+s/(--ml$m *: ).*/\1$L%;/"
+	done
+	sed -E "$regex" <<< $css > $filecss
+	iconsvg=/srv/http/assets/img/icon.svg
+	cm="($h,$s%,$l%)"
+	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
+	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
+	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
+	[[ ! $color ]] && color=true
+	color='{
+  "cg"    : "hsl('$h',3%,75%)"
+, "cm"    : "hsl'$cm'"
+, "color" : '$( [[ $default ]] && echo false || echo true )'
+, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
+, "ml"    : [ '${ml:1}' ]
+}'
+	pushData color "$color"
 	splashRotate
-	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
-	pushData reload
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
@@ -303,13 +312,15 @@ coverfileslimit )
 	;;
 dirdelete )
 	dir="$DIR/$NAME"
-	[[ ! $CONFIRM && $( ls "$dir" ) ]] && echo -1 && exit
+	lsdir=$( ls "$dir" )
+	[[ ! $CONFIRM && $lsdir ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	stations=$( find "$dir" -type f -exec basename {} \; )
 	rm -rf "$dir"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
-	pushRadioList
+	pushData radiolist '{ "dirdelete": "'$DIR'", "name": "'$NAME'" }'
+	[[ $lsdir ]] && webradioCount
 	while read s; do
 		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
 		
@@ -756,6 +767,7 @@ webradioadd )
 	file+="$DIR/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 # --------------------------------------------------------------------
+	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	echo "\
 $NAME
 
@@ -772,16 +784,16 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	newurlname=${NEWURL//\//|}
-	urlname=${URL//\//|}
+	newurlname=${URL//\//|}
+	urlname=${OLDURL//\//|}
 	newfile="$DIR/$newurlname"
 	prevfile="$DIR/$urlname"
-	if [[ $NEWURL == $URL ]]; then
+	if [[ $URL == $OLDURL ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 # --------------------------------------------------------------------
-		webradioM3uPlsVerify $NEWURL
+		webradioM3uPlsVerify $URL
 		rm "$prevfile"
 		# stationcover
 		imgurl="$dirwebradio/img/$urlname"
@@ -796,6 +808,7 @@ webradioedit )
 			[[ ! $( find $dirwebradio -name "$urlname" ) ]] && rm -f "$imgurl".* "$thumb"
 		fi
 	fi
+	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	echo "\
 $NAME
 $sampling
