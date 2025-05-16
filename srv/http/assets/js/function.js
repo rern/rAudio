@@ -1231,8 +1231,8 @@ var LIBRARY   = {
 var LYRICS    = {
 	  fetch        : refresh => {
 		BANNER( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
-		var artist = UTIL.plain( V.lyricsartist );
-		var title  = UTIL.plain( V.lyricstitle );
+		var artist = LYRICS.plain( V.lyricsartist );
+		var title  = LYRICS.plain( V.lyricstitle );
 		BASH( [ 'lyrics', artist, title, S.file, refresh || '', 'CMD ARTIST TITLE FILE ACTION' ], data => {
 			LYRICS.show( data );
 			BANNER_HIDE();
