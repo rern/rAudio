@@ -994,12 +994,17 @@ var GRAPH     = {
 	}
 }
 window.addEventListener( 'resize', GRAPH.flowchart.refresh );
-COMMON.dragMove( '#pipeline .entries', () => {
-	var a  = COMMON.json.clone( PIP[ V.sort.source ] );
-	PIP.splice( V.sort.source, 1 );
-	PIP.splice( V.sort.target, 0, a );
-	SETTING.save( 'Pipeline', 'Change order ...' );
-	RENDER.pipeline();
+new Sortable( $( '#pipeline .entries' )[ 0 ], {
+	  delay               : 200
+	, delayOnTouchOnly    : true
+	, touchStartThreshold : 5
+	, onUpdate            : e => {
+		var a  = COMMON.json.clone( PIP[ e.oldIndex ] );
+		PIP.splice( e.oldIndex, 1 );
+		PIP.splice( e.newIndex, 0, a );
+		SETTING.save( 'Pipeline', 'Change order ...' );
+		RENDER.pipeline();
+	}
 } );
 
 var CONFIG    = {

@@ -108,7 +108,7 @@ case 'home':
 		$modes_l[] = $mode_l;
 		$gr        = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
 		$htmlmode .= '
-<li class="mode '.$mode_l.'" data-mode="'.$mode_l.'" draggable="true">
+<li class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
 </li>';
 	}
@@ -129,7 +129,7 @@ case 'home':
 				$src     .= '/coverart.jpg';
 			}
 			$htmlmode.= '
-<li class="mode bookmark '.$bkradio.'" draggable="true">
+<li class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="name hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">

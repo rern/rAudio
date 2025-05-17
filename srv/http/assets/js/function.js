@@ -1044,17 +1044,13 @@ var IMAGE     = {
 	}
 }
 var LIBRARY   = {
-	  addReplace  : () => {
+	  addReplace : () => {
 		V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
 		V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
 		V.list.name = $LI.find( '.name' ).text()
 		PLAYLIST.addCommand();
 	}
-	, bkEditClear : () => {
-		$( '.mode' ).removeClass( 'edit' );
-		$( '.mode .bkedit' ).remove();
-	}
-	, coverart    : () => {
+	, coverart   : () => {
 		if ( D.hidecover ) {
 			$( '.licover' ).addClass( 'hide' );
 			$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
@@ -1070,7 +1066,7 @@ var LIBRARY   = {
 			$( '.liinfo .lialbum' ).toggleClass( 'hide', MODE.album() );
 		}
 	}
-	, get         : () => {
+	, get        : () => {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
@@ -1087,7 +1083,7 @@ var LIBRARY   = {
 			if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 		}, 'json' );
 	}
-	, home        : html => { // V.libraryhome
+	, home       : html => { // V.libraryhome
 		V.libraryhome = true;
 		V.search      = false;
 		V.mode        = '';
@@ -1110,7 +1106,7 @@ var LIBRARY   = {
 		$( '#lib-list, #page-library .index, #search-list' ).remove();
 		DISPLAY.library();
 	}
-	, list        : data => { // V.librarylist / V.librarytrack
+	, list       : data => { // V.librarylist / V.librarytrack
 		if ( ! V.search ) {
 			V.libraryhome = false;
 			V.librarylist = true;
@@ -1198,7 +1194,7 @@ var LIBRARY   = {
 			if ( V.color ) $( '#lib-list li' ).eq( 0 ).addClass( 'active' );
 		} );
 	}
-	, order       : () => {
+	, order      : () => {
 		if ( O.order === false ) return
 		
 		$list = $( '#lib-mode-list' );
@@ -1218,7 +1214,7 @@ var LIBRARY   = {
 			}
 		} );
 	}
-	, padding     : coverartH => {
+	, padding    : coverartH => {
 		var padding = UTIL.barVisible( 129, 89 );
 		if ( V.librarytrack ) {
 			if ( D.fixedcover && V.wH > 734 ) padding += 230;
@@ -2153,7 +2149,7 @@ var PLAYLIST  = {
 			if ( ! V.playlist || ! V.playlisthome ) return
 			
 			UTIL.intervalClear.all();
-			if ( V.sort
+			if ( V.sortable
 				|| [ 'airplay', 'spotify' ].includes( S.player )
 				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 			) {

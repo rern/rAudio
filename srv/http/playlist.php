@@ -3,7 +3,6 @@ $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 $filecount    = $fileplaylist.'count';
-$draggable    = '  draggable="true"';
 
 function output() {
 	global $CMD, $counthtml, $filecount, $fileplaylist, $html;
@@ -59,7 +58,7 @@ if ( $CMD === 'list' ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
 		$html     .=
-'<li class="pl-folder"'.$dataindex.$draggable.'>'.
+'<li class="pl-folder"'.$dataindex.'>'.
 	i( 'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
 '</li>
 ';
@@ -144,7 +143,7 @@ foreach( $lists as $list ) {
 		}
 		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
 		$html     .=
-'<li class="'.$class.'" '.$datatrack.$draggable.'>'.
+'<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
@@ -159,7 +158,7 @@ foreach( $lists as $list ) {
 	if ( substr( $file, 0, 14 ) === 'http://192.168' ) { // upnp
 		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
 		$html     .=
-'<li class="upnp"'.$draggable.'>'.
+'<li class="upnp">'.
 	i( 'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
@@ -192,7 +191,7 @@ foreach( $lists as $list ) {
 	}
 	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
 	$html         .=
-'<li class="webradio '.$notsaved.'"'.$draggable.'>'.
+'<li class="webradio '.$notsaved.'">'.
 	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
 	$icon.
 	'<div class="li1"><a class="name">'.$station.'</a><a class="elapsed"></a></div>'.

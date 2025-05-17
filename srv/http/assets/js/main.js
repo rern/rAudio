@@ -29,6 +29,11 @@ V = {   // var global
 			, svgMode     : true
 			, width       : 22
 		}
+		, sortable   : {
+			  delay               : 200
+			, delayOnTouchOnly    : true
+			, touchStartThreshold : 5
+		}
 	}
 	, page          : 'playback'
 	, wH            : window.innerHeight
@@ -92,7 +97,10 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.color ) return
 	
 	var $target = $( e.target );
-	if ( ! V.press && ! $target.is( '.bkedit' ) ) LIBRARY.bkEditClear();
+	if ( ! V.press && ! $target.is( '.bkedit' ) ) {
+		$( '.mode' ).removeClass( 'edit' );
+		$( '.mode .bkedit' ).remove();
+	}
 	if ( ! $target.is( '.bkcoverart, .bkradio, .disabled, .savedlist' ) ) MENU.hide();
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 	if ( V.guide ) DISPLAY.guideHide();
@@ -1029,23 +1037,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 		LIBRARY.list( data );
 	} );
 } );
-COMMON.dragMove( '#lib-mode-list', {
-	  start : () => setTimeout( LIBRARY.bkEditClear, 300 )
-	, drop  : () => {
-		var order = [];
-		$( '.mode' ).each( ( i, el ) => {
-			var $el  = $( el );
-			if ( $el.hasClass( 'bookmark' ) ) {
-				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
-			} else {
-				var data = $el.data( 'mode' );
-			}
-			order.push( data );
-		} );
-		COMMON.json.save( 'order', order );
-	}
-	, xy    : true
-} );
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
 	if ( V.press ) return
 	
@@ -1626,10 +1617,6 @@ $( '#pl-search-close' ).on( 'click', function() {
 		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
-COMMON.dragMove( '#pl-list', () => {
-	BASH( [ 'mpcmove', V.sort.source + 1, V.sort.target + 1, 'CMD FROM TO' ] );
-	$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-} );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
 		var pos     = $( this ).index() + 1;
@@ -1691,10 +1678,6 @@ $( '#pl-title' ).on( 'click', '.savedlist', function() {
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	MENU.scroll( $menu, 88 );
 } );
-COMMON.dragMove( '#pl-savedlist', () => {
-	BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', V.sort.source + 1, V.sort.target + 1, 'CMD NAME ACTION FROM TO' ] );
-	$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-} );
 $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	e.stopPropagation();
 	$LI          = $( this );
@@ -1753,6 +1736,44 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 		}
 	}
 } );
+
+new Sortable( document.getElementById( 'lib-mode-list' ), {
+	  ...V.option.sortable
+	, onClone  : () => V.sortable = true
+	, onUpdate : () => {
+		var order = [];
+		$( '.mode' ).each( ( i, el ) => {
+			var $el  = $( el );
+			if ( $el.hasClass( 'bookmark' ) ) {
+				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
+			} else {
+				var data = $el.data( 'mode' );
+			}
+			order.push( data );
+		} );
+		COMMON.json.save( 'order', order );
+		setTimeout( () => delete V.sortable, 1000 );
+	}
+} );
+new Sortable( document.getElementById( 'pl-list' ), {
+	  ...V.option.sortable
+	, onUpdate   : e => {
+		V.sortable = true
+		BASH( [ 'mpcmove', e.oldIndex + 1, e.newIndex + 1, 'CMD FROM TO' ] );
+		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+		setTimeout( () => delete V.sortable, 1000 );
+	}
+} );
+new Sortable( document.getElementById( 'pl-savedlist' ), {
+	  ...V.option.sortable
+	, onUpdate   : e => {
+		V.sortable = true
+		BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', e.oldIndex + 1, e.newIndex + 1, 'CMD NAME ACTION FROM TO' ] );
+		$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+		setTimeout( () => delete V.sortable, 1000 );
+	}
+} );
+
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {
 	COLOR.save( V.ctx.hsl );
