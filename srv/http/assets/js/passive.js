@@ -147,7 +147,7 @@ W = {
 		LIBRARY.order();
 	}
 	, playlist  : data => {
-		if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
+		if ( V.local || V.sort || $( '.pl-remove' ).length ) return
 		
 		if ( 'blink' in data ) {
 			PLAYLIST.blink();

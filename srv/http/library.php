@@ -108,9 +108,9 @@ case 'home':
 		$modes_l[] = $mode_l;
 		$gr        = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
 		$htmlmode .= '
-<div class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
+<li class="mode '.$mode_l.'" data-mode="'.$mode_l.'" draggable="true">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
-</div>';
+</li>';
 	}
 	// bookmarks
 	$dir       = '/srv/http/data/bookmarks';
@@ -129,11 +129,11 @@ case 'home':
 				$src     .= '/coverart.jpg';
 			}
 			$htmlmode.= '
-<div class="mode bookmark '.$bkradio.'">
+<li class="mode bookmark '.$bkradio.'" draggable="true">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="name hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
-</div>';
+</li>';
 		}
 	}
 	$lsmnt     = countMnt();

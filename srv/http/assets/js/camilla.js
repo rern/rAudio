@@ -1340,8 +1340,17 @@ var RENDER    = {
 		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		RENDER.toggle();
-		RENDER.sortable();
 		GRAPH.flowchart.refresh();
+		$MENU.addClass( 'hide' );
+		if ( $( '#pipeline .entries li' ).length < 2 ) return
+		
+		COMMON.dragMove( '#pipeline .entries', () => {
+			var a  = COMMON.json.clone( PIP[ V.sort.source ] );
+			PIP.splice( V.sort.source, 1 );
+			PIP.splice( V.sort.target, 0, a );
+			SETTING.save( 'Pipeline', 'Change order ...' );
+			RENDER.pipeline();
+		} );
 	}
 	, pipe        : ( el, i ) => {
 		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
@@ -1366,25 +1375,6 @@ var RENDER    = {
 				+ graph
 				+'</li>';
 		return li
-	}
-	, sortable    : () => {
-		$MENU.addClass( 'hide' );
-		if ( V.sortable ) {
-			V.sortable.destroy();
-			delete V.sortable;
-		}
-		if ( $( '#pipeline .entries li' ).length < 2 ) return
-		
-		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
-			...V.option.sortable
-			, onUpdate         : function ( e ) {
-				var a  = COMMON.json.clone( PIP[ e.oldIndex ] );
-				PIP.splice( e.oldIndex, 1 );
-				PIP.splice( e.newIndex, 0, a );
-				SETTING.save( 'Pipeline', 'Change order ...' );
-				RENDER.pipeline();
-			}
-		} );
 	} //-----------------------------------------------------------------------------------
 	, devices     : () => {
 		var li  = '';

@@ -211,7 +211,7 @@ $htmlsearch   = '
 		<span id="lib-title" class="title"></span>
 		<span id="lib-path"></span>
 	</div>
-	<div id="lib-mode-list"></div>
+	<ul id="lib-mode-list"></ul>
 </div>
 
 <div id="page-playback" class="page">

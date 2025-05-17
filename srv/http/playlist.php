@@ -3,6 +3,7 @@ $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 $filecount    = $fileplaylist.'count';
+$draggable    = '  draggable="true"';
 
 function output() {
 	global $CMD, $counthtml, $filecount, $fileplaylist, $html;
@@ -58,7 +59,7 @@ if ( $CMD === 'list' ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
 		$html     .=
-'<li class="pl-folder"'.$dataindex.'>'.
+'<li class="pl-folder"'.$dataindex.$draggable.'>'.
 	i( 'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
 '</li>
 ';
@@ -97,11 +98,12 @@ exec( $cmd, $lists );
 //----------------------------------------------------------------------------------
 $count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
-$pos    = 0;
+$song   = 0;
 $sec    = 0;
 $html   = '';
 foreach( $lists as $list ) {
-	$pos++;
+	$song++;
+	$pos    = '<a class="pos">'.$song.'</a>';
 	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
@@ -142,7 +144,7 @@ foreach( $lists as $list ) {
 		}
 		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
 		$html     .=
-'<li class="'.$class.'" '.$datatrack.'>'.
+'<li class="'.$class.'" '.$datatrack.$draggable.'>'.
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
@@ -157,7 +159,7 @@ foreach( $lists as $list ) {
 	if ( substr( $file, 0, 14 ) === 'http://192.168' ) { // upnp
 		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
 		$html     .=
-'<li class="upnp">'.
+'<li class="upnp"'.$draggable.'>'.
 	i( 'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
@@ -190,7 +192,7 @@ foreach( $lists as $list ) {
 	}
 	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
 	$html         .=
-'<li class="webradio '.$notsaved.'">'.
+'<li class="webradio '.$notsaved.'"'.$draggable.'>'.
 	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
 	$icon.
 	'<div class="li1"><a class="name">'.$station.'</a><a class="elapsed"></a></div>'.

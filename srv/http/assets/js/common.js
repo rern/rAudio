@@ -35,13 +35,6 @@ V    = {
 	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
 	, orange    : '#de810e'
 	, red       : '#bb2828'
-	, option    : {
-		sortable : {
-			  delay               : 200
-			, delayOnTouchOnly    : true
-			, touchStartThreshold : 5
-		}
-	}
 }
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
@@ -132,6 +125,8 @@ $.fn.press = function( args ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
+			if ( V.sort ) return
+			
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
@@ -1061,6 +1056,37 @@ var COMMON      = {
 			console.log( data );
 			console.log( bashcmd );
 		}
+	}
+	, dragMove      : ( el, fn ) => {
+		$( el ).on( 'dragstart', 'li', function( e ) {
+			e.originalEvent.dataTransfer.effectAllowed = 'move';
+			var $this = $( this );
+			V.sort    = {
+				  li     : $this
+				, source : $this.index()
+			}
+			if ( fn.start ) fn.start();
+		} ).on( 'dragenter', 'li', function( e ) {
+			e.preventDefault();
+			V.sort.x = e.pageX;
+			V.sort.y = e.pageY;
+		} ).on( 'dragover', 'li', function( e ) {
+			e.preventDefault();
+			var $this     = $( this );
+			V.sort.target = $this.index();
+			var previous  = e.pageY < V.sort.y;
+			if ( fn.xy ) previous = previous || e.pageX < V.sort.x;
+			if ( previous ) {
+				$this.before( V.sort.li );
+			} else {
+				$this.after( V.sort.li );
+			}
+		} ).on( 'drop', 'li', function( e ) {
+			e.preventDefault();
+			fn.drop ? fn.drop( el ) : fn( el );
+			
+			setTimeout( () => delete V.sort, 500 );
+		} );
 	}
 	, eq            : {
 		  beforShow : fn => {

@@ -354,17 +354,6 @@ i.disabled {
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
 }
-/* sortable */
-.sortable-chosen {
-	background: var( --cg60 );
-}
-.sortable-chosen .li-icon {
-	visibility: hidden;
-}
-.sortable-chosen a,
-.sortable-chosen .li2 {
-	color: var( --cg ) !important;
-}
 .value .clipped {
 	color: #f80;
 }
