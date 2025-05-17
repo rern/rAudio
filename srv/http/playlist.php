@@ -52,7 +52,7 @@ if ( $CMD === 'list' ) {
 		$array[]    = $each;
 	}
 	sortList( $array );
-	$html      = '<ul id="pl-savedlist" class="list">';
+	$html      = '';
 	$index0    = '';
 	$indexes   = [];
 	foreach( $array as $each ) {

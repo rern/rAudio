@@ -1993,8 +1993,8 @@ var PLAYLIST  = {
 			V.playlisttrack = false;
 			$( '#pl-title' ).html( ICON( 'playlists wh' ) +'PLAYLISTS' );
 			var html        = UTIL.htmlHash( data.html );
-			$( '#pl-savedlist, #page-playlist .index' ).remove();
-			$( '#pl-list' ).after( html ).promise().done( PLAYLIST.render.set );
+			$( '#page-playlist .index' ).remove();
+			$( '#pl-savedlist' ).html( html ).promise().done( PLAYLIST.render.set );
 		}
 		, list : name => { // V.playlisttrack
 			V.playlisthome  = false;
@@ -2095,13 +2095,13 @@ var PLAYLIST  = {
 			V.playlistlist  = false;
 			V.playlisttrack = false;
 			if ( ! V.playlist ) UTIL.switchPage( 'playlist' );
-			$( '#button-pl-back' ).addClass( 'hide' );
+			$( '#button-pl-back, #pl-savedlist' ).addClass( 'hide' );
 			$( '#pl-search-close' ).trigger( 'click' );
 			$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 			$( '#button-pl-librandom' )
 				.toggleClass( 'bl', S.librandom )
 				.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
-			$( '#pl-savedlist, #page-playlist .index' ).remove();
+			$( '#page-playlist .index' ).remove();
 			if ( ! data ) {
 				V.html.playlist = '';
 				S.pllength      = 0;

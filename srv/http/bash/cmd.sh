@@ -121,9 +121,11 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
-	[[ ! $( ls $dirdata/playlist ) ]] && pushData playlists -1 && exit
-# --------------------------------------------------------------------
-	pushData playlists $( php /srv/http/playlist.php list )
+	if [[ $( ls $dirdata/playlists ) ]]; then
+		pushData playlists $( php /srv/http/playlist.php list )
+	else
+		pushData playlists -1
+	fi
 }
 radioStop() {
 	if [[ -e $dirshm/radio ]]; then
@@ -705,9 +707,9 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	elif [[ $ACTION == add ]]; then
 		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
-		file=$( sed -n "$FROM p" "$plfile" )
+		track=$( sed -n "$FROM p" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))
-		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
+		sed -i -e "$FROM d" -e "$TO i$track" "$plfile"
 	fi
 	pushSavedPlaylist
 	;;
