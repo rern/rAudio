@@ -1626,7 +1626,10 @@ $( '#pl-search-close' ).on( 'click', function() {
 		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
-COMMON.dragMove( '#pl-list', () => PLAYLIST.sort( 'pl-list', V.sort.source, V.sort.target ) );
+COMMON.dragMove( '#pl-list', () => {
+	BASH( [ 'mpcmove', V.sort.source + 1, V.sort.target + 1, 'CMD FROM TO' ] );
+	$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+} );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
 		var pos     = $( this ).index() + 1;
@@ -1688,7 +1691,10 @@ $( '#pl-title' ).on( 'click', '.savedlist', function() {
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	MENU.scroll( $menu, 88 );
 } );
-COMMON.dragMove( '#pl-savedlist', () => PLAYLIST.sort( 'pl-savedlist', V.sort.source, V.sort.target ) );
+COMMON.dragMove( '#pl-savedlist', () => {
+	BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', V.sort.source + 1, V.sort.target + 1, 'CMD NAME ACTION FROM TO' ] );
+	$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+} );
 $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	e.stopPropagation();
 	$LI          = $( this );

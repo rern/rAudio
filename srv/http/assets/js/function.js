@@ -2042,19 +2042,29 @@ var PLAYLIST  = {
 			} );
 		}
 	}
-	, remove      : () => {
+	, remove      : $li => {
 		if ( S.pllength === 1 ) {
+			$li.remove();
 			BASH( [ 'mpcremove' ] );
-		} else {
-			BASH( [ 'mpcremove', $LI.index() + 1, 'CMD POS' ] );
+			return
 		}
-		S.pllength--;
-		$( '#pl-trackcount' ).text( S.pllength );
-		var time = $( '#pl-time' ).data( 'time' ) - $LI.find( '.time' ).data( 'time' );
-		$( '#pl-time' )
-			.data( 'time', time )
-			.text( UTIL.second2HMS( time ) );
-		$LI.remove();
+		
+		var pos = $li.index() + 1;
+		BASH( [ 'mpcremove', pos, 'CMD POS' ] );
+		if ( $li.hasClass( 'webradio' ) ) {
+			var $count = $( '#pl-radiocount' );
+			$count.text( +$count.text() - 1 );
+		} else {
+			var $count = $( '#pl-trackcount' );
+			var $time  = $( '#pl-time' );
+			$count.text( +$count.text() - 1 );
+			var time = $time.data( 'time' ) - $li.find( '.time' ).data( 'time' );
+			$time
+				.data( 'time', time )
+				.text( UTIL.second2HMS( time ) );
+		}
+		$li.remove();
+		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 	}
 	, removeRange : range => {
 		BANNER_HIDE();
@@ -2255,19 +2265,6 @@ var PLAYLIST  = {
 			$( '#elapsed, #total, #progress' ).empty();
 		}
 		BASH( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
-	}
-	, sort        : ( pl, iold, inew ) => {
-		if ( pl === 'pl-list' ) {
-			BASH( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
-		} else {
-			BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
-		}
-		var i    = Math.min( iold, inew );
-		var imax = Math.max( iold, inew ) + 1;
-		$( '#'+ pl +' li .pos' ).slice( i, imax ).each( ( j, el ) => {
-			i++
-			$( el ).text( i );
-		} );
 	}
 }
 var UTIL      = {
