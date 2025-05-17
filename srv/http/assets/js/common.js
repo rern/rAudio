@@ -1368,6 +1368,19 @@ var COMMON      = {
 		}
 		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
+	, sortable      : ( id, callback ) => {
+		var el = id[ 0 ] === '#' ? document.querySelector( id ) : document.getElementById( id );
+		new Sortable( el, {
+			  delay               : 200
+			, delayOnTouchOnly    : true
+			, touchStartThreshold : 5
+			, onClone             : () => V.sortable = true
+			, onUpdate            : e => {
+				callback( e );
+				setTimeout( () => delete V.sortable, 1000 );
+			}
+		} );
+	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
 var VOLUME      = {

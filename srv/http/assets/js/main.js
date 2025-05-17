@@ -29,11 +29,6 @@ V = {   // var global
 			, svgMode     : true
 			, width       : 22
 		}
-		, sortable   : {
-			  delay               : 200
-			, delayOnTouchOnly    : true
-			, touchStartThreshold : 5
-		}
 	}
 	, page          : 'playback'
 	, wH            : window.innerHeight
@@ -1737,41 +1732,26 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	}
 } );
 
-new Sortable( document.getElementById( 'lib-mode-list' ), {
-	  ...V.option.sortable
-	, onClone  : () => V.sortable = true
-	, onUpdate : () => {
-		var order = [];
-		$( '.mode' ).each( ( i, el ) => {
-			var $el  = $( el );
-			if ( $el.hasClass( 'bookmark' ) ) {
-				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
-			} else {
-				var data = $el.data( 'mode' );
-			}
-			order.push( data );
-		} );
-		COMMON.json.save( 'order', order );
-		setTimeout( () => delete V.sortable, 1000 );
-	}
+COMMON.sortable( 'lib-mode-list', () => {
+	var order = [];
+	$( '.mode' ).each( ( i, el ) => {
+		var $el  = $( el );
+		if ( $el.hasClass( 'bookmark' ) ) {
+			var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
+		} else {
+			var data = $el.data( 'mode' );
+		}
+		order.push( data );
+	} );
+	COMMON.json.save( 'order', order );
 } );
-new Sortable( document.getElementById( 'pl-list' ), {
-	  ...V.option.sortable
-	, onUpdate   : e => {
-		V.sortable = true
-		BASH( [ 'mpcmove', e.oldIndex + 1, e.newIndex + 1, 'CMD FROM TO' ] );
-		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-		setTimeout( () => delete V.sortable, 1000 );
-	}
+COMMON.sortable( 'pl-list', e => {
+	BASH( [ 'mpcmove', e.oldIndex + 1, e.newIndex + 1, 'CMD FROM TO' ] );
+	$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 } );
-new Sortable( document.getElementById( 'pl-savedlist' ), {
-	  ...V.option.sortable
-	, onUpdate   : e => {
-		V.sortable = true
-		BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', e.oldIndex + 1, e.newIndex + 1, 'CMD NAME ACTION FROM TO' ] );
-		$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-		setTimeout( () => delete V.sortable, 1000 );
-	}
+COMMON.sortable( 'pl-savedlist', e => {
+	BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', e.oldIndex + 1, e.newIndex + 1, 'CMD NAME ACTION FROM TO' ] );
+	$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 } );
 
 // color /////////////////////////////////////////////////////////////////////////////////////
