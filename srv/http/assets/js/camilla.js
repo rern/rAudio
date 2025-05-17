@@ -994,6 +994,13 @@ var GRAPH     = {
 	}
 }
 window.addEventListener( 'resize', GRAPH.flowchart.refresh );
+COMMON.dragMove( '#pipeline .entries', () => {
+	var a  = COMMON.json.clone( PIP[ V.sort.source ] );
+	PIP.splice( V.sort.source, 1 );
+	PIP.splice( V.sort.target, 0, a );
+	SETTING.save( 'Pipeline', 'Change order ...' );
+	RENDER.pipeline();
+} );
 
 var CONFIG    = {
 	  configuration       : () => {
@@ -1342,15 +1349,6 @@ var RENDER    = {
 		RENDER.toggle();
 		GRAPH.flowchart.refresh();
 		$MENU.addClass( 'hide' );
-		if ( $( '#pipeline .entries li' ).length < 2 ) return
-		
-		COMMON.dragMove( '#pipeline .entries', () => {
-			var a  = COMMON.json.clone( PIP[ V.sort.source ] );
-			PIP.splice( V.sort.source, 1 );
-			PIP.splice( V.sort.target, 0, a );
-			SETTING.save( 'Pipeline', 'Change order ...' );
-			RENDER.pipeline();
-		} );
 	}
 	, pipe        : ( el, i ) => {
 		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
