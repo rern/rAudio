@@ -1369,7 +1369,7 @@ var RENDER    = {
 			var li1    = el.name;
 			var li2    = RENDER.mixerMap( MIX[ el.name ].mapping );
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ICON( icon ) + ICON( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'" draggable="true">'+ ICON( icon ) + ICON( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
 				+ graph
