@@ -1384,8 +1384,6 @@ var SORT        = {
 			e.preventDefault();
 			if ( ! V.sort || V.sort.enter ) return
 			
-			V.sort.x = e.pageX;
-			V.sort.y = e.pageY;
 			V.sort.enter = true;
 			V.sort.over  = false;
 		} ).on( 'dragover', 'li', function( e ) {
@@ -1394,14 +1392,12 @@ var SORT        = {
 			
 			V.sort.enter = false;
 			V.sort.over  = true;
-			var $this     = $( this );
-			V.sort.to     = $this.index();
-			var previous  = e.pageY < V.sort.y;
-			if ( libmode ) previous = previous || e.pageX < V.sort.x;
-			if ( previous ) {
-				$this.before( V.sort.li );
+			var $target  = $( this )
+			V.sort.to    = $target.index();
+			if ( V.sort.to > V.sort.li.index() ) {
+				$target.after( V.sort.li );
 			} else {
-				$this.after( V.sort.li );
+				$target.before( V.sort.li );
 			}
 		} ).on( 'drop', 'li', function( e ) {
 			setTimeout( () => delete V.sort, 500 );
@@ -1445,13 +1441,15 @@ var SORT        = {
 					, top   : h / 2
 					, left  : w / 2
 				}
-				V.sort.ghost.css( {
-					  position  : 'fixed'
-					, width     : V.sort.w +'px'
-					, height    : V.sort.h +'px'
-					, opacity   : 0.5
-					, 'z-index' : 1
-				} );
+				V.sort.ghost
+					.addClass( 'ghost' )
+					.css( {
+						  position  : 'fixed'
+						, width     : V.sort.w +'px'
+						, height    : V.sort.h +'px'
+						, opacity   : 0.5
+						, 'z-index' : 1
+					} );
 				V.sort.li.before( V.sort.ghost );
 			}
 			var x      = e.touches[ 0 ].pageX;
@@ -1459,21 +1457,18 @@ var SORT        = {
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
 			clearTimeout( V.debounce );
 			V.debounce = setTimeout( () => {
-				var els = document.elementsFromPoint( x, y );
-				els.forEach( el => {
-					if ( el === V.sort.li ) return
-					
-					var $el = $( el );
-					if ( $el.is( 'li:not( .ghost )' ) ) {
-						var index = $el.index();
-						if ( index > V.sort.li.index() ) {
-							$el.after( V.sort.li );
-						} else {
-							$el.before( V.sort.li );
-						}
-						V.sort.target = $el;
-					}
-				} );
+				var els    = document.elementsFromPoint( x, y );
+				var target = els.filter( el => $el.is( 'li:not( .ghost )' ) );
+				if ( target === V.sort.li[ 0 ] ) return
+				
+				var $target = $( target );
+				var index = $target.index();
+				if ( index > V.sort.li.index() ) {
+					$target.after( V.sort.li );
+				} else {
+					$target.before( V.sort.li );
+				}
+				V.sort.target = $target;
 			}, 200 );
 		} ).on( 'touchend', function( e ) {
 			setTimeout( () => [ 'press', 'sort' ].forEach( k => delete V[ k ] ), 500 );
