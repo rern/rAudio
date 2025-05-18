@@ -1091,9 +1091,12 @@ var LIBRARY   = {
 		V.query       = [];
 		var title     = 'LIBRARY';
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
-		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) );
-		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-			IMAGE.error( this, $( this ).prev().text() );
+		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) ).promise().done( () => {
+			$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
+				IMAGE.error( this, $( this ).prev().text() );
+			} );
+			DISPLAY.library();
+			SORT.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
@@ -1104,7 +1107,6 @@ var LIBRARY   = {
 		$( '#page-library .content-top, #page-library .search, #lib-list' ).addClass( 'hide' );
 		$( '#page-library .content-top, #lib-mode-list, #search-list' ).removeClass( 'hide' );
 		$( '#lib-list, #page-library .index, #search-list' ).remove();
-		DISPLAY.library();
 	}
 	, list       : data => { // V.librarylist / V.librarytrack
 		if ( ! V.search ) {
@@ -2005,6 +2007,7 @@ var PLAYLIST  = {
 					IMAGE.load( 'pl-savedlist' );
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
+					SORT.draggable( 'pl-savedlist' );
 				} );
 			}, 'json' );
 		}
@@ -2135,6 +2138,7 @@ var PLAYLIST  = {
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
 					IMAGE.load( 'pl-list' );
+					SORT.draggable( 'pl-list' );
 				} );
 			} else {
 				PLAYLIST.render.set();

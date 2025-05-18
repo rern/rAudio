@@ -52,8 +52,8 @@ if ( $CMD === 'lsmode' ) {
 	array_splice( $f, $i, 1 );
 	array_unshift( $f, $GMODE );
 }
-$format = '%'.implode( '%^^%', $f ).'%';
-$format = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
+$format  = '%'.implode( '%^^%', $f ).'%';
+$format  = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
 // $dirmpd $dirsystem $dirwebradio
 foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
 

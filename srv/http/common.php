@@ -48,7 +48,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
+	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -75,7 +75,7 @@ if ( ! $page ) { // main
 		$icon      = 'camilladsp';
 		$pagetitle = 'CamillaDSP';
 		$css       = [ ...$css, 'camilla', 'equalizer' ];
-		$jsp       = [ ...$jsp, 'camilladsp_plot', 'complex', 'plotly', 'Sortable' ];
+		$jsp       = [ ...$jsp, 'camilladsp_plot', 'complex', 'plotly' ];
 	} else if ( $guide ) {
 		$icon      = 'help';
 		$pagetitle = 'User Guide';

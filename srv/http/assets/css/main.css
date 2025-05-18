@@ -46,6 +46,9 @@ img,
 	-webkit-user-select: none;
 	-webkit-touch-callout: none;
 }
+img {
+	-webkit-user-drag: none; /* fix: mouseup not fired after mousemove */
+}
 a {
 	color: var( --cw );
 	text-decoration: none !important;

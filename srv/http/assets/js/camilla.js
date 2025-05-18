@@ -994,12 +994,11 @@ var GRAPH     = {
 	}
 }
 window.addEventListener( 'resize', GRAPH.flowchart.refresh );
-COMMON.sortable( '#pipeline .entries', e => {
-	var a  = COMMON.json.clone( PIP[ e.oldIndex ] );
-	PIP.splice( e.oldIndex, 1 );
-	PIP.splice( e.newIndex, 0, a );
+SORT.set( 'pipeline .entries', ( from, to ) => {
+	var a  = COMMON.json.clone( PIP[ from ] );
+	PIP.splice( from, 1 );
+	PIP.splice( to, 0, a );
 	SETTING.save( 'Pipeline', 'Change order ...' );
-	RENDER.pipeline();
 } );
 
 var CONFIG    = {
@@ -1346,6 +1345,7 @@ var RENDER    = {
 		var li = '';
 		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
+		SORT.draggable( V.tab +' .entries' );
 		RENDER.toggle();
 		GRAPH.flowchart.refresh();
 		$MENU.addClass( 'hide' );
@@ -1367,7 +1367,7 @@ var RENDER    = {
 			var li1    = el.name;
 			var li2    = RENDER.mixerMap( MIX[ el.name ].mapping );
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'" draggable="true">'+ ICON( icon ) + ICON( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ICON( icon ) + ICON( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
 				+ graph

@@ -70,8 +70,9 @@ window.addEventListener( 'touchstart', function( e ) {
 	xstart      = e.changedTouches[ 0 ].pageX;
 } );
 window.addEventListener( 'touchend', function( e ) {
-	if ( ! xstart ) return
+	if ( ! xstart || V.sort ) return
 	
+	clearTimeout( V.timeoutsort );
 	var diff  = xstart - e.changedTouches[ 0 ].pageX;
 	xstart = false;
 	if ( Math.abs( diff ) < 100 ) return
@@ -1732,27 +1733,30 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	}
 } );
 
-COMMON.sortable( 'lib-mode-list', () => {
-	var order = [];
-	$( '.mode' ).each( ( i, el ) => {
-		var $el  = $( el );
-		if ( $el.hasClass( 'bookmark' ) ) {
-			var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
-		} else {
-			var data = $el.data( 'mode' );
-		}
-		order.push( data );
-	} );
-	COMMON.json.save( 'order', order );
-} );
-COMMON.sortable( 'pl-list', e => {
-	BASH( [ 'mpcmove', e.oldIndex + 1, e.newIndex + 1, 'CMD FROM TO' ] );
-	$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-} );
-COMMON.sortable( 'pl-savedlist', e => {
-	BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', e.oldIndex + 1, e.newIndex + 1, 'CMD NAME ACTION FROM TO' ] );
-	$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
-} );
+var list = {
+	  'lib-mode-list' : () => {
+		var order = [];
+		$( '.mode' ).each( ( i, el ) => {
+			var $el  = $( el );
+			if ( $el.hasClass( 'bookmark' ) ) {
+				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
+			} else {
+				var data = $el.data( 'mode' );
+			}
+			order.push( data );
+		} );
+		COMMON.json.save( 'order', order );
+	} 
+	, 'pl-list'       : ( from, to ) => {
+		BASH( [ 'mpcmove', from + 1, to + 1, 'CMD FROM TO' ] );
+		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+	}
+	, 'pl-savedlist'  : ( from, to ) => {
+		BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', from + 1, to + 1, 'CMD NAME ACTION FROM TO' ] );
+		$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+	}
+}
+$.each( list, ( id, callback ) => SORT.set( id, callback ) );
 
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {
