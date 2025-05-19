@@ -1397,13 +1397,8 @@ var SORT        = {
 		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, place     : $target => {
-		if ( V.sort.ghost ) {
-			V.sort.to = $target.index( 'li:not( .ghost )' );
-			var index = V.sort.li.index( 'li:not( .ghost )' );
-		} else {
-			V.sort.to = $target.index();
-			var index = V.sort.li.index();
-		}
+		V.sort.to = $target.index();
+		var index = V.sort.li.index();
 		$target[ V.sort.to > index ? 'after' : 'before' ]( V.sort.li );
 	}
 	, set       : ( el, callback ) => {
@@ -1424,7 +1419,7 @@ var SORT        = {
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
-			e.preventDefault(); // suppress select text
+			setTimeout( e.preventDefault, 100 ); // suppress select text
 			V.timeoutsort = setTimeout( () => {
 				var $li      = $( e.target ).closest( 'li' );
 				SORT.v_sort( $li );
@@ -1445,19 +1440,18 @@ var SORT        = {
 						, opacity   : 0.5
 						, 'z-index' : 1
 					} );
-				V.sort.li.after( V.sort.ghost );
+				$( this ).append( V.sort.ghost );
 			}, 500 ); // suppressed by swipe: (main.js - touchend)
 		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
 			
 			e.preventDefault(); // prevent scroll
-			V.press     = true;  // suppress click
-			var x       = e.pageX || e.touches[ 0 ].pageX;
-			var y       = e.pageY || e.touches[ 0 ].pageY;
+			var x      = e.pageX || e.touches[ 0 ].pageX;
+			var y      = e.pageY || e.touches[ 0 ].pageY;
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
-			var els     = document.elementsFromPoint( x, y );
-			var target  = els.filter( el => $( el ).is( 'li:not( .ghost )' ) )[ 0 ];
-			SORT.place( $( target ) );
+			var els    = document.elementsFromPoint( x, y );
+			var target = els.filter( el => $( el ).is( 'li:not( .ghost )' ) );
+			SORT.place( $( target[ 0 ] ) );
 		} ).on( 'touchend mouseup', function() {
 			setTimeout( () => {
 				if ( V.sort.ghost ) V.sort.ghost.remove();
