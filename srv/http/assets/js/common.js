@@ -1424,6 +1424,7 @@ var SORT        = {
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
+			e.preventDefault(); // suppress select text
 			V.timeoutsort = setTimeout( () => {
 				var $li      = $( e.target ).closest( 'li' );
 				SORT.v_sort( $li );
