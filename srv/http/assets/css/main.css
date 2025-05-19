@@ -40,6 +40,7 @@ div.pagerefresh { z-index: 100 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
 img,
+li *,
 #colorpicker,
 #map-cover {
 	user-select: none;

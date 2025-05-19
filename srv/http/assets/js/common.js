@@ -1419,16 +1419,14 @@ var SORT        = {
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
-			setTimeout( e.preventDefault, 100 ); // suppress select text
 			V.timeoutsort = setTimeout( () => {
 				var $li       = $( e.target ).closest( 'li' );
 				SORT.v_sort( $li );
 				var pos       = $li[ 0 ].getBoundingClientRect();
 				V.sort.$ghost = V.sort.$li.clone();
-				var x         = e.pageX || e.touches[ 0 ].pageX;
-				var y         = e.pageY || e.touches[ 0 ].pageY;
-				V.sort.left   = x - pos.left;
-				V.sort.top    = y - pos.top;
+				var xy        = SORT.xy( e );
+				V.sort.left   = xy.x - pos.left;
+				V.sort.top    = xy.y - pos.top;
 				V.sort.$ghost
 					.addClass( 'ghost' )
 					.css( {
@@ -1446,10 +1444,9 @@ var SORT        = {
 			if ( ! V.sort ) return
 			
 			e.preventDefault(); // prevent scroll
-			var x      = e.pageX || e.touches[ 0 ].pageX;
-			var y      = e.pageY || e.touches[ 0 ].pageY;
-			V.sort.$ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
-			var els    = document.elementsFromPoint( x, y );
+			var xy     = SORT.xy( e );
+			V.sort.$ghost.css( { top: ( xy.y - V.sort.top ) +'px', left: ( xy.x - V.sort.left ) +'px' } );
+			var els    = document.elementsFromPoint( xy.x, xy.y );
 			var target = els.filter( el => $( el ).is( 'li:not( .ghost )' ) );
 			SORT.place( $( target[ 0 ] ) );
 		} ).on( 'touchend mouseup', function() {
@@ -1463,6 +1460,12 @@ var SORT        = {
 		V.sort = {
 			  $li  : $li
 			, from : $li.index()
+		}
+	}
+	, xy        : e => {
+		return {
+			  x : e.clientX || e.touches[ 0 ].clientX
+			, y : e.clientY || e.touches[ 0 ].clientY
 		}
 	}
 }
