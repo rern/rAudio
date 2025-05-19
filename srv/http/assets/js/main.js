@@ -1733,7 +1733,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	}
 } );
 
-var list = {
+var sortlist = {
 	  'lib-mode-list' : () => {
 		var order = [];
 		$( '#lib-mode-list li' ).each( ( i, el ) => {
@@ -1756,7 +1756,7 @@ var list = {
 		$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 	}
 }
-$.each( list, ( el, callback ) => SORT.set( el, callback ) );
+$.each( sortlist, ( el, callback ) => SORT.set( el, callback ) );
 
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {
