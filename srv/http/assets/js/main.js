@@ -72,8 +72,8 @@ if ( navigator.maxTouchPoints ) {
 		if ( ! V.swipe || V.sort ) return
 		
 		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
-		V.swipe   = false;
 		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		V.swipe   = false;
 		if ( Math.abs( diff ) < 100 ) return
 		
 		var pages = [ 'library', 'playback',  'playlist' ];

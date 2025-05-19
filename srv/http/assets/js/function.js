@@ -2153,7 +2153,7 @@ var PLAYLIST  = {
 			if ( ! V.playlist || ! V.playlisthome ) return
 			
 			UTIL.intervalClear.all();
-			if ( V.sortable
+			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
 				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 			) {
