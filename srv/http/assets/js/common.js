@@ -1455,21 +1455,18 @@ var SORT        = {
 			var x      = e.touches[ 0 ].pageX;
 			var y      = e.touches[ 0 ].pageY;
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
-			clearTimeout( V.debounce );
-			V.debounce = setTimeout( () => {
-				var els    = document.elementsFromPoint( x, y );
-				var target = els.filter( el => $el.is( 'li:not( .ghost )' ) );
-				if ( target === V.sort.li[ 0 ] ) return
-				
-				var $target = $( target );
-				var index = $target.index();
-				if ( index > V.sort.li.index() ) {
-					$target.after( V.sort.li );
-				} else {
-					$target.before( V.sort.li );
-				}
-				V.sort.target = $target;
-			}, 200 );
+			var els    = document.elementsFromPoint( x, y );
+			var target = els.filter( el => $el.is( 'li:not( .ghost )' ) );
+			if ( target === V.sort.li[ 0 ] ) return
+			
+			var $target = $( target );
+			var index = $target.index();
+			if ( index > V.sort.li.index() ) {
+				$target.after( V.sort.li );
+			} else {
+				$target.before( V.sort.li );
+			}
+			V.sort.target = $target;
 		} ).on( 'touchend', function( e ) {
 			setTimeout( () => [ 'press', 'sort' ].forEach( k => delete V[ k ] ), 500 );
 			if ( ! V.sort.ghost ) return
