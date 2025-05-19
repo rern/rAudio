@@ -1736,7 +1736,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 var list = {
 	  'lib-mode-list' : () => {
 		var order = [];
-		$( '.mode' ).each( ( i, el ) => {
+		$( '#lib-mode-list li' ).each( ( i, el ) => {
 			var $el  = $( el );
 			if ( $el.hasClass( 'bookmark' ) ) {
 				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
@@ -1756,7 +1756,7 @@ var list = {
 		$( '#pl-savedlist li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 	}
 }
-$.each( list, ( id, callback ) => SORT.set( id, callback ) );
+$.each( list, ( el, callback ) => SORT.set( el, callback ) );
 
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {

@@ -1371,116 +1371,104 @@ var COMMON      = {
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
 var SORT        = {
-	  drag  : ( el, callback ) => {
+	  drag      : ( el, callback ) => {
 		var libmode = el === 'lib-mode-list';
 		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
 			e.originalEvent.dataTransfer.effectAllowed = 'move';
-			var $this = $( this );
-			V.sort    = {
-				  li   : $this
-				, from : $this.index()
-			}
+			SORT.v_sort( $( this ) );
 		} ).on( 'dragenter', 'li', function( e ) {
-			e.preventDefault();
+			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.enter ) return
 			
 			V.sort.enter = true;
 			V.sort.over  = false;
 		} ).on( 'dragover', 'li', function( e ) {
-			e.preventDefault();
+			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.over ) return
 			
 			V.sort.enter = false;
 			V.sort.over  = true;
-			var $target  = $( this )
-			V.sort.to    = $target.index();
-			if ( V.sort.to > V.sort.li.index() ) {
-				$target.after( V.sort.li );
-			} else {
-				$target.before( V.sort.li );
-			}
+			SORT.place( $( this ) );
 		} ).on( 'drop', 'li', function() {
-			setTimeout( () => delete V.sort, 500 );
-			if ( ! V.sort ) return
-			
-			var from = V.sort.from;
-			var to   = V.sort.to;
-			if ( from !== to ) callback( from, to );
+			SORT.sort( callback );
 		} );	
 	}
 	, draggable : el => {
 		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
-	, set   : ( el, callback ) => {
+	, place     : $target => {
+		if ( V.sort.ghost ) {
+			V.sort.to = $target.index( 'li:not( .ghost )' );
+			var index = V.sort.li.index( 'li:not( .ghost )' );
+		} else {
+			V.sort.to = $target.index();
+			var index = V.sort.li.index();
+		}
+		$target[ V.sort.to > index ? 'after' : 'before' ]( V.sort.li );
+	}
+	, set       : ( el, callback ) => {
 		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
+	}
+	, sort      : callback => {
+		setTimeout( () => delete V.sort, 600 );
+		if ( ! V.sort ) return
+		
+		var from = V.sort.from;
+		var to   = V.sort.to;
+		if ( from !== to ) callback( from, to );
 	}
 	// swipe : ! V.sort - before 500ms
 	// sort  : V.sort   - after  500ms
 	// press : ! V.sort - after 1000ms 
-	, touch : ( el, callback ) => { // ok for mouse
+	, touch     : ( el, callback ) => { // ok for mouse
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
-			V.timeoutsort = setTimeout( () => { // suppressed by swipe: (main.js - touchend)
-				var $li = $( e.target ).closest( 'li' );
-				V.sort    = {
-					  li   : $li
-					, from : $li.index()
-				}
-			}, 500 );
-		} ).on( 'touchmove mousemove', function( e ) {
-			if ( ! V.sort ) return
-			
-			e.preventDefault(); // prevent scroll
-			V.press    = true;  // suppress click
-			if ( ! V.sort.ghost ) {
-				var h  = V.sort.li.height();
-				var w  = V.sort.li.width();
-				V.sort = {
-					  ...V.sort
-					, ghost : V.sort.li.clone()
-					, h     : h
-					, w     : w
-					, top   : h / 2
-					, left  : w / 2
-				}
+			V.timeoutsort = setTimeout( () => {
+				var $li      = $( e.target ).closest( 'li' );
+				SORT.v_sort( $li );
+				var pos      = $li[ 0 ].getBoundingClientRect();
+				V.sort.ghost = V.sort.li.clone();
+				var x        = e.pageX || e.touches[ 0 ].pageX;
+				var y        = e.pageY || e.touches[ 0 ].pageY;
+				V.sort.left  = x - pos.left;
+				V.sort.top   = y - pos.top;
 				V.sort.ghost
 					.addClass( 'ghost' )
 					.css( {
 						  position  : 'fixed'
-						, width     : V.sort.w +'px'
-						, height    : V.sort.h +'px'
+						, width     : pos.width +'px'
+						, height    : pos.height +'px'
+						, left      : pos.left +'px'
+						, top       : pos.top +'px'
 						, opacity   : 0.5
 						, 'z-index' : 1
 					} );
-				V.sort.li.before( V.sort.ghost );
-			}
-			var x      = e.pageX || e.touches[ 0 ].pageX;
-			var y      = e.pageY || e.touches[ 0 ].pageY;
+				V.sort.li.after( V.sort.ghost );
+			}, 500 ); // suppressed by swipe: (main.js - touchend)
+		} ).on( 'touchmove mousemove', function( e ) {
+			if ( ! V.sort ) return
+			
+			e.preventDefault(); // prevent scroll
+			V.press     = true;  // suppress click
+			var x       = e.pageX || e.touches[ 0 ].pageX;
+			var y       = e.pageY || e.touches[ 0 ].pageY;
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
-			var els    = document.elementsFromPoint( x, y );
-			var target = els.filter( el => $( el ).is( 'li:not( .ghost )' ) )[ 0 ];
-			if ( target === V.sort.li[ 0 ] ) return
-			
-			var $target = $( target );
-			var index = $target.index();
-			if ( index > V.sort.li.index() ) {
-				$target.after( V.sort.li );
-			} else {
-				$target.before( V.sort.li );
-			}
-			V.sort.target = $target;
-		} ).on( 'touchend mouseup', function( e ) {
-			setTimeout( () => [ 'press', 'sort' ].forEach( k => delete V[ k ] ), 500 );
-			if ( ! V.sort.ghost ) return
-			
-			setTimeout( () => { // wait for V.sort.target
+			var els     = document.elementsFromPoint( x, y );
+			var target  = els.filter( el => $( el ).is( 'li:not( .ghost )' ) )[ 0 ];
+			SORT.place( $( target ) );
+		} ).on( 'touchend mouseup', function() {
+			setTimeout( () => {
 				if ( V.sort.ghost ) V.sort.ghost.remove();
-				var from = V.sort.from;
-				var to   = V.sort.target.index();
-				if ( from !== to ) callback( from, to );
-			}, 0 );
+				SORT.sort( callback );
+			}, 0 ); // wait for V.sort.target
 		} );
+	}
+	, v_sort    : $li => {
+		V.sort = {
+			  li   : $li
+			, from : $li.index()
+		}
 	}
 }
 var VOLUME      = {
