@@ -55,7 +55,6 @@ if ( navigator.maxTouchPoints ) { // swipe
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
-var xstart;
 window.addEventListener( 'touchstart', function( e ) {
 	if ( I.active || V.color ) return
 	
@@ -64,17 +63,17 @@ window.addEventListener( 'touchstart', function( e ) {
 		|| $target.parents( '#volume-knob' ).length
 		|| $( '#data' ).length
 		|| ! $( '#bio' ).hasClass( 'hide' )
-		|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 	
-	xstart      = e.changedTouches[ 0 ].pageX;
+	V.swipe     = e.changedTouches[ 0 ].pageX;
 } );
 window.addEventListener( 'touchend', function( e ) {
-	if ( ! xstart || V.sort ) return
+	if ( ! V.swipe || V.sort ) return
 	
 	clearTimeout( V.timeoutsort );
-	var diff  = xstart - e.changedTouches[ 0 ].pageX;
-	xstart = false;
+	V.swipe   = false;
+	var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
 	if ( Math.abs( diff ) < 100 ) return
 	
 	var pages = [ 'library', 'playback',  'playlist' ];
