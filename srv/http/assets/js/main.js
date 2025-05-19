@@ -54,39 +54,40 @@ if ( navigator.maxTouchPoints ) {
 		return false
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
+	 // swipe ---------------------------------------------------------
+	window.addEventListener( 'touchstart', function( e ) {
+		if ( I.active || V.color ) return
+		
+		var $target = $( e.target );
+		if ( $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| $( '#data' ).length
+			|| ! $( '#bio' ).hasClass( 'hide' )
+			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
+		) return
+		
+		V.swipe     = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( ! V.swipe || V.sort ) return
+		
+		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
+		V.swipe   = false;
+		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( diff ) < 100 ) return
+		
+		var pages = [ 'library', 'playback',  'playlist' ];
+		var i     = pages.indexOf( V.page );
+		var ilast = pages.length - 1;
+		diff > 0 ? i++ : i--;
+		if ( i < 0 ) {
+			i = ilast;
+		} else if ( i > ilast ) {
+			i = 0;
+		}
+		$( '#'+ pages[ i ] ).trigger( 'click' );
+	} );
 }
-window.addEventListener( 'touchstart', function( e ) { // swipe
-	if ( I.active || V.color ) return
-	
-	var $target = $( e.target );
-	if ( $target.parents( '#time-knob' ).length
-		|| $target.parents( '#volume-knob' ).length
-		|| $( '#data' ).length
-		|| ! $( '#bio' ).hasClass( 'hide' )
-		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
-	) return
-	
-	V.swipe     = e.changedTouches[ 0 ].pageX;
-} );
-window.addEventListener( 'touchend', function( e ) {
-	if ( ! V.swipe || V.sort ) return
-	
-	clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
-	V.swipe   = false;
-	var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
-	if ( Math.abs( diff ) < 100 ) return
-	
-	var pages = [ 'library', 'playback',  'playlist' ];
-	var i     = pages.indexOf( V.page );
-	var ilast = pages.length - 1;
-	diff > 0 ? i++ : i--;
-	if ( i < 0 ) {
-		i = ilast;
-	} else if ( i > ilast ) {
-		i = 0;
-	}
-	$( '#'+ pages[ i ] ).trigger( 'click' );
-} );
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.color ) return

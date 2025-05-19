@@ -1399,7 +1399,7 @@ var SORT        = {
 			} else {
 				$target.before( V.sort.li );
 			}
-		} ).on( 'drop', 'li', function( e ) {
+		} ).on( 'drop', 'li', function() {
 			setTimeout( () => delete V.sort, 500 );
 			if ( ! V.sort ) return
 			
@@ -1417,7 +1417,7 @@ var SORT        = {
 	// swipe : ! V.sort - before 500ms
 	// sort  : V.sort   - after  500ms
 	// press : ! V.sort - after 1000ms 
-	, touch : ( el, callback ) => {
+	, touch : ( el, callback ) => { // ok for mouse
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
