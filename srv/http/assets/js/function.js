@@ -1096,7 +1096,7 @@ var LIBRARY   = {
 				IMAGE.error( this, $( this ).prev().text() );
 			} );
 			DISPLAY.library();
-			SORT.draggable( 'lib-mode-list' );
+			SORT.draggable( this.id );
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
@@ -2003,11 +2003,11 @@ var PLAYLIST  = {
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
 				var html = UTIL.htmlHash( data.html );
-				$( '#pl-savedlist' ).html( html ).promise().done( () => {
+				$( '#pl-savedlist' ).html( html ).promise().done( function() {
 					IMAGE.load( 'pl-savedlist' );
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
-					SORT.draggable( 'pl-savedlist' );
+					SORT.draggable( this.id );
 				} );
 			}, 'json' );
 		}
@@ -2134,11 +2134,11 @@ var PLAYLIST  = {
 			if ( data.html !== V.html.playlist ) {
 				V.html.playlist = data.html;
 				var html        = UTIL.htmlHash( data.html );
-				$( '#pl-list' ).html( html ).promise().done( () => {
+				$( '#pl-list' ).html( html ).promise().done( function() {
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
-					IMAGE.load( 'pl-list' );
-					SORT.draggable( 'pl-list' );
+					IMAGE.load( this.id );
+					SORT.draggable( this.id );
 				} );
 			} else {
 				PLAYLIST.render.set();
