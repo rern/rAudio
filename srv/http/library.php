@@ -122,17 +122,17 @@ case 'home':
 			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
 				$bkradio  = 'bkradio';
 				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
-				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
+				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath );
 			} else {
 				$bkradio  = '';
 				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
-				$src     .= '/coverart.jpg';
+				$src     .= '/coverart';
 			}
 			$htmlmode.= '
 <li class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$src.'^^^">
+	<img class="bkcoverart" src="'.$src.'.jpg^^^">
 </li>';
 		}
 	}
