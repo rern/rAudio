@@ -125,7 +125,7 @@ $.fn.press = function( args ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
-			if ( V.sort ) return
+			if ( V.sort ) return // suppressed by SORT after 500ms
 			
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
@@ -1414,21 +1414,24 @@ var SORT        = {
 	, set   : ( el, callback ) => {
 		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
 	}
+	// swipe : ! V.sort - before 500ms
+	// sort  : V.sort   - after  500ms
+	// press : ! V.sort - after 1000ms 
 	, touch : ( el, callback ) => {
-		$( '#'+ el ).on( 'touchstart', function( e ) {
+		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
-			V.timeoutsort = setTimeout( () => { // if swipe, cleared by main.js - window.addEventListener( 'touchend' ...
+			V.timeoutsort = setTimeout( () => { // suppressed by swipe: (main.js - touchend)
 				var $li = $( e.target ).closest( 'li' );
 				V.sort    = {
 					  li   : $li
 					, from : $li.index()
 				}
-			}, 600 );
-		} ).on( 'touchmove', function( e ) {
+			}, 500 );
+		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
 			
-			e.preventDefault(); // touchmove - prevent scroll
+			e.preventDefault(); // prevent scroll
 			V.press    = true;  // suppress click
 			if ( ! V.sort.ghost ) {
 				var h  = V.sort.li.height();
@@ -1452,11 +1455,11 @@ var SORT        = {
 					} );
 				V.sort.li.before( V.sort.ghost );
 			}
-			var x      = e.touches[ 0 ].pageX;
-			var y      = e.touches[ 0 ].pageY;
+			var x      = e.pageX || e.touches[ 0 ].pageX;
+			var y      = e.pageY || e.touches[ 0 ].pageY;
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
 			var els    = document.elementsFromPoint( x, y );
-			var target = els.filter( el => $el.is( 'li:not( .ghost )' ) )[ 0 ];
+			var target = els.filter( el => $( el ).is( 'li:not( .ghost )' ) )[ 0 ];
 			if ( target === V.sort.li[ 0 ] ) return
 			
 			var $target = $( target );
@@ -1467,7 +1470,7 @@ var SORT        = {
 				$target.before( V.sort.li );
 			}
 			V.sort.target = $target;
-		} ).on( 'touchend', function( e ) {
+		} ).on( 'touchend mouseup', function( e ) {
 			setTimeout( () => [ 'press', 'sort' ].forEach( k => delete V[ k ] ), 500 );
 			if ( ! V.sort.ghost ) return
 			

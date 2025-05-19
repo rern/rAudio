@@ -46,7 +46,7 @@ $VOLUME = $( '#volume-knob' );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( navigator.maxTouchPoints ) { // swipe
+if ( navigator.maxTouchPoints ) {
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
@@ -55,7 +55,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
-window.addEventListener( 'touchstart', function( e ) {
+window.addEventListener( 'touchstart', function( e ) { // swipe
 	if ( I.active || V.color ) return
 	
 	var $target = $( e.target );
@@ -71,7 +71,7 @@ window.addEventListener( 'touchstart', function( e ) {
 window.addEventListener( 'touchend', function( e ) {
 	if ( ! V.swipe || V.sort ) return
 	
-	clearTimeout( V.timeoutsort );
+	clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
 	V.swipe   = false;
 	var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
 	if ( Math.abs( diff ) < 100 ) return
