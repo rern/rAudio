@@ -1456,7 +1456,7 @@ var SORT        = {
 			var y      = e.touches[ 0 ].pageY;
 			V.sort.ghost.css( { top: ( y - V.sort.top ) +'px', left: ( x - V.sort.left ) +'px' } );
 			var els    = document.elementsFromPoint( x, y );
-			var target = els.filter( el => $el.is( 'li:not( .ghost )' ) );
+			var target = els.filter( el => $el.is( 'li:not( .ghost )' ) )[ 0 ];
 			if ( target === V.sort.li[ 0 ] ) return
 			
 			var $target = $( target );
