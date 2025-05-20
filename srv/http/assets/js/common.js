@@ -1383,6 +1383,7 @@ var SORT        = {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
+		setTimeout( () => delete V.sort, 600 );
 	}
 	, drag      : ( el, callback ) => {
 		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
@@ -1404,7 +1405,6 @@ var SORT        = {
 			SORT.insert( this );
 		} ).on( 'drop', 'li', function() {
 			SORT.callback( callback );
-			setTimeout( () => delete V.sort, 600 );
 		} );
 	}
 	, draggable : el => {
@@ -1462,11 +1462,9 @@ var SORT        = {
 				}
 			} );
 		} ).on( 'touchend mouseup', function() {
-			setTimeout( () => delete V.sort, 600 );
-			if ( ! V.sort ) return
-			
-			if ( V.sort.$ghost ) V.sort.$ghost.remove();
-			setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			clearTimeout( V.timeoutsort );
+			$( 'li.ghost' ).remove();
+			if ( V.sort ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 		} );
 	}
 	, V        : $from => {
