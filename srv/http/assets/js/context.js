@@ -30,12 +30,7 @@ var CONTEXT  = {
 			, list       : [ 'As:', 'text' ]
 			, values     : name
 			, checkblank : true
-			, beforeshow : () => {
-				$( '#infoList input' ).parents( 'tr' ).addClass( 'hide' );
-				$( '#infoList img' ).off( 'error' ).on( 'error', function() {
-					IMAGE.error( this, 'bookmark' );
-				} );
-			}
+			, beforeshow : () => $( '#infoList input' ).parents( 'tr' ).addClass( 'hide' )
 			, ok         : () => {
 				var name = _INFO.val();
 				BANNER( 'bookmark', 'Bookmark', 'Add ...' );
@@ -242,9 +237,6 @@ var CONTEXT  = {
 				, values       : values
 				, checkchanged : true
 				, beforeshow   : () => {
-					$( '#infoList img' ).on( 'error', function() {
-						IMAGE.error( this );
-					} );
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
 					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
@@ -352,9 +344,6 @@ var CONTEXT  = {
 						   +'<p class="infoimgname">'+ name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, beforeshow  : () => {
-				$( '.imgold' ).on( 'error', function() {
-					IMAGE.error( this );
-				} );
 				$( '.extrabtn' ).toggleClass( 'hide', coverart.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
 			, buttonlabel : V.library ? ICON( mode ) +' Icon' : ICON( 'remove' ) +' Remove'
@@ -366,10 +355,7 @@ var CONTEXT  = {
 					BASH( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
 				}
 			}
-			, ok          : () => {
-				var src = $( '.infoimgnew' ).attr( 'src' );
-				IMAGE.replace( mode, imagefilenoext );
-			}
+			, ok          : () => UTIL.imageReplace( mode, imagefilenoext )
 		} );
 	}
 	, thumbupdate   : modealbum => {

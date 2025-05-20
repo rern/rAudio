@@ -352,7 +352,7 @@ var COVERART  = {
 				BASH( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
 				if ( V.playback ) COVERART.default();
 			}
-			, ok          : () => IMAGE.replace( 'coverart', file.slice( 0, -4 ) )
+			, ok          : () => UTIL.imageReplace( 'coverart', file.slice( 0, -4 ) )
 		} );
 	}
 	, default : () => {
@@ -407,7 +407,7 @@ var COVERART  = {
 							+'<p class="infoimgname">'+ ICON( 'folder' ) +' '+ album
 							+'<br>'+ ICON( 'artist' ) +' '+ artist +'</p>'
 				, ok      : () => {
-					IMAGE.replace( 'coverart', path +'/cover' );
+					UTIL.imageReplace( 'coverart', path +'/cover' );
 					BANNER( icon, title, 'Save ...' );
 				}
 			} );
@@ -957,92 +957,6 @@ var FILEIMAGE = {
 		}
 	}
 }
-var IMAGE     = {
-	  load    : list => {
-		var $lazyload = $( '#'+ list +' .lazyload' );
-		if ( ! $lazyload.length ) return
-		
-		if ( list === 'lib-list' ) {
-			if ( MODE.album() ) {
-				$lazyload.on( 'error', function() {
-					IMAGE.error( this );
-				} );
-			} else if ( ! MODE.file( '+radio' ) ) {
-				$lazyload.on( 'error', function() {
-					$( this ).replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
-				} );
-			} else {
-				$lazyload.on( 'error', function() {
-					var $this = $( this );
-					var src = $this.attr( 'src' );
-					if ( MODE.radio() ) {
-						if ( $this.parent().hasClass( 'dir' ) ) {
-							var icon = 'folder';
-							var menu = 'wrdir';
-						} else {
-							var icon = V.mode;
-							var menu = 'webradio';
-						}
-					} else {
-						var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
-						var menu = 'folder';
-					}
-					$this.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
-				} );
-			}
-		} else {
-			$lazyload.on( 'error', function() {
-				var $this = $( this );
-				var src   = $this.attr( 'src' );
-				var ext   = src.slice( -16, -13 );
-				if ( ext === 'jpg' ) {
-					$this.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
-				} else if ( ext === 'png' ) {
-					$this.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
-				} else {
-					$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
-				}
-			} );
-		}
-	}
-	, error   : ( el, bookmark ) => { // not lazyload
-		var $this = $( el );
-		var src   = $this.attr( 'src' );
-		if ( src.slice( -16, -13 ) === 'jpg' ) {
-			$this.attr( 'src', src.replace( 'jpg?v=', 'gif?v=' ) );
-		} else if ( ! bookmark ) {
-			$this.attr( 'src', V.coverart );
-		} else { // bookmark
-			var icon = ICON( 'bookmark bl' );
-			if ( V.libraryhome ) icon += '<a class="label">'+ bookmark +'</a>';
-			$this.replaceWith( icon );
-			$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
-		}
-	}
-	, replace : ( type, imagefilenoext ) => {
-		var data = {
-			  cmd     : 'imagereplace'
-			, type    : type
-			, file    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
-			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
-			, current : V.playback
-		}
-		if ( V.debug ) {
-			console.log( '%cDebug: %ccmd.php', 'color:red', 'color:white' );
-			console.log( data );
-			return
-		}
-		
-		$.post( 'cmd.php', data, std => {
-			if ( std == -1 ) {
-				BANNER_HIDE();
-				var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
-				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
-			}
-		} );
-		BANNER( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
-	}
-}
 var LIBRARY   = {
 	  addReplace : () => {
 		V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
@@ -1093,9 +1007,6 @@ var LIBRARY   = {
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
 		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) ).promise().done( () => {
 			DISPLAY.library();
-			$( '#lib-mode-list .bkcoverart' ).on( 'error', function() {
-				IMAGE.error( this, $( this ).prev().text() );
-			} );
 			SORT.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
@@ -1168,7 +1079,6 @@ var LIBRARY   = {
 				if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 			} else {
 				V.librarytrack = false;
-				IMAGE.load( 'lib-list' );
 				if ( V.albumlist ) $( '#lib-list' ).addClass( 'album' );
 			}
 			$( '.liinfopath' ).toggleClass( 'hide', MODE.file( '+radio' ) );
@@ -2007,7 +1917,6 @@ var PLAYLIST  = {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
-					IMAGE.load( id );
 					SORT.draggable( id );
 				} );
 			}, 'json' );
@@ -2139,7 +2048,6 @@ var PLAYLIST  = {
 					var id = 'pl-list';
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
-					IMAGE.load( id );
 					SORT.draggable( id );
 				} );
 			} else {
@@ -2345,6 +2253,29 @@ var UTIL      = {
 		var hash = UTIL.versionHash();
 		return html.replace( /\^\^\^/g, hash )
 	}
+	, imageReplace    : ( type, imagefilenoext ) => {
+		var data = {
+			  cmd     : 'imagereplace'
+			, type    : type
+			, file    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
+			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+			, current : V.playback
+		}
+		if ( V.debug ) {
+			console.log( '%cDebug: %ccmd.php', 'color:red', 'color:white' );
+			console.log( data );
+			return
+		}
+		
+		$.post( 'cmd.php', data, std => {
+			if ( std == -1 ) {
+				BANNER_HIDE();
+				var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
+				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
+			}
+		} );
+		BANNER( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
+	}
 	, infoTitle       : () => {
 		var artist = S.Artist;
 		var title  = S.Title;
@@ -2489,6 +2420,48 @@ var UTIL      = {
 		if ( mm < 10 ) mm = '0'+ mm;
 		var hh = Math.floor( second / 3600 );
 		return hh  +':'+ mm +':'+ ss;
+	}
+	, swipe           : () => {
+		$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
+			e.preventDefault();
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+			return false
+		} );
+		$( 'link[ href*="hovercursor.css" ]' ).remove();
+		 // swipe ---------------------------------------------------------
+		document.addEventListener( 'touchstart', function( e ) {
+			if ( I.active || V.color ) return
+			
+			var $target = $( e.target );
+			if ( $target.parents( '#time-knob' ).length
+				|| $target.parents( '#volume-knob' ).length
+				|| $( '#data' ).length
+				|| ! $( '#bio' ).hasClass( 'hide' )
+				|| [ 'time-band', 'volume-band' ].includes( e.target.id )
+			) return
+			
+			V.swipe     = e.changedTouches[ 0 ].pageX;
+		} );
+		document.addEventListener( 'touchend', function( e ) {
+			if ( ! V.swipe || V.sort ) return
+			
+			clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
+			var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+			V.swipe   = false;
+			if ( Math.abs( diff ) < 100 ) return
+			
+			var pages = [ 'library', 'playback',  'playlist' ];
+			var i     = pages.indexOf( V.page );
+			var ilast = pages.length - 1;
+			diff > 0 ? i++ : i--;
+			if ( i < 0 ) {
+				i = ilast;
+			} else if ( i > ilast ) {
+				i = 0;
+			}
+			$( '#'+ pages[ i ] ).trigger( 'click' );
+		} );
 	}
 	, switchPage      : page => {
 		UTIL.intervalClear.all();

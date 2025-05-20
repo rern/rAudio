@@ -97,7 +97,20 @@ function NOTIFY( icon, title, message, delay ) {
 }
 // ----------------------------------------------------------------------
 /*
-swipe : move 100px   before 500ms (main.js)
+mousedown/touchstart
+	press - V.timeoutpress 1000 > callback (cleared by dragstart/touchmove)
+	sort  - V.timeoutsort   500 > V.sort   (cleared by swipe touchend)
+	swipe - e.pageX
+dragstart/touchmove
+	press - clear V.timeoutpress
+	sort  - >>>
+	swipe - n/a
+drop/touchend
+	press - clear V.timeoutpress
+	sort  - delete V.sort
+	swipe - clear V.timeoutsort
+
+swipe : move 100px   before 500ms
 sort  : move < 100px after  500ms
 press : no move      after 1000ms
 
@@ -121,14 +134,12 @@ $.fn.press = function( args ) {
 		end      = args.end;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( () => {
-			if ( V.sort ) return // suppressed by SORT after 500ms
-			
+		V.timeoutpress = setTimeout( () => {
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
-		clearTimeout( timeout );
+		clearTimeout( V.timeoutpress );
 		if ( ! V.press ) return
 		
 		setTimeout( () => { // after last action timeout
@@ -1372,12 +1383,12 @@ var SORT        = {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
-		setTimeout( () => delete V.sort, 600 );
 	}
 	, drag      : ( el, callback ) => {
 		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
 			e.originalEvent.dataTransfer.effectAllowed = 'move';
 			V.sort = SORT.V( $( this ) );
+			clearTimeout( V.timeoutpress );
 		} ).on( 'dragenter', 'li', function( e ) {
 			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.enter ) return
@@ -1393,6 +1404,7 @@ var SORT        = {
 			SORT.insert( this );
 		} ).on( 'drop', 'li', function() {
 			SORT.callback( callback );
+			setTimeout( () => delete V.sort, 600 );
 		} );
 	}
 	, draggable : el => {
@@ -1433,6 +1445,7 @@ var SORT        = {
 				$( this ).append( V.sort.$ghost );
 			}, 500 ); // suppressed by swipe: (main.js - touchend)
 		} ).on( 'touchmove mousemove', function( e ) {
+			clearTimeout( V.timeoutpress );
 			if ( ! V.sort ) return
 			
 			e.preventDefault(); // prevent scroll
@@ -1449,6 +1462,7 @@ var SORT        = {
 				}
 			} );
 		} ).on( 'touchend mouseup', function() {
+			setTimeout( () => delete V.sort, 600 );
 			if ( ! V.sort ) return
 			
 			if ( V.sort.$ghost ) V.sort.$ghost.remove();

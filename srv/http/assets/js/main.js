@@ -46,48 +46,49 @@ $VOLUME = $( '#volume-knob' );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( navigator.maxTouchPoints ) {
-	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
-		e.preventDefault();
-		e.stopPropagation();
-		e.stopImmediatePropagation();
-		return false
-	} );
-	$( 'link[ href*="hovercursor.css" ]' ).remove();
-	 // swipe ---------------------------------------------------------
-	document.addEventListener( 'touchstart', function( e ) {
-		if ( I.active || V.color ) return
-		
-		var $target = $( e.target );
-		if ( $target.parents( '#time-knob' ).length
-			|| $target.parents( '#volume-knob' ).length
-			|| $( '#data' ).length
-			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
-		) return
-		
-		V.swipe     = e.changedTouches[ 0 ].pageX;
-	} );
-	document.addEventListener( 'touchend', function( e ) {
-		if ( ! V.swipe || V.sort ) return
-		
-		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
-		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
-		V.swipe   = false;
-		if ( Math.abs( diff ) < 100 ) return
-		
-		var pages = [ 'library', 'playback',  'playlist' ];
-		var i     = pages.indexOf( V.page );
-		var ilast = pages.length - 1;
-		diff > 0 ? i++ : i--;
-		if ( i < 0 ) {
-			i = ilast;
-		} else if ( i > ilast ) {
-			i = 0;
+if ( navigator.maxTouchPoints ) UTIL.swipe();
+
+document.addEventListener( 'error', function( e ) { // img error
+	if ( e.target.tagName !== 'IMG' ) return
+	
+	var $img = $( e.target );
+	var src  = $img.attr( 'src' );
+	var ext  = src.slice( -16, -13 );
+	if ( ext === 'jpg' ) {
+		$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
+	} else if ( ext === 'png' ) {
+		$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
+	} else if ( $img.hasClass( 'bkcoverart' ) ) { // bookmark
+		var icon = ICON( 'bookmark bl' );
+		if ( V.libraryhome ) icon += '<a class="label">'+ $img.prev().text() +'</a>';
+		$img.replaceWith( icon );
+		if ( I.active ) $( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
+	} else if ( I.active ) {
+		$img.attr( 'src', V.coverart );
+	} else if ( V.library ) {
+		if ( MODE.album() ) {
+			$img.replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
+		} else if ( V.mode === 'webradio' ) {
+			if ( MODE.radio() ) {
+				if ( $img.parent().hasClass( 'dir' ) ) {
+					var icon = 'folder';
+					var menu = 'wrdir';
+				} else {
+					var icon = V.mode;
+					var menu = 'webradio';
+				}
+			} else {
+				var icon = $img.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
+				var menu = 'folder';
+			}
+			$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
 		}
-		$( '#'+ pages[ i ] ).trigger( 'click' );
-	} );
-}
+	} else if ( V.playlist ) {
+		$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+	} else { // playlist
+		$img.attr( 'src', V.coverart );
+	}
+}, true ); // useCapture from parent > target (img onerror not bubble)
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.color ) return
@@ -1185,9 +1186,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, button      : ! thumbnail ? '' : () => {
 			BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir, 'CMD TYPE DIR' ] );
 		}
-		, ok          : () => {
-			IMAGE.replace( 'bookmark', dir +'/coverart' );
-		}
+		, ok          : () => UTIL.imageReplace( 'bookmark', dir +'/coverart' )
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	COMMON.dabScan();
