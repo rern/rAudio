@@ -373,6 +373,35 @@ var COVERART  = {
 			PLAYBACK.vu();
 		}
 	}
+	, onError : () => {
+		document.addEventListener( 'error', function( e ) { // img error - faster than exist checked on server
+			if ( e.target.tagName !== 'IMG' ) return
+			
+			var $img = $( e.target );
+			var src  = $img.attr( 'src' );
+			var ext  = src.slice( -16, -13 );
+			if ( ext === 'jpg' ) {
+				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
+			} else if ( ext === 'png' ) {
+				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
+			} else if ( V.playback ) {
+				$img.attr( 'src', V.coverart );
+			} else if ( V.playlist ) {
+				$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+			} else { // lib-list (home - already exist checked)
+				if ( MODE.album() ) {
+					$img.attr( 'src', V.coverart );
+				} else if ( ! MODE.radio() ) {
+					$img.replaceWith( '<i class="i-folder li-icon" data-menu="folder"></i>' );
+				} else {
+					var dir = $img.parent().hasClass( 'dir' );
+					var icon = dir ? 'folder' : V.mode;
+					var menu = dir ? 'wrdir' : 'webradio';
+					$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
+				}
+			}
+		}, true ); // useCapture (from parent > target - img onerror not bubble)
+	}
 	, save    : () => {
 		if ( V.playback ) {
 			var src    = $( '#coverart' ).attr( 'src' );
@@ -2422,6 +2451,8 @@ var UTIL      = {
 		return hh  +':'+ mm +':'+ ss;
 	}
 	, swipe           : () => {
+		if ( ! navigator.maxTouchPoints ) return
+		
 		$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 			e.preventDefault();
 			e.stopPropagation();
