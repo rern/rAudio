@@ -199,7 +199,7 @@ i {
 .i-refresh-library::before { content: '\F536' }
 .i-refresh-overlay         { position: absolute; left: -12px; }
 .i-refresh-overlay::before { content: '\F595'; position: absolute; color: var( --cg ); z-index: 1; }
-.i-refresh-overlay::after  { content: '\F596'; position: absolute; z-index: 2; }
+.i-refresh-overlay::after  { content: '\F596'; position: absolute; color: var( --cw ); z-index: 2; }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
 .i-repeat::before          { content: '\F511' }
