@@ -128,11 +128,19 @@ case 'home':
 				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
 				$src     .= '/coverart';
 			}
+			$icon = '<img class="bkcoverart" src="'.$src;
+			if ( file_exists( '/srv/http'.$src.'.jpg' ) ) {
+				$icon.= '.jpg^^^">';
+			} else if ( file_exists( '/srv/http'.$src.'.gif' ) ) {
+				$icon.= '.gif^^^">';
+			} else {
+				$icon = I( 'bookmark bl' ).'<a class="label">'.$name.'</a>';
+			}
 			$htmlmode.= '
 <li class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$src.'.jpg^^^">
+	'.$icon.'
 </li>';
 		}
 	}

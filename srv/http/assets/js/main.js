@@ -58,14 +58,11 @@ document.addEventListener( 'error', function( e ) { // img error
 		$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
 	} else if ( ext === 'png' ) {
 		$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
-	} else if ( $img.hasClass( 'bkcoverart' ) ) { // bookmark
-		var icon = ICON( 'bookmark bl' );
-		if ( V.libraryhome ) icon += '<a class="label">'+ $img.prev().text() +'</a>';
-		$img.replaceWith( icon );
-		if ( I.active ) $( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
-	} else if ( I.active ) {
+	} else if ( V.playback ) {
 		$img.attr( 'src', V.coverart );
-	} else if ( V.library ) {
+	} else if ( V.playlist ) {
+		$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+	} else { // lib-list (home - exist checked)
 		if ( MODE.album() ) {
 			$img.replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
 		} else if ( V.mode === 'webradio' ) {
@@ -83,10 +80,6 @@ document.addEventListener( 'error', function( e ) { // img error
 			}
 			$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
 		}
-	} else if ( V.playlist ) {
-		$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
-	} else { // playlist
-		$img.attr( 'src', V.coverart );
 	}
 }, true ); // useCapture from parent > target (img onerror not bubble)
 
