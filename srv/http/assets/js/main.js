@@ -55,7 +55,7 @@ if ( navigator.maxTouchPoints ) {
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
 	 // swipe ---------------------------------------------------------
-	window.addEventListener( 'touchstart', function( e ) {
+	document.addEventListener( 'touchstart', function( e ) {
 		if ( I.active || V.color ) return
 		
 		var $target = $( e.target );
@@ -68,7 +68,7 @@ if ( navigator.maxTouchPoints ) {
 		
 		V.swipe     = e.changedTouches[ 0 ].pageX;
 	} );
-	window.addEventListener( 'touchend', function( e ) {
+	document.addEventListener( 'touchend', function( e ) {
 		if ( ! V.swipe || V.sort ) return
 		
 		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
@@ -1008,7 +1008,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 	var $target = '';
 	if ( MODE.album() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( MODE.file( 'radio' ) ) {
+	} else if ( MODE.file( '+radio' ) ) {
 		var $breadcrumbs = $( '#lib-title a' );
 		$target = $breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ) : $( '#library' );
 	} else if ( V.query.length === 1 && ! MODE.radio() ) {
@@ -1329,7 +1329,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $LI.find( '.lipath' ).text();
 	if ( l_modefile ) {
-		if ( MODE.file( 'radio' ) ) {
+		if ( MODE.file( '+radio' ) ) {
 			var query     = {
 				  library : 'ls'
 				, string  : path
@@ -1779,6 +1779,8 @@ $( '#colorcancel' ).on( 'click', function() {
 	}
 } );
 $( '#pickhue' ).on( 'touchstart mousedown', e => {
+	if ( ! $( e.target ).closest( '#pickhue' ).length ) return // touch limit
+	
 	V.hue = true;
 	COLOR.pick.xy( e, 'hue' );
 	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
@@ -1795,6 +1797,8 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	$( '#picknone, #picksat' ).removeClass( 'hide' );
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
+	if ( ! $( e.target ).closest( '#picksat' ).length ) return // touch limit
+	
 	V.sat = true;
 	COLOR.pick.xy( e, 'sat', 'clear' );
 	$( '#colorok' ).removeClass( 'disabled' );

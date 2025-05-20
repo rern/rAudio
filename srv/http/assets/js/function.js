@@ -964,15 +964,15 @@ var IMAGE     = {
 		
 		if ( list === 'lib-list' ) {
 			if ( MODE.album() ) {
-				$lazyload.off( 'error' ).on( 'error', function() {
+				$lazyload.on( 'error', function() {
 					IMAGE.error( this );
 				} );
-			} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
-				$lazyload.off( 'error' ).on( 'error', function() {
+			} else if ( ! MODE.file( '+radio' ) ) {
+				$lazyload.on( 'error', function() {
 					$( this ).replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
 				} );
 			} else {
-				$lazyload.off( 'error' ).on( 'error', function() {
+				$lazyload.on( 'error', function() {
 					var $this = $( this );
 					var src = $this.attr( 'src' );
 					if ( MODE.radio() ) {
@@ -991,7 +991,7 @@ var IMAGE     = {
 				} );
 			}
 		} else {
-			$lazyload.off( 'error' ).on( 'error', function() {
+			$lazyload.on( 'error', function() {
 				var $this = $( this );
 				var src   = $this.attr( 'src' );
 				var ext   = src.slice( -16, -13 );
@@ -1005,9 +1005,9 @@ var IMAGE     = {
 			} );
 		}
 	}
-	, error   : ( el, bookmark ) => {
-		var $this      = $( el );
-		var src        = $this.attr( 'src' );
+	, error   : ( el, bookmark ) => { // not lazyload
+		var $this = $( el );
+		var src   = $this.attr( 'src' );
 		if ( src.slice( -16, -13 ) === 'jpg' ) {
 			$this.attr( 'src', src.replace( 'jpg?v=', 'gif?v=' ) );
 		} else if ( ! bookmark ) {
@@ -1060,7 +1060,7 @@ var LIBRARY   = {
 				.removeClass( 'hide' )
 				.toggleClass( 'nofixed', ! D.fixedcover );
 			$( '#lib-list li' ).eq( 1 ).toggleClass( 'track1', D.fixedcover );
-			$( '#liimg' ).off( 'error' ).on( 'error', function() {
+			$( '#liimg' ).on( 'error', function() {
 				$( this ).attr( 'src', V.coverdefault );
 			} );
 			$( '.liinfo .lialbum' ).toggleClass( 'hide', MODE.album() );
@@ -1092,11 +1092,11 @@ var LIBRARY   = {
 		var title     = 'LIBRARY';
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
 		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) ).promise().done( () => {
-			$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
+			DISPLAY.library();
+			$( '#lib-mode-list .bkcoverart' ).on( 'error', function() {
 				IMAGE.error( this, $( this ).prev().text() );
 			} );
-			DISPLAY.library();
-			SORT.draggable( this.id );
+			SORT.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
@@ -1130,7 +1130,7 @@ var LIBRARY   = {
 			var htmlpath = '';
 		} else if ( data.path === '/srv/http/data/'+ V.mode ) { // radio root
 			var htmlpath = ICON( V.mode ) + htmltitle;
-		} else if ( ! MODE.file( 'radio' ) ) {
+		} else if ( ! MODE.file( '+radio' ) ) {
 			var htmlpath = ICON( V.search ? 'search' : V.mode ) + htmltitle;
 		} else if ( data.path ) { // dir breadcrumbs
 			var dir      = data.path.split( '/' );
@@ -1171,7 +1171,7 @@ var LIBRARY   = {
 				IMAGE.load( 'lib-list' );
 				if ( V.albumlist ) $( '#lib-list' ).addClass( 'album' );
 			}
-			$( '.liinfopath' ).toggleClass( 'hide', MODE.file( 'radio' ) );
+			$( '.liinfopath' ).toggleClass( 'hide', MODE.file( '+radio' ) );
 			if ( V.albumlist ) {
 				if ( $( '.licover' ).length ) {
 					$( '.liinfo .lialbum' ).addClass( 'hide' );
@@ -2003,11 +2003,12 @@ var PLAYLIST  = {
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
 				var html = UTIL.htmlHash( data.html );
-				$( '#pl-savedlist' ).html( html ).promise().done( function() {
-					IMAGE.load( 'pl-savedlist' );
+				$( '#pl-savedlist' ).html( html ).promise().done( () => {
+					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
-					SORT.draggable( this.id );
+					IMAGE.load( id );
+					SORT.draggable( id );
 				} );
 			}, 'json' );
 		}
@@ -2134,11 +2135,12 @@ var PLAYLIST  = {
 			if ( data.html !== V.html.playlist ) {
 				V.html.playlist = data.html;
 				var html        = UTIL.htmlHash( data.html );
-				$( '#pl-list' ).html( html ).promise().done( function() {
+				$( '#pl-list' ).html( html ).promise().done( () => {
+					var id = 'pl-list';
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
-					IMAGE.load( this.id );
-					SORT.draggable( this.id );
+					IMAGE.load( id );
+					SORT.draggable( id );
 				} );
 			} else {
 				PLAYLIST.render.set();

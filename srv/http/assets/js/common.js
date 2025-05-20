@@ -1,35 +1,6 @@
-/*
-BASH()
-$.fn.press
-BANNER() COMMON.dataError() 
-info()   COMMON.power() COMMON.powerAction() _INFO.warning()
-COMMON.loader() LOCAL()     COMMON.select.set()
-websocket
-
-Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
-	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
-
-- js > php/ws >> common.js - BASH()
-	- string : 
-		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
-		- multiline      : 'l1\\nl2\\nl3...'
-- php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
-	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-- bash        >> common.sh - args2var
-	- string : convert to array > assign values
-		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
-		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
-		- With 'CFG' : 
-			- the same as 'CMD'
-			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
-		- [ CMD, 'OFF' ] : disable
-*/
 I    = { active: false }
 PAGE = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-S    = {} // status
+S    = {}
 V    = {
 	  i_warning : ICON( 'warning yl' ) +'&ensp;'
 	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
@@ -62,6 +33,28 @@ function BANNER_HIDE() {
 		.addClass( 'hide' )
 		.empty();
 }
+/*
+BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
+	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
+
+- js > php/ws >> common.js - BASH()
+	- string : 
+		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
+		- multiline      : 'l1\\nl2\\nl3...'
+- php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
+- bash        >> common.sh - args2var
+	- string : convert to array > assign values
+		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
+		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
+		- With 'CFG' : 
+			- the same as 'CMD'
+			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
+		- [ CMD, 'OFF' ] : disable
+*/
 function BASH( args, callback, json ) {
 	if ( typeof args === 'string' ) {
 		var filesh = 'settings/'+ args
@@ -104,6 +97,10 @@ function NOTIFY( icon, title, message, delay ) {
 }
 // ----------------------------------------------------------------------
 /*
+swipe : move 100px   before 500ms (main.js)
+sort  : move < 100px after  500ms
+press : no move      after 1000ms
+
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
 	- cannot be attached with .on
@@ -1371,11 +1368,16 @@ var COMMON      = {
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
 var SORT        = {
-	  drag      : ( el, callback ) => {
-		var libmode = el === 'lib-mode-list';
+	  callback  : callback => {
+		var from = V.sort.from;
+		var to   = V.sort.to;
+		if ( from !== to ) callback( from, to );
+		setTimeout( () => delete V.sort, 600 );
+	}
+	, drag      : ( el, callback ) => {
 		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
 			e.originalEvent.dataTransfer.effectAllowed = 'move';
-			SORT.v_sort( $( this ) );
+			V.sort = SORT.V( $( this ) );
 		} ).on( 'dragenter', 'li', function( e ) {
 			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.enter ) return
@@ -1388,78 +1390,76 @@ var SORT        = {
 			
 			V.sort.enter = false;
 			V.sort.over  = true;
-			SORT.place( $( this ) );
+			SORT.insert( this );
 		} ).on( 'drop', 'li', function() {
-			SORT.sort( callback );
-		} );	
+			SORT.callback( callback );
+		} );
 	}
 	, draggable : el => {
 		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
-	, place     : $target => {
-		V.sort.to = $target.index();
-		var index = V.sort.$li.index();
-		if ( V.sort.to !== index ) $target[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$li );
+	, insert    : to => {
+		var $to   = $( to );
+		V.sort.to = $to.index();
+		var index = V.sort.$from.index();
+		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
 	}
 	, set       : ( el, callback ) => {
 		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
 	}
-	, sort      : callback => {
-		setTimeout( () => delete V.sort, 600 );
-		if ( ! V.sort ) return
-		
-		var from = V.sort.from;
-		var to   = V.sort.to;
-		if ( from !== to ) callback( from, to );
-	}
-	// swipe : ! V.sort - before 500ms
-	// sort  : V.sort   - after  500ms
-	// press : ! V.sort - after 1000ms 
 	, touch     : ( el, callback ) => { // ok for mouse
 		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
 			V.timeoutsort = setTimeout( () => {
-				var $li       = $( e.target ).closest( 'li' );
-				SORT.v_sort( $li );
-				var pos       = $li[ 0 ].getBoundingClientRect();
-				V.sort.$ghost = V.sort.$li.clone();
+				var $from     = $( e.target ).closest( 'li' );
+				V.sort        = SORT.V( $from );
+				var pos       = $from[ 0 ].getBoundingClientRect();
+				var ghostcss  = {
+					  position  : 'fixed'
+					, width     : pos.width +'px'
+					, height    : pos.height +'px'
+					, left      : pos.left +'px'
+					, top       : pos.top +'px'
+					, opacity   : 0.5
+					, 'z-index' : 1
+				}
 				var xy        = SORT.xy( e );
 				V.sort.left   = xy.x - pos.left;
 				V.sort.top    = xy.y - pos.top;
-				V.sort.$ghost
-					.addClass( 'ghost' )
-					.css( {
-						  position  : 'fixed'
-						, width     : pos.width +'px'
-						, height    : pos.height +'px'
-						, left      : pos.left +'px'
-						, top       : pos.top +'px'
-						, opacity   : 0.5
-						, 'z-index' : 1
-					} );
+				V.sort.$ghost = $from.clone()
+									.addClass( 'ghost' )
+									.css( ghostcss );
 				$( this ).append( V.sort.$ghost );
 			}, 500 ); // suppressed by swipe: (main.js - touchend)
 		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
 			
 			e.preventDefault(); // prevent scroll
-			var xy     = SORT.xy( e );
-			V.sort.$ghost.css( { top: ( xy.y - V.sort.top ) +'px', left: ( xy.x - V.sort.left ) +'px' } );
-			var els    = document.elementsFromPoint( xy.x, xy.y );
-			var target = els.filter( el => $( el ).is( 'li:not( .ghost )' ) );
-			SORT.place( $( target[ 0 ] ) );
+			var xy  = SORT.xy( e );
+			V.sort.$ghost.css( {
+				  top  : ( xy.y - V.sort.top ) +'px'
+				, left : ( xy.x - V.sort.left ) +'px'
+			} );
+			var els = document.elementsFromPoint( xy.x, xy.y );
+			els.forEach( el => {
+				if ( el !== V.sort.li && $( el ).is( 'li:not( .ghost )' ) ) {
+					SORT.insert( el );
+					return false
+				}
+			} );
 		} ).on( 'touchend mouseup', function() {
-			setTimeout( () => {
-				if ( V.sort.$ghost ) V.sort.$ghost.remove();
-				SORT.sort( callback );
-			}, 0 ); // wait for V.sort.target
+			if ( ! V.sort ) return
+			
+			if ( V.sort.$ghost ) V.sort.$ghost.remove();
+			setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 		} );
 	}
-	, v_sort    : $li => {
-		V.sort = {
-			  $li  : $li
-			, from : $li.index()
+	, V        : $from => {
+		return {
+			  $from : $from
+			, from  : $from.index()
+			, li    : $from[ 0 ]
 		}
 	}
 	, xy        : e => {

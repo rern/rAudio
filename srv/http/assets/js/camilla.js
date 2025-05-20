@@ -1345,7 +1345,7 @@ var RENDER    = {
 		var li = '';
 		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
-		SORT.draggable( V.tab +' .entries' );
+		SORT.draggable( 'pipeline .entries' );
 		RENDER.toggle();
 		GRAPH.flowchart.refresh();
 		$MENU.addClass( 'hide' );
