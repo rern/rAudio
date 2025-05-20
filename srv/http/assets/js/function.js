@@ -1262,8 +1262,8 @@ var MENU      = {
 		}, 'json' );
 	}
 	, playlist : $target => {
-		$LI           = $target.parent();
-		var webradio  = $target.hasClass( 'webradio' );
+		$LI           = $target.closest( 'li' );
+		var webradio  = $LI.hasClass( 'webradio' );
 		V.list        = {};
 		V.list.path   = $LI.find( '.lipath' ).text();
 		V.list.name   = $LI.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();

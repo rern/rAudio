@@ -48,7 +48,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( navigator.maxTouchPoints ) UTIL.swipe();
 
-document.addEventListener( 'error', function( e ) { // img error
+document.addEventListener( 'error', function( e ) { // img error - faster than exist checked on server
 	if ( e.target.tagName !== 'IMG' ) return
 	
 	var $img = $( e.target );
@@ -62,22 +62,15 @@ document.addEventListener( 'error', function( e ) { // img error
 		$img.attr( 'src', V.coverart );
 	} else if ( V.playlist ) {
 		$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
-	} else { // lib-list (home - exist checked)
+	} else { // lib-list (home - no errors, exist checked)
 		if ( MODE.album() ) {
-			$img.replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
-		} else if ( V.mode === 'webradio' ) {
-			if ( MODE.radio() ) {
-				if ( $img.parent().hasClass( 'dir' ) ) {
-					var icon = 'folder';
-					var menu = 'wrdir';
-				} else {
-					var icon = V.mode;
-					var menu = 'webradio';
-				}
-			} else {
-				var icon = $img.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
-				var menu = 'folder';
-			}
+			$img.attr( 'src', V.coverart );
+		} else if ( ! MODE.radio() ) {
+			$img.replaceWith( '<i class="i-folder li-icon" data-menu="folder"></i>' );
+		} else {
+			var dir = $img.parent().hasClass( 'dir' );
+			var icon = dir ? 'folder' : V.mode;
+			var menu = dir ? 'wrdir' : 'webradio';
 			$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
 		}
 	}
