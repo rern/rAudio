@@ -1420,11 +1420,12 @@ var SORT        = {
 		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
 	}
 	, touch     : ( el, callback ) => { // ok for mouse
-		$( '#'+ el ).on( 'touchstart mousedown', function( e ) {
+		var $ul = $( '#'+ el );
+		$ul.on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
 			V.timeoutsort = setTimeout( () => {
-				var $from     = $( e.target ).closest( 'li' );
+				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
 				V.sort        = SORT.V( $from );
 				var pos       = $from[ 0 ].getBoundingClientRect();
 				var ghostcss  = {
@@ -1442,7 +1443,7 @@ var SORT        = {
 				V.sort.$ghost = $from.clone()
 									.addClass( 'ghost' )
 									.css( ghostcss );
-				$( this ).append( V.sort.$ghost );
+				$ul.append( V.sort.$ghost );
 			}, 500 ); // suppressed by swipe: (main.js - touchend)
 		} ).on( 'touchmove mousemove', function( e ) {
 			clearTimeout( V.timeoutpress );
@@ -1456,14 +1457,15 @@ var SORT        = {
 			} );
 			var els = document.elementsFromPoint( xy.x, xy.y );
 			els.forEach( el => {
-				if ( el !== V.sort.li && $( el ).is( 'li:not( .ghost )' ) ) {
+				if ( el.tagName === 'LI' && ! el.className.includes( 'from' ) ) {
 					SORT.insert( el );
 					return false
 				}
 			} );
 		} ).on( 'touchend mouseup', function() {
 			clearTimeout( V.timeoutsort );
-			$( 'li.ghost' ).remove();
+			$ul.find( 'li.ghost' ).remove();
+			$ul.find( 'li.from' ).removeClass( 'from' );
 			if ( V.sort ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 		} );
 	}
@@ -1471,14 +1473,12 @@ var SORT        = {
 		return {
 			  $from : $from
 			, from  : $from.index()
-			, li    : $from[ 0 ]
 		}
 	}
 	, xy        : e => {
-		return {
-			  x : e.clientX || e.touches[ 0 ].clientX
-			, y : e.clientY || e.touches[ 0 ].clientY
-		}
+		var x = e.clientX || e.touches[ 0 ].clientX;
+		var y = e.clientY || e.touches[ 0 ].clientY;
+		return { x: x, y:y }
 	}
 }
 var VOLUME      = {
