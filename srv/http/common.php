@@ -48,7 +48,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider' ];
+	$jsp   = [ 'jquery', 'pica', 'qrcode', 'roundslider' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -97,7 +97,7 @@ $html     .= '
 <body>
 ';
 if ( ! $add_guide )  {
-	$pageicon = $page ? i( $page.' page-icon' ) : '';
+	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html    .= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
@@ -124,7 +124,7 @@ function htmlBottom() {
 </html>
 ';
 }
-function i( $icon, $id = '', $cmd = '' ) {
+function icon(  $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';

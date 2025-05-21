@@ -1,4 +1,5 @@
 function LIST( query, callback, json ) {
+	if ( ! V.lazyload ) query.lazy = true;
 	if ( V.debug ) {
 		COMMON.debugConsole( JSON.stringify( query ) );
 		return
@@ -387,7 +388,8 @@ var COVERART  = {
 			} else if ( V.playback ) {
 				$img.attr( 'src', V.coverart );
 			} else if ( V.playlist ) {
-				$img.replaceWith( '<i class="i-'+ $img.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+				var icon = $img.parent()[ 0 ].classList[ 0 ];
+				$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="filesavedpl"></i>' );
 			} else { // lib-list (home - already exist checked)
 				if ( MODE.album() ) {
 					$img.attr( 'src', V.coverart );

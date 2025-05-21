@@ -44,16 +44,16 @@ function menuLi( $list ) {
 	$label   = $list[ 2 ];
 	if ( isset( $list[ 3 ] ) ) {
 		$sub     = ' sub';
-		$submenu = i( $list[ 3 ].' submenu', '', $list[ 4 ] );
+		$submenu = icon(  $list[ 3 ].' submenu', '', $list[ 4 ] );
 	} else {
 		$sub     = '';
 		$submenu = '';
 	}
-	if ( $icon[ 0 ] !== '<' ) $icon = i( $icon );
+	if ( $icon[ 0 ] !== '<' ) $icon = icon(  $icon );
 	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.$icon.$label.'</a>'.$submenu;
 }
 $coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
-$thumbupdate = $coverart.i( 'refresh-overlay' );
+$thumbupdate = $coverart.icon(  'refresh-overlay' );
 $kid3        = file_exists( '/usr/bin/kid3-cli' );
 $menu        = '';
 $htmlcommon  = menuCommon( 'add', 'replace' );
@@ -145,7 +145,7 @@ $ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librando
 $modeicon = '';
 foreach( $ids as $id ) {
 	$blink    = $localhost || $id !== 'libupdate' ? '' : ' blink';
-	$modeicon.= i( $id.' hide'.$blink, 'mi-'.$id );
+	$modeicon.= icon(  $id.' hide'.$blink, 'mi-'.$id );
 }
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
@@ -164,7 +164,7 @@ $htmlsettings = '';
 foreach( $settinglist as $l ) {
 	$icon  = str_replace( 'display', '', $l[ 0 ] );
 	$label = ucfirst( $icon );
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 2 ].' submenu', $l[ 2 ] );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.icon(  $icon ).$label.'</a>'.icon(  $l[ 2 ].' submenu', $l[ 2 ] );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
@@ -187,10 +187,10 @@ $htmlsearch   = '
 <div class="pagerefresh"></div>
 
 <div id="bar-top">
-	<?=i( 'raudio-nobg pagerefresh', 'logo' )
+	<?=icon(  'raudio-nobg pagerefresh', 'logo' )
 	  .'<div id="playback-controls">'
 	  .buttonSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
-	  .'</div>'.i( 'gear', 'button-settings' )?>
+	  .'</div>'.icon(  'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -199,7 +199,7 @@ $htmlsearch   = '
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?php echo
-			 i( 'library page-icon', 'button-library' )
+			 icon(  'library page-icon', 'button-library' )
 			.buttonSet( [
 				  [ 'search',          'search' ]
 				, [ 'back',            'back' ]
@@ -215,7 +215,7 @@ $htmlsearch   = '
 </div>
 
 <div id="page-playback" class="page">
-	<?=i( 'plus-o emptyadd hide' )
+	<?=icon(  'plus-o emptyadd hide' )
 		.buttonSet( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
 	<div id="info">
 		<?=$htmlinfo?>
@@ -238,7 +238,7 @@ $htmlsearch   = '
 					, [ 'guide',    'T' ]
 					, [ 'gear',     'TR' ]
 					, [ 'previous', 'L' ]
-					, '<div id="timeM" class="map maptime">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+					, '<div id="timeM" class="map maptime">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
 					, [ 'next',     'R' ]
 					, [ 'random',   'BL' ]
 					, [ 'stop',     'B' ]
@@ -261,7 +261,7 @@ $htmlsearch   = '
 						, [ 'guide r1 c2 wl hs',    'T' ]
 						, [ 'gear r1 c3 ws hs',     'TR' ]
 						, [ 'previous r2 c1 ws hl', 'L' ]
-						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
 						, [ 'next r2 c3 ws hl',     'R' ]
 						, [ 'random r3 c1 ws hs',   'BL' ]
 						, [ 'stop r3 c2 wl hs',     'B' ]
@@ -300,10 +300,10 @@ $htmlsearch   = '
 </div>
 
 <div id="page-playlist" class="page hide">
-	<?=i( 'plus-o emptyadd hide' )?>
+	<?=icon(  'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<?php echo
-			 i( 'playlist page-icon', 'button-playlist' )
+			 icon(  'playlist page-icon', 'button-playlist' )
 			.buttonSet( [
 				  [ 'back',            'back' ]
 				, [ 'search pllength', 'search' ]
@@ -331,7 +331,7 @@ $htmlsearch   = '
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
-		<img src=""><span id="lyricstitle"></span><?=i( 'close', 'lyricsclose' )?>
+		<img src=""><span id="lyricstitle"></span><?=icon(  'close', 'lyricsclose' )?>
 	</div>
 	<div id="divlyricsartist">
 		<span id="lyricsartist"></span><?=buttonSet( [ 'refresh', 'edit' ], '', 'lyrics' )?>

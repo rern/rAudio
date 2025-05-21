@@ -1,4 +1,7 @@
 <?php // for library.php, playlist.php
+$LAZYLOAD = $_POST[ 'lazyload' ] ?? null;
+$lazy     = $LAZYLOAD ? ' lazyload" data-src="' :'" loading="lazy" src="';
+
 function countMnt() {
 	$lsmnt     = ( object ) [];
 	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
@@ -38,14 +41,13 @@ function HMS2second( $time ) {
 		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
 	}
 }
-function i( $icon, $menu = '' ) {
+function icon(  $icon, $menu = '' ) {
 	$htmlmenu = $menu ? ' li-icon" data-menu="'.$menu : '';
 	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
-function imgIcon( $thumbsrc, $menu, $icon = '' ) {
-	$htmlicon  = $icon ? ' data-icon="'.$icon.'"' : '';
-	$thumbfile = rawurlencode( $thumbsrc ); # preserve spaces and special characters
-	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbfile.'^^^" data-menu="'.$menu.'">';
+function iconThumb( $thumbsrc, $menu ) {
+	global $lazy;
+	return '<img class="iconthumb li-icon'.$lazy.rawurlencode( $thumbsrc ).'^^^" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
 	$indexbar  = '<a class="indexed">#</a>';

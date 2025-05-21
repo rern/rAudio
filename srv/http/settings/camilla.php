@@ -136,13 +136,13 @@ $body     = [
 		  'volume'
 		, '
 <a><span class="label">Master</span>
-<gr class="control"></gr></a>'.i( 'minus' )
+<gr class="control"></gr></a>'.icon(  'minus' )
 		, '
 <div id="volume" class="slider">
 	<div class="track"></div>
 	<div class="thumb" tabindex="0"></div>
 	<div id="volume-band"></div>
-</div>'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' )
+</div>'.icon(  'plus' ).'<c class="level"></c>'.icon(  'volume' )
 	)
 	, htmlSectionStatus(
 		  'state'

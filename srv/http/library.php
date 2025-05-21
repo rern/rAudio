@@ -86,7 +86,7 @@ case 'findartist': // artist, albumartist
 	foreach( $array as $each ) {
 		$dataindex = dataIndex( $each->sort );
 		$path      = $each->path;
-		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
+		$icon      = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$html     .= '
 <li data-mode="lsmode"'.$dataindex.'>
 	'.$icon.'
@@ -135,7 +135,7 @@ case 'home':
 					break;
 				}
 			}
-			if ( ! $icon ) $icon = I( 'bookmark bl' ).'<a class="label">'.$name.'</a>';
+			if ( ! $icon ) $icon = icon(  'bookmark bl' ).'<a class="label">'.$name.'</a>';
 			$htmlmode.= '
 <li class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
@@ -274,7 +274,7 @@ case 'search':
 				$html.= '
 <li data-mode="'.$tag.'">
 	<a class="lipath">'.$path.'</a>
-	'.i( $tag, $tag ).'
+	'.icon(  $tag, $tag ).'
 	<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
 </li>';
 			}
@@ -295,7 +295,7 @@ case 'search':
 		$html.= '
 </ul>
 <div class="index modes">';
-		foreach( $t as $mode ) $html.= i( $mode );
+		foreach( $t as $mode ) $html.= icon(  $mode );
 		$html.= '
 </div>';
 		echo json_encode( [ 'html' => $html, 'count' => $count ] );
@@ -377,11 +377,11 @@ function htmlDirectory() {
 		$dir       = is_dir( '/mnt/MPD/'.$path );
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
-			$icon  = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
+			$icon  = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
 			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
-			$icon  = i( 'music ', 'file' );
+			$icon  = icon(  'music ', 'file' );
 			$class = '';
 		}
 		$htmlli   = '
@@ -427,7 +427,7 @@ function htmlFind() { // non-file 'find' command
 		$path      = $each->file ?? '';
 		$datamode  = $path ? 'lsmode' : 'album'; // $each->file - value as dir
 		$dataindex = dataIndex( $each->sort );
-		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
+		$icon      = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$liname    = $modedate_genre ? $val1 : $val0;
 		$html     .= '
 <li data-mode="'.$datamode.'"'.$dataindex.'">
@@ -450,11 +450,12 @@ function htmlList() { // non-file 'list' command
 			$html     .= '
 <li data-mode="'.$MODE.'"'.$dataindex.'>
 	<a class="lipath">'.$name.'</a>
-	'.i( $GMODE, $MODE ).'<span class="single name">'.$name.'</span>
+	'.icon(  $GMODE, $MODE ).'<span class="single name">'.$name.'</span>
 </li>';
 		}
 	} else {
-		global $display;
+		global $display, $LAZYLOAD;
+		$lazy = $LAZYLOAD ? ' class="lazyload" data-src="' : ' loading="lazy" src="';
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
@@ -483,7 +484,7 @@ function htmlList() { // non-file 'list' command
 <li class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$album.'</a>
-	<img class="lazyload" data-src="'.$thumbfile.'">
+	<img'.$lazy.$thumbfile.'">
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>
 </li>';
@@ -507,7 +508,7 @@ function htmlRadio() {
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
 			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg';
-			$icon      = imgIcon( $thumbsrc, 'wrdir' );
+			$icon      = iconThumb( $thumbsrc, 'wrdir' );
 			$html.= '
 <li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
 	'.$icon.'
@@ -536,7 +537,7 @@ function htmlRadio() {
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
-			$icon        = $search ? i( 'webradio li-icon' ) : imgIcon( $thumbsrc, 'webradio' );
+			$icon        = $search ? icon(  'webradio li-icon' ) : iconThumb( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
 <li data-mode="webradio" '.$datacharset.$dataindex.'>
@@ -619,21 +620,21 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$count         = count( $array );
 		if ( $cue || $plfile ) {
 			$ext     = $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION );
-			$exticon = i( 'playlists' );
+			$exticon = icon(  'playlists' );
 		} else {
 			$exticon = '';
 		}
-		$icon          = i( 'music', 'folder' );
+		$icon          = icon(  'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.$mpdpath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
-	<div class="liartist'.$hideartist.'">'.i( $iconartist ).$artist.'</div>
-	<div class="licomposer'.$hidecomposer.'">'.i( 'composer' ).$each0->composer.'</div>
-	<div class="liconductor'.$hideconductor.'">'.i( 'conductor' ).$each0->conductor.'</div>
-	<span class="ligenre'.$hidegenre.'">'.i( 'genre' ).$each0->genre.'&emsp;</span>
+	<div class="liartist'.$hideartist.'">'.icon(  $iconartist ).$artist.'</div>
+	<div class="licomposer'.$hidecomposer.'">'.icon(  'composer' ).$each0->composer.'</div>
+	<div class="liconductor'.$hideconductor.'">'.icon(  'conductor' ).$each0->conductor.'</div>
+	<span class="ligenre'.$hidegenre.'">'.icon(  'genre' ).$each0->genre.'&emsp;</span>
 	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
@@ -652,14 +653,14 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
 			$datamode  = 'title';
-			$icon      = i( $tag === 'title' ? 'music' : $tag, 'file' );
+			$icon      = icon(  $tag === 'title' ? 'music' : $tag, 'file' );
 			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
 			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
 			$trackname.= ' - '.$album;
 			$track1    = '';
 		} else {
 			$datamode  = $GMODE;
-			$icon      = i( 'music', 'file' );
+			$icon      = icon(  'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
 			$track1    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		}

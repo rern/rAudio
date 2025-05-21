@@ -14,6 +14,7 @@ V = {  // global var
 	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
+	, lazyload      : 'loading' in HTMLImageElement.prototype
 	, option        : {
 		  pica        : {
 			  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
@@ -48,6 +49,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 COVERART.onError();
 UTIL.swipe();
+if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.color ) return

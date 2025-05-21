@@ -27,5 +27,5 @@ img {
 </style>
 <img id="img" src="/assets/img/guide/1.jpg">
 <?php
-$htmlbar.= '<div>'.i( 'back', 'prev' ).i( 'arrow-right', 'next' ).'</div>';
+$htmlbar.= '<div>'.icon(  'back', 'prev' ).icon(  'arrow-right', 'next' ).'</div>';
 htmlBottom();

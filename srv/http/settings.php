@@ -2,8 +2,8 @@
 include 'common.php';
 
 $htmlhead  = '
-<div class="head hide">'.i( $icon.' page-icon pagerefresh' ).'<span class="title">'.$title.'</span>
-'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'
+<div class="head hide">'.icon(  $icon.' page-icon pagerefresh' ).'<span class="title">'.$title.'</span>
+'.icon(  'close close', 'close' ).icon(  'help helphead' ).icon(  'gear' ).'
 </div>';
 if ( ! $guide ) $htmlhead.= '
 <div class="container hide" tabindex="-1">
@@ -27,7 +27,7 @@ if ( $camilla ) {
 } else {
 	$tabs   = [ 'features', 'player', 'networks', 'system', 'addons' ];
 }
-foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).'<span>'.ucfirst( $tab ).'</span></div>';
+foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.icon(  $tab ).'<span>'.ucfirst( $tab ).'</span></div>';
 if ( $guide ) {
 	include 'settings/guide.php';
 	exit;
