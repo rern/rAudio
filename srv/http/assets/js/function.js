@@ -1460,11 +1460,6 @@ var PLAYBACK  = {
 		}
 	}
 	, coverart : () => {
-		var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
-		if ( src ) {
-			src += UTIL.versionHash();
-			if ( S.webradio ) PLAYLIST.coverart( src );
-		}
 		if ( ! D.cover ) {
 			COMMON.loaderHide();
 			return
@@ -1477,11 +1472,14 @@ var PLAYBACK  = {
 			$( '#vu' ).removeClass( 'hide' );
 			COMMON.loaderHide();
 		} else {
+			var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
 			if ( src ) {
+				src += UTIL.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
 					.attr( 'src', src )
 					.removeClass( 'hide' );
+				if ( S.webradio ) PLAYLIST.coverart( src );
 			} else {
 				COVERART.default();
 			}
