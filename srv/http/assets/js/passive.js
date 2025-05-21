@@ -16,11 +16,8 @@ W = {
 		if ( V.library ) return
 		
 		var src = data.cover + UTIL.versionHash();
-		if ( V.playback ) {
-			$( '#coverart' ).attr( 'src', src );
-		} else if ( V.playlisthome ) {
-			PLAYLIST.coverart( src );
-		}
+		$( '#coverart' ).attr( 'src', src );
+		PLAYLIST.coverart( src );
 	}
 	, coverart  : data => { // change
 		BANNER_HIDE();
