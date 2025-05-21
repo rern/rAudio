@@ -97,22 +97,9 @@ function NOTIFY( icon, title, message, delay ) {
 }
 // ----------------------------------------------------------------------
 /*
-mousedown/touchstart
-	press - V.timeoutpress 1000 > callback (cleared by dragstart/touchmove)
-	sort  - V.timeoutsort   500 > V.sort   (cleared by swipe touchend)
-	swipe - e.pageX
-dragstart/touchmove
-	press - clear V.timeoutpress
-	sort  - >>>
-	swipe - n/a
-drop/touchend
-	press - clear V.timeoutpress
-	sort  - delete V.sort
-	swipe - clear V.timeoutsort
-
-swipe : 100px  before  500ms - [move] clear sort + press
-sort  : < 100px after  500ms - [move] clear press [end] block swipe
-press :             > 1000ms - [no move] 0px: no swipe + no 'to': no sort
+swipe : > 100px *before  500ms - [move] clear V.timeoutsort + V.timeoutpress (* on draggable elements)
+sort  : < 100px after    500ms - [move] clear V.timeoutpress [end] V.sort block swipe
+press : opx           > 1000ms - [no move] no swipe + no sort
 
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
@@ -1379,17 +1366,25 @@ var COMMON      = {
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
 var SORT        = {
-	  callback  : callback => {
+	  callback   : callback => {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
 		setTimeout( () => delete V.sort, 600 );
 	}
-	, drag      : ( el, callback ) => {
+	, clearPress : () => {
+		clearTimeout( V.timeoutpress );
+		delete V.press;
+		if ( $( '.mode.edit' ).length ) {
+			$( '.mode' ).removeClass( 'edit' );
+			$( '.mode .bkedit' ).remove();
+		}
+	}
+	, drag       : ( el, callback ) => {
 		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
 			e.originalEvent.dataTransfer.effectAllowed = 'move';
 			V.sort = SORT.V( $( this ) );
-			clearTimeout( V.timeoutpress );
+			SORT.clearPress();
 		} ).on( 'dragenter', 'li', function( e ) {
 			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.enter ) return
@@ -1407,19 +1402,19 @@ var SORT        = {
 			SORT.callback( callback );
 		} );
 	}
-	, draggable : el => {
+	, draggable  : el => {
 		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
-	, insert    : to => {
+	, insert     : to => {
 		var $to   = $( to );
 		V.sort.to = $to.index();
 		var index = V.sort.$from.index();
 		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
 	}
-	, set       : ( el, callback ) => {
+	, set        : ( el, callback ) => {
 		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
 	}
-	, touch     : ( el, callback ) => { // ok for mouse
+	, touch      : ( el, callback ) => { // ok for mouse
 		var $ul = $( '#'+ el );
 		$ul.on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
@@ -1450,6 +1445,7 @@ var SORT        = {
 			if ( ! V.sort ) return
 			
 			e.preventDefault(); // prevent scroll
+			SORT.clearPress();
 			var xy  = SORT.xy( e );
 			V.sort.$ghost.css( {
 				  top  : ( xy.y - V.sort.top ) +'px'
@@ -1469,13 +1465,13 @@ var SORT        = {
 			if ( V.sort.to ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 		} );
 	}
-	, V        : $from => {
+	, V          : $from => {
 		return {
 			  $from : $from
 			, from  : $from.index()
 		}
 	}
-	, xy        : e => {
+	, xy         : e => {
 		var x = e.clientX || e.touches[ 0 ].clientX;
 		var y = e.clientY || e.touches[ 0 ].clientY;
 		return { x: x, y:y }
