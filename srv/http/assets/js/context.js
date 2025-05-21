@@ -211,20 +211,10 @@ var CONTEXT  = {
 			}
 			var fileicon = cue ? 'file-music' : 'playlists';
 			var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-						  +'<div>'+ ICON( 'folder' ) +' '+ dir;
+						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
 			message += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
 			var footer   = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
-			function tagModeSwitch() {
-				$( '#infoX' ).trigger( 'click' );
-				if ( V.playlist ) {
-					$( '#page-playlist' ).addClass( 'hide' );
-					$( '#page-library' ).removeClass( 'hide' );
-					V.playlist = false;
-					V.library  = true;
-					V.page     = 'library';
-				}
-			}
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
@@ -251,20 +241,30 @@ var CONTEXT  = {
 							$( '.taglabel' ).addClass( 'hide' );
 						}
 					} );
-					$( '#infoList' ).on( 'click', 'table i', function() {
+					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
 						var $this  = $( this );
-						var mode   = $this.prop( 'class' ).replace( 'i-', '' );
-						if ( [ 'track', 'title' ].includes( mode ) ) return
-						
-						var string = $this.parent().next().find( 'input' ).val();
-						if ( ! string ) return
-						
-						if ( V.playlist ) UTIL.switchPage( 'library' );
-						var query  = {
-							  library : 'find'
-							, mode    : mode
-							, string  : string
-							, format  : [ 'album', 'artist' ]
+						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );
+						if ( $this.is( 'i' ) ) {
+							var mode   = $this.prop( 'class' ).replace( 'i-', '' );
+							if ( [ 'track', 'title' ].includes( mode ) ) return
+							
+							var string = $this.parent().next().find( 'input' ).val();
+							if ( ! string ) return
+							
+							var query  = {
+								  library : 'findmode'
+								, mode    : mode
+								, string  : string
+								, format  : [ 'album', 'artist' ]
+							}
+						} else {
+							var string = $this.find( '.path' ).text();
+							var mode   = string.split( '/' )[ 0 ].toLowerCase();
+							var query  = {
+								  library : 'ls'
+								, string  : string
+								, gmode   : mode
+							}
 						}
 						LIST( query, function( html ) {
 							var data = {
@@ -274,31 +274,13 @@ var CONTEXT  = {
 							}
 							V.mode = mode;
 							LIBRARY.list( data );
-							query.gmode = mode;
-							query.modetitle = string;
-							tagModeSwitch();
-							V.query.push( query );
-						} );
-					} );
-					$( '.infomessage' ).on( 'click', function() {
-						if ( V.library ) return
-						
-						UTIL.switchPage( 'library' );
-						V.mode    = dir.split( '/' )[ 0 ].toLowerCase();
-						var query = {
-							  library : 'ls'
-							, string  : dir
-							, gmode   : V.mode
-						}
-						LIST( query, function( html ) {
-							var data = {
-								  html      : html
-								, modetitle : dir
-								, path      : dir
+							if ( V.playlist ) {
+								UTIL.switchPage( 'library' );
+								V.query.push( 'playlist' );
+							} else {
+								V.query.push( 'tageditor' );
 							}
-							tagModeSwitch();
-							LIBRARY.list( data );
-							UTIL.switchPage( 'library' );
+							$( '#infoX' ).trigger( 'click' );
 						} );
 					} );
 				}
