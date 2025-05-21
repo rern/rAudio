@@ -276,7 +276,7 @@ var CONTEXT  = {
 							LIBRARY.list( data );
 							if ( V.playlist ) {
 								UTIL.switchPage( 'library' );
-								V.query.push( 'playlist' );
+								V.query.push( 'trackinfo' );
 							} else {
 								V.query.push( 'tageditor' );
 							}

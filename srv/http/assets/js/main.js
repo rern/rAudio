@@ -959,7 +959,7 @@ $( '#lib-search-input' ).on( 'input', function() {
 	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {
-	if ( V.query.slice( -1 )[ 0 ] === 'playlist' ) {
+	if ( V.query.slice( -1 )[ 0 ] === 'trackinfo' ) {
 		$( '#playlist' ).trigger( 'click' );
 		return
 	}
