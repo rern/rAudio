@@ -110,9 +110,9 @@ drop/touchend
 	sort  - delete V.sort
 	swipe - clear V.timeoutsort
 
-swipe : move 100px   before 500ms
-sort  : move < 100px after  500ms
-press : no move      after 1000ms
+swipe : 100px  before  500ms - [move] clear sort + press
+sort  : < 100px after  500ms - [move] clear press [end] block swipe
+press :             > 1000ms - [no move] 0px: no swipe + no 'to': no sort
 
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
@@ -1466,7 +1466,7 @@ var SORT        = {
 			clearTimeout( V.timeoutsort );
 			$ul.find( 'li.ghost' ).remove();
 			$ul.find( 'li.from' ).removeClass( 'from' );
-			if ( V.sort ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			if ( V.sort.to ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 		} );
 	}
 	, V        : $from => {
