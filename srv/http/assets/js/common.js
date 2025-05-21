@@ -131,7 +131,7 @@ $.fn.press = function( args ) {
 		
 		setTimeout( () => { // after last action timeout
 			if ( end ) end();
-			setTimeout( () => V.press = false, 300 );
+			setTimeout( () => delete V.press, 300 );
 		}, 0 );
 	} );
 	return this // allow chain
@@ -1462,7 +1462,11 @@ var SORT        = {
 			clearTimeout( V.timeoutsort );
 			$ul.find( 'li.ghost' ).remove();
 			$ul.find( 'li.from' ).removeClass( 'from' );
-			if ( V.sort.to ) setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			if ( V.sort.to ) {
+				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			} else {
+				delete V.sort;
+			}
 		} );
 	}
 	, V          : $from => {

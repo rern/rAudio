@@ -2486,11 +2486,13 @@ var UTIL      = {
 			V.swipe     = e.changedTouches[ 0 ].pageX;
 		} );
 		document.addEventListener( 'touchend', function( e ) {
-			if ( ! V.swipe || V.sort ) return
+			if ( ! V.swipe ) return
+			
+			delete V.swipe;
+			if ( V.sort ) return
 			
 			clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
 			var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
-			V.swipe   = false;
 			if ( Math.abs( diff ) < 100 ) return
 			
 			var pages = [ 'library', 'playback',  'playlist' ];
