@@ -495,13 +495,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#pl-list li' ).eq( $LI.index() ).trigger( 'click' );
-		if ( S.player === 'mpd' || cmd !== 'play' ) {
-			$( '#'+ cmd ).trigger( 'click' );
-		} else {
-			$( '#stop' ).trigger( 'click' );
-			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
-		}
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 	

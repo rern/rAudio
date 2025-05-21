@@ -4,10 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250502
+# 20250523
 file=/etc/pacman.conf
-! grep -q mpd $file && sed -i '/IgnorePkg *=/ {s/^#//; s/$/ mpd/}' $file
+grep -q mpd $file && sed -i 's/ mpd//' $file
 
+# 20250502
 if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
 	for t in album latest; do
 		sort -o $dirmpd/$t{,}
@@ -48,12 +49,6 @@ if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
 	else
 		echo $warn upgrade snapcast failed.
 	fi
-fi
-
-# 20250322
-if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
-	mv /lib/systemd/{system,user}/spotifyd.service
-	ln -s /lib/systemd/{user,system}/spotifyd.service
 fi
 
 #-------------------------------------------------------------------------------

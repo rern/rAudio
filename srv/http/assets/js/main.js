@@ -1536,8 +1536,7 @@ $( '#button-pl-save' ).on( 'click', function() {
 	}
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
-	DISPLAY.pageScroll( 0 );
-	LIST( { playlist: 'list' }, ( data ) => PLAYLIST.playlists.home( data ), 'json' );
+	PLAYLIST.playlists.home();
 } );
 $( '#button-pl-search' ).on( 'click', function() {
 	if ( ! $( '#pl-search' ).hasClass( 'hide' ) ) return

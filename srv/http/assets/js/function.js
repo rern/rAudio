@@ -1460,6 +1460,11 @@ var PLAYBACK  = {
 		}
 	}
 	, coverart : () => {
+		var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
+		if ( src ) {
+			src += UTIL.versionHash();
+			if ( S.webradio ) PLAYLIST.coverart( src );
+		}
 		if ( ! D.cover ) {
 			COMMON.loaderHide();
 			return
@@ -1472,11 +1477,10 @@ var PLAYBACK  = {
 			$( '#vu' ).removeClass( 'hide' );
 			COMMON.loaderHide();
 		} else {
-			var coverart = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
-			if ( coverart ) {
+			if ( src ) {
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
-					.attr( 'src', coverart + UTIL.versionHash() )
+					.attr( 'src', src )
 					.removeClass( 'hide' );
 			} else {
 				COVERART.default();
@@ -1832,6 +1836,14 @@ var PLAYLIST  = {
 			V.timeoutpl = setTimeout( () => $( '#playlist, #button-playlist' ).addClass( 'blink' ), 1000 );
 		}
 	}
+	, coverart    : src => {
+		var $icon = $( '#pl-list li.active .li-icon' );
+		if ( $icon.is( 'i' ) ) {
+			$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
+		} else {
+			$icon.attr( 'src', src );
+		}
+	}
 	, get         : () => {
 		if ( ! S.pllength ) {
 			PLAYLIST.render.home();
@@ -1922,14 +1934,17 @@ var PLAYLIST  = {
 			delete V.pladd;
 			$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).removeClass( 'disabled' );
 		}
-		, home  : data => { // V.playlistlist
+		, home  : () => { // V.playlistlist
 			V.playlisthome  = false;
 			V.playlistlist  = true;
 			V.playlisttrack = false;
-			$( '#pl-title' ).html( ICON( 'playlists wh' ) +'PLAYLISTS' );
-			var html        = UTIL.htmlHash( data.html );
-			$( '#page-playlist .index' ).remove();
-			$( '#pl-savedlist' ).html( html ).promise().done( PLAYLIST.render.set );
+			LIST( { playlist: 'list' }, data => {
+				DISPLAY.pageScroll( 0 );
+				$( '#pl-title' ).html( ICON( 'playlists wh' ) +'PLAYLISTS' );
+				var html        = UTIL.htmlHash( data.html );
+				$( '#page-playlist .index' ).remove();
+				$( '#pl-savedlist' ).html( html ).promise().done( PLAYLIST.render.set );
+			}, 'json' );
 		}
 		, list : name => { // V.playlisttrack
 			V.playlisthome  = false;
@@ -2420,10 +2435,10 @@ var UTIL      = {
 		} else {
 			if ( V.playlisthome ) {
 				PLAYLIST.get();
-			} else if ( V.playlisttrack ) {
-				PLAYLIST.playlists.list( $( '#pl-title .name' ).text() );
+			} else if ( V.playlistlist ) {
+				PLAYLIST.playlists.home();
 			} else {
-				PLAYLIST.get();
+				PLAYLIST.playlists.list( $( '#pl-title .name' ).text() );
 			}
 		}
 	}

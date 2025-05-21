@@ -12,10 +12,17 @@ W = {
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
-	, cover     : data => {
-		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + UTIL.versionHash() );
+	, cover     : data => { // online - 1st download, subsequence > mpdplayer
+		if ( V.library ) return
+		
+		var src = data.cover + UTIL.versionHash();
+		if ( V.playback ) {
+			$( '#coverart' ).attr( 'src', src );
+		} else if ( V.playlisthome ) {
+			PLAYLIST.coverart( src );
+		}
 	}
-	, coverart  : data => {
+	, coverart  : data => { // change
 		BANNER_HIDE();
 		V.html = {}
 		if ( V.playback ) {
@@ -82,7 +89,7 @@ W = {
 			PLAYBACK.elapsed();
 		}
 	}
-	, mpdplayer : data => {
+	, mpdplayer : data => { // play/stop
 		if ( 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
@@ -97,6 +104,7 @@ W = {
 			} else if ( V.library ) {
 				REFRESHDATA();
 			} else {
+				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
 				PLAYLIST.render.scroll();
 			}
 			setTimeout( BANNER_HIDE, 3000 );
