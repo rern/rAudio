@@ -1,5 +1,5 @@
 <?php // for library.php, playlist.php
-$LAZYLOAD = $_POST[ 'lazyload' ] ?? null;
+$LAZYLOAD = isset( $_POST[ 'lazyload' ] );
 $lazy     = $LAZYLOAD ? ' lazyload" data-src="' :'" loading="lazy" src="';
 
 function countMnt() {

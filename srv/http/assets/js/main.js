@@ -14,7 +14,7 @@ V = {  // global var
 	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
-	, lazyload      : 'loading' in HTMLImageElement.prototype
+	, loadinglazy   : 'loading' in HTMLImageElement.prototype
 	, option        : {
 		  pica        : {
 			  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
