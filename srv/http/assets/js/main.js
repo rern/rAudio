@@ -959,6 +959,11 @@ $( '#lib-search-input' ).on( 'input', function() {
 	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {
+	if ( V.query.slice( -1 )[ 0 ] === 'playlist' ) {
+		$( '#playlist' ).trigger( 'click' );
+		return
+	}
+	
 	if ( V.search ) {
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );

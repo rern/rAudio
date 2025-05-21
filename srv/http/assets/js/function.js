@@ -1066,14 +1066,13 @@ var LIBRARY   = {
 									.replace( 'MARTIST', 'M ARTIST' )
 									.replace( 'BRADIO', 'B RADIO' );
 		}
-		var htmltitle = '<span id="mode-title">'+ data.modetitle;
 		if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			var htmlpath = '';
 		} else if ( data.path === '/srv/http/data/'+ V.mode ) { // radio root
-			var htmlpath = ICON( V.mode ) + htmltitle;
+			var htmlpath = ICON( V.mode ) + data.modetitle;
 		} else if ( ! MODE.file( '+radio' ) ) {
-			var htmlpath = ICON( V.search ? 'search' : V.mode ) + htmltitle;
+			var htmlpath = ICON( V.search ? 'search' : V.mode ) + data.modetitle;
 		} else if ( data.path ) { // dir breadcrumbs
 			var dir      = data.path.split( '/' );
 			var dir0     = dir[ 0 ];
@@ -1086,19 +1085,16 @@ var LIBRARY   = {
 				htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
 			}
 		}
-		if ( V.mode ) {
-			if ( V.mode === 'webradio' ) {
-				htmlpath += ICON( 'add btntitle button-webradio-new' );
-			} else if ( V.mode === 'latest' ) {
-				htmlpath += ICON( 'flash btntitle button-latest-clear' );
-			}
-			htmlpath     += '</span>';
-			$( '#lib-title' )
-				.html( htmlpath )
-				.removeClass( 'hide' )
-				.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
-			if ( MODE.radio () ) $( '#lib-title a' ).slice( 0, 4 ).remove();
+		if ( V.mode === 'webradio' ) {
+			htmlpath += ICON( 'add btntitle button-webradio-new' );
+		} else if ( V.mode === 'latest' ) {
+			htmlpath += ICON( 'flash btntitle button-latest-clear' );
 		}
+		$( '#lib-title' )
+			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
+			.removeClass( 'hide' )
+			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
+		if ( MODE.radio () ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 		
