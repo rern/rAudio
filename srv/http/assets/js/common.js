@@ -154,7 +154,7 @@ var SORT      = {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
-		setTimeout( () => delete V.sort, 600 ); // suppress refresh on push playlist
+		setTimeout( () => delete V.sort, 600 );
 	}
 	, clearPress : () => {
 		clearTimeout( V.timeoutpress );
@@ -200,7 +200,6 @@ var SORT      = {
 		$ul.on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
 			
-			V.sortstart   = true;
 			V.timeoutsort = setTimeout( () => {
 				delete V.swipe;
 				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
@@ -224,12 +223,9 @@ var SORT      = {
 				$ul.append( V.sort.$ghost );
 			}, 500 ); // suppressed by swipe: (main.js - touchend)
 		} ).on( 'touchmove mousemove', function( e ) {
-			if ( V.sortstart ) {
-				e.preventDefault(); // prevent scroll
-				delete V.sortstart;
-			}
 			if ( ! V.sort ) return
 			
+			e.preventDefault(); // prevent scroll
 			if ( V.press || V.bkedit ) SORT.clearPress();
 			var xy  = SORT.xy( e );
 			V.sort.$ghost.css( {
@@ -245,7 +241,6 @@ var SORT      = {
 			} );
 		} ).on( 'touchend mouseup', function() {
 			clearTimeout( V.timeoutsort );
-			delete V.sortstart;
 			$ul.find( 'li.ghost' ).remove();
 			$ul.find( 'li.from' ).removeClass( 'from' );
 			if ( ! V.sort ) return
