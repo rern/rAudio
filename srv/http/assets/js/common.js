@@ -154,7 +154,7 @@ var SORT      = {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
-		setTimeout( () => delete V.sort, 600 );
+		setTimeout( () => delete V.sort, 600 ); // suppress refresh on push playlist
 	}
 	, clearPress : () => {
 		clearTimeout( V.timeoutpress );
@@ -221,7 +221,7 @@ var SORT      = {
 									.addClass( 'ghost' )
 									.css( ghostcss );
 				$ul.append( V.sort.$ghost );
-			}, 500 ); // suppressed by swipe: (main.js - touchend)
+			}, 500 );
 		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
 			
@@ -291,7 +291,7 @@ var SWIPE     = () => {
 	document.addEventListener( 'touchend', function( e ) {
 		if ( ! V.swipe ) return
 
-		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
+		clearTimeout( V.timeoutsort );
 		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
 		delete V.swipe;
 		if ( Math.abs( diff ) < 100 ) return
