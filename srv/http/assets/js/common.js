@@ -99,19 +99,19 @@ function NOTIFY( icon, title, message, delay ) {
 /*
 [touchstart]----
 V.swipe
-(V.sort)  500ms
+(V.sort)  400ms
 (V.press) 1000ms
 ------------(no move, no end) >1000ms
 			V.press && <<press>>
-----[touchend] <500ms
+----[touchend] <400ms
 	<<swipe>>
 	x(V.sort)
 	x(V.press)
---------[touchmove] 500ms
+--------[touchmove] 400ms
 		xV.swipe
 		V.sort && <<sort>>
 		x(V.press)
-------------[touchend] >500ms
+------------[touchend] >400ms
 			V.swipe && <<swipe>>
 
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
@@ -221,7 +221,7 @@ var SORT      = {
 									.addClass( 'ghost' )
 									.css( ghostcss );
 				$ul.append( V.sort.$ghost );
-			}, 500 );
+			}, 400 );
 		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
 			
