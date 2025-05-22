@@ -110,10 +110,6 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	}
 	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
-		if ( ! $( '#color canvas' ).length ) { // color icon
-			$( '#color' ).html( '<canvas width="20" height="20"></canvas>' );
-			COLOR.wheel( '#color canvas' );
-		}
 		MENU.hide();
 		$( '#settings' )
 			.css( 'top', UTIL.barVisible( 40, 0 ) )

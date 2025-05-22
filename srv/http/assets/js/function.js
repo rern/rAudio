@@ -274,7 +274,7 @@ var COLOR     = {
 		var [ ty, tx ]  = Object.values( $( '#base' ).offset() );
 		V.ctx           = {
 			  canvas  : { w: canvas_w, c: canvas_c }
-			, context : COLOR.wheel( '#base' )
+			, context : $( '#base' )[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl0    : { h, s, l } // for #colorcancel
 			, sat     : { br: sat_br, tl: sat_tl, w: sat_w }
@@ -284,28 +284,10 @@ var COLOR     = {
 			}
 		}
 		var ctx         = V.ctx.context;
-		ctx.fillStyle   = '#000';
-		ctx.beginPath();
-		ctx.arc( canvas_c, canvas_c, hue_r, 0, 2 * Math.PI ); // hue cutout
-		ctx.fill();
 		ctx.translate( sat_tl, sat_tl );
 		COLOR.pick.set();
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
-	, wheel  : el => { // for picker and color menu
-		var canvas  = $( el )[ 0 ];
-		var ctx     = canvas.getContext( '2d', { willReadFrequently: el === '#base' } );
-		var c       = canvas.width / 2;
-		var deg_rad = Math.PI / 180;
-		for ( var i = 0; i < 360; i++ ) {
-			ctx.beginPath();
-			ctx.moveTo( c, c );
-			ctx.arc( c, c, c, i * deg_rad, ( i + 2 ) * deg_rad ); // fix moire - +2 (overlap)
-			ctx.fillStyle = 'hsl('+ i +', 100%, 50%)';
-			ctx.fill();
-		}
-		return ctx // for picker
-	}
 }
 var COVERART  = {
 	  change  : () =>  {

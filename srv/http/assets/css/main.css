@@ -167,6 +167,20 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	border-top: 1px solid var( --cga );
 }
+#wheel,
+#color::after {
+	border-radius: 50%;
+	box-shadow: var( --shadow-text );
+	background: conic-gradient( in hsl longer hue, red 0 100% );
+	transform: rotate( 90deg );
+}
+#color::after {
+	content: '';
+	display: block;
+	margin: 8px auto;
+	width: 22px;
+	height: 22px;
+}
 #screenoff {
 	border-left: 1px solid #000000;
 }
@@ -1861,17 +1875,17 @@ li.active .li2 bl {
 }
 #wheel {
 	border-radius: 50%;
-	border: 1px solid #000;
 	box-shadow: var( --shadow-bar );
+	z-index: -1;
 }
 #wheel::after {
 	content: '';
 	display: block;
-	margin: 18px auto;
-	width: 192px;
-	height: 192px;
+	margin: 20px auto;
+	width: 190px;
+	height: 190px;
 	border-radius: 50%;
-	border: 2px solid #000;
+	background: #000;
 }
 #hue div {
 	right: -1px;
