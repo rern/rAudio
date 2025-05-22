@@ -48,7 +48,7 @@ $VOLUME = $( '#volume-knob' );
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 COVERART.onError();
-UTIL.swipe();
+SWIPE();
 if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
 
 $( 'body' ).on( 'click', function( e ) {
@@ -56,6 +56,7 @@ $( 'body' ).on( 'click', function( e ) {
 	
 	var $target = $( e.target );
 	if ( ! V.press && ! $target.is( '.bkedit' ) ) {
+		delete V.bkedit;
 		$( '.mode' ).removeClass( 'edit' );
 		$( '.mode .bkedit' ).remove();
 	}
@@ -1159,7 +1160,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 } ).press( {
 	  delegate : '.mode.bookmark'
 	, action   : () => {
-		V.bklabel = $( this ).find( '.label' );
+		V.bkedit = true;
 		$( '.mode.bookmark' ).each( ( i, el ) => {
 			var $this      = $( el );
 			var buttonhtml = ICON( 'remove bkedit bk-remove' );

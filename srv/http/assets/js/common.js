@@ -97,9 +97,22 @@ function NOTIFY( icon, title, message, delay ) {
 }
 // ----------------------------------------------------------------------
 /*
-swipe : > 100px *before  500ms - [move] clear V.timeoutsort + V.timeoutpress (* on draggable elements)
-sort  : < 100px after    500ms - [move] clear V.timeoutpress [end] V.sort block swipe
-press : opx           > 1000ms - [no move] no swipe + no sort
+[touchstart]----
+V.swipe
+(V.sort)  500ms
+(V.press) 1000ms
+------------(no move, no end) >1000ms
+			V.press && <<press>>
+----[touchend] <500ms
+	<<swipe>>
+	x(V.sort)
+	x(V.press)
+--------[touchmove] 500ms
+		xV.swipe
+		V.sort && <<sort>>
+		x(V.press)
+------------[touchend] >500ms
+			V.swipe && <<swipe>>
 
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
@@ -110,7 +123,7 @@ events:
 	- click : mousedown  > mouseup   > click
 	- touch : touchstart > touchmove > touchend
 */
-$.fn.press = function( args ) {
+$.fn.press    = function( args ) {
 	var action, delegate, end, timeout;
 	if ( typeof args === 'function' ) {
 		delegate = '';
@@ -136,8 +149,167 @@ $.fn.press = function( args ) {
 	} );
 	return this // allow chain
 }
+var SORT      = {
+	  callback   : callback => {
+		var from = V.sort.from;
+		var to   = V.sort.to;
+		if ( from !== to ) callback( from, to );
+		setTimeout( () => delete V.sort, 600 );
+	}
+	, clearPress : () => {
+		clearTimeout( V.timeoutpress );
+		delete V.press;
+		if ( V.bkedit ) {
+			$( '.mode' ).removeClass( 'edit' );
+			$( '.mode .bkedit' ).remove();
+		}
+	}
+	, drag       : ( el, callback ) => {
+		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
+			e.originalEvent.dataTransfer.effectAllowed = 'move';
+			V.sort = SORT.V( $( this ) );
+			SORT.clearPress();
+		} ).on( 'dragenter', 'li', function( e ) {
+			e.preventDefault(); // not-allowed cursor
+			if ( ! V.sort || V.sort.enter ) return
+			
+			V.sort.enter = true;
+			V.sort.over  = false;
+		} ).on( 'dragover', 'li', function( e ) {
+			e.preventDefault(); // not-allowed cursor
+			if ( ! V.sort || V.sort.over ) return
+			
+			V.sort.enter = false;
+			V.sort.over  = true;
+			SORT.insert( this );
+		} ).on( 'drop', 'li', function() {
+			SORT.callback( callback );
+		} );
+	}
+	, insert     : to => {
+		var $to   = $( to );
+		V.sort.to = $to.index();
+		var index = V.sort.$from.index();
+		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
+	}
+	, set        : ( el, callback ) => {
+		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
+	}
+	, touch      : ( el, callback ) => { // ok for mouse
+		var $ul = $( '#'+ el );
+		$ul.on( 'touchstart mousedown', function( e ) {
+			if ( ! $( e.target ).parents( '#'+ el ).length ) return
+			
+			V.timeoutsort = setTimeout( () => {
+				delete V.swipe;
+				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
+				V.sort        = SORT.V( $from );
+				var pos       = $from[ 0 ].getBoundingClientRect();
+				var ghostcss  = {
+					  position  : 'fixed'
+					, width     : pos.width +'px'
+					, height    : pos.height +'px'
+					, left      : pos.left +'px'
+					, top       : pos.top +'px'
+					, opacity   : 0.5
+					, 'z-index' : 1
+				}
+				var xy        = SORT.xy( e );
+				V.sort.left   = xy.x - pos.left;
+				V.sort.top    = xy.y - pos.top;
+				V.sort.$ghost = $from.clone()
+									.addClass( 'ghost' )
+									.css( ghostcss );
+				$ul.append( V.sort.$ghost );
+			}, 500 ); // suppressed by swipe: (main.js - touchend)
+		} ).on( 'touchmove mousemove', function( e ) {
+			if ( ! V.sort ) return
+			
+			e.preventDefault(); // prevent scroll
+			if ( V.press || V.bkedit ) SORT.clearPress();
+			var xy  = SORT.xy( e );
+			V.sort.$ghost.css( {
+				  top  : ( xy.y - V.sort.top ) +'px'
+				, left : ( xy.x - V.sort.left ) +'px'
+			} );
+			var els = document.elementsFromPoint( xy.x, xy.y );
+			els.forEach( el => {
+				if ( el.tagName === 'LI' && ! el.className.includes( 'from' ) ) {
+					SORT.insert( el );
+					return false
+				}
+			} );
+		} ).on( 'touchend mouseup', function() {
+			clearTimeout( V.timeoutsort );
+			$ul.find( 'li.ghost' ).remove();
+			$ul.find( 'li.from' ).removeClass( 'from' );
+			if ( ! V.sort ) return
+			
+			if ( V.sort.to ) {
+				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			} else {
+				delete V.sort;
+			}
+		} );
+	}
+	, V          : $from => {
+		return {
+			  $from : $from
+			, from  : $from.index()
+		}
+	}
+	, xy         : e => {
+		var x = e.clientX || e.touches[ 0 ].clientX;
+		var y = e.clientY || e.touches[ 0 ].clientY;
+		return { x: x, y:y }
+	}
+}
+var SWIPE     = () => {
+	if ( ! navigator.maxTouchPoints ) return
+	
+	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		return false
+	} );
+	$( 'link[ href*="hovercursor.css" ]' ).remove();
+	 // swipe ---------------------------------------------------------
+	document.addEventListener( 'touchstart', function( e ) {
+		if ( I.active || V.color ) return
+		
+		var $target = $( e.target );
+		if ( $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| $( '#data' ).length
+			|| ! $( '#bio' ).hasClass( 'hide' )
+			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
+		) return
+		
+		V.swipe     = e.changedTouches[ 0 ].pageX;
+	} );
+	document.addEventListener( 'touchend', function( e ) {
+		if ( ! V.swipe ) return
+
+		clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
+		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		delete V.swipe;
+		if ( Math.abs( diff ) < 100 ) return
+		
+		var pages = [ 'library', 'playback',  'playlist' ];
+		var i     = pages.indexOf( V.page );
+		var ilast = pages.length - 1;
+		diff > 0 ? i++ : i--;
+		if ( i < 0 ) {
+			i = ilast;
+		} else if ( i > ilast ) {
+			i = 0;
+		}
+		$( '#'+ pages[ i ] ).trigger( 'click' );
+	} );
+}
 //-----------------------------------------------------------------------------------------------------------------
-W          = {  // ws push
+W             = {  // ws push
 	  bluetooth : () => {
 		if ( PAGE === 'networks' ) {
 			S.listbt = data;
@@ -713,7 +885,7 @@ function INFO( json ) {
 		}
 	} );
 }
-var _INFO       = {
+var _INFO     = {
 	  addRemove     : callback => {
 		$( '#infoList tr' ).append( '<td>'+ ICON( 'remove edit' ) +'</td>' );
 		$( '#infoList td' ).eq( 2 ).html( ICON( 'plus edit' ) );
@@ -974,7 +1146,7 @@ var _INFO       = {
 	}
 }
 
-var COMMON      = {
+var COMMON    = {
 	  capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1051,6 +1223,9 @@ var COMMON      = {
 			console.log( data );
 			console.log( bashcmd );
 		}
+	}
+	, draggable     : el => {
+		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, eq            : {
 		  beforShow : fn => {
@@ -1365,123 +1540,7 @@ var COMMON      = {
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
-var SORT        = {
-	  callback   : callback => {
-		var from = V.sort.from;
-		var to   = V.sort.to;
-		if ( from !== to ) callback( from, to );
-		setTimeout( () => delete V.sort, 600 );
-	}
-	, clearPress : () => {
-		clearTimeout( V.timeoutpress );
-		delete V.press;
-		if ( $( '.mode.edit' ).length ) {
-			$( '.mode' ).removeClass( 'edit' );
-			$( '.mode .bkedit' ).remove();
-		}
-	}
-	, drag       : ( el, callback ) => {
-		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
-			e.originalEvent.dataTransfer.effectAllowed = 'move';
-			V.sort = SORT.V( $( this ) );
-			SORT.clearPress();
-		} ).on( 'dragenter', 'li', function( e ) {
-			e.preventDefault(); // not-allowed cursor
-			if ( ! V.sort || V.sort.enter ) return
-			
-			V.sort.enter = true;
-			V.sort.over  = false;
-		} ).on( 'dragover', 'li', function( e ) {
-			e.preventDefault(); // not-allowed cursor
-			if ( ! V.sort || V.sort.over ) return
-			
-			V.sort.enter = false;
-			V.sort.over  = true;
-			SORT.insert( this );
-		} ).on( 'drop', 'li', function() {
-			SORT.callback( callback );
-		} );
-	}
-	, draggable  : el => {
-		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
-	}
-	, insert     : to => {
-		var $to   = $( to );
-		V.sort.to = $to.index();
-		var index = V.sort.$from.index();
-		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
-	}
-	, set        : ( el, callback ) => {
-		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
-	}
-	, touch      : ( el, callback ) => { // ok for mouse
-		var $ul = $( '#'+ el );
-		$ul.on( 'touchstart mousedown', function( e ) {
-			if ( ! $( e.target ).parents( '#'+ el ).length ) return
-			
-			V.timeoutsort = setTimeout( () => {
-				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
-				V.sort        = SORT.V( $from );
-				var pos       = $from[ 0 ].getBoundingClientRect();
-				var ghostcss  = {
-					  position  : 'fixed'
-					, width     : pos.width +'px'
-					, height    : pos.height +'px'
-					, left      : pos.left +'px'
-					, top       : pos.top +'px'
-					, opacity   : 0.5
-					, 'z-index' : 1
-				}
-				var xy        = SORT.xy( e );
-				V.sort.left   = xy.x - pos.left;
-				V.sort.top    = xy.y - pos.top;
-				V.sort.$ghost = $from.clone()
-									.addClass( 'ghost' )
-									.css( ghostcss );
-				$ul.append( V.sort.$ghost );
-			}, 500 ); // suppressed by swipe: (main.js - touchend)
-		} ).on( 'touchmove mousemove', function( e ) {
-			clearTimeout( V.timeoutpress );
-			if ( ! V.sort ) return
-			
-			e.preventDefault(); // prevent scroll
-			SORT.clearPress();
-			var xy  = SORT.xy( e );
-			V.sort.$ghost.css( {
-				  top  : ( xy.y - V.sort.top ) +'px'
-				, left : ( xy.x - V.sort.left ) +'px'
-			} );
-			var els = document.elementsFromPoint( xy.x, xy.y );
-			els.forEach( el => {
-				if ( el.tagName === 'LI' && ! el.className.includes( 'from' ) ) {
-					SORT.insert( el );
-					return false
-				}
-			} );
-		} ).on( 'touchend mouseup', function() {
-			clearTimeout( V.timeoutsort );
-			$ul.find( 'li.ghost' ).remove();
-			$ul.find( 'li.from' ).removeClass( 'from' );
-			if ( V.sort.to ) {
-				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
-			} else {
-				delete V.sort;
-			}
-		} );
-	}
-	, V          : $from => {
-		return {
-			  $from : $from
-			, from  : $from.index()
-		}
-	}
-	, xy         : e => {
-		var x = e.clientX || e.touches[ 0 ].clientX;
-		var y = e.clientY || e.touches[ 0 ].clientY;
-		return { x: x, y:y }
-	}
-}
-var VOLUME      = {
+var VOLUME    = {
 	  max : () => {
 		if ( S.volumemax && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
@@ -1512,7 +1571,7 @@ var VOLUME      = {
 		V.volumecurrent = S.volume;
 	}
 }
-var WEBSOCKET   = {
+var WEBSOCKET = {
 	  connect : ip => {
 		if ( WS && WS.readyState === 1 ) return
 		

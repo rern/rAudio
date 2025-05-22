@@ -1038,7 +1038,7 @@ var LIBRARY   = {
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
 		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) ).promise().done( () => {
 			DISPLAY.library();
-			SORT.draggable( 'lib-mode-list' );
+			COMMON.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
@@ -1957,7 +1957,7 @@ var PLAYLIST  = {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
-					SORT.draggable( id );
+					COMMON.draggable( id );
 				} );
 			}, 'json' );
 		}
@@ -2088,7 +2088,7 @@ var PLAYLIST  = {
 					var id = 'pl-list';
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
-					SORT.draggable( id );
+					COMMON.draggable( id );
 				} );
 			} else {
 				PLAYLIST.render.set();
@@ -2460,52 +2460,6 @@ var UTIL      = {
 		if ( mm < 10 ) mm = '0'+ mm;
 		var hh = Math.floor( second / 3600 );
 		return hh  +':'+ mm +':'+ ss;
-	}
-	, swipe           : () => {
-		if ( ! navigator.maxTouchPoints ) return
-		
-		$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-			return false
-		} );
-		$( 'link[ href*="hovercursor.css" ]' ).remove();
-		 // swipe ---------------------------------------------------------
-		document.addEventListener( 'touchstart', function( e ) {
-			if ( I.active || V.color ) return
-			
-			var $target = $( e.target );
-			if ( $target.parents( '#time-knob' ).length
-				|| $target.parents( '#volume-knob' ).length
-				|| $( '#data' ).length
-				|| ! $( '#bio' ).hasClass( 'hide' )
-				|| [ 'time-band', 'volume-band' ].includes( e.target.id )
-			) return
-			
-			V.swipe     = e.changedTouches[ 0 ].pageX;
-		} );
-		document.addEventListener( 'touchend', function( e ) {
-			if ( ! V.swipe ) return
-			
-			delete V.swipe;
-			if ( V.sort ) return
-			
-			clearTimeout( V.timeoutsort ); // suppress SORT before 500ms (common.js)
-			var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
-			if ( Math.abs( diff ) < 100 ) return
-			
-			var pages = [ 'library', 'playback',  'playlist' ];
-			var i     = pages.indexOf( V.page );
-			var ilast = pages.length - 1;
-			diff > 0 ? i++ : i--;
-			if ( i < 0 ) {
-				i = ilast;
-			} else if ( i > ilast ) {
-				i = 0;
-			}
-			$( '#'+ pages[ i ] ).trigger( 'click' );
-		} );
 	}
 	, switchPage      : page => {
 		UTIL.intervalClear.all();
