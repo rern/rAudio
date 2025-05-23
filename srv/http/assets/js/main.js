@@ -1767,7 +1767,7 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 } ).on( 'touchmove mousemove', e => {
 	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
-	if ( V.sat ) COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
+	if ( V.sat ) COLOR.pick.point( V.ctx.x, V.ctx.y );
 } ).on( 'mouseenter', () => {
 	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
 } );
@@ -1775,7 +1775,7 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 	if ( ! V.sat ) return
 	
 	V.sat = false;
-	COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
+	COLOR.pick.point( V.ctx.x, V.ctx.y );
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {

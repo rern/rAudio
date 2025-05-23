@@ -358,7 +358,9 @@ $htmlsearch   = '
 		<div id="wheel"></div>
 		<div id="hue"><div></div></div>
 		<div id="sat"></div>
-		<canvas id="base" width="230" height="230"></canvas>
+		<div id="box">
+			<canvas width="120" height="120"></canvas>
+		</div>
 		<a id="colorreset" class="infobtn"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>

@@ -175,7 +175,7 @@ var COLOR     = {
 		  gradient : () => {
 			var ctx = V.ctx.context;
 			var h   = V.ctx.hsl.h;
-			var w   = V.ctx.sat.w;
+			var w   = 120;
 			for( var i = 0; i <= w; i++ ){                                     // each line
 				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
 				var iy        = i / w * 100;
@@ -186,7 +186,7 @@ var COLOR     = {
 			}
 		}
 		, hue      : ( x, y ) => {
-			var c       = V.ctx.canvas.c;
+			var c       = 115;
 			var rad     = Math.atan2( x - c, y - c );
 			var h       = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
 			V.ctx.hsl.h = h;
@@ -196,7 +196,7 @@ var COLOR     = {
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
-				.css( { left: ( x - 5 ) +'px', top: ( y - 5 ) +'px' } )
+				.css( { left: ( x + 50 ) +'px', top: ( y + 50 ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
 		, rotate   : h => {
@@ -204,8 +204,6 @@ var COLOR     = {
 				.find( 'div' ).css( 'background', 'hsl( '+ h +', 100%, 50% )' );
 		}
 		, sat      : ( x, y ) => {
-			x += V.ctx.sat.tl;
-			y += V.ctx.sat.tl;
 			var d, f, m;
 			var [ r, g, b ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 			if ( r + g + b === 0 ) return
@@ -219,30 +217,28 @@ var COLOR     = {
 			V.ctx.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
 			V.ctx.hsl.s = f ? Math.round( d / f * 100 ) : 0;
 			COLOR.cssSet( V.ctx.hsl );
-			V.ctx.sat.x = x;
-			V.ctx.sat.y = y;
+			V.ctx.x = x;
+			V.ctx.y = y;
 		}
 		, set      : () => {
 			COLOR.pick.gradient(); // sat box
+			var h = V.ctx.hsl.h;
 			var l = V.ctx.hsl.l / 100;
 			var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
 			var k, rgb, v;
 			var [ r, g, b ] = ( () => { // hsl > rgb
 				rgb = [];
 				[ 0, 8, 4 ].forEach( n => {
-					k = ( n + V.ctx.hsl.h / 30 ) % 12;
+					k = ( n + h / 30 ) % 12;
 					v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
 					rgb.push( Math.round( v * 255 ) );
 				} );
 				return rgb
 			} )();
-			var br = V.ctx.sat.br
-			var tl = V.ctx.sat.tl;
-			var h  = V.ctx.hsl.h;
 			var pb, pg, pr;
 			match:
-			for ( var y = tl; y < br; y++ ) { // find pixel with rgb +/- 1
-				for ( var x = tl; x < br; x++ ) {
+			for ( var y = 0; y < 120; y++ ) { // find pixel with rgb +/- 1
+				for ( var x = 0; x < 120; x++ ) {
 					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate( h );
@@ -269,28 +265,13 @@ var COLOR     = {
 			return
 		}
 		
-		var canvas_w    = 230;
-		var canvas_c    = canvas_w / 2;
-		var hue_r       = 95;
-		var sat_w       = 120;
-		var sat_tl      = ( canvas_w - sat_w ) / 2;
-		var sat_br      = sat_tl + sat_w;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
-		var [ ty, tx ]  = Object.values( $( '#base' ).offset() );
 		V.ctx           = {
-			  canvas  : { w: canvas_w, c: canvas_c }
-			, context : $( '#base' )[ 0 ].getContext( '2d', { willReadFrequently: true } )
+			  context : $( '#box canvas' )[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl0    : { h, s, l } // for #colorcancel
-			, sat     : { br: sat_br, tl: sat_tl, w: sat_w }
-			, tl      : { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
-				  hue : { x: tx,          y: ty }
-				, sat : { x: tx + sat_tl, y: ty + sat_tl }
-			}
 			, touch   : navigator.maxTouchPoints
 		}
-		var ctx         = V.ctx.context;
-		ctx.translate( sat_tl, sat_tl );
 		COLOR.pick.set();
 	}
 	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
