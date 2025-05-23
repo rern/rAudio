@@ -81,10 +81,17 @@ a {
 	height: 100px;
 }
 .infobookmark .i-bookmark,
-#infoList .i-bookmark {
+#infoList .i-bookmark,
+#infoList i.msgicon {
 	margin-top: 30px;
 	width: 100px !important;
 	font-size: 48px !important;
+}
+#infoList i.msgicon:not( .i-bookmark ) {
+	color: var( --cg50 ) !important;
+}
+.infobookmark .i-bookmark,
+#infoList .i-bookmark {
 	color: var( --cm ) !important;
 }
 #time-knob.disabled .btn {

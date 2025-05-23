@@ -1504,8 +1504,8 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							PLAYLIST.removeRange();
 							break;
 						case 'crop':
+							$LI = $( '#pl-list li.active' );
 							CONTEXT.crop();
-							$( '#infoX' ).trigger( 'click' );
 							break;
 					}
 				} );

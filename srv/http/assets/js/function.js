@@ -361,6 +361,8 @@ var COVERART  = {
 				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
 			} else if ( ext === 'png' ) {
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
+			} else if ( I.active ) {
+				$img.replaceWith( '<i class="msgicon '+ $LI.find( '.li-icon' )[ 0 ].classList[ 0 ] +'"></i>' );
 			} else if ( V.playback ) {
 				$img.attr( 'src', V.coverart );
 			} else if ( V.playlist ) {

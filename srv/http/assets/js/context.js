@@ -48,8 +48,20 @@ var CONTEXT  = {
 		} );
 	}
 	, crop          : () => {
-		BASH( [ 'mpccrop' ] );
-		$( '#pl-list li:not( .active )' ).remove();
+		var $img = $LI.find( 'img' );
+		var src  = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		INFO( {
+			  icon    : 'crop'
+			, title   : 'Crop Playlist'
+			, message : '<img src="'+ src + UTIL.versionHash() +'">'
+						+'<br><wh>'+ $LI.find( '.name' ).text() +'</wh>'
+						+'<br><br>Remove all other tracks?'
+			, oklabel : ICON( 'crop' ) +'Crop'
+			, ok      : () => {
+				BASH( [ 'mpccrop' ] );
+				$( '#pl-list li:not( .active )' ).remove();
+			}
+		} );
 	}
 	, current       : () => {
 		S.song = V.list.index;
