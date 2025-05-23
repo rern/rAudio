@@ -270,7 +270,14 @@ var COLOR     = {
 			  context : $( '#box canvas' )[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl0    : { h, s, l } // for #colorcancel
-			, touch   : navigator.maxTouchPoints
+		}
+		if ( navigator.maxTouchPoints ) {
+			var [ ty, tx ]  = Object.values( $( '#box' ).offset() );
+			V.ctx.tl        = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
+				  hue : { x: tx,      y: ty }
+				, sat : { x: tx + 55, y: ty + 55 }
+			}
+			V.ctx.touch     = true;
 		}
 		COLOR.pick.set();
 	}
