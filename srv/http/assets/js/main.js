@@ -1761,7 +1761,7 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#picksat' ).length ) return // touch limit
 	
 	V.sat = true;
-	COLOR.pick.xy( e, 'sat', 'clear' );
+	COLOR.pick.xy( e, 'sat' );
 	$( '#sat' ).addClass( 'hide' );
 	$( '#colorok' ).removeClass( 'disabled' );
 } ).on( 'touchmove mousemove', e => {
