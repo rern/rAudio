@@ -167,19 +167,16 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	border-top: 1px solid var( --cga );
 }
-#wheel,
-#color::after {
-	border-radius: 50%;
-	box-shadow: var( --shadow-text );
-	background: conic-gradient( in hsl longer hue, red 0 100% );
-	transform: rotate( 90deg );
-}
 #color::after {
 	content: '';
 	display: block;
 	margin: 8px auto;
 	width: 22px;
 	height: 22px;
+	border-radius: 50%;
+	background: var( --wheel );
+	transform: rotate( 90deg );
+	box-shadow: var( --shadow-text );
 }
 #screenoff {
 	border-left: 1px solid #000000;
@@ -1875,6 +1872,8 @@ li.active .li2 bl {
 }
 #wheel {
 	border-radius: 50%;
+	background: var( --wheel );
+	transform: rotate( 90deg );
 	box-shadow: var( --shadow-bar );
 	z-index: -1;
 }
