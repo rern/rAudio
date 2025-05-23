@@ -122,7 +122,7 @@ var CONTEXT  = {
 	, remove        : () => {
 		V.contextmenu = true;
 		setTimeout( () => V.contextmenu = false, 500 );
-		PLAYLIST.remove();
+		PLAYLIST.remove( $LI );
 	}
 	, removerange   : () => PLAYLIST.removeRange( [ $LI.index() + 1, S.pllength ] )
 	, savedpladd    : () => {
