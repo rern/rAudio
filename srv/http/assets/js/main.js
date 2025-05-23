@@ -1762,19 +1762,9 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 	
 	V.sat = true;
 	COLOR.pick.xy( e, 'sat', 'clear' );
+	$( '#sat' ).addClass( 'hide' );
 	$( '#colorok' ).removeClass( 'disabled' );
-} ).on( 'touchmove', e => {
-	if ( ! V.sat  ) return
-	
-	var et = e.touches[ 0 ];
-	if ( 'picksat' === document.elementFromPoint( et.clientX, et.clientY ).id ) {
-		COLOR.pick.xy( e, 'sat', V.satout );
-		if ( V.satout ) V.satout = false;
-	} else {
-		V.satout = true;
-		COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );
-	}
-} ).on( 'mousemove', e => {
+} ).on( 'touchmove mousemove', e => {
 	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
 	if ( V.sat ) COLOR.pick.point( V.ctx.sat.x, V.ctx.sat.y );

@@ -251,10 +251,14 @@ var COLOR     = {
 				}
 			}
 		}
-		, xy       : ( e, hue_sat, clear ) => {
-			if ( clear ) $( '#sat' ).addClass( 'hide' )
-			var x = e.offsetX || e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
-			var y = e.offsetY || e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
+		, xy       : ( e, hue_sat ) => {
+			if ( V.ctx.touch ) {
+				var x = e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
+				var y = e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
+			} else {
+				var x = e.offsetX;
+				var y = e.offsetY;
+			}
 			COLOR.pick[ hue_sat ]( x, y );
 		}
 	}
@@ -282,6 +286,7 @@ var COLOR     = {
 				  hue : { x: tx,          y: ty }
 				, sat : { x: tx + sat_tl, y: ty + sat_tl }
 			}
+			, touch   : navigator.maxTouchPoints
 		}
 		var ctx         = V.ctx.context;
 		ctx.translate( sat_tl, sat_tl );
