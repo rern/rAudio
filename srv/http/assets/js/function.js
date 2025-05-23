@@ -200,7 +200,8 @@ var COLOR     = {
 				.removeClass( 'hide' );
 		}
 		, rotate   : h => {
-			$( '#hue' ).css( 'transform', 'rotate( '+ h +'deg )' );
+			$( '#hue' ).css( 'transform', 'rotate( '+ h +'deg )' )
+				.find( 'div' ).css( 'background', 'hsl( '+ h +', 100%, 50% )' );
 		}
 		, sat      : ( x, y ) => {
 			x += V.ctx.sat.tl;
