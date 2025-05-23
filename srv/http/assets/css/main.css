@@ -167,16 +167,26 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	border-top: 1px solid var( --cga );
 }
-#color::after {
+#color::before {
 	content: '';
+	position: absolute;
 	display: block;
-	margin: 8px auto;
-	width: 22px;
-	height: 22px;
+	margin: 7px 8px;
+	width: 24px;
+	height: 24px;
 	border-radius: 50%;
 	background: var( --wheel );
 	transform: rotate( 90deg );
-	box-shadow: var( --shadow-text );
+}
+#color::after {
+	content: '';
+	position: relative;
+	display: block;
+	margin: 10px auto;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var( --cg );
 }
 #screenoff {
 	border-left: 1px solid #000000;
