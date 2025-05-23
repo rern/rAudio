@@ -154,7 +154,7 @@ var SORT      = {
 		var from = V.sort.from;
 		var to   = V.sort.to;
 		if ( from !== to ) callback( from, to );
-		setTimeout( () => delete V.sort, 600 ); // suppress refresh on push playlist
+		setTimeout( () => delete V.sort, 600 ); // delay for suppress refresh on push playlist
 	}
 	, clearPress : () => {
 		clearTimeout( V.timeoutpress );
@@ -245,7 +245,7 @@ var SORT      = {
 			$ul.find( 'li.from' ).removeClass( 'from' );
 			if ( ! V.sort ) return
 			
-			if ( V.sort.to ) {
+			if ( 'to' in V.sort ) { // may be 0
 				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 			} else {
 				delete V.sort;
