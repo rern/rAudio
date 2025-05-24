@@ -161,17 +161,23 @@ var BIO       = {
 	}
 }
 var COLOR     = {
-	  cssSet : () => {
+	  cssSet   : () => {
 		var css = { '--h': V.ctx.hsl.h, '--s': V.ctx.hsl.s +'%' };
 		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( V.ctx.hsl.l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
-	, hide   : () => {
+	, hide     : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
 		delete V.color;
 	}
-	, pick   : {
+	, okEnable : () => {
+		if ( V.color.ok ) return
+		
+		V.color.ok = true;
+		$( '#colorok' ).removeClass( 'disabled' );
+	}
+	, pick     : {
 		  gradient : () => {
 			var ctx = V.ctx.context;
 			var h   = V.ctx.hsl.h;
@@ -196,6 +202,37 @@ var COLOR     = {
 			COLOR.pick.rotate();
 			COLOR.pick.gradient();
 			COLOR.cssSet();
+		}
+		, key      : {
+			  code : {
+				  ArrowUp    : [ 'y', -1 ]
+				, ArrowDown  : [ 'y',  1 ]
+				, ArrowRight : [ 'x',  1 ]
+				, ArrowLeft  : [ 'x', -1 ]
+				, '+'        :  1
+				, '-'        : -1
+			}
+			, hue  : key => {
+				COLOR.pick.hue( COLOR.pick.key.code[ key ] );
+				COLOR.okEnable();
+			}
+			, sat  : key => {
+				var [ xy, v ] = COLOR.pick.key.code[ key ];
+				if ( xy === 'x' ) {
+					var x = V.ctx.x + v;
+					if ( x < 0 || x > 120 ) return
+					
+					var y = V.ctx.y;
+				} else {
+					var y = V.ctx.y + v;
+					if ( y < 0 || y > 120 ) return
+					
+					var x = V.ctx.x;
+				}
+				COLOR.pick.point( x, y );
+				COLOR.pick.sat( x, y );
+				COLOR.okEnable();
+			}
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
@@ -246,6 +283,8 @@ var COLOR     = {
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate();
 						COLOR.pick.point( x, y );
+						V.ctx.x = x;
+						V.ctx.y = y;
 						break match;
 					}
 				}
@@ -260,9 +299,10 @@ var COLOR     = {
 				var y = e.offsetY;
 			}
 			COLOR.pick[ hue_sat ]( x, y );
+			COLOR.okEnable();
 		}
 	}
-	, picker : () => {
+	, picker   : () => {
 		if ( V.ctx ) {
 			COLOR.pick.set();
 			return
@@ -284,7 +324,7 @@ var COLOR     = {
 		}
 		COLOR.pick.set();
 	}
-	, save   : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
+	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
 	  change  : () =>  {

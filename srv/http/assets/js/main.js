@@ -1747,7 +1747,6 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	COLOR.pick.xy( e, 'hue' );
 	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
 	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
-	$( '#colorok' ).removeClass( 'disabled' );
 } ).on( 'touchmove mousemove', e => {
 	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
 } ).on( 'touchend mouseup', () => {
@@ -1764,7 +1763,6 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 	V.sat = true;
 	COLOR.pick.xy( e, 'sat' );
 	$( '#sat' ).addClass( 'hide' );
-	$( '#colorok' ).removeClass( 'disabled' );
 } ).on( 'touchmove mousemove', e => {
 	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
@@ -1787,10 +1785,11 @@ $( document ).on( 'keydown', e => {
 	if ( key === 'Escape' ) {
 		$( '#colorcancel' ).trigger( 'click' );
 	} else if ( key === 'Enter' ) {
-		if ( ! $( '#colorok' ).hasClass( 'disabled' ) ) $( '#colorok' ).trigger( 'click' );
-	} else {
-		$( '#colorok' ).removeClass( 'disabled' );
-		COLOR.pick.hue( key === '+' ? 1 : -1 );
+		if ( V.color.ok ) $( '#colorok' ).trigger( 'click' );
+	} else if ( /[+-]/.test( key ) ){
+		COLOR.pick.key.hue( key ); 
+	} else if ( /^Arrow/.test( key ) ) {
+		COLOR.pick.key.sat( key ); 
 	}
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
