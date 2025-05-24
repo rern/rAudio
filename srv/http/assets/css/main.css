@@ -1875,7 +1875,7 @@ li.active .li2 bl {
 	height: 36px;
 	font-size: 24px;
 	line-height: 36px;
-	color: var( --cm );
+	color: var( --cml );
 	background: #000;
 	box-shadow: var( --shadow-bar );
 	text-shadow: var( --shadow-btn );
