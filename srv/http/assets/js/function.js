@@ -181,7 +181,7 @@ var COLOR     = {
 		  gradient : () => {
 			var ctx = V.ctx.context;
 			var h   = V.ctx.hsl.h;
-			var w   = 120;
+			var w   = V.ctx.sat.w;
 			for( var i = 0; i <= w; i++ ){                                     // each line
 				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
 				var iy        = i / w * 100;
@@ -220,12 +220,12 @@ var COLOR     = {
 				var [ xy, v ] = COLOR.pick.key.code[ key ];
 				if ( xy === 'x' ) {
 					var x = V.ctx.x + v;
-					if ( x < 0 || x > 120 ) return
+					if ( x < 0 || x > V.ctx.sat.w ) return
 					
 					var y = V.ctx.y;
 				} else {
 					var y = V.ctx.y + v;
-					if ( y < 0 || y > 120 ) return
+					if ( y < 0 || y > V.ctx.sat.w ) return
 					
 					var x = V.ctx.x;
 				}
@@ -236,7 +236,7 @@ var COLOR     = {
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
-				.css( { left: ( x + 50 ) +'px', top: ( y + 50 ) +'px' } ) // margin 55px - r 5px
+				.css( { left: ( x + V.ctx.sat.m ) +'px', top: ( y + V.ctx.sat.m ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
@@ -277,8 +277,8 @@ var COLOR     = {
 			} )();
 			var pb, pg, pr;
 			match:
-			for ( var y = 0; y < 120; y++ ) { // find pixel with rgb +/- 1
-				for ( var x = 0; x < 120; x++ ) {
+			for ( var y = 0; y < V.ctx.sat.w; y++ ) { // find pixel with rgb +/- 1
+				for ( var x = 0; x < V.ctx.sat.w; x++ ) {
 					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate();
@@ -308,17 +308,21 @@ var COLOR     = {
 			return
 		}
 		
+		var $canvas     = $( '#box canvas' );
+		var margin      = +$canvas.css( 'margin' ).replace( 'px', '' );
+		var sat_r       = +$( '#sat' ).css( 'width' ).replace( 'px', '' ) / 2;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		V.ctx           = {
-			  context : $( '#box canvas' )[ 0 ].getContext( '2d', { willReadFrequently: true } )
+			  context : $canvas[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl0    : { h, s, l } // for #colorcancel
+			, sat     : { m: margin - sat_r, w: 130 }
 		}
 		if ( navigator.maxTouchPoints ) {
 			var [ ty, tx ]  = Object.values( $( '#box' ).offset() );
 			V.ctx.tl        = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,      y: ty }
-				, sat : { x: tx + 55, y: ty + 55 }
+				, sat : { x: tx + margin, y: ty + margin }
 			}
 			V.ctx.touch     = true;
 		}

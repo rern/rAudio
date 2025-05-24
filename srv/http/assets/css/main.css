@@ -1894,23 +1894,29 @@ li.active .li2 bl {
 	box-shadow: var( --shadow-bar );
 	z-index: -1;
 }
+#picknone,
+#wheel::after {
+	margin: 15px auto;
+	width: 200px;
+	height: 200px;
+}
 #wheel::after {
 	content: '';
 	display: block;
-	margin: 20px auto;
-	width: 190px;
-	height: 190px;
 	border-radius: 50%;
 	background: #000;
 }
+#picknone {
+	margin: 15px;
+}
 #box canvas {
-	margin: 55px;
+	margin: 50px;
 }
 #hue div {
-	right: -1px;
+	right: -2px;
 	top: 104px;
-	width: 22px;
-	height: 22px;
+	width: 20px;
+	height: 20px;
 	border: 2px solid #fff;
 	border-radius: 50%;
 	box-shadow: 0 0 4px 1px #000;
@@ -1922,15 +1928,10 @@ li.active .li2 bl {
 	border-radius: 50%;
 	box-shadow: 0 0 2px 1px #666;
 }
-#picknone {
-	margin: 20px;
-	width: 190px;
-	height: 190px;
-}
 #picksat {
-	margin: 55px;
-	width: 120px;
-	height: 120px;
+	margin: 50px;
+	width: 130px;
+	height: 130px;
 }
 #colorcancel,
 #pickhue,
