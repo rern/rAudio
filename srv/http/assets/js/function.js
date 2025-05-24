@@ -161,9 +161,9 @@ var BIO       = {
 	}
 }
 var COLOR     = {
-	  cssSet : hsl => {
-		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
-		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
+	  cssSet : () => {
+		var css = { '--h': V.ctx.hsl.h, '--s': V.ctx.hsl.s +'%' };
+		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( V.ctx.hsl.l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
 	, hide   : () => {
@@ -186,22 +186,25 @@ var COLOR     = {
 			}
 		}
 		, hue      : ( x, y ) => {
-			var c       = 115;
-			var rad     = Math.atan2( x - c, y - c );
-			var h       = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
-			V.ctx.hsl.h = h;
-			COLOR.pick.rotate( h );
+			if ( y ) {
+				var c       = 115;
+				var rad     = Math.atan2( x - c, y - c );
+				V.ctx.hsl.h = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
+			} else {
+				V.ctx.hsl.h += x;
+			}
+			COLOR.pick.rotate();
 			COLOR.pick.gradient();
-			COLOR.cssSet( V.ctx.hsl );
+			COLOR.cssSet();
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
 				.css( { left: ( x + 50 ) +'px', top: ( y + 50 ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
-		, rotate   : h => {
-			$( '#hue' ).css( 'transform', 'rotate( '+ h +'deg )' )
-				.find( 'div' ).css( 'background', 'hsl( '+ h +', 100%, 50% )' );
+		, rotate   : () => {
+			$( '#hue' ).css( 'transform', 'rotate( '+ V.ctx.hsl.h +'deg )' )
+				.find( 'div' ).css( 'background', 'hsl( '+ V.ctx.hsl.h +', 100%, 50% )' );
 		}
 		, sat      : ( x, y ) => {
 			var d, f, m;
@@ -216,7 +219,7 @@ var COLOR     = {
 			f  = 1 - Math.abs( m + m - d - 1 ); 
 			V.ctx.hsl.l = Math.round( ( m + m - d ) / 2 * 100 );
 			V.ctx.hsl.s = f ? Math.round( d / f * 100 ) : 0;
-			COLOR.cssSet( V.ctx.hsl );
+			COLOR.cssSet();
 			V.ctx.x = x;
 			V.ctx.y = y;
 		}
@@ -241,7 +244,7 @@ var COLOR     = {
 				for ( var x = 0; x < 120; x++ ) {
 					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
-						COLOR.pick.rotate( h );
+						COLOR.pick.rotate();
 						COLOR.pick.point( x, y );
 						break match;
 					}
@@ -281,7 +284,7 @@ var COLOR     = {
 		}
 		COLOR.pick.set();
 	}
-	, save   : hsl => BASH( [ 'color', Object.values( hsl ).join( ' ' ), 'CMD HSL' ] )
+	, save   : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
 	  change  : () =>  {
@@ -362,7 +365,8 @@ var COVERART  = {
 			} else if ( ext === 'png' ) {
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
 			} else if ( I.active ) {
-				$img.replaceWith( '<i class="msgicon '+ $LI.find( '.li-icon' )[ 0 ].classList[ 0 ] +'"></i>' );
+				var icon = I.icon === 'bookmark' ? 'bookmark' : $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
+				$img.replaceWith( ICON( icon +' msgicon' ) );
 			} else if ( V.playback ) {
 				$img.attr( 'src', V.coverart );
 			} else if ( V.playlist ) {

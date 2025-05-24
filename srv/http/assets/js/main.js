@@ -1721,17 +1721,18 @@ $.each( sortlist, ( el, callback ) => SORT.set( el, callback ) );
 
 // color /////////////////////////////////////////////////////////////////////////////////////
 $( '#colorok' ).on( 'click', function() {
-	COLOR.save( V.ctx.hsl );
+	COLOR.save();
 	COLOR.hide();
 } );
 $( '#colorreset' ).on( 'click', function() {
-	COLOR.cssSet( V.color.cd );
+	V.ctx.hsl = V.color.cd;
+	COLOR.cssSet();
 	BASH( [ 'color', true, 'CMD RESET' ] );
 	COLOR.hide();
 } );
 $( '#colorcancel' ).on( 'click', function() {
 	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl0 );
-	COLOR.cssSet( V.ctx.hsl );
+	COLOR.cssSet();
 	COLOR.hide();
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();
@@ -1776,6 +1777,8 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 	
 	V.sat = false;
 	COLOR.pick.point( V.ctx.x, V.ctx.y );
+} ).on( 'wheel', e => {
+	COLOR.pick.hue( e.originalEvent.deltaY > 0 ? 1 : -1 );
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
