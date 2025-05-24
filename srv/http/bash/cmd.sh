@@ -471,11 +471,11 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if [[ $( mpcState ) == play ]]; then
+	if [[ ! $POS && $( mpcState ) == play ]]; then
 		mpc -q crop
 	else
 		radioStop
-		mpc -q play
+		mpc -q play $POS
 		mpc -q crop
 		mpc -q stop
 	fi

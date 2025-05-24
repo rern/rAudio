@@ -58,8 +58,14 @@ var CONTEXT  = {
 						+'<br><br>Remove all other tracks?'
 			, oklabel : ICON( 'crop' ) +'Crop'
 			, ok      : () => {
-				BASH( [ 'mpccrop' ] );
-				$( '#pl-list li:not( .active )' ).remove();
+				delete V.html.playlist;
+				if ( $LI.hasClass( 'active' ) ) {
+					BASH( [ 'mpccrop' ] );
+				} else {
+					BASH( [ 'mpccrop', $LI.index() + 1, 'CMD POS' ] );
+					$LI.addClass( 'active' );
+				}
+				$( '#pl-list li' ).not( $LI ).remove();
 			}
 		} );
 	}
