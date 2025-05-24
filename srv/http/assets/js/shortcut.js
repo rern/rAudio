@@ -32,12 +32,7 @@ function menuLibraryPlaylist( $tabs, click ) {
 }
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
-	if ( V.local || I.active ) return
-	
-	if ( V.color ) {
-		$( '#colorcancel' ).trigger( 'click' );
-		return
-	}
+	if ( V.local || I.active || V.color ) return
 	
 	var key      = e.key;
 	var $search  = $( '.search:not( .hide )' );

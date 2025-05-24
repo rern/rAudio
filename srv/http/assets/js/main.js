@@ -1780,6 +1780,18 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 } ).on( 'wheel', e => {
 	COLOR.pick.hue( e.originalEvent.deltaY > 0 ? 1 : -1 );
 } );
+$( document ).on( 'keydown', e => {
+	if ( ! V.color ) return
+	
+	var key = e.key;
+	if ( key === 'Escape' ) {
+		$( '#colorcancel' ).trigger( 'click' );
+	} else if ( key === 'Enter' ) {
+		$( '#colorok' ).trigger( 'click' );
+	} else {
+		COLOR.pick.hue( key === '+' ? 1 : -1 );
+	}
+} );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqedit, #eq .select2-container, #eqnew' ).addClass( 'hide' );
