@@ -1669,8 +1669,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
-			if ( ! $target.length ) $target = $( '#infoOk' );
-			$target.trigger( 'focus' ).trigger( 'click' );
+			if ( $target.length ) {
+				$target.trigger( 'click' );
+			} else if ( ! $( '#infoOk' ).hasClass( 'disabled' ) ) {
+				$( '#infoOk' ).trigger( 'click' );
+			}
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );

@@ -1787,8 +1787,9 @@ $( document ).on( 'keydown', e => {
 	if ( key === 'Escape' ) {
 		$( '#colorcancel' ).trigger( 'click' );
 	} else if ( key === 'Enter' ) {
-		$( '#colorok' ).trigger( 'click' );
+		if ( ! $( '#colorok' ).hasClass( 'disabled' ) ) $( '#colorok' ).trigger( 'click' );
 	} else {
+		$( '#colorok' ).removeClass( 'disabled' );
 		COLOR.pick.hue( key === '+' ? 1 : -1 );
 	}
 } );
