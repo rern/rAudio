@@ -284,9 +284,6 @@ var COLOR     = {
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate();
 						COLOR.pick.point( x, y );
-						$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
-						$( '#colorok' ).addClass( 'disabled' );
-						$( 'body' ).css( 'overflow', 'hidden' );
 						V.ctx.x = x;
 						V.ctx.y = y;
 						break match;
@@ -308,6 +305,9 @@ var COLOR     = {
 	}
 	, picker   : () => {
 		$( '#colorpicker' ).removeClass( 'hide' ); // to get offset
+		$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
+		$( '#colorok' ).addClass( 'disabled' );
+		$( 'body' ).css( 'overflow', 'hidden' );
 		var $box        = $( '#box' );
 		var box_margin  = parseInt( $box.css( 'margin' ) );
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
