@@ -207,8 +207,6 @@ $( '#settings' ).on( 'click', '.settings', function() {
 					$( '#library' ).trigger( 'click' );
 				} else if ( ! $list.find( '.li2' ).length ) {
 					$( V.library ? '.mode.webradio' : '#button-pl-back' ).trigger( 'click' );
-				} else {
-					$list.find( 'li:not( .licover )' ).eq( 0 ).addClass( 'active' );
 				}
 			}, 'json' );
 			break;
