@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1747379469' );
+	src         : url( '/assets/fonts/rern.woff2?v=1747959063' );
 }
 @font-face {
 	font-family : Lato;
@@ -658,7 +658,6 @@ hr {
 	text-align: center;
 	overflow: hidden;
 	scrollbar-width: none;
-	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
 }
 #infoOverlay a {

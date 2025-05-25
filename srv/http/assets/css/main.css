@@ -97,18 +97,6 @@ a {
 #time-knob.disabled .btn {
 	background-color: var( --cgd ) !important;
 }
-#divcolor .infobtn {
-	position: relative;
-	margin: 10px 5px;
-	width: 90px;
-	box-shadow: var( --shadow-bar );
-}
-#divcolor .btn.disabled {
-	background-color: var( --cg ) !important;
-}
-#colorreset {
-	background-color: var( --cd );
-}
 .submenu.disabled {
 	color: var( --cg60 ) !important;
 }
@@ -1166,7 +1154,6 @@ div.pagerefresh {
 	line-height: 24px;
 	color: var( --cw );
 	scrollbar-width: none;
-	-ms-overflow-style: none;
 }
 #lyricstext {
 	padding: 20px 15px 180px 15px;
@@ -1848,21 +1835,18 @@ li.active .li2 bl {
 	font-size: 30px;
 }
 /* ---------------------- colorpicker ----------------------*/
-#wheel {
-	z-index: -1;
-}
-#sat {
-	z-index: 1;
-}
 #pickhue,
 #picknone,
 #picksat {
-	z-index: 2;
+	z-index: 1;
+}
+#pickhue,
+#picksat {
+	cursor: crosshair;
 }
 #hue,
 #pickhue,
-#wheel,
-#box {
+#wheel {
 	width: 230px;
 	height: 230px;
 }
@@ -1873,15 +1857,11 @@ li.active .li2 bl {
 #wheel {
 	border-radius: 50%;
 }
-#pickhue,
-#picksat {
-	cursor: crosshair;
-}
-#picknone {
-	cursor: default;
+#colorpicker,
+#divcolor *:not( .infobtn, .i-set0, #hue ) {
+	position: absolute;
 }
 #colorpicker {
-	position: absolute;
 	top: 0;
 	width: 100%;
 	height: 100%;
@@ -1891,15 +1871,9 @@ li.active .li2 bl {
 #divcolor {
 	position: relative;
 	top: 50%;
-	-webkit-transform: translateY( -50% );
-	-ms-transform: translateY( -50% );
 	transform: translateY( -50% );
 	width: 230px;
 	margin: auto;
-}
-#colorcancel,
-#divcolor div:not( #box ) {
-	position: absolute;
 }
 #colorcancel {
 	right: -5px;
@@ -1929,9 +1903,10 @@ li.active .li2 bl {
 	border-radius: 50%;
 	background: #000;
 }
-#box canvas {
-	margin: 50px;
+#box {
+	display: block;
 }
+#box,
 #picksat {
 	margin: 50px;
 	width: 130px;
@@ -1951,6 +1926,14 @@ li.active .li2 bl {
 	height: 10px;
 	border: 1px solid #fff;
 	box-shadow: 0 0 2px 1px #666;
+}
+#colorreset {
+	background-color: var( --cd );
+}
+#divcolor .infobtn {
+	margin: 10px 5px;
+	width: 90px;
+	box-shadow: var( --shadow-bar );
 }
 /* ---------------------- tag ----------------------*/
 .tagmessage {

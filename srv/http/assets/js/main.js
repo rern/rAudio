@@ -1731,7 +1731,7 @@ $( '#colorreset' ).on( 'click', function() {
 	COLOR.hide();
 } );
 $( '#colorcancel' ).on( 'click', function() {
-	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl0 );
+	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl_cur );
 	COLOR.cssSet();
 	COLOR.hide();
 	if ( S.player === 'mpd' ) {

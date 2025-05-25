@@ -181,7 +181,7 @@ var COLOR     = {
 		  gradient : () => {
 			var ctx = V.ctx.context;
 			var h   = V.ctx.hsl.h;
-			var w   = V.ctx.sat.w;
+			var w   = V.ctx.width;
 			for( var i = 0; i <= w; i++ ){                                     // each line
 				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
 				var iy        = i / w * 100;
@@ -193,8 +193,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				var c       = 115;
-				var rad     = Math.atan2( x - c, y - c );
+				var rad     = Math.atan2( x - V.ctx.wheel_c, y - V.ctx.wheel_c );
 				V.ctx.hsl.h = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
 			} else {
 				V.ctx.hsl.h += x;
@@ -220,12 +219,12 @@ var COLOR     = {
 				var [ xy, v ] = COLOR.pick.key.code[ key ];
 				if ( xy === 'x' ) {
 					var x = V.ctx.x + v;
-					if ( x < 0 || x > V.ctx.sat.w ) return
+					if ( x < 0 || x > V.ctx.width ) return
 					
 					var y = V.ctx.y;
 				} else {
 					var y = V.ctx.y + v;
-					if ( y < 0 || y > V.ctx.sat.w ) return
+					if ( y < 0 || y > V.ctx.width ) return
 					
 					var x = V.ctx.x;
 				}
@@ -236,7 +235,7 @@ var COLOR     = {
 		}
 		, point    : ( x, y ) => {
 			$( '#sat' )
-				.css( { left: ( x + V.ctx.sat.m ) +'px', top: ( y + V.ctx.sat.m ) +'px' } ) // margin 55px - r 5px
+				.css( { left: ( x + V.ctx.sat_m ) +'px', top: ( y + V.ctx.sat_m ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
@@ -277,8 +276,8 @@ var COLOR     = {
 			} )();
 			var pb, pg, pr;
 			match:
-			for ( var y = 0; y < V.ctx.sat.w; y++ ) { // find pixel with rgb +/- 1
-				for ( var x = 0; x < V.ctx.sat.w; x++ ) {
+			for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
+				for ( var x = 0; x < V.ctx.width; x++ ) {
 					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate();
@@ -292,8 +291,8 @@ var COLOR     = {
 		}
 		, xy       : ( e, hue_sat ) => {
 			if ( V.ctx.touch ) {
-				var x = e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
-				var y = e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
+				var x = e.changedTouches[ 0 ].pageX;
+				var y = e.changedTouches[ 0 ].pageY;
 			} else {
 				var x = e.offsetX;
 				var y = e.offsetY;
@@ -308,23 +307,17 @@ var COLOR     = {
 			return
 		}
 		
-		var $canvas     = $( '#box canvas' );
-		var margin      = parseInt( $canvas.css( 'margin' ) );
-		var sat_r       = $( '#sat' ).outerWidth() / 2;
+		var $box        = $( '#box' );
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		var sat_margin  = parseInt( $box.css( 'margin' ) ) - $( '#sat' ).outerWidth() / 2;
 		V.ctx           = {
-			  context : $canvas[ 0 ].getContext( '2d', { willReadFrequently: true } )
+			  context : $box[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
-			, hsl0    : { h, s, l } // for #colorcancel
-			, sat     : { m: margin - sat_r, w: 130 }
-		}
-		if ( navigator.maxTouchPoints ) {
-			var [ ty, tx ]  = Object.values( $( '#box' ).offset() );
-			V.ctx.tl        = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
-				  hue : { x: tx,      y: ty }
-				, sat : { x: tx + margin, y: ty + margin }
-			}
-			V.ctx.touch     = true;
+			, hsl_cur : { h, s, l } // for #colorcancel
+			, sat_m   : parseInt( $box.css( 'margin' ) ) - $( '#sat' ).outerWidth() / 2
+			, touch   : navigator.maxTouchPoints > 0
+			, width   : $box.width()
+			, wheel_c : $( '#wheel' ).width() / 2
 		}
 		COLOR.pick.set();
 	}

@@ -353,14 +353,12 @@ $htmlsearch   = '
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
 		<div id="wheel"></div>
+		<canvas id="box" width="130" height="130"></canvas>
 		<div id="pickhue"></div>
 		<div id="picknone"></div>
 		<div id="picksat"></div>
-		<div id="hue"><div></div></div>
 		<div id="sat"></div>
-		<div id="box">
-			<canvas width="130" height="130"></canvas>
-		</div>
+		<div id="hue"><div></div></div>
 		<a id="colorreset" class="infobtn"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
