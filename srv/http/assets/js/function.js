@@ -169,7 +169,7 @@ var COLOR     = {
 	, hide     : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
-		$( '#'+ V.color.page ).trigger( 'click' );
+		if ( V.color.page !== 'library' ) $( '#'+ V.color.page ).trigger( 'click' );
 		delete V.color;
 		delete V.ctx;
 	}
