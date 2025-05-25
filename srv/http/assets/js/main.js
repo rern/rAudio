@@ -194,16 +194,11 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'color':
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
-				V.color   = data;
+				V.color      = data;
+				V.color.page = V.page;
 				COLOR.picker();
-				if ( V.playback ) {
-					$( '#library' ).trigger( 'click' );
-					return
-				}
-				
-				if ( $( '.page:not( .hide ) .list:not( .hide ) .li2' ).length ) return
-				
-				$( V.library ? '.mode.webradio' : '#button-pl-back' ).trigger( 'click' );
+				V.mode === 'webradio' ? COLOR.liActive() : $( '.mode.webradio' ).trigger( 'click' );
+				if ( ! V.library ) $( '#library' ).trigger( 'click' );
 			}, 'json' );
 			break;
 		case 'multiraudio':
@@ -1728,11 +1723,7 @@ $( '#colorcancel' ).on( 'click', function() {
 	V.ctx.hsl = COMMON.json.clone( V.ctx.hsl_cur );
 	COLOR.cssSet();
 	COLOR.hide();
-	if ( S.player === 'mpd' ) {
-		if ( V.playlist ) PLAYLIST.render.scroll();
-	} else {
-		UTIL.switchPage( 'playback' );
-	}
+	if ( ! S.player === 'mpd' ) UTIL.switchPage( 'playback' );
 } );
 $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#pickhue' ).length ) return // touch limit

@@ -169,15 +169,16 @@ var COLOR     = {
 	, hide     : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
+		$( '#'+ V.color.page ).trigger( 'click' );
 		delete V.color;
 		delete V.ctx;
 	}
+	, liActive : () => $( '#lib-list li' ).eq( 0 ).addClass( 'active' )
 	, okEnable : () => {
 		if ( V.color.ok ) return
 		
 		V.color.ok = true;
 		$( '#colorok' ).removeClass( 'disabled' );
-		$( '.page:not( .hide ) .list:not( .hide ) li:not( .licover )' ).eq( 0 ).addClass( 'active' );
 	}
 	, pick     : {
 		  gradient : () => {
@@ -1081,7 +1082,10 @@ var LIBRARY   = {
 		if ( ! V.search ) {
 			V.libraryhome = false;
 			V.librarylist = true;
-			if ( data.html === V.html.librarylist ) return
+			if ( data.html === V.html.librarylist ) {
+				if ( V.color ) COLOR.liActive();
+				return
+			}
 		}
 		
 		V.html.librarylist = data.html;
@@ -1157,6 +1161,7 @@ var LIBRARY   = {
 			} else {
 				LIBRARY.padding();
 			}
+			if ( V.color ) COLOR.liActive();
 		} );
 	}
 	, order      : () => {
@@ -2509,7 +2514,7 @@ var UTIL      = {
 			PLAYBACK.vu();
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
-				if ( ! V.color ) DISPLAY.pageScroll( V.liscrolltop );
+				DISPLAY.pageScroll( V.liscrolltop );
 			} else {
 				LIBRARY.get();
 			}
