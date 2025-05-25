@@ -282,7 +282,7 @@ var COLOR     = {
 					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 						COLOR.pick.rotate();
 						COLOR.pick.point( x, y );
-						$( '#colorreset' ).toggleClass( 'hide', ! D.color );
+						$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
 						$( '#colorok' ).addClass( 'disabled' );
 						$( 'body' ).css( 'overflow', 'hidden' );
 						$( '#colorpicker' ).removeClass( 'hide' );

@@ -254,8 +254,9 @@ color )
 	cd=( $hslcd )
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
 	[[ $LIST ]] && echo '{
-  "cd" : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "ml" : [ '${ml:1}' ]
+  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "custom" : '$( exists $dirsystem/color )'
+, "ml"     : [ '${ml:1}' ]
 }' && exit
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color

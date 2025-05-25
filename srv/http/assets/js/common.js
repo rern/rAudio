@@ -326,7 +326,6 @@ W             = {  // ws push
 		BANNER_HIDE();
 	}
 	, color     : data => {
-		D.color = data.color !== false;
 		V.color = data;
 		COLOR.cssSet( data.hsl );
 		if ( V.ctx ) {
