@@ -309,8 +309,8 @@ var COLOR     = {
 		}
 		
 		var $canvas     = $( '#box canvas' );
-		var margin      = +$canvas.css( 'margin' ).replace( 'px', '' );
-		var sat_r       = +$( '#sat' ).css( 'width' ).replace( 'px', '' ) / 2;
+		var margin      = parseInt( $canvas.css( 'margin' ) );
+		var sat_r       = $( '#sat' ).outerWidth() / 2;
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
 		V.ctx           = {
 			  context : $canvas[ 0 ].getContext( '2d', { willReadFrequently: true } )

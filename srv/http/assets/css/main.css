@@ -1848,6 +1848,38 @@ li.active .li2 bl {
 	font-size: 30px;
 }
 /* ---------------------- colorpicker ----------------------*/
+#wheel {
+	z-index: -1;
+}
+#sat {
+	z-index: 1;
+}
+#pickhue,
+#picknone,
+#picksat {
+	z-index: 2;
+}
+#hue,
+#pickhue,
+#wheel,
+#box {
+	width: 230px;
+	height: 230px;
+}
+#colorcancel,
+#pickhue,
+#picknone,
+#sat,
+#wheel {
+	border-radius: 50%;
+}
+#pickhue,
+#picksat {
+	cursor: crosshair;
+}
+#picknone {
+	cursor: default;
+}
 #colorpicker {
 	position: absolute;
 	top: 0;
@@ -1880,23 +1912,14 @@ li.active .li2 bl {
 	box-shadow: var( --shadow-bar );
 	text-shadow: var( --shadow-btn );
 }
-#hue,
-#pickhue,
-#wheel,
-#box {
-	width: 230px;
-	height: 230px;
-}
 #wheel {
-	border-radius: 50%;
 	background: var( --wheel );
 	transform: rotate( 90deg );
 	box-shadow: var( --shadow-bar );
-	z-index: -1;
 }
 #picknone,
 #wheel::after {
-	margin: 15px auto;
+	margin: 15px;
 	width: 200px;
 	height: 200px;
 }
@@ -1906,11 +1929,13 @@ li.active .li2 bl {
 	border-radius: 50%;
 	background: #000;
 }
-#picknone {
-	margin: 15px;
-}
 #box canvas {
 	margin: 50px;
+}
+#picksat {
+	margin: 50px;
+	width: 130px;
+	height: 130px;
 }
 #hue div {
 	right: -2px;
@@ -1925,28 +1950,7 @@ li.active .li2 bl {
 	width: 10px;
 	height: 10px;
 	border: 1px solid #fff;
-	border-radius: 50%;
 	box-shadow: 0 0 2px 1px #666;
-}
-#picksat {
-	margin: 50px;
-	width: 130px;
-	height: 130px;
-}
-#colorcancel,
-#pickhue,
-#picknone,
-#picksat,
-#sat {
-	border-radius: 50%;
-	z-index: 1;
-}
-#pickhue,
-#picksat {
-	cursor: crosshair;
-}
-#picksat {
-	border-radius: unset;
 }
 /* ---------------------- tag ----------------------*/
 .tagmessage {
