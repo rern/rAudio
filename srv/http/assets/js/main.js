@@ -195,19 +195,15 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'color':
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
 				V.color   = data;
-				$( 'body' ).css( 'overflow', 'hidden' );
-				$( '#colorreset' ).toggleClass( 'hide', ! D.color );
-				$( '#colorok' ).toggleClass( 'disabled', ! D.color );
-				$( '#colorpicker' ).removeClass( 'hide' );
 				COLOR.picker();
-				if ( V.playlist && V.playlisthome ) return
-				
-				var $list = $( '.page:not( .hide ) .list:not( .hide )' );
 				if ( V.playback ) {
 					$( '#library' ).trigger( 'click' );
-				} else if ( ! $list.find( '.li2' ).length ) {
-					$( V.library ? '.mode.webradio' : '#button-pl-back' ).trigger( 'click' );
+					return
 				}
+				
+				if ( $( '.page:not( .hide ) .list:not( .hide ) .li2' ).length ) return
+				
+				$( V.library ? '.mode.webradio' : '#button-pl-back' ).trigger( 'click' );
 			}, 'json' );
 			break;
 		case 'multiraudio':
@@ -1775,6 +1771,7 @@ $( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and
 	COLOR.pick.point( V.ctx.x, V.ctx.y );
 } ).on( 'wheel', e => {
 	COLOR.pick.hue( e.originalEvent.deltaY > 0 ? 1 : -1 );
+	COLOR.okEnable();
 } );
 $( document ).on( 'keydown', e => {
 	if ( ! V.color ) return
@@ -1789,6 +1786,7 @@ $( document ).on( 'keydown', e => {
 	} else if ( /^Arrow/.test( key ) ) {
 		COLOR.pick.key.sat( key ); 
 	}
+	COLOR.okEnable();
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
