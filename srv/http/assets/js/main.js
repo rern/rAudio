@@ -194,7 +194,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'color':
 			BASH( [ 'color', true, 'CMD LIST' ], data => {
-				V.color = data;
+				V.color   = data;
 				$( 'body' ).css( 'overflow', 'hidden' );
 				$( '#colorreset' ).toggleClass( 'hide', ! D.color );
 				$( '#colorok' ).toggleClass( 'disabled', ! D.color );

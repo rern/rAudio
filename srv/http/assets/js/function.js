@@ -176,6 +176,7 @@ var COLOR     = {
 		
 		V.color.ok = true;
 		$( '#colorok' ).removeClass( 'disabled' );
+		$( '.page:not( .hide ) .list:not( .hide ) li:not( .licover )' ).eq( 0 ).addClass( 'active' );
 	}
 	, pick     : {
 		  gradient : () => {
@@ -1149,7 +1150,6 @@ var LIBRARY   = {
 			} else {
 				LIBRARY.padding();
 			}
-			if ( V.color ) $( '#lib-list li' ).eq( 0 ).addClass( 'active' );
 		} );
 	}
 	, order      : () => {
