@@ -215,6 +215,7 @@ var COLOR     = {
 			}
 			, hue  : key => {
 				COLOR.pick.hue( COLOR.pick.key.code[ key ] );
+				COLOR.okEnable();
 			}
 			, sat  : key => {
 				var [ xy, v ] = COLOR.pick.key.code[ key ];
@@ -231,6 +232,7 @@ var COLOR     = {
 				}
 				COLOR.pick.point( x, y );
 				COLOR.pick.sat( x, y );
+				COLOR.okEnable();
 			}
 		}
 		, point    : ( x, y ) => {
@@ -285,7 +287,6 @@ var COLOR     = {
 						$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
 						$( '#colorok' ).addClass( 'disabled' );
 						$( 'body' ).css( 'overflow', 'hidden' );
-						$( '#colorpicker' ).removeClass( 'hide' );
 						V.ctx.x = x;
 						V.ctx.y = y;
 						break match;
@@ -306,6 +307,7 @@ var COLOR     = {
 		}
 	}
 	, picker   : () => {
+		$( '#colorpicker' ).removeClass( 'hide' ); // to get offset
 		var $box        = $( '#box' );
 		var box_margin  = parseInt( $box.css( 'margin' ) );
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );

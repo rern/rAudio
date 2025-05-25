@@ -1786,7 +1786,6 @@ $( document ).on( 'keydown', e => {
 	} else if ( /^Arrow/.test( key ) ) {
 		COLOR.pick.key.sat( key ); 
 	}
-	COLOR.okEnable();
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
