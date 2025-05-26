@@ -10,8 +10,8 @@
 	<meta name="application-name" content="rAudio">
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
-	<link rel="icon" href="/assets/img/icon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png?v=1748155501">
+	<link rel="icon" href="/assets/img/icon.png?v=1748155501">
 
 <?php
 $page      = $_GET[ 'p' ] ?? '';
@@ -46,9 +46,9 @@ foreach( $jsfiles as $file ) {
 	$jfiles[ $name ] = $file;
 }
 if ( ! $page ) { // main
-	$cssp  = [ 'roundslider' ];
+	$cssp  = [];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'pica', 'qrcode', 'roundslider' ];
+	$jsp   = [ 'jquery', 'pica', 'qrcode' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';

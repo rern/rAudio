@@ -228,10 +228,13 @@ $htmlsearch   = '
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
-			<div id="time"></div>
-			<div id="timeicon"><?=$timeicon?></div>
-			<span id="elapsed"></span>
-			<span id="total"></span>
+			<div id="time" class="round">
+				<div class="container">
+					<span id="elapsed">11:11</span>
+					<span id="total">22:22</span>
+					<div id="timeicon"><?=$timeicon?></div>
+				</div>
+			</div>
 			<div id="map-time">
 				<?=buttonSet( [
 					  [ 'scale',    'TL' ]
@@ -278,7 +281,14 @@ $htmlsearch   = '
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
-			<div id="volume"></div>
+			<div id="volume" class="round">
+				<div class="container">
+					<div id="divdot">
+						<div id="dot"></div>
+					</div>
+					<span id="vol">37</span>
+				</div>
+			</div>
 			<div id="map-volume">
 				<?=buttonSet( [
 					  [ 'plus up',  'T' ]

@@ -43,7 +43,9 @@ V = {  // global var
 [ 'playback',      'playlisthome' ].forEach(                                     k => V[ k ] = true );
 $LI     = '';
 $TIME   = $( '#time-knob' );
+$TIME_RS = $( '#time' );
 $VOLUME = $( '#volume-knob' );
+$VOLUME_RS = $( '#vol' );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -331,7 +333,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 $( '#elapsed' ).on( 'click', function() {
 	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
-$( '#time' ).roundSlider( {
+/*$( '#time' ).roundSlider( {
 	  ...V.option.roundslider
 	, sliderType  : 'min-range'
 	, width       : 22
@@ -358,7 +360,7 @@ $( '#time' ).roundSlider( {
 	, stop        : function() {
 		V.drag = false;
 	}
-} );
+} );*/
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	if ( S.player !== 'mpd' || S.webradio ) return
 	
@@ -379,7 +381,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'mouseleave', function() {
 	V.start = V.drag = false;
 } );
-$( '#volume' ).roundSlider( {
+/*$( '#volume' ).roundSlider( {
 	// init     : valueChange > create > beforeValueChange > valueChange
 	// tap      : beforeValueChange > change > valueChange
 	// drag     : start > [ beforeValueChange > drag > valueChange ] > change > stop
@@ -461,7 +463,7 @@ $( '#volume' ).roundSlider( {
 		VOLUME.push();
 		VOLUME.disable()
 	}
-} );
+} );*/
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	DISPLAY.guideHide();
 	VOLUME.bar.hideClear();
@@ -494,7 +496,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		VOLUME.animate( S.volume, V.volume.current );
 		VOLUME.set();
 	}
-	$VOLUME_RS.setValue( S.volume );
+	PLAYBACK.vol();
 	V.volume    = V.drag = false;
 	VOLUME.bar.hide();
 } ).on( 'mouseleave', function() {
@@ -524,7 +526,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 			$( '#volume-text' ).text( S.volume );
 			$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		} else {
-			$VOLUME_RS.setValue( S.volume );
+			PLAYBACK.vol();
 			VOLUME.bar.hideClear();
 			VOLUME.bar.hide();
 		}
