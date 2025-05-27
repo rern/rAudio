@@ -1525,12 +1525,11 @@ var PLAYBACK  = {
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( UTIL.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
-//			$TIME_RS.option( 'max', S.Time );
 			PLAYBACK.progress.set();
 			if ( ! V.localhost ) {
-				setTimeout( PLAYBACK.progress.animate, 0 ); // delay to after setvalue on load
-//			} else {
-//				$TIME_RS_PROG.css( 'transition-duration', '0s' );
+				PLAYBACK.progress.animate();
+			} else {
+				$TIME_ARC.css( 'transition-duration', '0s' );
 			}
 		} else { // elapsed only
 			if ( ! D.radioelapsed ) {
@@ -1543,10 +1542,9 @@ var PLAYBACK  = {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
 				if ( V.localhost ) {
-					PLAYBACK.prog();
+					PLAYBACK.progress.arc();
 					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				}
-				PLAYBACK.prog();
 				elapsedhms = UTIL.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
 				if ( S.state !== 'play' ) UTIL.intervalClear.elapsed();
@@ -1582,7 +1580,6 @@ var PLAYBACK  = {
 			return
 		}
 		
-//		$TIME_RS.option( 'max', S.Time || 100 );
 		if ( S.state === 'stop' ) {
 			PLAYBACK.stop();
 			return
@@ -1722,29 +1719,23 @@ var PLAYBACK  = {
 			}
 		}
 	}
-	, prog     : () => {
-		var percent = S.elapsed && S.Time ? S.elapsed / S.Time * 100 : 0;
-		$TIME_RS.css( 'background', 'conic-gradient( var( --cm ) '+ percent +'%, var( --cg ) 0% )' );
-	}
-	, vol      : () => { // 150 - 0 <> 30 - 100 --- 240deg : 100%
-		var deg = 150 + S.volume * 2.4;
-		$( '#divdot' ).css( 'transform', 'rotate( '+ deg +'deg' );
-		$( '#dot' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-	}
 	, progress : {
 		  animate : () => {
 			if ( ! D.time && ! D.cover ) return
 			
-//			$TIME_RS_PROG.css( 'transition-duration', S.Time - S.elapsed +'s' );
-//			$TIME_RS.setValue( S.Time );
-//			$TIME_RS.css( 'animation', 'linear '+ S.Time +'s infinite time' );
+			$TIME_ARC.css( 'transition-duration', S.Time - S.elapsed +'s' );
+			PLAYBACK.progress.arc( 654 ); // full
 			$( '#time-bar' ).css( 'width', '100%' );
 		}
-		, set        : position => {
+		, arc     : arcL => {
+			if ( ! arcL ) arcL = S.elapsed && S.Time ? S.elapsed / S.Time * 654 : 0;
+			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ arcL +', 654' );
+		}
+		, set     : position => {
 			if ( position !== 0 ) position = S.elapsed;
 			if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
-//			$TIME_RS_PROG.css( 'transition-duration', '0s' );
-//			PLAYBACK.prog();
+			$TIME_ARC.css( 'transition-duration', '0s' );
+			PLAYBACK.progress.arc();
 			var w = position && S.Time ? position / S.Time * 100 : 0;
 			$( '#time-bar' ).css( 'width', w +'%' );
 		}
@@ -1783,6 +1774,11 @@ var PLAYBACK  = {
 		PLAYBACK.info.set();
 		$( '#artist, #title, #album' ).addClass( 'disabled' );
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
+	}
+	, volume   : () => { // 150 - 0 <> 30 - 100 --- 240deg : 100%
+		var deg = 150 + S.volume * 2.4;
+		$( '#divdot' ).css( 'transform', 'rotate( '+ deg +'deg' );
+		$( '#dot' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 	}
 	, vu       : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
@@ -2606,7 +2602,7 @@ var VOLUME    = {
 	, setValue : () => {
 		if ( V.animate ) return
 		
-		if ( D.volume ) PLAYBACK.vol();
+		if ( D.volume ) PLAYBACK.volume();
 		VOLUME.disable();
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-text' )
@@ -2620,7 +2616,7 @@ var VOLUME    = {
 	}
 	, upDown  : up => {
 		up ? S.volume++ : S.volume--;
-		if ( D.volume ) PLAYBACK.vol();
+		if ( D.volume ) PLAYBACK.volume();
 		VOLUME.max();
 		S.volumemute = 0;
 		VOLUME.setValue();

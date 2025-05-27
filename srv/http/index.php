@@ -229,9 +229,12 @@ $htmlsearch   = '
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
 			<div id="time" class="round">
+				<svg>               <!-- x   y              x   y               x   y -->
+					<path id="arc" d="M 115 11 A 1 1 0 0 1 115 219 A 1 1 0 0 1 115 11"></path>
+				</svg>              <!-- top    arc         bottom  src         top   -->
 				<div class="container">
-					<span id="elapsed">11:11</span>
-					<span id="total">22:22</span>
+					<span id="elapsed"></span>
+					<span id="total"></span>
 					<div id="timeicon"><?=$timeicon?></div>
 				</div>
 			</div>

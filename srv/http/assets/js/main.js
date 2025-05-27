@@ -41,11 +41,10 @@ V = {  // global var
 [ 'lyrics',        'lyricsartist', 'mode' ].forEach(                             k => V[ k ] = '' );
 [ 'modescrolltop', 'rotate' ].forEach(                                           k => V[ k ] = 0 );
 [ 'playback',      'playlisthome' ].forEach(                                     k => V[ k ] = true );
-$LI     = '';
-$TIME   = $( '#time-knob' );
-$TIME_RS = $( '#time' );
-$VOLUME = $( '#volume-knob' );
-$VOLUME_RS = $( '#vol' );
+$LI       = '';
+$TIME     = $( '#time-knob' );
+$TIME_ARC = $( '#arc' );
+$VOLUME   = $( '#volume-knob' );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -496,7 +495,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		VOLUME.animate( S.volume, V.volume.current );
 		VOLUME.set();
 	}
-	PLAYBACK.vol();
+	PLAYBACK.volume();
 	V.volume    = V.drag = false;
 	VOLUME.bar.hide();
 } ).on( 'mouseleave', function() {
@@ -526,7 +525,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 			$( '#volume-text' ).text( S.volume );
 			$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		} else {
-			PLAYBACK.vol();
+			PLAYBACK.volume();
 			VOLUME.bar.hideClear();
 			VOLUME.bar.hide();
 		}

@@ -850,14 +850,6 @@ div.pagerefresh {
 	background-color: var( --cg );
 }
 /* ------------------- roundSlider ------------------- */
-@keyframes time {
-	  0% { background: conic-gradient( var( --cm )   0%, var( --cg ) 0% ); }
-	100% { background: conic-gradient( var( --cm ) 100%, var( --cg ) 0% ); }
-}
-@keyframes rotateGradient {
-  0% { background: conic-gradient(from 0deg, red, yellow, green, blue, red); }
-  100% { background: conic-gradient(from 360deg, red, yellow, green, blue, red); }
-}
 #time,
 #volume {
 	position: relative;
@@ -867,7 +859,19 @@ div.pagerefresh {
 }
 #time {
 	border-radius: 50%;
-	animation: rotateGradient 3s infinite linear;
+	background: var( --cg );
+}
+#time svg {
+	position: absolute;
+	width: 230px;
+	height: 230px;
+	left: 0;
+}
+#arc {
+	fill: transparent;
+	stroke: var( --cm );
+	stroke-width: 21px;
+	transition-duration: 0s;
 }
 .round .container {
 	position: relative;
