@@ -240,31 +240,22 @@ W = {
 		}
 	}
 	, volume    : data => {
-		if ( V.local ) {
-			V.local = false;
-			return
-		}
+		if ( V.drag || V.volume ) return
 		
 		if ( 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
 			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
-		if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-			V.local = false; // allow beforeValueChange()
-			V.volumediff = Math.abs( S.volume - S.volumemute );
-		} else {
-			V.volumediff = Math.abs( S.volume - data.val );
-		}
+		
 		if ( data.type === 'mute' ) {
-			S.volume = 0;
+			S.volume     = 0;
 			S.volumemute = data.val;
 		} else {
-			S.volume = data.val;
+			S.volume     = data.val;
 			S.volumemute = 0;
 		}
 		VOLUME.setValue();
-		V.volumecurrent = S.volume;
 	}
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

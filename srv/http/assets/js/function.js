@@ -47,7 +47,6 @@ function REFRESHDATA() {
 		}
 		if ( V.volumeactive ) delete status.volume; // immediately change volume when page inactive > page active
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		V.volumecurrent = S.volume;
 		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) )
 		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
 		DISPLAY.controls();
@@ -196,8 +195,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				var rad     = Math.atan2( x - V.ctx.wheel_c, y - V.ctx.wheel_c );
-				V.ctx.hsl.h = Math.round( ( rad * ( 180 / Math.PI ) * -1 ) + 90 );
+				V.ctx.hsl.h = COMMON.xy2degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -1489,6 +1487,10 @@ var PLAYBACK  = {
 			}
 		}
 	}
+	, centerXy : el => {
+		var [ y, x ] = Object.values( $( '#'+ el ).offset() );
+		return { cx: x + 115, cy: y + 115 }
+	}
 	, coverart : () => {
 		if ( ! D.cover ) {
 			COMMON.loaderHide();
@@ -1740,22 +1742,45 @@ var PLAYBACK  = {
 			$( '#time-bar' ).css( 'width', w +'%' );
 		}
 	}
-	, seekBar  : e => {
-		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
-		var $timeband  = $( '#time-band' );
-		var posX       = pageX - $timeband.offset().left;
-		var bandW      = $timeband.width();
-		posX           = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-		var pos        = posX / bandW;
-		var elapsed    = Math.round( pos * S.Time );
-		var elapsedhms = UTIL.second2HMS( elapsed );
-		if ( S.elapsed ) {
-			$( '#progress span' ).html( elapsedhms );
-		} else {
-			$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
+	, seek     : {
+		  bar  : e => {
+			var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
+			var $timeband  = $( '#time-band' );
+			var posX       = pageX - $timeband.offset().left;
+			var bandW      = $timeband.width();
+			posX           = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+			var pos        = posX / bandW;
+			var elapsed    = Math.round( pos * S.Time );
+			var elapsedhms = UTIL.second2HMS( elapsed );
+			if ( S.elapsed ) {
+				$( '#progress span' ).html( elapsedhms );
+			} else {
+				$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
+			}
+			$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
+			PLAYBACK.seek.mpc( elapsed );
 		}
-		$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
-		if ( ! V.drag ) UTIL.mpcSeek( elapsed );
+		, knob : e => {
+			var deg     = COMMON.xy2degree( e.pageX, e.pageY, V.time.cx, V.time.cy ) + 90;
+			if ( deg > 360 ) deg -= 360;
+			var elapsed = Math.round( S.Time * deg / 360 );
+			PLAYBACK.progress.set();
+			if ( S.state === 'play' ) setTimeout( PLAYBACK.progress.animate, 0 );
+			$( '#elapsed, #total' ).removeClass( 'gr' );
+			if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
+			$( '#elapsed' ).text( UTIL.second2HMS( elapsed ) );
+			$( '#total' ).text( UTIL.second2HMS( S.Time ) );
+			if ( S.state === 'stop' && UTIL.barVisible() ) {
+				$( '#playback-controls i' ).removeClass( 'active' );
+				$( '#pause' ).addClass( 'active' );
+				$( '#title' ).addClass( 'gr' );
+			}
+			PLAYBACK.seek.mpc( elapsed );
+		}
+		, mpc  : elapsed => {
+			S.elapsed = elapsed;
+			if ( ! V.drag ) BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] );
+		}
 	}
 	, stop     : () => {
 		PLAYBACK.progress.set( 0 );
@@ -1775,13 +1800,36 @@ var PLAYBACK  = {
 		$( '#artist, #title, #album' ).addClass( 'disabled' );
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
-	, volume   : prev => {
-		var ms  = prev ? Math.abs( S.volume - prev ) * 40 : 0; // 1%:40ms
-		var deg = 150 + S.volume * 2.4;                        // 150°-0% > 30°-100% >> 240°:100%
-//		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
-			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-		$( '#volume-level' ).text( S.volume );
+	, volume    : {
+		  animate : volumeprev => {
+			if ( volumeprev === undefined || volumeprev === S.volume ) {
+				var ms = 0;
+			} else {
+				var ms = Math.abs( S.volume - volumeprev ) * 40; // 1%:40ms
+			}
+			$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
+			var deg = 150 + S.volume * 2.4; // 150°-0% > 30°-100% >> 240°:100%
+			PLAYBACK.volume.set( deg );
+		}
+		, drag : e => {
+			var deg  = COMMON.xy2degree( e.pageX, e.pageY, V.volume.cx, V.volume.cy ) - 30;
+			if ( deg < 0 ) deg += 360;
+			if ( deg < 120 ) return
+			
+			var volumeprev = S.volume;
+			S.volume       = Math.round( ( deg - 120 ) / 240 * 100 );
+			if ( V.drag ) {
+				PLAYBACK.volume.set( deg + 30 );
+			} else {
+				PLAYBACK.volume.animate( volumeprev );
+			}
+			VOLUME.set();
+		}
+		, set     : deg => {
+			$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
+				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+			$( '#volume-level' ).text( S.volume );
+		}
 	}
 	, vu       : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
@@ -2437,22 +2485,6 @@ var UTIL      = {
 			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 		}
 	}
-	, mpcSeek         : elapsed => {
-		S.elapsed = elapsed;
-		LOCAL();
-		PLAYBACK.progress.set();
-		if ( S.state === 'play' ) setTimeout( PLAYBACK.progress.animate, 0 );
-		$( '#elapsed, #total' ).removeClass( 'gr' );
-		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
-		$( '#elapsed' ).text( UTIL.second2HMS( elapsed ) );
-		$( '#total' ).text( UTIL.second2HMS( S.Time ) );
-		if ( S.state === 'stop' && UTIL.barVisible() ) {
-			$( '#playback-controls i' ).removeClass( 'active' );
-			$( '#pause' ).addClass( 'active' );
-			$( '#title' ).addClass( 'gr' );
-		}
-		BASH( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
-	}
 	, refresh         : () => {
 		if ( V.library ) {
 			if ( V.libraryhome ) {
@@ -2605,7 +2637,7 @@ var VOLUME    = {
 	, setValue : () => {
 		if ( V.animate ) return
 		
-		if ( D.volume ) PLAYBACK.volume();
+		if ( D.volume ) PLAYBACK.volume.animate( V.volumeprev !== undefined ? V.volumeprev : S.volume );
 		VOLUME.disable();
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-text' )
@@ -2619,7 +2651,7 @@ var VOLUME    = {
 	}
 	, upDown  : up => {
 		up ? S.volume++ : S.volume--;
-		if ( D.volume ) PLAYBACK.volume();
+		if ( D.volume ) PLAYBACK.volume.animate();
 		VOLUME.max();
 		S.volumemute = 0;
 		VOLUME.setValue();

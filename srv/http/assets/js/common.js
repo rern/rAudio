@@ -1538,6 +1538,12 @@ var COMMON    = {
 		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
+	, xy2degree     : ( x, y, cx, cy ) => {
+		var rad = Math.atan2( y - cy, x - cx );
+		var deg = Math.round( rad * 180 / Math.PI );
+		if ( deg < 0 ) deg += 360;
+		return deg
+	}
 }
 var VOLUME    = {
 	  max : () => {
@@ -1547,15 +1553,18 @@ var VOLUME    = {
 		}
 	}
 	, toggle : () => {
-		V.volumediff = Math.abs( S.volume - S.volumemute );
 		if ( S.volumemute ) {
 			S.volume     = S.volumemute;
 			S.volumemute = 0;
+			V.volumeprev = 0;
+			var type     = 'unmute';
 		} else {
 			S.volumemute = S.volume;
+			V.volumeprev = S.volume;
 			S.volume     = 0;
+			var type     = 'mute';
 		}
-		VOLUME.set( S.volumemute ? 'mute' : 'unmute' );
+		VOLUME.set( type );
 	}
 	, push : () => {
 		V.local = true;
@@ -1566,8 +1575,7 @@ var VOLUME    = {
 		V.volumeactive = true;
 		setTimeout( () => V.volumeactive = false, 300 );
 		if ( V.drag || V.press ) type = 'dragpress';
-		BASH( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-		V.volumecurrent = S.volume;
+		BASH( [ 'volume', V.volumeprev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	}
 }
 var WEBSOCKET = {
