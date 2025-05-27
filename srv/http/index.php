@@ -286,11 +286,9 @@ $htmlsearch   = '
 		<div id="volume-knob" class="hide">
 			<div id="volume" class="round">
 				<div class="container">
-					<div id="divdot">
-						<div id="dot"></div>
-					</div>
-					<span id="vol">37</span>
+					<div id="vol"><div></div></div>
 				</div>
+				<span id="volume-level"></span>
 			</div>
 			<div id="map-volume">
 				<?=buttonSet( [

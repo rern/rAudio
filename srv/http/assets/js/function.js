@@ -1775,10 +1775,13 @@ var PLAYBACK  = {
 		$( '#artist, #title, #album' ).addClass( 'disabled' );
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
-	, volume   : () => { // 150 - 0 <> 30 - 100 --- 240deg : 100%
-		var deg = 150 + S.volume * 2.4;
-		$( '#divdot' ).css( 'transform', 'rotate( '+ deg +'deg' );
-		$( '#dot' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+	, volume   : prev => {
+		var ms  = prev ? Math.abs( S.volume - prev ) * 40 : 0; // 1%:40ms
+		var deg = 150 + S.volume * 2.4;                        // 150°-0% > 30°-100% >> 240°:100%
+//		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
+		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
+			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+		$( '#volume-level' ).text( S.volume );
 	}
 	, vu       : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
@@ -2534,24 +2537,24 @@ var UTIL      = {
 }	
 var VOLUME    = {
 	  ...VOLUME
-	, animate : ( target, volume ) => {
-		VOLUME.bar.hideClear();
-		$( '.volumeband' ).addClass( 'disabled' );
-		$( '#volume-bar' ).animate(
-			  { width: target +'%' }
-			, {
-				  duration : Math.abs( target - volume ) * 40
-				, easing   : 'linear'
-				, complete : () => {
-					VOLUME.bar.hide();
-					$( '.volumeband' ).removeClass( 'disabled' );
-					VOLUME.setValue();
-				}
-			}
-		);
-	}
 	, bar     : {
-		hide : nodelay => {
+		  animate   : ( target, volume ) => {
+			VOLUME.bar.hideClear();
+			$( '.volumeband' ).addClass( 'disabled' );
+			$( '#volume-bar' ).animate(
+				  { width: target +'%' }
+				, {
+					  duration : Math.abs( target - volume ) * 40
+					, easing   : 'linear'
+					, complete : () => {
+						VOLUME.bar.hide();
+						$( '.volumeband' ).removeClass( 'disabled' );
+						VOLUME.setValue();
+					}
+				}
+			);
+		}
+		, hide      : nodelay => {
 			V.volumebar = setTimeout( () => {
 				$( '#info' ).removeClass( 'hide' ); // 320 x 480
 				$( '#volume-bar, #volume-text' ).addClass( 'hide' );
@@ -2559,14 +2562,14 @@ var VOLUME    = {
 			}, nodelay ? 0 : 3000 );
 		}
 		, hideClear : () => clearTimeout( V.volumebar )
-		, set : e => {
+		, set       : e => {
 			var pageX  = e.pageX || e.changedTouches[ 0 ].pageX;
 			V.volume.x = pageX - V.volume.min;
 			S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
 			VOLUME.max();
 			VOLUME.setValue();
 		}
-		, show : () => {
+		, show      : () => {
 			if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 			
 			VOLUME.bar.hide();
@@ -2576,10 +2579,10 @@ var VOLUME    = {
 	}
 	, color   : {
 		  mute : () =>  {
-			$( '#vol' )
+			$( '#volume-level' )
 				.text( S.volumemute )
 				.addClass( 'bl' );
-			$( '#dot' ).addClass( 'bgr60' );
+			$( '#vol div' ).addClass( 'bgr60' );
 			$( '#volmute' ).addClass( 'mute active' );
 			if ( $VOLUME.is( ':hidden' ) ) {
 				var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
@@ -2587,8 +2590,8 @@ var VOLUME    = {
 			}
 		}
 		, unMute : () => {
-			$( '#vol' ).removeClass( 'bl' );
-			$( '#dot' ).removeClass( 'bgr60' );
+			$( '#volume-level' ).removeClass( 'bl' );
+			$( '#vol div' ).removeClass( 'bgr60' );
 			$( '#volmute' ).removeClass( 'mute active' )
 			$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 		}

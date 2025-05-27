@@ -492,7 +492,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		VOLUME.push();
 	} else { // click
 		VOLUME.bar.set( e );
-		VOLUME.animate( S.volume, V.volume.current );
+		VOLUME.bar.animate( S.volume, V.volume.current );
 		VOLUME.set();
 	}
 	PLAYBACK.volume();
@@ -534,7 +534,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	VOLUME.bar.hideClear();
-	VOLUME.animate( S.volumemute, S.volume );
+	VOLUME.bar.animate( S.volumemute, S.volume );
 	VOLUME.toggle();
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
