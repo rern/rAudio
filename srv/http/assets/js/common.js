@@ -1542,11 +1542,11 @@ var COMMON    = {
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
-		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volumemax && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 		}
+		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 		
 		V.local      = true;
