@@ -2563,7 +2563,6 @@ var UTIL      = {
 var VOLUME    = {
 	  ...VOLUME
 	, animate : () => {
-		VOLUME.disable();
 		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
 		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
@@ -2609,12 +2608,6 @@ var VOLUME    = {
 			$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 		}
 	}
-	, disable : () => {
-		if ( D.volume ) {
-			$( '#voldn, #volL, #volB, #volume-band-dn' ).toggleClass( 'disabled', S.volume === 0 );
-			$( '#volup, #volR, #volT, #volume-band-up' ).toggleClass( 'disabled', S.volume === 100 );
-		}
-	}
 	, drag    : e => {
 		var deg  = PLAYBACK.degree( e, 'volume' );
 		if ( deg > 30 && deg < 150 ) return
@@ -2640,8 +2633,6 @@ var VOLUME    = {
 			.toggleClass( 'hide', ! mute );
 	}
 	, setValue : () => {
-		if ( V.animate ) return
-		
 		if ( D.volume ) VOLUME.animate();
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-text' )
