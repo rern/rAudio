@@ -351,7 +351,7 @@ $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 	V.drag = ! V.volume.vol;
 	PLAYBACK.volume.drag( e );
 } );
-$( '#page-playback' ).on( 'touchend mouseup', function( e ) {
+$( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end outside
 	delete V.drag;
 	if ( V.time ) {
 		PLAYBACK.seek.knob( e );
@@ -1652,13 +1652,6 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
 } ).on( 'touchmove mousemove', e => {
 	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
-} ).on( 'touchend mouseup', () => {
-	if ( ! V.hue ) return
-	
-	V.hue = false;
-	if ( V.ctx.hsl.h < 0 ) V.ctx.hsl.h += 360;
-	$( '#pickhue' ).css( 'border-radius', '' );
-	$( '#picknone, #picksat' ).removeClass( 'hide' );
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#picksat' ).length ) return // touch limit
@@ -1673,11 +1666,16 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 } ).on( 'mouseenter', () => {
 	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
 } );
-$( '#colorpicker' ).on( 'touchend mouseup', () => { // drag stop both inside and outside #picksat
-	if ( ! V.sat ) return
-	
-	V.sat = false;
-	COLOR.pick.point( V.ctx.x, V.ctx.y );
+$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow drag end outside
+	if ( V.hue ) {
+		V.hue = false;
+		if ( V.ctx.hsl.h < 0 ) V.ctx.hsl.h += 360;
+		$( '#pickhue' ).css( 'border-radius', '' );
+		$( '#picknone, #picksat' ).removeClass( 'hide' );
+	} else if ( V.sat ) {
+		V.sat = false;
+		COLOR.pick.point( V.ctx.x, V.ctx.y );
+	}
 } ).on( 'wheel', e => {
 	COLOR.pick.hue( e.originalEvent.deltaY > 0 ? 1 : -1 );
 	COLOR.okEnable();

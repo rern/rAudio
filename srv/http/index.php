@@ -288,6 +288,7 @@ $htmlsearch   = '
 				<div class="container">
 					<div id="vol"><div></div></div>
 				</div>
+				<span id="volume-mute" class="hide">0</span>
 				<span id="volume-level"></span>
 			</div>
 			<div id="map-volume">

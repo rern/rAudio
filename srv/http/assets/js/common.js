@@ -1556,11 +1556,9 @@ var VOLUME    = {
 		if ( S.volumemute ) {
 			S.volume     = S.volumemute;
 			S.volumemute = 0;
-			V.volumeprev = 0;
 			var type     = 'unmute';
 		} else {
 			S.volumemute = S.volume;
-			V.volumeprev = S.volume;
 			S.volume     = 0;
 			var type     = 'mute';
 		}
@@ -1571,11 +1569,10 @@ var VOLUME    = {
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 	}
 	, set : type => { // type: mute / unmute
-		V.local        = true;
-		V.volumeactive = true;
-		setTimeout( () => V.volumeactive = false, 300 );
 		if ( V.drag || V.press ) type = 'dragpress';
-		BASH( [ 'volume', V.volumeprev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+		V.local        = true;
+		var vol_prev   = $( '#volume-level' ).text();
+		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	}
 }
 var WEBSOCKET = {

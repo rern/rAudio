@@ -935,6 +935,7 @@ div.pagerefresh {
 	top: 70px
 }
 #elapsed,
+#volume-mute,
 #volume-level {
 	font-size: 38px;
 	line-height: 54px;
@@ -956,6 +957,7 @@ div.pagerefresh {
 	width: 120px;
 	text-align: center;
 }
+#volume-mute,
 #volume-level {
 	position: absolute;
 	left: 75px;
@@ -963,6 +965,10 @@ div.pagerefresh {
 	width: 80px;
 	text-align: center;
 }
+#volume-mute {
+	color: var( --cml );
+}
+
 /* ---------------------- bio ---------------------- */
 #bio {
 	position: fixed;

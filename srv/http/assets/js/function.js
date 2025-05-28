@@ -45,7 +45,6 @@ function REFRESHDATA() {
 			BANNER_HIDE();
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
-		if ( V.volumeactive ) delete status.volume; // immediately change volume when page inactive > page active
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) )
 		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
@@ -1563,7 +1562,7 @@ var PLAYBACK  = {
 		
 		LOCAL();
 		if ( S.state === 'stop' ) PLAYBACK.progress.set( 0 );
-		if ( ! V.volumeactive ) VOLUME.setValue(); // immediately change volume when page inactive > page active
+		VOLUME.setValue();
 		PLAYBACK.button.options();
 		clearInterval( V.interval.blinkdot );
 		$( '#qr' ).remove();
@@ -1801,34 +1800,37 @@ var PLAYBACK  = {
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
 	, volume    : {
-		  animate : volumeprev => {
-			if ( volumeprev === undefined || volumeprev === S.volume ) {
-				var ms = 0;
-			} else {
-				var ms = Math.abs( S.volume - volumeprev ) * 40; // 1%:40ms
-			}
+		  animate : () => {
+		  	VOLUME.disable();
+		  	var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
+			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 			$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-			var deg = 150 + S.volume * 2.4; // 150°-0% > 30°-100% >> 240°:100%
-			PLAYBACK.volume.set( deg );
+			var deg      = 150 + S.volume * 2.4; // 150°@0% > 30°@100% >> 240°:100%
+			PLAYBACK.volume.set( deg ); // can be > 360°
 		}
 		, drag : e => {
-			var deg  = COMMON.xy2degree( e.pageX, e.pageY, V.volume.cx, V.volume.cy ) - 30;
-			if ( deg < 0 ) deg += 360;
-			if ( deg < 120 ) return
+			var deg  = COMMON.xy2degree( e.pageX, e.pageY, V.volume.cx, V.volume.cy );
+			if ( deg > 30 && deg < 150 ) return
 			
-			var volumeprev = S.volume;
-			S.volume       = Math.round( ( deg - 120 ) / 240 * 100 );
+			var deg_vol = deg >= 150 ? deg : deg + 390; // 30°@100% >> 390 - 150 = 240
+			S.volume = Math.round( ( deg - 150 ) / 240 * 100 );
 			if ( V.drag ) {
-				PLAYBACK.volume.set( deg + 30 );
+				PLAYBACK.volume.set( deg );
 			} else {
-				PLAYBACK.volume.animate( volumeprev );
+				PLAYBACK.volume.animate();
 			}
 			VOLUME.set();
 		}
 		, set     : deg => {
 			$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-			$( '#volume-level' ).text( S.volume );
+			var mute = S.volumemute !== 0;
+			$( '#volume-level' )
+				.text( S.volume )
+				.toggleClass( 'hide', mute );
+			$( '#volume-mute' )
+				.text( S.volumemute )
+				.toggleClass( 'hide', ! mute );
 		}
 	}
 	, vu       : () => {
@@ -2609,25 +2611,6 @@ var VOLUME    = {
 			$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 		}
 	}
-	, color   : {
-		  mute : () =>  {
-			$( '#volume-level' )
-				.text( S.volumemute )
-				.addClass( 'bl' );
-			$( '#vol div' ).addClass( 'bgr60' );
-			$( '#volmute' ).addClass( 'mute active' );
-			if ( $VOLUME.is( ':hidden' ) ) {
-				var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
-				$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-			}
-		}
-		, unMute : () => {
-			$( '#volume-level' ).removeClass( 'bl' );
-			$( '#vol div' ).removeClass( 'bgr60' );
-			$( '#volmute' ).removeClass( 'mute active' )
-			$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-		}
-	}
 	, disable : () => {
 		if ( D.volume ) {
 			$( '#voldn, #volL, #volB, #volume-band-dn' ).toggleClass( 'disabled', S.volume === 0 );
@@ -2637,8 +2620,7 @@ var VOLUME    = {
 	, setValue : () => {
 		if ( V.animate ) return
 		
-		if ( D.volume ) PLAYBACK.volume.animate( V.volumeprev !== undefined ? V.volumeprev : S.volume );
-		VOLUME.disable();
+		if ( D.volume ) PLAYBACK.volume.animate();
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
@@ -2647,7 +2629,18 @@ var VOLUME    = {
 			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 		}
-		S.volumemute ? VOLUME.color.mute( S.volumemute ) : VOLUME.color.unMute();
+		if ( S.volumemute ) {
+			$( '#vol div' ).addClass( 'bgr60' );
+			$( '#volmute' ).addClass( 'mute active' );
+			if ( $VOLUME.is( ':hidden' ) ) {
+				var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
+				$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+			}
+		} else {
+			$( '#vol div' ).removeClass( 'bgr60' );
+			$( '#volmute' ).removeClass( 'mute active' )
+			$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
+		}
 	}
 	, upDown  : up => {
 		up ? S.volume++ : S.volume--;
