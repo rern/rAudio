@@ -873,9 +873,6 @@ div.pagerefresh {
 .round .container::after {
 	content: '';
 	position: absolute;
-	left: 0;
-	width: 100%;
-	height: 100%;
 	border-radius: 50%;
 }
 .round .container::before {
@@ -883,10 +880,12 @@ div.pagerefresh {
 	left: 5px;
 	width: calc( 100% - 10px );
 	height: calc( 100% - 10px );
-	border-radius: 50%;
 	background-color: #000;
 }
 .round .container::after { /* glossy overlay */
+	left: 0;
+	width: 100%;
+	height: 100%;
 	background: radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 }                             /* w    h       x   y   inner(color)        w    outer(color)      w */
 #time .container {
