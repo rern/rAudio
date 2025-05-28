@@ -1542,16 +1542,16 @@ var COMMON    = {
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
-		if ( V.drag || V.press ) type = 'dragpress';
-		V.local        = true;
-		var vol_prev   = $( '#volume-level' ).text();
-		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-	}
-	, max     : () => {
+		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volumemax && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 		}
+		if ( S.volume === vol_prev ) return
+		
+		V.local      = true;
+		if ( V.drag || V.press ) type = 'dragpress';
+		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	}
 	, push    : () => {
 		V.local = true;

@@ -2599,7 +2599,6 @@ var VOLUME    = {
 			var pageX  = e.pageX || e.changedTouches[ 0 ].pageX;
 			V.volume.x = pageX - V.volume.min;
 			S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
-			VOLUME.max();
 			VOLUME.setValue();
 		}
 		, show      : () => {
@@ -2622,12 +2621,12 @@ var VOLUME    = {
 		
 		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
 		S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
+		VOLUME.command();
 		if ( V.drag ) {
 			VOLUME.set( deg );
 		} else {
 			VOLUME.animate();
 		}
-		VOLUME.command();
 	}
 	, set     : deg => {
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
@@ -2669,11 +2668,10 @@ var VOLUME    = {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 		
 		up ? S.volume++ : S.volume--;
+		VOLUME.command();
 		if ( D.volume ) VOLUME.set( 150 + S.volume * 2.4 );
-		VOLUME.max();
 		S.volumemute = 0;
 		VOLUME.setValue();
-		VOLUME.command();
 	}
 }
 var WEBRADIO  = {

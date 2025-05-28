@@ -2444,9 +2444,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
 	
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
-	VOLUME.max();
-	RENDER.volume();
 	VOLUME.command();
+	RENDER.volume();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -2462,10 +2461,9 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		} else {
 			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
-		VOLUME.max();
+		VOLUME.command();
 		$( '#divvolume .level' ).text( S.volume );
 		UTIL.volumeAnimate( S.volume, current );
-		VOLUME.command();
 	}
 	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
@@ -2474,19 +2472,17 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
-	VOLUME.max();
+	VOLUME.command();
 	$( '#divvolume .level' ).text( S.volume );
 	UTIL.volumeAnimate( S.volume, current );
-	VOLUME.command();
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
-	VOLUME.max();
-	RENDER.volume();
 	VOLUME.command();
+	RENDER.volume();
 } ).on( 'click', '.col-r .i-volume, .level', function() {
 	UTIL.volumeAnimate( S.volumemute, S.volume );
 	VOLUME.toggle();
@@ -2499,7 +2495,6 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
-			VOLUME.max();
 			VOLUME.command();
 			RENDER.volumeThumb();
 			$( '#divvolume .level' ).text( S.volume );

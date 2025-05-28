@@ -174,13 +174,11 @@ audio_output {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				$range.on( 'input', function() {
 					S.volume = +this.value;
-					VOLUME.max();
 					UTIL.volumeSet();
 					BASH( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
 					S.volume = +$range.val();
-					VOLUME.max();
 					$range
 						.trigger( 'input' )
 						.trigger( 'keyup' );
