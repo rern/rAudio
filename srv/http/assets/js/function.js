@@ -1378,7 +1378,7 @@ var MODE      = {
 	, radio : () => V.mode.slice( -5 ) === 'radio'
 }
 var PLAYBACK  = {
-	  blank    : () => {
+	  blank     : () => {
 		$( '#page-playback .emptyadd' ).toggleClass( 'hide', S.player !== 'mpd' );
 		$( '#playback-controls, #infoicon i, #vu,#divcomposer, #divconductor' ).addClass( 'hide' );
 		$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
@@ -1409,7 +1409,7 @@ var PLAYBACK  = {
 		PLAYBACK.vu();
 		COMMON.loaderHide();
 	}
-	, button   : {
+	, button    : {
 		  options : () => {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
@@ -1485,11 +1485,7 @@ var PLAYBACK  = {
 			}
 		}
 	}
-	, centerXy : el => {
-		var [ y, x ] = Object.values( $( '#'+ el ).offset() );
-		return { cx: x + 115, cy: y + 115 }
-	}
-	, coverart : () => {
+	, coverart  : () => {
 		if ( ! D.cover ) {
 			COMMON.loaderHide();
 			return
@@ -1516,7 +1512,7 @@ var PLAYBACK  = {
 		}
 		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
 	}
-	, degree   : ( e, el ) => { // el: time/volume
+	, degree    : ( e, el ) => { // el: time/volume
 		if ( V.touch ) {
 			var x = e.changedTouches[ 0 ].pageX;
 			var y = e.changedTouches[ 0 ].pageY;
@@ -1526,7 +1522,7 @@ var PLAYBACK  = {
 		}
 		return PLAYBACK.xy2degree( x, y, V[ el ].cx, V[ el ].cy )
 	}
-	, elapsed  : () => {
+	, elapsed   : () => {
 		UTIL.intervalClear.elapsed();
 		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 		
@@ -1566,7 +1562,7 @@ var PLAYBACK  = {
 			}
 		}, 1000 );
 	}
-	, main     : () => {
+	, main      : () => {
 		if ( ! S.state ) return // suppress on reboot
 		
 		LOCAL();
@@ -1620,7 +1616,7 @@ var PLAYBACK  = {
 			PLAYBACK.elapsed();
 		}
 	}
-	, info     : {
+	, info      : {
 		  color  : () => {
 			var pause = S.state === 'pause';
 			$( '#title' ).toggleClass( 'gr', pause );
@@ -1729,7 +1725,7 @@ var PLAYBACK  = {
 			}
 		}
 	}
-	, stop     : () => {
+	, stop      : () => {
 		PROGRESS.set( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
@@ -1747,7 +1743,7 @@ var PLAYBACK  = {
 		$( '#artist, #title, #album' ).addClass( 'disabled' );
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
-	, vu       : () => {
+	, vu        : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
 			clearInterval( V.interval.vu );
 			$( '#vuneedle' ).css( 'transform', '' );
@@ -1772,11 +1768,19 @@ var PLAYBACK  = {
 			}, 300 );
 		}, 300 );
 	}
-	, xy2degree     : ( x, y, cx, cy ) => {
+	, xyCenter  : el => {
+		var [ y, x ] = Object.values( $( '#'+ el ).offset() );
+		return { cx: x + 115, cy: y + 115 }
+	}
+	, xy2degree : ( x, y, cx, cy ) => {
 		var rad = Math.atan2( y - cy, x - cx );
 		var deg = Math.round( rad * 180 / Math.PI );
 		if ( deg < 0 ) deg += 360;
 		return deg
+	}
+	, xWidth    : el => {
+		var $el = $( '#'+ el );
+		return { x: $el.offset().left, w: $el.width() }
 	}
 }
 var PLAYLIST  = {
@@ -2241,11 +2245,9 @@ var PROGRESS  = {
 	}
 	, bar     : e => {
 		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
-		var $timeband  = $( '#time-band' );
-		var posX       = pageX - $timeband.offset().left;
-		var bandW      = $timeband.width();
-		posX           = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-		var pos        = posX / bandW;
+		var posX       = pageX - V.time.x;
+		posX           = posX < 0 ? 0 : ( posX > V.time.w ? V.time.w : posX );
+		var pos        = posX / V.time.w;
 		S.elapsed      = Math.round( pos * S.Time );
 		var elapsedhms = UTIL.second2HMS( S.elapsed );
 		if ( S.elapsed ) {
@@ -2255,10 +2257,11 @@ var PROGRESS  = {
 		}
 		$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
 	}
+	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
 	, down    : ( e, type ) => {
 		if ( S.player !== 'mpd' || S.webradio ) return
 		
-		V.time      = PLAYBACK.centerXy( 'time' );
+		V.time      = PLAYBACK[ type === 'time' ? 'xyCenter' : 'xWidth' ]( 'time' );
 		V.time.type = type;
 		UTIL.intervalClear.all();
 		DISPLAY.guideHide();
@@ -2561,6 +2564,14 @@ var UTIL      = {
 }	
 var VOLUME    = {
 	  ...VOLUME
+	, animate : () => {
+		VOLUME.disable();
+		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
+		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
+		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
+		VOLUME.set( deg );
+	}
 	, bar     : {
 		  animate   : ( target, volume ) => {
 			VOLUME.bar.hideClear();
@@ -2606,6 +2617,30 @@ var VOLUME    = {
 			$( '#voldn, #volL, #volB, #volume-band-dn' ).toggleClass( 'disabled', S.volume === 0 );
 			$( '#volup, #volR, #volT, #volume-band-up' ).toggleClass( 'disabled', S.volume === 100 );
 		}
+	}
+	, drag    : e => {
+		var deg  = PLAYBACK.degree( e, 'volume' );
+		if ( deg > 30 && deg < 150 ) return
+		
+		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
+		S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
+		if ( V.drag ) {
+			VOLUME.set( deg );
+		} else {
+			VOLUME.animate();
+		}
+		VOLUME.command();
+	}
+	, set     : deg => {
+		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
+			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+		var mute = S.volumemute !== 0;
+		$( '#volume-level' )
+			.text( S.volume )
+			.toggleClass( 'hide', mute );
+		$( '#volume-mute' )
+			.text( S.volumemute )
+			.toggleClass( 'hide', ! mute );
 	}
 	, setValue : () => {
 		if ( V.animate ) return

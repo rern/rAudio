@@ -336,7 +336,7 @@ $( '#time svg, #time-band' ).on( 'touchstart mousedown', function( e ) {
 	PROGRESS.drag( e );
 } );
 $( '#vol' ).on( 'touchstart mousedown', function( e ) {
-	V.volume     = PLAYBACK.centerXy( 'volume' );
+	V.volume     = PLAYBACK.xyCenter( 'volume' );
 	V.volume.vol = e.target.id;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
@@ -353,7 +353,7 @@ $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 $( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end outside
 	delete V.drag;
 	if ( V.time ) {
-		BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] );
+		PROGRESS.command();
 	} else if ( V.volume ) {
 		VOLUME.drag( e );
 	}
@@ -396,8 +396,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	VOLUME.animate();
 	V.volume    = V.drag = false;
 	VOLUME.bar.hide();
-} ).on( 'mouseleave', function() {
-	V.volume = V.drag = false;
 } );
 
 $( '#elapsed' ).on( 'click', function() {

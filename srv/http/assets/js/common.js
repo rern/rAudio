@@ -1541,32 +1541,11 @@ var COMMON    = {
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
 var VOLUME    = {
-	  animate : () => {
-		VOLUME.disable();
-		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
-		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
-		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
-		VOLUME.set( deg );
-	}
-	, command : type => { // type: mute / unmute
+	  command : type => { // type: mute / unmute
 		if ( V.drag || V.press ) type = 'dragpress';
 		V.local        = true;
 		var vol_prev   = $( '#volume-level' ).text();
 		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-	}
-	, drag    : e => {
-		var deg  = PLAYBACK.degree( e, 'volume' );
-		if ( deg > 30 && deg < 150 ) return
-		
-		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
-		S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
-		if ( V.drag ) {
-			VOLUME.set( deg );
-		} else {
-			VOLUME.animate();
-		}
-		VOLUME.command();
 	}
 	, max     : () => {
 		if ( S.volumemax && S.volume > S.volumemax ) {
@@ -1577,17 +1556,6 @@ var VOLUME    = {
 	, push    : () => {
 		V.local = true;
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
-	}
-	, set     : deg => {
-		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
-			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-		var mute = S.volumemute !== 0;
-		$( '#volume-level' )
-			.text( S.volume )
-			.toggleClass( 'hide', mute );
-		$( '#volume-mute' )
-			.text( S.volumemute )
-			.toggleClass( 'hide', ! mute );
 	}
 	, toggle  : () => {
 		if ( S.volumemute ) {
