@@ -2261,7 +2261,7 @@ var PROGRESS  = {
 	, down    : ( e, type ) => {
 		if ( S.player !== 'mpd' || S.webradio ) return
 		
-		V.time      = PLAYBACK[ type === 'time' ? 'xyCenter' : 'xWidth' ]( 'time' );
+		V.time      = PLAYBACK[ type === 'knob' ? 'xyCenter' : 'xWidth' ]( 'time' );
 		V.time.type = type;
 		UTIL.intervalClear.all();
 		DISPLAY.guideHide();
