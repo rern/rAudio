@@ -1383,7 +1383,7 @@ var PLAYBACK  = {
 		$( '#playback-controls, #infoicon i, #vu,#divcomposer, #divconductor' ).addClass( 'hide' );
 		$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 		$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
-		PLAYBACK.progress.set( 0 );
+		PROGRESS.set( 0 );
 		$( '#sampling' ).empty();
 		if ( S.ip || D.ap ) {
 			var ip = S.ip || D.apconf.ip;
@@ -1535,9 +1535,9 @@ var PLAYBACK  = {
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( UTIL.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
-			PLAYBACK.progress.set();
+			PROGRESS.set();
 			if ( ! V.localhost ) {
-				PLAYBACK.progress.animate();
+				PROGRESS.animate();
 			} else {
 				$TIME_ARC.css( 'transition-duration', '0s' );
 			}
@@ -1552,7 +1552,7 @@ var PLAYBACK  = {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
 				if ( V.localhost ) {
-					PLAYBACK.progress.arc();
+					PROGRESS.arc();
 					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				}
 				elapsedhms = UTIL.second2HMS( S.elapsed );
@@ -1562,7 +1562,7 @@ var PLAYBACK  = {
 				S.elapsed = 0;
 				UTIL.intervalClear.all();
 				$elapsed.empty();
-				PLAYBACK.progress.set( 0 );
+				PROGRESS.set( 0 );
 			}
 		}, 1000 );
 	}
@@ -1570,7 +1570,7 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 		
 		LOCAL();
-		if ( S.state === 'stop' ) PLAYBACK.progress.set( 0 );
+		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.setValue();
 		PLAYBACK.button.options();
 		clearInterval( V.interval.blinkdot );
@@ -1615,7 +1615,7 @@ var PLAYBACK  = {
 		if ( S.state === 'pause' ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			PLAYBACK.progress.set();
+			PROGRESS.set();
 		} else { //play
 			PLAYBACK.elapsed();
 		}
@@ -1729,67 +1729,8 @@ var PLAYBACK  = {
 			}
 		}
 	}
-	, progress : {
-		  animate : () => {
-			if ( ! D.time && ! D.cover ) return
-			
-			$TIME_ARC.css( 'transition-duration', S.Time - S.elapsed +'s' );
-			PLAYBACK.progress.arc( 654 ); // full
-			$( '#time-bar' ).css( 'width', '100%' );
-		}
-		, arc     : arcL => {
-			if ( ! arcL ) arcL = S.elapsed && S.Time ? S.elapsed / S.Time * 654 : 0;
-			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ arcL +', 654' );
-		}
-		, bar  : e => {
-			var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
-			var $timeband  = $( '#time-band' );
-			var posX       = pageX - $timeband.offset().left;
-			var bandW      = $timeband.width();
-			posX           = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-			var pos        = posX / bandW;
-			var elapsed    = Math.round( pos * S.Time );
-			var elapsedhms = UTIL.second2HMS( elapsed );
-			if ( S.elapsed ) {
-				$( '#progress span' ).html( elapsedhms );
-			} else {
-				$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
-			}
-			$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
-			PLAYBACK.progress.mpc( elapsed );
-		}
-		, knob : e => {
-			var deg      = PLAYBACK.degree( e, 'time' );
-			deg          = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
-			var elapsed  = Math.round( S.Time * deg / 360 );
-			PLAYBACK.progress.set();
-			if ( S.state === 'play' ) setTimeout( PLAYBACK.progress.animate, 0 );
-			$( '#elapsed, #total' ).removeClass( 'gr' );
-			if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
-			$( '#elapsed' ).text( UTIL.second2HMS( elapsed ) );
-			$( '#total' ).text( UTIL.second2HMS( S.Time ) );
-			if ( S.state === 'stop' && UTIL.barVisible() ) {
-				$( '#playback-controls i' ).removeClass( 'active' );
-				$( '#pause' ).addClass( 'active' );
-				$( '#title' ).addClass( 'gr' );
-			}
-			PLAYBACK.progress.mpc( elapsed );
-		}
-		, mpc  : elapsed => {
-			S.elapsed = elapsed;
-			if ( ! V.drag ) BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] );
-		}
-		, set     : position => {
-			if ( position !== 0 ) position = S.elapsed;
-			if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
-			$TIME_ARC.css( 'transition-duration', '0s' );
-			PLAYBACK.progress.arc();
-			var w = position && S.Time ? position / S.Time * 100 : 0;
-			$( '#time-bar' ).css( 'width', w +'%' );
-		}
-	}
 	, stop     : () => {
-		PLAYBACK.progress.set( 0 );
+		PROGRESS.set( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
 		if ( V.timehms ) {
@@ -1805,40 +1746,6 @@ var PLAYBACK  = {
 		PLAYBACK.info.set();
 		$( '#artist, #title, #album' ).addClass( 'disabled' );
 		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
-	}
-	, volume    : {
-		  animate : () => {
-		  	VOLUME.disable();
-		  	var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
-			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
-			$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-			var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
-			PLAYBACK.volume.set( deg );
-		}
-		, drag    : e => {
-			var deg  = PLAYBACK.degree( e, 'volume' );
-			if ( deg > 30 && deg < 150 ) return
-			
-			var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
-			S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
-			if ( V.drag ) {
-				PLAYBACK.volume.set( deg );
-			} else {
-				PLAYBACK.volume.animate();
-			}
-			VOLUME.set();
-		}
-		, set     : deg => {
-			$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
-				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-			var mute = S.volumemute !== 0;
-			$( '#volume-level' )
-				.text( S.volume )
-				.toggleClass( 'hide', mute );
-			$( '#volume-mute' )
-				.text( S.volumemute )
-				.toggleClass( 'hide', ! mute );
-		}
 	}
 	, vu       : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
@@ -2314,10 +2221,80 @@ var PLAYLIST  = {
 		
 		UTIL.intervalClear.all();
 		if ( S.state !== 'stop' ) {
-			PLAYBACK.progress.set( 0 );
+			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
 		BASH( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
+	}
+}
+var PROGRESS  = {
+	  animate : () => {
+		if ( ! D.time && ! D.cover ) return
+		
+		$TIME_ARC.css( 'transition-duration', S.Time - S.elapsed +'s' );
+		PROGRESS.arc( 654 ); // full
+		$( '#time-bar' ).css( 'width', '100%' );
+	}
+	, arc     : arcL => {
+		if ( ! arcL ) arcL = S.elapsed && S.Time ? S.elapsed / S.Time * 654 : 0;
+		$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ arcL +', 654' );
+	}
+	, bar     : e => {
+		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
+		var $timeband  = $( '#time-band' );
+		var posX       = pageX - $timeband.offset().left;
+		var bandW      = $timeband.width();
+		posX           = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+		var pos        = posX / bandW;
+		S.elapsed      = Math.round( pos * S.Time );
+		var elapsedhms = UTIL.second2HMS( S.elapsed );
+		if ( S.elapsed ) {
+			$( '#progress span' ).html( elapsedhms );
+		} else {
+			$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
+		}
+		$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
+	}
+	, down    : ( e, type ) => {
+		if ( S.player !== 'mpd' || S.webradio ) return
+		
+		V.time      = PLAYBACK.centerXy( 'time' );
+		V.time.type = type;
+		UTIL.intervalClear.all();
+		DISPLAY.guideHide();
+		if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
+		PROGRESS[ type ]( e );
+	}
+	, drag    : e => {
+		if ( ! V.time ) return
+		
+		e.preventDefault(); // prevent scroll
+		V.drag = true;
+		PROGRESS[ V.time.type ]( e );
+	}
+	, knob    : e => {
+		var deg   = PLAYBACK.degree( e, 'time' );
+		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
+		S.elapsed = Math.round( S.Time * deg / 360 );
+		PROGRESS.set();
+		if ( S.state === 'play' ) setTimeout( PROGRESS.animate, 0 );
+		$( '#elapsed, #total' ).removeClass( 'gr' );
+		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
+		$( '#elapsed' ).text( UTIL.second2HMS( S.elapsed ) );
+		$( '#total' ).text( UTIL.second2HMS( S.Time ) );
+		if ( S.state === 'stop' && UTIL.barVisible() ) {
+			$( '#playback-controls i' ).removeClass( 'active' );
+			$( '#pause' ).addClass( 'active' );
+			$( '#title' ).addClass( 'gr' );
+		}
+	}
+	, set     : position => {
+		if ( position !== 0 ) position = S.elapsed;
+		if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
+		$TIME_ARC.css( 'transition-duration', '0s' );
+		PROGRESS.arc();
+		var w = position && S.Time ? position / S.Time * 100 : 0;
+		$( '#time-bar' ).css( 'width', w +'%' );
 	}
 }
 var UTIL      = {
@@ -2360,7 +2337,7 @@ var UTIL      = {
 				$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
 				PLAYBACK.elapsed();
 			} else {
-				PLAYBACK.progress.set( 0 );
+				PROGRESS.set( 0 );
 			}
 		}
 	}
@@ -2492,7 +2469,7 @@ var UTIL      = {
 	, intervalClear   : {
 		  all : () => {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
-			PLAYBACK.progress.set( S.webradio ? 0 : '' ); // stop progress animation
+			PROGRESS.set( S.webradio ? 0 : '' ); // stop progress animation
 			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 		}
 		, elapsed : () => {
@@ -2633,7 +2610,7 @@ var VOLUME    = {
 	, setValue : () => {
 		if ( V.animate ) return
 		
-		if ( D.volume ) PLAYBACK.volume.animate();
+		if ( D.volume ) VOLUME.animate();
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
@@ -2657,11 +2634,11 @@ var VOLUME    = {
 	}
 	, upDown  : up => {
 		up ? S.volume++ : S.volume--;
-		if ( D.volume ) PLAYBACK.volume.animate();
+		if ( D.volume ) VOLUME.animate();
 		VOLUME.max();
 		S.volumemute = 0;
 		VOLUME.setValue();
-		VOLUME.set();
+		VOLUME.command();
 	}
 }
 var WEBRADIO  = {

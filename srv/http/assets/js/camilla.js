@@ -2446,7 +2446,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
 	VOLUME.max();
 	RENDER.volume();
-	VOLUME.set();
+	VOLUME.command();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -2465,7 +2465,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		VOLUME.max();
 		$( '#divvolume .level' ).text( S.volume );
 		UTIL.volumeAnimate( S.volume, current );
-		VOLUME.set();
+		VOLUME.command();
 	}
 	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
@@ -2477,7 +2477,7 @@ $( '#volume-0, #volume-100' ).on( 'click', function() {
 	VOLUME.max();
 	$( '#divvolume .level' ).text( S.volume );
 	UTIL.volumeAnimate( S.volume, current );
-	VOLUME.set();
+	VOLUME.command();
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
@@ -2486,7 +2486,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	up ? S.volume++ : S.volume--;
 	VOLUME.max();
 	RENDER.volume();
-	VOLUME.set();
+	VOLUME.command();
 } ).on( 'click', '.col-r .i-volume, .level', function() {
 	UTIL.volumeAnimate( S.volumemute, S.volume );
 	VOLUME.toggle();
@@ -2500,7 +2500,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
 			VOLUME.max();
-			VOLUME.set();
+			VOLUME.command();
 			RENDER.volumeThumb();
 			$( '#divvolume .level' ).text( S.volume );
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );

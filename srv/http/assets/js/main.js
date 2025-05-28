@@ -330,16 +330,10 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	} );
 } );
 // drag/click >>-------------------------------------------------------------
-$( '#time svg' ).on( 'touchstart mousedown', function( e ) {
-	UTIL.intervalClear.all();
-	V.time = PLAYBACK.centerXy( 'time' );
-	V.drag = true;
-	PLAYBACK.progress.knob( e );
+$( '#time svg, #time-band' ).on( 'touchstart mousedown', function( e ) {
+	PROGRESS.down( e, this.id === 'time-band' ? 'bar' : 'knob' );
 } ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.time ) return
-	
-	e.preventDefault(); // prevent scroll
-	PLAYBACK.progress.knob( e );
+	PROGRESS.drag( e );
 } );
 $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 	V.volume     = PLAYBACK.centerXy( 'volume' );
@@ -354,42 +348,19 @@ $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 	
 	e.preventDefault();
 	V.drag = true;
-	PLAYBACK.volume.drag( e );
+	VOLUME.drag( e );
 } );
 $( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end outside
 	delete V.drag;
 	if ( V.time ) {
-		PLAYBACK.progress.knob( e );
+		BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] );
 	} else if ( V.volume ) {
-		PLAYBACK.volume.drag( e );
+		VOLUME.drag( e );
 	}
 	delete V.time;
 	delete V.volume;
 } );
 // drag/click <<-------------------------------------------------------------
-$( '#elapsed' ).on( 'click', function() {
-	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
-} );
-$( '#time-band' ).on( 'touchstart mousedown', function() {
-	if ( S.player !== 'mpd' || S.webradio ) return
-	
-	V.start = true;
-	DISPLAY.guideHide();
-	UTIL.intervalClear.all();
-	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.start ) return
-	
-	V.drag = true;
-	PLAYBACK.progress.bar( e );
-} ).on( 'touchend mouseup', function( e ) {
-	if ( ! V.start ) return
-	
-	V.start = V.drag = false;
-	PLAYBACK.progress.bar( e );
-} ).on( 'mouseleave', function() {
-	V.start = V.drag = false;
-} );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	DISPLAY.guideHide();
 	VOLUME.bar.hideClear();
@@ -408,7 +379,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.drag = true;
 	VOLUME.bar.set( e );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
-	VOLUME.set();
+	VOLUME.command();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		VOLUME.bar.show();
@@ -420,13 +391,17 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	} else { // click
 		VOLUME.bar.set( e );
 		VOLUME.bar.animate( S.volume, V.volume.current );
-		VOLUME.set();
+		VOLUME.command();
 	}
-	PLAYBACK.volume.animate();
+	VOLUME.animate();
 	V.volume    = V.drag = false;
 	VOLUME.bar.hide();
 } ).on( 'mouseleave', function() {
 	V.volume = V.drag = false;
+} );
+
+$( '#elapsed' ).on( 'click', function() {
+	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	VOLUME.toggle();
@@ -451,7 +426,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 			$( '#volume-text' ).text( S.volume );
 			$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		} else {
-			PLAYBACK.volume.animate();
+			VOLUME.animate();
 			VOLUME.bar.hideClear();
 			VOLUME.bar.hide();
 		}
@@ -589,8 +564,8 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 			DISPLAY.playback();
 			PLAYBACK.button.options();
 			if ( S.state === 'play' && ! S.webradio && ! V.localhost ) {
-				PLAYBACK.progress.set();
-				setTimeout( PLAYBACK.progress.animate, 0 );
+				PROGRESS.set();
+				setTimeout( PROGRESS.animate, 0 );
 			}
 			if ( 'coverTL' in V && ! D.cover ) $( '#map-time' ).removeClass( 'hide' );
 			break;

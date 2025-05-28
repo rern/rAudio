@@ -115,7 +115,7 @@ W = {
 			$( '#progress' ).html( ICON( 'play' ) +'<span></span>' );
 			PLAYBACK.elapsed();
 		} else {
-			PLAYBACK.progress.set( 0 );
+			PROGRESS.set( 0 );
 			UTIL.blinkDot();
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
