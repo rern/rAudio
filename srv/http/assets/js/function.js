@@ -2235,7 +2235,7 @@ var PROGRESS  = {
 	  animate : () => { // knob + bar
 		if ( ! D.time && ! D.cover ) return
 		
-		$( '#time svg, #time-bar' ).css( 'transition-duration', S.Time - S.elapsed +'s' ); // ms - from current to full
+		$( '#time path, #time-bar' ).css( 'transition-duration', S.Time - S.elapsed +'s' ); // ms - from current to full
 		PROGRESS.arc( 654 );                                                               // full circle: stroke-dasharray = 654
 		$( '#time-bar' ).css( 'width', '100%' );
 	}
