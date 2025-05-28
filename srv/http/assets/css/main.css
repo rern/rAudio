@@ -863,8 +863,8 @@ div.pagerefresh {
 }
 .round .container {
 	position: relative;
-	height: 230px;
-	width: 230px;
+	height: 100%;
+	width: 100%;
 	border-radius: 50%;
 	background: linear-gradient( var( --cgl ), #000 );
 	box-shadow: 0 0 8px 2px #555;
@@ -873,11 +873,11 @@ div.pagerefresh {
 .round .container::after {
 	content: '';
 	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	border-radius: 50%;
 }
-.round .container::after { /* glossy overlay */
-	background: radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-}                             /* w    h       x   y   inner(color)        w    outer(color)      w */
 .round .container::before {
 	top: 5px;
 	left: 5px;
@@ -886,6 +886,9 @@ div.pagerefresh {
 	border-radius: 50%;
 	background-color: #000;
 }
+.round .container::after { /* glossy overlay */
+	background: radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+}                             /* w    h       x   y   inner(color)        w    outer(color)      w */
 #time .container {
 	left: 20px;
 	top: 20px;
@@ -904,11 +907,6 @@ div.pagerefresh {
 	stroke: var( --cm );
 	stroke-width: 21px;
 	transition-duration: 0s;
-}
-#volume .container::after {
-	left: 0;
-	width: 100%;
-	height: 100%;
 }
 #vol {
 	position: absolute;
