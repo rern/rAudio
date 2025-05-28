@@ -6,6 +6,7 @@ V    = {
 	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
 	, orange    : '#de810e'
 	, red       : '#bb2828'
+	, touch     : navigator.maxTouchPoints > 0
 }
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
@@ -193,7 +194,7 @@ var SORT      = {
 		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
 	}
 	, set        : ( el, callback ) => {
-		SORT[ navigator.maxTouchPoints ? 'touch' : 'drag' ]( el, callback );
+		SORT[ V.touch ? 'touch' : 'drag' ]( el, callback );
 	}
 	, touch      : ( el, callback ) => { // ok for mouse
 		var $ul = $( '#'+ el );
@@ -265,7 +266,7 @@ var SORT      = {
 	}
 }
 var SWIPE     = () => {
-	if ( ! navigator.maxTouchPoints ) return
+	if ( ! V.touch ) return
 	
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
@@ -1224,7 +1225,7 @@ var COMMON    = {
 		}
 	}
 	, draggable     : el => {
-		if ( ! navigator.maxTouchPoints ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
+		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, eq            : {
 		  beforShow : fn => {
@@ -1490,7 +1491,7 @@ var COMMON    = {
 					V.select2 = true;
 					setTimeout( () => {
 						var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-						if ( navigator.maxTouchPoints ) scroll -= 12;
+						if ( V.touch ) scroll -= 12;
 						$( '.select2-results ul' ).scrollTop( scroll );
 					}, 0 );
 					if ( I.active && I.boxwidth ) COMMON.select.width( I.boxwidth );
@@ -1538,12 +1539,6 @@ var COMMON    = {
 		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
-	, xy2degree     : ( x, y, cx, cy ) => {
-		var rad = Math.atan2( y - cy, x - cx );
-		var deg = Math.round( rad * 180 / Math.PI );
-		if ( deg < 0 ) deg += 360;
-		return deg
-	}
 }
 var VOLUME    = {
 	  max : () => {
@@ -1725,7 +1720,7 @@ $( '#debug' ).on( 'click', function() {
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
-				if ( navigator.maxTouchPoints ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
+				if ( V.touch ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
 				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();

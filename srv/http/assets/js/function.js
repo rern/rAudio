@@ -194,7 +194,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = COMMON.xy2degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
+				V.ctx.hsl.h = PLAYBACK.xy2degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -290,10 +290,10 @@ var COLOR     = {
 			}
 		}
 		, xy       : ( e, hue_sat ) => {
-			if ( V.ctx.touch ) {
+			if ( V.touch ) {
 				var x = e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
 				var y = e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
-			} else {
+			} else { // V.ctx.tl[ hue_sat ] - relative xy
 				var x = e.offsetX;
 				var y = e.offsetY;
 			}
@@ -317,13 +317,12 @@ var COLOR     = {
 			, width   : $box.width()
 			, wheel_c : $( '#wheel' ).width() / 2
 		}
-		if ( navigator.maxTouchPoints ) {
+		if ( V.touch ) {
 			var [ ty, tx ] = Object.values( $( '#wheel' ).offset() );
 			V.ctx.tl       = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
 				  hue : { x: tx,              y: ty }
 				, sat : { x: tx + box_margin, y: ty + box_margin }
 			}
-			V.ctx.touch     = true;
 		}
 		COLOR.pick.set();
 	}
@@ -478,7 +477,7 @@ var DISPLAY   = {
 		var lcd         = ( V.wH <= 320 && V.wW <= 480 ) || ( V.wH <= 480 && V.wW <= 320 );
 		if ( ! D.bars || ( smallscreen && ! D.barsalways ) || lcd ) {
 			$( '#bar-top' ).addClass( 'hide' );
-			$( '#bar-bottom' ).addClass( navigator.maxTouchPoints ? 'hide' : 'transparent' );
+			$( '#bar-bottom' ).addClass( V.touch ? 'hide' : 'transparent' );
 			$( '.page' ).addClass ( 'barshidden' );
 			$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 			$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
@@ -1517,6 +1516,16 @@ var PLAYBACK  = {
 		}
 		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
 	}
+	, degree   : ( e, el ) => { // el: time/volume
+		if ( V.touch ) {
+			var x = e.changedTouches[ 0 ].pageX;
+			var y = e.changedTouches[ 0 ].pageY;
+		} else {
+			var x = e.pageX;
+			var y = e.pageY;
+		}
+		return PLAYBACK.xy2degree( x, y, V[ el ].cx, V[ el ].cy )
+	}
 	, elapsed  : () => {
 		UTIL.intervalClear.elapsed();
 		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
@@ -1732,17 +1741,7 @@ var PLAYBACK  = {
 			if ( ! arcL ) arcL = S.elapsed && S.Time ? S.elapsed / S.Time * 654 : 0;
 			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ arcL +', 654' );
 		}
-		, set     : position => {
-			if ( position !== 0 ) position = S.elapsed;
-			if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
-			$TIME_ARC.css( 'transition-duration', '0s' );
-			PLAYBACK.progress.arc();
-			var w = position && S.Time ? position / S.Time * 100 : 0;
-			$( '#time-bar' ).css( 'width', w +'%' );
-		}
-	}
-	, seek     : {
-		  bar  : e => {
+		, bar  : e => {
 			var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
 			var $timeband  = $( '#time-band' );
 			var posX       = pageX - $timeband.offset().left;
@@ -1757,12 +1756,12 @@ var PLAYBACK  = {
 				$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
 			}
 			$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
-			PLAYBACK.seek.mpc( elapsed );
+			PLAYBACK.progress.mpc( elapsed );
 		}
 		, knob : e => {
-			var deg     = COMMON.xy2degree( e.pageX, e.pageY, V.time.cx, V.time.cy ) + 90;
-			if ( deg > 360 ) deg -= 360;
-			var elapsed = Math.round( S.Time * deg / 360 );
+			var deg      = PLAYBACK.degree( e, 'time' );
+			deg          = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
+			var elapsed  = Math.round( S.Time * deg / 360 );
 			PLAYBACK.progress.set();
 			if ( S.state === 'play' ) setTimeout( PLAYBACK.progress.animate, 0 );
 			$( '#elapsed, #total' ).removeClass( 'gr' );
@@ -1774,11 +1773,19 @@ var PLAYBACK  = {
 				$( '#pause' ).addClass( 'active' );
 				$( '#title' ).addClass( 'gr' );
 			}
-			PLAYBACK.seek.mpc( elapsed );
+			PLAYBACK.progress.mpc( elapsed );
 		}
 		, mpc  : elapsed => {
 			S.elapsed = elapsed;
 			if ( ! V.drag ) BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] );
+		}
+		, set     : position => {
+			if ( position !== 0 ) position = S.elapsed;
+			if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
+			$TIME_ARC.css( 'transition-duration', '0s' );
+			PLAYBACK.progress.arc();
+			var w = position && S.Time ? position / S.Time * 100 : 0;
+			$( '#time-bar' ).css( 'width', w +'%' );
 		}
 	}
 	, stop     : () => {
@@ -1805,15 +1812,15 @@ var PLAYBACK  = {
 		  	var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
 			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 			$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-			var deg      = 150 + S.volume * 2.4; // 150°@0% > 30°@100% >> 240°:100%
-			PLAYBACK.volume.set( deg ); // can be > 360°
+			var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
+			PLAYBACK.volume.set( deg );
 		}
-		, drag : e => {
-			var deg  = COMMON.xy2degree( e.pageX, e.pageY, V.volume.cx, V.volume.cy );
+		, drag    : e => {
+			var deg  = PLAYBACK.degree( e, 'volume' );
 			if ( deg > 30 && deg < 150 ) return
 			
-			var deg_vol = deg >= 150 ? deg : deg + 390; // 30°@100% >> 390 - 150 = 240
-			S.volume = Math.round( ( deg - 150 ) / 240 * 100 );
+			var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
+			S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
 			if ( V.drag ) {
 				PLAYBACK.volume.set( deg );
 			} else {
@@ -1857,6 +1864,12 @@ var PLAYBACK  = {
 				$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
 			}, 300 );
 		}, 300 );
+	}
+	, xy2degree     : ( x, y, cx, cy ) => {
+		var rad = Math.atan2( y - cy, x - cx );
+		var deg = Math.round( rad * 180 / Math.PI );
+		if ( deg < 0 ) deg += 360;
+		return deg
 	}
 }
 var PLAYLIST  = {

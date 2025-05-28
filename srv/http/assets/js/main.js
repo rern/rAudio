@@ -329,18 +329,17 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, ok      : () => BASH( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );
-$( '#elapsed' ).on( 'click', function() {
-	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
-} );
+// drag/click >>-------------------------------------------------------------
 $( '#time svg' ).on( 'touchstart mousedown', function( e ) {
 	UTIL.intervalClear.all();
 	V.time = PLAYBACK.centerXy( 'time' );
 	V.drag = true;
-	PLAYBACK.seek.knob( e );
+	PLAYBACK.progress.knob( e );
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.time ) return
 	
-	PLAYBACK.seek.knob( e );
+	e.preventDefault(); // prevent scroll
+	PLAYBACK.progress.knob( e );
 } );
 $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 	V.volume     = PLAYBACK.centerXy( 'volume' );
@@ -348,18 +347,28 @@ $( '#vol' ).on( 'touchstart mousedown', function( e ) {
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
-	V.drag = ! V.volume.vol;
+	if ( V.volume.vol ) {
+		delete V.volume;
+		return
+	}
+	
+	e.preventDefault();
+	V.drag = true;
 	PLAYBACK.volume.drag( e );
 } );
 $( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end outside
 	delete V.drag;
 	if ( V.time ) {
-		PLAYBACK.seek.knob( e );
+		PLAYBACK.progress.knob( e );
 	} else if ( V.volume ) {
 		PLAYBACK.volume.drag( e );
 	}
 	delete V.time;
 	delete V.volume;
+} );
+// drag/click <<-------------------------------------------------------------
+$( '#elapsed' ).on( 'click', function() {
+	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	if ( S.player !== 'mpd' || S.webradio ) return
@@ -372,12 +381,12 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	if ( ! V.start ) return
 	
 	V.drag = true;
-	PLAYBACK.seek.bar( e );
+	PLAYBACK.progress.bar( e );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
 	V.start = V.drag = false;
-	PLAYBACK.seek.bar( e );
+	PLAYBACK.progress.bar( e );
 } ).on( 'mouseleave', function() {
 	V.start = V.drag = false;
 } );
