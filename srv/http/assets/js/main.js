@@ -620,6 +620,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			UTIL.intervalClear.elapsed();
 			PLAYBACK.stop();
+			PROGRESS.set( 0 );
 			if ( S.player !== 'mpd' ) {
 				BASH( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				var icon_player = {

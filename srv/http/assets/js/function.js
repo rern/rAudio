@@ -1548,7 +1548,7 @@ var PLAYBACK  = {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
 				if ( V.localhost ) {
-					PROGRESS.arc();
+					PROGRESS.arc( S.elapsed / S.Time );
 					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				}
 				elapsedhms = UTIL.second2HMS( S.elapsed );
@@ -1734,6 +1734,7 @@ var PLAYBACK  = {
 			$( '#elapsed' )
 				.text( V.timehms )
 				.addClass( 'gr' );
+			$
 		}
 		if ( ! S.webradio ) return
 		
@@ -2236,13 +2237,10 @@ var PROGRESS  = {
 		if ( ! D.time && ! D.cover ) return
 		
 		$( '#time path, #time-bar' ).css( 'transition-duration', S.Time - S.elapsed +'s' ); // ms - from current to full
-		PROGRESS.arc( 654 );                                                               // full circle: stroke-dasharray = 654
+		PROGRESS.arc( 1 );                                                                  // full circle
 		$( '#time-bar' ).css( 'width', '100%' );
 	}
-	, arc     : arcL => {
-		if ( ! arcL ) arcL = S.elapsed && S.Time ? S.elapsed / S.Time * 654 : 0;
-		$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ arcL +', 654' );
-	}
+	, arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
 	, bar     : e => {
 		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
 		var posX       = pageX - V.time.x;
@@ -2294,8 +2292,8 @@ var PROGRESS  = {
 	, set     : position => {
 		if ( position !== 0 ) position = S.elapsed;
 		if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
-		$TIME_ARC.css( 'transition-duration', '0s' );
-		PROGRESS.arc();
+		$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
+		PROGRESS.arc( position / S.Time );
 		var w = position && S.Time ? position / S.Time * 100 : 0;
 		$( '#time-bar' ).css( 'width', w +'%' );
 	}
@@ -2668,8 +2666,10 @@ var VOLUME    = {
 		}
 	}
 	, upDown  : up => {
+		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
+		
 		up ? S.volume++ : S.volume--;
-		if ( D.volume ) VOLUME.animate();
+		if ( D.volume ) VOLUME.set( 150 + S.volume * 2.4 );
 		VOLUME.max();
 		S.volumemute = 0;
 		VOLUME.setValue();
