@@ -2535,6 +2535,7 @@ var UTIL      = {
 			return deg
 		}
 		, get    : el => {
+			DISPLAY.guideHide();
 			if ( $( el ).hasClass( 'band' ) ) {
 				var $el = $( '#coverart' );
 				return {

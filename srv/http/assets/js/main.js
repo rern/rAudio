@@ -330,36 +330,19 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	} );
 } );
 // drag/click >>-------------------------------------------------------------
-$( '#time svg, #time-band:not( .hide )' ).on( 'touchstart mousedown', function() {
+$( '#time svg, #time-band:not( .hide )' ).on( 'touchstart mousedown', function( e ) {
 	if ( S.player !== 'mpd' || S.webradio ) return
 	
 	V.time = UTIL.xy.get( this );
 	UTIL.intervalClear.all();
-	DISPLAY.guideHide();
 	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-	PROGRESS[ V.time.type ]( e );
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.time ) return
-	
-	e.preventDefault(); // prevent scroll
-	V.drag = true;
-	PROGRESS[ V.time.type ]( e );
+	PROGRESS[ V.time.type ]( e ); // move immediatly
 } );
-$( '#vol, #volume-band:not( .hide )' ).on( 'touchstart mousedown', function() {
-	V.volume = UTIL.xy.get( this );
-	V.volume.drag = this.id !== 'vol';
-	DISPLAY.guideHide();
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.volume || ! V.volume.drag ) {
-		delete V.volume;
-		return
-	}
-	
-	e.preventDefault();
-	V.drag = true;
-	VOLUME[ V.volume.type ]( e );
+$( '#vol, #volume-band:not( .hide )' ).on( 'touchstart mousedown', function( e ) {
+	V.volume      = UTIL.xy.get( this );
+	V.volume.drag = e.target.id !== 'vol';
 } );
-$( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end outside
+$( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag outside
 	delete V.drag;
 	if ( V.time ) {
 		PROGRESS.command();
@@ -378,6 +361,17 @@ $( '#page-playback' ).on( 'touchend mouseup', function( e ) { // allow drag end 
 		}
 		delete V.volume;
 	}
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( ! V.volume && ! V.time ) return
+	
+	if ( 'volume' in V && ! V.volume.drag ) {
+		delete V.volume;
+		return
+	}
+	
+	e.preventDefault();
+	V.drag = true;
+	V.volume ? VOLUME[ V.volume.type ]( e ) : PROGRESS[ V.time.type ]( e );
 } );
 // drag/click <<-------------------------------------------------------------
 $( '#elapsed' ).on( 'click', function() {
