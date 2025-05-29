@@ -242,7 +242,6 @@ cachebust )
 		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
 	fi
 	sed -i "1,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
-	! grep -q grepr $dirbash/bashrc && echo "alias grepr='grep --color --exclude-dir plugin -nr'" >> $dirbash/bashrc
 	;;
 cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static

@@ -1155,17 +1155,19 @@ var RENDER    = {
 		}
 	}
 	, volume      : () => {
+		var $level   = $( '#volume-level' );
+		var $ivolume = $( '#divvolume .i-volume' );
 		RENDER.volumeThumb();
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
-			$( '#divvolume .level' ).addClass( 'bl' );
-			$( '#divvolume .i-volume' ).addClass( 'mute' );
+			$level.addClass( 'bl' );
+			$ivolume.addClass( 'mute' );
 		} else {
-			$( '#divvolume .level' ).removeClass( 'bl' );
-			$( '#divvolume .i-volume' ).removeClass( 'mute' );
+			$level.removeClass( 'bl' );
+			$ivolume.removeClass( 'mute' );
 		}
-		$( '#divvolume .level' ).text( S.volumemute || S.volume )
+		$level.text( S.volumemute || S.volume )
 	}
 	, volumeThumb : () => {
 		$( '#volume .thumb' ).css( 'margin-left', ( 230 - 40 ) / 100 * S.volume );
@@ -2462,7 +2464,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
 		VOLUME.command();
-		$( '#divvolume .level' ).text( S.volume );
+		$( '#volume-level' ).text( S.volume );
 		UTIL.volumeAnimate( S.volume, current );
 	}
 	V.volume = V.drag = false;
@@ -2473,7 +2475,7 @@ $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
 	VOLUME.command();
-	$( '#divvolume .level' ).text( S.volume );
+	$( '#volume-level' ).text( S.volume );
 	UTIL.volumeAnimate( S.volume, current );
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
@@ -2483,7 +2485,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	up ? S.volume++ : S.volume--;
 	VOLUME.command();
 	RENDER.volume();
-} ).on( 'click', '.col-r .i-volume, .level', function() {
+} ).on( 'click', '.col-r .i-volume, #volume-level', function() {
 	UTIL.volumeAnimate( S.volumemute, S.volume );
 	VOLUME.toggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
@@ -2497,7 +2499,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 			up ? S.volume++ : S.volume--;
 			VOLUME.command();
 			RENDER.volumeThumb();
-			$( '#divvolume .level' ).text( S.volume );
+			$( '#volume-level' ).text( S.volume );
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 		}, 100 );
 	}

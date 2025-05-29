@@ -194,7 +194,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = PLAYBACK.xy2degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
+				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -1520,7 +1520,7 @@ var PLAYBACK  = {
 			var x = e.pageX;
 			var y = e.pageY;
 		}
-		return PLAYBACK.xy2degree( x, y, V[ el ].cx, V[ el ].cy )
+		return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear.elapsed();
@@ -1531,12 +1531,7 @@ var PLAYBACK  = {
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( UTIL.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
-			PROGRESS.set();
-			if ( ! V.localhost ) {
-				PROGRESS.animate();
-			} else {
-				$TIME_ARC.css( 'transition-duration', '0s' );
-			}
+			 PROGRESS.set( S.elapsed );
 		} else { // elapsed only
 			if ( ! D.radioelapsed ) {
 				$( '#pl-list li.active .elapsed' ).html( V.blinkdot );
@@ -1567,7 +1562,7 @@ var PLAYBACK  = {
 		
 		LOCAL();
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
-		VOLUME.setValue();
+		VOLUME.setAll();
 		PLAYBACK.button.options();
 		clearInterval( V.interval.blinkdot );
 		$( '#qr' ).remove();
@@ -1611,7 +1606,7 @@ var PLAYBACK  = {
 		if ( S.state === 'pause' ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			PROGRESS.set();
+			PROGRESS.set( S.elapsed );
 		} else { //play
 			PLAYBACK.elapsed();
 		}
@@ -1768,20 +1763,6 @@ var PLAYBACK  = {
 				$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
 			}, 300 );
 		}, 300 );
-	}
-	, xyCenter  : el => {
-		var [ y, x ] = Object.values( $( '#'+ el ).offset() );
-		return { cx: x + 115, cy: y + 115 }
-	}
-	, xy2degree : ( x, y, cx, cy ) => {
-		var rad = Math.atan2( y - cy, x - cx );
-		var deg = Math.round( rad * 180 / Math.PI );
-		if ( deg < 0 ) deg += 360;
-		return deg
-	}
-	, xWidth    : el => {
-		var $el = $( '#'+ el );
-		return { x: $el.offset().left, w: $el.width() }
 	}
 }
 var PLAYLIST  = {
@@ -2233,52 +2214,24 @@ var PLAYLIST  = {
 	}
 }
 var PROGRESS  = {
-	  animate : () => { // knob + bar
-		if ( ! D.time && ! D.cover ) return
-		
-		$( '#time path, #time-bar' ).css( 'transition-duration', S.Time - S.elapsed +'s' ); // ms - from current to full
-		PROGRESS.arc( 1 );                                                                  // full circle
-		$( '#time-bar' ).css( 'width', '100%' );
-	}
-	, arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
+	  arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
 	, bar     : e => {
-		var pageX      = e.pageX || e.changedTouches[ 0 ].pageX;
-		var posX       = pageX - V.time.x;
-		posX           = posX < 0 ? 0 : ( posX > V.time.w ? V.time.w : posX );
-		var pos        = posX / V.time.w;
-		S.elapsed      = Math.round( pos * S.Time );
+		var ratio      = UTIL.xy.ratio( e, 'time' );
+		S.elapsed      = Math.round( ratio * S.Time );
 		var elapsedhms = UTIL.second2HMS( S.elapsed );
 		if ( S.elapsed ) {
 			$( '#progress span' ).html( elapsedhms );
 		} else {
 			$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
 		}
-		$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
+		$( '#time-bar' ).css( 'width', ( ratio * 100 ) +'%' );
 	}
 	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
-	, down    : ( e, type ) => {
-		if ( S.player !== 'mpd' || S.webradio ) return
-		
-		V.time      = PLAYBACK[ type === 'knob' ? 'xyCenter' : 'xWidth' ]( 'time' );
-		V.time.type = type;
-		UTIL.intervalClear.all();
-		DISPLAY.guideHide();
-		if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-		PROGRESS[ type ]( e );
-	}
-	, drag    : e => {
-		if ( ! V.time ) return
-		
-		e.preventDefault(); // prevent scroll
-		V.drag = true;
-		PROGRESS[ V.time.type ]( e );
-	}
 	, knob    : e => {
 		var deg   = PLAYBACK.degree( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
 		S.elapsed = Math.round( S.Time * deg / 360 );
-		PROGRESS.set();
-		if ( S.state === 'play' ) setTimeout( PROGRESS.animate, 0 );
+		PROGRESS.set( S.elapsed );
 		$( '#elapsed, #total' ).removeClass( 'gr' );
 		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
 		$( '#elapsed' ).text( UTIL.second2HMS( S.elapsed ) );
@@ -2289,13 +2242,28 @@ var PROGRESS  = {
 			$( '#title' ).addClass( 'gr' );
 		}
 	}
-	, set     : position => {
-		if ( position !== 0 ) position = S.elapsed;
-		if ( S.state !== 'play' || ! position ) UTIL.intervalClear.elapsed();
-		$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
-		PROGRESS.arc( position / S.Time );
-		var w = position && S.Time ? position / S.Time * 100 : 0;
-		$( '#time-bar' ).css( 'width', w +'%' );
+	, set : elapsed => { // if defined - no animate
+		if ( ! D.time && ! D.cover ) return
+		
+		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear.elapsed();
+		if ( elapsed === undefined ) {
+			var s = S.Time - S.elapsed; // seconds from current to full
+			var l = 1;                  // full circle
+			var w = 100;
+		} else {
+			var s = 0;
+			var l = elapsed / S.Time;
+			var w = l * 100;
+		}
+		if ( V.localhost ) { // no animation - fix high cpu load
+			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
+			PROGRESS.arc( l );
+			$( '#time-bar' ).css( 'width', w +'%' );
+		} else {
+			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
+			$TIME.is( ':visible' ) ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
+		}
+		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
 	}
 }
 var UTIL      = {
@@ -2470,7 +2438,7 @@ var UTIL      = {
 	, intervalClear   : {
 		  all : () => {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
-			PROGRESS.set( S.webradio ? 0 : '' ); // stop progress animation
+			PROGRESS.set( S.elapsed || 0 );
 			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 		}
 		, elapsed : () => {
@@ -2559,71 +2527,77 @@ var UTIL      = {
 		$( '#page-'+ page ).removeClass( 'hide' );
 	}
 	, versionHash     : () => '?v='+ Math.round( Date.now() / 1000 )
+	, xy              : {
+		  degree : ( x, y, cx, cy ) => {
+			var rad = Math.atan2( y - cy, x - cx );
+			var deg = Math.round( rad * 180 / Math.PI );
+			if ( deg < 0 ) deg += 360;
+			return deg
+		}
+		, get    : el => {
+			if ( $( el ).hasClass( 'band' ) ) {
+				var $el = $( '#coverart' );
+				return {
+					  x    : $el.offset().left
+					, w    : $el.width()
+					, type : 'bar'
+				}
+			} else {
+				var id = $( el ).parents( '#time' ).length ? 'time' : 'volume';
+				var [ y, x ] = Object.values( $( '#'+ id ).offset() );
+				return {
+					  cx   : x + 115
+					, cy   : y + 115
+					, type : 'knob'
+				}
+			}
+		}
+		, ratio  : ( e, type ) => {
+			var x     = V[ type ].x;
+			var w     = V[ type ].w;
+			var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
+			var posX  = pageX - x;
+			posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
+			return posX / w
+		}
+	}
 }	
 var VOLUME    = {
 	  ...VOLUME
-	, animate : () => {
-		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
-		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
-		$( '#vol, #vol div' ).css( 'transition-duration', ms +'ms' );
-		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
-		VOLUME.set( deg );
-	}
-	, bar     : {
-		  animate   : ( target, volume ) => {
-			VOLUME.bar.hideClear();
-			$( '.volumeband' ).addClass( 'disabled' );
-			$( '#volume-bar' ).animate(
-				  { width: target +'%' }
-				, {
-					  duration : Math.abs( target - volume ) * 40
-					, easing   : 'linear'
-					, complete : () => {
-						VOLUME.bar.hide();
-						$( '.volumeband' ).removeClass( 'disabled' );
-						VOLUME.setValue();
-					}
-				}
-			);
+	, bar     : e => {
+		if ( e ) {
+			var ratio = UTIL.xy.ratio( e, 'time' );
+			S.volume  = Math.round( ratio * 100 );
+			VOLUME.command();
+			VOLUME.set();
 		}
-		, hide      : nodelay => {
+		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+		$( '#volume-text' )
+			.text( S.volumemute || S.volume )
+			.toggleClass( 'bll', S.volumemute > 0 );
+	}
+	, barHide : {
+		  clear : () => clearTimeout( V.volumebar )
+		, delay : nodelay => {
 			V.volumebar = setTimeout( () => {
 				$( '#info' ).removeClass( 'hide' ); // 320 x 480
 				$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 				$( '.volumeband' ).addClass( 'transparent' );
 			}, nodelay ? 0 : 3000 );
 		}
-		, hideClear : () => clearTimeout( V.volumebar )
-		, set       : e => {
-			var pageX  = e.pageX || e.changedTouches[ 0 ].pageX;
-			V.volume.x = pageX - V.volume.min;
-			S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
-			VOLUME.setValue();
-		}
-		, show      : () => {
-			if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	}
+	, knob    : e => {
+		if ( e ) {
+			var deg     = PLAYBACK.degree( e, 'volume' );
+			if ( deg > 30 && deg < 150 ) return
 			
-			VOLUME.bar.hide();
-			$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-			$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-		}
-	}
-	, drag    : e => {
-		var deg  = PLAYBACK.degree( e, 'volume' );
-		if ( deg > 30 && deg < 150 ) return
-		
-		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
-		S.volume = Math.round( ( deg_vol - 150 ) / 240 * 100 );
-		VOLUME.command();
-		if ( V.drag ) {
-			VOLUME.set( deg );
+			var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
+			S.volume    = Math.round( ( deg_vol - 150 ) / 240 * 100 );
+			VOLUME.command();
+			VOLUME.set();
 		} else {
-			VOLUME.animate();
+			var deg     = 150 + S.volume * 2.4;
 		}
-	}
-	, set     : deg => {
-		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
-			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		var mute = S.volumemute !== 0;
 		$( '#volume-level' )
 			.text( S.volume )
@@ -2631,38 +2605,32 @@ var VOLUME    = {
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
-	}
-	, setValue : () => {
-		if ( D.volume ) VOLUME.animate();
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
-		$( '#volume-text' )
-			.text( S.volumemute || S.volume )
-			.toggleClass( 'bll', S.volumemute > 0 );
+		$( '#vol div' ).toggleClass( 'bgr60', mute );
+		$( '#volmute' ).toggleClass( 'mute active', mute );
 		if ( $VOLUME.is( ':hidden' ) ) {
 			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
-			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
-		}
-		if ( S.volumemute ) {
-			$( '#vol div' ).addClass( 'bgr60' );
-			$( '#volmute' ).addClass( 'mute active' );
-			if ( $VOLUME.is( ':hidden' ) ) {
-				var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
-				$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-			}
-		} else {
-			$( '#vol div' ).removeClass( 'bgr60' );
-			$( '#volmute' ).removeClass( 'mute active' )
-			$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
+			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', mute );
 		}
 	}
+	, set     : () => {
+		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
+		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+		$( '#vol, #vol div, #volume-bar' ).css( 'transition-duration', ms +'ms' );
+		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
+		if ( $VOLUME.is( ':visible' ) ) {
+			$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
+				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+		} else {
+			$( '#volume-bar' ).css( 'width', S.volume +'%' );
+		}
+	}
+	, setAll  : () => [ 'bar', 'knob', 'set' ].forEach( k => VOLUME[ k ]() )
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 		
 		up ? S.volume++ : S.volume--;
-		VOLUME.command();
-		if ( D.volume ) VOLUME.set( 150 + S.volume * 2.4 );
+		$VOLUME.is( ':visible' ) ? VOLUME.knob() : VOLUME.bar();
 		S.volumemute = 0;
-		VOLUME.setValue();
 	}
 }
 var WEBRADIO  = {

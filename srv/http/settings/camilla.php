@@ -142,7 +142,7 @@ $body     = [
 	<div class="track"></div>
 	<div class="thumb" tabindex="0"></div>
 	<div id="volume-band"></div>
-</div>'.icon(  'plus' ).'<c class="level"></c>'.icon(  'volume' )
+</div>'.icon(  'plus' ).'<c id="volume-level"></c>'.icon(  'volume' )
 	)
 	, htmlSectionStatus(
 		  'state'

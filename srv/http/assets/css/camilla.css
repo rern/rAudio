@@ -130,7 +130,7 @@
 	color: var( --cg60 );
 }
 .db,
-#divvolume .level {
+#volume-level {
 	display: inline-block;
 	width: 45px;
 	min-width: 45px;
