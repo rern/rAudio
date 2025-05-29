@@ -1550,7 +1550,10 @@ var VOLUME    = {
 		if ( S.volume === vol_prev ) return
 		
 		V.local      = true;
-		if ( V.drag || V.press ) type = 'dragpress';
+		if ( V.drag || V.press ) {
+			type = 'dragpress';
+			VOLUME.push();
+		}
 		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	}
 	, push    : () => {
