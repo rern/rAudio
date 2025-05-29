@@ -355,6 +355,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 	e.preventDefault();
 	V.drag = true;
 	V.volume ? VOLUME[ V.volume.type ]( e ) : PROGRESS[ V.time.type ]( e );
+	if ( V.volume.type === 'bar' ) VOLUME.barHide.clear();
 } ).on( 'touchend mouseup', function( e ) {
 	delete V.drag;
 	if ( V.time ) {
@@ -365,10 +366,10 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 				$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 				$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-				VOLUME.barHide.delay();
 			} else {
 				VOLUME.bar( e );
 			}
+			VOLUME.barHide.delay();
 		} else {
 			VOLUME.knob( e );
 		}

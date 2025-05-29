@@ -2578,7 +2578,12 @@ var VOLUME    = {
 			.toggleClass( 'bll', S.volumemute > 0 );
 	}
 	, barHide : {
-		  clear : () => clearTimeout( V.volumebar )
+		  clear : () => {
+			if ( ! V.volumebar ) return
+			
+			clearTimeout( V.volumebar );
+			delete V.volumebar;
+		}
 		, delay : ms => {
 			V.volumebar = setTimeout( () => {
 				$( '#info' ).removeClass( 'hide' ); // 320 x 480
@@ -2614,8 +2619,12 @@ var VOLUME    = {
 		}
 	}
 	, set     : () => {
-		var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
-		var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+		if ( V.drag ) {
+			var ms = 0;
+		} else {
+			var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
+			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+		}
 		$( '#vol, #vol div, #volume-bar' ).css( 'transition-duration', ms +'ms' );
 		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		if ( $VOLUME.is( ':visible' ) ) {
