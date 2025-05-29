@@ -329,7 +329,9 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, ok      : () => BASH( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );
-// drag/click >>-------------------------------------------------------------
+$( '#elapsed' ).on( 'click', function() {
+	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
+} );
 $( '#time svg, #time-band:not( .hide )' ).on( 'touchstart mousedown', function( e ) {
 	if ( S.player !== 'mpd' || S.webradio ) return
 	
@@ -345,7 +347,7 @@ $( '#vol, #volume-band:not( .hide )' ).on( 'touchstart mousedown', function( e )
 $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag outside
 	if ( ! V.volume && ! V.time ) return
 	
-	if ( 'volume' in V && ! V.volume.drag ) {
+	if ( V.volume && ! V.volume.drag ) {
 		delete V.volume;
 		return
 	}
@@ -373,11 +375,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		delete V.volume;
 	}
 } );
-// drag/click <<-------------------------------------------------------------
-$( '#elapsed' ).on( 'click', function() {
-	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
-} );
-$( '#volmute, #volM' ).on( 'click', function() {
+$( '#volmute, #volM, #volume-text' ).on( 'click', function() {
 	VOLUME.toggle();
 	VOLUME.set();
 } );
@@ -398,11 +396,6 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		clearInterval( V.interval.volume );
 		VOLUME.barHide.delay();
 	}
-} );
-$( '#volume-text' ).on( 'click', function() { // mute / unmute
-	VOLUME.barHide.clear();
-	VOLUME.toggle();
-	VOLUME.set();
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
 	COVERART.save();
@@ -441,7 +434,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
 		VOLUME.barHide.clear();
-		VOLUME.barHide.delay( 'nodelay' );
+		VOLUME.barHide.delay( 0 );
 		return
 		
 	} else if ( 'screenoff' in V ) {

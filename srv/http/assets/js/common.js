@@ -1549,7 +1549,6 @@ var VOLUME    = {
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 		
-		V.local      = true;
 		if ( V.drag || V.press ) {
 			type = 'dragpress';
 			VOLUME.push();

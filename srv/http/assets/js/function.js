@@ -2567,7 +2567,7 @@ var VOLUME    = {
 	  ...VOLUME
 	, bar     : e => {
 		if ( e ) {
-			var ratio = UTIL.xy.ratio( e, 'time' );
+			var ratio = UTIL.xy.ratio( e, 'volume' );
 			S.volume  = Math.round( ratio * 100 );
 			VOLUME.command();
 			VOLUME.set();
@@ -2579,12 +2579,12 @@ var VOLUME    = {
 	}
 	, barHide : {
 		  clear : () => clearTimeout( V.volumebar )
-		, delay : nodelay => {
+		, delay : ms => {
 			V.volumebar = setTimeout( () => {
 				$( '#info' ).removeClass( 'hide' ); // 320 x 480
 				$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 				$( '.volumeband' ).addClass( 'transparent' );
-			}, nodelay ? 0 : 3000 );
+			}, ms !== undefined ? ms : 3000 );
 		}
 	}
 	, knob    : e => {
@@ -2623,6 +2623,11 @@ var VOLUME    = {
 				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		} else {
 			$( '#volume-bar' ).css( 'width', S.volume +'%' );
+			if ( V.local ) return // suppress on push received
+			
+			LOCAL();
+			VOLUME.barHide.clear();
+			VOLUME.barHide.delay( ms + 3000 );
 		}
 	}
 	, setAll  : () => [ 'bar', 'knob', 'set' ].forEach( k => VOLUME[ k ]() )
