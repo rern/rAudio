@@ -2544,7 +2544,7 @@ var UTIL      = {
 					, type : 'bar'
 				}
 			} else {
-				var id = $( el ).parents( '#time' ).length ? 'time' : 'volume';
+				var id = $( el ).parents( '.round' ).prop( 'id' );
 				var [ y, x ] = Object.values( $( '#'+ id ).offset() );
 				return {
 					  cx   : x + 115
