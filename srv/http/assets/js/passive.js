@@ -255,7 +255,7 @@ W = {
 			S.volume     = data.val;
 			S.volumemute = 0;
 		}
-		VOLUME.setAll();
+		VOLUME.set();
 	}
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

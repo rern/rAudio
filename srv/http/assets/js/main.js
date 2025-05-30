@@ -374,12 +374,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		if ( V.volume.type === 'knob' ) {
 			VOLUME.knob( e );
 		} else {
-			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-				$( '#volume-bar, #volume-band-point, #volume-band-level' ).removeClass( 'hide' );
-				$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
-			} else {
-				VOLUME.bar( e );
-			}
+			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow() : VOLUME.bar( e );
 			VOLUME.barHide();
 		}
 		delete V.volume;
