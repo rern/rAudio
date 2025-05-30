@@ -228,7 +228,7 @@ $htmlsearch   = '
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
-			<div id="time" class="round">
+			<div id="time" class="knob">
 				<svg>               <!-- x   y              x   y               x   y -->
 					<path id="arc" d="M 115 11 A 1 1 0 0 1 115 219 A 1 1 0 0 1 115 11"></path>
 				</svg>              <!-- top    arc         bottom  src         top   -->
@@ -284,7 +284,7 @@ $htmlsearch   = '
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
-			<div id="volume" class="round">
+			<div id="volume" class="knob">
 				<div class="container">
 					<div id="vol"><div></div></div>
 				</div>

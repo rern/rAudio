@@ -2577,20 +2577,12 @@ var VOLUME    = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 	}
-	, barHide : {
-		  clear : () => {
-			if ( ! V.volumebar ) return
-			
-			clearTimeout( V.volumebar );
-			delete V.volumebar;
-		}
-		, delay : ms => {
-			V.volumebar = setTimeout( () => {
-				$( '#info' ).removeClass( 'hide' ); // 320 x 480
-				$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-				$( '.volumeband' ).addClass( 'transparent' );
-			}, ms !== undefined ? ms : 3000 );
-		}
+	, barHide : ms => {
+		V.volumebar = setTimeout( () => {
+			$( '#info' ).removeClass( 'hide' ); // 320 x 480
+			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+			$( '.volumeband' ).addClass( 'transparent' );
+		}, ms !== undefined ? ms : 3000 );
 	}
 	, knob    : e => {
 		if ( e ) {
@@ -2635,8 +2627,8 @@ var VOLUME    = {
 			if ( V.local ) return // suppress on push received
 			
 			LOCAL();
-			VOLUME.barHide.clear();
-			VOLUME.barHide.delay( ms + 3000 );
+			clearTimeout( V.volumebar );
+			VOLUME.barHide( ms + 3000 );
 		}
 	}
 	, setAll  : () => [ 'bar', 'knob', 'set' ].forEach( k => VOLUME[ k ]() )

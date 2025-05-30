@@ -510,8 +510,8 @@ div.pagerefresh {
 }
 #time-bar,
 #volume-bar {
-	width: 0;
-	height: 2px;
+	height: 3px;
+	margin: 0 1px;
 	background: var( --cm );
 	transition: all 0s linear;
 }
@@ -861,7 +861,7 @@ div.pagerefresh {
 	border-radius: 50%;
 	background: var( --cg );
 }
-.round .container {
+.knob .container {
 	position: relative;
 	height: 100%;
 	width: 100%;
@@ -869,20 +869,20 @@ div.pagerefresh {
 	background: linear-gradient( var( --cgl ), #000 );
 	box-shadow: 0 0 8px 2px #555;
 }
-.round .container::before,
-.round .container::after {
+.knob .container::before,
+.knob .container::after {
 	content: '';
 	position: absolute;
 	border-radius: 50%;
 }
-.round .container::before {
+.knob .container::before {
 	top: 5px;
 	left: 5px;
 	width: calc( 100% - 10px );
 	height: calc( 100% - 10px );
 	background-color: #000;
 }
-.round .container::after { /* glossy overlay */
+.knob .container::after { /* glossy overlay */
 	left: 0;
 	width: 100%;
 	height: 100%;

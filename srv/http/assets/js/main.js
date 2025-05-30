@@ -343,6 +343,7 @@ $( '#time svg, #time-band:not( .hide )' ).on( 'touchstart mousedown', function( 
 $( '#vol, #volume-band:not( .hide )' ).on( 'touchstart mousedown', function( e ) {
 	V.volume      = UTIL.xy.get( this );
 	V.volume.drag = e.target.id !== 'vol';
+	clearTimeout( V.volumebar );
 } );
 $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag outside
 	if ( ! V.volume && ! V.time ) return
@@ -355,7 +356,6 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 	e.preventDefault();
 	V.drag = true;
 	V.volume ? VOLUME[ V.volume.type ]( e ) : PROGRESS[ V.time.type ]( e );
-	if ( V.volume.type === 'bar' ) VOLUME.barHide.clear();
 } ).on( 'touchend mouseup', function( e ) {
 	delete V.drag;
 	if ( V.time ) {
@@ -369,7 +369,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 			} else {
 				VOLUME.bar( e );
 			}
-			VOLUME.barHide.delay();
+			VOLUME.barHide();
 		} else {
 			VOLUME.knob( e );
 		}
@@ -388,14 +388,14 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).press( {
 	  action : e => { 
-		VOLUME.barHide.clear();
+		clearTimeout( V.volumebar );
 		if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
 		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
 	}
 	, end    : () => { // on end
 		clearInterval( V.interval.volume );
-		VOLUME.barHide.delay();
+		VOLUME.barHide();
 	}
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
@@ -434,8 +434,8 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
-		VOLUME.barHide.clear();
-		VOLUME.barHide.delay( 0 );
+		clearTimeout( V.volumebar );
+		VOLUME.barHide( 0 );
 		return
 		
 	} else if ( 'screenoff' in V ) {
@@ -445,7 +445,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	
 	var cmd = btnctrl[ this.id.replace( /[a-z]/g, '' ) ];
 	if ( cmd === 'guide' ) {
-		VOLUME.barHide.clear();
+		clearTimeout( V.volumebar );
 		if ( V.guide ) {
 			DISPLAY.guideHide();
 			return
