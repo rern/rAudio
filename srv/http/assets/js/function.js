@@ -2602,10 +2602,6 @@ var VOLUME    = {
 			var deg     = 150 + S.volume * 2.4;
 		}
 		var mute     = S.volumemute !== 0;
-		$( '#volume-level' ).toggleClass( 'hide', mute );
-		$( '#volume-mute' )
-			.text( S.volumemute )
-			.toggleClass( 'hide', ! mute );
 		$( '#vol div' ).toggleClass( 'bgr60', mute );
 		$( '#volmute' ).toggleClass( 'mute active', mute );
 		$( '#ti-mute, #mi-mute' ).addClass( 'hide' );
@@ -2616,7 +2612,13 @@ var VOLUME    = {
 	}
 	, set     : () => {
 		var vol_prev = $( '#volume-level' ).text();
-		$( '#volume-level, #volume-band-level' ).text( S.volume );
+		var mute     = S.volumemute !== 0;
+		$( '#volume-level' )
+			.text( S.volume )
+			.toggleClass( 'hide', mute );
+		$( '#volume-mute' )
+			.text( S.volumemute )
+			.toggleClass( 'hide', ! mute );
 		if ( V.drag || vol_prev === '' ) { // onload - empty
 			var ms  = 0;
 		} else {
