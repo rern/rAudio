@@ -522,7 +522,7 @@ var DISPLAY   = {
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 			$( '.band, #volbar' ).addClass( 'transparent' );
-			$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
+			$( '.guide, #volume-bar, #volume-band-text' ).addClass( 'hide' );
 		}
 	}
 	, keyValue   : type => {
@@ -2536,7 +2536,7 @@ var UTIL      = {
 		}
 		, get    : el => {
 			DISPLAY.guideHide();
-			if ( $( el ).hasClass( 'band' ) ) {
+			if ( $( el ).parents( '#divcover' ).length ) {
 				var $el = $( '#coverart' );
 				return {
 					  x    : $el.offset().left
@@ -2544,7 +2544,7 @@ var UTIL      = {
 					, type : 'bar'
 				}
 			} else {
-				var id = $( el ).parents( '.round' ).prop( 'id' );
+				var id = $( el ).parents( '.knob' ).prop( 'id' );
 				var [ y, x ] = Object.values( $( '#'+ id ).offset() );
 				return {
 					  cx   : x + 115
@@ -2572,17 +2572,19 @@ var VOLUME    = {
 			VOLUME.command();
 			VOLUME.set();
 		}
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
-		$( '#volume-text' )
+		$( '#volume-band-text' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 	}
 	, barHide : ms => {
+		if ( V.animate ) return
+		
 		V.volumebar = setTimeout( () => {
 			$( '#info' ).removeClass( 'hide' ); // 320 x 480
-			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+			$( '#volume-bar, #volume-band-point, #volume-band-text' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
-		}, ms !== undefined ? ms : 3000 );
+			delete V.animate;
+		}, ms !== undefined ? ms : 5000 );
 	}
 	, knob    : e => {
 		if ( e ) {
@@ -2617,18 +2619,18 @@ var VOLUME    = {
 			var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
 			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 		}
-		$( '#vol, #vol div, #volume-bar' ).css( 'transition-duration', ms +'ms' );
-		var deg      = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
-		if ( $VOLUME.is( ':visible' ) ) {
-			$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
-				.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-		} else {
-			$( '#volume-bar' ).css( 'width', S.volume +'%' );
-			if ( V.local ) return // suppress on push received
-			
-			LOCAL();
+		$( '#vol, #vol div, #volume-bar, #volume-band-point' ).css( 'transition-duration', ms +'ms' );
+		var deg = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
+		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
+			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
+		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
+		if ( ms === 0 || ! V.volume ) return
+		
+		if ( ! V.animate && V.volume.type === 'bar' ) { // suppress on push received
 			clearTimeout( V.volumebar );
-			VOLUME.barHide( ms + 3000 );
+			VOLUME.barHide( ms + 5000 );
+			V.animate = true;
 		}
 	}
 	, setAll  : () => [ 'bar', 'knob', 'set' ].forEach( k => VOLUME[ k ]() )

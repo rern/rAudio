@@ -8,10 +8,11 @@
 #bar-top,
 #bar-bottom { z-index: 106 }
 #settings { z-index: 105 }
-.content-top { z-index: 104 }
+.content-top,
+#volume-band-point { z-index: 104 }
 .band,
 .emptyadd,
-#volume-text { z-index: 102 }
+#volume-band-text { z-index: 102 }
 div.pagerefresh { z-index: 100 }
 #lib-search,
 #pl-search { z-index: 96 }
@@ -501,8 +502,13 @@ div.pagerefresh {
 .band,
 #time-bar,
 #volume-bar,
-#volume-text {
+#volume-band-point,
+#volume-band-text {
 	position: absolute;
+}
+#volume-bar,
+#volume-band-point {
+	transition: all 0s linear;
 }
 .band {
 	background: var( --cg );
@@ -513,13 +519,20 @@ div.pagerefresh {
 	height: 3px;
 	margin: 0 1px;
 	background: var( --cm );
-	transition: all 0s linear;
 }
 #time-bar {
 	top: -4px;
 }
 #volume-bar {
 	bottom: -4px;
+}
+#volume-band-point {
+	margin-left: -13px;
+	margin-top: -11px;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: var( --cm );
 }
 #volume-band-dn,
 #volume-band-up {
@@ -537,7 +550,7 @@ div.pagerefresh {
 #volume-band-up {
 	right: -40px
 }
-#volume-text {
+#volume-band-text {
 	bottom: 10px;
 	left: 0;
 	right: 0;

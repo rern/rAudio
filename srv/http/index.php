@@ -280,13 +280,14 @@ $htmlsearch   = '
 					, [ 'minus dn', '-dn' ]
 					, [ 'plus up',  '-up' ]
 				], 'transparent volumeband band', 'volume-band' )?>
-				<div id="volume-text" class="hide"></div>
+				<div id="volume-band-point" class="point hide"></div>
+				<div id="volume-band-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume" class="knob">
 				<div class="container">
-					<div id="vol"><div></div></div>
+					<div id="vol"><div class="point"></div></div>
 				</div>
 				<span id="volume-mute" class="hide">0</span>
 				<span id="volume-level"></span>

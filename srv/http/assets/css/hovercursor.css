@@ -98,6 +98,7 @@ li:not( .licover ),
 .map,
 .menu a,
 .mode:not( .nodata ),
+.point,
 .savedlist,
 .submenu:not( .disabled ),
 #album:not( .albumgray ),
@@ -131,11 +132,10 @@ li:not( .licover ),
 #time-band,
 #time svg,
 #title,
-#vol div,
 #volume-band,
 #volume-bar-dn,
 #volume-bar-up,
-#volume-text {
+#volume-band-text {
 	cursor: pointer;
 }
 .disabled,
