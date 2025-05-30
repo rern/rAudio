@@ -359,7 +359,12 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 	
 	e.preventDefault();
 	V.drag = true;
-	V.volume ? VOLUME[ V.volume.type ]( e ) : PROGRESS[ V.time.type ]( e );
+	if ( V.volume ) {
+		S.volumemute = 0;
+		VOLUME[ V.volume.type ]( e );
+	} else {
+		PROGRESS[ V.time.type ]( e );
+	}
 } ).on( 'touchend mouseup', function( e ) {
 	delete V.drag;
 	if ( V.time ) {
@@ -390,7 +395,6 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	if ( V.animate ) return
 	
 	var $this = $( this );
-	LOCAL();
 	DISPLAY.guideHide();
 	VOLUME.upDown( $this.hasClass( 'up' ) );
 	if ( $this.hasClass( 'band' ) ) $( '#volume-band-text, #volume-bar' ).removeClass( 'hide' );

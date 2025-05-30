@@ -2639,8 +2639,9 @@ var VOLUME    = {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 		
 		up ? S.volume++ : S.volume--;
-		$VOLUME.is( ':visible' ) ? VOLUME.knob() : VOLUME.bar();
 		S.volumemute = 0;
+		VOLUME.command();
+		$VOLUME.is( ':visible' ) ? VOLUME.knob() : VOLUME.bar();
 	}
 }
 var WEBRADIO  = {
