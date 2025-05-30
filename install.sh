@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250523
+# 20250530
 file=/etc/pacman.conf
 grep -q mpd $file && sed -i 's/ mpd//' $file
 

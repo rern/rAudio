@@ -2535,6 +2535,8 @@ var UTIL      = {
 			return deg
 		}
 		, get    : el => {
+			if ( V.animate ) return
+			
 			DISPLAY.guideHide();
 			if ( $( el ).parents( '#divcover' ).length ) {
 				var $el = $( '#coverart' );
@@ -2577,13 +2579,10 @@ var VOLUME    = {
 			.toggleClass( 'bll', S.volumemute > 0 );
 	}
 	, barHide : ms => {
-		if ( V.animate ) return
-		
 		V.volumebar = setTimeout( () => {
 			$( '#info' ).removeClass( 'hide' ); // 320 x 480
 			$( '#volume-bar, #volume-band-point, #volume-band-text' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
-			delete V.animate;
 		}, ms !== undefined ? ms : 5000 );
 	}
 	, knob    : e => {
@@ -2625,13 +2624,15 @@ var VOLUME    = {
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
-		if ( ms === 0 || ! V.volume ) return
+		if ( ms === 0 ) return
 		
-		if ( ! V.animate && V.volume.type === 'bar' ) { // suppress on push received
+		V.animate = true;
+		setTimeout( () => delete V.animate, ms );
+		if ( V.volume && V.volume.type === 'bar' ) { // suppress on push received
 			clearTimeout( V.volumebar );
 			VOLUME.barHide( ms + 5000 );
-			V.animate = true;
 		}
+
 	}
 	, setAll  : () => [ 'bar', 'knob', 'set' ].forEach( k => VOLUME[ k ]() )
 	, upDown  : up => {

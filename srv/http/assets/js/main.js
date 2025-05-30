@@ -381,10 +381,14 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 	}
 } );
 $( '#volmute, #volM, #volume-band-text' ).on( 'click', function() {
+	if ( V.animate ) return
+	
 	VOLUME.toggle();
 	VOLUME.set();
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
+	if ( V.animate ) return
+	
 	var $this = $( this );
 	LOCAL();
 	DISPLAY.guideHide();
