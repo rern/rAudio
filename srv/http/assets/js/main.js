@@ -635,14 +635,14 @@ $( '.btn-cmd' ).on( 'click', function() {
 		}
 	}
 } );
-$( '#previous, #next, #coverR, #coverL' ).press( e => {
+/*$( '#previous, #next, #coverR, #coverL' ).press( e => {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );
 	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
 	
 	BANNER( 'playlist', 'Playlist', 'Skip to '+ ( next ? 'last ...' : 'first ...' ) );
 	S.song   = next ? S.pllength - 1 : 0;
 	PLAYLIST.skip();
-} );
+} );*/
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	BIO.get( $( this ).text(), 'getsimilar' );
 } ).on( 'click', '.bioback', function() {
@@ -1478,7 +1478,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		UTIL.intervalClear.all();
 		$( '.elapsed' ).empty();
-		BASH( [ 'mpcskippl', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}

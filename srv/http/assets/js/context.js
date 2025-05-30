@@ -73,7 +73,7 @@ var CONTEXT  = {
 		S.song = V.list.index;
 		PLAYLIST.render.scroll();
 		LOCAL();
-		BASH( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 	}
 	, directory     : () => {
 		var path      = V.list.path;

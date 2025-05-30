@@ -2210,7 +2210,7 @@ var PLAYLIST  = {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
-		BASH( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', S.song + 1, S.state, 'CMD POS ACTION' ] );
 	}
 }
 var PROGRESS  = {

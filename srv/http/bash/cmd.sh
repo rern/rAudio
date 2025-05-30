@@ -610,27 +610,18 @@ mpcsimilar )
 mpcskip )
 	radioStop
 	touch $dirshm/skip
-	if [[ $( mpcState ) == play ]]; then
+	state=$( mpcState )
+	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-		rm -f $dirshm/skip
-		mpc -q play $POS
-		. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-		[[ $consume == on ]] && mpc -q del $songpos
-	else
-		mpc -q play $POS
-		rm -f $dirshm/skip
-		mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
-	;;
-mpcskippl )
-	radioStop
 	mpc -q play $POS
-	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
-	[[ $Time == 0 ]] && Time=false
-	[[ $ACTION != play ]] && mpc -q stop
-	pushPlaylist
+	[[ ! $ACTION ]] && ACTION=$state
+	[[ $ACTION != play ]] && mpc -q $ACTION
+	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
+	[[ $consume == on ]] && mpc -q del $songpos
+	rm -f $dirshm/skip
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
