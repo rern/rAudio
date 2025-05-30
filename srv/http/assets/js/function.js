@@ -2601,7 +2601,8 @@ var VOLUME    = {
 		} else {
 			var deg     = 150 + S.volume * 2.4;
 		}
-		var mute = S.volumemute !== 0;
+		var mute     = S.volumemute !== 0;
+		V.volumeprev = $( '#volume-level' ).text();
 		$( '#volume-level' )
 			.text( S.volume )
 			.toggleClass( 'hide', mute );
@@ -2617,11 +2618,10 @@ var VOLUME    = {
 		}
 	}
 	, set     : () => {
-		if ( V.drag ) {
+		if ( V.drag || V.volumeprev === '' ) { // onload - empty
 			var ms = 0;
 		} else {
-			var vol_prev = $( '#volume-level' ).text(); // empty: onload - no animate
-			var ms       = vol_prev === '' ? 0 : Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			var ms = Math.abs( S.volume - V.volumeprev ) * 40; // 1%:40ms
 		}
 		$( '#vol, #vol div, #volume-bar, #volume-band-point' ).css( 'transition-duration', ms +'ms' );
 		var deg = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
