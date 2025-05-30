@@ -385,6 +385,9 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		delete V.volume;
 	}
 } );
+$( '#volume, #map-volume' ).on( 'wheel', e => {
+	$( e.originalEvent.deltaY > 0 ? '#volup' : '#voldn' ).trigger( 'click' );
+} );
 $( '#volmute, #volM, #volume-band-text' ).on( 'click', function() {
 	if ( V.animate ) return
 	
