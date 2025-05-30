@@ -397,10 +397,7 @@ $( '#volmute, #volM, #volume-band-text' ).on( 'click', function() {
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
 	if ( V.animate ) return
 	
-	var $this = $( this );
-	DISPLAY.guideHide();
-	VOLUME.upDown( $this.hasClass( 'up' ) );
-	if ( $this.hasClass( 'band' ) ) $( '#volume-band-text, #volume-bar' ).removeClass( 'hide' );
+	VOLUME.upDown( $( this ).hasClass( 'up' ) );
 } ).press( {
 	  action : e => { 
 		clearTimeout( V.volumebar );

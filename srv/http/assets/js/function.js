@@ -2610,9 +2610,10 @@ var VOLUME    = {
 			.toggleClass( 'hide', ! mute );
 		$( '#vol div' ).toggleClass( 'bgr60', mute );
 		$( '#volmute' ).toggleClass( 'mute active', mute );
-		if ( $VOLUME.is( ':hidden' ) ) {
+		$( '#ti-mute, #mi-mute' ).addClass( 'hide' );
+		if ( mute && $VOLUME.is( ':hidden' ) ) {
 			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
-			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', mute );
+			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
 	}
 	, set     : () => {
@@ -2632,7 +2633,7 @@ var VOLUME    = {
 		
 		V.animate = true;
 		setTimeout( () => delete V.animate, ms );
-		if ( V.volume && V.volume.type === 'bar' ) { // suppress on push received
+		if ( $VOLUME.is( ':hidden' ) ) { // suppress on push received
 			clearTimeout( V.volumebar );
 			VOLUME.barHide( ms + 5000 );
 		}
@@ -2642,6 +2643,8 @@ var VOLUME    = {
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 		
+		clearTimeout( V.volumebar );
+		DISPLAY.guideHide();
 		up ? S.volume++ : S.volume--;
 		S.volumemute = 0;
 		VOLUME.command();
