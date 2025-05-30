@@ -2602,10 +2602,7 @@ var VOLUME    = {
 			var deg     = 150 + S.volume * 2.4;
 		}
 		var mute     = S.volumemute !== 0;
-		V.volumeprev = $( '#volume-level' ).text();
-		$( '#volume-level' )
-			.text( S.volume )
-			.toggleClass( 'hide', mute );
+		$( '#volume-level' ).toggleClass( 'hide', mute );
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
@@ -2618,13 +2615,18 @@ var VOLUME    = {
 		}
 	}
 	, set     : () => {
-		if ( V.drag || V.volumeprev === '' ) { // onload - empty
-			var ms = 0;
+		var vol_prev = $( '#volume-level' ).text();
+		$( '#volume-level' ).text( S.volume );
+		if ( V.drag || vol_prev === '' ) { // onload - empty
+			var ms  = 0;
 		} else {
-			var ms = Math.abs( S.volume - V.volumeprev ) * 40; // 1%:40ms
+			var ms  = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 		}
-		$( '#vol, #vol div, #volume-bar, #volume-band-point' ).css( 'transition-duration', ms +'ms' );
-		var deg = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
+		var ms_knob = $VOLUME.is( ':visible' ) ? ms : 0;
+		var ms_bar  = $( '#volume-bar' ).is( ':visible' ) ? ms : 0;
+		$( '#vol, #vol div' ).css( 'transition-duration', ms_knob +'ms' );
+		$( '#volume-bar, #volume-band-point' ).css( 'transition-duration', ms_bar +'ms' );
+		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
