@@ -2252,8 +2252,12 @@ var PROGRESS  = {
 			var w = 100;
 		} else {
 			var s = 0;
-			var l = elapsed / S.Time;
-			var w = l * 100;
+			var l = 0;
+			var w = 0;
+			if ( elapsed ) {
+				l = S.Time ? elapsed / S.Time : 0;
+				w = l * 100;
+			}
 		}
 		if ( V.localhost ) { // no animation - fix high cpu load
 			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
