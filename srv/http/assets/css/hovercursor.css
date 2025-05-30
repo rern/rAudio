@@ -135,7 +135,7 @@ li:not( .licover ),
 #volume-band,
 #volume-bar-dn,
 #volume-bar-up,
-#volume-band-text {
+#volume-band-level {
 	cursor: pointer;
 }
 .disabled,

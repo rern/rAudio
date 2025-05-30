@@ -522,7 +522,7 @@ var DISPLAY   = {
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 			$( '.band, #volbar' ).addClass( 'transparent' );
-			$( '.guide, #volume-bar, #volume-band-text' ).addClass( 'hide' );
+			$( '.guide, #volume-bar, #volume-band-level' ).addClass( 'hide' );
 		}
 	}
 	, keyValue   : type => {
@@ -2578,14 +2578,14 @@ var VOLUME    = {
 			VOLUME.command();
 			VOLUME.set();
 		}
-		$( '#volume-band-text' )
+		$( '#volume-band-level' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 	}
 	, barHide : ms => {
 		V.volumebar = setTimeout( () => {
 			$( '#info' ).removeClass( 'hide' ); // 320 x 480
-			$( '#volume-bar, #volume-band-point, #volume-band-text' ).addClass( 'hide' );
+			$( '#volume-bar, #volume-band-point, #volume-band-level' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
 		}, ms !== undefined ? ms : 5000 );
 	}
@@ -2616,7 +2616,7 @@ var VOLUME    = {
 	}
 	, set     : () => {
 		var vol_prev = $( '#volume-level' ).text();
-		$( '#volume-level' ).text( S.volume );
+		$( '#volume-level, #volume-band-level' ).text( S.volume );
 		if ( V.drag || vol_prev === '' ) { // onload - empty
 			var ms  = 0;
 		} else {

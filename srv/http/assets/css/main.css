@@ -12,7 +12,7 @@
 #volume-band-point { z-index: 104 }
 .band,
 .emptyadd,
-#volume-band-text { z-index: 102 }
+#volume-band-level { z-index: 102 }
 div.pagerefresh { z-index: 100 }
 #lib-search,
 #pl-search { z-index: 96 }
@@ -503,7 +503,7 @@ div.pagerefresh {
 #time-bar,
 #volume-bar,
 #volume-band-point,
-#volume-band-text {
+#volume-band-level {
 	position: absolute;
 }
 #volume-bar,
@@ -550,7 +550,7 @@ div.pagerefresh {
 #volume-band-up {
 	right: -40px
 }
-#volume-band-text {
+#volume-band-level {
 	bottom: 10px;
 	left: 0;
 	right: 0;

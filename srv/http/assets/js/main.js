@@ -375,7 +375,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 			VOLUME.knob( e );
 		} else {
 			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-				$( '#volume-bar, #volume-band-point, #volume-band-text' ).removeClass( 'hide' );
+				$( '#volume-bar, #volume-band-point, #volume-band-level' ).removeClass( 'hide' );
 				$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
 			} else {
 				VOLUME.bar( e );
@@ -388,7 +388,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 $( '#volume, #map-volume' ).on( 'wheel', e => {
 	$( e.originalEvent.deltaY > 0 ? '#volup' : '#voldn' ).trigger( 'click' );
 } );
-$( '#volmute, #volM, #volume-band-text' ).on( 'click', function() {
+$( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 	if ( V.animate ) return
 	
 	VOLUME.toggle();
@@ -401,7 +401,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } ).press( {
 	  action : e => { 
 		clearTimeout( V.volumebar );
-		if ( ! D.volume ) $( '#volume-bar, #volume-band-text' ).removeClass( 'hide' );
+		if ( ! D.volume ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
 		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
 	}
@@ -491,7 +491,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 			}
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
-		$( '#volume-band-text, #settings' ).addClass( 'hide' );
+		$( '#volume-band-level, #settings' ).addClass( 'hide' );
 		return
 	}
 	
@@ -531,7 +531,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 				}
 			}
 			$( '.band' ).addClass( 'transparent' );
-			$( '#volume-bar, #volume-band-text' ).addClass( 'hide' );
+			$( '#volume-bar, #volume-band-level' ).addClass( 'hide' );
 			DISPLAY.bars();
 			DISPLAY.playback();
 			PLAYBACK.button.options();
