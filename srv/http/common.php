@@ -1,3 +1,6 @@
+<?php
+$hash      = '?v=1748685014';
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,15 +13,14 @@
 	<meta name="application-name" content="rAudio">
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png?v=1748155501">
-	<link rel="icon" href="/assets/img/icon.png?v=1748155501">
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png<?=$hash?>">
+	<link rel="icon" href="/assets/img/icon.png<?=$hash?>">
 
 <?php
 $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$hash      = '?v='.time();
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';

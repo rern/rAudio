@@ -4,6 +4,20 @@
 
 args2var "$1" # $2 $3 ... if any, still valid
 
+cacheBust() {
+	if [[ $TYPE ]]; then
+		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
+		return
+# --------------------------------------------------------------------
+	fi
+	hash="?v=$( date +%s )'"
+	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
+	if [[ $TIME ]]; then
+		hashtime="?v='.time()"
+		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
+	fi
+	sed -i "/^\$hash/ s/?v=.*/$hash;/" /srv/http/common.php
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
@@ -235,16 +249,7 @@ bookmarkrename )
 	pushBookmark
 	;;
 cachebust )
-	hash="?v=$( date +%s )'"
-	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
-	if [[ $TIME ]]; then
-		hashtime="?v='.time()"
-		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
-	fi
-	sed -i "1,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
-	;;
-cachetype )
-	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
+	cacheBust
 	;;
 color )
 	filecss=/srv/http/assets/css/colors.css
@@ -287,7 +292,6 @@ s/(--ml$m *: ).*/\1$L%;/"
 	cm="($h,$s%,$l%)"
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
-	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
 	[[ ! $color ]] && color=true
 	color='{
   "cg"    : "hsl('$h',3%,75%)"
@@ -298,6 +302,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
+	! grep -q "?v='.time()" /srv/http/common.php && cacheBust
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd

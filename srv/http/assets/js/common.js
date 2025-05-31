@@ -1706,7 +1706,7 @@ $( '#debug' ).on( 'click', function() {
 		return
 	}
 	
-	BASH( [ 'cmd.sh', 'cachetype' ], type => {
+	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
 			return
