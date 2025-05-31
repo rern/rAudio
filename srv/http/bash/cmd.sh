@@ -4,6 +4,20 @@
 
 args2var "$1" # $2 $3 ... if any, still valid
 
+cacheBust() {
+	if [[ $TYPE ]]; then
+		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
+		return
+# --------------------------------------------------------------------
+	fi
+	hash="?v=$( date +%s )'"
+	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
+	if [[ $TIME ]]; then
+		hashtime="?v='.time()"
+		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
+	fi
+	sed -i "/^\$hash/ s/?v=.*/$hash;/" /srv/http/common.php
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
@@ -121,9 +135,11 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
-	[[ ! $( ls $dirdata/playlist ) ]] && pushData playlists -1 && exit
-# --------------------------------------------------------------------
-	pushData playlists $( php /srv/http/playlist.php list )
+	if [[ $( ls $dirdata/playlists ) ]]; then
+		pushData playlists $( php /srv/http/playlist.php list )
+	else
+		pushData playlists -1
+	fi
 }
 radioStop() {
 	if [[ -e $dirshm/radio ]]; then
@@ -233,16 +249,7 @@ bookmarkrename )
 	pushBookmark
 	;;
 cachebust )
-	hash="?v=$( date +%s )'"
-	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
-	if [[ $TIME ]]; then
-		hashtime="?v='.time()"
-		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
-	fi
-	sed -i "1,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
-	;;
-cachetype )
-	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
+	cacheBust
 	;;
 color )
 	filecss=/srv/http/assets/css/colors.css
@@ -251,8 +258,9 @@ color )
 	cd=( $hslcd )
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
 	[[ $LIST ]] && echo '{
-  "cd" : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "ml" : [ '${ml:1}' ]
+  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "custom" : '$( exists $dirsystem/color )'
+, "ml"     : [ '${ml:1}' ]
 }' && exit
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color
@@ -284,7 +292,6 @@ s/(--ml$m *: ).*/\1$L%;/"
 	cm="($h,$s%,$l%)"
 	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
 	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
-	sed -i -E 's/(icon.png).*/\1?v='$( date +%s )'">/' /srv/http/common.php
 	[[ ! $color ]] && color=true
 	color='{
   "cg"    : "hsl('$h',3%,75%)"
@@ -295,6 +302,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
+	! grep -q "?v='.time()" /srv/http/common.php && cacheBust
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
@@ -468,11 +476,11 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if [[ $( mpcState ) == play ]]; then
+	if [[ ! $POS && $( mpcState ) == play ]]; then
 		mpc -q crop
 	else
 		radioStop
-		mpc -q play
+		mpc -q play $POS
 		mpc -q crop
 		mpc -q stop
 	fi
@@ -607,27 +615,18 @@ mpcsimilar )
 mpcskip )
 	radioStop
 	touch $dirshm/skip
-	if [[ $( mpcState ) == play ]]; then
+	state=$( mpcState )
+	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-		rm -f $dirshm/skip
-		mpc -q play $POS
-		. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-		[[ $consume == on ]] && mpc -q del $songpos
-	else
-		mpc -q play $POS
-		rm -f $dirshm/skip
-		mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
-	;;
-mpcskippl )
-	radioStop
 	mpc -q play $POS
-	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
-	[[ $Time == 0 ]] && Time=false
-	[[ $ACTION != play ]] && mpc -q stop
-	pushPlaylist
+	[[ ! $ACTION ]] && ACTION=$state
+	[[ $ACTION != play ]] && mpc -q $ACTION
+	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
+	[[ $consume == on ]] && mpc -q del $songpos
+	rm -f $dirshm/skip
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
@@ -704,9 +703,9 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	elif [[ $ACTION == add ]]; then
 		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
-		file=$( sed -n "$FROM p" "$plfile" )
+		track=$( sed -n "$FROM p" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))
-		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
+		sed -i -e "$FROM d" -e "$TO i$track" "$plfile"
 	fi
 	pushSavedPlaylist
 	;;

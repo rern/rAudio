@@ -98,7 +98,7 @@ li:not( .licover ),
 .map,
 .menu a,
 .mode:not( .nodata ),
-.rs-container,
+.point,
 .savedlist,
 .submenu:not( .disabled ),
 #album:not( .albumgray ),
@@ -130,11 +130,12 @@ li:not( .licover ),
 #status,
 #thumbupdate,
 #time-band,
+#time svg,
 #title,
 #volume-band,
 #volume-bar-dn,
 #volume-bar-up,
-#volume-text {
+#volume-band-level {
 	cursor: pointer;
 }
 .disabled,

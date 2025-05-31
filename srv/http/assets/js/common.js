@@ -1,47 +1,12 @@
-/*
-BASH()
-$.fn.press
-BANNER() COMMON.dataError() 
-info()   COMMON.power() COMMON.powerAction() _INFO.warning()
-COMMON.loader() LOCAL()     COMMON.select.set()
-websocket
-
-Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
-	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
-
-- js > php/ws >> common.js - BASH()
-	- string : 
-		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
-		- multiline      : 'l1\\nl2\\nl3...'
-- php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
-	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-- bash        >> common.sh - args2var
-	- string : convert to array > assign values
-		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
-		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
-		- With 'CFG' : 
-			- the same as 'CMD'
-			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
-		- [ CMD, 'OFF' ] : disable
-*/
 I    = { active: false }
 PAGE = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-S    = {} // status
+S    = {}
 V    = {
 	  i_warning : ICON( 'warning yl' ) +'&ensp;'
 	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
 	, orange    : '#de810e'
 	, red       : '#bb2828'
-	, option    : {
-		sortable : {
-			  delay               : 200
-			, delayOnTouchOnly    : true
-			, touchStartThreshold : 5
-		}
-	}
+	, touch     : navigator.maxTouchPoints > 0
 }
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
@@ -69,6 +34,28 @@ function BANNER_HIDE() {
 		.addClass( 'hide' )
 		.empty();
 }
+/*
+BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
+	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
+
+- js > php/ws >> common.js - BASH()
+	- string : 
+		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
+		- multiline      : 'l1\\nl2\\nl3...'
+- php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
+- bash        >> common.sh - args2var
+	- string : convert to array > assign values
+		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
+		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
+		- With 'CFG' : 
+			- the same as 'CMD'
+			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
+		- [ CMD, 'OFF' ] : disable
+*/
 function BASH( args, callback, json ) {
 	if ( typeof args === 'string' ) {
 		var filesh = 'settings/'+ args
@@ -111,6 +98,23 @@ function NOTIFY( icon, title, message, delay ) {
 }
 // ----------------------------------------------------------------------
 /*
+[touchstart]----
+V.swipe
+(V.sort)  400ms
+(V.press) 1000ms
+------------(no move, no end) >1000ms
+			V.press && <<press>>
+----[touchend] <400ms
+	<<swipe>>
+	x(V.sort)
+	x(V.press)
+--------[touchmove] 400ms
+		xV.swipe
+		V.sort && <<sort>>
+		x(V.press)
+------------[touchend] >400ms
+			V.swipe && <<swipe>>
+
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
 	- cannot be attached with .on
@@ -120,7 +124,7 @@ events:
 	- click : mousedown  > mouseup   > click
 	- touch : touchstart > touchmove > touchend
 */
-$.fn.press = function( args ) {
+$.fn.press    = function( args ) {
 	var action, delegate, end, timeout;
 	if ( typeof args === 'function' ) {
 		delegate = '';
@@ -131,23 +135,182 @@ $.fn.press = function( args ) {
 		end      = args.end;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( () => {
+		V.timeoutpress = setTimeout( () => {
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
-		clearTimeout( timeout );
+		clearTimeout( V.timeoutpress );
 		if ( ! V.press ) return
 		
 		setTimeout( () => { // after last action timeout
 			if ( end ) end();
-			setTimeout( () => V.press = false, 300 );
+			setTimeout( () => delete V.press, 300 );
 		}, 0 );
 	} );
 	return this // allow chain
 }
+var SORT      = {
+	  callback   : callback => {
+		var from = V.sort.from;
+		var to   = V.sort.to;
+		if ( from !== to ) callback( from, to );
+		setTimeout( () => delete V.sort, 600 ); // delay for suppress refresh on push playlist
+	}
+	, clearPress : () => {
+		clearTimeout( V.timeoutpress );
+		delete V.press;
+		if ( V.bkedit ) {
+			$( '.mode' ).removeClass( 'edit' );
+			$( '.mode .bkedit' ).remove();
+		}
+	}
+	, drag       : ( el, callback ) => {
+		$( '#'+ el ).on( 'dragstart', 'li', function( e ) {
+			e.originalEvent.dataTransfer.effectAllowed = 'move';
+			V.sort = SORT.V( $( this ) );
+			SORT.clearPress();
+		} ).on( 'dragenter', 'li', function( e ) {
+			e.preventDefault(); // not-allowed cursor
+			if ( ! V.sort || V.sort.enter ) return
+			
+			V.sort.enter = true;
+			V.sort.over  = false;
+		} ).on( 'dragover', 'li', function( e ) {
+			e.preventDefault(); // not-allowed cursor
+			if ( ! V.sort || V.sort.over ) return
+			
+			V.sort.enter = false;
+			V.sort.over  = true;
+			SORT.insert( this );
+		} ).on( 'drop', 'li', function() {
+			SORT.callback( callback );
+		} );
+	}
+	, insert     : to => {
+		var $to   = $( to );
+		V.sort.to = $to.index();
+		var index = V.sort.$from.index();
+		if ( V.sort.to !== index ) $to[ V.sort.to > index ? 'after' : 'before' ]( V.sort.$from );
+	}
+	, set        : ( el, callback ) => {
+		SORT[ V.touch ? 'touch' : 'drag' ]( el, callback );
+	}
+	, touch      : ( el, callback ) => { // ok for mouse
+		var $ul = $( '#'+ el );
+		$ul.on( 'touchstart mousedown', function( e ) {
+			if ( ! $( e.target ).parents( '#'+ el ).length ) return
+			
+			V.timeoutsort = setTimeout( () => {
+				delete V.swipe;
+				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
+				V.sort        = SORT.V( $from );
+				var pos       = $from[ 0 ].getBoundingClientRect();
+				var ghostcss  = {
+					  position  : 'fixed'
+					, width     : pos.width +'px'
+					, height    : pos.height +'px'
+					, left      : pos.left +'px'
+					, top       : pos.top +'px'
+					, opacity   : 0.5
+					, 'z-index' : 1
+				}
+				var xy        = SORT.xy( e );
+				V.sort.left   = xy.x - pos.left;
+				V.sort.top    = xy.y - pos.top;
+				V.sort.$ghost = $from.clone()
+									.addClass( 'ghost' )
+									.css( ghostcss );
+				$ul.append( V.sort.$ghost );
+			}, 400 );
+		} ).on( 'touchmove mousemove', function( e ) {
+			if ( ! V.sort ) return
+			
+			e.preventDefault(); // prevent scroll
+			if ( V.press || V.bkedit ) SORT.clearPress();
+			var xy  = SORT.xy( e );
+			V.sort.$ghost.css( {
+				  top  : ( xy.y - V.sort.top ) +'px'
+				, left : ( xy.x - V.sort.left ) +'px'
+			} );
+			var els = document.elementsFromPoint( xy.x, xy.y );
+			els.forEach( el => {
+				if ( el.tagName === 'LI' && ! el.className.includes( 'from' ) ) {
+					SORT.insert( el );
+					return false
+				}
+			} );
+		} ).on( 'touchend mouseup', function() {
+			clearTimeout( V.timeoutsort );
+			$ul.find( 'li.ghost' ).remove();
+			$ul.find( 'li.from' ).removeClass( 'from' );
+			if ( ! V.sort ) return
+			
+			if ( 'to' in V.sort ) { // may be 0
+				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
+			} else {
+				delete V.sort;
+			}
+		} );
+	}
+	, V          : $from => {
+		return {
+			  $from : $from
+			, from  : $from.index()
+		}
+	}
+	, xy         : e => {
+		var x = e.clientX || e.touches[ 0 ].clientX;
+		var y = e.clientY || e.touches[ 0 ].clientY;
+		return { x: x, y:y }
+	}
+}
+var SWIPE     = () => {
+	if ( ! V.touch ) return
+	
+	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		return false
+	} );
+	$( 'link[ href*="hovercursor.css" ]' ).remove();
+	 // swipe ---------------------------------------------------------
+	document.addEventListener( 'touchstart', function( e ) {
+		if ( I.active || V.color ) return
+		
+		var $target = $( e.target );
+		if ( $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| $( '#data' ).length
+			|| ! $( '#bio' ).hasClass( 'hide' )
+			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
+		) return
+		
+		V.swipe     = e.changedTouches[ 0 ].pageX;
+	} );
+	document.addEventListener( 'touchend', function( e ) {
+		if ( ! V.swipe ) return
+
+		clearTimeout( V.timeoutsort );
+		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		delete V.swipe;
+		if ( Math.abs( diff ) < 100 ) return
+		
+		var pages = [ 'library', 'playback',  'playlist' ];
+		var i     = pages.indexOf( V.page );
+		var ilast = pages.length - 1;
+		diff > 0 ? i++ : i--;
+		if ( i < 0 ) {
+			i = ilast;
+		} else if ( i > ilast ) {
+			i = 0;
+		}
+		$( '#'+ pages[ i ] ).trigger( 'click' );
+	} );
+}
 //-----------------------------------------------------------------------------------------------------------------
-W          = {  // ws push
+W             = {  // ws push
 	  bluetooth : () => {
 		if ( PAGE === 'networks' ) {
 			S.listbt = data;
@@ -164,7 +327,6 @@ W          = {  // ws push
 		BANNER_HIDE();
 	}
 	, color     : data => {
-		D.color = data.color !== false;
 		V.color = data;
 		COLOR.cssSet( data.hsl );
 		if ( V.ctx ) {
@@ -235,7 +397,7 @@ W          = {  // ws push
 			$( '#infoX' ).trigger( 'click' );
 			if ( ! PAGE ) {
 				$( '#relays' ).toggleClass( 'on', S.relayson );
-				$( ( $TIME.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+				$( ( PROGRESS.visible() ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
 			}
 		}
 		if ( 'done' in data ) {
@@ -723,7 +885,7 @@ function INFO( json ) {
 		}
 	} );
 }
-var _INFO       = {
+var _INFO     = {
 	  addRemove     : callback => {
 		$( '#infoList tr' ).append( '<td>'+ ICON( 'remove edit' ) +'</td>' );
 		$( '#infoList td' ).eq( 2 ).html( ICON( 'plus edit' ) );
@@ -984,7 +1146,7 @@ var _INFO       = {
 	}
 }
 
-var COMMON      = {
+var COMMON    = {
 	  capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1061,6 +1223,9 @@ var COMMON      = {
 			console.log( data );
 			console.log( bashcmd );
 		}
+	}
+	, draggable     : el => {
+		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, eq            : {
 		  beforShow : fn => {
@@ -1326,7 +1491,7 @@ var COMMON      = {
 					V.select2 = true;
 					setTimeout( () => {
 						var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-						if ( navigator.maxTouchPoints ) scroll -= 12;
+						if ( V.touch ) scroll -= 12;
 						$( '.select2-results ul' ).scrollTop( scroll );
 					}, 0 );
 					if ( I.active && I.boxwidth ) COMMON.select.width( I.boxwidth );
@@ -1375,38 +1540,39 @@ var COMMON      = {
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 }
-var VOLUME      = {
-	  max : () => {
+var VOLUME    = {
+	  command : type => { // type: mute / unmute
 		if ( S.volumemax && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 		}
-	}
-	, toggle : () => {
-		V.volumediff = Math.abs( S.volume - S.volumemute );
-		if ( S.volumemute ) {
-			S.volume     = S.volumemute;
-			S.volumemute = 0;
-		} else {
-			S.volumemute = S.volume;
-			S.volume     = 0;
+		var vol_prev = +$( '#volume-level' ).text();
+		if ( S.volume === vol_prev ) return
+		
+		if ( V.drag || V.press ) {
+			type = 'dragpress';
+			VOLUME.push();
 		}
-		VOLUME.set( S.volumemute ? 'mute' : 'unmute' );
+		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	}
-	, push : () => {
+	, push    : () => {
 		V.local = true;
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 	}
-	, set : type => { // type: mute / unmute
-		V.local        = true;
-		V.volumeactive = true;
-		setTimeout( () => V.volumeactive = false, 300 );
-		if ( V.drag || V.press ) type = 'dragpress';
-		BASH( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-		V.volumecurrent = S.volume;
+	, toggle  : () => {
+		if ( S.volumemute ) {
+			S.volume     = S.volumemute;
+			S.volumemute = 0;
+			var type     = 'unmute';
+		} else {
+			S.volumemute = S.volume;
+			S.volume     = 0;
+			var type     = 'mute';
+		}
+		VOLUME.command( type );
 	}
 }
-var WEBSOCKET   = {
+var WEBSOCKET = {
 	  connect : ip => {
 		if ( WS && WS.readyState === 1 ) return
 		
@@ -1504,8 +1670,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
-			if ( ! $target.length ) $target = $( '#infoOk' );
-			$target.trigger( 'focus' ).trigger( 'click' );
+			if ( $target.length ) {
+				$target.trigger( 'click' );
+			} else if ( ! $( '#infoOk' ).hasClass( 'disabled' ) ) {
+				$( '#infoOk' ).trigger( 'click' );
+			}
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
@@ -1537,7 +1706,7 @@ $( '#debug' ).on( 'click', function() {
 		return
 	}
 	
-	BASH( [ 'cmd.sh', 'cachetype' ], type => {
+	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
 			return
@@ -1553,7 +1722,7 @@ $( '#debug' ).on( 'click', function() {
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
-				if ( navigator.maxTouchPoints ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
+				if ( V.touch ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
 				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();

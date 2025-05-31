@@ -44,16 +44,16 @@ function menuLi( $list ) {
 	$label   = $list[ 2 ];
 	if ( isset( $list[ 3 ] ) ) {
 		$sub     = ' sub';
-		$submenu = i( $list[ 3 ].' submenu', '', $list[ 4 ] );
+		$submenu = icon(  $list[ 3 ].' submenu', '', $list[ 4 ] );
 	} else {
 		$sub     = '';
 		$submenu = '';
 	}
-	if ( $icon[ 0 ] !== '<' ) $icon = i( $icon );
+	if ( $icon[ 0 ] !== '<' ) $icon = icon(  $icon );
 	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.$icon.$label.'</a>'.$submenu;
 }
 $coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
-$thumbupdate = $coverart.i( 'refresh-overlay' );
+$thumbupdate = $coverart.icon(  'refresh-overlay' );
 $kid3        = file_exists( '/usr/bin/kid3-cli' );
 $menu        = '';
 $htmlcommon  = menuCommon( 'add', 'replace' );
@@ -145,7 +145,7 @@ $ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librando
 $modeicon = '';
 foreach( $ids as $id ) {
 	$blink    = $localhost || $id !== 'libupdate' ? '' : ' blink';
-	$modeicon.= i( $id.' hide'.$blink, 'mi-'.$id );
+	$modeicon.= icon(  $id.' hide'.$blink, 'mi-'.$id );
 }
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
@@ -164,7 +164,7 @@ $htmlsettings = '';
 foreach( $settinglist as $l ) {
 	$icon  = str_replace( 'display', '', $l[ 0 ] );
 	$label = ucfirst( $icon );
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 2 ].' submenu', $l[ 2 ] );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.icon(  $icon ).$label.'</a>'.icon(  $l[ 2 ].' submenu', $l[ 2 ] );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
@@ -187,10 +187,10 @@ $htmlsearch   = '
 <div class="pagerefresh"></div>
 
 <div id="bar-top">
-	<?=i( 'raudio-nobg pagerefresh', 'logo' )
+	<?=icon(  'raudio-nobg pagerefresh', 'logo' )
 	  .'<div id="playback-controls">'
 	  .buttonSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
-	  .'</div>'.i( 'gear', 'button-settings' )?>
+	  .'</div>'.icon(  'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -199,7 +199,7 @@ $htmlsearch   = '
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?php echo
-			 i( 'library page-icon', 'button-library' )
+			 icon(  'library page-icon', 'button-library' )
 			.buttonSet( [
 				  [ 'search',          'search' ]
 				, [ 'back',            'back' ]
@@ -211,11 +211,11 @@ $htmlsearch   = '
 		<span id="lib-title" class="title"></span>
 		<span id="lib-path"></span>
 	</div>
-	<div id="lib-mode-list"></div>
+	<ul id="lib-mode-list"></ul>
 </div>
 
 <div id="page-playback" class="page">
-	<?=i( 'plus-o emptyadd hide' )
+	<?=icon(  'plus-o emptyadd hide' )
 		.buttonSet( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
 	<div id="info">
 		<?=$htmlinfo?>
@@ -228,17 +228,23 @@ $htmlsearch   = '
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
-			<div id="time"></div>
-			<div id="timeicon"><?=$timeicon?></div>
-			<span id="elapsed"></span>
-			<span id="total"></span>
+			<div id="time" class="knob">
+				<svg>               <!-- x   y              x   y               x   y -->
+					<path id="arc" d="M 115 11 A 1 1 0 0 1 115 219 A 1 1 0 0 1 115 11"></path>
+				</svg>              <!-- top    arc         bottom  src         top   -->
+				<div class="container">
+					<span id="elapsed"></span>
+					<span id="total"></span>
+					<div id="timeicon"><?=$timeicon?></div>
+				</div>
+			</div>
 			<div id="map-time">
 				<?=buttonSet( [
 					  [ 'scale',    'TL' ]
 					, [ 'guide',    'T' ]
 					, [ 'gear',     'TR' ]
 					, [ 'previous', 'L' ]
-					, '<div id="timeM" class="map maptime">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+					, '<div id="timeM" class="map maptime">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
 					, [ 'next',     'R' ]
 					, [ 'random',   'BL' ]
 					, [ 'stop',     'B' ]
@@ -261,24 +267,31 @@ $htmlsearch   = '
 						, [ 'guide r1 c2 wl hs',    'T' ]
 						, [ 'gear r1 c3 ws hs',     'TR' ]
 						, [ 'previous r2 c1 ws hl', 'L' ]
-						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
 						, [ 'next r2 c3 ws hl',     'R' ]
 						, [ 'random r3 c1 ws hs',   'BL' ]
 						, [ 'stop r3 c2 wl hs',     'B' ]
 						, [ 'repeat r3 c3 ws hs',   'BR' ]
 					], 'map mapcover', 'cover' )?>
 				</div>
+				<div id="volume-band-level" class="hide"></div>
 				<div id="volume-bar" class="hide"></div>
+				<div id="volume-band-point" class="point hide"></div>
 				<?=buttonSet( [
 					  [ 'volume',   '' ]
 					, [ 'minus dn', '-dn' ]
 					, [ 'plus up',  '-up' ]
 				], 'transparent volumeband band', 'volume-band' )?>
-				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
-			<div id="volume"></div>
+			<div id="volume" class="knob">
+				<div class="container">
+					<div id="vol"><div class="point"></div></div>
+				</div>
+				<span id="volume-mute" class="hide">0</span>
+				<span id="volume-level"></span>
+			</div>
 			<div id="map-volume">
 				<?=buttonSet( [
 					  [ 'plus up',  'T' ]
@@ -300,10 +313,10 @@ $htmlsearch   = '
 </div>
 
 <div id="page-playlist" class="page hide">
-	<?=i( 'plus-o emptyadd hide' )?>
+	<?=icon(  'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<?php echo
-			 i( 'playlist page-icon', 'button-playlist' )
+			 icon(  'playlist page-icon', 'button-playlist' )
 			.buttonSet( [
 				  [ 'back',            'back' ]
 				, [ 'search pllength', 'search' ]
@@ -331,7 +344,7 @@ $htmlsearch   = '
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
-		<img src=""><span id="lyricstitle"></span><?=i( 'close', 'lyricsclose' )?>
+		<img src=""><span id="lyricstitle"></span><?=icon(  'close', 'lyricsclose' )?>
 	</div>
 	<div id="divlyricsartist">
 		<span id="lyricsartist"></span><?=buttonSet( [ 'refresh', 'edit' ], '', 'lyrics' )?>
@@ -352,13 +365,13 @@ $htmlsearch   = '
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
 		<i id="colorcancel" class="i-close"></i>
+		<div id="wheel"></div>
+		<canvas id="box" width="130" height="130"></canvas>
 		<div id="pickhue"></div>
 		<div id="picknone"></div>
 		<div id="picksat"></div>
-		<div id="wheel"></div>
-		<div id="hue"><div></div></div>
 		<div id="sat"></div>
-		<canvas id="base" width="230" height="230"></canvas>
+		<div id="hue"><div></div></div>
 		<a id="colorreset" class="infobtn"><i class="i-set0"></i>Default</a>
 		<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>

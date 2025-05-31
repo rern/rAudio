@@ -12,10 +12,14 @@ W = {
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
-	, cover     : data => {
-		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + UTIL.versionHash() );
+	, cover     : data => { // online - 1st download, subsequence > mpdplayer
+		if ( V.library ) return
+		
+		var src = data.cover + UTIL.versionHash();
+		$( '#coverart' ).attr( 'src', src );
+		PLAYLIST.coverart( src );
 	}
-	, coverart  : data => {
+	, coverart  : data => { // change
 		BANNER_HIDE();
 		V.html = {}
 		if ( V.playback ) {
@@ -82,7 +86,7 @@ W = {
 			PLAYBACK.elapsed();
 		}
 	}
-	, mpdplayer : data => {
+	, mpdplayer : data => { // play/stop
 		if ( 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
@@ -97,6 +101,7 @@ W = {
 			} else if ( V.library ) {
 				REFRESHDATA();
 			} else {
+				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
 				PLAYLIST.render.scroll();
 			}
 			setTimeout( BANNER_HIDE, 3000 );
@@ -110,7 +115,7 @@ W = {
 			$( '#progress' ).html( ICON( 'play' ) +'<span></span>' );
 			PLAYBACK.elapsed();
 		} else {
-			PLAYBACK.progress.set( 0 );
+			PROGRESS.set( 0 );
 			UTIL.blinkDot();
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
@@ -147,7 +152,7 @@ W = {
 		LIBRARY.order();
 	}
 	, playlist  : data => {
-		if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
+		if ( V.local || V.sort || $( '.pl-remove' ).length ) return
 		
 		if ( 'blink' in data ) {
 			PLAYLIST.blink();
@@ -169,6 +174,8 @@ W = {
 		}
 	}
 	, playlists : data => {
+		if ( V.sort ) return
+		
 		PLAYLIST.playlists.addClear();
 		if ( V.playlistlist && data == -1 ) {
 			$( '#playlist' ).trigger( 'click' );
@@ -233,31 +240,22 @@ W = {
 		}
 	}
 	, volume    : data => {
-		if ( V.local ) {
-			V.local = false;
-			return
-		}
+		if ( V.drag || V.volume ) return
 		
 		if ( 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
 			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
-		if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-			V.local = false; // allow beforeValueChange()
-			V.volumediff = Math.abs( S.volume - S.volumemute );
-		} else {
-			V.volumediff = Math.abs( S.volume - data.val );
-		}
+		
 		if ( data.type === 'mute' ) {
-			S.volume = 0;
+			S.volume     = 0;
 			S.volumemute = data.val;
 		} else {
-			S.volume = data.val;
+			S.volume     = data.val;
 			S.volumemute = 0;
 		}
-		VOLUME.setValue();
-		V.volumecurrent = S.volume;
+		VOLUME.set();
 	}
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
