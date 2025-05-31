@@ -459,8 +459,8 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 		}
 		
 		V.guide    = true;
-		var time   = $TIME.is( ':visible' );
-		var volume = $VOLUME.is( ':visible' );
+		var time   = PROGRESS.visible();
+		var volume = VOLUME.visible();
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
 		if ( S.pllength ) {
@@ -497,7 +497,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 			if ( ! ( 'coverTL' in V )
 				&& ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 				&& ! D.volumenone
-				&& $VOLUME.is( ':hidden' )
+				&& ! VOLUME.visible()
 			) {
 				if ( $( '#info' ).hasClass( 'hide' ) ) {
 					$( '#info' ).removeClass( 'hide' );

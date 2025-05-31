@@ -397,7 +397,7 @@ W             = {  // ws push
 			$( '#infoX' ).trigger( 'click' );
 			if ( ! PAGE ) {
 				$( '#relays' ).toggleClass( 'on', S.relayson );
-				$( ( $TIME.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+				$( ( PROGRESS.visible() ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
 			}
 		}
 		if ( 'done' in data ) {

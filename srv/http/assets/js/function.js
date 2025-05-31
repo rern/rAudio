@@ -778,7 +778,7 @@ var DISPLAY   = {
 	, pageScroll : top => setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 )
 	, playback   : () => {
 		$TIME.toggleClass( 'hide', ! D.time );              // #time hidden on load - set before get :hidden
-		var hidetime   = ! D.time || $TIME.is( ':hidden' ); // #time hidden by css on small screen
+		var hidetime   = ! D.time || ! PROGRESS.visible(); // #time hidden by css on small screen
 		var hidevolume = ! D.volume || D.volumenone;
 		$VOLUME.toggleClass( 'hide', hidevolume );
 		var $cover     = $( '#coverart-block' );
@@ -797,7 +797,7 @@ var DISPLAY   = {
 		$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 		$( '#time-band' ).toggleClass( 'disabled', S.pllength === 0 || S.webradio || S.player !== 'mpd' );
 		$( '#time' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
-		$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $VOLUME.is( ':visible' ) );
+		$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || VOLUME.visible() );
 		$( '#map-time' ).toggleClass( 'hide', D.cover );
 		$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 		$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
@@ -1414,8 +1414,8 @@ var PLAYBACK  = {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-			var timevisible = $TIME.is( ':visible' );
-			var prefix = timevisible ? 'ti' : 'mi';
+			var time = PROGRESS.visible();
+			var prefix = time ? 'ti' : 'mi';
 			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
@@ -1431,7 +1431,7 @@ var PLAYBACK  = {
 					$( '#'+ prefix +'-single' ).toggleClass( 'hide', ! S.single || ( S.repeat && S.single ) );
 				}
 				[ 'consume', 'librandom' ].forEach( option => {
-					if ( timevisible ) {
+					if ( time ) {
 						$( '#mi-'+ option ).addClass( 'hide' );
 						$( '#ti-'+ option ).toggleClass( 'hide', ! S[ option ] );
 					} else {
@@ -1443,13 +1443,13 @@ var PLAYBACK  = {
 			}
 			PLAYBACK.button.update();
 			PLAYBACK.button.updating();
-			if ( $VOLUME.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
+			if ( ! VOLUME.visible() ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 		}
 		, update : () => {
 			if ( S.updateaddons ) {
 				$( '#button-settings, #addons i' ).addClass( 'bl' );
 				if ( ! UTIL.barVisible() ) {
-					var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
+					var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 					$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 					$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 				}
@@ -1461,8 +1461,8 @@ var PLAYBACK  = {
 		, updating : () => {
 			clearInterval( V.interval.blinkupdate );
 			if ( S.updating_db ) {
-				if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
-					var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
+				if ( $( '#bar-bottom' ).css( 'display' ) === 'none' || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
+					var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 					$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 				} else {
 					$( '#library, #button-library' ).addClass( 'blink' );
@@ -2242,7 +2242,7 @@ var PROGRESS  = {
 			$( '#title' ).addClass( 'gr' );
 		}
 	}
-	, set : elapsed => { // if defined - no animate
+	, set     : elapsed => { // if defined - no animate
 		if ( ! D.time && ! D.cover ) return
 		
 		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear.elapsed();
@@ -2265,10 +2265,11 @@ var PROGRESS  = {
 			$( '#time-bar' ).css( 'width', w +'%' );
 		} else {
 			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
-			$TIME.is( ':visible' ) ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
+			PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
 		}
 		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
 	}
+	, visible : () => $( '#time-knob' ).css( 'display' ) !== 'none' // both .hide and css show/hide
 }
 var UTIL      = {
 	  barVisible      : ( a, b ) => {
@@ -2609,33 +2610,33 @@ var VOLUME    = {
 		$( '#volume-band-level' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
-		var mute     = S.volumemute !== 0;
-		$( '#vol div' ).toggleClass( 'bgr60', mute );
+		$( '#vol .point' ).toggleClass( 'bgr60', mute );
 		$( '#volmute' ).toggleClass( 'mute active', mute );
 		$( '#ti-mute, #mi-mute' ).addClass( 'hide' );
-		if ( mute && $VOLUME.is( ':hidden' ) ) {
-			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
+		if ( mute && ! VOLUME.visible() ) {
+			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( V.drag || vol_prev === '' ) { // onload - empty
+		if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
 			var ms  = 0;
 		} else {
 			var ms  = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
 		}
-		var ms_knob = $VOLUME.is( ':visible' ) ? ms : 0;
-		var ms_bar  = $( '#volume-bar' ).is( ':visible' ) ? ms : 0;
-		$( '#vol, #vol div' ).css( 'transition-duration', ms_knob +'ms' );
+		var $bar    = $( '#volume-bar' );
+		var ms_knob = VOLUME.visible() ? ms : 0;
+		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
+		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
 		$( '#volume-bar, #volume-band-point' ).css( 'transition-duration', ms_bar +'ms' );
 		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+		$bar.css( 'width', S.volume +'%' );
 		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
 		if ( ms === 0 ) return
 		
 		V.animate = true;
 		setTimeout( () => delete V.animate, ms );
-		if ( $VOLUME.is( ':hidden' ) ) { // suppress on push received
+		if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
 			clearTimeout( V.volumebar );
 			VOLUME.barHide( ms + 5000 );
 		}
@@ -2651,6 +2652,7 @@ var VOLUME    = {
 		VOLUME.command();
 		VOLUME.set();
 	}
+	, visible : () => $VOLUME.css( 'display' ) !== 'none'
 }
 var WEBRADIO  = {
 	  exists : ( error, name, url, charset ) => {
