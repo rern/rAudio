@@ -281,6 +281,9 @@ getVar() { # var=value
 			;;
 	esac
 }
+grepr() {
+	grep --color --exclude-dir plugin -Inr "$@" /srv
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf

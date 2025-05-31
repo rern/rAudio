@@ -58,8 +58,8 @@ if ( $CMD === 'list' ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
 		$html     .=
-'<li class="pl-folder"'.$dataindex.'>'.
-	i( 'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
+'<li '.$dataindex.'>'.
+	icon(  'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
 '</li>
 ';
 	}
@@ -125,7 +125,7 @@ foreach( $lists as $list ) {
 			$class     = 'audiocd';
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 			$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
-			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'audiocd' );
+			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
 		} else {
 			if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
 			if ( ! $artist ) $artist = $albumartist;
@@ -135,11 +135,11 @@ foreach( $lists as $list ) {
 				$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 			}
 			$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
-			$class     = 'file';
+			$class     = 'music';
 			$discid    = '';
 			$path      = pathinfo( $file, PATHINFO_DIRNAME );
 			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
-			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'music' );
+			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
 		}
 		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
 		$html     .=
@@ -159,7 +159,7 @@ foreach( $lists as $list ) {
 		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
 		$html     .=
 '<li class="upnp">'.
-	i( 'upnp', 'filesavedpl' ).
+	icon(  'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
@@ -183,10 +183,10 @@ foreach( $lists as $list ) {
 		$notsaved = '';
 		$li2     .= $station;
 		$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-		$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
+		$icon     = iconThumb( $thumbsrc, 'filesavedpl' );
 	} else {
 		$notsaved = ' notsaved';
-		$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+		$icon     = icon(  'save savewr' ).icon(  'webradio', 'filesavedpl' );
 		$station  = '. . .';
 	}
 	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
@@ -202,11 +202,11 @@ foreach( $lists as $list ) {
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.i( 'playlists savedlist' ).$name.'</span> <gr>·</gr>';
+	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.icon(  'playlists savedlist' ).$name.'</span> <gr>·</gr>';
 }
 if ( $count->song ) {
-	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
+	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.icon(  'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
 }
-if ( $count->radio ) $counthtml.= i( 'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
-if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
+if ( $count->radio ) $counthtml.= icon(  'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
+if ( $count->upnp )  $counthtml.= '&emsp;'.icon(  'upnp' );
 output();

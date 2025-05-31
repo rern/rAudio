@@ -30,12 +30,7 @@ var CONTEXT  = {
 			, list       : [ 'As:', 'text' ]
 			, values     : name
 			, checkblank : true
-			, beforeshow : () => {
-				$( '#infoList input' ).parents( 'tr' ).addClass( 'hide' );
-				$( '#infoList img' ).off( 'error' ).on( 'error', function() {
-					IMAGE.error( this, 'bookmark' );
-				} );
-			}
+			, beforeshow : () => $( '#infoList input' ).parents( 'tr' ).addClass( 'hide' )
 			, ok         : () => {
 				var name = _INFO.val();
 				BANNER( 'bookmark', 'Bookmark', 'Add ...' );
@@ -53,14 +48,32 @@ var CONTEXT  = {
 		} );
 	}
 	, crop          : () => {
-		BASH( [ 'mpccrop' ] );
-		$( '#pl-list li:not( .active )' ).remove();
+		var $img = $LI.find( 'img' );
+		var src  = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		INFO( {
+			  icon    : 'crop'
+			, title   : 'Crop Playlist'
+			, message : '<img src="'+ src + UTIL.versionHash() +'">'
+						+'<br><wh>'+ $LI.find( '.name' ).text() +'</wh>'
+						+'<br><br>Remove all other tracks?'
+			, oklabel : ICON( 'crop' ) +'Crop'
+			, ok      : () => {
+				delete V.html.playlist;
+				if ( $LI.hasClass( 'active' ) ) {
+					BASH( [ 'mpccrop' ] );
+				} else {
+					BASH( [ 'mpccrop', $LI.index() + 1, 'CMD POS' ] );
+					$LI.addClass( 'active' );
+				}
+				$( '#pl-list li' ).not( $LI ).remove();
+			}
+		} );
 	}
 	, current       : () => {
 		S.song = V.list.index;
 		PLAYLIST.render.scroll();
 		LOCAL();
-		BASH( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 	}
 	, directory     : () => {
 		var path      = V.list.path;
@@ -127,7 +140,7 @@ var CONTEXT  = {
 	, remove        : () => {
 		V.contextmenu = true;
 		setTimeout( () => V.contextmenu = false, 500 );
-		PLAYLIST.remove();
+		PLAYLIST.remove( $LI );
 	}
 	, removerange   : () => PLAYLIST.removeRange( [ $LI.index() + 1, S.pllength ] )
 	, savedpladd    : () => {
@@ -216,20 +229,10 @@ var CONTEXT  = {
 			}
 			var fileicon = cue ? 'file-music' : 'playlists';
 			var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-						  +'<div>'+ ICON( 'folder' ) +' '+ dir;
+						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
 			message += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
 			var footer   = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
-			function tagModeSwitch() {
-				$( '#infoX' ).trigger( 'click' );
-				if ( V.playlist ) {
-					$( '#page-playlist' ).addClass( 'hide' );
-					$( '#page-library' ).removeClass( 'hide' );
-					V.playlist = false;
-					V.library  = true;
-					V.page     = 'library';
-				}
-			}
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
@@ -242,9 +245,6 @@ var CONTEXT  = {
 				, values       : values
 				, checkchanged : true
 				, beforeshow   : () => {
-					$( '#infoList img' ).on( 'error', function() {
-						IMAGE.error( this );
-					} );
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
 					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
@@ -259,20 +259,30 @@ var CONTEXT  = {
 							$( '.taglabel' ).addClass( 'hide' );
 						}
 					} );
-					$( '#infoList' ).on( 'click', 'table i', function() {
+					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
 						var $this  = $( this );
-						var mode   = $this.prop( 'class' ).replace( 'i-', '' );
-						if ( [ 'track', 'title' ].includes( mode ) ) return
-						
-						var string = $this.parent().next().find( 'input' ).val();
-						if ( ! string ) return
-						
-						if ( V.playlist ) UTIL.switchPage( 'library' );
-						var query  = {
-							  library : 'find'
-							, mode    : mode
-							, string  : string
-							, format  : [ 'album', 'artist' ]
+						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );
+						if ( $this.is( 'i' ) ) {
+							var mode   = $this.prop( 'class' ).replace( 'i-', '' );
+							if ( [ 'track', 'title' ].includes( mode ) ) return
+							
+							var string = $this.parent().next().find( 'input' ).val();
+							if ( ! string ) return
+							
+							var query  = {
+								  library : 'findmode'
+								, mode    : mode
+								, string  : string
+								, format  : [ 'album', 'artist' ]
+							}
+						} else {
+							var string = $this.find( '.path' ).text();
+							var mode   = string.split( '/' )[ 0 ].toLowerCase();
+							var query  = {
+								  library : 'ls'
+								, string  : string
+								, gmode   : mode
+							}
 						}
 						LIST( query, function( html ) {
 							var data = {
@@ -282,31 +292,13 @@ var CONTEXT  = {
 							}
 							V.mode = mode;
 							LIBRARY.list( data );
-							query.gmode = mode;
-							query.modetitle = string;
-							tagModeSwitch();
-							V.query.push( query );
-						} );
-					} );
-					$( '.infomessage' ).on( 'click', function() {
-						if ( V.library ) return
-						
-						UTIL.switchPage( 'library' );
-						V.mode    = dir.split( '/' )[ 0 ].toLowerCase();
-						var query = {
-							  library : 'ls'
-							, string  : dir
-							, gmode   : V.mode
-						}
-						LIST( query, function( html ) {
-							var data = {
-								  html      : html
-								, modetitle : dir
-								, path      : dir
+							if ( V.playlist ) {
+								UTIL.switchPage( 'library' );
+								V.query.push( 'trackinfo' );
+							} else {
+								V.query.push( 'tageditor' );
 							}
-							tagModeSwitch();
-							LIBRARY.list( data );
-							UTIL.switchPage( 'library' );
+							$( '#infoX' ).trigger( 'click' );
 						} );
 					} );
 				}
@@ -352,9 +344,6 @@ var CONTEXT  = {
 						   +'<p class="infoimgname">'+ name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, beforeshow  : () => {
-				$( '.imgold' ).on( 'error', function() {
-					IMAGE.error( this );
-				} );
 				$( '.extrabtn' ).toggleClass( 'hide', coverart.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
 			, buttonlabel : V.library ? ICON( mode ) +' Icon' : ICON( 'remove' ) +' Remove'
@@ -366,10 +355,7 @@ var CONTEXT  = {
 					BASH( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
 				}
 			}
-			, ok          : () => {
-				var src = $( '.infoimgnew' ).attr( 'src' );
-				IMAGE.replace( mode, imagefilenoext );
-			}
+			, ok          : () => UTIL.imageReplace( mode, imagefilenoext )
 		} );
 	}
 	, thumbupdate   : modealbum => {
@@ -527,13 +513,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#pl-list li' ).eq( $LI.index() ).trigger( 'click' );
-		if ( S.player === 'mpd' || cmd !== 'play' ) {
-			$( '#'+ cmd ).trigger( 'click' );
-		} else {
-			$( '#stop' ).trigger( 'click' );
-			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
-		}
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 	

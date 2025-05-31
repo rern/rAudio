@@ -994,12 +994,11 @@ var GRAPH     = {
 	}
 }
 window.addEventListener( 'resize', GRAPH.flowchart.refresh );
-COMMON.sortable( '#pipeline .entries', e => {
-	var a  = COMMON.json.clone( PIP[ e.oldIndex ] );
-	PIP.splice( e.oldIndex, 1 );
-	PIP.splice( e.newIndex, 0, a );
+SORT.set( 'pipeline .entries', ( from, to ) => {
+	var a  = COMMON.json.clone( PIP[ from ] );
+	PIP.splice( from, 1 );
+	PIP.splice( to, 0, a );
 	SETTING.save( 'Pipeline', 'Change order ...' );
-	RENDER.pipeline();
 } );
 
 var CONFIG    = {
@@ -1156,17 +1155,19 @@ var RENDER    = {
 		}
 	}
 	, volume      : () => {
+		var $level   = $( '#volume-level' );
+		var $ivolume = $( '#divvolume .i-volume' );
 		RENDER.volumeThumb();
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
-			$( '#divvolume .level' ).addClass( 'bl' );
-			$( '#divvolume .i-volume' ).addClass( 'mute' );
+			$level.addClass( 'bl' );
+			$ivolume.addClass( 'mute' );
 		} else {
-			$( '#divvolume .level' ).removeClass( 'bl' );
-			$( '#divvolume .i-volume' ).removeClass( 'mute' );
+			$level.removeClass( 'bl' );
+			$ivolume.removeClass( 'mute' );
 		}
-		$( '#divvolume .level' ).text( S.volumemute || S.volume )
+		$level.text( S.volumemute || S.volume )
 	}
 	, volumeThumb : () => {
 		$( '#volume .thumb' ).css( 'margin-left', ( 230 - 40 ) / 100 * S.volume );
@@ -1346,6 +1347,7 @@ var RENDER    = {
 		var li = '';
 		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
+		COMMON.draggable( 'pipeline .entries' );
 		RENDER.toggle();
 		GRAPH.flowchart.refresh();
 		$MENU.addClass( 'hide' );
@@ -1367,7 +1369,7 @@ var RENDER    = {
 			var li1    = el.name;
 			var li2    = RENDER.mixerMap( MIX[ el.name ].mapping );
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'" draggable="true">'+ ICON( icon ) + ICON( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ICON( icon ) + ICON( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
 				+ graph
@@ -2444,9 +2446,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
 	
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
-	VOLUME.max();
+	VOLUME.command();
 	RENDER.volume();
-	VOLUME.set();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -2462,10 +2463,9 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		} else {
 			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
-		VOLUME.max();
-		$( '#divvolume .level' ).text( S.volume );
+		VOLUME.command();
+		$( '#volume-level' ).text( S.volume );
 		UTIL.volumeAnimate( S.volume, current );
-		VOLUME.set();
 	}
 	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
@@ -2474,20 +2474,18 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
-	VOLUME.max();
-	$( '#divvolume .level' ).text( S.volume );
+	VOLUME.command();
+	$( '#volume-level' ).text( S.volume );
 	UTIL.volumeAnimate( S.volume, current );
-	VOLUME.set();
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
-	VOLUME.max();
+	VOLUME.command();
 	RENDER.volume();
-	VOLUME.set();
-} ).on( 'click', '.col-r .i-volume, .level', function() {
+} ).on( 'click', '.col-r .i-volume, #volume-level', function() {
 	UTIL.volumeAnimate( S.volumemute, S.volume );
 	VOLUME.toggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
@@ -2499,10 +2497,9 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
-			VOLUME.max();
-			VOLUME.set();
+			VOLUME.command();
 			RENDER.volumeThumb();
-			$( '#divvolume .level' ).text( S.volume );
+			$( '#volume-level' ).text( S.volume );
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 		}, 100 );
 	}

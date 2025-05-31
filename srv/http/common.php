@@ -1,3 +1,6 @@
+<?php
+$hash      = '?v=1748685014';
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,15 +13,14 @@
 	<meta name="application-name" content="rAudio">
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
-	<link rel="icon" href="/assets/img/icon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png<?=$hash?>">
+	<link rel="icon" href="/assets/img/icon.png<?=$hash?>">
 
 <?php
 $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$hash      = '?v='.time();
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
@@ -46,9 +48,9 @@ foreach( $jsfiles as $file ) {
 	$jfiles[ $name ] = $file;
 }
 if ( ! $page ) { // main
-	$cssp  = [ 'roundslider' ];
+	$cssp  = [];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
+	$jsp   = [ 'jquery', 'pica', 'qrcode' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -75,7 +77,7 @@ if ( ! $page ) { // main
 		$icon      = 'camilladsp';
 		$pagetitle = 'CamillaDSP';
 		$css       = [ ...$css, 'camilla', 'equalizer' ];
-		$jsp       = [ ...$jsp, 'camilladsp_plot', 'complex', 'plotly', 'Sortable' ];
+		$jsp       = [ ...$jsp, 'camilladsp_plot', 'complex', 'plotly' ];
 	} else if ( $guide ) {
 		$icon      = 'help';
 		$pagetitle = 'User Guide';
@@ -97,7 +99,7 @@ $html     .= '
 <body>
 ';
 if ( ! $add_guide )  {
-	$pageicon = $page ? i( $page.' page-icon' ) : '';
+	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html    .= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
@@ -124,7 +126,7 @@ function htmlBottom() {
 </html>
 ';
 }
-function i( $icon, $id = '', $cmd = '' ) {
+function icon(  $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
