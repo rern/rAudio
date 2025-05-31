@@ -2279,29 +2279,7 @@ var UTIL      = {
 		return visible ? a : b
 	}
 	, blinkDot        : () => {
-		if ( V.localhost ) {
-			$( '.dot' ).css( 'animation', 'none' );
-			var $d1 = $( '.dot1' );
-			var $d2 = $( '.dot2' );
-			var $d3 = $( '.dot3' );
-			V.interval.blinkdot = setInterval( () => {
-				$d1.css( 'opacity', 1 );
-				$d2.css( 'opacity', 0.1 );
-				$d3.css( 'opacity', 0.50 );
-				setTimeout( () => {
-					$d1.css( 'opacity', 0.50 );
-					$d2.css( 'opacity', 1 );
-					$d3.css( 'opacity', 0.1 );
-					setTimeout( () => {
-						$d1.css( 'opacity', 0.1 );
-						$d2.css( 'opacity', 0.50 );
-						$d3.css( 'opacity', 1 );
-					}, 1000 );
-				}, 1000 );
-			}, 3000 );
-			return
-		}
-		
+		if ( V.localhost ) $( '.dot' ).css( 'animation', 'none' );
 		UTIL.intervalClear.all();
 		$( '#vuneedle' ).css( 'transform', '' );
 		$( '#elapsed, #total, #progress' ).empty();
