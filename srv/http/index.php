@@ -274,14 +274,14 @@ $htmlsearch   = '
 						, [ 'repeat r3 c3 ws hs',   'BR' ]
 					], 'map mapcover', 'cover' )?>
 				</div>
+				<div id="volume-band-level" class="hide"></div>
 				<div id="volume-bar" class="hide"></div>
+				<div id="volume-band-point" class="point hide"></div>
 				<?=buttonSet( [
 					  [ 'volume',   '' ]
 					, [ 'minus dn', '-dn' ]
 					, [ 'plus up',  '-up' ]
 				], 'transparent volumeband band', 'volume-band' )?>
-				<div id="volume-band-point" class="point hide"></div>
-				<div id="volume-band-level" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
