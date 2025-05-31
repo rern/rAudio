@@ -517,8 +517,9 @@ div.pagerefresh {
 #time-bar,
 #volume-bar {
 	height: 3px;
-	margin: 0 1px;
 	background: var( --cm );
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 }
 #time-bar {
 	top: -4px;
