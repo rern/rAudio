@@ -53,7 +53,7 @@ SWIPE();
 if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
 if ( V.localhost ) {
 	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot limit ' );
-	$( '#library, #button-library, .i-libupdate' ).addClass( 'limit' );
+	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'limit' );
 }
 
 $( 'body' ).on( 'click', function( e ) {
