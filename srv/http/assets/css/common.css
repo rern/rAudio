@@ -287,10 +287,14 @@ sp {
 }
 
 .blink::before,
-.blink::after {
+.blink::after,
+#loader svg {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }
+.dot  { animation:       1s infinite blinkopaque }
+.dot2 { animation-delay: 250ms }
+.dot3 { animation-delay: 500ms }
 input:focus {
 	outline: none;
 }
@@ -314,7 +318,6 @@ input:focus {
 	right     : 0;
 	margin    : auto;
 	width     : 50px;
-	animation : blinkopaque 1.5s linear infinite;
 }
 .logo rect {
 	fill: var( --cm );
@@ -1007,15 +1010,6 @@ input[ type=radio ]:disabled {
 }
 #infoPrompt {
 	margin-top: 20px;
-}
-.dot {
-	animation: 1s infinite blinkopaque;
-}
-.dot2 {
-	animation-delay: 250ms;
-}
-.dot3 {
-	animation-delay: 500ms;
 }
 .msgrelays object {
 	vertical-align: -40px;
