@@ -51,9 +51,15 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 COVERART.onError();
 SWIPE();
 if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
-if ( V.localhost ) {
+if ( V.localhost ) { // limit animation (high cpu load)
 	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot limit ' );
 	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'limit' );
+	var $icon  = $( '#library, #button-library, .i-libupdate' );
+	$icon.on( 'animationend', function() {
+		$icon
+			.removeClass( 'i-library blink' )
+			.addClass( 'i-refresh-library' );
+	} );
 }
 
 $( 'body' ).on( 'click', function( e ) {

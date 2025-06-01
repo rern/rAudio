@@ -1410,7 +1410,7 @@ var PLAYBACK  = {
 		COMMON.loaderHide();
 	}
 	, button    : {
-		  options : () => {
+		  options  : () => {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
@@ -1445,7 +1445,7 @@ var PLAYBACK  = {
 			PLAYBACK.button.updating();
 			if ( ! VOLUME.visible() ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 		}
-		, update : () => {
+		, update   : () => {
 			if ( S.updateaddons ) {
 				$( '#button-settings, #addons i' ).addClass( 'bl' );
 				if ( ! UTIL.barVisible() ) {
@@ -1459,26 +1459,17 @@ var PLAYBACK  = {
 			}
 		}
 		, updating : () => {
-			clearInterval( V.interval.blinkupdate );
+			var $icon = $( '#library, #button-library, .i-libupdate' );
 			if ( S.updating_db ) {
+				$icon.addClass( 'blink' );
+				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
+				$( '#update' ).addClass( 'on' );
 				if ( $( '#bar-bottom' ).css( 'display' ) === 'none' || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 					var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 					$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
-				} else {
-					$( '#library, #button-library' ).addClass( 'blink' );
 				}
-				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
-				if ( V.localhost ) {
-					var $icons = $( '#library, #button-library, #mi-libupdate, #ti-libupdate' );
-					$icons.removeClass( 'blink' );
-					V.interval.blinkupdate = setInterval( () => {
-						$icons.addClass( 'clear' );
-						setTimeout( () => $icons.removeClass( 'clear' ), 1500 );
-					}, 2500 );
-				}
-				$( '#update' ).addClass( 'on' );
 			} else {
-				$( '#library, #button-library' ).removeClass( 'blink' );
+				$icon.removeClass( 'blink' );
 				$( '#refresh-library, #button-lib-update' ).removeClass( 'bl' );
 				$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 				$( '#update' ).removeClass( 'on' );
