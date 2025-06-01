@@ -11,10 +11,10 @@ cacheBust() {
 # --------------------------------------------------------------------
 	fi
 	local hash
-	hash=$( date +%s )
-	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash' );/" /srv/http/assets/css/common.css
-	[[ $TIME ]] && hash="'.time()'"
-	sed -i "1,/hash.*=/ s/v=.*/v=$hash';/" /srv/http/common.php
+	hash=$( date +%s )"'"
+	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
+	[[ $TIME ]] && hash="'.time()"
+	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 }
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
