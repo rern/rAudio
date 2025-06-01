@@ -581,11 +581,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			PLAYBACK.vu();
 			PLAYBACK.info.color();
-			if ( stateprev === 'stop' ) {
-				S.webradio ? $( '#title, #elapsed' ).html( V.blinkdot ) : $( '#elapsed' ).empty();
-				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-				$( '#total' ).text( V.timehms );
-			}
 			BASH( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;

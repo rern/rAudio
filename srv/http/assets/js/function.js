@@ -1564,7 +1564,6 @@ var PLAYBACK  = {
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
-		clearInterval( V.interval.blinkdot );
 		$( '#qr' ).remove();
 		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 			PLAYBACK.blank();
@@ -1662,14 +1661,14 @@ var PLAYBACK  = {
 			}
 			if ( S.webradio ) {
 				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.state !== 'play' ) {
-					$( '#artist' ).text( S.station );
-					$( '#title' ).html( V.dots );
-					$( '#album' ).text( url );
-				} else {
+				if ( S.state === 'play' ) {
 					$( '#artist' ).text( S.Artist || S.station );
 					$( '#title' ).html( S.Title || V.blinkdot );
 					$( '#album' ).text( S.Album || url );
+				} else {
+					$( '#artist' ).text( S.station );
+					$( '#title' ).html( V.dots );
+					$( '#album' ).text( url );
 				}
 			} else {
 				$( '#artist' ).html( S.Artist || V.dots );
@@ -2232,7 +2231,7 @@ var PROGRESS  = {
 	}
 	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
 	, knob    : e => {
-		var deg   = PLAYBACK.degree( e, 'time' );
+		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
 		S.elapsed = Math.round( S.Time * deg / 360 );
 		PROGRESS.set( S.elapsed );
@@ -2506,6 +2505,16 @@ var UTIL      = {
 			if ( deg < 0 ) deg += 360;
 			return deg
 		}
+		, e2deg  : ( e, el ) => { // el: time/volume
+			if ( V.touch ) {
+				var x = e.changedTouches[ 0 ].pageX;
+				var y = e.changedTouches[ 0 ].pageY;
+			} else {
+				var x = e.pageX;
+				var y = e.pageY;
+			}
+			return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
+		}
 		, get    : el => {
 			if ( V.animate ) return
 			
@@ -2557,7 +2566,7 @@ var VOLUME    = {
 		$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
 	}
 	, knob    : e => {
-		var deg     = PLAYBACK.degree( e, 'volume' );
+		var deg     = UTIL.xy.e2deg( e, 'volume' );
 		if ( deg > 30 && deg < 150 ) return
 		
 		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
