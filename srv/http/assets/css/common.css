@@ -282,10 +282,10 @@ sp {
 }
 .hide { display: none !important }
 .hidden { visibility: hidden }
+
 @keyframes blinkopaque {
 	50% { opacity: 0 } 
 }
-
 .blink::before,
 .blink::after,
 #loader svg {
@@ -295,9 +295,12 @@ sp {
 .dot  { animation:       1s infinite blinkopaque }
 .dot2 { animation-delay: 250ms }
 .dot3 { animation-delay: 500ms }
-.dot.limit {
-	animation-iteration-count: 3;
+.blink.limit::before,
+.blink.limit::after,
+.limit {
+	animation-iteration-count: 5;
 }
+
 input:focus {
 	outline: none;
 }

@@ -51,7 +51,10 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 COVERART.onError();
 SWIPE();
 if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
-if ( V.localhost ) V.blinkdot = V.blinkdot.replace( /dot /g, 'dot limit ' );
+if ( V.localhost ) {
+	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot limit ' );
+	$( '#library, #button-library, .i-libupdate' ).addClass( 'limit' );
+}
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.color ) return

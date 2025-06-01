@@ -1580,6 +1580,15 @@ var PLAYBACK  = {
 			return
 		}
 		
+		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
+		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
+		if ( S.elapsed ) {
+			htmlelapsed += ' / ';
+		} else {
+			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
+		}
+		htmlelapsed +=  V.timehms;
+		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
 		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
@@ -1598,15 +1607,6 @@ var PLAYBACK  = {
 			return
 		}
 		
-		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
-		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
-		if ( S.elapsed ) {
-			htmlelapsed += ' / ';
-		} else {
-			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
-		}
-		htmlelapsed +=  V.timehms;
-		$( '#progress' ).html( htmlelapsed );
 		if ( S.state === 'pause' ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
