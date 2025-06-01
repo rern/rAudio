@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1747959063' );
+	src         : url( '/assets/fonts/rern.woff2?v=1748737819' );
 }
 @font-face {
 	font-family : Lato;
@@ -1008,11 +1008,8 @@ input[ type=radio ]:disabled {
 #infoPrompt {
 	margin-top: 20px;
 }
-@keyframes blinkdot {
-	50% { opacity: 0 }
-}
 .dot {
-	animation: 1s infinite blinkdot;
+	animation: 1s infinite blinkopaque;
 }
 .dot2 {
 	animation-delay: 250ms;

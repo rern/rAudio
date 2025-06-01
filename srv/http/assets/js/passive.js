@@ -116,7 +116,6 @@ W = {
 			PLAYBACK.elapsed();
 		} else {
 			PROGRESS.set( 0 );
-			UTIL.blinkDot();
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	

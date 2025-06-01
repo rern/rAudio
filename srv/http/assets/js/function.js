@@ -1576,11 +1576,6 @@ var PLAYBACK  = {
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		V.timehms = S.Time ? UTIL.second2HMS( S.Time ) : '';
-		if ( S.elapsed === false || S.webradio ) {
-			UTIL.blinkDot();
-			return
-		}
-		
 		if ( S.state === 'stop' ) {
 			PLAYBACK.stop();
 			return
@@ -1588,9 +1583,19 @@ var PLAYBACK  = {
 		
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
-			$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
-			UTIL.blinkDot();
+		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+			UTIL.intervalClear.all();
+			$( '#vuneedle' ).css( 'transform', '' );
+			$( '#elapsed, #total, #progress' ).empty();
+			if ( S.state === 'play' ) {
+				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
+				if ( D.radioelapsed ) {
+					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
+					PLAYBACK.elapsed();
+				} else {
+					PROGRESS.set( 0 );
+				}
+			}
 			return
 		}
 		
@@ -1664,7 +1669,6 @@ var PLAYBACK  = {
 				} else {
 					$( '#artist' ).text( S.Artist || S.station );
 					$( '#title' ).html( S.Title || V.blinkdot );
-					UTIL.blinkDot();
 					$( '#album' ).text( S.Album || url );
 				}
 			} else {
@@ -2277,21 +2281,6 @@ var UTIL      = {
 		if ( ! a ) return visible
 		
 		return visible ? a : b
-	}
-	, blinkDot        : () => {
-		if ( V.localhost ) $( '.dot' ).css( 'animation', 'none' );
-		UTIL.intervalClear.all();
-		$( '#vuneedle' ).css( 'transform', '' );
-		$( '#elapsed, #total, #progress' ).empty();
-		if ( S.state === 'play' ) {
-			$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
-			if ( D.radioelapsed ) {
-				$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
-				PLAYBACK.elapsed();
-			} else {
-				PROGRESS.set( 0 );
-			}
-		}
 	}
 	, changeIP        : () => { // for android app
 		INFO( {
