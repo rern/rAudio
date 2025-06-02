@@ -2401,11 +2401,11 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		  x : bounding.left + 20
 		, w : bounding.width - 40
 	}
-	S.volumemute    = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
-	V.drag = true;
+	V.drag       = true;
+	S.volumemute = 0;
 	VOLUME.xy( e );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
