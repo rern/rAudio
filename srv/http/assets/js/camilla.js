@@ -2404,6 +2404,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
+	e.preventDefault();
 	V.drag       = true;
 	S.volumemute = 0;
 	VOLUME.xy( e );
