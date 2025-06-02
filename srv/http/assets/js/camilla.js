@@ -2380,10 +2380,9 @@ var VOLUME   = {
 		} );
 	}
 	, xy  : e => {
-		var x     = V.volume.x;
-		var w     = V.volume.w;
 		var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
-		var posX  = pageX - x;
+		var posX  = pageX - V.volume.x;
+		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 		S.volume  = Math.round( posX / w * 100 );
 		VOLUME.command();
