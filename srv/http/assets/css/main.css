@@ -518,11 +518,11 @@ div.pagerefresh {
 #volume-bar {
 	height: 3px;
 	background: var( --cm );
-	border-left: 1px solid #000;
-	border-right: 1px solid #000;
 }
 #time-bar {
 	top: -4px;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 }
 #volume-bar {
 	bottom: -4px;
