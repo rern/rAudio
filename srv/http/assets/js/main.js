@@ -1602,16 +1602,22 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
 	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
 } ).on( 'touchmove mousemove', e => {
-	if ( V.hue ) COLOR.pick.xy( e, 'hue' );
+	if ( ! V.hue ) return
+	
+	e.preventDefault();
+	COLOR.pick.xy( e, 'hue' );
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
-	if ( ! $( e.target ).closest( '#picksat' ).length ) return // touch limit
+	if ( ! $( e.target ).closest( '#picksat' ).length ) return
 	
 	V.sat = true;
 	COLOR.pick.xy( e, 'sat' );
 	$( '#sat' ).addClass( 'hide' );
 } ).on( 'touchmove mousemove', e => {
-	if ( V.sat ) COLOR.pick.xy( e, 'sat' );
+	if ( ! V.sat ) return
+	
+	e.preventDefault();
+	COLOR.pick.xy( e, 'sat' );
 } ).on( 'mouseleave', () => {
 	if ( V.sat ) COLOR.pick.point( V.ctx.x, V.ctx.y );
 } ).on( 'mouseenter', () => {
