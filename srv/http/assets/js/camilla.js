@@ -2395,21 +2395,6 @@ var VOLUME   = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
-$( '#divvolume' ).on( 'keydown', function( e ) {
-	var key = e.key;
-	if ( [ '-', '+' ].includes( key ) ) $( this ).find( key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
-} );
-$( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
-	var key = e.key;
-	if ( [ '-', '+' ].includes( key ) ) {
-		var $this = $( this );
-		var $updn = $this.find( key === '-' ? '.i-minus' : '.i-plus' );
-		if ( ! $updn.length ) return
-		
-		V.focused = $this.index();
-		$updn.trigger( 'click' );
-	}
-} );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	var bounding = this.getBoundingClientRect();
 	V.volume = {
@@ -2425,7 +2410,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
-	if ( ! V.drag ) VOLUME.xy( e );
+	VOLUME.xy( e );
 	delete V.drag;
 	delete V.volume;
 } );
@@ -2467,6 +2452,21 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	, end     : () => {
 		clearInterval( V.intervalvolume );
 		VOLUME.push();
+	}
+} );
+$( '#divvolume' ).on( 'keydown', function( e ) {
+	var key = e.key;
+	if ( [ '-', '+' ].includes( key ) ) $( this ).find( key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
+} );
+$( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
+	var key = e.key;
+	if ( [ '-', '+' ].includes( key ) ) {
+		var $this = $( this );
+		var $updn = $this.find( key === '-' ? '.i-minus' : '.i-plus' );
+		if ( ! $updn.length ) return
+		
+		V.focused = $this.index();
+		$updn.trigger( 'click' );
 	}
 } );
 // common ---------------------------------------------------------------------------------
