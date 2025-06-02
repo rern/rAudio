@@ -1131,7 +1131,6 @@ var RENDER    = {
 			RENDER[ V.tab ]();
 		}
 	}
-	, volume      : VOLUME.set
 	, vuBarToggle : () => {
 		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || S.state !== 'play' );
 	}
