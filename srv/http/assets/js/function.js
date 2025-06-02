@@ -194,7 +194,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
+				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy )
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -234,8 +234,9 @@ var COLOR     = {
 			}
 		}
 		, point    : ( x, y ) => {
+			var m = V.ctx.sat.margin;
 			$( '#sat' )
-				.css( { left: ( x + V.ctx.sat_m ) +'px', top: ( y + V.ctx.sat_m ) +'px' } ) // margin 55px - r 5px
+				.css( { left: ( x + m ) +'px', top: ( y + m ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
@@ -244,6 +245,8 @@ var COLOR     = {
 		}
 		, sat      : ( x, y ) => {
 			var d, f, m;
+			x -= V.ctx.sat.tx; // relative x/y from top-left
+			y -= V.ctx.sat.ty;
 			var [ r, g, b ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 			if ( r + g + b === 0 ) return
 			 // rgb > s l
@@ -290,13 +293,8 @@ var COLOR     = {
 			}
 		}
 		, xy       : ( e, hue_sat ) => {
-			if ( V.touch ) {
-				var x = e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
-				var y = e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
-			} else { // V.ctx.tl[ hue_sat ] - relative xy
-				var x = e.offsetX;
-				var y = e.offsetY;
-			}
+			var x = e.pageX || e.changedTouches[ 0 ].pageX;
+			var y = e.pageY || e.changedTouches[ 0 ].pageY;
 			COLOR.pick[ hue_sat ]( x, y );
 			COLOR.okEnable();
 		}
@@ -309,20 +307,19 @@ var COLOR     = {
 		var $box        = $( '#box' );
 		var box_margin  = parseInt( $box.css( 'margin' ) );
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		var [ ty, tx ]  = Object.values( $( '#wheel' ).offset() );
+		var wheel_c     = $( '#wheel' ).width() / 2;
 		V.ctx           = {
 			  context : $box[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl_cur : { h, s, l } // for #colorcancel
-			, sat_m   : box_margin - $( '#sat' ).outerWidth() / 2
-			, width   : $box.width()
-			, wheel_c : $( '#wheel' ).width() / 2
-		}
-		if ( V.touch ) {
-			var [ ty, tx ] = Object.values( $( '#wheel' ).offset() );
-			V.ctx.tl       = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
-				  hue : { x: tx,              y: ty }
-				, sat : { x: tx + box_margin, y: ty + box_margin }
+			, sat     : {
+				  tx     : tx + box_margin
+				, ty     : ty + box_margin
+				, margin : box_margin - $( '#sat' ).outerWidth() / 2
 			}
+			, width   : $box.width()
+			, wheel   : { cx: tx + wheel_c, cy: ty + wheel_c }
 		}
 		COLOR.pick.set();
 	}

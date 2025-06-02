@@ -1599,13 +1599,6 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	
 	V.hue = true;
 	COLOR.pick.xy( e, 'hue' );
-	$( '#pickhue' ).css( 'border-radius', 0 );     // drag outside #pickhue
-	$( '#picknone, #picksat' ).addClass( 'hide' ); // drag inside
-} ).on( 'touchmove mousemove', e => {
-	if ( ! V.hue ) return
-	
-	e.preventDefault();
-	COLOR.pick.xy( e, 'hue' );
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#picksat' ).length ) return
@@ -1623,7 +1616,12 @@ $( '#picksat' ).on( 'touchstart mousedown', e => {
 } ).on( 'mouseenter', () => {
 	if ( V.sat ) $( '#sat' ).addClass( 'hide' );
 } );
-$( '#colorpicker' ).on( 'touchend mouseup', () => { // allow drag end outside
+$( '#colorpicker' ).on( 'touchmove mousemove', e => { // allow drag outside
+	if ( ! V.hue ) return
+	
+	e.preventDefault();
+	COLOR.pick.xy( e, 'hue' );
+} ).on( 'touchend mouseup', () => {
 	if ( V.hue ) {
 		V.hue = false;
 		if ( V.ctx.hsl.h < 0 ) V.ctx.hsl.h += 360;
