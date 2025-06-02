@@ -2352,7 +2352,7 @@ var UTIL      = {
 		getstate.forEach( k => WSCAMILLA.send( '"'+ k +'"' ) );
 	}
 }
-var VOLUME   = {
+var VOLUME    = {
 	...VOLUME
 	, set : () => {
 		var $level   = $( '#volume-level' );
