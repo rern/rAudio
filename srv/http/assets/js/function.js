@@ -2509,6 +2509,11 @@ var UTIL      = {
 		, get    : el => {
 			if ( V.animate ) return
 			
+			if ( PAGE === 'camilla' ) {
+				
+				return
+			}
+			
 			DISPLAY.guideHide();
 			if ( $( el ).parents( '#divcover' ).length ) {
 				var $el = $( '#coverart' );
@@ -2566,9 +2571,10 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 	, set     : () => {
-		var vol_prev = $( '#volume-level' ).text();
+		var $level   = $( '#volume-level' );
+		var vol_prev = $level.text();
 		var mute     = S.volumemute !== 0;
-		$( '#volume-level' )
+		$level
 			.text( S.volume )
 			.toggleClass( 'hide', mute );
 		$( '#volume-mute' )
@@ -2585,9 +2591,15 @@ var VOLUME    = {
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
 		if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
-			var ms  = 0;
+			var ms    = 0;
 		} else {
-			var ms  = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			var ms    = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			V.animate = true;
+			setTimeout( () => delete V.animate, ms );
+			if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
+				clearTimeout( V.volumebar );
+				VOLUME.barHide( ms + 5000 );
+			}
 		}
 		var $bar    = $( '#volume-bar' );
 		var ms_knob = VOLUME.visible() ? ms : 0;
@@ -2599,15 +2611,6 @@ var VOLUME    = {
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$bar.css( 'width', S.volume +'%' );
 		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
-		if ( ms === 0 ) return
-		
-		V.animate = true;
-		setTimeout( () => delete V.animate, ms );
-		if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
-			clearTimeout( V.volumebar );
-			VOLUME.barHide( ms + 5000 );
-		}
-
 	}
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return

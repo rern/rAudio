@@ -1,27 +1,3 @@
-W.volume      = data => {
-	if ( V.local ) {
-		V.local = false;
-		return
-	}
-	
-	var vol = data.val;
-	if ( data.type === 'mute' ) {
-		UTIL.volumeAnimate( 0, S.volume );
-		S.volume     = 0;
-		S.volumemute = vol;
-	} else if ( data.type === 'unmute' ) {
-		UTIL.volumeAnimate( S.volumemute, 0 );
-		S.volume     = vol;
-		S.volumemute = 0;
-	} else {
-		if ( data.type === 'drag' ) {
-			V.drag = true;
-			setTimeout( () => V.drag = false, 300 );
-		}
-		UTIL.volumeAnimate( vol, S.volume );
-		S.volume = vol;
-	}
-}
 W.refresh     = data => {
 	if ( V.press || V.local || data.page !== 'camilla' ) return
 	
@@ -1102,7 +1078,7 @@ var RENDER    = {
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#divvolume .control' ).text( S.control );
-			RENDER.volume();
+			VOLUME.set();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
@@ -1130,6 +1106,7 @@ var RENDER    = {
 		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		RENDER.vuBarToggle();
+		if ( ! V.localhost ) $( '.bar' ).addClass( 'local' );
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -1154,24 +1131,7 @@ var RENDER    = {
 			RENDER[ V.tab ]();
 		}
 	}
-	, volume      : () => {
-		var $level   = $( '#volume-level' );
-		var $ivolume = $( '#divvolume .i-volume' );
-		RENDER.volumeThumb();
-		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
-		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
-		if ( S.volumemute ) {
-			$level.addClass( 'bl' );
-			$ivolume.addClass( 'mute' );
-		} else {
-			$level.removeClass( 'bl' );
-			$ivolume.removeClass( 'mute' );
-		}
-		$level.text( S.volumemute || S.volume )
-	}
-	, volumeThumb : () => {
-		$( '#volume .thumb' ).css( 'margin-left', ( 230 - 40 ) / 100 * S.volume );
-	}
+	, volume      : VOLUME.set
 	, vuBarToggle : () => {
 		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || S.state !== 'play' );
 	}
@@ -2197,8 +2157,8 @@ var SETTING   = {
 		} );
 	}
 }
-var UTIL    = {
-	  inUse         : name => {
+var UTIL      = {
+	  inUse        : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
 		if ( filters && ! ( name in FIL ) ) { // file
@@ -2232,7 +2192,7 @@ var UTIL    = {
 		
 		return false
 	}
-	, key2label     : key => {
+	, key2label    : key => {
 		if ( key === 'ms' ) return 'ms'
 		
 		var str = key[ 0 ].toUpperCase();
@@ -2251,29 +2211,14 @@ var UTIL    = {
 				.slice( 1 )
 		return str + key
 	}
-	, labels2array  : array => {
+	, labels2array : array => {
 		if ( ! array ) return false
 		
 		var capitalized = array.map( el => UTIL.key2label( el ) );
 		return capitalized
 	}
-	, tabTitle      : () => COMMON.capitalize( V.tab )
-	, volumeAnimate : ( target, volume ) => {
-		var bandW = $( '#volume-band' ).width() - 40;
-		$( '#divvolume' ).css( 'pointer-events', 'none' );
-		$( '#volume .thumb' ).animate(
-			  { 'margin-left': bandW / 100 * target }
-			, {
-				  duration : Math.abs( target - volume ) * 40
-				, easing   : 'linear'
-				, complete : () => {
-					$( '#divvolume' ).css( 'pointer-events', '' );
-					RENDER.volume();
-				}
-			}
-		);
-	}
-	, webSocket     : () => {
+	, tabTitle     : () => COMMON.capitalize( V.tab )
+	, webSocket    : () => {
 		if ( WSCAMILLA && WSCAMILLA.readyState < 2 ) return
 		
 		WSCAMILLA           = new WebSocket( 'ws://'+ location.host +':1234' );
@@ -2397,15 +2342,53 @@ var UTIL    = {
 			}
 		}
 	}
-	, wsGetConfig   : () => {
+	, wsGetConfig  : () => {
 		setTimeout( () => {
 			WSCAMILLA.send( '"GetConfigJson"' );
 		}, WSCAMILLA.readyState === 1 ? 0 : 300 ); 
 	}
-	, wsGetState    : () => {
+	, wsGetState   : () => {
 		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
 		if ( S.config && DEV.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
 		getstate.forEach( k => WSCAMILLA.send( '"'+ k +'"' ) );
+	}
+}
+var VOLUME   = {
+	...VOLUME
+	, set : () => {
+		var $level   = $( '#volume-level' );
+		var vol_prev = $level.text();
+		var mute     = S.volumemute !== 0;
+		$level
+			.text( S.volume )
+			.toggleClass( 'hide', mute );
+		$( '#volume-mute' )
+			.text( S.volumemute )
+			.toggleClass( 'hide', ! mute );
+		$( '#divvolume .i-volume' ).toggleClass( 'mute', mute );
+		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
+		if ( V.drag || vol_prev === '' ) { // onload - empty
+			var ms   = 0;
+		} else {
+			var ms    = Math.abs( S.volume - vol_prev ) * 40;
+			V.animate = true;
+			setTimeout( () => delete V.animate, ms );
+		}
+		$( '#volume .thumb' ).css( {
+			  'transition-duration' : ms +'ms'
+			, left                  : S.volume +'%'
+		} );
+	}
+	, xy  : e => {
+		var x     = V.volume.x;
+		var w     = V.volume.w;
+		var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
+		var posX  = pageX - x;
+		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
+		S.volume  = Math.round( posX / w * 100 );
+		VOLUME.command();
+		VOLUME.set();
 	}
 }
 
@@ -2427,66 +2410,44 @@ $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
 		$updn.trigger( 'click' );
 	}
 } );
-$( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
-	var $this = $( this );
-	var left  = $this.offset().left;
-	var width = $this.width();
+$( '#volume-band' ).on( 'touchstart mousedown', function() {
+	var bounding = this.getBoundingClientRect();
 	V.volume = {
-		  current : S.volume
-		, min     : left
-		, max     : left + width - 40
-		, width   : width - 40
+		  x : bounding.left + 20
+		, w : bounding.width - 40
 	}
 	S.volumemute    = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
 	V.drag = true;
-	var x  = e.pageX || e.changedTouches[ 0 ].pageX;
-	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
-	
-	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
-	VOLUME.command();
-	RENDER.volume();
+	VOLUME.xy( e );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
-	if ( V.drag ) {
-		VOLUME.push();
-	} else { // click
-		var current = V.volume.current;
-		var x       = e.pageX || e.changedTouches[ 0 ].pageX;
-		if ( x < V.volume.min + 20 ) {   // 0-20: volume = 0
-			S.volume = 0;
-		} else if ( x > V.volume.max + 20 ) {
-			S.volume = 100;
-		} else {
-			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
-		}
-		VOLUME.command();
-		$( '#volume-level' ).text( S.volume );
-		UTIL.volumeAnimate( S.volume, current );
-	}
-	V.volume = V.drag = false;
-} ).on( 'mouseleave', function() {
-	V.volume = V.drag = false;
+	if ( ! V.drag ) VOLUME.xy( e );
+	delete V.drag;
+	delete V.volume;
 } );
 $( '#volume-0, #volume-100' ).on( 'click', function() {
-	var current = S.volume;
-	S.volume    = this.id === 'volume-0' ? 0 : 100;
+	if ( V.animate ) return
+	
+	S.volume = this.id === 'volume-0' ? 0 : 100;
 	VOLUME.command();
-	$( '#volume-level' ).text( S.volume );
-	UTIL.volumeAnimate( S.volume, current );
+	VOLUME.set();
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
+	if ( V.animate ) return
+	
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
 	VOLUME.command();
-	RENDER.volume();
+	VOLUME.set();
 } ).on( 'click', '.col-r .i-volume, #volume-level', function() {
-	UTIL.volumeAnimate( S.volumemute, S.volume );
+	if ( V.animate ) return
+	
 	VOLUME.toggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
@@ -2498,7 +2459,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
 			VOLUME.command();
-			RENDER.volumeThumb();
+			VOLUME.set();
 			$( '#volume-level' ).text( S.volume );
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 		}, 100 );

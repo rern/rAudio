@@ -52,14 +52,8 @@ COVERART.onError();
 SWIPE();
 if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
 if ( V.localhost ) { // limit animation (high cpu load)
-	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot limit ' );
-	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'limit' );
-	var $icon  = $( '#library, #button-library, .i-libupdate' );
-	$icon.on( 'animationend', function() {
-		$icon
-			.removeClass( 'i-library blink' )
-			.addClass( 'i-refresh-library' );
-	} );
+	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot local ' );
+	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'local' );
 }
 
 $( 'body' ).on( 'click', function( e ) {
@@ -401,7 +395,6 @@ $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 	if ( V.animate ) return
 	
 	VOLUME.toggle();
-	VOLUME.set();
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
 	if ( V.animate ) return

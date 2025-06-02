@@ -292,15 +292,14 @@ sp {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }
-.dot  { animation:       1s infinite blinkopaque }
-.dot2 { animation-delay: 250ms }
-.dot3 { animation-delay: 500ms }
-.blink.limit::before,
-.blink.limit::after,
-.limit {
-	animation-iteration-count: 5;
+.dot  { animation: 1s infinite blinkopaque }
+.blink.local::before,
+.blink.local::after,
+.dot.local {
+	animation: blinkopaque 1.5s step-start infinite;
 }
-
+.dot2 { animation-delay: 250ms !important }
+.dot3 { animation-delay: 500ms !important }
 input:focus {
 	outline: none;
 }

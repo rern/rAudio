@@ -130,7 +130,8 @@
 	color: var( --cg60 );
 }
 .db,
-#volume-level {
+#volume-level,
+#volume-mute {
 	display: inline-block;
 	width: 45px;
 	min-width: 45px;
@@ -138,6 +139,9 @@
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
+}
+#volume-mute {
+	color: var( --cml );
 }
 .db {
 	float: left;
@@ -392,14 +396,20 @@ i.disabled {
 	top: 0;
 	left: 0;
 }
-.slider .thumb {
+#vol {
 	position: relative;
+	width: 190px;
+	height: 40px;
+}
+.slider .thumb {
+	position: absolute;
 	width: 40px;
 	height: 40px;
 	border-radius: 4px;
 	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
+	transition: all 0s linear;
 }
 .slider.disabled .thumb {
 	background-color: var( --cmd );

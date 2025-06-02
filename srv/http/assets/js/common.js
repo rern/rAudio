@@ -135,6 +135,8 @@ $.fn.press    = function( args ) {
 		end      = args.end;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
+		if ( V.animate ) return
+		
 		V.timeoutpress = setTimeout( () => {
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
@@ -432,6 +434,24 @@ W             = {  // ws push
 			COMMON.loader();
 			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 		}
+	}
+	, volume    : data => {
+		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
+		
+		if ( ! PAGE && 'volumenone' in data ) {
+			D.volumenone = data.volumenone;
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
+			return
+		}
+		
+		if ( data.type === 'mute' ) {
+			S.volume     = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volume     = data.val;
+			S.volumemute = 0;
+		}
+		VOLUME.set();
 	}
 }
 // info ----------------------------------------------------------------------
@@ -1570,6 +1590,7 @@ var VOLUME    = {
 			var type     = 'mute';
 		}
 		VOLUME.command( type );
+		VOLUME.set();
 	}
 }
 var WEBSOCKET = {

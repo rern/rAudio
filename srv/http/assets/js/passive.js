@@ -238,24 +238,6 @@ W = {
 			}
 		}
 	}
-	, volume    : data => {
-		if ( V.drag || V.volume ) return
-		
-		if ( 'volumenone' in data ) {
-			D.volumenone = data.volumenone;
-			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
-			return
-		}
-		
-		if ( data.type === 'mute' ) {
-			S.volume     = 0;
-			S.volumemute = data.val;
-		} else {
-			S.volume     = data.val;
-			S.volumemute = 0;
-		}
-		VOLUME.set();
-	}
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
