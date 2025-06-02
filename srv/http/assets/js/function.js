@@ -2571,6 +2571,7 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 	, set     : () => {
+		var $bar     = $( '#volume-bar' );
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute !== 0;
@@ -2601,7 +2602,6 @@ var VOLUME    = {
 				VOLUME.barHide( ms + 5000 );
 			}
 		}
-		var $bar    = $( '#volume-bar' );
 		var ms_knob = VOLUME.visible() ? ms : 0;
 		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
 		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
