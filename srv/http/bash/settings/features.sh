@@ -403,7 +403,11 @@ startx )
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 	profile=$( ls /root/.mozilla/firefox | grep release$ )
-	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
+	cat << EOF > /root/.mozilla/firefox/$profile/user.js
+user_pref("sidebar.revamp", false);
+user_pref("sidebar.verticalTabs", false);
+user_pref("layout.css.devPixelsPerPx", "$scale");
+EOF
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
