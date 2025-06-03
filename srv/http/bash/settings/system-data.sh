@@ -22,12 +22,12 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	it="<i class='i-templimit yl'></i>CPU X"
 	ito="${it/yl/gr} $occurred"
 	iv="<ora><i class='i-voltage blink local'></i>Under-voltage</ora>"
-	ivy=${iv/ blink local}
+	ivy="${iv//ora/yl} $occurred"
 	declare -A warnings=(
 		 [0]=${ito/X/throttling}
 		 [1]=${ito/X/temperature limit}
 		 [2]=${ito/X/frequency capping}
-		 [3]="${ivy//ora/yl} $occurred"
+		 [3]=${ivy/ blink local}
 		[16]=${it/X/throttled}
 		[17]=${it/X/temperature limit}
 		[18]=${it/X/frequency capped}
