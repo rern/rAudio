@@ -296,7 +296,7 @@ sp {
 .blink.local::before,
 .blink.local::after,
 .dot.local {
-	animation: blinkopaque 1.5s step-start infinite;
+	animation: blinkopaque 1.5s step-start infinite; /* lower cpu load on localbrowser */
 }
 .dot2 { animation-delay: 250ms !important }
 .dot3 { animation-delay: 500ms !important }
