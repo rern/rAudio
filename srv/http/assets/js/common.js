@@ -3,7 +3,7 @@ PAGE = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=
 S    = {}
 V    = {
 	  i_warning : ICON( 'warning yl' ) +'&ensp;'
-	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
+	, localhost : location.hostname === 'localhost'
 	, orange    : '#de810e'
 	, red       : '#bb2828'
 	, touch     : navigator.maxTouchPoints > 0
