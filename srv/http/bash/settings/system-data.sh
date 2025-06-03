@@ -21,7 +21,7 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	occurred='<gr>occurred</gr>'
 	it="<i class='i-templimit yl'></i>CPU X"
 	ito="${it/yl/gr} $occurred"
-	iv="<ora><i class='i-voltage blink'></i>Under-voltage</ora>"
+	iv="<ora><i class='i-voltage blink local'></i>Under-voltage</ora>"
 	declare -A warnings=(
 		 [0]=${ito/X/throttling}
 		 [1]=${ito/X/temperature limit}
