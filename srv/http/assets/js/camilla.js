@@ -1106,7 +1106,7 @@ var RENDER    = {
 		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		RENDER.vuBarToggle();
-		if ( ! V.localhost ) $( '.bar' ).addClass( 'local' );
+		if ( V.localhost ) $( '.bar' ).addClass( 'local' );
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
