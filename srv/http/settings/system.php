@@ -382,10 +382,6 @@ $listui      = [
 	  , 'QR Code generator'
 	  , 'https://github.com/datalog/qrcode-svg'
 	],[
-	    'roundSlider'
-	  , 'A plugin that allows the user to select a value or range of values.'
-	  , 'https://github.com/soundar24/roundSlider'
-	],[
 	    'simple-keyboard'
 	  , 'Virtual Keyboard'
 	  , 'https://github.com/hodgef/simple-keyboard'
