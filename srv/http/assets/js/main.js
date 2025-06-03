@@ -564,7 +564,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	}
 } );
 $( '.btn-cmd' ).on( 'click', function() {
-	if ( V.press || WS.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
+	if ( V.press ) return
 	
 	var cmd   = this.id;
 	if ( S.player === 'mpd' && S.state === cmd ) return
