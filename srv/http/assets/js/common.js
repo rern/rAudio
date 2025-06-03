@@ -458,8 +458,8 @@ W             = {  // ws push
 function INFO( json ) {
 	_INFO.clearTimeout( 'all' );
 	$( '.menu' ).addClass( 'hide' );
-	V.timeout = {}
 	I         = json;
+	I.timeout = {}
 	LOCAL(); // flag for consecutive info
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
@@ -804,11 +804,11 @@ function INFO( json ) {
 				$rangeval.text( val );
 			}
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( V.timeout.range );
+				clearTimeout( I.timeout.range );
 				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
 			} ).press( e => {
 				var up = $( e.target ).hasClass( 'up' );
-				V.timeout.range = setInterval( () => rangeSet( up ), 100 );
+				I.timeout.range = setInterval( () => rangeSet( up ), 100 );
 			} );
 		}
 		if ( I.updn.length ) {
@@ -852,14 +852,14 @@ function INFO( json ) {
 					if ( ! V.press ) numberset( $( this ) );
 				} ).press( e => {
 					var $target = $( e.target );
-					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
-					V.timeout.updnt = setTimeout( () => { // @5 after 3s
-						clearInterval( V.timeout.updni );
+					I.timeout.updni = setInterval( () => numberset( $target ), 100 );
+					I.timeout.updnt = setTimeout( () => { // @5 after 3s
+						clearInterval( I.timeout.updni );
 						step           *= 5;
 						var v           = +$num.val();
 						v               = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout.updni = setInterval( () => numberset( $target ), 100 );
+						I.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
 					_INFO.clearTimeout();
@@ -969,10 +969,10 @@ var _INFO     = {
 			$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 				var infoval = _INFO.val( 'array' );
 				if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
-				if ( I.checkblank )  V.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
-				if ( I.checklength ) V.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
-				if ( I.checkip )     V.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
-				V.timeout.check = setTimeout( () => {
+				if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
+				if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
+				if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
+				I.timeout.check = setTimeout( () => {
 					var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
 					var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
 					$( '#infoOk' ).toggleClass( 'disabled', disabled );
@@ -983,8 +983,8 @@ var _INFO     = {
 	, clearTimeout  : all => { // ok for both timeout and interval
 		if ( ! ( 'timeout' in V ) ) return
 		
-		var timeout = all ? Object.keys( V.timeout ) : [ 'updni', 'updnt' ];
-		timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
+		var timeout = all ? Object.keys( I.timeout ) : [ 'updni', 'updnt' ];
+		timeout.forEach( k => clearTimeout( I.timeout[ k ] ) );
 	}
 	, footerIcon    : kv => {
 		var footer = '';
