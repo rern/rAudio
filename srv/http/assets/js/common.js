@@ -1619,7 +1619,7 @@ var WEBSOCKET = {
 		WS.onmessage = message => {
 			var data = message.data;
 			if ( data === 'pong' ) { // on pageActive - reload if ws not response
-				delete V.timeoutreload;
+				clearTimeout( V.timeoutreload );
 			} else {
 				var json    = JSON.parse( data );
 				var channel = json.channel;
@@ -1630,7 +1630,7 @@ var WEBSOCKET = {
 	}
 	, reConnect : () => {
 		try {
-			V.timeoutreload ? location.reload() : WEBSOCKET.connect();
+			WEBSOCKET.connect();
 		} catch( error ) {
 			setTimeout( WEBSOCKET.reConnect, 1000 );
 		}
@@ -1648,10 +1648,7 @@ function pageActive() {
 	V.pageactive = true;
 	if ( WS && WS.readyState === 1 ) {
 		WS.send( '"ping"' );
-		V.timeoutreload = true;
-		setTimeout( () => { // reconnect if ws not response on wakeup
-			if ( V.timeoutreload ) WEBSOCKET.reConnect();
-		}, 300 );
+		V.timeoutreload = setTimeout( location.reload, 300 ); // if ws not response on page visible
 	} else {
 		WEBSOCKET.reConnect();
 	}
