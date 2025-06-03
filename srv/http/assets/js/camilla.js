@@ -1151,7 +1151,7 @@ var RENDER    = {
 				if ( ! V.timeoutred ) return
 				
 				clearTimeout( V.timeoutred );
-				V.timeoutred = false;
+				delete V.timeoutred;
 				$( '.peak, .clipped' )
 					.css( 'transition-duration', '0s' )
 					.addClass( 'red' );

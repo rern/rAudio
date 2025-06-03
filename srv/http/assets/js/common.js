@@ -1619,7 +1619,7 @@ var WEBSOCKET = {
 		WS.onmessage = message => {
 			var data = message.data;
 			if ( data === 'pong' ) { // on pageActive - reload if ws not response
-				V.timeoutreload = false;
+				delete V.timeoutreload;
 			} else {
 				var json    = JSON.parse( data );
 				var channel = json.channel;
