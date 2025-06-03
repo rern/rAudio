@@ -378,8 +378,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		if ( V.volume.type === 'knob' ) {
 			VOLUME.knob( e );
 		} else {
-			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow() : VOLUME.bar( e );
-			VOLUME.barHide();
+			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow( 'hide' ) : VOLUME.bar( e );
 		}
 		delete V.volume;
 	}
@@ -399,9 +398,15 @@ $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
 	if ( V.animate ) return
 	
-	VOLUME.upDown( $( this ).hasClass( 'up' ) );
+	var $this = $( this );
+	if ( $this.hasClass( 'transparent' ) ) {
+		VOLUME.barShow( 'hide' );
+		return
+	}
+	
+	VOLUME.upDown( $this.hasClass( 'up' ) );
 } ).press( {
-	  action : e => { 
+	  action : e => {
 		clearTimeout( V.volumebar );
 		if ( ! D.volume ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
@@ -414,7 +419,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
 	COVERART.save();
-} ).press( e => {
+} );
+$( '#map-cover' ).press( e => {
 	if ( typeof Android === 'object' && e.target.id === 'coverT' ) {
 		UTIL.changeIP();
 		return
@@ -427,9 +433,6 @@ $( '#divcover' ).on( 'click', '.cover-save', function() {
 	) return
 	
 	S.webradio ? CONTEXT.thumbnail() : COVERART.change();
-} );
-$( '#coverT' ).press( () => {
-	if ( typeof Android === 'object' ) UTIL.changeIP();
 } );
 var btnctrl = {
 	  TL : 'cover'
@@ -507,10 +510,11 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 				&& ! VOLUME.visible()
 			) {
 				if ( $( '#info' ).hasClass( 'hide' ) ) {
-					$( '#info' ).removeClass( 'hide' );
-				} else {
 					$( '#info' ).addClass( 'hide' );
-					$( '#volume-band' ).trigger( 'click' );
+					VOLUME.barShow();
+				} else {
+					$( '#info' ).removeClass( 'hide' );
+					VOLUME.barHide();
 				}
 				return
 			}

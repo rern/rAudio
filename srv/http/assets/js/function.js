@@ -2549,14 +2549,14 @@ var VOLUME    = {
 	}
 	, barHide : ms => {
 		V.volumebar = setTimeout( () => {
-			$( '#info' ).removeClass( 'hide' ); // 320 x 480
 			$( '#volume-bar, #volume-band-point, #volume-band-level' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
 		}, ms !== undefined ? ms : 5000 );
 	}
-	, barShow : () => {
+	, barShow : hide => {
 		$( '#volume-bar, #volume-band-point, #volume-band-level' ).removeClass( 'hide' );
 		$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
+		if ( hide ) VOLUME.barHide();
 	}
 	, knob    : e => {
 		var deg     = UTIL.xy.e2deg( e, 'volume' );
