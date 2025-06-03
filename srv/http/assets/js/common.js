@@ -1596,43 +1596,37 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 }
-/*
-- page load : pageActive() > connect() --- timeout  readyState !== 1 > clear interval > connect()
-- onopen    :                          --- interval readyState === 1 > clear interval > REFRESHDATA()
-- on wakeup : pageActive() : readyState === 1 > ping --- timeout no 'pong' > reload()
-                             connect()
-*/
 var WEBSOCKET = {
 	  connect : ip => {
-		if ( WS ) WS.close();
-		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
+		if ( WS ) WS.close();                                                      // terminate existing
+		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
 		var interval = null;
-		setTimeout( () => { // after wakeup
-			if ( WS.readyState !== 1 ) {
-				clearInterval( interval );
-				WEBSOCKET.connect();
+		setTimeout( () => {                                                        // limit polling for ready
+			if ( WS.readyState !== 1 ) {                                           // if not ready in 1s:
+				clearInterval( interval );                                         // - cancel polling
+				WEBSOCKET.connect();                                               // - reinit
 			}
 		}, 1000 );
 		WS.onopen    = () => {
-			interval = setInterval( () => {
-				if ( WS.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+			interval = setInterval( () => {                                       // poll for ready every 0.1s
+				if ( WS.readyState === 1 ) {                                      // if ready:
 					clearInterval( interval );
 					WS.send( '{ "client": "add" }' );
 					if ( V.reboot && S.login ) {
-						location.href = '/';
+						location.href = '/';                                      // > if S.login, reload page to logout
 					} else {
 						delete V.reboot;
-						REFRESHDATA();
+						REFRESHDATA();                                            // > refresh data / get data - start page
 					}
 				}
 			}, 100 );
 		}
 		WS.onmessage = message => {
 			var data = message.data;
-			if ( data === 'pong' ) { // on pageActive - reload if ws not response
-				clearTimeout( V.timeoutreload );
-				REFRESHDATA();
-			} else {
+			if ( data === 'pong' ) {                                              // from pageActive 'ping'
+				clearTimeout( V.timeoutreload );                                  // - cancel reload page
+				REFRESHDATA();                                                    // - refresh data
+			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
@@ -1648,14 +1642,14 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 function pageActive() {
-	if ( V && ( V.pageactive || V.off ) ) return
+	if ( V.pageactive || V.off ) return
 	
 	V.pageactive = true;
-	if ( WS && WS.readyState === 1 ) {
-		WS.send( '"ping"' );
-		V.timeoutreload = setTimeout( location.reload, 300 ); // if ws not response on page visible
-	} else {
-		WEBSOCKET.connect();
+	if ( WS && WS.readyState === 1 ) {                                            // on wakeup and ws still ready
+		WS.send( '"ping"' );                                                      // - send      'ping'
+		V.timeoutreload = setTimeout( location.reload, 300 );                     // - wait 0.3s for 'pong' or reload page
+	} else {                                                                      // on page load or ws already closed
+		WEBSOCKET.connect();                                                      // - connect
 	}
 }
 function pageInactive() {
