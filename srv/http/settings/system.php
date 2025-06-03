@@ -367,7 +367,7 @@ $listui      = [
 	  , 'http://www.latofonts.com/lato-free-fonts'
 	],[
 	    'lazysizes'
-	  , 'Lazy loader for images'
+	  , 'Lazy loader for images <gr>(fallback: not support loading="lazy")</gr>'
 	  , 'https://github.com/aFarkas/lazysizes'
 	],[
 	    'pica'
