@@ -383,7 +383,7 @@ W             = {  // ws push
 				$( '#banner' ).addClass( 'hide' );
 			}, 12000 );
 		} else { // reconnect after reboot
-			setTimeout( WEBSOCKET.reConnect, data.startup + 8000 ); // add shutdown 8s
+			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
 		}
 	}
 	, relays    : data => {
@@ -1596,25 +1596,33 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 }
+/*
+- page load : pageActive() > connect() --- timeout  readyState !== 1 > clear interval > connect()
+- onopen    :                          --- interval readyState === 1 > clear interval > REFRESHDATA()
+- on wakeup : pageActive() : readyState === 1 > ping --- timeout no 'pong' > reload()
+                             connect()
+*/
 var WEBSOCKET = {
 	  connect : ip => {
-		if ( WS && WS.readyState === 1 ) return
-		
+		if ( WS ) WS.close();
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
+		var interval = null;
+		setTimeout( () => { // after wakeup
+			if ( WS.readyState !== 1 ) {
+				clearInterval( interval );
+				WEBSOCKET.connect();
+			}
+		}, 1000 );
 		WS.onopen    = () => {
-			var interval = setInterval( () => {
+			interval = setInterval( () => {
 				if ( WS.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 					clearInterval( interval );
 					WS.send( '{ "client": "add" }' );
-					if ( V.reboot ) {
-						delete V.reboot
-						if ( S.login ) {
-							location.href = '/';
-						} else {
-							REFRESHDATA();
-							COMMON.loaderHide();
-							BANNER_HIDE();
-						}
+					if ( V.reboot && S.login ) {
+						location.href = '/';
+					} else {
+						delete V.reboot;
+						REFRESHDATA();
 					}
 				}
 			}, 100 );
@@ -1623,19 +1631,13 @@ var WEBSOCKET = {
 			var data = message.data;
 			if ( data === 'pong' ) { // on pageActive - reload if ws not response
 				clearTimeout( V.timeoutreload );
+				REFRESHDATA();
 			} else {
 				var json    = JSON.parse( data );
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
 			}
-		}
-	}
-	, reConnect : () => {
-		try {
-			WEBSOCKET.connect();
-		} catch( error ) {
-			setTimeout( WEBSOCKET.reConnect, 1000 );
 		}
 	}
 }
@@ -1653,9 +1655,8 @@ function pageActive() {
 		WS.send( '"ping"' );
 		V.timeoutreload = setTimeout( location.reload, 300 ); // if ws not response on page visible
 	} else {
-		WEBSOCKET.reConnect();
+		WEBSOCKET.connect();
 	}
-	setTimeout( REFRESHDATA, PAGE ? 300 : 0 );
 }
 function pageInactive() {
 		if ( V.local || V.debug ) return // V.local from select2
