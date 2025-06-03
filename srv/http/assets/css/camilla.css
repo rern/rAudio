@@ -64,6 +64,9 @@
 	background: var( --cm );
 	transition-duration: 0.1s;
 }
+.bar.local {
+	transition-timing-function: step-start;
+}
 #vugrid {
 	position: absolute;
 	width: 100%;
