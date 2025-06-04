@@ -242,6 +242,9 @@ i.map.disabled, .map.disabled i {
 #page-playlist .index {
 	opacity: 0.5;
 }
+.page {
+	overflow-x: hidden;
+}
 /* ---------------------- bars ----------------------*/
 div.pagerefresh {
 	position: fixed;
@@ -932,12 +935,12 @@ div.pagerefresh {
 	right: 15px;
 	height: 25px;
 	width: 25px;
-	border-radius: 50%;
 	background: var( --cm );
 	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
 #vol,
 #vol .point {
+	border-radius: 50%;
 	transition: transform 0s linear;
 }
 
