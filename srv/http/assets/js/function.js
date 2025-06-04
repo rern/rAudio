@@ -2579,7 +2579,9 @@ var VOLUME    = {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
+		if ( V.updn ) {
+			var ms    = 100;
+		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
 			var ms    = 0;
 		} else {
 			var ms    = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms

@@ -393,7 +393,10 @@ $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 	
 	VOLUME.toggle();
 } );
-$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
+$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'touchstart mousedown', function() {
+	V.updn = true;
+} ).on( 'click', function() {
+	setTimeout( () => delete V.updn, 300 );
 	if ( V.animate ) return
 	
 	var $this = $( this );
@@ -406,7 +409,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } ).press( {
 	  action : e => {
 		clearTimeout( V.volumebar );
-		if ( ! D.volume ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
+		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
 		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
 	}
