@@ -50,7 +50,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 COVERART.onError();
 SWIPE();
-if ( ! V.lazyload ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
+if ( ! V.loadinglazy ) $.getScript( '/assets/js/plugin/lazysizes-5.3.2.min.js' );
 if ( V.localhost ) { // limit animation (high cpu load)
 	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot local ' );
 	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'local' );

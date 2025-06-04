@@ -264,7 +264,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				LIBRARY.padding( MODE.album() ? $( '.coverart' ).eq( 0 ).height() : false );
+				LIBRARY.padding();
 			}
 		} else {
 			PLAYLIST.render.padding();

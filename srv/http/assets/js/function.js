@@ -1146,13 +1146,7 @@ var LIBRARY   = {
 			}
 			$( '#lib-search, #button-lib-search, #search-list' ).addClass( 'hide' );
 			DISPLAY.pageScroll( V.scrolltop[ data.path ] || 0 );
-			if ( MODE.album() ) {
-				$( '.coverart img' ).eq( 0 ).on( 'lazyloaded', function() {
-					LIBRARY.padding( $( '.coverart' ).eq( 0 ).height() );
-				});
-			} else {
-				LIBRARY.padding();
-			}
+			LIBRARY.padding();
 			if ( V.color ) COLOR.liActive();
 		} );
 	}
@@ -1176,12 +1170,12 @@ var LIBRARY   = {
 			}
 		} );
 	}
-	, padding    : coverartH => {
+	, padding    : () => {
 		var padding = UTIL.barVisible( 129, 89 );
 		if ( V.librarytrack ) {
 			if ( D.fixedcover && V.wH > 734 ) padding += 230;
-		} else if ( coverartH ) {
-			padding += coverartH - 49;
+		} else if ( MODE.album() ) {
+			padding += $( '.coverart' ).height() - 49;
 		}
 		var $list = V.search ? $( '#search-list' ) : $( '#lib-list' );
 		$list.css( {
@@ -2163,9 +2157,7 @@ var PLAYLIST  = {
 				$artist.addClass( 'hide' );
 				$url.removeClass( 'hide' );
 			} else {
-				if ( S.coverart ) $img
-									.removeClass( 'lazyload' )
-									.attr( 'src', S.coverart );
+				if ( S.coverart ) $img.attr( 'src', S.coverart );
 				$name.html( S.Title || V.dots );
 				if ( S.Artist ) {
 					$artist
