@@ -190,6 +190,8 @@ var COLOR     = {
 				ctx.fillStyle = grad;
 				ctx.fillRect( 0, w - i, w, 1 );
 			}
+//			var changed = JSON.stringify( V.ctx.hsl ) !== JSON.stringify( V.ctx.hsl_cur )
+//			$( '#colorok' ).toggleClass( 'disabled', ! changed );
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
@@ -261,36 +263,6 @@ var COLOR     = {
 			V.ctx.x = x;
 			V.ctx.y = y;
 		}
-		, set      : () => {
-			COLOR.pick.gradient(); // sat box
-			var h = V.ctx.hsl.h;
-			var l = V.ctx.hsl.l / 100;
-			var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
-			var k, rgb, v;
-			var [ r, g, b ] = ( () => { // hsl > rgb
-				rgb = [];
-				[ 0, 8, 4 ].forEach( n => {
-					k = ( n + h / 30 ) % 12;
-					v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
-					rgb.push( Math.round( v * 255 ) );
-				} );
-				return rgb
-			} )();
-			var pb, pg, pr;
-			match:
-			for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
-				for ( var x = 0; x < V.ctx.width; x++ ) {
-					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
-					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
-						COLOR.pick.rotate();
-						COLOR.pick.point( x, y );
-						V.ctx.x = x;
-						V.ctx.y = y;
-						break match;
-					}
-				}
-			}
-		}
 		, xy       : ( e, hue_sat ) => {
 			var x = e.pageX || e.changedTouches[ 0 ].pageX;
 			var y = e.pageY || e.changedTouches[ 0 ].pageY;
@@ -320,7 +292,34 @@ var COLOR     = {
 			, width   : $box.width()
 			, wheel   : { cx: tx + wheel_c, cy: ty + wheel_c }
 		}
-		COLOR.pick.set();
+		COLOR.pick.gradient(); // sat box
+		var h = V.ctx.hsl.h;
+		var l = V.ctx.hsl.l / 100;
+		var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
+		var k, rgb, v;
+		var [ r, g, b ] = ( () => { // hsl > rgb
+			rgb = [];
+			[ 0, 8, 4 ].forEach( n => {
+				k = ( n + h / 30 ) % 12;
+				v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
+				rgb.push( Math.round( v * 255 ) );
+			} );
+			return rgb
+		} )();
+		var pb, pg, pr;
+		match:
+		for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
+			for ( var x = 0; x < V.ctx.width; x++ ) {
+				[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
+				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
+					COLOR.pick.rotate();
+					COLOR.pick.point( x, y );
+					V.ctx.x = x;
+					V.ctx.y = y;
+					break match;
+				}
+			}
+		}
 	}
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
