@@ -2380,8 +2380,7 @@ var VOLUME    = {
 		} );
 	}
 	, xy  : e => {
-		var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
-		var posX  = pageX - V.volume.x;
+		var posX  = COMMON.pageX( e ) - V.volume.x;
 		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 		S.volume  = Math.round( posX / w * 100 );

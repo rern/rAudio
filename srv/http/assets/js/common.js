@@ -289,13 +289,13 @@ var SWIPE     = () => {
 			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 		) return
 		
-		V.swipe     = e.changedTouches[ 0 ].pageX;
+		V.swipe     = COMMON.pageX( e );
 	} );
 	document.addEventListener( 'touchend', function( e ) {
 		if ( ! V.swipe ) return
 
 		clearTimeout( V.timeoutsort );
-		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		var diff  = V.swipe - COMMON.pageX( e );
 		delete V.swipe;
 		if ( Math.abs( diff ) < 100 ) return
 		
@@ -1562,6 +1562,12 @@ var COMMON    = {
 		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
+	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
+	, pageXY        : e => {
+		var x = e.pageX || e.changedTouches[ 0 ].pageX;
+		var y = e.pageY || e.changedTouches[ 0 ].pageY;
+		return [ x, y ]
+	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute

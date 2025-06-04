@@ -264,8 +264,7 @@ var COLOR     = {
 			V.ctx.y = y;
 		}
 		, xy       : ( e, hue_sat ) => {
-			var x = e.pageX || e.changedTouches[ 0 ].pageX;
-			var y = e.pageY || e.changedTouches[ 0 ].pageY;
+			var [ x, y ] = COMMON.pageXY( e );
 			COLOR.pick[ hue_sat ]( x, y );
 			COLOR.okEnable();
 		}
@@ -1492,16 +1491,6 @@ var PLAYBACK  = {
 		}
 		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
 	}
-	, degree    : ( e, el ) => { // el: time/volume
-		if ( V.touch ) {
-			var x = e.changedTouches[ 0 ].pageX;
-			var y = e.changedTouches[ 0 ].pageY;
-		} else {
-			var x = e.pageX;
-			var y = e.pageY;
-		}
-		return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
-	}
 	, elapsed   : () => {
 		UTIL.intervalClear.elapsed();
 		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
@@ -2484,13 +2473,7 @@ var UTIL      = {
 			return deg
 		}
 		, e2deg  : ( e, el ) => { // el: time/volume
-			if ( V.touch ) {
-				var x = e.changedTouches[ 0 ].pageX;
-				var y = e.changedTouches[ 0 ].pageY;
-			} else {
-				var x = e.pageX;
-				var y = e.pageY;
-			}
+			var [ x, y ] = COMMON.pageXY( e );
 			return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
 		}
 		, get    : el => {
@@ -2522,8 +2505,7 @@ var UTIL      = {
 		, ratio  : ( e, type ) => {
 			var x     = V[ type ].x;
 			var w     = V[ type ].w;
-			var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
-			var posX  = pageX - x;
+			var posX  = COMMON.pageX( e ) - x;
 			posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 			return posX / w
 		}
