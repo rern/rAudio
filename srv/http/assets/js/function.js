@@ -1,5 +1,4 @@
 function LIST( query, callback, json ) {
-	if ( ! V.loadinglazy ) query.lazyload = true;
 	if ( V.debug ) {
 		COMMON.debugConsole( JSON.stringify( query ) );
 		return

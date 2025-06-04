@@ -366,10 +366,6 @@ $listui      = [
 	  , 'A san-serif typeface family'
 	  , 'http://www.latofonts.com/lato-free-fonts'
 	],[
-	    'lazysizes'
-	  , 'Lazy loader for images <gr>(fallback: not support loading="lazy")</gr>'
-	  , 'https://github.com/aFarkas/lazysizes'
-	],[
 	    'pica'
 	  , 'Resize image in browser with high quality and high speed'
 	  , 'https://github.com/nodeca/pica'

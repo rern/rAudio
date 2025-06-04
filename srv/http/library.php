@@ -454,8 +454,7 @@ function htmlList() { // non-file 'list' command
 </li>';
 		}
 	} else {
-		global $display, $LAZYLOAD;
-		$lazy = $LAZYLOAD ? ' class="lazyload" data-src="' : ' loading="lazy" src="';
+		global $display;
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
@@ -484,7 +483,7 @@ function htmlList() { // non-file 'list' command
 <li class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$album.'</a>
-	<img'.$lazy.$thumbfile.'">
+	<img loading="lazy" src="'.$thumbfile.'">
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>
 </li>';
