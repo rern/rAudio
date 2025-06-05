@@ -1659,10 +1659,10 @@ function pageActive() {
 	}
 }
 function pageInactive() {
-		if ( V.local || V.debug ) return // V.local from select2
-		
-		V.pageactive = false;
-		if ( typeof onPageInactive === 'function' ) onPageInactive();
+	if ( V.local || V.debug ) return // V.local from select2
+	
+	V.pageactive = false;
+	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
 
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
