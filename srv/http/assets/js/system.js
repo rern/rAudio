@@ -6,7 +6,7 @@ W.storage         = data => {
 	V.debounce = setTimeout( () => {
 		S.list.storage = data.list;
 		UTIL.renderStorage();
-		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) );
+		COMMON.statusToggle( 'refresh' );
 	}, 1000 );
 }
 

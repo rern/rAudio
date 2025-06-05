@@ -59,11 +59,7 @@ function REFRESHDATA() {
 		
 		SWITCH.set();
 		renderPage();
-		if ( $( '#data .infobtn' ).length ) {
-			$( '#data' ).remove();
-		} else if ( $( '#data' ).length ) {
-			$( '#data' ).html( COMMON.json.highlight( S ) );
-		}
+		COMMON.statusToggle( 'refresh' );
 	} );
 }
 function SETTING( id, callback ) {
@@ -382,8 +378,8 @@ $( document ).on( 'keydown', function( e ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {
 				$( '.select2-hidden-accessible' ).select2( 'close' );
-			} else if ( $( '#data' ).length ) {
-				$( '#data' ).remove();
+			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
+				COMMON.statusToggle( 'hide' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				COMMON.loaderHide();
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
@@ -409,7 +405,7 @@ $( document ).on( 'keydown', function( e ) {
 		case 'x':
 			if ( ! e.ctrlKey ) return
 			
-			$( '#data' ).length ? $( '#data' ).remove() : $( '#close' ).trigger( 'click' );
+			$( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':

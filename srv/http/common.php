@@ -1,5 +1,5 @@
 <?php
-$hash      = '?v=1748685014';
+$hash      = '?v='.time();
 $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
 ?>
 <!DOCTYPE html>
@@ -105,6 +105,8 @@ if ( ! $add_guide )  {
 	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html_end.= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
+	<pre id="data" class="hide"></pre>
+	<i id="debug" class="i-info"></i>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
 ';
@@ -122,7 +124,6 @@ function htmlEnd( $htmlbar ) {
 	global $html_end;
 	echo '
 	<div id="bar-bottom">'.$htmlbar.'</div>
-	<i id="debug" class="i-info"></i>
 '.$html_end.'
 </body>
 </html>

@@ -284,7 +284,7 @@ var SWIPE     = () => {
 		var $target = $( e.target );
 		if ( $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
-			|| $( '#data' ).length
+			|| ! $( '#data' ).hasClass( 'hide' )
 			|| ! $( '#bio' ).hasClass( 'hide' )
 			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 		) return
@@ -1185,8 +1185,9 @@ var COMMON    = {
 		COMMON.loaderHide();
 	}
 	, dataErrorSet  : error => {
-		$( '#data .error' ).remove();
-		$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' );
+		$( '#data' )
+			.html( error )
+			.removeClass( 'hide' );
 		if ( $( '#data codered' ).length ) {
 			var fn = () => {
 				// copy2clipboard - for non https which cannot use clipboard API
@@ -1455,6 +1456,12 @@ var COMMON    = {
 		
 		$( '#loader' ).addClass( 'hide' );
 	}
+	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
+	, pageXY        : e => {
+		var x = e.pageX || e.changedTouches[ 0 ].pageX;
+		var y = e.pageY || e.changedTouches[ 0 ].pageY;
+		return [ x, y ]
+	}
 	, power         : () => {
 		INFO( {
 			  icon        : 'power'
@@ -1562,11 +1569,25 @@ var COMMON    = {
 		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
-	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
-	, pageXY        : e => {
-		var x = e.pageX || e.changedTouches[ 0 ].pageX;
-		var y = e.pageY || e.changedTouches[ 0 ].pageY;
-		return [ x, y ]
+	, statusToggle  : action => {
+		var $data  = $( '#data' );
+		var hidden = $data.hasClass( 'hide' );
+		if ( action === 'refresh' && hidden ) return
+		
+		if ( action ) {
+			var show = action !== 'hide';
+		} else {
+			var show = hidden;
+		}
+		if ( show ) {
+			$data
+				.html( COMMON.json.highlight( S ) )
+				.removeClass( 'hide' );
+		} else {
+			$data
+				.empty()
+				.addClass( 'hide' );
+		}
 	}
 }
 var VOLUME    = {
@@ -1717,11 +1738,7 @@ $( '#debug' ).on( 'click', function() {
 		return
 	}
 	
-	if ( $( '#data' ).length ) {
-		$( '#data' ).remove();
-	} else {
-		$( '#banner' ).after( '<pre id="data">'+ COMMON.json.highlight( S ) +'</pre>' );
-	}
+	COMMON.statusToggle();
 } ).press( () => {
 	if ( V.debug ) {
 		COMMON.debug( 'disable' );

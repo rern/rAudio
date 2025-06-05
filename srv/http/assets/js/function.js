@@ -45,7 +45,7 @@ function REFRESHDATA() {
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) )
+		COMMON.statusToggle( 'refresh' );
 		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
 		DISPLAY.controls();
 	} );
