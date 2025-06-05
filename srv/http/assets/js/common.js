@@ -361,7 +361,7 @@ W             = {  // ws push
 		}
 		if ( ! PAGE ) {
 			if ( message === 'Change track ...' ) { // audiocd
-				UTIL.intervalClear.all();
+				UTIL.intervalClear();
 			} else if ( title === 'Latest' ) {
 				C.latest = 0;
 				$( '.mode.latest gr' ).empty();

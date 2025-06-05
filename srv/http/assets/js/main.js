@@ -338,7 +338,7 @@ $( '#time svg, #time-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( S.player !== 'mpd' || S.webradio ) return
 	
 	V.time = UTIL.xy.get( this );
-	UTIL.intervalClear.all();
+	UTIL.intervalClear();
 	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 	PROGRESS[ V.time.type ]( e ); // move immediatly
 } );
@@ -591,7 +591,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			BASH( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
-			UTIL.intervalClear.elapsed();
+			UTIL.intervalClear( 'elapsed' );
 			PLAYBACK.stop();
 			PROGRESS.set( 0 );
 			if ( S.player !== 'mpd' ) {
@@ -612,7 +612,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
-			UTIL.intervalClear.elapsed();
+			UTIL.intervalClear( 'elapsed' );
 			PLAYBACK.info.color();
 			BASH( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
@@ -1475,7 +1475,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			$( '#play' ).trigger( 'click' );
 		}
 	} else {
-		UTIL.intervalClear.all();
+		UTIL.intervalClear();
 		$( '.elapsed' ).empty();
 		BASH( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );

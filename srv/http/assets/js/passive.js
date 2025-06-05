@@ -283,6 +283,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
-	UTIL.intervalClear.all();
+	UTIL.intervalClear();
 	DISPLAY.guideHide();
 }

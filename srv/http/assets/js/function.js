@@ -1492,7 +1492,7 @@ var PLAYBACK  = {
 		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
 	}
 	, elapsed   : () => {
-		UTIL.intervalClear.elapsed();
+		UTIL.intervalClear( 'elapsed' );
 		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
@@ -1503,7 +1503,7 @@ var PLAYBACK  = {
 			 PROGRESS.set( S.elapsed );
 		} else { // elapsed only
 			if ( ! D.radioelapsed ) {
-				$( '#pl-list li.active .elapsed' ).html( V.blinkdot );
+				$elapsed.html( V.blinkdot );
 				return
 			}
 		}
@@ -1517,10 +1517,10 @@ var PLAYBACK  = {
 				}
 				elapsedhms = UTIL.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) UTIL.intervalClear.elapsed();
+				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
 			} else {
 				S.elapsed = 0;
-				UTIL.intervalClear.all();
+				UTIL.intervalClear();
 				$elapsed.empty();
 				PROGRESS.set( 0 );
 			}
@@ -1561,7 +1561,7 @@ var PLAYBACK  = {
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
 		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
-			UTIL.intervalClear.all();
+			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
 			if ( S.state === 'play' ) {
@@ -2070,7 +2070,7 @@ var PLAYLIST  = {
 		, scroll : () => {
 			if ( ! V.playlist || ! V.playlisthome ) return
 			
-			UTIL.intervalClear.all();
+			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
 				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
@@ -2175,7 +2175,7 @@ var PLAYLIST  = {
 			return
 		}
 		
-		UTIL.intervalClear.all();
+		UTIL.intervalClear();
 		if ( S.state !== 'stop' ) {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
@@ -2215,7 +2215,7 @@ var PROGRESS  = {
 	, set     : elapsed => { // if defined - no animate
 		if ( ! D.time && ! D.cover ) return
 		
-		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear.elapsed();
+		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear( 'elapsed' );
 		if ( elapsed === undefined ) {
 			var s = S.Time - S.elapsed; // seconds from current to full
 			var l = 1;                  // full circle
@@ -2373,16 +2373,13 @@ var UTIL      = {
 			, okno        : true
 		} );
 	}
-	, intervalClear   : {
-		  all : () => {
+	, intervalClear   : elpased => {
+		if ( elapsed ) {
+			clearInterval( V.interval.elapsed );;
+		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
-			PROGRESS.set( S.elapsed || 0 );
-			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 		}
-		, elapsed : () => {
-			clearInterval( V.interval.elapsed );
-			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
-		}
+		if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 	}
 	, refresh         : () => {
 		if ( V.library ) {
@@ -2433,7 +2430,7 @@ var UTIL      = {
 		return hh  +':'+ mm +':'+ ss;
 	}
 	, switchPage      : page => {
-		UTIL.intervalClear.all();
+		UTIL.intervalClear();
 		// get scroll position before changed
 		if ( V.library ) {
 			if ( V.librarylist ) {
