@@ -2163,7 +2163,6 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .i-coverart,
 	#divcover .i-save { top: 5px; }
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {
