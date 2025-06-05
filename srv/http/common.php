@@ -121,8 +121,8 @@ foreach( $js as $j )  $html_end.= $htmljs.$j.'.js'.$hash.'"></script>';
 function htmlEnd( $htmlbar ) {
 	global $html_end;
 	echo '
-	<i id="debug" class="i-info"></i>
 	<div id="bar-bottom">'.$htmlbar.'</div>
+	<i id="debug" class="i-info"></i>
 '.$html_end.'
 </body>
 </html>
