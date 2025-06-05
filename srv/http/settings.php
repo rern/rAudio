@@ -40,4 +40,4 @@ if ( ! $addons ) {
 echo '
 </div>
 ';
-htmlBottom();
+htmlEnd( $htmlbar );

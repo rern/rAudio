@@ -380,4 +380,4 @@ $htmlsearch   = '
 <div id="bio" class="hide"></div>
 <?php
 $htmlbar = buttonSet( [ 'library', 'playback', 'playlist' ] );
-htmlBottom();
+htmlEnd( $htmlbar );

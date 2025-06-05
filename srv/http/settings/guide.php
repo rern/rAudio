@@ -28,4 +28,4 @@ img {
 <img id="img" src="/assets/img/guide/1.jpg">
 <?php
 $htmlbar.= '<div>'.icon(  'back', 'prev' ).icon(  'arrow-right', 'next' ).'</div>';
-htmlBottom();
+htmlEnd( $htmlbar );

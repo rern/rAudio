@@ -90,43 +90,45 @@ if ( ! $page ) { // main
 $add_guide = $addonsprogress || $guide;
 $keyboard  = $localhost && ! $add_guide;
 if ( $keyboard ) foreach( [ 'cssp', 'css', 'jsp', 'js' ] as $ea ) $$ea[] = 'simplekeyboard';
-
+//------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
 foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
-$html     .= '
+echo $html.'
 </head>
 <body>
 ';
+//------------------------------------------------------------------------------------------
+$html_end  = '';
 if ( ! $add_guide )  {
 	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
-	$html    .= '
+	$html_end.= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
 ';
 }
-if ( $keyboard )       $html.= '
+if ( $keyboard ) {
+	$html_end.= '
 	<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
 ';
-echo $html;
-
-$scripts   = '';
+}
 $htmljs    = '<script src="/assets/js/';
-foreach( $jsp as $j ) $scripts.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
+foreach( $jsp as $j ) $html_end.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  $html_end.= $htmljs.$j.'.js'.$hash.'"></script>';
 
-function htmlBottom() {
-	global $htmlbar, $scripts;
+function htmlEnd( $htmlbar ) {
+	global $html_end;
 	echo '
-	<div id="bar-bottom">'.$htmlbar.'</div>
 	<i id="debug" class="i-info"></i>
-	'.$scripts.'
+	<div id="bar-bottom">'.$htmlbar.'</div>
+'.$html_end.'
 </body>
 </html>
 ';
 }
+//------------------------------------------------------------------------------------------
 function icon(  $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
