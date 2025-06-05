@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1748737819' );
+	src         : url( '/assets/fonts/rern.woff2?v=1749096010' );
 }
 @font-face {
 	font-family : Lato;
@@ -75,7 +75,7 @@ i {
 .i-close::before,
 .i-disconnect::before,
 .i-unmount::before         { content: '\F56C' }
-.i-code::before            { content: '\F59E' }
+.i-code::before            { content: '\F591' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
@@ -88,8 +88,6 @@ i {
 .i-features::before,
 .i-sliders::before         { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
-.i-coverart::before        { content: '\F58A'; position: absolute; }
-.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 0.6; -webkit-text-stroke: 1px var( --cgl ); }
 .i-crop::before            { content: '\F568' }
 .i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
@@ -151,8 +149,8 @@ i {
 .i-libupdate::before       { content: '\F506' }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
-.i-localbrowser::before    { content: '\F58C'; position: absolute; }
-.i-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
+.i-localbrowser::before    { content: '\F58A'; position: absolute; }
+.i-localbrowser::after     { content: '\F58B'; position: relative; color: var( --cg60 ); }
 .i-lock::before,
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
@@ -217,7 +215,7 @@ i {
 .i-shift::before           { content: '\F606' }
 .i-shuffle::before         { content: '\F513' }
 .i-single::before          { content: '\F514' }
-.i-smb::before             { content: '\F58E' }
+.i-smb::before             { content: '\F584' }
 .i-snapcast::before,
 .i-snapclient::before,
 .i-snapserver::before      { content: '\F587' }
