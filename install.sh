@@ -17,8 +17,8 @@ if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
 fi
 
 if ! locale | grep -qi ^LANG=.*utf-*8; then
-	[[ -e /usr/share/i18n/locales/C ]] && loc=C.UTF-8 || loc=en_US.UTF-8
-	locale-gen $loc
+	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
+	locale-gen $loc.UTF-8
 	localectl set-locale LANG=$loc
 fi
 
