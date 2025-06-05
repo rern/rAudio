@@ -284,5 +284,5 @@ function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
 	UTIL.intervalClear();
-	DISPLAY.guideHide();
+	if ( S.elapsed && S.state === 'play' ) PROGRESS.set( S.elapsed );
 }

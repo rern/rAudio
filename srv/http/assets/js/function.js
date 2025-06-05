@@ -2237,6 +2237,8 @@ var PROGRESS  = {
 			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
 			PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
 		}
+		if ( ! V.pageactive ) return
+		
 		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
 	}
 	, visible : () => $( '#time-knob' ).css( 'display' ) !== 'none' // both .hide and css show/hide
