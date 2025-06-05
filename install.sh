@@ -8,20 +8,20 @@ alias=r1
 file=/etc/pacman.conf
 grep -q mpd $file && sed -i 's/ mpd//' $file
 
-# 20250502
-if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
-	for t in album latest; do
-		sort -o $dirmpd/$t{,}
-		sort -o $dirmpd/$t'byartist'{,}
-	done
-fi
-
 if ! locale | grep -q ^LANG=.*UTF-8; then
 	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
 	loc+=.UTF-8
 	echo "$loc UTF-8" >> /etc/locale.gen
 	locale-gen
 	localectl set-locale LANG=$loc
+fi
+
+# 20250502
+if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
+	for t in album latest; do
+		sort -o $dirmpd/$t{,}
+		sort -o $dirmpd/$t'byartist'{,}
+	done
 fi
 
 file=/etc/systemd/system/cava.service
