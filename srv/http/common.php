@@ -89,7 +89,7 @@ if ( ! $page ) { // main
 }
 $add_guide = $addonsprogress || $guide;
 $keyboard  = $localhost && ! $add_guide;
-if ( $keyboard ) foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'simplekeyboard';
+if ( $keyboard ) foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'keyboard';
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
