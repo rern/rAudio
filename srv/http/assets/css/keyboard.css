@@ -1,0 +1,66 @@
+#keyboard {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	padding: 5px 0 5px 5px;
+	background: var( --cga ) !important;
+	box-shadow: var( --shadow-bar );
+	-webkit-touch-callout: none;
+}
+#keyboard div {
+	margin: auto;
+	width: 100%;
+	max-width: 560px;
+	background: none;
+}
+#keyboard .row {
+	margin-bottom: 5px;
+}
+#keyboard .kr1 {
+	margin-left: 3.5%;
+}
+#keyboard a {
+	display: inline-block;
+	margin-right: 5px;
+	width: 6.7%;
+	max-width: 40px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 22px;
+	text-align: center;
+	text-shadow: var(--shadow-text);
+	background: var(--cg) !important;
+	box-shadow: var(--shadow-btn) !important;
+	border-radius: 4px !important;
+	border-bottom: none !important;
+	border-top: 1px solid var(--cg60);
+	cursor: pointer;
+	user-select: none;
+}
+#ks {
+	width: 100%;
+	position: relative;
+}
+#keyboard .backspace {
+	color: #f00;
+}
+#keyboard .space {
+	width: 58%;
+	max-width: unset;
+}
+#keyboard .enter,
+#keyboard .numeric,
+#keyboard .shift {
+	width: 10.5%;
+	max-width: 65px;
+}
+#keyboard .enter {
+	width: 10%;
+	background: var(--glossy-btn) !important;
+	background-color: var(--cm) !important;
+}
+#keyboard .enter,
+#keyboard .numeric {
+	font-size: 16px;
+	vertical-align: 2px;
+}
