@@ -26,10 +26,7 @@ $( '#keyboard .numeric' ).on( 'click', function( e ) {
 } );
 $( '#keyboard .backspace' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
-	var $active = $( 'input.active' );
-	var val    = $active.val();
-	$active.val( val.slice( 0, -1 ) );
-	$active.trigger( 'input' );
+	keyboardSet();
 } );
 $( '#keyboard .enter' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
@@ -42,20 +39,32 @@ $( '#keyboard a' ).on( 'click', function() {
 	var capslock = $( '#keyboard .capslock' ).hasClass( 'bll' );
 	var numeric  = ! $( '#kn' ).hasClass( 'hide' );
 	if ( cap && ! capslock && ! numeric ) $( '#ka, #kA' ).toggleClass( 'hide' );
-	var $active  = $( 'input.active' );
-	var val      = $active.val() + $( this ).text();
-	$active.val( val );
-	$active.trigger( 'input' );
+	keyboardSet( $( this ).text() );
 } );
 var inputs = 'input[type=text], input[type=passowrd], textarea';
 $( 'body' ).on( 'click', inputs, function() {
 	$( '#keyboard' ).removeClass( 'hide' );
 	$( inputs ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
+	V.index = this.selectionStart;
 } ).on( 'click touchstart', function( e ) {
 	$kb = $( '#keyboard' );
-	if ( ! $kb.hasClass( 'hide' )
-		&& ! $( e.target ).is( inputs )
-		&& ! $( e.target ).closest( '#keyboard' ).length
-	) $kb.addClass( 'hide' );
+	if ( ! $kb.hasClass( 'hide' ) && ! $( e.target ).is( inputs ) && ! $( e.target ).closest( '#keyboard' ).length ) {
+		$kb.addClass( 'hide' );
+		delete V.index;
+	}
 } );
+function keyboardSet( t ) {
+	var val = $( 'input.active' ).val();
+	if ( t ) {
+		var value = V.index === val.length ? val + t : val.slice( 0, V.index ) + t + val.slice( V.index );
+		V.index++;
+	} else {
+		var value = V.index === val.length ? val.slice( 0, -1 ) : val.slice( 0, V.index - 1 ) + val.slice( V.index );
+		V.index--;
+	}
+	$( 'input.active' )
+		.val( value )
+		.trigger( 'input' );
+
+}

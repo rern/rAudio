@@ -37,6 +37,9 @@
 	cursor: pointer;
 	user-select: none;
 }
+#keyboard a.blank {
+	vertical-align: -12px;
+}
 #ks {
 	width: 100%;
 	position: relative;

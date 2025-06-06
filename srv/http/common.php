@@ -125,7 +125,7 @@ if ( $keyboard ) {
 			$suffix = '<a class="backspace">'.icon( 'backspace' ).'</a>';
 		} else if ( $i === 2 ) {
 			$prefix = '<a class="capslock">'.icon( 'capslock' ).'</a>';
-			$suffix = '<a class="enter">Ent</a>';
+			$suffix = '<a class="enter">OK</a>';
 		}
 		$html_ka.= '<div class="row kr'.$i.'">'.$prefix;
 		$html_kA.= '<div class="row kr'.$i.'">'.$prefix;
@@ -136,14 +136,14 @@ if ( $keyboard ) {
 		foreach( $key_a as $j => $k ) {
 			$html_ka.= '<a>'.$k.'</a>';
 			$html_kA.= '<a>'.$key_A[ $j ].'</a>';
-			$kn      = $key_n[ $j ] === ' ' ? '&nbsp;' : $key_n[ $j ];
-			$html_kn.= '<a>'.$kn.'</a>';
+			$kn      = $key_n[ $j ];
+			$html_kn.= $kn === ' ' ? '<a class="blank"></a>' : '<a>'.$kn.'</a>';
 		}
 		$html_ka.= $suffix.'</div>';
 		$html_kA.= $suffix.'</div>';
 		$html_kn.= $suffix.'</div>';
 	}
-	$ks      = [ 'shift' => 1, 'numeric' => '12@', 'space' => '&nbsp;', 'shift' => 1 ];
+	$ks      = [ 'shift' => 1, 'numeric' => '12@', 'space blank' => ' ', 'shift' => 1 ];
 	$html_ks = '';
 	forEach( $ks as $k => $text ) {
 		$html_ks.= '<a class="'.$k.'">'.( $k === 'shift' ? icon( 'shift' ) : $text ).'</a>';
