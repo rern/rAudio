@@ -378,10 +378,6 @@ $listui      = [
 	  , 'QR Code generator'
 	  , 'https://github.com/datalog/qrcode-svg'
 	],[
-	    'simple-keyboard'
-	  , 'Virtual Keyboard'
-	  , 'https://github.com/hodgef/simple-keyboard'
-	],[
 	    'Select2'
 	  , 'A replacement for select boxes'
 	  , 'https://github.com/select2/select2'
