@@ -134,13 +134,12 @@ if ( $keyboard ) {
 		$html_ka.= $suffix.'</div>';
 		$html_kA.= $suffix.'</div>';
 	}
-	$shift    = '<a class="shift">'.icon( 'shift' ).'</a>';
 	$html_end.= '
 	<div id="keyboard" class="hide">
 		<div>
 			<div id="ka">'.$html_ka.'</div>
 			<div id="kA" class="hide">'.$html_kA.'</div>
-			<div id="ks">'.$shift.'<a class="space"> </a><a class="enter">OK</a></div>
+			<div id="ks"><a class="shift">'.icon( 'shift' ).'</a><a class="space"> </a><a class="enter">OK</a></div>
 		</div>
 	</div>
 ';
