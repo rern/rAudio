@@ -114,8 +114,8 @@ if ( ! $add_guide )  {
 if ( $keyboard ) {
 	$keys_a   = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./' ];
 	$keys_A   = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?' ];
-	$html_ka = '';
-	$html_kA = '';
+	$html_ka  = '';
+	$html_kA  = '';
 	foreach( $keys_a as $i => $key ) {
 		$prefix  = '';
 		$suffix  = '';
@@ -134,7 +134,7 @@ if ( $keyboard ) {
 		$html_ka.= $suffix.'</div>';
 		$html_kA.= $suffix.'</div>';
 	}
-	$shift = '<a class="shift">'.icon( 'shift' ).'</a>';
+	$shift    = '<a class="shift">'.icon( 'shift' ).'</a>';
 	$html_end.= '
 	<div id="keyboard" class="hide">
 		<div>
