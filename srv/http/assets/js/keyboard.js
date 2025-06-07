@@ -24,25 +24,27 @@ $( '#keyboard a' ).on( 'click', function() {
 	keyboardSet( $( this ).text() );
 } );
 var inputs = 'input[type=text], input[type=passowrd], textarea';
-$( 'body' ).on( 'click', inputs, function() {
+$( '#infoOverlay' ).on( 'click', inputs, function() {
 	$( '#keyboard' ).removeClass( 'hide' );
 	$( inputs ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	V.index = this.selectionStart;
-} ).on( 'click touchstart', function( e ) {
+} );
+$( 'body' ).on( 'click touchstart', function( e ) {
 	$kb = $( '#keyboard' );
 	if ( ! $kb.hasClass( 'hide' ) && ! $( e.target ).is( inputs ) && ! $( e.target ).closest( '#keyboard' ).length ) {
 		$kb.addClass( 'hide' );
 		delete V.index;
 	}
 } );
-function keyboardSet( t ) {
-	var val = $( 'input.active' ).val();
-	if ( t ) {
-		var value = V.index === val.length ? val + t : val.slice( 0, V.index ) + t + val.slice( V.index );
+function keyboardSet( key ) {
+	var val  = $( 'input.active' ).val();
+	var last = V.index === val.length;
+	if ( key ) {
+		var value = last ? val + key : val.slice( 0, V.index ) + key + val.slice( V.index );
 		V.index++;
 	} else {
-		var value = V.index === val.length ? val.slice( 0, -1 ) : val.slice( 0, V.index - 1 ) + val.slice( V.index );
+		var value = last ? val.slice( 0, -1 ) : val.slice( 0, V.index - 1 ) + val.slice( V.index );
 		V.index--;
 	}
 	$( 'input.active' )
