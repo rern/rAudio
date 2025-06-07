@@ -91,7 +91,8 @@ $add_guide = $addonsprogress || $guide;
 //------------------------------------------------------------------------------------------
 $html_kb   = '';
 if ( $localhost && ! $add_guide ) {
-	foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'keyboard';
+	$css[]   = 'keyboard';
+	$js[]    = 'keyboard';
 	$keys_a  = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./' ];
 	$keys_A  = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?' ];
 	$html_ka = '';
