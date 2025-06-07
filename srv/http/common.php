@@ -88,34 +88,14 @@ if ( ! $page ) { // main
 	$title = $pagetitle;
 }
 $add_guide = $addonsprogress || $guide;
-$keyboard  = $localhost && ! $add_guide;
-if ( $keyboard ) foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'keyboard';
 //------------------------------------------------------------------------------------------
-$html      = '';
-$htmlcss   = '<link rel="stylesheet" href="/assets/css/';
-foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
-foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
-echo $html.'
-</head>
-<body>
-';
-//------------------------------------------------------------------------------------------
-$html_end  = '';
-if ( ! $add_guide )  {
-	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
-	$html_end.= '
-	<div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<pre id="data" class="hide"></pre>
-	<i id="debug" class="i-info"></i>
-	<div id="loader">'.$logosvg.'</div>
-	<div id="banner" class="hide"></div>
-';
-}
-if ( $keyboard ) {
-	$keys_a   = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./' ];
-	$keys_A   = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?' ];
-	$html_ka  = '';
-	$html_kA  = '';
+$html_kb   = '';
+if ( $localhost && ! $add_guide ) {
+	foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'keyboard';
+	$keys_a  = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./' ];
+	$keys_A  = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?' ];
+	$html_ka = '';
+	$html_kA = '';
 	foreach( $keys_a as $i => $key ) {
 		$prefix  = '';
 		$suffix  = '';
@@ -134,7 +114,7 @@ if ( $keyboard ) {
 		$html_ka.= $suffix.'</div>';
 		$html_kA.= $suffix.'</div>';
 	}
-	$html_end.= '
+	$html_kb = '
 	<div id="keyboard" class="hide">
 		<div>
 			<div id="ka">'.$html_ka.'</div>
@@ -142,6 +122,28 @@ if ( $keyboard ) {
 			<div id="ks"><a class="shift">'.icon( 'shift' ).'</a><a class="space"> </a><a class="enter">OK</a></div>
 		</div>
 	</div>
+';
+}
+//------------------------------------------------------------------------------------------
+$html      = '';
+$htmlcss   = '<link rel="stylesheet" href="/assets/css/';
+foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
+foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
+echo $html.'
+</head>
+<body>
+';
+//------------------------------------------------------------------------------------------
+$html_end  = '';
+if ( ! $add_guide )  {
+	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
+	$html_end.= '
+	<div id="infoOverlay" class="hide" tabindex="-1"></div>
+	'.$html_kb.'
+	<pre id="data" class="hide"></pre>
+	<i id="debug" class="i-info"></i>
+	<div id="loader">'.$logosvg.'</div>
+	<div id="banner" class="hide"></div>
 ';
 }
 $htmljs    = '<script src="/assets/js/';
