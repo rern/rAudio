@@ -7,11 +7,16 @@
 	box-shadow: var( --shadow-bar );
 	-webkit-touch-callout: none;
 }
-#keyboard div {
+#keyboard > div {
 	margin: auto;
 	width: 100%;
-	max-width: 560px;
 	background: none;
+}
+@media ( min-width: 540px ) {
+	#keyboard > div {
+		max-width: 540px;
+		transform: translateX( 10px );
+	}
 }
 #keyboard .row {
 	margin-bottom: 5px;
@@ -24,8 +29,8 @@
 }
 #keyboard a {
 	display: inline-block;
-	margin-right: 5px;
-	width: 6.8%;
+	margin-right: 4px;
+	width: 7%;
 	max-width: 38px;
 	height: 38px;
 	line-height: 38px;
@@ -46,17 +51,18 @@
 }
 #keyboard .backspace {
 	color: #f00;
-	width: 8.5%;
+	width: 7.5%;
 	max-width: 65px;
 }
 #keyboard .space {
-	width: 74%;
-	max-width: unset;
-	vertical-align: -9px;
+	width: 72%;
+	max-width: 400px;
+	vertical-align: -11px;
 }
 #keyboard .enter,
 #keyboard .shift {
 	width: 12%;
+	max-width: 64px;
 }
 #keyboard .enter {
 	background: var(--glossy-btn) !important;
