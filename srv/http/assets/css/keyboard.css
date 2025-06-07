@@ -3,47 +3,45 @@
 	width: 100%;
 	bottom: 0;
 	padding: 5px 0 5px 5px;
-	background: var( --cga ) !important;
+	background: var( --cga );
 	box-shadow: var( --shadow-bar );
 	-webkit-touch-callout: none;
 }
 #keyboard > div {
 	margin: auto;
-	width: 100%;
+	width: 550px;
 	background: none;
-}
-@media ( min-width: 540px ) {
-	#keyboard > div {
-		max-width: 540px;
-		transform: translateX( 10px );
-	}
 }
 #keyboard .row {
 	margin-bottom: 5px;
 }
 #keyboard .kr1 {
-	margin-left: 2.5%;
+	transform: translateX( 3% );
 }
 #keyboard .kr2 {
-	margin-left: 5%;
+	transform: translateX( 6% );
 }
 #keyboard a {
 	display: inline-block;
-	margin-right: 4px;
-	width: 7%;
-	max-width: 38px;
-	height: 38px;
-	line-height: 38px;
+	margin-right: 5px;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
 	font-size: 22px;
 	text-align: center;
-	text-shadow: var(--shadow-text);
-	background: var(--cg) !important;
-	box-shadow: var(--shadow-btn) !important;
-	border-radius: 4px !important;
-	border-bottom: none !important;
-	border-top: 1px solid var(--cg60);
+	text-shadow: var( --shadow-text );
+	background: var( --cg );
+	box-shadow: var( --shadow-btn );
+	border-radius: 4px;
+	border-top: 1px solid var( --cg60 );
 	cursor: pointer;
 	user-select: none;
+}
+#keyboard a:last-child {
+	margin-right: 0;
+}
+#ks a {
+	vertical-align: middle;
 }
 #ks {
 	width: 100%;
@@ -51,24 +49,47 @@
 }
 #keyboard .backspace {
 	color: #f00;
-	width: 7.5%;
+	width: 55px;;
 	max-width: 65px;
 }
 #keyboard .space {
-	width: 72%;
-	max-width: 400px;
-	vertical-align: -11px;
+	width: 380px;
 }
 #keyboard .enter,
 #keyboard .shift {
-	width: 12%;
-	max-width: 64px;
-}
-#keyboard .enter {
-	background: var(--glossy-btn) !important;
-	background-color: var(--cm) !important;
+	width: 80px;
 }
 #keyboard .enter {
 	font-size: 16px;
-	vertical-align: 3px;
+	background: var( --glossy-btn );
+	background-color: var( --cm );
+}
+@media ( max-width: 540px ) {
+	#keyboard > div {
+		width: 100%;
+	}
+	#keyboard .row {
+		margin-bottom: 4px;
+	}
+	#keyboard a {
+		margin-right: 4px;
+		width: 7%;
+	}
+	#keyboard .backspace {
+		width: 10%;
+	}
+	#keyboard .enter,
+	#keyboard .shift {
+		width: 12%;
+	}
+	#keyboard .space {
+		width: 72%;
+	}
+}
+@media ( max-height: 480px ) {
+	#keyboard a {
+		height: 30px;
+		line-height: 30px;
+		font-size: 18px;
+	}
 }

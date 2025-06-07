@@ -88,7 +88,6 @@ if ( ! $page ) { // main
 	$title = $pagetitle;
 }
 $add_guide = $addonsprogress || $guide;
-$keyboard  = $localhost && ! $add_guide;
 if ( $keyboard ) foreach( [ 'css', 'js' ] as $ea ) $$ea[] = 'keyboard';
 //------------------------------------------------------------------------------------------
 $html      = '';
