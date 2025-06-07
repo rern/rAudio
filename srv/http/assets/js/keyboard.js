@@ -7,23 +7,6 @@ $( '#keyboard' ).find( '.capslock, .shift' ).on( 'click', function( e ) {
 		$( '#keyboard .capslock' ).removeClass( 'bll' );
 	}
 } );
-$( '#keyboard .numeric' ).on( 'click', function( e ) {
-	e.stopImmediatePropagation();
-	var $this  = $( this );
-	var $kn    = $( '#kn' );
-	var $shift = $( '#keyboard' ).find( '.capslock, .shift' );
-	if ( $kn.hasClass( 'hide' ) ) {
-		$this.text( 'abc' );
-		$( '#ka, #kA' ).addClass( 'hide' );
-		$kn.removeClass( 'hide' );
-		$shift.addClass( 'disabled' );
-	} else {
-		$this.text( '12!@' );
-		$( '#ka' ).removeClass( 'hide' );
-		$kn.addClass( 'hide' );
-		$shift.removeClass( 'disabled' );
-	}
-} );
 $( '#keyboard .backspace' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
 	keyboardSet();
@@ -37,8 +20,7 @@ $( '#keyboard .enter' ).on( 'click', function( e ) {
 $( '#keyboard a' ).on( 'click', function() {
 	var cap      = $( '#ka' ).hasClass( 'hide' );
 	var capslock = $( '#keyboard .capslock' ).hasClass( 'bll' );
-	var numeric  = ! $( '#kn' ).hasClass( 'hide' );
-	if ( cap && ! capslock && ! numeric ) $( '#ka, #kA' ).toggleClass( 'hide' );
+	if ( cap && ! capslock ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
 } );
 var inputs = 'input[type=text], input[type=passowrd], textarea';

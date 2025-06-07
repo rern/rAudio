@@ -17,15 +17,18 @@
 	margin-bottom: 5px;
 }
 #keyboard .kr1 {
-	margin-left: 3.5%;
+	margin-left: 2.5%;
+}
+#keyboard .kr2 {
+	margin-left: 5%;
 }
 #keyboard a {
 	display: inline-block;
 	margin-right: 5px;
-	width: 6.7%;
-	max-width: 40px;
-	height: 40px;
-	line-height: 40px;
+	width: 6.8%;
+	max-width: 38px;
+	height: 38px;
+	line-height: 38px;
 	font-size: 22px;
 	text-align: center;
 	text-shadow: var(--shadow-text);
@@ -37,33 +40,29 @@
 	cursor: pointer;
 	user-select: none;
 }
-#keyboard a.blank {
-	vertical-align: -12px;
-}
 #ks {
 	width: 100%;
 	position: relative;
 }
 #keyboard .backspace {
 	color: #f00;
-}
-#keyboard .space {
-	width: 58%;
-	max-width: unset;
-}
-#keyboard .enter,
-#keyboard .numeric,
-#keyboard .shift {
-	width: 10.5%;
+	width: 8.5%;
 	max-width: 65px;
 }
+#keyboard .space {
+	width: 74%;
+	max-width: unset;
+	vertical-align: -9px;
+}
+#keyboard .enter,
+#keyboard .shift {
+	width: 12%;
+}
 #keyboard .enter {
-	width: 10%;
 	background: var(--glossy-btn) !important;
 	background-color: var(--cm) !important;
 }
-#keyboard .enter,
-#keyboard .numeric {
+#keyboard .enter {
 	font-size: 16px;
-	vertical-align: 2px;
+	vertical-align: 3px;
 }
