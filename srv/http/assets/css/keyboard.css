@@ -53,11 +53,11 @@
 	max-width: 65px;
 }
 #keyboard .space {
-	width: 380px;
+	width: 310px;
 }
 #keyboard .enter,
 #keyboard .shift {
-	width: 80px;
+	width: 85px;
 }
 #keyboard .enter {
 	font-size: 16px;
@@ -80,10 +80,10 @@
 	}
 	#keyboard .enter,
 	#keyboard .shift {
-		width: 12%;
+		width: 15%;
 	}
 	#keyboard .space {
-		width: 72%;
+		width: 55%;
 	}
 }
 @media ( max-height: 480px ) {
