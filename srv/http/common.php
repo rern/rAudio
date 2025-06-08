@@ -89,7 +89,10 @@ if ( ! $page ) { // main
 }
 $add_guide = $addonsprogress || $guide;
 //------------------------------------------------------------------------------------------
-if ( $localhost && ! $add_guide ) include 'keyboard.php';
+if ( $localhost && ! $add_guide ) {
+	$devices = file_get_contents( '/proc/bus/input/devices' );
+	if ( ! $devices || ! strpos( $devices, 'Handlers=kbd' ) ) include 'keyboard.php';
+}
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
