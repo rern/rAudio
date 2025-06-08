@@ -93,17 +93,12 @@ $html_kb   = '';
 if ( $localhost && ! $add_guide ) {
 	$css[]   = 'keyboard';
 	$js[]    = 'keyboard';
-	$keys_a  = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./' ];
-	$keys_A  = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?' ];
+	$keys_A  = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?~' ];
+	$keys_a  = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./`' ];
 	$html_ka = '';
 	$html_kA = '';
 	foreach( $keys_a as $i => $key ) {
-		$prefix  = '';
-		$suffix  = '';
-		if ( $i === 3 ) {
-			$prefix = '<a class="capslock">'.icon( 'capslock' ).'</a>';
-			$suffix = '<a class="backspace">'.icon( 'backspace' ).'</a>';
-		}
+		$prefix  = $i === 3 ? '<a class="capslock">'.icon( 'capslock' ).'</a>' : '';
 		$html_ka.= '<div class="row kr'.$i.'">'.$prefix;
 		$html_kA.= '<div class="row kr'.$i.'">'.$prefix;
 		$key_a   = str_split( $key );
@@ -112,15 +107,15 @@ if ( $localhost && ! $add_guide ) {
 			$html_ka.= '<a>'.$k.'</a>';
 			$html_kA.= '<a>'.$key_A[ $j ].'</a>';
 		}
-		$html_ka.= $suffix.'</div>';
-		$html_kA.= $suffix.'</div>';
+		$html_ka.= '</div>';
+		$html_kA.= '</div>';
 	}
 	$html_kb = '
 	<div id="keyboard" class="hide">
 		<div>
 			<div id="ka">'.$html_ka.'</div>
 			<div id="kA" class="hide">'.$html_kA.'</div>
-			<div id="ks"><a class="shift">'.icon( 'shift' ).'</a><a class="space"> </a><a class="enter">OK</a></div>
+			<div id="ks"><a class="shift">'.icon( 'shift' ).'</a><a class="space"> </a><a class="backspace">'.icon( 'backspace' ).'</a><a class="enter">OK</a></div>
 		</div>
 	</div>
 ';
