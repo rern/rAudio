@@ -4,14 +4,14 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250606
+# 20250608
 file=/etc/pacman.conf
 grep -q mpd $file && sed -i 's/ mpd//' $file
 
 if ! locale | grep -q ^LANG=.*UTF-8; then
 	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
 	loc+=.UTF-8
- 	if ! greo -q ^$loc /etc/locale.gen; then
+ 	if ! grep -q ^$loc /etc/locale.gen; then
  		echo "$loc UTF-8" >> /etc/locale.gen
 	 	locale-gen
  	fi
