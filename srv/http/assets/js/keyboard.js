@@ -27,7 +27,7 @@ $( '#infoOverlay' ).on( 'click', 'input, textarea', function() {
 	$( this ).addClass( 'active' );
 	V.index = this.selectionStart;
 } );
-$( 'body' ).on( 'click touchstart', function( e ) {
+$( 'body' ).on( 'click', function( e ) {
 	$kb = $( '#keyboard' );
 	if ( ! $kb.hasClass( 'hide' ) && ! $( e.target ).is( 'input, textarea' ) && ! $( e.target ).closest( '#keyboard' ).length ) {
 		$kb.addClass( 'hide' );
