@@ -13,7 +13,7 @@ $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
 	<meta name="apple-mobile-web-app-title" content="rAudio">
 	<meta name="application-name" content="rAudio">
 	<meta name="msapplication-tap-highlight" content="no">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 	<link rel="apple-touch-icon" sizes="180x180" <?=$hreficon?>>
 	<link rel="icon" <?=$hreficon?>>
 
