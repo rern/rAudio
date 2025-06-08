@@ -28,6 +28,12 @@ $( '#keyboard a' ).on( 'click', function() {
 	var capslock = $( '#keyboard .shift' ).hasClass( 'bll' );
 	if ( ( cap && ! capslock ) || ( ! cap && capslock ) ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
+} ).press( {
+	  action : e => V.intervalkey = setInterval( () => keyboardSet( $( e.currentTarget ).text() ), 100 )
+	, end    : () => {
+		clearInterval( V.intervalkey );
+		delete V.intervalkey;
+	}
 } );
 $( '#infoOverlay' ).on( 'click', 'input, textarea', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
@@ -49,6 +55,8 @@ function keyboardSet( key ) {
 		var value = last ? val + key : val.slice( 0, V.index ) + key + val.slice( V.index );
 		V.index++;
 	} else {
+		if ( V.index === 0 ) return
+		
 		var value = last ? val.slice( 0, -1 ) : val.slice( 0, V.index - 1 ) + val.slice( V.index );
 		V.index--;
 	}
