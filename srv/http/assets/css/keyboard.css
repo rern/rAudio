@@ -16,10 +16,10 @@
 	margin-bottom: 5px;
 }
 #keyboard .kr1 {
-	transform: translateX( 3% );
+	transform: translateX( 15px );
 }
 #keyboard .kr2 {
-	transform: translateX( 6% );
+	transform: translateX( 30px );
 }
 #keyboard a {
 	display: inline-block;
@@ -69,6 +69,12 @@
 	}
 	#keyboard .row {
 		margin-bottom: 4px;
+	}
+	#keyboard .kr1 {
+		transform: translateX( 3% );
+	}
+	#keyboard .kr2 {
+		transform: translateX( 6% );
 	}
 	#keyboard a {
 		margin-right: 4px;
