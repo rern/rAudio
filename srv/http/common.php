@@ -89,37 +89,7 @@ if ( ! $page ) { // main
 }
 $add_guide = $addonsprogress || $guide;
 //------------------------------------------------------------------------------------------
-$html_kb   = '';
-if ( $localhost && ! $add_guide ) {
-	$css[]   = 'keyboard';
-	$js[]    = 'keyboard';
-	$keys_A  = [ '!@#$%^&*()_+', 'QWERTYUIOP{}', 'ASDFGHJKL:"', 'ZXCVBNM<>?~' ];
-	$keys_a  = [ '1234567890-=', 'qwertyuiop[]', "asdfghjkl;'", 'zxcvbnm,./`' ];
-	$html_ka = '';
-	$html_kA = '';
-	foreach( $keys_a as $i => $key ) {
-		$prefix  = $i === 3 ? '<a class="capslock">'.icon( 'capslock' ).'</a>' : '';
-		$html_ka.= '<div class="row kr'.$i.'">'.$prefix;
-		$html_kA.= '<div class="row kr'.$i.'">'.$prefix;
-		$key_a   = str_split( $key );
-		$key_A   = str_split( $keys_A[ $i ] );
-		foreach( $key_a as $j => $k ) {
-			$html_ka.= '<a>'.$k.'</a>';
-			$html_kA.= '<a>'.$key_A[ $j ].'</a>';
-		}
-		$html_ka.= '</div>';
-		$html_kA.= '</div>';
-	}
-	$html_kb = '
-	<div id="keyboard" class="hide">
-		<div>
-			<div id="ka">'.$html_ka.'</div>
-			<div id="kA" class="hide">'.$html_kA.'</div>
-			<div id="ks"><a class="shift">'.icon( 'shift' ).'</a><a class="space"> </a><a class="backspace">'.icon( 'backspace' ).'</a><a class="enter">OK</a></div>
-		</div>
-	</div>
-';
-}
+if ( $localhost && ! $add_guide ) include 'keyboard.php';
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
@@ -135,7 +105,7 @@ if ( ! $add_guide )  {
 	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html_end.= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
-	'.$html_kb.'
+	'.( $keyboard ?? '' ).'
 	<pre id="data" class="hide"></pre>
 	<i id="debug" class="i-info"></i>
 	<div id="loader">'.$logosvg.'</div>

@@ -1,8 +1,16 @@
-$( '#keyboard' ).find( '.capslock, .shift' ).on( 'click', function( e ) {
+$( '#keyboard .shift' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
-	$( '#ka, #kA' ).toggleClass( 'hide' );
-	if ( $( this ).hasClass( 'capslock' ) ) {
-		$( '#keyboard .capslock' ).toggleClass( 'bll', $( '#ka' ).hasClass( 'hide' ) );
+	var $this = $( this );
+	if ( ! V.local ) $( '#ka, #kA' ).toggleClass( 'hide' );
+	if ( $this.hasClass( 'bll' ) ) {
+		$this.removeClass( 'bll' );
+		return
+	}
+	
+	if ( V.local ) {
+		$this.addClass( 'bll' );
+	} else {
+		LOCAL( 600 );
 	}
 } );
 $( '#keyboard .backspace' ).on( 'click', function( e ) {
@@ -17,7 +25,7 @@ $( '#keyboard .enter' ).on( 'click', function( e ) {
 } );
 $( '#keyboard a' ).on( 'click', function() {
 	var cap      = $( '#ka' ).hasClass( 'hide' );
-	var capslock = $( '#keyboard .capslock' ).hasClass( 'bll' );
+	var capslock = $( '#keyboard .shift' ).hasClass( 'bll' );
 	if ( ( cap && ! capslock ) || ( ! cap && capslock ) ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
 } );
