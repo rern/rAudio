@@ -11,10 +11,10 @@ grep -q mpd $file && sed -i 's/ mpd//' $file
 if ! locale | grep -q ^LANG=.*UTF-8; then
 	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
 	loc+=.UTF-8
- 	if ! grep -q ^$loc /etc/locale.gen; then
- 		echo "$loc UTF-8" >> /etc/locale.gen
-	 	locale-gen
- 	fi
+	if ! grep -q ^$loc /etc/locale.gen; then
+		echo "$loc UTF-8" >> /etc/locale.gen
+		locale-gen
+	fi
 	localectl set-locale LANG=$loc
 fi
 
