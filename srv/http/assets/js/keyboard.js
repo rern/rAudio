@@ -21,12 +21,13 @@ $( '#keyboard a' ).on( 'click', function() {
 	if ( ( cap && ! capslock ) || ( ! cap && capslock ) ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
 } );
-$( 'body' ).on( 'click', 'input, textarea', function( e ) {
+$( '#infoOverlay' ).on( 'click', 'input, textarea', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
-	$( 'input textarea' ).removeClass( 'active' );
+	$( 'input, textarea' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	V.index = this.selectionStart;
-} ).on( 'click touchstart', function( e ) {
+} );
+$( 'body' ).on( 'click touchstart', function( e ) {
 	$kb = $( '#keyboard' );
 	if ( ! $kb.hasClass( 'hide' ) && ! $( e.target ).is( 'input, textarea' ) && ! $( e.target ).closest( '#keyboard' ).length ) {
 		$kb.addClass( 'hide' );
