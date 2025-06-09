@@ -56,7 +56,6 @@ a[href^="http"] {
 }
 label {
 	display: inline-block;
-	margin: 2px 0;
 }
 ul {
 	margin: 0;
