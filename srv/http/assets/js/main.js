@@ -809,7 +809,7 @@ $( '#lib-search-close' ).on( 'click', function() {
 $( '#lib-search-input' ).on( 'input', function() {
 	if ( ! V.search ) return
 	
-	var kL = $( '#lib-search-input' ).val().length;
+	var kL = $( this ).val().length;
 	if ( kL > 2 ) {
 		$( '#button-lib-search' ).trigger( 'click' );
 	} else if ( ! kL ) {
@@ -1406,7 +1406,7 @@ $( '#button-pl-search' ).on( 'click', function() {
 	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 $( '#pl-search-input' ).on( 'input', function() {
-	var keyword = $( '#pl-search-input' ).val();
+	var keyword = $( this ).val();
 	var regex   = new RegExp( keyword, 'ig' );
 	var count   = 0;
 	$( '#pl-list li' ).each( ( i, el ) => {
