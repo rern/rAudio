@@ -1,6 +1,5 @@
 #bar-bottom { z-index: 95 }
 .menu { z-index: 11 }
-.container input[type=checkbox] { z-index: 1 }
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
 li.current a::before,
