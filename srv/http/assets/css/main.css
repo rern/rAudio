@@ -658,8 +658,6 @@ div.pagerefresh {
 .divmap {
 	position: absolute;
 	top: 0;
-	width: 230px;
-	height: 230px;
 	font-size: 22px;
 }
 #map-cover {
@@ -681,15 +679,20 @@ div.pagerefresh {
 	background: none;
 	opacity: 0.8;
 }
+#map-info {
+	width: 100%;
+	height: 100%;
+}
 #map-info i {
 	width: 40px;
 	line-height: 40px;
 	border-radius: 50%;
 	background: var( --cg );
 }
-#map-info,
 #map-time,
 #map-volume {
+	width: 230px;
+	height: 230px;
 	left: 50%;
 	margin-left: -115px;
 }
@@ -742,9 +745,9 @@ div.pagerefresh {
 	border-left: 3px solid #000000;
 	border-right: 3px solid #000000;
 }
-#info-bio     { left: -60px; top: -10px; }
-#info-lyrics  { left: -20px; top:  20px; }
-#info-booklet { left:  20px; top:  50px; }
+#info-bio     { left: calc( 50% - 60px ); top: -10px; }
+#info-lyrics  { left: calc( 50% - 20px ); top:  20px; }
+#info-booklet { left: calc( 50% + 20px ); top:  50px; }
 .r1           { top: 0; }
 .r2           { top: 22%; }
 .r3           { top: 78%; }
