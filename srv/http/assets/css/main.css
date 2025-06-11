@@ -19,7 +19,7 @@ div.pagerefresh { z-index: 100 }
 .coveredit,
 .bkedit,
 .controls { z-index: 20 }
-.divmap { z-index: 16 }
+.divmap i { z-index: 16 }
 .licover { z-index: 15 }
 .menu { z-index: 11 }
 #vu::before { z-index: 6 }
