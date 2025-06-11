@@ -662,8 +662,7 @@ div.pagerefresh {
 	height: 100%;
 	font-size: 22px;
 }
-.divmap > i,
-.divmap div {
+.divmap i {
 	position: absolute;
 	display: flex;
 	align-items: center;
