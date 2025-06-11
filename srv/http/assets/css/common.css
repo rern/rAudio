@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1749426414' );
+	src         : url( '/assets/fonts/rern.woff2?v=1749426416' );
 }
 @font-face {
 	font-family : Lato;
@@ -48,7 +48,6 @@ i {
 #divbluealsa .i-gear::before,
 #divmixer .i-gear::before  { content: '\F516' }
 .i-autoplay::before,
-.i-play::before            { content: '\F503' }
 .i-back::before            { content: '\F602' }
 .i-backspace::before       { content: '\F608' }
 .i-backup::before,
@@ -173,6 +172,8 @@ i {
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
 .i-pipeline::before        { content: '\F52B' }
+.i-play::before            { content: '\F503' }
+.divmap .i-play::before    { content: '\F50E' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
 .i-play-cd::before         { content: '\F539' }
