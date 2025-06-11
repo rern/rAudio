@@ -684,9 +684,6 @@ div.pagerefresh {
 	border-radius: 50%;
 	background: var( --cg );
 }
-#info-bio     { left: -70px; top: -10px; }
-#info-lyrics  { left: -20px; top:  20px; }
-#info-booklet { left:  30px; top:  50px; }
 #map-info,
 #map-time,
 #map-volume {
@@ -709,19 +706,11 @@ div.pagerefresh {
 #timeBR {
 	border-radius: 50% !important;
 }
-.r1 { top: 0; }
-.r2 { top: 22%; }
-.r3 { top: 78%; }
 .ws { width: 22%; }
 .wl { width: 56%; }
 .hs { height: 22%; }
 .hl { height: 56%; }
-.c2 { margin-left: 22%; }
-.c3 { margin-left: 78%; }
 .wl.narrow { width: 46% }
-.c1.narrow { margin-left: 5% }
-.c2.narrow { margin-left: 27% }
-.c3.narrow { margin-left: 73% }
 #coverT,
 #timeT {
 	background: var( --cga );
@@ -745,6 +734,17 @@ div.pagerefresh {
 	border-left: 3px solid #000000;
 	border-right: 3px solid #000000;
 }
+#info-bio     { left: -60px; top: -10px; }
+#info-lyrics  { left: -20px; top:  20px; }
+#info-booklet { left:  20px; top:  50px; }
+.r1           { top: 0; }
+.r2           { top: 22%; }
+.r3           { top: 78%; }
+.c2           { left: 22%; }
+.c3           { left: 78%; }
+.c1.narrow    { left: 5% }
+.c2.narrow    { left: 27% }
+.c3.narrow    { left: 73% }
 #timeT,
 #timeB,
 #volT,
