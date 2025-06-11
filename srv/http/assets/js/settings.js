@@ -6,7 +6,7 @@ Naming must be the same for:
 */
 $MENU      = $( '#menu' );
 function CONTENT() {
-	if ( $( 'select' ).length ) COMMON.select.set( $( 'select' ) );
+	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select();
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();
@@ -318,8 +318,6 @@ $( document ).on( 'keydown', function( e ) {
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
-			if ( V.select2 ) return
-			
 			e.preventDefault();
 			if ( ! camilla && tabs ) return
 			
@@ -376,8 +374,8 @@ $( document ).on( 'keydown', function( e ) {
 			e.preventDefault();
 			if ( menu ) {
 				$( '.menu' ).addClass( 'hide' );
-			} else if ( V.select2 ) {
-				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( $( '.dropdown' ).length ) {
+				$( '.dropdown' ).prev().trigger( 'click' );
 			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
 				COMMON.statusToggle( 'hide' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
@@ -385,7 +383,13 @@ $( document ).on( 'keydown', function( e ) {
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 				$( '.focus' ).trigger( 'focus' );
 			} else {
+				if ( ! $( '#loader' ).hasClass( 'hide' ) ) {
+					COMMON.loaderHide();
+					$( '#bar-bottom' ).css( 'z-index', '' );
+				}
+				
 				COMMON.loader( 'fader' );
+				$( '#bar-bottom' ).css( 'z-index', 121 );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				var $focus = $( '#bar-bottom div.active' );
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );

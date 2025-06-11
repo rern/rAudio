@@ -1,9 +1,3 @@
-<style>
-.select2-results { width: 330px }
-.select2-dropdown {
-	width: fit-content !important;
-	min-width: 100%;
-</style>
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
@@ -377,10 +371,6 @@ $listui      = [
 	    'QR Code generator'
 	  , 'QR Code generator'
 	  , 'https://github.com/datalog/qrcode-svg'
-	],[
-	    'Select2'
-	  , 'A replacement for select boxes'
-	  , 'https://github.com/select2/select2'
 	]
 ];
 $uihtml      = '';

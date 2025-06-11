@@ -299,7 +299,6 @@ var CONFIG        = {
 			, boxwidth     : 250
 			, values       : data.values
 			, checkchanged : S.wlan
-			, beforeshow   : () => COMMON.select.text2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 		} );
@@ -351,7 +350,9 @@ var UTIL          = {
 	}
 	, i2sSelect     : {
 		  hide   : () => {
-			$( '#i2s' ).prop( 'checked', false );
+			$( '#i2s' )
+				.removeClass( 'disabled' )
+				.prop( 'checked', false );
 			$( '#divi2s' ).removeClass( 'hide' );
 			$( '#divi2smodule' ).addClass( 'hide' );
 		  }
@@ -359,16 +360,15 @@ var UTIL          = {
 			if ( $( '#i2smodule option' ).length > 2 ) {
 				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 					UTIL.i2sSelect.show();
-					$( '#i2smodule' ).select2( 'open' );
+					$( '#i2smodule' ).next().trigger( 'click' );
 				}
 			} else {
-				$( '#i2smodule' ).select2( 'close' );
 				SETTING( 'i2slist', list => {
 					list[ '(None / Auto detect)' ] = '';
 					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
 					UTIL.i2sSelect.select();
 					UTIL.i2sSelect.show();
-					$( '#i2smodule' ).select2( 'open' );
+					$( '#i2smodule' ).next().trigger( 'click' );
 				} );
 			}
 		}
@@ -659,6 +659,7 @@ var UTIL          = {
 				, beforeshow   : () => {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
+//					$( '#infoList .select' ).css( 'width', '70px' );
 					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
@@ -830,7 +831,6 @@ var UTIL          = {
 					, boxwidth     : 240
 					, values       : data.values
 					, checkchanged : true
-					, beforeshow   : () => COMMON.select.text2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 					, ok           : SWITCH.enable
 				} );
 			} );
@@ -853,6 +853,18 @@ var UTIL          = {
 					, ok           : SWITCH.enable
 				} );
 			} );
+		}
+	}
+	, timezoneList  : () => {
+		if ( $( '#timezone option' ).length < 3 ) {
+			$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
+				$( '#timezone' ).html( data ).promise().done( () => {
+					$( '#timezone' )
+						.val( S.timezone )
+						.next().trigger( 'click' );
+				} );
+			} );
+			return true
 		}
 	}
 	, wm5102        : () => {
@@ -910,16 +922,8 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	if ( S.i2smodule ) {
-		if ( $( '#i2smodule option' ).length ) {
-			UTIL.i2sSelect.select();
-		} else {
-			$( '#i2smodule' ).html( '<option></option><option selected>'+ S.audiooutput +'</option>' );
-		}
-		UTIL.i2sSelect.show();
-	} else {
-		UTIL.i2sSelect.hide();
-	}
+	UTIL.i2sSelect[ S.i2smodule ? 'show' : 'hide' ]();
+	$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )
@@ -1062,29 +1066,12 @@ $( '#i2smodule' ).on( 'input', function() {
 		}
 		NOTIFY( icon, title, msg );
 	}
-} ).on( 'select2:open', function( e ) {
-	if ( $( '#i2smodule option' ).length > 2 ) return
-	
-	$( '#i2smodule' ).select2( 'close' );
-	UTIL.i2sSelect.option();
-} ).on( 'select2:close', function () {
-	if ( ! this.value ) UTIL.i2sSelect.hide();
 } );
 $( '#ledcalc' ).on( 'click', UTIL.ledcalc );
 $( '#hostname' ).on( 'click', UTIL.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
 	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
 	BASH( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
-} ).on( 'select2:open', function( e ) {
-	if ( $( '#timezone option' ).length > 2 ) return
-	
-	$( '#timezone' ).select2( 'close' );
-	$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
-		$( '#timezone' )
-			.html( data )
-			.val( S.timezone )
-			.select2( 'open' );
-	} );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );

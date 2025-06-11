@@ -4,14 +4,10 @@ include 'common.php';
 function buttonSet( $array, $class = '', $prefix = '' ) {
 	$icons = '';
 	foreach( $array as $a ) {
-		if ( $a[ 0 ] === '<' ) {
-			$icons.= $a;
-		} else if ( is_string( $a ) ) {
+		if ( is_string( $a ) ) {
 			$icons.= '<i id="'.$prefix.$a.'" class="i-'.$a.' '.$class.'"></i>';
 		} else {
-			$cl    = $a[ 0 ].' '.$class;
-			$id    = $prefix.$a[ 1 ];
-			$icons.= '<i id="'.$id.'" class="i-'.$cl.'"></i>';
+			$icons.= '<i id="'.$prefix.$a[ 1 ].'" class="i-'.$a[ 0 ].' '.$class.'"></i>';
 		}
 	}
 	return $icons;
@@ -182,6 +178,19 @@ $htmlsearch   = '
 	<input id="lib-search-input" type="text" spellcheck="false">
 </div>
 ';
+$mapcover     = [
+	  [ 'scale r1 c1 ws hs',    'TL' ]
+	, [ 'guide r1 c2 wl hs',    'T'  ]
+	, [ 'gear r1 c3 ws hs',     'TR' ]
+	, [ 'previous r2 c1 ws hl', 'L'  ]
+	, [ 'play r2 c2 wl hl',     'M'  ]
+	, [ 'next r2 c3 ws hl',     'R'  ]
+	, [ 'random r3 c1 ws hs',   'BL' ]
+	, [ 'stop r3 c2 wl hs',     'B'  ]
+	, [ 'repeat r3 c3 ws hs',   'BR' ]
+];
+$maptime      = [];
+foreach( $mapcover as $a ) $maptime[] = preg_replace( '/ .*/', '', $a );
 ?>
 
 <div class="pagerefresh"></div>
@@ -215,8 +224,7 @@ $htmlsearch   = '
 </div>
 
 <div id="page-playback" class="page">
-	<?=icon(  'plus-o emptyadd hide' )
-		.buttonSet( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
+	<?=icon(  'plus-o emptyadd hide' )?>
 	<div id="info">
 		<?=$htmlinfo?>
 		<div id="infoicon">
@@ -225,6 +233,7 @@ $htmlsearch   = '
 			<span id="modeicon"><?=$modeicon?></span>
 		</div>
 		<div id="sampling"></div>
+		<div id="map-info" class="divmap"><?=buttonSet( [ 'bio', 'lyrics', 'booklet' ], 'hide', 'info-' )?></div>
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
@@ -238,18 +247,8 @@ $htmlsearch   = '
 					<div id="timeicon"><?=$timeicon?></div>
 				</div>
 			</div>
-			<div id="map-time">
-				<?=buttonSet( [
-					  [ 'scale',    'TL' ]
-					, [ 'guide',    'T' ]
-					, [ 'gear',     'TR' ]
-					, [ 'previous', 'L' ]
-					, '<div id="timeM" class="map maptime">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
-					, [ 'next',     'R' ]
-					, [ 'random',   'BL' ]
-					, [ 'stop',     'B' ]
-					, [ 'repeat',   'BR' ]
-				], 'map maptime', 'time' )?>
+			<div id="map-time" class="divmap">
+				<?=buttonSet( $maptime, '', 'time' )?>
 			</div>
 			<div id="button-time" class="btn-group">
 				<?=buttonSet( [ 'random', 'single', 'repeat' ], 'btn btn-default btn-cmd btn-toggle' )?>
@@ -261,18 +260,8 @@ $htmlsearch   = '
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" src="" class="hide">
 				<?=$htmlvumeter?>
-				<div id="map-cover">
-					<?=buttonSet( [
-						  [ 'scale r1 c1 ws hs',    'TL' ]
-						, [ 'guide r1 c2 wl hs',    'T' ]
-						, [ 'gear r1 c3 ws hs',     'TR' ]
-						, [ 'previous r2 c1 ws hl', 'L' ]
-						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.icon(  'play' ).'&emsp;'.icon(  'pause' ).'</div>'
-						, [ 'next r2 c3 ws hl',     'R' ]
-						, [ 'random r3 c1 ws hs',   'BL' ]
-						, [ 'stop r3 c2 wl hs',     'B' ]
-						, [ 'repeat r3 c3 ws hs',   'BR' ]
-					], 'map mapcover', 'cover' )?>
+				<div id="map-cover" class="divmap">
+					<?=buttonSet( $mapcover, '', 'cover' )?>
 				</div>
 				<div id="volume-band-level" class="hide"></div>
 				<div id="volume-bar" class="hide"></div>
@@ -292,14 +281,14 @@ $htmlsearch   = '
 				<span id="volume-mute" class="hide">0</span>
 				<span id="volume-level"></span>
 			</div>
-			<div id="map-volume">
+			<div id="map-volume" class="divmap">
 				<?=buttonSet( [
 					  [ 'plus up',  'T' ]
 					, [ 'minus dn', 'L' ]
 					, [ 'volume',   'M' ]
 					, [ 'plus up',  'R' ]
 					, [ 'minus dn', 'B' ]
-				], 'map mapvolume', 'vol' )?>
+				], '', 'vol' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
 				<?=buttonSet( [

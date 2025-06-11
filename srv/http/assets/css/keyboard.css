@@ -32,7 +32,7 @@
 	text-shadow: var( --shadow-text );
 	background: var( --cg );
 	box-shadow: var( --shadow-btn );
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	border-top: 1px solid var( --cg60 );
 	cursor: pointer;
 	user-select: none;

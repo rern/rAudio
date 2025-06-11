@@ -19,7 +19,7 @@ div.pagerefresh { z-index: 100 }
 .coveredit,
 .bkedit,
 .controls { z-index: 20 }
-.map { z-index: 16 }
+.divmap { z-index: 16 }
 .licover { z-index: 15 }
 .menu { z-index: 11 }
 #vu::before { z-index: 6 }
@@ -94,9 +94,6 @@ a {
 }
 .submenu.disabled {
 	color: var( --cg60 ) !important;
-}
-i.map.disabled, .map.disabled i {
-	color: var( --cgl );
 }
 #logo {
 	position: absolute;
@@ -545,7 +542,7 @@ div.pagerefresh {
 	height: 40px;
 	font-size: 18px;
 	line-height: 40px;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	opacity: 1;
 }
 #volume-band-dn {
@@ -641,7 +638,7 @@ div.pagerefresh {
 .btn {
 	border: none;
 	outline: none !important;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	color: var( --cw );
 							  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -655,50 +652,62 @@ div.pagerefresh {
 	color: var( --cm ) !important;
 }
 /* overlay controls */
-#map-cover {
+#info {
+	position: relative;
+}
+.divmap {
 	position: absolute;
 	top: 0;
 	width: 100%;
-	height: 100%
+	height: 100%;
+	font-size: 22px;
 }
-.map {
+.divmap > i,
+.divmap div {
 	position: absolute;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 24px;
 	opacity: 0;
+	background: var( --cg );
 }
-.map.mapshow {
-	opacity: 0.8;
-}
-.map.guide.mapshow {
-	opacity: 0.9;
+.mapshow * {
+	opacity: 0.8 !important;
 }
 #coverTR.empty {
 	background: none;
 	opacity: 0.8;
 }
-.guide {
+#map-info i {
 	width: 40px;
 	line-height: 40px;
 	border-radius: 50%;
-	left: -70px;
-	right: 0;
-	margin: -10px auto;
 	background: var( --cg );
 }
-#guide-lyrics {
-	left: 0;
-	margin-top: 20px;
+#info-bio     { left: -70px; top: -10px; }
+#info-lyrics  { left: -20px; top:  20px; }
+#info-booklet { left:  30px; top:  50px; }
+#map-info,
+#map-time,
+#map-volume {
+	left: 50%;
 }
-#guide-booklet {
-	left: 70px;
-	margin-top: 50px;
+#map-time i,
+#map-volume i {
+	height: 40px;
+	width: 40px;
+	border-radius: var( --radius-btn );
 }
-.maptime,
-.mapvolume {
-	border-radius: 4px;
+#timeM,
+#volM {
+	width: 60px !important;
+	height: 60px !important;
+}
+#timeTL,
+#timeTR,
+#timeBL,
+#timeBR {
+	border-radius: 50% !important;
 }
 .r1 { top: 0; }
 .r2 { top: 22%; }
@@ -709,12 +718,6 @@ div.pagerefresh {
 .hl { height: 56%; }
 .c2 { margin-left: 22%; }
 .c3 { margin-left: 78%; }
-.r1,
-.r3,
-.maptime,
-.mapvolume {
-	background: var( --cg );
-}
 .wl.narrow { width: 46% }
 .c1.narrow { margin-left: 5% }
 .c2.narrow { margin-left: 27% }
@@ -729,7 +732,7 @@ div.pagerefresh {
 #timeM,
 #timeR,
 #timeB {
-	background: var( --cmd );
+	background: var( --cmd ) !important;
 }
 .r1 {
 	font-size: 30px;
@@ -742,81 +745,32 @@ div.pagerefresh {
 	border-left: 3px solid #000000;
 	border-right: 3px solid #000000;
 }
-.maptime {
-	font-size: 22px;
-}
-.maptime,
-.mapvolume {
-	height: 40px;
-	width: 60px;
-	left: 50%;
-	margin-left: -30px;
-}
 #timeT,
 #timeB,
 #volT,
-#volB {
-	margin-left: -20px;
-	width: 40px;
-}
+#volB   { left: -20px }
 #timeT,
-#volT {
-	top: 44px;
-}
+#volT   { top: 44px }
 #timeTL,
+#timeTR { left: -64px; top: 53px; }
 #timeTR,
+#timeBR { left: 24px }
 #timeBL,
-#timeBR {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-}
-#timeTL,
-#timeTR {
-	top: 53px;
-	margin-left: -64px;
-}
-#timeTR,
-#timeBR {
-	margin-left: 24px;
-}
-#timeBL,
-#timeBR {
-	top: 141px;
-}
-#timeBL {
-	margin-left: -64px;
-}
+#timeBR { top: 141px }
+#timeBL { left: -64px }
 #timeL,
 #timeR,
 #volL,
-#volR {
-	top: 97px;
-	height: 40px;
-}
+#volR   { top: 97px }
 #timeM,
-#volM {
-	top: 87px;
-	height: 60px;
-}
+#volM   { left: -30px; top: 87px; }
 #timeL,
+#volL   { left: -73px }
 #timeR,
-#volL,
-#volR {
-	width: 40px;
-}
-#timeL,
-#volL {
-	margin-left: -73px;
-}
-#timeR,
-#volR {
-	margin-left: 33px;
-}
+#volR   { left: 33px }
 #timeB,
-#volB {
-	top: 150px;
-}
+#volB   { top: 150px }
+
 .btn-group {
 	display: inline-block;
 	margin-top: 20px;
@@ -826,7 +780,7 @@ div.pagerefresh {
 	float: left;
 }
 .btn-group > .btn:not(:first-child):not(:last-child) {
-	border-radius:0;
+	border-radius: 0;
 }
 .btn-group > .btn:first-child:not(:last-child) {
 	border-bottom-right-radius: 0;
@@ -931,10 +885,10 @@ div.pagerefresh {
 }
 #vol .point {
 	position: absolute;
-	top: 100px;
+	top: 103px;
 	right: 15px;
-	height: 25px;
-	width: 25px;
+	height: 24px;
+	width: 24px;
 	background: var( --cm );
 	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
@@ -1226,7 +1180,7 @@ div.pagerefresh {
 .mode {
 	position: relative;
 	height: 110px;
-	border-radius: 5px;
+	border-radius: var( --radius-btn );
 	color: var( --cg60 );
 	text-align: center;
 }
@@ -1458,7 +1412,6 @@ div.pagerefresh {
 	height: 32px !important;
 	margin: 0;
 	padding: 5px 5px 2px 5px;
-	border: 1px solid var( --cg );
 	color: var( --cw );
 	background-color: #000000;
 	font-family: Lato;
@@ -2161,7 +2114,7 @@ li.active .li2 bl {
 	#sampling,
 	#time-knob,
 	#volume-knob,
-	#guide-lyrics { display: none; }
+	#info-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
 	#divcover .i-save { top: 5px; }
 }

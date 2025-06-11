@@ -14,22 +14,6 @@ V = {  // global var
 	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
-	, option        : {
-		  pica        : {
-			  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
-			, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
-			, unsharpRadius    : 0.6
-//			, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
-//			, alpha            : true // Default = false (black crop background)
-		}
-		, roundslider : {
-			  animation   : false
-			, borderWidth : 0
-			, radius      : 115
-			, svgMode     : true
-			, width       : 22
-		}
-	}
 	, page          : 'playback'
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
@@ -276,10 +260,10 @@ $( '#info' ).on( 'click', function() {
 $( '.emptyadd' ).on( 'click', function() {
 	$( '#library' ).trigger( 'click' );
 } );
-$( '#artist, #guide-bio' ).on( 'click', function() {
+$( '#artist, #info-bio' ).on( 'click', function() {
 	BIO.get( S.Artist );
 } );
-$( '#title, #guide-lyrics' ).on( 'click', function() {
+$( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
 		&& ( ! S.webradio || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
@@ -299,7 +283,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	}
 	
 } );
-$( '#album, #guide-booklet' ).on( 'click', function() {
+$( '#album, #info-booklet' ).on( 'click', function() {
 	if ( V.press || V.localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
@@ -446,7 +430,7 @@ var btnctrl = {
 	, B  : 'stop'
 	, BR : 'repeat'
 }
-$( '#map-cover .map' ).on( 'click', function( e ) {
+$( '#map-cover i' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	
@@ -473,17 +457,16 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 		var time   = PROGRESS.visible();
 		var volume = VOLUME.visible();
 		$( '#coverTR' ).removeClass( 'empty' );
-		$( '.mapcover, .guide' ).addClass( 'mapshow' );
+		$( '#map-cover, #map-info' ).addClass( 'mapshow' );
 		if ( S.pllength ) {
-			$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
-			$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
-			$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
+			$( '#info-bio' ).toggleClass( 'hide', S.Artist === '' );
+			$( '#info-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
+			$( '#info-booklet' ).toggleClass( 'hide', S.Album === '' );
 		} else {
-			$( '#guide-bio, #guide-lyrics, #guide-booklet' ).addClass( 'hide' );
+			$( '#info-bio, #info-lyrics, #info-booklet' ).addClass( 'hide' );
 		}
-		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
-		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
-		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
+		$( '#map-time' ).toggleClass( 'mapshow', ! D.cover );
+		$( '#map-volume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', ! UTIL.barVisible() );
 		if ( S.player === 'mpd' ) {
 			if ( ! time && ! S.webradio ) {
@@ -1409,20 +1392,21 @@ $( '#pl-search-input' ).on( 'input', function() {
 	var keyword = $( this ).val();
 	var regex   = new RegExp( keyword, 'ig' );
 	var count   = 0;
-	$( '#pl-list li' ).each( ( i, el ) => {
-		var $this = $( el );
-		var name  = $this.find( '.li1 .name' ).text();
-		var ar_al = $this.find( '.ar_al' ).text();
-		var txt   = name + ar_al;
-		if ( txt.search( regex ) !== -1 ) {
+	$( '#pl-list li' ).each( ( i, li ) => {
+		var $li   = $( li );
+		var name  = $li.find( '.li1 .name' ).text();
+		var ar_al = $li.find( '.ar_al' ).text();
+		var text  = name + ar_al;
+		if ( regex.test( text ) ) {
 			count++;
-			name  = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			ar_al = ar_al.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			$this.find( '.name' ).html( name );
-			$this.find( '.ar_al' ).html( ar_al );
-			$this.removeClass( 'hide' );
+			name  = COMMON.search.addTag( name, regex );
+			ar_al = COMMON.search.addTag( ar_al, regex );
+			$li.find( '.name' ).html( name );
+			$li.find( '.ar_al' ).html( ar_al );
+			$li.removeClass( 'hide' );
 		} else {
-			$this.addClass( 'hide' );
+			$li.addClass( 'hide' );
+			COMMON.search.removeTag( $li );
 		}
 	} );
 	DISPLAY.pageScroll( 0 );
@@ -1430,12 +1414,9 @@ $( '#pl-search-input' ).on( 'input', function() {
 } );
 $( '#pl-search-close' ).on( 'click', function() {
 	$( '#page-playlist .search' ).addClass( 'hide' );
-	$( '#pl-manage, #pl-list li' ).removeClass( 'hide' );
+	$( '#pl-manage' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).empty();
-	$( '#pl-search-input' ).val( '' );
-	$( '#pl-list' ).html( function() {
-		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
-	} )
+	COMMON.search.reset( $( '#pl-search-input' ), $( '#pl-list' ) );
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
@@ -1656,7 +1637,7 @@ $( document ).on( 'keydown', e => {
 } );
 // eq /////////////////////////////////////////////////////////////////////////////////////
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
-	$( '#eqedit, #eq .select2-container, #eqnew' ).addClass( 'hide' );
+	$( '#eqedit, #eq .select, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' )
 		.css( 'display', 'inline-block' )
@@ -1706,7 +1687,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 		}
 	} );
 } ).on( 'click', '#eqback', function() {
-	$( '#eqedit, #eq .select2-container, #eqnew' ).removeClass( 'hide' );
+	$( '#eqedit, #eq .select, #eqnew' ).removeClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
 } ).on( 'input', '#eqname', function( e ) {

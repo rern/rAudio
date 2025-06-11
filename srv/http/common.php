@@ -38,36 +38,22 @@ $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // plugin: css / js filename with version
-$cssfiles  = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
-foreach( $cssfiles as $file ) {
-	$name            = explode( '-', $file )[ 0 ];
-	$cfiles[ $name ] = $file;
-}
 $jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$jfiles[ $name ] = $file;
 }
 if ( ! $page ) { // main
-	$cssp  = [];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ 'jquery', 'pica', 'qrcode' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
-	if ( $equalizer ) {
-		$cssp[] = 'select2';
-		$css    = [ ...$css, 'select2', 'equalizer' ];
-		$jsp[]  = 'select2';
-	}
+	if ( $equalizer ) $css[] = 'equalizer';
 	$title = 'STATUS';
 } else {         // settings
-	$cssp  = [];
 	$css[] = 'settings';
-	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];
+	$jsp   = [ 'jquery' ];
+	if ( $networks ) $jsp[] = 'qrcode';
 	$js    = [ 'common', 'settings', $page ];
-	if ( ! $guide && ! $networks && ! $addonsprogress ) {
-		$cssp[] = 'select2';
-		$css[]  = 'select2';
-	}
 	if ( $addons ) $css[] = 'addons';
 	$icon      = $page;
 	$pagetitle = strtoupper( $page );
@@ -93,7 +79,6 @@ if ( $localhost && ! $add_guide ) include 'keyboard.php';
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
-foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
 echo $html.'
 </head>

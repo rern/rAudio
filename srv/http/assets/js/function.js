@@ -505,14 +505,13 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
 			V.guide        = false;
 			var barvisible = UTIL.barVisible();;
 			$( '#coverTR' ).toggleClass( 'empty', S.pllength === 0 && ! barvisible && S.player === 'mpd' );
-			$( '.map' ).removeClass( 'mapshow' );
+			$( '.divmap' ).removeClass( 'mapshow' );
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 			$( '.band, #volbar' ).addClass( 'transparent' );
@@ -876,7 +875,7 @@ EQ            = {
 						$( '#eqpreset' ).html( COMMON.htmlOption( Object.keys( E.preset ) ) );
 						I.values = [ ...E.preset[ E.active ], E.active ];
 						_INFO.setValues();
-						COMMON.select.set();
+						COMMON.select();
 						COMMON.json.save( 'equalizer', E );
 					}
 				} );
@@ -939,13 +938,19 @@ var FILEIMAGE = {
 					var canvas    = document.createElement( 'canvas' );
 					canvas.width  = resize.w;
 					canvas.height = resize.h;
-					pica.resize( filecanvas, canvas, V.option.pica ).then( function() {
+					var option    = {
+						  unsharpAmount    : 100  // 0...500 Default: 0 (try 50-100)
+						, unsharpThreshold : 5    // 0...100 Default: 0 (try 10)
+						, unsharpRadius    : 0.6
+//						, quality          : 3    // 0...3   Default: 3 (Lanczos win)
+//						, alpha            : true //         Default: false (black crop background)
+					}
+					pica.resize( filecanvas, canvas, option ).then( function() {
 						FILEIMAGE.render( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 					} );
 				} else {
 					FILEIMAGE.render( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 				}
-				clearTimeout( V.timeout.file );
 				BANNER_HIDE();
 			}
 		}

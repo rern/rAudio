@@ -763,6 +763,7 @@ function INFO( json ) {
 		// show
 		_INFO.toggle();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
+		if ( $( '#infoList select' ).length ) COMMON.select();
 		_INFO.width(); // text / password / textarea
 		if ( [ 'V.localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
 		// check inputs: blank / length / change
@@ -916,10 +917,8 @@ var _INFO     = {
 			var $this = $( this );
 			var add   = $this.hasClass( 'i-plus' );
 			if ( add ) {
-				$( '#infoList select' ).select2( 'destroy' );
 				var $tr = $( '#infoList tr' ).last();
 				$tr.after( $tr.clone() );
-				COMMON.select.set();
 			} else {
 				$this.parents( 'tr' ).remove();
 			}
@@ -1157,6 +1156,8 @@ var _INFO     = {
 		} else {
 			I.boxW   = 230;
 		}
+		var $select = $( '#infoList .select' );
+		if ( $select.length ) $select.css( 'width', I.boxW +'px' );
 		$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
 			var $el = $( el );
 			if ( ! $el.attr( 'style' ) && ! $el.parent().attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
@@ -1165,7 +1166,6 @@ var _INFO     = {
 			$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 		}
 		if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
-		if ( ! resize && $( '#infoList select' ).length ) COMMON.select.set();
 	}
 }
 
@@ -1254,8 +1254,8 @@ var COMMON    = {
 	, eq            : {
 		  beforShow : fn => {
 			fn.init();
-			var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
-			$( '#eq' ).css( 'height', eqH );
+			var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top - 15;
+			$( '#eq' ).css( 'height', eqH +'px' );
 			$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
 			var $range0 = $( '.inforange input' ).eq( 0 );
 			var max     = +$range0.prop( 'max' );
@@ -1361,7 +1361,7 @@ var COMMON    = {
 		if ( I.active ) {
 			if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
 		} else if ( $parent.is( '#bar-bottom' ) ) {
-			if ( ! PAGE ) $next.trigger( 'click' );
+			if ( PAGE ) $next.trigger( 'click' );
 		} else {
 			if ( $parent.is( '.content-top' ) ) return
 			
@@ -1370,7 +1370,7 @@ var COMMON    = {
 	}
 	, focusNextTabs : () => {
 		var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-			if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
+			if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide' ) ) return $( el )
 		} );
 		return $tabs
 	}
@@ -1510,63 +1510,29 @@ var COMMON    = {
 		
 		$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 	}
-	, select        : {
-		  set : $select => {
-			if ( ! $select ) $select = $( '#infoList select' );
+	, search        : {
+		  addTag    : ( text, regex ) => text.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } )
+		, removeTag : $li => $li.html( $li.html().replace( /<bll>|<\/bll>/g, '' ) )
+		, reset     : ( $input, $ul ) => {
+			if ( ! $input.val() ) return
+			
+			$input.val( '' );
+			$ul.find( 'li:not( .hide )' ).each( ( i, li ) => COMMON.search.removeTag( $( li ) ) );
+			$ul.find( 'li' ).removeClass( 'hide' );
+		}
+	}
+	, select        : () => {
+		var $el = $( I.active ? '#infoList select' : '.container select' );
+		$.each( $el, ( i, select ) => {
+			var $select = $( select );
+			if ( $select.next().hasClass( 'select' ) ) return
+			
+			var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
+			var text    = $select.find( 'option:selected' ).text();
 			$select
-				.select2( {
-					minimumResultsForSearch: 10
-				} ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
-					LOCAL(); // fix: onblur / onpagehide
-					V.select2 = true;
-					setTimeout( () => {
-						var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-						if ( V.touch ) scroll -= 12;
-						$( '.select2-results ul' ).scrollTop( scroll );
-					}, 0 );
-					if ( I.active && I.boxwidth ) COMMON.select.width( I.boxwidth );
-				} ).one( 'select2:closing', function() {
-					LOCAL(); // fix: onblur / onpagehide / Enter
-					setTimeout( () => {
-						V.select2 = false;
-						var $tabs = COMMON.focusNextTabs();
-						$tabs
-							.removeClass( 'focus' )
-							.each( ( i, el ) => {
-								if ( this === el ) {
-									$tabs.eq( i + 1 ).trigger( 'focus' );
-									return false
-								}
-						} );
-					}, 300 );
-				} ).each( ( i, el ) => {
-					var $this = $( el );
-					$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
-				} );
-			$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
-			// if select width set
-			$( '#infoList select[ data-width ]' ).each( ( i, el ) => {
-				var $el   = $( el );
-				var width = $el.data( 'width' );
-				$el.next().css( 'width', width +'px' );
-				$el.one( 'select2:open', () => COMMON.select.width( width ) );
-			} );
-		}
-		, text2Html : pattern => {
-			function htmlSet( $el ) {
-				$.each( pattern, ( k, v ) => {
-					if ( $el.text() === k ) $el.html( v );
-				} );
-			}
-			var $rendered = $( '.select2-selection__rendered' ).eq( 0 );
-			htmlSet( $rendered );
-			$( '#infoList select' ).on( 'select2:open', () => {
-				setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
-			} ).on( 'select2:select', function() {
-				htmlSet( $rendered );
-			} );
-		}
-		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
+				.addClass( 'hide' )
+				.after( '<div class="select'+ single +'" tabindex="0">'+ text +'</div>' );
+		} );
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 	, statusToggle  : action => {
@@ -1680,7 +1646,7 @@ function pageActive() {
 	}
 }
 function pageInactive() {
-	if ( V.local || V.debug ) return // V.local from select2
+	if ( V.local || V.debug ) return
 	
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
@@ -1696,10 +1662,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'ArrowDown':
 		case 'Tab':
 			e.preventDefault();
-			if ( V.select2 ) return
 			
 			COMMON.focusNext( COMMON.focusNextTabs(), 'focus', key );
-			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
@@ -1710,7 +1674,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
-			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
+			if ( $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( $target.length ) {
@@ -1720,7 +1684,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			}
 			break
 		case 'Escape':
-			$( '#infoX' ).trigger( 'click' );
+			var $dropdown = $( '#infoList .dropdown:not( .hide )' );
+			$dropdown.length ? $dropdown.prev().trigger( 'click' ) : $( '#infoX' ).trigger( 'click' );
 			break
 	}
 } ).on( 'click', '#infoList', function() {
@@ -1778,3 +1743,73 @@ $( '#debug' ).on( 'click', function() {
 } );
 $( '#banner' ).on( 'click', BANNER_HIDE );
 $( '.pagerefresh' ).press( () => location.reload() );
+// select ---------------------------------------------------------------------------------------------
+$( 'body' ).on( 'click', function( e ) {
+	var $dropdown = $( '.dropdown:not( .hide' );
+	if ( ! $dropdown.length || $( e.target ).closest( '.select, .dropdown' ).length ) return
+	
+	$dropdown.prev().trigger( 'click' );
+} ).on( 'click', '.select:not( .single )', function() {
+	var $this      = $( this );
+	var active     = $this.hasClass( 'active' );
+	$( '.select' ) // reset all
+		.removeClass( 'active' )
+		.next().addClass( 'hide' );
+	$( '.dropdown input' ).each( ( i, input ) => {
+		COMMON.search.reset( $( input ), $( input ).parent().next() );
+	} );
+	var $origin    = $this.prev();
+	if ( active ) {
+		if ( $origin.is( '#i2smodule' ) && ! S.i2smodule ) UTIL.i2sSelect.hide(); // from system.js
+		return
+	}
+	
+	if ( $origin.is( '#timezone' ) && UTIL.timezoneList() ) return                // from system.js
+	
+	var index      = $origin.find( 'option:selected' ).index();
+	var $dropdown  = $this.next();
+	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
+		var html_li = $origin.html()
+						.replace( /<option/g, '<li' )
+						.replace( /option>/g, 'li>' );
+		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
+		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
+		$dropdown   = $this.next();
+	}
+	$this.addClass( 'active' );
+	$dropdown
+		.css( 'min-width', $this.css( 'width' ) )
+		.removeClass( 'hide' )
+		.find( 'ul' ).scrollTop( index * 40 - 40 )
+		.find( 'li' ).eq( index ).addClass( 'selected' );
+} ).on( 'click', '.dropdown li', function() {
+	var $this     = $( this );
+	var $dropdown = $this.parents( '.dropdown' );
+	var $select  = $dropdown.prev();
+	var $origin   = $select.prev();
+	$select
+		.text( $this.text() )
+		.toggleClass( 'active' )
+		.prev().find( 'option' ).eq( $this.index() ).attr( 'selected', true );
+	$dropdown
+		.addClass( 'hide' )
+		.find( 'li.selected' ).removeClass( 'selected' );
+	$this.addClass( 'selected' );
+	$origin.trigger( 'input' );
+} ).on( 'input', '.dropdown input', function() {
+	var $this   = $( this );
+	var keyword = $this.val();
+	var regex   = new RegExp( keyword, 'ig' );
+	$this.parent().next().find( 'li' ).each( ( i, li ) => {
+		var $li  = $( li );
+		var text = $li.text();
+		if ( regex.test( text ) ) {
+			text = COMMON.search.addTag( text, regex );
+			$li.html( text );
+			$li.removeClass( 'hide' );
+		} else {
+			$li.addClass( 'hide' );
+			COMMON.search.removeTag( $li );
+		}
+	} );
+} );

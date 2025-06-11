@@ -200,7 +200,7 @@ tab {
 	line-height: 22px;
 	padding: 0 3px;
 	border: 1px solid var( --cg );
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 }
 tab {
 	padding: 0 20px;
@@ -343,7 +343,6 @@ heading i.disabled {
 .entries li span,
 .entries .li1,
 .entries .li2,
-.select2-results__options li,
 #divvolume .control {
 	white-space: nowrap;
 	overflow: hidden;
@@ -454,7 +453,7 @@ input[type=image] {
 	height: 40px;
 	margin-bottom: 5px;
 	background: var( --cg );
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	box-shadow: inset 0px 1px 2px #000000;
 }
 .btn-primary,
@@ -471,7 +470,7 @@ input:checked + .switchlabel::after {
 	height: 40px;
 	background-color: var( --cg );
 	box-shadow: 0px 2px 5px #000000;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	transition: 0.3s;
 }
 input:checked + .switchlabel::after {
@@ -505,7 +504,7 @@ input.disabled + .switchlabel::after {
 	width: 40px !important;
 	margin-left: 5px;
 	font-size: 26px;
-	line-height: 44px;
+	line-height: 40px;
 	text-align: center;
 }
 .setting {
@@ -735,11 +734,11 @@ circle.on {
 		cursor: pointer
 	}
 	i:focus-visible,
+	.graphclose:focus-visible,
+	.select:focus-visible,
+	.setting:focus-visible,
 	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
-	.select2-selection:focus-visible,
-	.setting:focus-visible,
-	.graphclose:focus-visible,
 	#hostname:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;

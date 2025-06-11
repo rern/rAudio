@@ -2830,11 +2830,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var values = param.gains.map( g => g * 10 );
 	}
 	function flatButton() {
-		if ( peq ) {
-			var flat = ! g_k.some( k => param[ k ] !== 0 );
-		} else {
-			var flat = values.reduce( ( a, b ) => a + b, 0 ) === 0;
-		}
+		var flat = peq ? ! g_k.some( k => param[ k ] !== 0 ) : ! param.gains.some( k => k !== 0 );
 		$( '#infoOk' ).toggleClass( 'disabled', flat );
 	}
 	INFO( {
@@ -2853,11 +2849,9 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 					var val = v / 10;
 					peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
 					$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
-				}
-				, end   : () => {
-					SETTING.save();
 					flatButton();
 				}
+				, end   : () => SETTING.save()
 			} );
 		}
 		, oklabel    : ICON( 'set0' ) +'Flat'

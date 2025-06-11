@@ -55,7 +55,7 @@
 	text-shadow: none;
 	font-family: Inconsolata;
 	background: var( --cg );
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 	cursor: pointer;
 }
 #eq .label.dn,
@@ -114,4 +114,5 @@
 	display: inline-block;
 	width: 230px;
 	height: 42px;
+	vertical-align: middle;
 }
