@@ -658,9 +658,13 @@ div.pagerefresh {
 .divmap {
 	position: absolute;
 	top: 0;
+	width: 230px;
+	height: 230px;
+	font-size: 22px;
+}
+#map-cover {
 	width: 100%;
 	height: 100%;
-	font-size: 22px;
 }
 .divmap i {
 	position: absolute;
@@ -687,6 +691,11 @@ div.pagerefresh {
 #map-time,
 #map-volume {
 	left: 50%;
+	margin-left: -115px;
+}
+#map-time,
+#map-volume {
+	border-radius: 50%;
 }
 #map-time i,
 #map-volume i {
@@ -744,31 +753,34 @@ div.pagerefresh {
 .c1.narrow    { left: 5% }
 .c2.narrow    { left: 27% }
 .c3.narrow    { left: 73% }
-#timeT,
-#timeB,
-#volT,
-#volB   { left: -20px }
-#timeT,
-#volT   { top: 44px }
 #timeTL,
-#timeTR { left: -64px; top: 53px; }
-#timeTR,
-#timeBR { left: 24px }
-#timeBL,
-#timeBR { top: 141px }
-#timeBL { left: -64px }
+#timeTR { top: 50px }
+#timeT,
+#volT   { top: 43px }
 #timeL,
 #timeR,
 #volL,
-#volR   { top: 97px }
+#volR   { top: 95px }
 #timeM,
-#volM   { left: -30px; top: 87px; }
-#timeL,
-#volL   { left: -73px }
-#timeR,
-#volR   { left: 33px }
+#volM   { top: 85px }
+#timeBL,
+#timeBR { bottom: 50px }
 #timeB,
-#volB   { top: 150px }
+#volB   { bottom: 43px }
+#timeTL,
+#timeBL { left: 50px }
+#timeTR,
+#timeBR { right: 50px }
+#timeT,
+#timeB,
+#volT,
+#volB   { left: 95px }
+#timeM,
+#volM   { left: 85px }
+#timeL,
+#volL   { left: 43px }
+#timeR,
+#volR   { right: 43px }
 
 .btn-group {
 	display: inline-block;
@@ -885,7 +897,7 @@ div.pagerefresh {
 #vol .point {
 	position: absolute;
 	top: 103px;
-	right: 15px;
+	right: 13px;
 	height: 24px;
 	width: 24px;
 	background: var( --cm );
