@@ -1613,8 +1613,8 @@ var PLAYBACK  = {
 			if ( ! tWmax ) return
 			
 			$( '.scrollleft' ).css( { // same width and speed
-				  width     : tWmax
-				, animation : ( ( V.wW + tWmax ) / 80 ) +'s infinite linear scrollleft'
+				  width                : tWmax
+				, 'animation-duration' : ( ( V.wW + tWmax ) / 80 ) +'s'
 			} );
 			if ( V.localhost ) {
 				$( '.scrollleft' )

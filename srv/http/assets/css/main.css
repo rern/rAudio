@@ -445,8 +445,11 @@ div.pagerefresh {
 	display: block !important;
 	padding: 0 10px;
 }
+.scrollleft {
+	animation: scrollleft 0s linear infinite;
+}
 @keyframes scrollleft {
-	0%   { transform : translateX( 100% ) } /* move to right 100vw */
+	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
 	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
 }
 /* ---------------------- knobs, buttons ----------------------*/
@@ -506,9 +509,13 @@ div.pagerefresh {
 #volume-band-level {
 	position: absolute;
 }
+#arc,
+#time-bar,
+#vol,
+#vol .point,
 #volume-bar,
 #volume-bar-point {
-	transition: all 0s linear;
+	transition-timing-function: linear;
 }
 .band {
 	background: var( --cg );
@@ -867,7 +874,6 @@ div.pagerefresh {
 	fill: transparent;
 	stroke: var( --cm );
 	stroke-width: 21px;
-	transition-timing-function: linear;
 }
 #vol {
 	position: absolute;
@@ -887,7 +893,6 @@ div.pagerefresh {
 #vol,
 #vol .point {
 	border-radius: 50%;
-	transition: transform 0s linear;
 }
 
 #elapsed {
