@@ -686,7 +686,6 @@ div.pagerefresh {
 #map-info i {
 	width: 40px;
 	line-height: 40px;
-	border-radius: 50%;
 	background: var( --cg );
 }
 #map-time,
@@ -696,15 +695,10 @@ div.pagerefresh {
 	left: 50%;
 	margin-left: -115px;
 }
-#map-time,
-#map-volume {
-	border-radius: 50%;
-}
 #map-time i,
 #map-volume i {
 	height: 40px;
 	width: 40px;
-	border-radius: var( --radius-btn );
 }
 #timeM,
 #volM {
@@ -775,6 +769,14 @@ div.pagerefresh {
 #volL,   #volR   { top:    var( --margin-center ) }
 #timeT,  #timeB,
 #volT,   #volB   { left:   var( --margin-center ) }
+#timeT,
+#volT { border-radius: 4px 4px 0 0 }
+#timeB,
+#volB { border-radius: 0 0 4px 4px }
+#timeL,
+#volL { border-radius: 4px 0 0 4px }
+#timeR,
+#volR { border-radius: 0 4px 4px 0 }
 
 .btn-group {
 	display: inline-block;
@@ -788,12 +790,10 @@ div.pagerefresh {
 	border-radius: 0;
 }
 .btn-group > .btn:first-child:not(:last-child) {
-	border-bottom-right-radius: 0;
-	border-top-right-radius: 0;
+	border-radius: 4px 0 0 4px;
 }
 .btn-group > .btn:last-child:not(:first-child) {
-	border-bottom-left-radius: 0;
-	border-top-left-radius: 0;
+	border-radius: 0 4px 4px 0;
 }
 .btn-group i {
 	height: 40px;
