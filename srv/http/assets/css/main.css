@@ -708,8 +708,8 @@ div.pagerefresh {
 }
 #timeM,
 #volM {
-	width: 60px !important;
-	height: 60px !important;
+	width: 50px !important;
+	height: 50px !important;
 }
 #timeTL,
 #timeTR,
@@ -717,10 +717,10 @@ div.pagerefresh {
 #timeBR {
 	border-radius: 50% !important;
 }
-.ws { width: 22%; }
-.wl { width: 56%; }
-.hs { height: 22%; }
-.hl { height: 56%; }
+.ws { width:  22% }
+.wl { width:  56% }
+.hs { height: 22% }
+.hl { height: 56% }
 .wl.narrow { width: 46% }
 #coverT,
 #timeT {
@@ -748,42 +748,33 @@ div.pagerefresh {
 #info-bio     { left: calc( 50% - 60px ); top: -10px; }
 #info-lyrics  { left: calc( 50% - 20px ); top:  20px; }
 #info-booklet { left: calc( 50% + 20px ); top:  50px; }
-.r1           { top: 0; }
-.r2           { top: 22%; }
-.r3           { top: 78%; }
-.c2           { left: 22%; }
-.c3           { left: 78%; }
-.c1.narrow    { left: 5% }
+.r2           { top:  22% }
+.c2           { left: 22% }
+.r3           { bottom: 0 }
+.c3           { right:  0 }
+.c1.narrow    { left:  5% }
 .c2.narrow    { left: 27% }
-.c3.narrow    { left: 73% }
-#timeTL,
-#timeTR { top: 50px }
-#timeT,
-#volT   { top: 43px }
-#timeL,
-#timeR,
-#volL,
-#volR   { top: 95px }
-#timeM,
-#volM   { top: 85px }
-#timeBL,
-#timeBR { bottom: 50px }
-#timeB,
-#volB   { bottom: 43px }
-#timeTL,
-#timeBL { left: 50px }
-#timeTR,
-#timeBR { right: 50px }
-#timeT,
-#timeB,
-#volT,
-#volB   { left: 95px }
-#timeM,
-#volM   { left: 85px }
-#timeL,
-#volL   { left: 43px }
-#timeR,
-#volR   { right: 43px }
+.c3.narrow    { right: 5% }
+:root {
+	--margin:        48px;
+	--margin-corner: calc( var( --margin ) + 2px );
+	--margin-mid:    calc( var( --margin ) + 40px + 2px );
+	--margin-center: calc( var( --margin-mid ) + 5px );
+}
+#timeT,  #volT   { top:    var( --margin ) }
+#timeB,  #volB   { bottom: var( --margin ) }
+#timeL,  #volL   { left:   var( --margin ) }
+#timeR,  #volR   { right:  var( --margin ) }
+#timeTL, #timeTR { top:    var( --margin-corner ) }
+#timeBL, #timeBR { bottom: var( --margin-corner ) }
+#timeTL, #timeBL { left:   var( --margin-corner ) }
+#timeTR, #timeBR { right:  var( --margin-corner ) }
+#timeM,  #volM   { top:    var( --margin-mid ) }
+#timeM,  #volM   { left:   var( --margin-mid ) }
+#timeL,  #timeR,
+#volL,   #volR   { top:    var( --margin-center ) }
+#timeT,  #timeB,
+#volT,   #volB   { left:   var( --margin-center ) }
 
 .btn-group {
 	display: inline-block;
