@@ -163,7 +163,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	$( '.playback' ).on( 'click', function() {
 		S.state = S.state === 'play' ? 'pause' : 'play'
 		headIcon();
-		if ( PAGE === 'camilla' && S.state === 'pause' ) render.statusStop();
+		if ( PAGE === 'camilla' && S.state === 'pause' ) RENDER.statusStop();
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
