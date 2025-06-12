@@ -867,6 +867,7 @@ div.pagerefresh {
 	fill: transparent;
 	stroke: var( --cm );
 	stroke-width: 21px;
+	transition-timing-function: linear;
 }
 #vol {
 	position: absolute;
