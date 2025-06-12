@@ -265,7 +265,7 @@ foreach( $mapcover as $a ) $maptime[] = preg_replace( '/ .*/', '', $a );
 				</div>
 				<div id="volume-band-level" class="hide"></div>
 				<div id="volume-bar" class="hide"></div>
-				<div id="volume-band-point" class="point hide"></div>
+				<div id="volume-bar-point" class="point hide"></div>
 				<?=buttonSet( [
 					  [ 'volume',   '' ]
 					, [ 'minus dn', '-dn' ]

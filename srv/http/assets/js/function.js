@@ -515,7 +515,7 @@ var DISPLAY   = {
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 			$( '.band, #volbar' ).addClass( 'transparent' );
-			$( '.guide, #volume-bar, #volume-band-level' ).addClass( 'hide' );
+			$( '.guide, #volume-bar, #volume-bar-point, #volume-band-level' ).addClass( 'hide' );
 		}
 	}
 	, keyValue   : type => {
@@ -2525,12 +2525,12 @@ var VOLUME    = {
 	}
 	, barHide : ms => {
 		V.volumebar = setTimeout( () => {
-			$( '#volume-bar, #volume-band-point, #volume-band-level' ).addClass( 'hide' );
+			$( '#volume-bar, #volume-bar-point, #volume-band-level' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
 		}, ms !== undefined ? ms : 5000 );
 	}
 	, barShow : hide => {
-		$( '#volume-bar, #volume-band-point, #volume-band-level' ).removeClass( 'hide' );
+		$( '#volume-bar, #volume-bar-point, #volume-band-level' ).removeClass( 'hide' );
 		$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
 		if ( hide ) VOLUME.barHide();
 	}
@@ -2580,12 +2580,12 @@ var VOLUME    = {
 		var ms_knob = VOLUME.visible() ? ms : 0;
 		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
 		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
-		$( '#volume-bar, #volume-band-point' ).css( 'transition-duration', ms_bar +'ms' );
+		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms_bar +'ms' );
 		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$bar.css( 'width', S.volume +'%' );
-		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
+		$( '#volume-bar-point' ).css( 'left', S.volume +'%' );
 	}
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return

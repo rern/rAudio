@@ -9,7 +9,7 @@
 #bar-bottom { z-index: 106 }
 #settings { z-index: 105 }
 .content-top,
-#volume-band-point { z-index: 104 }
+#volume-bar-point { z-index: 104 }
 .band,
 .emptyadd,
 #volume-band-level { z-index: 102 }
@@ -502,12 +502,12 @@ div.pagerefresh {
 .band,
 #time-bar,
 #volume-bar,
-#volume-band-point,
+#volume-bar-point,
 #volume-band-level {
 	position: absolute;
 }
 #volume-bar,
-#volume-band-point {
+#volume-bar-point {
 	transition: all 0s linear;
 }
 .band {
@@ -527,7 +527,7 @@ div.pagerefresh {
 #volume-bar {
 	bottom: -4px;
 }
-#volume-band-point {
+#volume-bar-point {
 	margin-left: -13px;
 	margin-top: -11px;
 	width: 26px;

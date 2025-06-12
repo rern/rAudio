@@ -329,7 +329,7 @@ $( '#time svg, #time-band' ).on( 'touchstart mousedown', function( e ) {
 $( '#vol, #volume-band' ).on( 'touchstart mousedown', function() {
 	V.volume = UTIL.xy.get( this );
 } );
-$( '#vol .point, #volume-band-point' ).on( 'touchstart mousedown', function( e ) {
+$( '#vol .point, #volume-bar-point' ).on( 'touchstart mousedown', function( e ) {
 	e.stopPropagation();
 	V.volume       = UTIL.xy.get( this );
 	V.volume.point = true;
@@ -476,7 +476,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 			}
 			if ( ! volume && ! D.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent hide' );
-				$( '#volume-bar' ).removeClass( 'hide' );
+				$( '#volume-bar, #volume-bar-point' ).removeClass( 'hide' );
 			}
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
