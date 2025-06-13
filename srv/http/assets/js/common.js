@@ -1754,7 +1754,7 @@ $( 'body' ).on( 'click', function( e ) {
 	var active     = $this.hasClass( 'active' );
 	$( '.select' ) // reset all
 		.removeClass( 'active' )
-		.next().addClass( 'hide' );
+		.next( '.dropdown' ).addClass( 'hide' );
 	$( '.dropdown input' ).each( ( i, input ) => {
 		COMMON.search.reset( $( input ), $( input ).parent().next() );
 	} );
