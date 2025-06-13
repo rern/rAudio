@@ -607,7 +607,7 @@ var UTIL          = {
 			];
 			var kL     = keys.length;
 			for ( var i = 0; i < kL; i++ ) {
-				list.push( [ '', 'select', { kv: UTIL.board2bcm, sameline: true } ], [ '', 'text' ] );
+				list.push( [ '', 'select', { kv: UTIL.board2bcm, width: 80, sameline: true } ], [ '', 'text' ] );
 			}
 			INFO( {
 				  ...SW
@@ -615,7 +615,7 @@ var UTIL          = {
 				, tab          : [ () => UTIL.relays.order( data ), '' ]
 				, message      : UTIL.gpiosvg
 				, list         : list
-				, boxwidth     : 80
+				, boxwidth     : 160
 				, propmt       : true
 				, checkblank   : true
 				, checkchanged : S.relays
@@ -624,8 +624,6 @@ var UTIL          = {
 				, beforeshow   : () => {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
-//					$( '#infoList .select' ).css( 'width', '70px' );
-					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
@@ -649,9 +647,11 @@ var UTIL          = {
 			var values = [];
 			var pL     = pin.ON.length;
 			for ( var i = 0; i < pL; i++ ) {
+				var width  = window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20;
+				var param = { kv: names, width: width, colspan: 2 };
 				list.push(
-					  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
-					, [ '', 'select', { kv: names, colspan: 2 } ]
+					  [ '', 'select', { ...param, sameline: true } ]
+					, [ '', 'select', param ]
 				);
 				values.push( pin.ON[ i ], pin.OFF[ i ] );
 				if ( i < pL - 1 ) {
@@ -675,14 +675,13 @@ var UTIL          = {
 				, tablabel     : UTIL.relays.tab
 				, tab          : [ '', () => UTIL.relays.name( data ) ]
 				, list         : list
-				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
+				, boxwidth     : 70
 				, lableno      : true
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
-					$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
 					var $tdtimer = $( '#infoList tr:last td' );
 					var $timer   = $tdtimer.slice( 1 )
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
