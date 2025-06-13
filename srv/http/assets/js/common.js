@@ -1759,12 +1759,14 @@ $( 'body' ).on( 'click', function( e ) {
 		COMMON.search.reset( $( input ), $( input ).parent().next() );
 	} );
 	var $origin    = $this.prev();
+	var i2s        = $origin.is( '#i2smodule' );
 	if ( active ) {
-		if ( $origin.is( '#i2smodule' ) && ! S.i2smodule ) UTIL.select.i2s.hide();
+		if ( i2s && ! S.i2smodule ) UTIL.select.i2s.hide();
 		return
 	}
 	
-	if ( $origin.is( '#i2smodule' ) && UTIL.select.i2s.option() ) return // <option> not yet ready
+	if ( i2s && UTIL.select.i2s.option() ) return // <option> not yet ready
+	
 	if ( $origin.is( '#timezone' ) && UTIL.select.timezone() ) return
 	
 	var index      = $origin.find( 'option:selected' ).index();
