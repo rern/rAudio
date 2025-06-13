@@ -641,7 +641,7 @@ var UTIL          = {
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
-				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { sameline: true, colspan: 2 } ]
+				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { colspan: 2, sameline: true } ]
 				, [ '', ICON( 'power red' ) +' Off <gr>(s)</gr>', { colspan: 2 } ]
 			];
 			var values = [];
