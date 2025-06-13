@@ -843,6 +843,7 @@ var UTIL          = {
 						UTIL.select.i2s.show();
 						$( '#i2smodule' ).next().trigger( 'click' );
 					} );
+					return true
 				}
 			}
 			, select : () => {

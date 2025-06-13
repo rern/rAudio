@@ -1760,11 +1760,12 @@ $( 'body' ).on( 'click', function( e ) {
 	} );
 	var $origin    = $this.prev();
 	if ( active ) {
-		if ( $origin.is( '#i2smodule' ) && ! S.i2smodule ) UTIL.select.i2s.hide(); // from system.js
+		if ( $origin.is( '#i2smodule' ) && ! S.i2smodule ) UTIL.select.i2s.hide();
 		return
 	}
 	
-	if ( $origin.is( '#timezone' ) && UTIL.select.timezone() ) return                // from system.js
+	if ( $origin.is( '#i2smodule' ) && UTIL.select.i2s.option() ) return // <option> not yet ready
+	if ( $origin.is( '#timezone' ) && UTIL.select.timezone() ) return
 	
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
