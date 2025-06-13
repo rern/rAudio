@@ -1150,14 +1150,17 @@ var _INFO     = {
 				}
 				$( '#infoBox' ).css( 'width', maxW +'px' );
 			}
-			var allW   = $( '#infoList' ).width();
-			var labelW = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
-			I.boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+			var allW     = $( '#infoList' ).width();
+			var labelW   = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
+			I.boxW       = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 		} else {
-			I.boxW   = 230;
+			I.boxW       = 230;
 		}
-		var $select = $( '#infoList .select' );
-		if ( $select.length ) $select.css( 'width', I.boxW +'px' );
+		$( '#infoList .select' ).each( ( i, select ) => {
+			var $select = $( select );
+			var width   = $select.prev().data( 'width' ) || I.boxW;
+			$select.css( 'width', width +'px' );
+		} );
 		$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
 			var $el = $( el );
 			if ( ! $el.attr( 'style' ) && ! $el.parent().attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
