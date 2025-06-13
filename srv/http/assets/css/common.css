@@ -1052,7 +1052,7 @@ input[ type=radio ]:disabled {
 .dropdown {
 	position: absolute;
 	margin-top: -9px;
-	box-shadow: var( --shadow-menu );
+	box-shadow: var( --shadow-btn );
 	z-index: 1;
 }
 #infoList .dropdown {
