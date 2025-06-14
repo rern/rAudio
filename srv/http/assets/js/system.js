@@ -838,18 +838,15 @@ var UTIL          = {
 					SETTING( 'i2slist', list => {
 						list[ '(None / Auto detect)' ] = '';
 						$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
-						UTIL.select.i2s.select();
+						$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+							var $this = $( el );
+							return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+						} ).prop( 'selected', true );
 						UTIL.select.i2s.show();
 						$( '#i2smodule' ).next().trigger( 'click' );
 					} );
 					return true
 				}
-			}
-			, select : () => {
-				$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-					var $this = $( el );
-					return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-				} ).prop( 'selected', true );
 			}
 			, show   : () => {
 				$( '#divi2s' ).addClass( 'hide' );
@@ -857,16 +854,18 @@ var UTIL          = {
 				$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
 			}
 		}
-		, timezone : () => {
-			if ( $( '#timezone option' ).length < 3 ) {
-				$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
-					$( '#timezone' ).html( data ).promise().done( () => {
-						$( '#timezone' )
-							.val( S.timezone )
-							.next().trigger( 'click' );
+		, timezone : {
+			option : () => {
+				if ( $( '#timezone option' ).length < 3 ) {
+					$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
+						$( '#timezone' ).html( data ).promise().done( () => {
+							$( '#timezone' )
+								.val( S.timezone )
+								.next().trigger( 'click' );
+						} );
 					} );
-				} );
-				return true
+					return true
+				}
 			}
 		}
 	}
@@ -932,13 +931,10 @@ function renderPage() {
 		.val( S.hostname )
 		.removeClass( 'disabled' );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	if ( $( '#timezone option' ).length ) {
+	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( `
-<option></option>
-<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
-` );
+		$( '#timezone' ).html( '<option></option><option selected>'+ S.timezoneoffset +'</option>' );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );

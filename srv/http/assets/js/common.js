@@ -1762,15 +1762,13 @@ $( 'body' ).on( 'click', function( e ) {
 		COMMON.search.reset( $( input ), $( input ).parent().next() );
 	} );
 	var $origin    = $this.prev();
-	var i2s        = $origin.is( '#i2smodule' );
+	var id         = $origin[ 0 ].id;
 	if ( active ) {
-		if ( i2s && ! S.i2smodule ) UTIL.select.i2s.hide();
+		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.select.i2s.hide();
 		return
 	}
 	
-	if ( i2s && UTIL.select.i2s.option() ) return // <option> not yet ready
-	
-	if ( $origin.is( '#timezone' ) && UTIL.select.timezone() ) return
+	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.select[ id ].option() ) return // <option> not yet ready
 	
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
