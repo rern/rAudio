@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1749426416' );
+	src         : url( '/assets/fonts/rern.woff2?v=1749902188' );
 }
 @font-face {
 	font-family : Lato;
@@ -1096,6 +1096,9 @@ input[ type=radio ]:disabled {
 }
 .dropdown li.selected:hover {
 	background: var( --cg50 );
+}
+.qr svg {
+	fill: var( --cg60 );
 }
 
 @media ( max-height: 420px ) {

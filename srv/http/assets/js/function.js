@@ -1392,7 +1392,7 @@ var PLAYBACK  = {
 						+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
 						+'<div class="code">'+ COMMON.qrCode( 'http://'+ ip ) +'</div>';
 			$( '#qr' ).remove();
-			$( '#map-cover' ).before( '<div id="qr">'+ htmlqr +'</div>' );
+			$( '#map-cover' ).before( '<div id="qr" class="qr">'+ htmlqr +'</div>' );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
 			$( '#coverart' ).addClass( 'hide' );
 		} else {

@@ -1504,7 +1504,6 @@ var COMMON    = {
 			  msg : msg
 			, dim : 115
 			, pad : 0
-			, pal : [ '#969a9c' ]
 		} );
 		return qr.outerHTML
 	}
