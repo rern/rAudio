@@ -374,7 +374,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	if ( MENU.isActive( $li, e ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
-	V[ $li.parent().prop( 'id' ) ] = true;
+	V[ $li.parent()[ 0 ].id ] = true;
 	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $li.find( 'grn' ).length === 1;

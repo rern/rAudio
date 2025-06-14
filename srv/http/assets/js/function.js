@@ -141,7 +141,7 @@ var BIO       = {
 		$artist
 			.before( '<div id="bioimg">'+ imageshtml +'</div>' )
 			.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
-		var titleafter = $artist.prev().prop('id') === 'bioimg';
+		var titleafter = $artist.prev()[ 0 ].id === 'bioimg';
 		if ( 'observer' in V ) V.observer.disconnect();
 		if ( V.wW < 481 ) {
 			var options = { rootMargin: '-50px 0px 0px 0px' } // detect when pass 50px before top
@@ -2497,7 +2497,7 @@ var UTIL      = {
 					, type : 'bar'
 				}
 			} else {
-				var id = $( el ).parents( '.knob' ).prop( 'id' );
+				var id = $( el ).parents( '.knob' )[ 0 ].id;
 				var [ y, x ] = Object.values( $( '#'+ id ).offset() );
 				return {
 					  cx   : x + 115

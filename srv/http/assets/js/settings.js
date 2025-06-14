@@ -223,7 +223,7 @@ $( '#close' ).on( 'click', function() {
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
 	$this.toggleClass( 'bl' );
-	var $helpblock = $this.parent().prop( 'id' ) ? $this.parent().next() : $this.parents( '.section' ).find( '.helpblock' );
+	var $helpblock = $this.parent()[ 0 ].id ? $this.parent().next() : $this.parents( '.section' ).find( '.helpblock' );
 	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
