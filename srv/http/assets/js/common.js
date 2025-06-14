@@ -1764,11 +1764,11 @@ $( 'body' ).on( 'click', function( e ) {
 	var $origin    = $this.prev();
 	var id         = $origin[ 0 ].id;
 	if ( active ) {
-		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.select.i2smodule.hide();
+		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.i2smodule.hide();
 		return
 	}
 	
-	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.select.option[ id ]() ) return // <option> not yet ready
+	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.option[ id ]() ) return // <option> not yet ready
 	
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();

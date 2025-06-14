@@ -72,7 +72,7 @@ var CONFIG        = {
 				}
 			} );
 		}
-		, i2s     : () => UTIL.select.option.i2smodule()
+		, i2s     : () => UTIL.option.i2smodule()
 		, restore : () => {
 			INFO( {
 				  ...SW
@@ -349,6 +349,20 @@ var UTIL          = {
 			}
 		} );
 	}
+	, i2smodule : {
+		  hide   : () => {
+			$( '#i2s' )
+				.removeClass( 'disabled' )
+				.prop( 'checked', false );
+			$( '#divi2s' ).removeClass( 'hide' );
+			$( '#divi2smodule' ).addClass( 'hide' );
+		  }
+		, show   : () => {
+			$( '#divi2s' ).addClass( 'hide' );
+			$( '#divi2smodule' ).removeClass( 'hide' );
+			$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
+		}
+	}
 	, lcdchar       : {
 		  gpio : data => {
 			var list0 = COMMON.json.clone( UTIL.lcdchar.list );
@@ -541,6 +555,39 @@ var UTIL          = {
 			} );
 		}
 		, tab     : [ 'CIFS', 'NFS', ICON( 'rserver' ) +' rAudio' ]
+	}
+	, option        : {
+		  i2smodule : () => {
+			if ( $( '#i2smodule option' ).length > 2 ) {
+				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+					UTIL.i2smodule.show();
+					setTimeout( () => $( '#i2smodule' ).next().trigger( 'click' ), 0 );
+				}
+			} else {
+				SETTING( 'i2slist', list => {
+					list[ '(None / Auto detect)' ] = '';
+					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
+					$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+						var $this = $( el );
+						return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+					} ).prop( 'selected', true );
+					UTIL.i2smodule.show();
+					$( '#i2smodule' ).next().trigger( 'click' );
+				} );
+				return true
+			}
+		}
+		, timezone  : () => {
+			if ( $( '#timezone option' ).length < 3 ) {
+				SETTING( 'timezonelist', list => {
+					$( '#timezone' )
+						.html( COMMON.htmlOption( list ) )
+						.val( S.timezone )
+						.next().trigger( 'click' );
+				} );
+				return true
+			}
+		}
 	}
 	, powerbutton   : {
 		  sw : values => {
@@ -819,55 +866,6 @@ var UTIL          = {
 			} );
 		}
 	}
-	, select        : {
-		  i2smodule : {
-			  hide   : () => {
-				$( '#i2s' )
-					.removeClass( 'disabled' )
-					.prop( 'checked', false );
-				$( '#divi2s' ).removeClass( 'hide' );
-				$( '#divi2smodule' ).addClass( 'hide' );
-			  }
-			, show   : () => {
-				$( '#divi2s' ).addClass( 'hide' );
-				$( '#divi2smodule' ).removeClass( 'hide' );
-				$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
-			}
-		}
-		, option        : {
-			  i2smodule : () => {
-				if ( $( '#i2smodule option' ).length > 2 ) {
-					if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-						UTIL.select.i2smodule.show();
-						setTimeout( () => $( '#i2smodule' ).next().trigger( 'click' ), 0 );
-					}
-				} else {
-					SETTING( 'i2slist', list => {
-						list[ '(None / Auto detect)' ] = '';
-						$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
-						$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-							var $this = $( el );
-							return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-						} ).prop( 'selected', true );
-						UTIL.select.i2smodule.show();
-						$( '#i2smodule' ).next().trigger( 'click' );
-					} );
-					return true
-				}
-			}
-			, timezone  : () => {
-				if ( $( '#timezone option' ).length < 3 ) {
-					SETTING( 'timezonelist', list => {
-						$( '#timezone' )
-							.html( COMMON.htmlOption( list ) )
-							.val( S.timezone )
-							.next().trigger( 'click' );
-					} );
-					return true
-				}
-			}
-		}
-	}
 	, wm5102        : () => {
 		SETTING( 'audio-wm5102', data => {
 			var icon   = 'i2s';
@@ -923,7 +921,7 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	UTIL.select.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
+	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
@@ -1057,7 +1055,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
-			UTIL.select.i2smodule.hide();
+			UTIL.i2smodule.hide();
 			var msg = 'Disable ...';
 		} else {
 			var msg = S.i2smodule ? 'Change ...' : 'Enable ...';
