@@ -122,7 +122,6 @@ var CONFIG        = {
 			UTIL.wm5102();
 		} else {
 			SETTING( 'i2smodule', values => {
-				console.log(values)
 				INFO( {
 					  ...SW
 					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
@@ -574,7 +573,6 @@ var UTIL          = {
 				}
 			} else {
 				SETTING( 'i2slist', list => {
-					list[ '(None / Auto detect)' ] = '';
 					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
 					UTIL.i2smodule.selected();
 					UTIL.i2smodule.show();
