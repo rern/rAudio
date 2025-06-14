@@ -857,12 +857,11 @@ var UTIL          = {
 		, timezone : {
 			option : () => {
 				if ( $( '#timezone option' ).length < 3 ) {
-					$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
-						$( '#timezone' ).html( data ).promise().done( () => {
-							$( '#timezone' )
-								.val( S.timezone )
-								.next().trigger( 'click' );
-						} );
+					SETTING( 'timezonelist', list => {
+						$( '#timezone' )
+							.html( COMMON.htmlOption( list ) )
+							.val( S.timezone )
+							.next().trigger( 'click' );
 					} );
 					return true
 				}
