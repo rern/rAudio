@@ -350,14 +350,23 @@ var UTIL          = {
 		} );
 	}
 	, i2smodule : {
-		  hide   : () => {
+		  hide     : () => {
 			$( '#i2s' )
 				.removeClass( 'disabled' )
 				.prop( 'checked', false );
 			$( '#divi2s' ).removeClass( 'hide' );
 			$( '#divi2smodule' ).addClass( 'hide' );
-		  }
-		, show   : () => {
+		}
+		, selected : () => {
+			$( '#i2smodule option' ).each( ( i, el ) => { // for 1 value : multiple names
+				var $this = $( el );
+				if ( $this.text() === S.audiooutput && $this.val() === S.audioaplayname ) {
+					$this.prop( 'selected', true );
+					return false
+				}
+			} );
+		}
+		, show     : () => {
 			$( '#divi2s' ).addClass( 'hide' );
 			$( '#divi2smodule' ).removeClass( 'hide' );
 			$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
@@ -567,10 +576,7 @@ var UTIL          = {
 				SETTING( 'i2slist', list => {
 					list[ '(None / Auto detect)' ] = '';
 					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
-					$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-						var $this = $( el );
-						return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-					} ).prop( 'selected', true );
+					UTIL.i2smodule.selected();
 					UTIL.i2smodule.show();
 					$( '#i2smodule' ).next().trigger( 'click' );
 				} );
@@ -921,8 +927,12 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
+	if ( $( '#i2smodule option' ).length > 2 ) {
+		UTIL.i2smodule.selected();
+	} else {
+		$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
+	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
-	$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )
