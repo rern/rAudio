@@ -1764,7 +1764,7 @@ $( 'body' ).on( 'click', function( e ) {
 	var $origin    = $this.prev();
 	var id         = $origin[ 0 ].id;
 	if ( active ) {
-		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.select.i2s.hide();
+		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.select.i2smodule.hide();
 		return
 	}
 	

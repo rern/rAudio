@@ -72,7 +72,7 @@ var CONFIG        = {
 				}
 			} );
 		}
-		, i2s     : () => UTIL.select.i2s.option()
+		, i2s     : () => UTIL.select.i2smodule.option()
 		, restore : () => {
 			INFO( {
 				  ...SW
@@ -820,7 +820,7 @@ var UTIL          = {
 		}
 	}
 	, select        : {
-		  i2s      : {
+		  i2smodule : {
 			  hide   : () => {
 				$( '#i2s' )
 					.removeClass( 'disabled' )
@@ -831,7 +831,7 @@ var UTIL          = {
 			, option : () => {
 				if ( $( '#i2smodule option' ).length > 2 ) {
 					if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-						UTIL.select.i2s.show();
+						UTIL.select.i2smodule.show();
 						setTimeout( () => $( '#i2smodule' ).next().trigger( 'click' ), 0 );
 					}
 				} else {
@@ -842,7 +842,7 @@ var UTIL          = {
 							var $this = $( el );
 							return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
 						} ).prop( 'selected', true );
-						UTIL.select.i2s.show();
+						UTIL.select.i2smodule.show();
 						$( '#i2smodule' ).next().trigger( 'click' );
 					} );
 					return true
@@ -854,7 +854,7 @@ var UTIL          = {
 				$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
 			}
 		}
-		, timezone : {
+		, timezone  : {
 			option : () => {
 				if ( $( '#timezone option' ).length < 3 ) {
 					SETTING( 'timezonelist', list => {
@@ -923,7 +923,7 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	UTIL.select.i2s[ S.i2smodule ? 'show' : 'hide' ]();
+	UTIL.select.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
@@ -1057,7 +1057,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
-			UTIL.select.i2s.hide();
+			UTIL.select.i2smodule.hide();
 			var msg = 'Disable ...';
 		} else {
 			var msg = S.i2smodule ? 'Change ...' : 'Enable ...';
