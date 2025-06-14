@@ -1500,7 +1500,7 @@ var COMMON    = {
 		} );
 	}
 	, qrCode        : msg => {
-		var qr = QRCode( { msg : msg, pad : 0 } );
+		var qr = QRCode( { msg : msg, dim: 115, pad : 0 } );
 		return qr.outerHTML
 	}
 	, scrollToView  : $el => {
