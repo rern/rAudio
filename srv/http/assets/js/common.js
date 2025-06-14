@@ -1768,7 +1768,7 @@ $( 'body' ).on( 'click', function( e ) {
 		return
 	}
 	
-	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.select[ id ].option() ) return // <option> not yet ready
+	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.select.option[ id ]() ) return // <option> not yet ready
 	
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();

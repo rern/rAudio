@@ -72,7 +72,7 @@ var CONFIG        = {
 				}
 			} );
 		}
-		, i2s     : () => UTIL.select.i2smodule.option()
+		, i2s     : () => UTIL.select.option.i2smodule()
 		, restore : () => {
 			INFO( {
 				  ...SW
@@ -828,7 +828,14 @@ var UTIL          = {
 				$( '#divi2s' ).removeClass( 'hide' );
 				$( '#divi2smodule' ).addClass( 'hide' );
 			  }
-			, option : () => {
+			, show   : () => {
+				$( '#divi2s' ).addClass( 'hide' );
+				$( '#divi2smodule' ).removeClass( 'hide' );
+				$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
+			}
+		}
+		, option        : {
+			  i2smodule : () => {
 				if ( $( '#i2smodule option' ).length > 2 ) {
 					if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 						UTIL.select.i2smodule.show();
@@ -848,14 +855,7 @@ var UTIL          = {
 					return true
 				}
 			}
-			, show   : () => {
-				$( '#divi2s' ).addClass( 'hide' );
-				$( '#divi2smodule' ).removeClass( 'hide' );
-				$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
-			}
-		}
-		, timezone  : {
-			option : () => {
+			, timezone  : () => {
 				if ( $( '#timezone option' ).length < 3 ) {
 					SETTING( 'timezonelist', list => {
 						$( '#timezone' )
