@@ -1,15 +1,19 @@
 <?php
 include 'common.php';
 
-$helphead  = $guide ? '' : icon(  'help helphead' );
-$htmlhead  = '
+if ( $guide ) {
+	$helphead  = '';
+	$container = '';
+} else {
+	$helphead  = icon(  'help helphead' );
+	$container = '<div class="container hide" tabindex="-1">';
+}
+echo '
 <div class="head hide">'.icon(  $icon.' page-icon pagerefresh' ).'<span class="title">'.$title.'</span>
 '.icon(  'close close', 'close' ).$helphead.icon(  'gear' ).'
-</div>';
-if ( ! $guide ) $htmlhead.= '
-<div class="container hide" tabindex="-1">
-';
-echo $htmlhead;
+</div>
+'.$container;
+
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
