@@ -1384,13 +1384,13 @@ var PLAYBACK  = {
 			
 			var htmlqr = '';
 			if ( ! S.ip && D.ap ) {
-				htmlqr += '<gr>Access Point:</gr> <wh>'+ D.apconf.ssid +'</wh>'
-						 +'<br><gr>Password:</gr> <wh>'+ D.apconf.passphrase +'</wh>'
+				htmlqr += '<gr>Access Point:</gr> '+ D.apconf.ssid
+						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
 						 + COMMON.qrCode( D.apconf.qr );
 			}
-			htmlqr   +=  '<gr>http://</gr>'+ ip
-						+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-						+ COMMON.qrCode( 'http://'+ ip );
+			htmlqr   += '<gr>http://</gr>'+ ip
+					  + '<div class="gr">http://'+ S.hostname +'</div>'
+					  + COMMON.qrCode( 'http://'+ ip );
 			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
 			$( '#qr' ).html( htmlqr );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
