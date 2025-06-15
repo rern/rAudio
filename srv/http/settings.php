@@ -1,9 +1,10 @@
 <?php
 include 'common.php';
 
+$helphead  = $guide ? '' : icon(  'help helphead' );
 $htmlhead  = '
 <div class="head hide">'.icon(  $icon.' page-icon pagerefresh' ).'<span class="title">'.$title.'</span>
-'.icon(  'close close', 'close' ).icon(  'help helphead' ).icon(  'gear' ).'
+'.icon(  'close close', 'close' ).$helphead.icon(  'gear' ).'
 </div>';
 if ( ! $guide ) $htmlhead.= '
 <div class="container hide" tabindex="-1">

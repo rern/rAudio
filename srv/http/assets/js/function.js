@@ -246,8 +246,6 @@ var COLOR     = {
 		}
 		, sat      : ( x, y ) => {
 			var d, f, m;
-			x -= V.ctx.sat.tx; // relative x/y from top-left
-			y -= V.ctx.sat.ty;
 			var [ r, g, b ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 			if ( r + g + b === 0 ) return
 			 // rgb > s l
