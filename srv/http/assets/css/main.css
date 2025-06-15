@@ -612,7 +612,7 @@ div.pagerefresh {
 	height: 230px;
 	padding-top: 10px;
 }
-#qr .code {
+#qr svg {
 	margin: 11px auto;
 }
 #coverart svg .text {

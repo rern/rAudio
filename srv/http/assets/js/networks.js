@@ -134,12 +134,12 @@ function renderPage() {
 	if ( S.ap ) {
 		var html = S.apconf.ssid
 				  +'<br>'+ S.apconf.passphrase
-				  +'<br>'+ COMMON.qrCode( S.apconf.qr )
+				  + COMMON.qrCode( S.apconf.qr )
 		$( '#qrap' ).html( html );
 	}
 	var html = '<gr>http://</gr>'+ S.ip
 			 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-			 +'<br>'+ COMMON.qrCode( 'http://'+ S.ip )
+			 + COMMON.qrCode( 'http://'+ S.ip )
 	$( '#qrurl' ).html( html );
 	$( '#divwebui' ).removeClass( 'hide' );
 	CONTENT();

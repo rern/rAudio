@@ -1098,6 +1098,7 @@ input[ type=radio ]:disabled {
 	background: var( --cg50 );
 }
 .qr svg {
+	display: block;
 	fill: var( --cg60 );
 }
 

@@ -1386,11 +1386,11 @@ var PLAYBACK  = {
 			if ( ! S.ip && D.ap ) {
 				htmlqr += '<gr>Access Point:</gr> <wh>'+ D.apconf.ssid +'</wh>'
 						 +'<br><gr>Password:</gr> <wh>'+ D.apconf.passphrase +'</wh>'
-						 +'<div class="code">'+ COMMON.qrCode( D.apconf.qr ) +'</div>';
+						 + COMMON.qrCode( D.apconf.qr );
 			}
 			htmlqr   +=  '<gr>http://</gr>'+ ip
 						+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-						+'<div class="code">'+ COMMON.qrCode( 'http://'+ ip ) +'</div>';
+						+ COMMON.qrCode( 'http://'+ ip );
 			$( '#qr' ).remove();
 			$( '#map-cover' ).before( '<div id="qr" class="qr">'+ htmlqr +'</div>' );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
