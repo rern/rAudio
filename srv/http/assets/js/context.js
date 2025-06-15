@@ -380,7 +380,7 @@ var CONTEXT  = {
 					  alias      : 'thumbnail'
 					, title      : 'Album Thumbnails'
 					, label      : 'Update'
-					, installurl : "albumthumbnail.sh '"+ path +"' "+ _INFO.val()
+					, installurl : 'albumthumbnail.sh "'+ path.replace( /"/g, '\"' ) +'" '+ _INFO.val()
 					, backhref   : '/'
 				} );
 			}
