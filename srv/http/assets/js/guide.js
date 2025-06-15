@@ -1,5 +1,4 @@
 document.title = 'Guide';
-[ '.helphead', '#debug' ].forEach( cl => document.querySelector( cl ).remove() );
 [ '.head', '#bar-bottom' ].forEach( k => document.querySelector( k ).classList.remove( 'hide' ) );
 var P          = {
 	  playback : 1
