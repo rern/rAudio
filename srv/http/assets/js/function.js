@@ -1391,8 +1391,8 @@ var PLAYBACK  = {
 			htmlqr   +=  '<gr>http://</gr>'+ ip
 						+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
 						+ COMMON.qrCode( 'http://'+ ip );
-			$( '#qr' ).remove();
-			$( '#map-cover' ).before( '<div id="qr" class="qr">'+ htmlqr +'</div>' );
+			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
+			$( '#qr' ).html( htmlqr );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
 			$( '#coverart' ).addClass( 'hide' );
 		} else {

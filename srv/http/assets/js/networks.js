@@ -125,22 +125,27 @@ function renderPage() {
 	[ 'bluetooth', 'wlan', 'lan' ].forEach( k => {
 		S.device[ k ] ? RENDER[ k ]() : $( '#div'+ k ).addClass( 'hide' );
 	} );
-	$( '#divap' ).toggleClass( 'hide', ! S.ap );
 	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
 	}
 	
 	if ( S.ap ) {
-		var html = S.apconf.ssid
-				  +'<br>'+ S.apconf.passphrase
-				  + COMMON.qrCode( S.apconf.qr )
-		$( '#qrap' ).html( html );
+		$( '#qrap' )
+			.html(
+				  S.apconf.ssid
+				+'<br>'+ S.apconf.passphrase
+				+ COMMON.qrCode( S.apconf.qr )
+			)
+			.removeClass( 'hide' );
+	} else {
+		$( '#divap' ).addClass( 'hide', ! S.ap );
 	}
-	var html = '<gr>http://</gr>'+ S.ip
-			 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-			 + COMMON.qrCode( 'http://'+ S.ip )
-	$( '#qrurl' ).html( html );
+	$( '#qrurl' ).html(
+		  '<gr>http://</gr>'+ S.ip
+		 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+		 + COMMON.qrCode( 'http://'+ S.ip )
+	);
 	$( '#divwebui' ).removeClass( 'hide' );
 	CONTENT();
 }
