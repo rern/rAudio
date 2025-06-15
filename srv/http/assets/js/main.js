@@ -24,6 +24,7 @@ V = {  // global var
 [ 'lyrics',        'lyricsartist', 'mode' ].forEach(                             k => V[ k ] = '' );
 [ 'modescrolltop', 'rotate' ].forEach(                                           k => V[ k ] = 0 );
 [ 'playback',      'playlisthome' ].forEach(                                     k => V[ k ] = true );
+$COVERART = $( '#coverart' );
 $LI       = '';
 $TIME     = $( '#time-knob' );
 $TIME_ARC = $( '#arc' );
@@ -54,9 +55,9 @@ $( 'body' ).on( 'click', function( e ) {
 $( '#loader' ).on( 'click', function() {
 	COMMON.loaderHide();
 } );
-$( '#coverart' ).on( 'load', function() {
+$COVERART.on( 'load', function() {
 	if ( ! S.webradio && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
-		$( '#coverart' ).after( V.icoversave );
+		$( this ).after( V.icoversave );
 	}
 	if ( ( V.wW - $( '#divcover' ).width() ) < 80 ) {
 		$( '#volume-band-dn' ).css( 'left', 0 );
@@ -234,7 +235,7 @@ $( '#library, #button-library' ).on( 'click', function() {
 	if ( S.updating_db ) BANNER( 'library blink', 'Library Database', 'Update ...' );
 } );
 $( '#playback' ).on( 'click', function() {
-	if ( V.playback && ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
+	if ( V.playback && ( V.wH - COVERART.bottom() ) < 30 ) {
 		$( '#stop' ).trigger( 'click' );
 	} else {
 		if ( ! V.playback ) {
@@ -489,7 +490,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 		case 'cover':
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! ( 'coverTL' in V )
-				&& ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+				&& ( V.wH - COVERART.bottom() ) < 40
 				&& ! D.volumenone
 				&& ! VOLUME.visible()
 			) {

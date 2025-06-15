@@ -16,7 +16,7 @@ W = {
 		if ( V.library ) return
 		
 		var src = data.cover + UTIL.versionHash();
-		$( '#coverart' ).attr( 'src', src );
+		$COVERART.attr( 'src', src );
 		PLAYLIST.coverart( src );
 	}
 	, coverart  : data => { // change
@@ -40,7 +40,7 @@ W = {
 				}
 				data.current = path0 === path1;
 			}
-			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + UTIL.versionHash() );
+			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		} else {
 			UTIL.refresh();
 		}
@@ -64,7 +64,7 @@ W = {
 		if ( ! D.covervu && ! D.vumeter ) {
 			$( '#vu' ).remove();
 		} else if ( ! $( '#vu' ).length ) {
-			$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu">'+ data +'</div>' ), 'text' );
+			$.get( '/assets/img/vu.svg', data => $COVERART.after( '<div id="vu">'+ data +'</div>' ), 'text' );
 		}
 		DISPLAY.bars();
 		$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );

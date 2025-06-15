@@ -323,22 +323,22 @@ var COLOR     = {
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
-	  change  : () =>  {
+	  bottom  : () => $COVERART[ 0 ].getBoundingClientRect().bottom
+	, change  : () =>  {
 		if ( V.playback ) {
-			var $coverart     = $( '#coverart' );
+			var src           = $COVERART.attr( 'src' );
 			var path          = UTIL.dirName( S.file );
 			var album         = S.Album;
 			var artist        = S.Artist;
 			var onlinefetched = $( '#divcover .cover-save' ).length;
 		} else {
-			var $coverart     = $( '#liimg' );
+			var rsc           = $( '#liimg' ).attr( 'src' );
 			var path          = $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
 			var album         = $( '.licover .lialbum' ).text();
 			var artist        = $( '.licover .liartist' ).text();
 			var onlinefetched = $( '.licover .cover-save' ).length;
 		}
-		var src          = $coverart.attr( 'src' );
 		var coverdefault = src.slice( 0, -13 ) === V.coverdefault;
 		if ( coverdefault ) {
 			if ( 'discid' in S ) {
@@ -376,13 +376,13 @@ var COVERART  = {
 		
 		var hash = UTIL.versionHash();
 		if ( ! D.covervu ) {
-			$( '#coverart' )
+			$COVERART
 				.attr( 'src', V.coverdefault + hash )
 				.css( 'border', V.coverdefault === V.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 			$( '#vu' ).addClass( 'hide' );
 		} else {
-			$( '#coverart' )
+			$COVERART
 				.addClass( 'hide' )
 				.attr( 'src', V.coverdefault + hash );
 			$( '#vu' ).removeClass( 'hide' );
@@ -424,7 +424,7 @@ var COVERART  = {
 	}
 	, save    : () => {
 		if ( V.playback ) {
-			var src    = $( '#coverart' ).attr( 'src' );
+			var src    = $COVERART.attr( 'src' );
 			var file   = S.file;
 			var path   = '/mnt/MPD/'+ UTIL.dirName( file );
 			var artist = S.Artist;
@@ -1219,7 +1219,7 @@ var LYRICS    = {
 	, show         : data => {
 		V.lyrics       = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-		$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' ) );
+		$( '#divlyricstitle img' ).attr( 'src', $COVERART.attr( 'src' ) );
 		$( '#lyricstitle' ).text( V.lyricstitle );
 		$( '#lyricsartist' ).text( V.lyricsartist );
 		$( '#lyricstext' ).html( lyricshtml );
@@ -1394,9 +1394,9 @@ var PLAYBACK  = {
 			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
 			$( '#qr' ).html( htmlqr );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
-			$( '#coverart' ).addClass( 'hide' );
+			$COVERART.addClass( 'hide' );
 		} else {
-			$( '#coverart' ).removeClass( 'hide' );
+			$COVERART.removeClass( 'hide' );
 			$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ICON( 'networks' ) +'&ensp;Setup</a>' );
 		}
 		PLAYBACK.vu();
@@ -1476,7 +1476,7 @@ var PLAYBACK  = {
 		}
 		
 		if ( D.vumeter ) {
-			$( '#coverart' )
+			$COVERART
 				.addClass( 'hide' )
 				.attr( 'src', '' );
 			$( '#vu' ).removeClass( 'hide' );
@@ -1486,7 +1486,7 @@ var PLAYBACK  = {
 			if ( src ) {
 				src += UTIL.versionHash();
 				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
+				$COVERART
 					.attr( 'src', src )
 					.removeClass( 'hide' );
 				if ( S.webradio ) PLAYLIST.coverart( src );
@@ -2490,10 +2490,9 @@ var UTIL      = {
 			
 			DISPLAY.guideHide();
 			if ( $( el ).parents( '#divcover' ).length ) {
-				var $el = $( '#coverart' );
 				return {
-					  x    : $el.offset().left
-					, w    : $el.width()
+					  x    : $COVERART.offset().left
+					, w    : $COVERART.width()
 					, type : 'bar'
 				}
 			} else {
