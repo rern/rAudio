@@ -263,6 +263,10 @@ var COLOR     = {
 		}
 		, xy       : ( e, hue_sat ) => {
 			var [ x, y ] = COMMON.pageXY( e );
+			if ( hue_sat === 'sat' ) { // offset to top left
+				x -= V.ctx.sat.tx;
+				y -= V.ctx.sat.ty;
+			}
 			COLOR.pick[ hue_sat ]( x, y );
 			COLOR.okEnable();
 		}
