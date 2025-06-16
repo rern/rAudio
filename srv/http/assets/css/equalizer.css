@@ -63,7 +63,6 @@
 	max-width: unset;
 	user-select: none;
 	-webkit-touch-callout: none;
-	-webkit-user-select: none;
 }
 #eq .label.dn a {
 	background: var( --cgd );
