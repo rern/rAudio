@@ -315,7 +315,12 @@ var COLOR     = {
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
-	  bottom  : () => $COVERART[ 0 ].getBoundingClientRect().bottom
+	  bottom  : side => {
+		var rect = $COVERART[ 0 ].getBoundingClientRect();
+		if ( side ) return [ rect[ side ], rect.bottom ]
+		
+		return rect.bottom
+	}
 	, change  : () =>  {
 		if ( V.playback ) {
 			var src           = $COVERART.attr( 'src' );
@@ -1480,13 +1485,17 @@ var PLAYBACK  = {
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
 					.attr( 'src', src )
-					.removeClass( 'hide' );
+					.removeClass( 'hide' )
+					.on( 'load', function() {
+						var [ top, bottom ] = COVERART.bottom( 'top' );
+						$COVERART.css( 'height', bottom > V.wH ? V.wH - top +'px' : '' );
+					} );
 				if ( S.webradio ) PLAYLIST.coverart( src );
 			} else {
 				COVERART.default();
 			}
 		}
-		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
+		$( '#map-cover' ).toggleClass( 'offset', V.wW === $COVERART.width() );
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
@@ -1538,14 +1547,14 @@ var PLAYBACK  = {
 		
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
-		PLAYBACK.info.set();
-		PLAYBACK.coverart();
-		V.timehms = S.Time ? UTIL.second2HMS( S.Time ) : '';
 		if ( S.state === 'stop' ) {
 			PLAYBACK.stop();
 			return
 		}
 		
+		PLAYBACK.info.set();
+		PLAYBACK.coverart();
+		V.timehms = S.Time ? UTIL.second2HMS( S.Time ) : '';
 		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
 		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
 		if ( S.elapsed ) {
