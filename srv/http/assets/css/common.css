@@ -186,7 +186,7 @@ i {
 .i-processors::before,
 .i-soundprofile::before    { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
-.i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
+.i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cg50 ); }
 .i-radioparadise::after    { content: '\F594'; }
 .i-random::before          { content: '\F512' }
 .i-raudio-nobg::before     { content: '\F500' }
