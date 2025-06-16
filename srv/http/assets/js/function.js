@@ -261,13 +261,15 @@ var COLOR     = {
 			V.ctx.x = x;
 			V.ctx.y = y;
 		}
-		, xy       : ( e, hue_sat ) => {
+		, xy       : e => {
 			var [ x, y ] = COMMON.pageXY( e );
-			if ( hue_sat === 'sat' ) { // offset to top left
+			if ( V.sat ) { // offset to top left
 				x -= V.ctx.sat.tx;
 				y -= V.ctx.sat.ty;
+				COLOR.pick.sat( x, y );
+			} else {
+				COLOR.pick.hue( x, y );
 			}
-			COLOR.pick[ hue_sat ]( x, y );
 			COLOR.okEnable();
 		}
 	}

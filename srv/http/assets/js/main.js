@@ -1585,19 +1585,19 @@ $( '#pickhue' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#pickhue' ).length ) return // touch limit
 	
 	V.hue = true;
-	COLOR.pick.xy( e, 'hue' );
+	COLOR.pick.xy( e );
 } );
 $( '#picksat' ).on( 'touchstart mousedown', e => {
 	if ( ! $( e.target ).closest( '#picksat' ).length ) return
 	
 	V.sat = true;
-	COLOR.pick.xy( e, 'sat' );
+	COLOR.pick.xy( e );
 	$( '#sat' ).addClass( 'hide' );
 } ).on( 'touchmove mousemove', e => {
 	if ( ! V.sat ) return
 	
 	e.preventDefault();
-	COLOR.pick.xy( e, 'sat' );
+	COLOR.pick.xy( e );
 } ).on( 'mouseleave', () => {
 	if ( V.sat ) COLOR.pick.point( V.ctx.x, V.ctx.y );
 } ).on( 'mouseenter', () => {
@@ -1607,7 +1607,7 @@ $( '#colorpicker' ).on( 'touchmove mousemove', e => { // allow drag outside
 	if ( ! V.hue ) return
 	
 	e.preventDefault();
-	COLOR.pick.xy( e, 'hue' );
+	COLOR.pick.xy( e );
 } ).on( 'touchend mouseup', () => {
 	if ( V.hue ) {
 		V.hue = false;
