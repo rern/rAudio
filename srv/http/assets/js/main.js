@@ -1041,7 +1041,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var $this  = $( e.currentTarget );
 		INFO( {
 			  icon    : V.icoverart
-			, title   : COMMON.capitalize( V.mode ) +' Thumbnail'
+			, title   : 'Album Thumbnail'
 			, message : $this.find( 'img' )[ 0 ].outerHTML
 						+'<p>'+ $this.find( '.coverart1' ).text()
 						+'<br>'+ $this.find( '.coverart2' ).text()

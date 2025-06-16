@@ -67,7 +67,7 @@ i {
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
-.i-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
+.i-camilladsp::after       { content: '\F59C'; }
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
@@ -149,7 +149,7 @@ i {
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
 .i-localbrowser::before    { content: '\F58A'; position: absolute; }
-.i-localbrowser::after     { content: '\F58B'; position: relative; color: var( --cg60 ); }
+.i-localbrowser::after     { content: '\F58B'; color: var( --cg60 ); }
 .i-lock::before,
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
@@ -187,7 +187,7 @@ i {
 .i-soundprofile::before    { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
-.i-radioparadise::after    { content: '\F594'; position: relative; }
+.i-radioparadise::after    { content: '\F594'; }
 .i-random::before          { content: '\F512' }
 .i-raudio-nobg::before     { content: '\F500' }
 .i-reboot::before          { content: '\F521' }
@@ -670,10 +670,10 @@ hr {
 }
 #infoBox {
 	position: relative;
+	margin: 50vh auto;
 	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 50vh auto;
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
