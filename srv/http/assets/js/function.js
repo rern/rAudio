@@ -315,12 +315,7 @@ var COLOR     = {
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
-	  bottom  : side => {
-		var rect = $COVERART[ 0 ].getBoundingClientRect();
-		if ( side ) return [ rect[ side ], rect.bottom ]
-		
-		return rect.bottom
-	}
+	  bottom  : () => $COVERART[ 0 ].getBoundingClientRect().bottom
 	, change  : () =>  {
 		if ( V.playback ) {
 			var src           = $COVERART.attr( 'src' );
@@ -1487,15 +1482,15 @@ var PLAYBACK  = {
 					.attr( 'src', src )
 					.removeClass( 'hide' )
 					.on( 'load', function() {
-						var [ top, bottom ] = COVERART.bottom( 'top' );
-						$COVERART.css( 'height', bottom > V.wH ? V.wH - top +'px' : '' );
+						var cover = $COVERART[ 0 ].getBoundingClientRect();
+						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
+						$( '#map-cover' ).toggleClass( 'offset', V.wW - cover.width < 15 );
 					} );
 				if ( S.webradio ) PLAYLIST.coverart( src );
 			} else {
 				COVERART.default();
 			}
 		}
-		$( '#map-cover' ).toggleClass( 'offset', V.wW === $COVERART.width() );
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
