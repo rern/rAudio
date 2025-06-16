@@ -171,12 +171,6 @@ var COLOR     = {
 		delete V.ctx;
 	}
 	, liActive : () => $( '#lib-list li' ).eq( 0 ).addClass( 'active' )
-	, okEnable : () => {
-		if ( V.color.ok ) return
-		
-		V.color.ok = true;
-		$( '#colorok' ).removeClass( 'disabled' );
-	}
 	, pick     : {
 		  gradient : () => {
 			var ctx = V.ctx.context;
@@ -190,8 +184,6 @@ var COLOR     = {
 				ctx.fillStyle = grad;
 				ctx.fillRect( 0, w - i, w, 1 );
 			}
-//			var changed = JSON.stringify( V.ctx.hsl ) !== JSON.stringify( V.ctx.hsl_cur )
-//			$( '#colorok' ).toggleClass( 'disabled', ! changed );
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
@@ -214,7 +206,6 @@ var COLOR     = {
 			}
 			, hue  : key => {
 				COLOR.pick.hue( COLOR.pick.key.code[ key ] );
-				COLOR.okEnable();
 			}
 			, sat  : key => {
 				var [ xy, v ] = COLOR.pick.key.code[ key ];
@@ -231,7 +222,6 @@ var COLOR     = {
 				}
 				COLOR.pick.point( x, y );
 				COLOR.pick.sat( x, y );
-				COLOR.okEnable();
 			}
 		}
 		, point    : ( x, y ) => {
@@ -270,13 +260,11 @@ var COLOR     = {
 			} else {
 				COLOR.pick.hue( x, y );
 			}
-			COLOR.okEnable();
 		}
 	}
 	, picker   : () => {
 		$( '#colorpicker' ).removeClass( 'hide' ); // to get offset
 		$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
-		$( '#colorok' ).addClass( 'disabled' );
 		$( 'body' ).css( 'overflow', 'hidden' );
 		var $box        = $( '#box' );
 		var box_margin  = parseInt( $box.css( 'margin' ) );

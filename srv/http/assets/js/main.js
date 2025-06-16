@@ -1620,7 +1620,6 @@ $( '#colorpicker' ).on( 'touchmove mousemove', e => { // allow drag outside
 	}
 } ).on( 'wheel', e => {
 	COLOR.pick.hue( e.originalEvent.deltaY > 0 ? 1 : -1 );
-	COLOR.okEnable();
 } );
 $( document ).on( 'keydown', e => {
 	if ( ! V.color ) return
