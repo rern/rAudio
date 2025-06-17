@@ -1990,9 +1990,6 @@ li.active .li2 bl {
 	@media ( max-height: 480px ) {
 		#settings { position: absolute }
 		#playback-row { margin-top: 10px }
-		#time-knob,
-		#coverart-block,
-		#volume-knob { min-width: 30% }
 		#divcomposer,
 		#divconductor,
 		#button-time,
