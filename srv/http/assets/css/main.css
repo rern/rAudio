@@ -479,15 +479,12 @@ div.pagerefresh {
 	max-width: 400px;
 }
 #time-knob {
-	-webkit-order: 1;
 	order: 1;
 }
 #coverart-block {
-	-webkit-order: 2;
 	order: 2;
 }
 #volume-knob {
-	-webkit-order: 3;
 	order: 3;
 }
 #coverart {
