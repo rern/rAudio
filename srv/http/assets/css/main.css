@@ -447,9 +447,9 @@ div.pagerefresh {
 .scrollleft {
 	animation: scrollleft 0s linear infinite;
 }
-@keyframes scrollleft {
-	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
-	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
+@keyframes scrollleft {                      /* 0      : left edge */
+	0%   { transform : translateX( 100vw ) } /* start  : from right edge (100vw) */
+	100% { transform : translateX( -100% ) } /* scroll : to left edge    (-100% text width) */
 }
 /* ---------------------- knobs, buttons ----------------------*/
 #playback-row {
@@ -460,9 +460,6 @@ div.pagerefresh {
 	margin: 30px auto 0;
 	padding: 0;
 	min-height: 230px;
-}
-#playback-row.top0 {
-	margin-top: 0 !important;
 }
 #time-knob,
 #coverart-block,
@@ -488,7 +485,7 @@ div.pagerefresh {
 	order: 3;
 }
 #coverart {
-	display: block; /* fix container div larger tahn img */
+	display: block; /* for container div larger than img */
 	margin: 0 auto;
 	min-width: 230px;
 	max-width: 100%;
@@ -2005,9 +2002,6 @@ li.active .li2 bl {
 	@media ( max-width: 900px ) {
 		#coverart-block { max-width: 55% }
 	}
-	@media ( max-width: 895px ) {
-		#playback-row { align-items: flex-start }
-	}
 	@media ( max-width: 749px ) {
 		#playback-row { align-items: center }
 		#time-knob,
@@ -2018,9 +2012,6 @@ li.active .li2 bl {
 	@media ( max-width: 700px ) {
 		#lib-title.search,
 		.liinfo { display: none }
-	}
-	@media ( max-width: 590px ) {
-		#playback-row { align-items: flex-start }
 	}
 	@media ( max-width: 560px ) {
 		#coverart-block { max-width: 50% }
