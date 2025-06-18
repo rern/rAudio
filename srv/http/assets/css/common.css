@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1749912942' );
+	src         : url( '/assets/fonts/rern.woff2?v=1750218578' );
 }
 @font-face {
 	font-family : Lato;
@@ -918,8 +918,7 @@ input[ type=password ]::-ms-reveal {
 .col-r input[ type=text ],
 input[ type=text ]:disabled,
 input[ type=number ]:disabled {
-	border: 1px solid var( --cgl );
-	opacity: 1;
+	opacity: 0.7;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
