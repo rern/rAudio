@@ -41,9 +41,6 @@ li,
 	user-select: none;
 	-webkit-touch-callout: none;
 }
-img {
-	-webkit-user-drag: none; /* fix: mouseup not fired after mousemove */
-}
 a {
 	color: var( --cw );
 	text-decoration: none !important;
@@ -1113,8 +1110,6 @@ div.pagerefresh {
 	width: 510px;
 	max-width: 100%;
 	height: 100px;
-	background: -moz-linear-gradient(top,  transparent, #000000);
-	background: -webkit-linear-gradient(top,  transparent,#000000);
 	background: linear-gradient(to bottom,  transparent,#000000);
 }
 
