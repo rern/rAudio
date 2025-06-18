@@ -1,3 +1,7 @@
+#infoOverlay {
+	height: 100%;
+	min-height: unset
+}
 /* :hover *********************************************************/
 #lib-title a:hover {
 	color: var( --cm );

@@ -687,6 +687,10 @@ circle.on {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
+	#infoOverlay {
+		height: 100%;
+		min-height: unset
+	}
 	#bar-bottom div:hover { background-color: var( --cgl ) }
 	#bar-bottom div.active:hover { background-color: var( --cml ) }
 	#bar-bottom div:hover span { color: var( --cw ) }
