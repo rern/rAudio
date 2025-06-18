@@ -2393,10 +2393,10 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
-	var bounding = this.getBoundingClientRect();
+	var pos = this.getBoundingClientRect();
 	V.volume = {
-		  x : bounding.left + 20
-		, w : bounding.width - 40
+		  x : pos.left + 20
+		, w : pos.width - 40
 	}
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return

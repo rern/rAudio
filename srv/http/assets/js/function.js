@@ -1540,6 +1540,10 @@ var PLAYBACK  = {
 			return
 		}
 		
+		PLAYBACK.info.set();
+		PLAYBACK.coverart();
+		V.timehms      = S.Time ? UTIL.second2HMS( S.Time ) : '';
+		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		if ( S.state === 'stop' ) {
@@ -1547,10 +1551,6 @@ var PLAYBACK  = {
 			return
 		}
 		
-		PLAYBACK.info.set();
-		PLAYBACK.coverart();
-		V.timehms = S.Time ? UTIL.second2HMS( S.Time ) : '';
-		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
 		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
 		if ( S.elapsed ) {
 			htmlelapsed += ' / ';
@@ -1600,7 +1600,7 @@ var PLAYBACK  = {
 				.removeClass( 'scrollleft scrollellipse' )
 				.removeAttr( 'style' );
 			$el.each( ( i, el ) => {
-				var tW = Math.ceil( el.getBoundingClientRect().width );
+				var tW = Math.ceil( el.clientWidth );
 				if ( tW > V.wW - 20 ) {
 					if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 					$( el ).addClass( 'scrollleft' );
