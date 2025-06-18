@@ -1704,13 +1704,6 @@ var PLAYBACK  = {
 				.addClass( 'gr' );
 			$
 		}
-		if ( ! S.webradio ) return
-		
-		S.coverart = false;
-		PLAYBACK.coverart();
-		PLAYBACK.info.set();
-		$( '#artist, #title, #album' ).addClass( 'disabled' );
-		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
 	, vu        : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
