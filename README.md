@@ -30,7 +30,7 @@ Audio player for
 - `*.cue` - virtually as individual tracks in all modes and user playlists
 - VU meter as coverart ${\textsf{\color{gray}(for remote screen)}}$
 - Wi-Fi connection can be pre-configured for headless mode.
-- Access point - `hostapd`
+- Access point - `iwd`
 - File sharing - `samba`
 - Easy update and extra features with Addons
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
