@@ -1378,11 +1378,11 @@ var PLAYBACK  = {
 			if ( ! S.ip && D.ap ) {
 				htmlqr += '<gr>Access Point:</gr> '+ D.apconf.ssid
 						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
-						 + QRCode.generateSVG( D.apconf.qr );
+						 + QRCode( D.apconf.qr );
 			}
 			htmlqr   += '<gr>http://</gr>'+ ip
 					  + '<div class="gr">http://'+ S.hostname +'</div>'
-					  + QRCode.generateSVG( 'http://'+ ip );
+					  + QRCode( 'http://'+ ip );
 			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
 			$( '#qr' ).html( htmlqr );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
