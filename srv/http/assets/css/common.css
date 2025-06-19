@@ -1099,6 +1099,7 @@ input[ type=radio ]:disabled {
 .qr svg {
 	display: block;
 	width: 115px;
+	shape-rendering: crispEdges;
 }
 .qr rect {
 	fill: var( --cg60 );
