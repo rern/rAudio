@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1750218578' );
+	src         : url( '/assets/fonts/rern.woff2?v=1750308067' );
 }
 @font-face {
 	font-family : Lato;
@@ -1098,6 +1098,9 @@ input[ type=radio ]:disabled {
 }
 .qr svg {
 	display: block;
+	width: 115px;
+}
+.qr rect {
 	fill: var( --cg60 );
 }
 

@@ -135,7 +135,7 @@ function renderPage() {
 			.html(
 				  S.apconf.ssid
 				+'<br>'+ S.apconf.passphrase
-				+ COMMON.qrCode( S.apconf.qr )
+				+ QRCode.generateSVG( S.apconf.qr )
 			)
 			.removeClass( 'hide' );
 	} else {
@@ -144,7 +144,7 @@ function renderPage() {
 	$( '#qrurl' ).html(
 		  '<gr>http://</gr>'+ S.ip
 		 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-		 + COMMON.qrCode( 'http://'+ S.ip )
+		 + QRCode.generateSVG( 'http://'+ S.ip )
 	);
 	$( '#divwebui' ).removeClass( 'hide' );
 	CONTENT();

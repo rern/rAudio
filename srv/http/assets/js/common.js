@@ -1499,10 +1499,6 @@ var COMMON    = {
 			} );
 		} );
 	}
-	, qrCode        : msg => {
-		var qr = QRCode( { msg : msg, dim: 115, pad : 0 } );
-		return qr.outerHTML
-	}
 	, scrollToView  : $el => {
 		if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
 		
