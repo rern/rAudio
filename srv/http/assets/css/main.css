@@ -600,10 +600,10 @@ div.pagerefresh {
 #qr {
 	width: 230px;
 	height: 230px;
-	padding-top: 10px;
+	line-height: 22px;
 }
 #qr svg {
-	margin: 11px auto;
+	margin: 10px auto;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
