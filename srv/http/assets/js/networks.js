@@ -142,8 +142,8 @@ function renderPage() {
 		$( '#divap' ).addClass( 'hide', ! S.ap );
 	}
 	$( '#qrurl' ).html(
-		  '<gr>http://</gr>'+ S.ip
-		 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+		  'http://<wh>'+ S.ip +'</wh>'
+		 + ( S.hostname ? '<br>http://'+ S.hostname : '' )
 		 + QRCode( 'http://'+ S.ip )
 	);
 	$( '#divwebui' ).removeClass( 'hide' );

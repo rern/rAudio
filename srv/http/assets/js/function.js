@@ -1380,8 +1380,8 @@ var PLAYBACK  = {
 						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
 						 + QRCode( D.apconf.qr );
 			}
-			htmlqr   += '<gr>http://</gr>'+ ip
-					  + '<div class="gr">http://'+ S.hostname +'</div>'
+			htmlqr   += 'http://<wh>'+ ip +'</wh>'
+					  + '<br>http://'+ S.hostname
 					  + QRCode( 'http://'+ ip );
 			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
 			$( '#qr' ).html( htmlqr );
