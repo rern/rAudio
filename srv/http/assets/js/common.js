@@ -1024,7 +1024,7 @@ var _INFO     = {
 				var checked = typeof val === 'boolean' ? val : val == $this.val();
 				$this.prop( 'checked', checked );
 			} else if ( $this.is( 'select' ) ) {
-				val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
+				val !== undefined ? $this.val( val ) : el.selectedIndex = 0;
 			} else {
 				if ( Array.isArray( val ) ) { // array > array literal
 					val = '[ '+ val.join( ', ' ) +' ]';

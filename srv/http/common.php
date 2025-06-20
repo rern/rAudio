@@ -45,14 +45,14 @@ foreach( $jsfiles as $file ) {
 }
 if ( ! $page ) { // main
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'pica', 'qrjs2' ];
+	$jsp   = [ 'jquery', 'pica', 'qr' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) $css[] = 'equalizer';
 	$title = 'STATUS';
 } else {         // settings
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
-	if ( $networks ) $jsp[] = 'qrjs2';
+	if ( $networks ) $jsp[] = 'qr';
 	$js    = [ 'common', 'settings', $page ];
 	if ( $addons ) $css[] = 'addons';
 	$icon      = $page;
