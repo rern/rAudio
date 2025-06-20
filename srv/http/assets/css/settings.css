@@ -402,7 +402,8 @@ input[type=image] {
 	margin-top: 60px;
 	line-height: 22px;
 }
-#logotext {
+#logotext,
+.qr gr {
 	display: inline-block;
 	margin-left: 12px;
 	line-height: 16px;
@@ -410,10 +411,15 @@ input[type=image] {
 	font-weight: 300;
 	letter-spacing: 15px;
 }
-#logotext gr {
+.qr gr {
 	font-size: 15px;
 	font-weight: normal;
-	letter-spacing: normal;
+	letter-spacing: 5px;
+	vertical-align: 29px;
+}
+#divabout svg {
+	display: inline-block;
+	width: 40px;
 }
 .list {
 	margin-top: 10px;

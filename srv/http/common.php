@@ -52,7 +52,7 @@ if ( ! $page ) { // main
 } else {         // settings
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
-	if ( $networks ) $jsp[] = 'qr';
+	if ( $networks || $system ) $jsp[] = 'qr';
 	$js    = [ 'common', 'settings', $page ];
 	if ( $addons ) $css[] = 'addons';
 	$icon      = $page;
