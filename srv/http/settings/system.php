@@ -368,9 +368,9 @@ $listui      = [
 	  , 'Graphing Library'
 	  , 'https://plotly.com/javascript/'
 	],[
-	    'qrjs2'
+	    'qr.js'
 	  , 'QR code generator'
-	  , 'https://github.com/englishextra/qrjs2'
+	  , 'https://github.com/lifthrasiir/qr.js'
 	]
 ];
 $uihtml      = '';
