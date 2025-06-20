@@ -517,7 +517,7 @@ input.disabled + .switchlabel::after {
 	background: var( --cga ) !important;
 }
 #divwebui svg {
-	margin: 5px 0 10px 0;
+	margin: 5px 0 20px 0;
 }
 .container {
 	position: fixed;
