@@ -621,10 +621,6 @@ input.disabled + .switchlabel::after {
 	font-size: 16px;
 	vertical-align: 0;
 }
-.divap {
-	float: left;
-	width: 170px;
-}
 .head .i-gear {
 	display: none;
 }
