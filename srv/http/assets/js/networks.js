@@ -133,8 +133,8 @@ function renderPage() {
 	if ( S.ap ) {
 		$( '#qrap' )
 			.html(
-				  S.apconf.ssid
-				+'<br>'+ S.apconf.passphrase
+				 '<wh>'+ S.apconf.ssid
+				+'<br>'+ S.apconf.passphrase +'</wh>'
 				+ QRCode( S.apconf.qr )
 			)
 			.removeClass( 'hide' );
