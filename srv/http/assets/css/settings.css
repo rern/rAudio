@@ -402,18 +402,14 @@ input[type=image] {
 	margin-top: 60px;
 	line-height: 22px;
 }
-#logotext,
-.qr gr {
-	display: inline-block;
+#logo-r {
 	margin-left: 12px;
-	line-height: 16px;
 	font-size: 22px;
 	font-weight: 300;
 	letter-spacing: 15px;
 }
-.qr gr {
-	font-size: 15px;
-	font-weight: normal;
+#logo-b {
+	margin-left: 12px;
 	letter-spacing: 5px;
 	vertical-align: 29px;
 }
