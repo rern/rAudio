@@ -944,7 +944,6 @@ function renderPage() {
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
-	if ( ! $( '#divabout svg' ).length ) $( '#divabout .qr' ).prepend( QRCode( 'https://github.com/rern/rAudio' ) );
 	CONTENT();
 }
 
