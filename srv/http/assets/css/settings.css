@@ -402,20 +402,21 @@ input[type=image] {
 	margin-top: 60px;
 	line-height: 22px;
 }
+#logo img {
+	width: 40px;
+}
 #logo-r {
 	margin-left: 12px;
 	font-size: 22px;
 	font-weight: 300;
 	letter-spacing: 15px;
+	color: var( --cw );
 }
 #logo-b {
 	margin-left: 12px;
 	letter-spacing: 7px;
 	vertical-align: 29px;
 	color: var( --cg60 );
-}
-#qr {
-	width: 40px;
 }
 .list {
 	margin-top: 10px;

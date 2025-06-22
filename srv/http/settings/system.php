@@ -381,10 +381,11 @@ $indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio/discussions" tabindex="-1"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
-	<a id="logo-r">rAudio</a>
-	<br><img id="qr" src="/assets/img/qrgithub.png">
-	<a id="logo-b">by rern</a>
+	<a id="logo" href="https://github.com/rern/rAudio" target="_blank">
+		<img src="/assets/img/icon.svg"><span id="logo-r">rAudio</span>
+		<br>
+		<img src="/assets/img/qrgithub.png"><span id="logo-b">by rern</span>
+	</a>
 	
 	<heading class="subhead">Back End</heading>
 	<div class="list">
