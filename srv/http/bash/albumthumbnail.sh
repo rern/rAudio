@@ -10,7 +10,6 @@ warn='<a class="cbr cw"> ! </a>'
 
 basename $0 .sh > $dirshm/script
 path=$( cat $dirshm/dir )
-[[ ! $path ]] && path=/mnt/MPD
 [[ -e $dirshm/overwrite ]] && overwrite=1
 rm -f $dirshm/{path,overwrite}
 
