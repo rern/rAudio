@@ -214,6 +214,10 @@ albumignore )
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
 	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	;;
+albumthumbnail )
+	echo $DIR > $dirshm/dir
+	[[ $OVERWRITE ]] && touch $dirshm/overwrite
+	;;
 bookmarkadd )
 	file_bk="$dirbookmarks/${NAME//\//|}"
 	[[ -e $file_bk ]] && echo -1 && exit

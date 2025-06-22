@@ -1,7 +1,5 @@
 #!/bin/bash
 
-path=$1
-[[ $2 == true ]] && overwrite=1
 bar='<a class="cbm">  </a>'
 padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'
@@ -11,6 +9,10 @@ warn='<a class="cbr cw"> ! </a>'
 . /srv/http/bash/common.sh
 
 basename $0 .sh > $dirshm/script
+path=$( cat $dirshm/dir )
+[[ ! $path ]] && path=/mnt/MPD
+[[ -e $dirshm/overwrite ]] && overwrite=1
+rm -f $dirshm/{path,overwrite}
 
 hhmmss() {
 	local fmt
