@@ -1202,9 +1202,15 @@ var COMMON    = {
 			}
 		} else {
 			var fn = () => {
-				var cmdsh = PAGE === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+				if ( PAGE === 'player' ) {
+					var cmdsh = [ 'settings/player-conf.sh' ];
+					var title = 'MPD';
+				} else {
+					var cmdsh = [ 'settings/camilla.sh', 'restart' ];
+					var title = 'Camilla DSP';
+				}
 				BASH( cmdsh, REFRESHDATA );
-				NOTIFY( pkg, pkg, 'Start ...' );
+				NOTIFY( PAGE, title, 'Restart ...' );
 			}
 		}
 		$( '#data .infobtn' ).on( 'click', fn );
