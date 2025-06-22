@@ -1484,7 +1484,7 @@ var PLAYBACK  = {
 					.on( 'load', function() {
 						var cover = $COVERART[ 0 ].getBoundingClientRect();
 						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
-						$( '#map-cover' ).toggleClass( 'offset', V.wW - cover.width < 15 );
+						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
 					} );
 				if ( S.webradio ) PLAYLIST.coverart( src );
 			} else {

@@ -262,6 +262,8 @@ foreach( $mapcover as $a ) $maptime[] = preg_replace( '/ .*/', '', $a );
 				<?=$htmlvumeter?>
 				<div id="map-cover" class="divmap">
 					<?=buttonSet( $mapcover, '', 'cover' )?>
+					<div id="offset-l"></div>
+					<div id="offset-r"></div>
 				</div>
 				<div id="volume-band-level" class="hide"></div>
 				<div id="volume-bar" class="hide"></div>

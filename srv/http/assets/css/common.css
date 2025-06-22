@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1750382680' );
+	src         : url( '/assets/fonts/rern.woff2?v=1750588950' );
 }
 @font-face {
 	font-family : Lato;
@@ -268,6 +268,7 @@ i,
 .selectnone,
 #debug {
 	user-select: none;
+	-webkit-user-select: none;
 	-webkit-touch-callout: none;
 }
 sp {

@@ -711,7 +711,6 @@ div.pagerefresh {
 .wl { width:  56% }
 .hs { height: 22% }
 .hl { height: 56% }
-#map-cover.offset .wl { width: 46% }
 #coverT,
 #timeT {
 	background: var( --cga );
@@ -742,9 +741,6 @@ div.pagerefresh {
 .c2           { left: 22% }
 .r3           { bottom: 0 }
 .c3           { right:  0 }
-#map-cover.offset .c1 { left:  5% }
-#map-cover.offset .c2 { left: 27% }
-#map-cover.offset .c3 { right: 5% }
 #timeB,  #volB   { bottom: 0 }
 #timeR,  #volR   { right:  0 }
 #timeBL, #timeBR { bottom: 0 }
