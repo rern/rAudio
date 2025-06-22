@@ -411,10 +411,10 @@ input[type=image] {
 #logo-b {
 	margin-left: 12px;
 	letter-spacing: 7px;
-	vertical-align: 30px;
+	vertical-align: 29px;
+	color: var( --cg60 );
 }
-#divabout svg {
-	display: inline-block;
+#qr {
 	width: 40px;
 }
 .list {
