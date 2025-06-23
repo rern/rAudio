@@ -162,7 +162,7 @@ EOF
 	, [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
-		, 'sub' => 'Wiring Pi'
+		, 'sub'      => 'libgpiod'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 $B->gear
@@ -173,7 +173,7 @@ EOF
 	, [
 		  'id'       => 'relays'
 		, 'label'    => 'Relay Module'
-		, 'sub' => 'Wiring Pi'
+		, 'sub'      => 'libgpiod'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
  · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
