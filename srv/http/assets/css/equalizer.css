@@ -62,6 +62,7 @@
 #eq .label.up {
 	max-width: unset;
 	user-select: none;
+	-webkit-user-select: none;
 	-webkit-touch-callout: none;
 }
 #eq .label.dn a {

@@ -36,6 +36,7 @@
 	border-top: 1px solid var( --cg60 );
 	cursor: pointer;
 	user-select: none;
+	-webkit-user-select: none;
 }
 #keyboard a:last-child {
 	margin-right: 0;
