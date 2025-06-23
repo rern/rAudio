@@ -167,10 +167,7 @@ system )
 $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( grep -Ev '^#|^\s*$' /boot/config.txt )
-
-<bll># pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader</bll>
-$( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader )"
+$( grep -Ev '^#|^\s*$' /boot/config.txt )"
 	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
 	[[ $ignorepkg ]] && config+="
 	
