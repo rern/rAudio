@@ -177,7 +177,6 @@ i {
 .i-playlist::before        { content: '\F508' }
 .i-play-cd::before         { content: '\F539' }
 .i-play-plus::before       { content: '\F532' }
-.i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
 .i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
