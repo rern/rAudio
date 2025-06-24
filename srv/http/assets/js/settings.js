@@ -374,8 +374,8 @@ $( document ).on( 'keydown', function( e ) {
 			e.preventDefault();
 			if ( menu ) {
 				$( '.menu' ).addClass( 'hide' );
-			} else if ( $( '.dropdown' ).length ) {
-				$( '.dropdown' ).prev().trigger( 'click' );
+			} else if ( $( '.dropdown:not( .hide )' ).length ) {
+				$( '.dropdown:not( .hide )' ).prev().trigger( 'click' );
 			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
 				COMMON.statusToggle( 'hide' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {

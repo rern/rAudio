@@ -573,7 +573,7 @@ var UTIL          = {
 				}
 			} else {
 				SETTING( 'i2slist', list => {
-					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
+					$( '#i2smodule' ).html( COMMON.htmlOption( list, 'nosort' ) );
 					UTIL.i2smodule.selected();
 					UTIL.i2smodule.show();
 					$( '#i2smodule' ).next().trigger( 'click' );
@@ -585,7 +585,7 @@ var UTIL          = {
 			if ( $( '#timezone option' ).length < 3 ) {
 				SETTING( 'timezonelist', list => {
 					$( '#timezone' )
-						.html( COMMON.htmlOption( list ) )
+						.html( COMMON.htmlOption( list, 'nosort' ) )
 						.val( S.timezone )
 						.next().trigger( 'click' );
 				} );
@@ -928,7 +928,7 @@ function renderPage() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		UTIL.i2smodule.selected();
 	} else {
-		$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
+		$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None) <gr>/ Auto detect</gr>' ) +'</option>' );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );

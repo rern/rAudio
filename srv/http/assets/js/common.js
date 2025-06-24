@@ -1528,10 +1528,10 @@ var COMMON    = {
 			if ( $select.next().hasClass( 'select' ) ) return
 			
 			var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
-			var text    = $select.find( 'option:selected' ).text();
+			var label   = $select.find( 'option:selected' ).html();
 			$select
 				.addClass( 'hide' )
-				.after( '<div class="select'+ single +'" tabindex="0">'+ text +'</div>' );
+				.after( '<div class="select'+ single +'" tabindex="0">'+ label +'</div>' );
 		} );
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
@@ -1789,7 +1789,7 @@ $( 'body' ).on( 'click', function( e ) {
 	var $select  = $dropdown.prev();
 	var $origin   = $select.prev();
 	$select
-		.text( $this.text() )
+		.html( $this.html() )
 		.toggleClass( 'active' )
 		.prev().find( 'option' ).eq( $this.index() ).attr( 'selected', true );
 	$dropdown
