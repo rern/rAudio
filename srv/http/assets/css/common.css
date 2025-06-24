@@ -1088,7 +1088,7 @@ input[ type=radio ]:disabled {
 	cursor: pointer;
 }
 .dropdown li.selected {
-	background: var( --cgl );
+	background: var( --cg );
 }
 .dropdown li:hover {
 	background: var( --cg );
