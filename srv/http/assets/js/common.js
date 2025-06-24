@@ -1782,7 +1782,8 @@ $( 'body' ).on( 'click', function( e ) {
 		.css( 'min-width', $this.css( 'width' ) )
 		.removeClass( 'hide' )
 		.find( 'ul' ).scrollTop( index * 40 - 40 )
-		.find( 'li' ).eq( index ).addClass( 'selected' );
+			.find( 'li' ).removeAttr( 'value' )
+				.eq( index ).addClass( 'selected' );
 } ).on( 'click', '.dropdown li', function() {
 	var $this     = $( this );
 	var $dropdown = $this.parents( '.dropdown' );
