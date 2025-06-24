@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1750681968' );
+	src         : url( '/assets/fonts/rern.woff2?v=1750729548' );
 }
 @font-face {
 	font-family : Lato;
@@ -1051,7 +1051,7 @@ input[ type=radio ]:disabled {
 .dropdown {
 	position: absolute;
 	margin-top: -9px;
-	box-shadow: var( --shadow-btn );
+	box-shadow: var( --shadow-drop );
 	z-index: 1;
 }
 #infoList .dropdown {
