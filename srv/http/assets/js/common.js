@@ -1413,7 +1413,7 @@ var COMMON    = {
 			el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 		} else {                     // json
 			if ( ! nosort ) el = COMMON.json.sort( el );
-			$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
+			$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '\"' ) +'">'+ k +'</option>' );
 		}
 		return options
 	}

@@ -928,7 +928,7 @@ function renderPage() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		UTIL.i2smodule.selected();
 	} else {
-		$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None) <gr>/ Auto detect</gr>' ) +'</option>' );
+		$( '#i2smodule' ).html( '<option></option><option selected>'+ ( S.audiooutput || '(None) / Auto detect' ) +'</option>' );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
