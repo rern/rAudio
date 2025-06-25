@@ -13,9 +13,10 @@ W = {
 		DISPLAY.library();
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
+		S.coverart = data.cover;
 		if ( V.library ) return
 		
-		var src = data.cover + UTIL.versionHash();
+		var src    = data.cover + UTIL.versionHash();
 		$COVERART.attr( 'src', src );
 		PLAYLIST.coverart( src );
 	}
