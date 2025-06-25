@@ -925,11 +925,11 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	var option = '<option></option><option selected>';
+	var option = label => '<option></option><option selected data-label="'+ label +'">'+ label +'</option>'
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		UTIL.i2smodule.selected();
 	} else {
-		$( '#i2smodule' ).html( option + ( S.audiooutput || '(None) / Auto detect' ) +'</option>' );
+		$( '#i2smodule' ).html( option( S.audiooutput || '<gr>(None / Auto detect)</gr>' ) );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
@@ -940,7 +940,7 @@ function renderPage() {
 	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( option + S.timezoneoffset +'</option>' );
+		$( '#timezone' ).html( option( S.timezone +' <gr>('+ S.timezoneoffset +')</gr>' ) );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );

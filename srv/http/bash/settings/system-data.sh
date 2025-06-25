@@ -128,7 +128,7 @@ data+='
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
-, "timezoneoffset" : "'${timezone/\// · }' '$( date +%z | sed -E 's/(..)$/:\1/' )'"'
+, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='

@@ -1,5 +1,5 @@
 {
-	"(None) / Auto detect": "",
+	"(None / Auto detect)": "",
 	"Adafruit MAX98357": "hifiberry-dac",
 	"Adafruit UDA1334A": "hifiberry-dac,i2s-mmap",
 	"Allo Boss DAC": "allo-boss-dac-pcm512x-audio",

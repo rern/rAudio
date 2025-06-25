@@ -1400,14 +1400,18 @@ var COMMON    = {
 	}
 	, htmlOption    : ( list, nosort ) => {
 		if ( typeof list === 'number' ) list = [ ...Array( list ).keys() ];
-		var option = '';
 		if ( Array.isArray( list ) ) { // name = value
-			if ( ! nosort ) list.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
-			list.forEach( v => option += '<option value="'+ v +'">'+ v +'</option>' );
-		} else {                     // json
-			if ( ! nosort ) list = COMMON.json.sort( list );
-			$.each( list, ( k, v ) => option += '<option value="'+ v.toString().replace( /"/g, '\"' ) +'">'+ k +'</option>' );
+			var li = {}
+			list.forEach( v => { li[ v ] = v } );
+			list   = li;
 		}
+		if ( ! nosort ) list = COMMON.json.sort( list );
+		var option = '';
+		$.each( list, ( k, v ) => {
+			var value = v.toString().replace( /"/g, '\"' );
+			var label = k.replace( '(', '<gr>(' ).replace( ')', ')</gr>' );
+			option   += '<option value="'+ value +'" data-label="'+ label +'">'+ k +'</option>';
+		} );
 		return option
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
@@ -1521,7 +1525,7 @@ var COMMON    = {
 			if ( $select.next().hasClass( 'select' ) ) return
 			
 			var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
-			var label   = $select.find( 'option:selected' ).html();
+			var label   = $select.find( 'option:selected' ).data( 'label' );
 			$select
 				.addClass( 'hide' )
 				.after( '<div class="select'+ single +'" tabindex="0">'+ label +'</div>' );
@@ -1763,10 +1767,9 @@ $( 'body' ).on( 'click', function( e ) {
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
 	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
-		var html_li = $origin.html()
-						.replace( /<option/g, '<li' )
-						.replace( /option>/g, 'li>' );
 		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
+		var html_li = '';
+		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ $( el ).data( 'label' ) +'</li>' );
 		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
 		$dropdown   = $this.next();
 	}
@@ -1775,8 +1778,7 @@ $( 'body' ).on( 'click', function( e ) {
 		.css( 'min-width', $this.css( 'width' ) )
 		.removeClass( 'hide' )
 		.find( 'ul' ).scrollTop( index * 40 - 40 )
-			.find( 'li' ).removeAttr( 'value' )
-				.eq( index ).addClass( 'selected' );
+			.find( 'li' ).eq( index ).addClass( 'selected' );
 } ).on( 'click', '.dropdown li', function() {
 	var $this     = $( this );
 	var $dropdown = $this.parents( '.dropdown' );
