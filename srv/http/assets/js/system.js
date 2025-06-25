@@ -573,7 +573,7 @@ var UTIL          = {
 				}
 			} else {
 				SETTING( 'i2slist', list => {
-					$( '#i2smodule' ).html( COMMON.htmlOption( list, 'nosort' ) );
+					$( '#i2smodule' ).html( COMMON.select.option( list, 'nosort' ) );
 					UTIL.i2smodule.selected();
 					UTIL.i2smodule.show();
 					$( '#i2smodule' ).next().trigger( 'click' );
@@ -585,7 +585,7 @@ var UTIL          = {
 			if ( $( '#timezone option' ).length < 3 ) {
 				SETTING( 'timezonelist', list => {
 					$( '#timezone' )
-						.html( COMMON.htmlOption( list, 'nosort' ) )
+						.html( COMMON.select.option( list, 'nosort' ) )
 						.val( S.timezone )
 						.next().trigger( 'click' );
 				} );
@@ -940,7 +940,7 @@ function renderPage() {
 	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( option( S.timezone +' <gr>('+ S.timezoneoffset +')</gr>' ) );
+		$( '#timezone' ).html( option( S.timezone.replace( '/', ' · ' ) +' <gr>('+ S.timezoneoffset +')</gr>' ) );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );

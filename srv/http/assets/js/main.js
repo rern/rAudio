@@ -1717,7 +1717,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	COMMON.json.save( 'equalizer', E );
 	$( '#eqback' ).trigger( 'click' );
 	$( '#eqpreset' )
-		.html( COMMON.htmlOption( Object.keys( E.preset ) ) )
+		.html( COMMON.select.option( Object.keys( E.preset ) ) )
 		.val( name )
 		.trigger( 'change' );
 } );

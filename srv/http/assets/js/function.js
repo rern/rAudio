@@ -837,7 +837,7 @@ EQ            = {
 	, info  : data => {
 		E = data;
 		EQ.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
-		var opt  = COMMON.htmlOption( Object.keys( E.preset ) );
+		var opt  = COMMON.select.option( Object.keys( E.preset ) );
 		INFO( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
@@ -864,10 +864,10 @@ EQ            = {
 						}
 						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
 						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' ).html( COMMON.htmlOption( Object.keys( E.preset ) ) );
+						$( '#eqpreset' ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 						I.values = [ ...E.preset[ E.active ], E.active ];
 						_INFO.setValues();
-						COMMON.select();
+						COMMON.select.set();
 						COMMON.json.save( 'equalizer', E );
 					}
 				} );

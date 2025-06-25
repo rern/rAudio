@@ -6,7 +6,7 @@ Naming must be the same for:
 */
 $MENU      = $( '#menu' );
 function CONTENT() {
-	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select();
+	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select.set();
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();

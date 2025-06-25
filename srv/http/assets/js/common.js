@@ -710,7 +710,7 @@ function INFO( json ) {
 				case 'select':
 					kv          = param.kv || param;
 					datawidth   = param.width ? ' data-width="'+ param.width +'"' : '';
-					htmls.list += '<select'+ datawidth +'>'+ COMMON.htmlOption( kv, param.nosort ) +'</select>';
+					htmls.list += '<select'+ datawidth +'>'+ COMMON.select.option( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -763,7 +763,7 @@ function INFO( json ) {
 		// show
 		_INFO.toggle();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		if ( $( '#infoList select' ).length ) COMMON.select();
+		if ( $( '#infoList select' ).length ) COMMON.select.set();
 		_INFO.width(); // text / password / textarea
 		if ( [ 'V.localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
 		// check inputs: blank / length / change
@@ -1398,22 +1398,6 @@ var COMMON    = {
 		COMMON.loader();
 		$( '#formtemp' ).submit();
 	}
-	, htmlOption    : ( list, nosort ) => {
-		if ( typeof list === 'number' ) list = [ ...Array( list ).keys() ];
-		if ( Array.isArray( list ) ) { // name = value
-			var li = {}
-			list.forEach( v => { li[ v ] = v } );
-			list   = li;
-		}
-		if ( ! nosort ) list = COMMON.json.sort( list );
-		var option = '';
-		$.each( list, ( k, v ) => {
-			var value = v.toString().replace( /"/g, '\"' );
-			var label = k.replace( '(', '<gr>(' ).replace( ')', ')</gr>' );
-			option   += '<option value="'+ value +'" data-label="'+ label +'">'+ k +'</option>';
-		} );
-		return option
-	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
 		  clone : json => JSON.parse( JSON.stringify( json ) )
@@ -1518,18 +1502,38 @@ var COMMON    = {
 			$ul.find( 'li' ).removeClass( 'hide' );
 		}
 	}
-	, select        : () => {
-		var $el = $( I.active ? '#infoList select' : '.container select' );
-		$.each( $el, ( i, select ) => {
-			var $select = $( select );
-			if ( $select.next().hasClass( 'select' ) ) return
-			
-			var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
-			var label   = $select.find( 'option:selected' ).data( 'label' );
-			$select
-				.addClass( 'hide' )
-				.after( '<div class="select'+ single +'" tabindex="0">'+ label +'</div>' );
-		} );
+	, select        : {
+		  label  : text => text
+							.replace( '(', '<gr>(' )
+							.replace( ')', ')</gr>' )
+		, set    : () => {
+			var $el = $( I.active ? '#infoList select' : '.container select' );
+			$.each( $el, ( i, select ) => {
+				var $select = $( select );
+				if ( $select.next().hasClass( 'select' ) ) return
+				
+				var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
+				var label   = COMMON.select.label( $select.find( 'option:selected' ).text() );
+				$select
+					.addClass( 'hide' )
+					.after( '<div class="select'+ single +'" tabindex="0">'+ label +'</div>' );
+			} );
+		}
+		, option : ( list, nosort ) => {
+			if ( typeof list === 'number' ) list = [ ...Array( list ).keys() ];
+			if ( Array.isArray( list ) ) { // name = value
+				var li = {}
+				list.forEach( v => { li[ v ] = v } );
+				list   = li;
+			}
+			if ( ! nosort ) list = COMMON.json.sort( list );
+			var option = '';
+			$.each( list, ( k, v ) => {
+				var value = typeof v === 'string' ? v.toString().replace( /"/g, '\"' ) : v;
+				option   += '<option value="'+ value +'">'+ k +'</option>';
+			} );
+			return option
+		}
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
 	, statusToggle  : action => {
@@ -1769,7 +1773,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
 		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
 		var html_li = '';
-		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ $( el ).data( 'label' ) +'</li>' );
+		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
 		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
 		$dropdown   = $this.next();
 	}
