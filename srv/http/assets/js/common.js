@@ -1040,15 +1040,12 @@ var _INFO     = {
 			var height    = '';
 			var overflow  = '';
 			var padding   = I.padding;
-			var scrolltop = I.scrolltop;
 		} else {
 			I.active      = true;
-			I.scrolltop   = $( window ).scrollTop();
 			I.padding     = PAGE ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
 			var height    = '150vh';
 			var overflow  = 'hidden';
 			var padding   = 0;
-			var scrolltop = 0;
 			$( '#infoOverlay' ).removeClass( 'hide' );
 			if ( I.buttonfit ) return
 			
@@ -1067,7 +1064,6 @@ var _INFO     = {
 			$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
 			$( '.list' ).css( 'padding-bottom', padding );
 		}
-		$( window ).scrollTop( scrolltop );
 	}
 	, val           : array => {
 		var $this, type, name, val;
@@ -1783,6 +1779,8 @@ $( 'body' ).on( 'click', function( e ) {
 		.removeClass( 'hide' )
 		.find( 'ul' ).scrollTop( index * 40 - 40 )
 			.find( 'li' ).eq( index ).addClass( 'selected' );
+	var bottom = $( '#bar-bottom' ).offset().top;
+	if ( $dropdown[ 0 ].getBoundingClientRect().bottom > bottom ) $( '.container' ).scrollTop( bottom );
 } ).on( 'click', '.dropdown li', function() {
 	var $this     = $( this );
 	var $dropdown = $this.parents( '.dropdown' );
