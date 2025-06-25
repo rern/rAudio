@@ -315,8 +315,7 @@ var COLOR     = {
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
-	  bottom  : () => $COVERART[ 0 ].getBoundingClientRect().bottom
-	, change  : () =>  {
+	  change  : () =>  {
 		if ( V.playback ) {
 			var src           = $COVERART.attr( 'src' );
 			var path          = UTIL.dirName( S.file );

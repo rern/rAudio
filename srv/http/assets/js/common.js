@@ -1169,7 +1169,8 @@ var _INFO     = {
 }
 
 var COMMON    = {
-	  capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
+	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
+	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
 		var pos   = msg.replace( /.* position /, '' );
@@ -1259,7 +1260,7 @@ var COMMON    = {
 	, eq            : {
 		  beforShow : fn => {
 			fn.init();
-			var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top - 15;
+			var eqH     = COMMON.bottom( $( '#eq .bottom' ) ) - $( '#eq .up' ).offset().top - 15;
 			$( '#eq' ).css( 'height', eqH +'px' );
 			$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
 			var $range0 = $( '.inforange input' ).eq( 0 );
@@ -1483,9 +1484,9 @@ var COMMON    = {
 		} );
 	}
 	, scrollToView  : $el => {
-		if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
-		
-		$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).offset().top ) {
+			$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+		}
 	}
 	, search        : {
 		  addTag    : ( text, regex ) => text.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } )
@@ -1779,8 +1780,7 @@ $( 'body' ).on( 'click', function( e ) {
 		.removeClass( 'hide' )
 		.find( 'ul' ).scrollTop( index * 40 - 40 )
 			.find( 'li' ).eq( index ).addClass( 'selected' );
-	var bottom = $( '#bar-bottom' ).offset().top;
-	if ( $dropdown[ 0 ].getBoundingClientRect().bottom > bottom ) $( '.container' ).scrollTop( bottom );
+	COMMON.scrollToView( $dropdown );
 } ).on( 'click', '.dropdown li', function() {
 	var $this     = $( this );
 	var $dropdown = $this.parents( '.dropdown' );
