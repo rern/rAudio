@@ -1398,24 +1398,17 @@ var COMMON    = {
 		COMMON.loader();
 		$( '#formtemp' ).submit();
 	}
-	, htmlOption    : ( el, nosort ) => {
-		var array = false;
-		if ( typeof el === 'number' ) {
-			el         = [ ...Array( el ).keys() ];
-		} else if ( Array.isArray( el ) ) {
-			var array  = true;
-		} else {
-			if ( 'kv' in el ) el = el.kv;
-		}
-		var options = '';
-		if ( array ) { // name = value
-			if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
-			el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
+	, htmlOption    : ( list, nosort ) => {
+		if ( typeof list === 'number' ) list = [ ...Array( list ).keys() ];
+		var option = '';
+		if ( Array.isArray( list ) ) { // name = value
+			if ( ! nosort ) list.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+			list.forEach( v => option += '<option value="'+ v +'">'+ v +'</option>' );
 		} else {                     // json
-			if ( ! nosort ) el = COMMON.json.sort( el );
-			$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '\"' ) +'">'+ k +'</option>' );
+			if ( ! nosort ) list = COMMON.json.sort( list );
+			$.each( list, ( k, v ) => option += '<option value="'+ v.toString().replace( /"/g, '\"' ) +'">'+ k +'</option>' );
 		}
-		return options
+		return option
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
