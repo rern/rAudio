@@ -1616,7 +1616,7 @@ var SETTING   = {
 			  icon         : V.tab
 			, title        : title
 			, message      : name ? 'Rename <wh>'+ name +'</wh>' : ''
-			, list         : [ 'To', 'text' ]
+			, list         : [ 'Name', 'text' ]
 			, values       : name
 			, checkblank   : true
 			, checkchanged : name
