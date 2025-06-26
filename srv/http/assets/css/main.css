@@ -760,6 +760,15 @@ div.pagerefresh {
 #volL { border-radius: 4px 0 0 4px }
 #timeR,
 #volR { border-radius: 0 4px 4px 0 }
+#offset-l,
+#offset-r {
+	position: absolute;
+	width: 15px;
+	height: 100%;
+}
+#offset-r {
+	right: 0;
+}
 
 .btn-group {
 	display: inline-block;
