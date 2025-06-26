@@ -631,9 +631,6 @@ input.disabled + .switchlabel::after {
 	display: inline-block;
 	width: 112px;
 }
-#divstatus i {
-	margin-right: 5px;
-}
 circle.on {
 	stroke: red;
 	stroke-width: 4px;
