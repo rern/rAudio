@@ -421,7 +421,7 @@ var UTIL          = {
 			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
 			, [ 'Address',              'radio',    [ '' ] ] // set by SETTING
-			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
+			, [ 'Chip',                 'select',   [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}

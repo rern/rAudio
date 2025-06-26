@@ -1526,7 +1526,7 @@ var COMMON    = {
 			if ( ! nosort ) list = COMMON.json.sort( list );
 			var option = '';
 			$.each( list, ( k, v ) => {
-				var value = typeof v === 'string' ? v.toString().replace( /"/g, '\"' ) : v;
+				var value = typeof v === 'string' ? v.replace( /"/g, '&quot;' ) : v; // <option>: &quote; instead of '\\"'
 				option   += '<option value="'+ value +'">'+ k +'</option>';
 			} );
 			return option
