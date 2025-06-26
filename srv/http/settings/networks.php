@@ -103,8 +103,8 @@ $body = [
 		, 'Access Point<br>Password'
 		, '<div id="qrap" class="qr"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
- • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.$T->features.$L->accesspoint.'
+ · Connect <wh>Access Point</wh> with the password or scan QR code
+ · Access point setting: '.$T->features.$L->accesspoint.'
 
 Note: No internet connection.</div>'
 	)

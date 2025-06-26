@@ -45,7 +45,7 @@ $labels      = 'CPU Load
 	<br>Available Memory
 	<br>Time
 	<br>Up Time';
-$help        = '<wh>• CPU Load:</wh>
+$help        = '<wh>CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.';
@@ -259,15 +259,15 @@ EOF
 Tweak kernel parameters to improve sound quality.
 $B->gear
  · Swapiness (default: <c>60</c>)
-	- Balance between swap disk vs system memory cache
-	- Low - less swap
+	· Balance between swap disk vs system memory cache
+	· Low - less swap
  · Maximum Transmission Unit (default: <c>1500</c> bytes)
-	- Maximum size of one packet that can be transmitted
-	- High - less overhead more efficiency
-	- Low - less delay
+	· Maximum size of one packet that can be transmitted
+	· High - less overhead more efficiency
+	· Low - less delay
  · Transmit Queue Length (default: <c>1000</c>)
-	- Number of packets allowed per kernel transmit queue
-	- High - improve performance under high load
+	· Number of packets allowed per kernel transmit queue
+	· High - improve performance under high load
 EOF
 	]
 	, [
@@ -320,8 +320,8 @@ Connect shared data as client for:
 
 Note:
  • Enabled - $B->microsd SD and $B->usbdrive USB:
-	 - Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
-	 - Not availble in Library home
+	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
+	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
@@ -330,21 +330,21 @@ Note:
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>
 	 · Linux permissions:
-		- NFS: <c>777</c>
-		- CIFS (SMB): <c>read only = no</c>
+		· NFS: <c>777</c>
+		· CIFS (SMB): <c>read only = no</c>
 	 · Windows <btn>Folder</btn> <btn>Properties</btn> - right-click 
-		- <btn>Sharing</btn> <btn>Advanced Sharing...</btn>
-		- <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
+		· <btn>Sharing</btn> <btn>Advanced Sharing...</btn>
+		· <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
+		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- $L->storage $B->add Add <c>source</c>
-		- $M->refreshlibrary Update database
-		- $L->shareddata Connect <c>data</c>
-		- Local data will be transfered to <c>data</c>
+		· $L->storage $B->add Add <c>source</c>
+		· $M->refreshlibrary Update database
+		· $L->shareddata Connect <c>data</c>
+		· Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $L->shareddata Connect <c>data</c>
-		- <c>source</c> will be connected accordingly
+		· $L->shareddata Connect <c>data</c>
+		· <c>source</c> will be connected accordingly
 EOF
 	]
 ];
