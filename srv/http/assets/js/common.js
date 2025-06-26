@@ -1788,16 +1788,16 @@ $( 'body' ).on( 'click', function( e ) {
 } ).on( 'click', '.dropdown li', function() {
 	var $this     = $( this );
 	var $dropdown = $this.parents( '.dropdown' );
-	var $select  = $dropdown.prev();
+	var $select   = $dropdown.prev();
 	var $origin   = $select.prev();
-	$select
-		.html( $this.html() )
-		.toggleClass( 'active' )
-		.prev().find( 'option' ).eq( $this.index() ).attr( 'selected', true );
 	$dropdown
 		.addClass( 'hide' )
 		.find( 'li.selected' ).removeClass( 'selected' );
 	$this.addClass( 'selected' );
+	$select
+		.html( $this.html() )
+		.toggleClass( 'active' );
+	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
 	$origin.trigger( 'input' );
 } ).on( 'input', '.dropdown input', function() {
 	var $this   = $( this );
