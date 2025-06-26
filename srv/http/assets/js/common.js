@@ -1674,6 +1674,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Enter':
 			if ( $( 'textarea' ).is( ':focus' ) ) return
 			
+			if ( $( '.select.focus' ).length ) {
+				$( '.select.focus' ).trigger( 'click' );
+				return
+			}
+			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( $target.length ) {
 				$target.trigger( 'click' );
