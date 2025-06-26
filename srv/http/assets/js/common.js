@@ -1375,10 +1375,9 @@ var COMMON    = {
 		}
 	}
 	, focusNextTabs : () => {
-		var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-			if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide' ) ) return $( el )
+		return $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+			if ( ! $( el ).is( 'input:radio:checked, input:hidden, input:disabled, .disabled, .hide' ) ) return $( el )
 		} );
-		return $tabs
 	}
 	, formSubmit    : input => {
 		if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
