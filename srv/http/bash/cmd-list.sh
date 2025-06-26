@@ -35,7 +35,7 @@ timeFormat() {
 updateDone() {
 	jq -S <<< "{ $counts }" > $dirmpd/counts
 	pushData mpdupdate '{ '$counts', "done": true }'
-	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
+	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	rm -f $dirmpd/listing $dirshm/albumprev
 	$dirbash/status-push.sh
