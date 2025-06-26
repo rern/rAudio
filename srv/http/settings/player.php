@@ -151,8 +151,8 @@ Support: FLAC, Ogg Vorbis, Musepack and MP3
 
 $B->gear
 ■ Gain control - Mixer device:
- • <c>replay_gain_handler "mixer"</c>
- • Available when Volume Control = MPD software
+ · <c>replay_gain_handler "mixer"</c>
+ · Available when Volume Control = MPD software
 EOF
 	]
 ];
