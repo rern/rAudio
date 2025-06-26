@@ -1829,14 +1829,12 @@ var SETTING   = {
 					$( '#infoList .i-add' ).toggleClass( 'disabled', FIL[ $( '#infoList select' ).val() ].type === 'Conv' );
 				}
 				setDisabled();
-				var select    = '<select>'+ COMMON.select.option( filters ) +'</select>';
 				$( '#infoList' ).on( 'input', function() {
 					setChanged();
 				} ).on( 'click', '.i-add', function() {
 					var $trlast = $( '#infoList tr' ).last();
 					$( '#infoList table' ).append( $trlast.clone() );
 					var $trnew  = $( '#infoList tr' ).last();
-					$trnew.find( 'td' ).eq( 1 ).html( select );
 					setChanged();
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
