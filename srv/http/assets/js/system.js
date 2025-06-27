@@ -6,7 +6,7 @@ W.storage         = data => {
 	V.debounce = setTimeout( () => {
 		S.list.storage = data.list;
 		UTIL.renderStorage();
-		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) );
+		COMMON.statusToggle( 'refresh' );
 	}, 1000 );
 }
 
@@ -72,7 +72,7 @@ var CONFIG        = {
 				}
 			} );
 		}
-		, i2s     : () => UTIL.i2sSelect.option()
+		, i2s     : () => UTIL.option.i2smodule()
 		, restore : () => {
 			INFO( {
 				  ...SW
@@ -299,7 +299,6 @@ var CONFIG        = {
 			, boxwidth     : 250
 			, values       : data.values
 			, checkchanged : S.wlan
-			, beforeshow   : () => COMMON.select.text2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 		} );
@@ -349,36 +348,24 @@ var UTIL          = {
 			}
 		} );
 	}
-	, i2sSelect     : {
-		  hide   : () => {
-			$( '#i2s' ).prop( 'checked', false );
+	, i2smodule : {
+		  hide     : () => {
+			$( '#i2s' )
+				.removeClass( 'disabled' )
+				.prop( 'checked', false );
 			$( '#divi2s' ).removeClass( 'hide' );
 			$( '#divi2smodule' ).addClass( 'hide' );
-		  }
-		, option : () => {
-			if ( $( '#i2smodule option' ).length > 2 ) {
-				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-					UTIL.i2sSelect.show();
-					$( '#i2smodule' ).select2( 'open' );
-				}
-			} else {
-				$( '#i2smodule' ).select2( 'close' );
-				SETTING( 'i2slist', list => {
-					list[ '(None / Auto detect)' ] = '';
-					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
-					UTIL.i2sSelect.select();
-					UTIL.i2sSelect.show();
-					$( '#i2smodule' ).select2( 'open' );
-				} );
-			}
 		}
-		, select : () => {
-			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+		, selected : () => {
+			$( '#i2smodule option' ).each( ( i, el ) => { // for 1 value : multiple names
 				var $this = $( el );
-				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-			} ).prop( 'selected', true );
+				if ( $this.text() === S.audiooutput && $this.val() === S.audioaplayname ) {
+					$this.prop( 'selected', true );
+					return false
+				}
+			} );
 		}
-		, show   : () => {
+		, show     : () => {
 			$( '#divi2s' ).addClass( 'hide' );
 			$( '#divi2smodule' ).removeClass( 'hide' );
 			$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
@@ -434,7 +421,7 @@ var UTIL          = {
 			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
 			, [ 'Address',              'radio',    [ '' ] ] // set by SETTING
-			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
+			, [ 'Chip',                 'select',   [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}
@@ -577,6 +564,35 @@ var UTIL          = {
 		}
 		, tab     : [ 'CIFS', 'NFS', ICON( 'rserver' ) +' rAudio' ]
 	}
+	, option        : {
+		  i2smodule : () => {
+			if ( $( '#i2smodule option' ).length > 2 ) {
+				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+					UTIL.i2smodule.show();
+					setTimeout( () => $( '#i2smodule' ).next().trigger( 'click' ), 0 );
+				}
+			} else {
+				SETTING( 'i2slist', list => {
+					$( '#i2smodule' ).html( COMMON.select.option( list, 'nosort' ) );
+					UTIL.i2smodule.selected();
+					UTIL.i2smodule.show();
+					$( '#i2smodule' ).next().trigger( 'click' );
+				} );
+				return true
+			}
+		}
+		, timezone  : () => {
+			if ( $( '#timezone option' ).length < 3 ) {
+				SETTING( 'timezonelist', list => {
+					$( '#timezone' )
+						.html( COMMON.select.option( list, 'nosort' ) )
+						.val( S.timezone )
+						.next().trigger( 'click' );
+				} );
+				return true
+			}
+		}
+	}
 	, powerbutton   : {
 		  sw : values => {
 			INFO( {
@@ -642,7 +658,7 @@ var UTIL          = {
 			];
 			var kL     = keys.length;
 			for ( var i = 0; i < kL; i++ ) {
-				list.push( [ '', 'select', { kv: UTIL.board2bcm, sameline: true } ], [ '', 'text' ] );
+				list.push( [ '', 'select', { kv: UTIL.board2bcm, width: 80, sameline: true } ], [ '', 'text' ] );
 			}
 			INFO( {
 				  ...SW
@@ -650,7 +666,7 @@ var UTIL          = {
 				, tab          : [ () => UTIL.relays.order( data ), '' ]
 				, message      : UTIL.gpiosvg
 				, list         : list
-				, boxwidth     : 80
+				, boxwidth     : 160
 				, propmt       : true
 				, checkblank   : true
 				, checkchanged : S.relays
@@ -659,7 +675,6 @@ var UTIL          = {
 				, beforeshow   : () => {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
-					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
@@ -677,15 +692,17 @@ var UTIL          = {
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
-				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { sameline: true, colspan: 2 } ]
+				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { colspan: 2, sameline: true } ]
 				, [ '', ICON( 'power red' ) +' Off <gr>(s)</gr>', { colspan: 2 } ]
 			];
 			var values = [];
 			var pL     = pin.ON.length;
 			for ( var i = 0; i < pL; i++ ) {
+				var width  = window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20;
+				var param = { kv: names, width: width, colspan: 2 };
 				list.push(
-					  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
-					, [ '', 'select', { kv: names, colspan: 2 } ]
+					  [ '', 'select', { ...param, sameline: true } ]
+					, [ '', 'select', param ]
 				);
 				values.push( pin.ON[ i ], pin.OFF[ i ] );
 				if ( i < pL - 1 ) {
@@ -709,14 +726,13 @@ var UTIL          = {
 				, tablabel     : UTIL.relays.tab
 				, tab          : [ '', () => UTIL.relays.name( data ) ]
 				, list         : list
-				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
+				, boxwidth     : 70
 				, lableno      : true
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
-					$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
 					var $tdtimer = $( '#infoList tr:last td' );
 					var $timer   = $tdtimer.slice( 1 )
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
@@ -830,7 +846,6 @@ var UTIL          = {
 					, boxwidth     : 240
 					, values       : data.values
 					, checkchanged : true
-					, beforeshow   : () => COMMON.select.text2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 					, ok           : SWITCH.enable
 				} );
 			} );
@@ -910,28 +925,22 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	if ( S.i2smodule ) {
-		if ( $( '#i2smodule option' ).length ) {
-			UTIL.i2sSelect.select();
-		} else {
-			$( '#i2smodule' ).html( '<option></option><option selected>'+ S.audiooutput +'</option>' );
-		}
-		UTIL.i2sSelect.show();
+	var option = label => '<option></option><option selected data-label="'+ label +'">'+ label +'</option>'
+	if ( $( '#i2smodule option' ).length > 2 ) {
+		UTIL.i2smodule.selected();
 	} else {
-		UTIL.i2sSelect.hide();
+		$( '#i2smodule' ).html( option( S.audiooutput || '<gr>(None / Auto detect)</gr>' ) );
 	}
+	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )
 		.removeClass( 'disabled' );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	if ( $( '#timezone option' ).length ) {
+	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( `
-<option></option>
-<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
-` );
+		$( '#timezone' ).html( option( S.timezone.replace( '/', ' · ' ) +' <gr>('+ S.timezoneoffset +')</gr>' ) );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
@@ -1055,36 +1064,19 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
-			UTIL.i2sSelect.hide();
+			UTIL.i2smodule.hide();
 			var msg = 'Disable ...';
 		} else {
 			var msg = S.i2smodule ? 'Change ...' : 'Enable ...';
 		}
 		NOTIFY( icon, title, msg );
 	}
-} ).on( 'select2:open', function( e ) {
-	if ( $( '#i2smodule option' ).length > 2 ) return
-	
-	$( '#i2smodule' ).select2( 'close' );
-	UTIL.i2sSelect.option();
-} ).on( 'select2:close', function () {
-	if ( ! this.value ) UTIL.i2sSelect.hide();
 } );
 $( '#ledcalc' ).on( 'click', UTIL.ledcalc );
 $( '#hostname' ).on( 'click', UTIL.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
 	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
 	BASH( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
-} ).on( 'select2:open', function( e ) {
-	if ( $( '#timezone option' ).length > 2 ) return
-	
-	$( '#timezone' ).select2( 'close' );
-	$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
-		$( '#timezone' )
-			.html( data )
-			.val( S.timezone )
-			.select2( 'open' );
-	} );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );

@@ -370,11 +370,11 @@ function renderPage() {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', S.bluetooth && ! S.devicewithbt );
 		$( '#device' )
-			.html( COMMON.htmlOption( Object.keys( S.devices ) ) )
+			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
 		if ( S.mixers ) {
 			$( '#mixer' )
-				.html( COMMON.htmlOption( S.mixers ) )
+				.html( COMMON.select.option( S.mixers ) )
 				.val( S.output.mixer );
 			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume || S.novolume );
 			$( '#divmixer' ).removeClass( 'hide' );

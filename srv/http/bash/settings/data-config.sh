@@ -263,6 +263,9 @@ templimit )
 	[[ $line ]] && degree=$( cut -d= -f2 <<< $line ) || degree=60
 	echo '{ "DEGREE": '$degree' }'
 	;;
+timezonelist )
+	cat /srv/http/assets/data/timezone.json
+	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
 	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'

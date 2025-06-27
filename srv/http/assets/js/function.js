@@ -1,5 +1,4 @@
 function LIST( query, callback, json ) {
-	if ( ! V.loadinglazy ) query.lazyload = true;
 	if ( V.debug ) {
 		COMMON.debugConsole( JSON.stringify( query ) );
 		return
@@ -46,7 +45,7 @@ function REFRESHDATA() {
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) )
+		COMMON.statusToggle( 'refresh' );
 		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
 		DISPLAY.controls();
 	} );
@@ -142,7 +141,7 @@ var BIO       = {
 		$artist
 			.before( '<div id="bioimg">'+ imageshtml +'</div>' )
 			.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
-		var titleafter = $artist.prev().prop('id') === 'bioimg';
+		var titleafter = $artist.prev()[ 0 ].id === 'bioimg';
 		if ( 'observer' in V ) V.observer.disconnect();
 		if ( V.wW < 481 ) {
 			var options = { rootMargin: '-50px 0px 0px 0px' } // detect when pass 50px before top
@@ -172,12 +171,6 @@ var COLOR     = {
 		delete V.ctx;
 	}
 	, liActive : () => $( '#lib-list li' ).eq( 0 ).addClass( 'active' )
-	, okEnable : () => {
-		if ( V.color.ok ) return
-		
-		V.color.ok = true;
-		$( '#colorok' ).removeClass( 'disabled' );
-	}
 	, pick     : {
 		  gradient : () => {
 			var ctx = V.ctx.context;
@@ -194,7 +187,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel_c, V.ctx.wheel_c )
+				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy )
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -213,7 +206,6 @@ var COLOR     = {
 			}
 			, hue  : key => {
 				COLOR.pick.hue( COLOR.pick.key.code[ key ] );
-				COLOR.okEnable();
 			}
 			, sat  : key => {
 				var [ xy, v ] = COLOR.pick.key.code[ key ];
@@ -230,12 +222,12 @@ var COLOR     = {
 				}
 				COLOR.pick.point( x, y );
 				COLOR.pick.sat( x, y );
-				COLOR.okEnable();
 			}
 		}
 		, point    : ( x, y ) => {
+			var m = V.ctx.sat.margin;
 			$( '#sat' )
-				.css( { left: ( x + V.ctx.sat_m ) +'px', top: ( y + V.ctx.sat_m ) +'px' } ) // margin 55px - r 5px
+				.css( { left: ( x + m ) +'px', top: ( y + m ) +'px' } ) // margin 55px - r 5px
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
@@ -259,92 +251,85 @@ var COLOR     = {
 			V.ctx.x = x;
 			V.ctx.y = y;
 		}
-		, set      : () => {
-			COLOR.pick.gradient(); // sat box
-			var h = V.ctx.hsl.h;
-			var l = V.ctx.hsl.l / 100;
-			var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
-			var k, rgb, v;
-			var [ r, g, b ] = ( () => { // hsl > rgb
-				rgb = [];
-				[ 0, 8, 4 ].forEach( n => {
-					k = ( n + h / 30 ) % 12;
-					v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
-					rgb.push( Math.round( v * 255 ) );
-				} );
-				return rgb
-			} )();
-			var pb, pg, pr;
-			match:
-			for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
-				for ( var x = 0; x < V.ctx.width; x++ ) {
-					[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
-					if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
-						COLOR.pick.rotate();
-						COLOR.pick.point( x, y );
-						V.ctx.x = x;
-						V.ctx.y = y;
-						break match;
-					}
-				}
+		, xy       : e => {
+			var [ x, y ] = COMMON.pageXY( e );
+			if ( V.sat ) { // offset to top left
+				x -= V.ctx.sat.tx;
+				y -= V.ctx.sat.ty;
+				COLOR.pick.sat( x, y );
+			} else {
+				COLOR.pick.hue( x, y );
 			}
-		}
-		, xy       : ( e, hue_sat ) => {
-			if ( V.touch ) {
-				var x = e.changedTouches[ 0 ].pageX - V.ctx.tl[ hue_sat ].x;
-				var y = e.changedTouches[ 0 ].pageY - V.ctx.tl[ hue_sat ].y;
-			} else { // V.ctx.tl[ hue_sat ] - relative xy
-				var x = e.offsetX;
-				var y = e.offsetY;
-			}
-			COLOR.pick[ hue_sat ]( x, y );
-			COLOR.okEnable();
 		}
 	}
 	, picker   : () => {
 		$( '#colorpicker' ).removeClass( 'hide' ); // to get offset
 		$( '#colorreset' ).toggleClass( 'hide', ! V.color.custom );
-		$( '#colorok' ).addClass( 'disabled' );
 		$( 'body' ).css( 'overflow', 'hidden' );
 		var $box        = $( '#box' );
 		var box_margin  = parseInt( $box.css( 'margin' ) );
 		var [ h, s, l ] = $( ':root' ).css( '--cm' ).replace( /[^0-9,]/g, '' ).split( ',' ).map( Number );
+		var [ ty, tx ]  = Object.values( $( '#wheel' ).offset() );
+		var wheel_c     = $( '#wheel' ).width() / 2;
 		V.ctx           = {
 			  context : $box[ 0 ].getContext( '2d', { willReadFrequently: true } )
 			, hsl     : { h, s, l }
 			, hsl_cur : { h, s, l } // for #colorcancel
-			, sat_m   : box_margin - $( '#sat' ).outerWidth() / 2
+			, sat     : {
+				  tx     : tx + box_margin
+				, ty     : ty + box_margin
+				, margin : box_margin - $( '#sat' ).outerWidth() / 2
+			}
 			, width   : $box.width()
-			, wheel_c : $( '#wheel' ).width() / 2
+			, wheel   : { cx: tx + wheel_c, cy: ty + wheel_c }
 		}
-		if ( V.touch ) {
-			var [ ty, tx ] = Object.values( $( '#wheel' ).offset() );
-			V.ctx.tl       = { // e.changedTouches[ 0 ].pageX/Y - tl[ x ].x/y = e.offsetX/Y
-				  hue : { x: tx,              y: ty }
-				, sat : { x: tx + box_margin, y: ty + box_margin }
+		COLOR.pick.gradient(); // sat box
+		var h = V.ctx.hsl.h;
+		var l = V.ctx.hsl.l / 100;
+		var a = V.ctx.hsl.s / 100 * Math.min( l, 1 - l );
+		var k, rgb, v;
+		var [ r, g, b ] = ( () => { // hsl > rgb
+			rgb = [];
+			[ 0, 8, 4 ].forEach( n => {
+				k = ( n + h / 30 ) % 12;
+				v = l - a * Math.max( Math.min( k - 3, 9 - k, 1 ), -1 );
+				rgb.push( Math.round( v * 255 ) );
+			} );
+			return rgb
+		} )();
+		var pb, pg, pr;
+		match:
+		for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
+			for ( var x = 0; x < V.ctx.width; x++ ) {
+				[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
+				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
+					COLOR.pick.rotate();
+					COLOR.pick.point( x, y );
+					V.ctx.x = x;
+					V.ctx.y = y;
+					break match;
+				}
 			}
 		}
-		COLOR.pick.set();
 	}
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
 	  change  : () =>  {
 		if ( V.playback ) {
-			var $coverart     = $( '#coverart' );
+			var src           = $COVERART.attr( 'src' );
 			var path          = UTIL.dirName( S.file );
 			var album         = S.Album;
 			var artist        = S.Artist;
 			var onlinefetched = $( '#divcover .cover-save' ).length;
 		} else {
-			var $coverart     = $( '#liimg' );
+			var rsc           = $( '#liimg' ).attr( 'src' );
 			var path          = $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
 			var album         = $( '.licover .lialbum' ).text();
 			var artist        = $( '.licover .liartist' ).text();
 			var onlinefetched = $( '.licover .cover-save' ).length;
 		}
-		var src          = $coverart.attr( 'src' );
 		var coverdefault = src.slice( 0, -13 ) === V.coverdefault;
 		if ( coverdefault ) {
 			if ( 'discid' in S ) {
@@ -382,13 +367,13 @@ var COVERART  = {
 		
 		var hash = UTIL.versionHash();
 		if ( ! D.covervu ) {
-			$( '#coverart' )
+			$COVERART
 				.attr( 'src', V.coverdefault + hash )
 				.css( 'border', V.coverdefault === V.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 			$( '#vu' ).addClass( 'hide' );
 		} else {
-			$( '#coverart' )
+			$COVERART
 				.addClass( 'hide' )
 				.attr( 'src', V.coverdefault + hash );
 			$( '#vu' ).removeClass( 'hide' );
@@ -430,7 +415,7 @@ var COVERART  = {
 	}
 	, save    : () => {
 		if ( V.playback ) {
-			var src    = $( '#coverart' ).attr( 'src' );
+			var src    = $COVERART.attr( 'src' );
 			var file   = S.file;
 			var path   = '/mnt/MPD/'+ UTIL.dirName( file );
 			var artist = S.Artist;
@@ -511,18 +496,17 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
 			V.guide        = false;
 			var barvisible = UTIL.barVisible();;
 			$( '#coverTR' ).toggleClass( 'empty', S.pllength === 0 && ! barvisible && S.player === 'mpd' );
-			$( '.map' ).removeClass( 'mapshow' );
+			$( '.divmap' ).removeClass( 'mapshow' );
 			$( '#bar-bottom' ).removeClass( 'translucent' );
 			if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 			$( '.band, #volbar' ).addClass( 'transparent' );
-			$( '.guide, #volume-bar, #volume-band-level' ).addClass( 'hide' );
+			$( '.guide, #volume-bar, #volume-bar-point, #volume-band-level' ).addClass( 'hide' );
 		}
 	}
 	, keyValue   : type => {
@@ -852,7 +836,7 @@ EQ            = {
 	, info  : data => {
 		E = data;
 		EQ.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
-		var opt  = COMMON.htmlOption( Object.keys( E.preset ) );
+		var opt  = COMMON.select.option( Object.keys( E.preset ) );
 		INFO( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
@@ -879,7 +863,7 @@ EQ            = {
 						}
 						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
 						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' ).html( COMMON.htmlOption( Object.keys( E.preset ) ) );
+						$( '#eqpreset' ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 						I.values = [ ...E.preset[ E.active ], E.active ];
 						_INFO.setValues();
 						COMMON.select.set();
@@ -945,13 +929,19 @@ var FILEIMAGE = {
 					var canvas    = document.createElement( 'canvas' );
 					canvas.width  = resize.w;
 					canvas.height = resize.h;
-					pica.resize( filecanvas, canvas, V.option.pica ).then( function() {
+					var option    = {
+						  unsharpAmount    : 100  // 0...500 Default: 0 (try 50-100)
+						, unsharpThreshold : 5    // 0...100 Default: 0 (try 10)
+						, unsharpRadius    : 0.6
+//						, quality          : 3    // 0...3   Default: 3 (Lanczos win)
+//						, alpha            : true //         Default: false (black crop background)
+					}
+					pica.resize( filecanvas, canvas, option ).then( function() {
 						FILEIMAGE.render( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 					} );
 				} else {
 					FILEIMAGE.render( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 				}
-				clearTimeout( V.timeout.file );
 				BANNER_HIDE();
 			}
 		}
@@ -1149,13 +1139,7 @@ var LIBRARY   = {
 			}
 			$( '#lib-search, #button-lib-search, #search-list' ).addClass( 'hide' );
 			DISPLAY.pageScroll( V.scrolltop[ data.path ] || 0 );
-			if ( MODE.album() ) {
-				$( '.coverart img' ).eq( 0 ).on( 'lazyloaded', function() {
-					LIBRARY.padding( $( '.coverart' ).eq( 0 ).height() );
-				});
-			} else {
-				LIBRARY.padding();
-			}
+			LIBRARY.padding();
 			if ( V.color ) COLOR.liActive();
 		} );
 	}
@@ -1179,12 +1163,12 @@ var LIBRARY   = {
 			}
 		} );
 	}
-	, padding    : coverartH => {
+	, padding    : () => {
 		var padding = UTIL.barVisible( 129, 89 );
 		if ( V.librarytrack ) {
 			if ( D.fixedcover && V.wH > 734 ) padding += 230;
-		} else if ( coverartH ) {
-			padding += coverartH - 49;
+		} else if ( MODE.album() ) {
+			padding += $( '.coverart' ).height() - 49;
 		}
 		var $list = V.search ? $( '#search-list' ) : $( '#lib-list' );
 		$list.css( {
@@ -1226,7 +1210,7 @@ var LYRICS    = {
 	, show         : data => {
 		V.lyrics       = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-		$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' ) );
+		$( '#divlyricstitle img' ).attr( 'src', $COVERART.attr( 'src' ) );
 		$( '#lyricstitle' ).text( V.lyricstitle );
 		$( '#lyricsartist' ).text( V.lyricsartist );
 		$( '#lyricstext' ).html( lyricshtml );
@@ -1391,26 +1375,26 @@ var PLAYBACK  = {
 			
 			var htmlqr = '';
 			if ( ! S.ip && D.ap ) {
-				htmlqr += '<gr>Access Point:</gr> <wh>'+ D.apconf.ssid +'</wh>'
-						 +'<br><gr>Password:</gr> <wh>'+ D.apconf.passphrase +'</wh>'
-						 +'<div class="code">'+ COMMON.qrCode( D.apconf.qr ) +'</div>';
+				htmlqr += '<gr>Access Point:</gr> '+ D.apconf.ssid
+						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
+						 + QRCode( D.apconf.qr );
 			}
-			htmlqr   +=  '<gr>http://</gr>'+ ip
-						+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-						+'<div class="code">'+ COMMON.qrCode( 'http://'+ ip ) +'</div>';
-			$( '#qr' ).remove();
-			$( '#map-cover' ).before( '<div id="qr">'+ htmlqr +'</div>' );
+			htmlqr   += 'http://<wh>'+ ip +'</wh>'
+					  + '<br>http://'+ S.hostname
+					  + QRCode( 'http://'+ ip );
+			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
+			$( '#qr' ).html( htmlqr );
 			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
-			$( '#coverart' ).addClass( 'hide' );
+			$COVERART.addClass( 'hide' );
 		} else {
-			$( '#coverart' ).removeClass( 'hide' );
+			$COVERART.removeClass( 'hide' );
 			$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ICON( 'networks' ) +'&ensp;Setup</a>' );
 		}
 		PLAYBACK.vu();
 		COMMON.loaderHide();
 	}
 	, button    : {
-		  options : () => {
+		  options  : () => {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
@@ -1445,7 +1429,7 @@ var PLAYBACK  = {
 			PLAYBACK.button.updating();
 			if ( ! VOLUME.visible() ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 		}
-		, update : () => {
+		, update   : () => {
 			if ( S.updateaddons ) {
 				$( '#button-settings, #addons i' ).addClass( 'bl' );
 				if ( ! UTIL.barVisible() ) {
@@ -1459,26 +1443,17 @@ var PLAYBACK  = {
 			}
 		}
 		, updating : () => {
-			clearInterval( V.interval.blinkupdate );
+			var $icon = $( '#library, #button-library, .i-libupdate' );
 			if ( S.updating_db ) {
+				$icon.addClass( 'blink' );
+				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
+				$( '#update' ).addClass( 'on' );
 				if ( $( '#bar-bottom' ).css( 'display' ) === 'none' || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 					var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 					$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
-				} else {
-					$( '#library, #button-library' ).addClass( 'blink' );
 				}
-				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
-				if ( V.localhost ) {
-					var $icons = $( '#library, #button-library, #mi-libupdate, #ti-libupdate' );
-					$icons.removeClass( 'blink' );
-					V.interval.blinkupdate = setInterval( () => {
-						$icons.addClass( 'clear' );
-						setTimeout( () => $icons.removeClass( 'clear' ), 1500 );
-					}, 2500 );
-				}
-				$( '#update' ).addClass( 'on' );
 			} else {
-				$( '#library, #button-library' ).removeClass( 'blink' );
+				$icon.removeClass( 'blink' );
 				$( '#refresh-library, #button-lib-update' ).removeClass( 'bl' );
 				$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 				$( '#update' ).removeClass( 'on' );
@@ -1492,7 +1467,7 @@ var PLAYBACK  = {
 		}
 		
 		if ( D.vumeter ) {
-			$( '#coverart' )
+			$COVERART
 				.addClass( 'hide' )
 				.attr( 'src', '' );
 			$( '#vu' ).removeClass( 'hide' );
@@ -1502,28 +1477,22 @@ var PLAYBACK  = {
 			if ( src ) {
 				src += UTIL.versionHash();
 				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
+				$COVERART
 					.attr( 'src', src )
-					.removeClass( 'hide' );
+					.removeClass( 'hide' )
+					.on( 'load', function() {
+						var cover = $COVERART[ 0 ].getBoundingClientRect();
+						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
+						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
+					} );
 				if ( S.webradio ) PLAYLIST.coverart( src );
 			} else {
 				COVERART.default();
 			}
 		}
-		$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
-	}
-	, degree    : ( e, el ) => { // el: time/volume
-		if ( V.touch ) {
-			var x = e.changedTouches[ 0 ].pageX;
-			var y = e.changedTouches[ 0 ].pageY;
-		} else {
-			var x = e.pageX;
-			var y = e.pageY;
-		}
-		return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
 	}
 	, elapsed   : () => {
-		UTIL.intervalClear.elapsed();
+		UTIL.intervalClear( 'elapsed' );
 		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
@@ -1534,7 +1503,7 @@ var PLAYBACK  = {
 			 PROGRESS.set( S.elapsed );
 		} else { // elapsed only
 			if ( ! D.radioelapsed ) {
-				$( '#pl-list li.active .elapsed' ).html( V.blinkdot );
+				$elapsed.html( V.blinkdot );
 				return
 			}
 		}
@@ -1548,10 +1517,10 @@ var PLAYBACK  = {
 				}
 				elapsedhms = UTIL.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) UTIL.intervalClear.elapsed();
+				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
 			} else {
 				S.elapsed = 0;
-				UTIL.intervalClear.all();
+				UTIL.intervalClear();
 				$elapsed.empty();
 				PROGRESS.set( 0 );
 			}
@@ -1564,37 +1533,23 @@ var PLAYBACK  = {
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
-		clearInterval( V.interval.blinkdot );
 		$( '#qr' ).remove();
 		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 			PLAYBACK.blank();
 			return
 		}
 		
-		$( '.emptyadd' ).addClass( 'hide' );
-		$( '#coverTR' ).removeClass( 'empty' );
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
-		V.timehms = S.Time ? UTIL.second2HMS( S.Time ) : '';
-		if ( S.elapsed === false || S.webradio ) {
-			UTIL.blinkDot();
-			return
-		}
-		
+		V.timehms      = S.Time ? UTIL.second2HMS( S.Time ) : '';
+		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
+		$( '.emptyadd' ).addClass( 'hide' );
+		$( '#coverTR' ).removeClass( 'empty' );
 		if ( S.state === 'stop' ) {
 			PLAYBACK.stop();
 			return
 		}
 		
-		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-		$( '#total' ).text( V.timehms );
-		if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
-			$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
-			UTIL.blinkDot();
-			return
-		}
-		
-		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
 		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
 		if ( S.elapsed ) {
 			htmlelapsed += ' / ';
@@ -1603,6 +1558,24 @@ var PLAYBACK  = {
 		}
 		htmlelapsed +=  V.timehms;
 		$( '#progress' ).html( htmlelapsed );
+		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
+		$( '#total' ).text( V.timehms );
+		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+			UTIL.intervalClear();
+			$( '#vuneedle' ).css( 'transform', '' );
+			$( '#elapsed, #total, #progress' ).empty();
+			if ( S.state === 'play' ) {
+				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
+				if ( D.radioelapsed ) {
+					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
+					PLAYBACK.elapsed();
+				} else {
+					PROGRESS.set( 0 );
+				}
+			}
+			return
+		}
+		
 		if ( S.state === 'pause' ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
@@ -1626,7 +1599,7 @@ var PLAYBACK  = {
 				.removeClass( 'scrollleft scrollellipse' )
 				.removeAttr( 'style' );
 			$el.each( ( i, el ) => {
-				var tW = Math.ceil( el.getBoundingClientRect().width );
+				var tW = Math.ceil( el.clientWidth );
 				if ( tW > V.wW - 20 ) {
 					if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 					$( el ).addClass( 'scrollleft' );
@@ -1635,8 +1608,8 @@ var PLAYBACK  = {
 			if ( ! tWmax ) return
 			
 			$( '.scrollleft' ).css( { // same width and speed
-				  width     : tWmax
-				, animation : ( ( V.wW + tWmax ) / 80 ) +'s infinite linear scrollleft'
+				  width                : tWmax
+				, 'animation-duration' : ( ( V.wW + tWmax ) / 80 ) +'s'
 			} );
 			if ( V.localhost ) {
 				$( '.scrollleft' )
@@ -1657,15 +1630,14 @@ var PLAYBACK  = {
 			}
 			if ( S.webradio ) {
 				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.state !== 'play' ) {
+				if ( S.state === 'play' ) {
+					$( '#artist' ).text( S.Artist || S.station );
+					$( '#title' ).html( S.Title || V.blinkdot );
+					$( '#album' ).text( S.Album || url );
+				} else {
 					$( '#artist' ).text( S.station );
 					$( '#title' ).html( V.dots );
 					$( '#album' ).text( url );
-				} else {
-					$( '#artist' ).text( S.Artist || S.station );
-					$( '#title' ).html( S.Title || V.blinkdot );
-					UTIL.blinkDot();
-					$( '#album' ).text( S.Album || url );
 				}
 			} else {
 				$( '#artist' ).html( S.Artist || V.dots );
@@ -1731,13 +1703,6 @@ var PLAYBACK  = {
 				.addClass( 'gr' );
 			$
 		}
-		if ( ! S.webradio ) return
-		
-		S.coverart = false;
-		PLAYBACK.coverart();
-		PLAYBACK.info.set();
-		$( '#artist, #title, #album' ).addClass( 'disabled' );
-		$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 	}
 	, vu        : () => {
 		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
@@ -2098,7 +2063,7 @@ var PLAYLIST  = {
 		, scroll : () => {
 			if ( ! V.playlist || ! V.playlisthome ) return
 			
-			UTIL.intervalClear.all();
+			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
 				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
@@ -2172,9 +2137,7 @@ var PLAYLIST  = {
 				$artist.addClass( 'hide' );
 				$url.removeClass( 'hide' );
 			} else {
-				if ( S.coverart ) $img
-									.removeClass( 'lazyload' )
-									.attr( 'src', S.coverart );
+				if ( S.coverart ) $img.attr( 'src', S.coverart );
 				$name.html( S.Title || V.dots );
 				if ( S.Artist ) {
 					$artist
@@ -2205,7 +2168,7 @@ var PLAYLIST  = {
 			return
 		}
 		
-		UTIL.intervalClear.all();
+		UTIL.intervalClear();
 		if ( S.state !== 'stop' ) {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
@@ -2228,7 +2191,7 @@ var PROGRESS  = {
 	}
 	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
 	, knob    : e => {
-		var deg   = PLAYBACK.degree( e, 'time' );
+		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
 		S.elapsed = Math.round( S.Time * deg / 360 );
 		PROGRESS.set( S.elapsed );
@@ -2245,7 +2208,7 @@ var PROGRESS  = {
 	, set     : elapsed => { // if defined - no animate
 		if ( ! D.time && ! D.cover ) return
 		
-		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear.elapsed();
+		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear( 'elapsed' );
 		if ( elapsed === undefined ) {
 			var s = S.Time - S.elapsed; // seconds from current to full
 			var l = 1;                  // full circle
@@ -2267,6 +2230,8 @@ var PROGRESS  = {
 			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
 			PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
 		}
+		if ( ! V.pageactive ) return
+		
 		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
 	}
 	, visible : () => $( '#time-knob' ).css( 'display' ) !== 'none' // both .hide and css show/hide
@@ -2277,43 +2242,6 @@ var UTIL      = {
 		if ( ! a ) return visible
 		
 		return visible ? a : b
-	}
-	, blinkDot        : () => {
-		if ( V.localhost ) {
-			$( '.dot' ).css( 'animation', 'none' );
-			var $d1 = $( '.dot1' );
-			var $d2 = $( '.dot2' );
-			var $d3 = $( '.dot3' );
-			V.interval.blinkdot = setInterval( () => {
-				$d1.css( 'opacity', 1 );
-				$d2.css( 'opacity', 0.1 );
-				$d3.css( 'opacity', 0.50 );
-				setTimeout( () => {
-					$d1.css( 'opacity', 0.50 );
-					$d2.css( 'opacity', 1 );
-					$d3.css( 'opacity', 0.1 );
-					setTimeout( () => {
-						$d1.css( 'opacity', 0.1 );
-						$d2.css( 'opacity', 0.50 );
-						$d3.css( 'opacity', 1 );
-					}, 1000 );
-				}, 1000 );
-			}, 3000 );
-			return
-		}
-		
-		UTIL.intervalClear.all();
-		$( '#vuneedle' ).css( 'transform', '' );
-		$( '#elapsed, #total, #progress' ).empty();
-		if ( S.state === 'play' ) {
-			$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
-			if ( D.radioelapsed ) {
-				$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
-				PLAYBACK.elapsed();
-			} else {
-				PROGRESS.set( 0 );
-			}
-		}
 	}
 	, changeIP        : () => { // for android app
 		INFO( {
@@ -2440,16 +2368,13 @@ var UTIL      = {
 			, okno        : true
 		} );
 	}
-	, intervalClear   : {
-		  all : () => {
+	, intervalClear   : elpased => {
+		if ( elapsed ) {
+			clearInterval( V.interval.elapsed );;
+		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
-			PROGRESS.set( S.elapsed || 0 );
-			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 		}
-		, elapsed : () => {
-			clearInterval( V.interval.elapsed );
-			if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
-		}
+		if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 	}
 	, refresh         : () => {
 		if ( V.library ) {
@@ -2500,7 +2425,7 @@ var UTIL      = {
 		return hh  +':'+ mm +':'+ ss;
 	}
 	, switchPage      : page => {
-		UTIL.intervalClear.all();
+		UTIL.intervalClear();
 		// get scroll position before changed
 		if ( V.library ) {
 			if ( V.librarylist ) {
@@ -2539,19 +2464,27 @@ var UTIL      = {
 			if ( deg < 0 ) deg += 360;
 			return deg
 		}
+		, e2deg  : ( e, el ) => { // el: time/volume
+			var [ x, y ] = COMMON.pageXY( e );
+			return UTIL.xy.degree( x, y, V[ el ].cx, V[ el ].cy )
+		}
 		, get    : el => {
 			if ( V.animate ) return
 			
+			if ( PAGE === 'camilla' ) {
+				
+				return
+			}
+			
 			DISPLAY.guideHide();
 			if ( $( el ).parents( '#divcover' ).length ) {
-				var $el = $( '#coverart' );
 				return {
-					  x    : $el.offset().left
-					, w    : $el.width()
+					  x    : $COVERART.offset().left
+					, w    : $COVERART.width()
 					, type : 'bar'
 				}
 			} else {
-				var id = $( el ).parents( '.knob' ).prop( 'id' );
+				var id = $( el ).parents( '.knob' )[ 0 ].id;
 				var [ y, x ] = Object.values( $( '#'+ id ).offset() );
 				return {
 					  cx   : x + 115
@@ -2563,8 +2496,7 @@ var UTIL      = {
 		, ratio  : ( e, type ) => {
 			var x     = V[ type ].x;
 			var w     = V[ type ].w;
-			var pageX = e.pageX || e.changedTouches[ 0 ].pageX;
-			var posX  = pageX - x;
+			var posX  = COMMON.pageX( e ) - x;
 			posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 			return posX / w
 		}
@@ -2580,17 +2512,17 @@ var VOLUME    = {
 	}
 	, barHide : ms => {
 		V.volumebar = setTimeout( () => {
-			$( '#info' ).removeClass( 'hide' ); // 320 x 480
-			$( '#volume-bar, #volume-band-point, #volume-band-level' ).addClass( 'hide' );
+			$( '#volume-bar, #volume-bar-point, #volume-band-level' ).addClass( 'hide' );
 			$( '.volumeband' ).addClass( 'transparent' );
 		}, ms !== undefined ? ms : 5000 );
 	}
-	, barShow : () => {
-		$( '#volume-bar, #volume-band-point, #volume-band-level' ).removeClass( 'hide' );
+	, barShow : hide => {
+		$( '#volume-bar, #volume-bar-point, #volume-band-level' ).removeClass( 'hide' );
 		$( '.volumeband:not( #volume-band )' ).removeClass( 'transparent' );
+		if ( hide ) VOLUME.barHide();
 	}
 	, knob    : e => {
-		var deg     = PLAYBACK.degree( e, 'volume' );
+		var deg     = UTIL.xy.e2deg( e, 'volume' );
 		if ( deg > 30 && deg < 150 ) return
 		
 		var deg_vol = deg >= 150 ? deg : deg + 360; // [0°-30°] + 360° >> [360°-390°] - 150° = [210°-240°]
@@ -2599,9 +2531,11 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 	, set     : () => {
-		var vol_prev = $( '#volume-level' ).text();
+		var $bar     = $( '#volume-bar' );
+		var $level   = $( '#volume-level' );
+		var vol_prev = $level.text();
 		var mute     = S.volumemute !== 0;
-		$( '#volume-level' )
+		$level
 			.text( S.volume )
 			.toggleClass( 'hide', mute );
 		$( '#volume-mute' )
@@ -2617,30 +2551,28 @@ var VOLUME    = {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
-			var ms  = 0;
+		if ( V.updn ) {
+			var ms    = 100;
+		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
+			var ms    = 0;
 		} else {
-			var ms  = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			var ms    = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			V.animate = true;
+			setTimeout( () => delete V.animate, ms );
+			if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
+				clearTimeout( V.volumebar );
+				VOLUME.barHide( ms + 5000 );
+			}
 		}
-		var $bar    = $( '#volume-bar' );
 		var ms_knob = VOLUME.visible() ? ms : 0;
 		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
 		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
-		$( '#volume-bar, #volume-band-point' ).css( 'transition-duration', ms_bar +'ms' );
+		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms_bar +'ms' );
 		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$bar.css( 'width', S.volume +'%' );
-		$( '#volume-band-point' ).css( 'left', S.volume +'%' );
-		if ( ms === 0 ) return
-		
-		V.animate = true;
-		setTimeout( () => delete V.animate, ms );
-		if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
-			clearTimeout( V.volumebar );
-			VOLUME.barHide( ms + 5000 );
-		}
-
+		$( '#volume-bar-point' ).css( 'left', S.volume +'%' );
 	}
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return

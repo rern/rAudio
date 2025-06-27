@@ -104,6 +104,7 @@ document.body.addEventListener( 'keydown', e => {
 			break
 	}
 } );
+if ( location.hostname === 'localhost' ) E.titleicon.classList.add( 'local' );
 </script>
 <?php
 // ......................................................................................

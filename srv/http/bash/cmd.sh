@@ -10,13 +10,11 @@ cacheBust() {
 		return
 # --------------------------------------------------------------------
 	fi
-	hash="?v=$( date +%s )'"
-	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
-	if [[ $TIME ]]; then
-		hashtime="?v='.time()"
-		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
-	fi
-	sed -i "/^\$hash/ s/?v=.*/$hash;/" /srv/http/common.php
+	local hash
+	hash=$( date +%s )"'"
+	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
+	[[ $TIME ]] && hash="'.time()"
+	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 }
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
@@ -215,6 +213,10 @@ albumignore )
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
 	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
+	;;
+albumthumbnail )
+	echo $DIR > $dirshm/dir
+	[[ $OVERWRITE ]] && touch $dirshm/overwrite
 	;;
 bookmarkadd )
 	file_bk="$dirbookmarks/${NAME//\//|}"

@@ -3,7 +3,7 @@ PAGE = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=
 S    = {}
 V    = {
 	  i_warning : ICON( 'warning yl' ) +'&ensp;'
-	, localhost : [ 'localhost', '127.0.0.1' ].includes( location.hostname )
+	, localhost : location.hostname === 'localhost'
 	, orange    : '#de810e'
 	, red       : '#bb2828'
 	, touch     : navigator.maxTouchPoints > 0
@@ -135,6 +135,8 @@ $.fn.press    = function( args ) {
 		end      = args.end;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
+		if ( V.animate ) return
+		
 		V.timeoutpress = setTimeout( () => {
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
@@ -282,18 +284,18 @@ var SWIPE     = () => {
 		var $target = $( e.target );
 		if ( $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
-			|| $( '#data' ).length
+			|| ! $( '#data' ).hasClass( 'hide' )
 			|| ! $( '#bio' ).hasClass( 'hide' )
 			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 		) return
 		
-		V.swipe     = e.changedTouches[ 0 ].pageX;
+		V.swipe     = COMMON.pageX( e );
 	} );
 	document.addEventListener( 'touchend', function( e ) {
 		if ( ! V.swipe ) return
 
 		clearTimeout( V.timeoutsort );
-		var diff  = V.swipe - e.changedTouches[ 0 ].pageX;
+		var diff  = V.swipe - COMMON.pageX( e );
 		delete V.swipe;
 		if ( Math.abs( diff ) < 100 ) return
 		
@@ -359,7 +361,7 @@ W             = {  // ws push
 		}
 		if ( ! PAGE ) {
 			if ( message === 'Change track ...' ) { // audiocd
-				UTIL.intervalClear.all();
+				UTIL.intervalClear();
 			} else if ( title === 'Latest' ) {
 				C.latest = 0;
 				$( '.mode.latest gr' ).empty();
@@ -381,7 +383,7 @@ W             = {  // ws push
 				$( '#banner' ).addClass( 'hide' );
 			}, 12000 );
 		} else { // reconnect after reboot
-			setTimeout( WEBSOCKET.reConnect, data.startup + 8000 ); // add shutdown 8s
+			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
 		}
 	}
 	, relays    : data => {
@@ -424,6 +426,9 @@ W             = {  // ws push
 			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 		}, 1000 );
 	}
+	, reload    : () => {
+		if ( V.localhost ) location.reload();
+	}
 	, restore   : data => {
 		if ( data.restore === 'done' ) {
 			BANNER( 'restore', 'Restore Settings', 'Done' );
@@ -433,13 +438,31 @@ W             = {  // ws push
 			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 		}
 	}
+	, volume    : data => {
+		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
+		
+		if ( ! PAGE && 'volumenone' in data ) {
+			D.volumenone = data.volumenone;
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
+			return
+		}
+		
+		if ( data.type === 'mute' ) {
+			S.volume     = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volume     = data.val;
+			S.volumemute = 0;
+		}
+		VOLUME.set();
+	}
 }
 // info ----------------------------------------------------------------------
 function INFO( json ) {
 	_INFO.clearTimeout( 'all' );
 	$( '.menu' ).addClass( 'hide' );
-	V.timeout = {}
 	I         = json;
+	I.timeout = {}
 	LOCAL(); // flag for consecutive info
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
@@ -687,7 +710,7 @@ function INFO( json ) {
 				case 'select':
 					kv          = param.kv || param;
 					datawidth   = param.width ? ' data-width="'+ param.width +'"' : '';
-					htmls.list += '<select'+ datawidth +'>'+ COMMON.htmlOption( kv, param.nosort ) +'</select>';
+					htmls.list += '<select'+ datawidth +'>'+ COMMON.select.option( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -740,6 +763,7 @@ function INFO( json ) {
 		// show
 		_INFO.toggle();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
+		if ( $( '#infoList select' ).length ) COMMON.select.set();
 		_INFO.width(); // text / password / textarea
 		if ( [ 'V.localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
 		// check inputs: blank / length / change
@@ -784,11 +808,11 @@ function INFO( json ) {
 				$rangeval.text( val );
 			}
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( V.timeout.range );
+				clearTimeout( I.timeout.range );
 				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
 			} ).press( e => {
 				var up = $( e.target ).hasClass( 'up' );
-				V.timeout.range = setInterval( () => rangeSet( up ), 100 );
+				I.timeout.range = setInterval( () => rangeSet( up ), 100 );
 			} );
 		}
 		if ( I.updn.length ) {
@@ -832,14 +856,14 @@ function INFO( json ) {
 					if ( ! V.press ) numberset( $( this ) );
 				} ).press( e => {
 					var $target = $( e.target );
-					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
-					V.timeout.updnt = setTimeout( () => { // @5 after 3s
-						clearInterval( V.timeout.updni );
+					I.timeout.updni = setInterval( () => numberset( $target ), 100 );
+					I.timeout.updnt = setTimeout( () => { // @5 after 3s
+						clearInterval( I.timeout.updni );
 						step           *= 5;
 						var v           = +$num.val();
 						v               = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout.updni = setInterval( () => numberset( $target ), 100 );
+						I.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
 					_INFO.clearTimeout();
@@ -893,10 +917,11 @@ var _INFO     = {
 			var $this = $( this );
 			var add   = $this.hasClass( 'i-plus' );
 			if ( add ) {
-				$( '#infoList select' ).select2( 'destroy' );
-				var $tr = $( '#infoList tr' ).last();
+				var $tr     = $( '#infoList tr' ).last();
+				var val     = $tr.find( 'select' ).val();
 				$tr.after( $tr.clone() );
-				COMMON.select.set();
+				var $select = $( '#infoList tr' ).last().find( 'select' );
+				if ( $select.length ) $select.val( val );
 			} else {
 				$this.parents( 'tr' ).remove();
 			}
@@ -949,10 +974,10 @@ var _INFO     = {
 			$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 				var infoval = _INFO.val( 'array' );
 				if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
-				if ( I.checkblank )  V.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
-				if ( I.checklength ) V.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
-				if ( I.checkip )     V.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
-				V.timeout.check = setTimeout( () => {
+				if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
+				if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
+				if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
+				I.timeout.check = setTimeout( () => {
 					var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
 					var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
 					$( '#infoOk' ).toggleClass( 'disabled', disabled );
@@ -963,8 +988,8 @@ var _INFO     = {
 	, clearTimeout  : all => { // ok for both timeout and interval
 		if ( ! ( 'timeout' in V ) ) return
 		
-		var timeout = all ? Object.keys( V.timeout ) : [ 'updni', 'updnt' ];
-		timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
+		var timeout = all ? Object.keys( I.timeout ) : [ 'updni', 'updnt' ];
+		timeout.forEach( k => clearTimeout( I.timeout[ k ] ) );
 	}
 	, footerIcon    : kv => {
 		var footer = '';
@@ -1002,7 +1027,8 @@ var _INFO     = {
 				var checked = typeof val === 'boolean' ? val : val == $this.val();
 				$this.prop( 'checked', checked );
 			} else if ( $this.is( 'select' ) ) {
-				val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
+				if ( val !== undefined ) $this.val( val );
+				if ( ! $this.find( 'option:selected' ).length ) el.selectedIndex = 0;
 			} else {
 				if ( Array.isArray( val ) ) { // array > array literal
 					val = '[ '+ val.join( ', ' ) +' ]';
@@ -1018,15 +1044,12 @@ var _INFO     = {
 			var height    = '';
 			var overflow  = '';
 			var padding   = I.padding;
-			var scrolltop = I.scrolltop;
 		} else {
 			I.active      = true;
-			I.scrolltop   = $( window ).scrollTop();
 			I.padding     = PAGE ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
 			var height    = '150vh';
 			var overflow  = 'hidden';
 			var padding   = 0;
-			var scrolltop = 0;
 			$( '#infoOverlay' ).removeClass( 'hide' );
 			if ( I.buttonfit ) return
 			
@@ -1045,7 +1068,6 @@ var _INFO     = {
 			$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
 			$( '.list' ).css( 'padding-bottom', padding );
 		}
-		$( window ).scrollTop( scrolltop );
 	}
 	, val           : array => {
 		var $this, type, name, val;
@@ -1128,12 +1150,17 @@ var _INFO     = {
 				}
 				$( '#infoBox' ).css( 'width', maxW +'px' );
 			}
-			var allW   = $( '#infoList' ).width();
-			var labelW = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
-			I.boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+			var allW     = $( '#infoList' ).width();
+			var labelW   = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
+			I.boxW       = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 		} else {
-			I.boxW   = 230;
+			I.boxW       = 230;
 		}
+		$( '#infoList .select' ).each( ( i, select ) => {
+			var $select = $( select );
+			var width   = $select.prev().data( 'width' ) || I.boxW;
+			$select.css( 'width', width +'px' );
+		} );
 		$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
 			var $el = $( el );
 			if ( ! $el.attr( 'style' ) && ! $el.parent().attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
@@ -1142,12 +1169,12 @@ var _INFO     = {
 			$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 		}
 		if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
-		if ( ! resize && $( '#infoList select' ).length ) COMMON.select.set();
 	}
 }
 
 var COMMON    = {
-	  capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
+	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
+	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
 		var pos   = msg.replace( /.* position /, '' );
@@ -1162,8 +1189,9 @@ var COMMON    = {
 		COMMON.loaderHide();
 	}
 	, dataErrorSet  : error => {
-		$( '#data .error' ).remove();
-		$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' );
+		$( '#data' )
+			.html( error )
+			.removeClass( 'hide' );
 		if ( $( '#data codered' ).length ) {
 			var fn = () => {
 				// copy2clipboard - for non https which cannot use clipboard API
@@ -1175,9 +1203,15 @@ var COMMON    = {
 			}
 		} else {
 			var fn = () => {
-				var cmdsh = PAGE === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+				if ( PAGE === 'player' ) {
+					var cmdsh = [ 'settings/player-conf.sh' ];
+					var title = 'MPD';
+				} else {
+					var cmdsh = [ 'settings/camilla.sh', 'restart' ];
+					var title = 'Camilla DSP';
+				}
 				BASH( cmdsh, REFRESHDATA );
-				NOTIFY( pkg, pkg, 'Start ...' );
+				NOTIFY( PAGE, title, 'Restart ...' );
 			}
 		}
 		$( '#data .infobtn' ).on( 'click', fn );
@@ -1230,8 +1264,8 @@ var COMMON    = {
 	, eq            : {
 		  beforShow : fn => {
 			fn.init();
-			var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
-			$( '#eq' ).css( 'height', eqH );
+			var eqH     = COMMON.bottom( $( '#eq .bottom' ) ) - $( '#eq .up' ).offset().top - 15;
+			$( '#eq' ).css( 'height', eqH +'px' );
 			$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
 			var $range0 = $( '.inforange input' ).eq( 0 );
 			var max     = +$range0.prop( 'max' );
@@ -1337,7 +1371,7 @@ var COMMON    = {
 		if ( I.active ) {
 			if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
 		} else if ( $parent.is( '#bar-bottom' ) ) {
-			if ( ! PAGE ) $next.trigger( 'click' );
+			if ( PAGE ) $next.trigger( 'click' );
 		} else {
 			if ( $parent.is( '.content-top' ) ) return
 			
@@ -1345,10 +1379,9 @@ var COMMON    = {
 		}
 	}
 	, focusNextTabs : () => {
-		var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-			if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
+		return $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+			if ( ! $( el ).is( 'input:radio:checked, input:hidden, input:disabled, .disabled, .hide' ) ) return $( el )
 		} );
-		return $tabs
 	}
 	, formSubmit    : input => {
 		if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
@@ -1364,25 +1397,6 @@ var COMMON    = {
 		
 		COMMON.loader();
 		$( '#formtemp' ).submit();
-	}
-	, htmlOption    : ( el, nosort ) => {
-		var array = false;
-		if ( typeof el === 'number' ) {
-			el         = [ ...Array( el ).keys() ];
-		} else if ( Array.isArray( el ) ) {
-			var array  = true;
-		} else {
-			if ( 'kv' in el ) el = el.kv;
-		}
-		var options = '';
-		if ( array ) { // name = value
-			if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
-			el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
-		} else {                     // json
-			if ( ! nosort ) el = COMMON.json.sort( el );
-			$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
-		}
-		return options
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
@@ -1432,6 +1446,12 @@ var COMMON    = {
 		
 		$( '#loader' ).addClass( 'hide' );
 	}
+	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
+	, pageXY        : e => {
+		var x = e.pageX || e.changedTouches[ 0 ].pageX;
+		var y = e.pageY || e.changedTouches[ 0 ].pageY;
+		return [ x, y ]
+	}
 	, power         : () => {
 		INFO( {
 			  icon        : 'power'
@@ -1466,79 +1486,76 @@ var COMMON    = {
 			} );
 		} );
 	}
-	, qrCode        : msg => {
-		var qr = QRCode( {
-			  msg : msg
-			, dim : 115
-			, pad : 0
-			, pal : [ '#969a9c' ]
-		} );
-		return qr.outerHTML
-	}
 	, scrollToView  : $el => {
-		if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
-		
-		$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).offset().top ) {
+			$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+		}
+	}
+	, search        : {
+		  addTag    : ( text, regex ) => text.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } )
+		, removeTag : $li => $li.html( $li.html().replace( /<bll>|<\/bll>/g, '' ) )
+		, reset     : ( $input, $ul ) => {
+			if ( ! $input.val() ) return
+			
+			$input.val( '' );
+			$ul.find( 'li:not( .hide )' ).each( ( i, li ) => COMMON.search.removeTag( $( li ) ) );
+			$ul.find( 'li' ).removeClass( 'hide' );
+		}
 	}
 	, select        : {
-		  set : $select => {
-			if ( ! $select ) $select = $( '#infoList select' );
-			$select
-				.select2( {
-					minimumResultsForSearch: 10
-				} ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
-					LOCAL(); // fix: onblur / onpagehide
-					V.select2 = true;
-					setTimeout( () => {
-						var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-						if ( V.touch ) scroll -= 12;
-						$( '.select2-results ul' ).scrollTop( scroll );
-					}, 0 );
-					if ( I.active && I.boxwidth ) COMMON.select.width( I.boxwidth );
-				} ).one( 'select2:closing', function() {
-					LOCAL(); // fix: onblur / onpagehide / Enter
-					setTimeout( () => {
-						V.select2 = false;
-						var $tabs = COMMON.focusNextTabs();
-						$tabs
-							.removeClass( 'focus' )
-							.each( ( i, el ) => {
-								if ( this === el ) {
-									$tabs.eq( i + 1 ).trigger( 'focus' );
-									return false
-								}
-						} );
-					}, 300 );
-				} ).each( ( i, el ) => {
-					var $this = $( el );
-					$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
-				} );
-			$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
-			// if select width set
-			$( '#infoList select[ data-width ]' ).each( ( i, el ) => {
-				var $el   = $( el );
-				var width = $el.data( 'width' );
-				$el.next().css( 'width', width +'px' );
-				$el.one( 'select2:open', () => COMMON.select.width( width ) );
+		  label  : text => text
+							.replace( '(', '<gr>(' )
+							.replace( ')', ')</gr>' )
+		, set    : () => {
+			var $el = $( I.active ? '#infoList select' : '.container select' );
+			$.each( $el, ( i, select ) => {
+				var $select = $( select );
+				if ( $select.next().hasClass( 'select' ) ) return
+				
+				var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
+				var label   = COMMON.select.label( $select.find( 'option:selected' ).text() );
+				$select
+					.addClass( 'hide' )
+					.after( '<div class="select'+ single +'" tabindex="0">'+ label +'</div>' );
 			} );
 		}
-		, text2Html : pattern => {
-			function htmlSet( $el ) {
-				$.each( pattern, ( k, v ) => {
-					if ( $el.text() === k ) $el.html( v );
-				} );
+		, option : ( list, nosort ) => {
+			if ( typeof list === 'number' ) list = [ ...Array( list ).keys() ];
+			if ( Array.isArray( list ) ) { // name = value
+				var li = {}
+				list.forEach( v => { li[ v ] = v } );
+				list   = li;
 			}
-			var $rendered = $( '.select2-selection__rendered' ).eq( 0 );
-			htmlSet( $rendered );
-			$( '#infoList select' ).on( 'select2:open', () => {
-				setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
-			} ).on( 'select2:select', function() {
-				htmlSet( $rendered );
+			if ( ! nosort ) list = COMMON.json.sort( list );
+			var option = '';
+			$.each( list, ( k, v ) => {
+				var value = typeof v === 'string' ? v.replace( /"/g, '&quot;' ) : v; // <option>: &quote; instead of '\\"'
+				option   += '<option value="'+ value +'">'+ k +'</option>';
 			} );
+			return option
 		}
-		, width : width => $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' )
 	}
 	, sp            : px => '<sp style="width: '+ px +'px"></sp>'
+	, statusToggle  : action => {
+		var $data  = $( '#data' );
+		var hidden = $data.hasClass( 'hide' );
+		if ( action === 'refresh' && hidden ) return
+		
+		if ( action ) {
+			var show = action !== 'hide';
+		} else {
+			var show = hidden;
+		}
+		if ( show ) {
+			$data
+				.html( COMMON.json.highlight( S ) )
+				.removeClass( 'hide' );
+		} else {
+			$data
+				.empty()
+				.addClass( 'hide' );
+		}
+	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
@@ -1570,48 +1587,45 @@ var VOLUME    = {
 			var type     = 'mute';
 		}
 		VOLUME.command( type );
+		VOLUME.set();
 	}
 }
 var WEBSOCKET = {
 	  connect : ip => {
-		if ( WS && WS.readyState === 1 ) return
-		
-		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
+		if ( WS ) WS.close();                                                      // terminate existing
+		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
+		var interval = null;
+		setTimeout( () => {                                                        // limit polling for ready
+			if ( WS.readyState !== 1 ) {                                           // if not ready in 1s:
+				clearInterval( interval );                                         // - cancel polling
+				WEBSOCKET.connect();                                               // - reinit
+			}
+		}, 1000 );
 		WS.onopen    = () => {
-			var interval = setInterval( () => {
-				if ( WS.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+			interval = setInterval( () => {                                       // poll for ready every 0.1s
+				if ( WS.readyState === 1 ) {                                      // if ready:
 					clearInterval( interval );
 					WS.send( '{ "client": "add" }' );
-					if ( V.reboot ) {
-						delete V.reboot
-						if ( S.login ) {
-							location.href = '/';
-						} else {
-							REFRESHDATA();
-							COMMON.loaderHide();
-							BANNER_HIDE();
-						}
+					if ( V.reboot && S.login ) {
+						location.href = '/';                                      // > if S.login, reload page to logout
+					} else {
+						delete V.reboot;
+						REFRESHDATA();                                            // > refresh data / get data - start page
 					}
 				}
 			}, 100 );
 		}
 		WS.onmessage = message => {
 			var data = message.data;
-			if ( data === 'pong' ) { // on pageActive - reload if ws not response
-				V.timeoutreload = false;
-			} else {
+			if ( data === 'pong' ) {                                              // from pageActive 'ping'
+				clearTimeout( V.timeoutreload );                                  // - cancel reload page
+				REFRESHDATA();                                                    // - refresh data
+			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
 			}
-		}
-	}
-	, reConnect : () => {
-		try {
-			V.timeoutreload ? location.reload() : WEBSOCKET.connect();
-		} catch( error ) {
-			setTimeout( WEBSOCKET.reConnect, 1000 );
 		}
 	}
 }
@@ -1622,25 +1636,21 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 function pageActive() {
-	if ( V && ( V.pageactive || V.off ) ) return
+	if ( V.pageactive || V.off ) return
 	
 	V.pageactive = true;
-	if ( WS && WS.readyState === 1 ) {
-		WS.send( '"ping"' );
-		V.timeoutreload = true;
-		setTimeout( () => { // reconnect if ws not response on wakeup
-			if ( V.timeoutreload ) WEBSOCKET.reConnect();
-		}, 300 );
-	} else {
-		WEBSOCKET.reConnect();
+	if ( WS && WS.readyState === 1 ) {                                            // on wakeup and ws still ready
+		WS.send( '"ping"' );                                                      // - send      'ping'
+		V.timeoutreload = setTimeout( location.reload, 300 );                     // - wait 0.3s for 'pong' or reload page
+	} else {                                                                      // on page load or ws already closed
+		WEBSOCKET.connect();                                                      // - connect
 	}
-	setTimeout( REFRESHDATA, PAGE ? 300 : 0 );
 }
 function pageInactive() {
-		if ( V.local || V.debug ) return // V.local from select2
-		
-		V.pageactive = false;
-		if ( typeof onPageInactive === 'function' ) onPageInactive();
+	if ( V.local || V.debug ) return
+	
+	V.pageactive = false;
+	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
 
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
@@ -1653,10 +1663,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'ArrowDown':
 		case 'Tab':
 			e.preventDefault();
-			if ( V.select2 ) return
 			
 			COMMON.focusNext( COMMON.focusNextTabs(), 'focus', key );
-			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
@@ -1667,7 +1675,12 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
-			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
+			if ( $( 'textarea' ).is( ':focus' ) ) return
+			
+			if ( $( '.select.focus' ).length ) {
+				$( '.select.focus' ).trigger( 'click' );
+				return
+			}
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( $target.length ) {
@@ -1677,7 +1690,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			}
 			break
 		case 'Escape':
-			$( '#infoX' ).trigger( 'click' );
+			var $dropdown = $( '#infoList .dropdown:not( .hide )' );
+			$dropdown.length ? $dropdown.prev().trigger( 'click' ) : $( '#infoX' ).trigger( 'click' );
 			break
 	}
 } ).on( 'click', '#infoList', function() {
@@ -1695,11 +1709,7 @@ $( '#debug' ).on( 'click', function() {
 		return
 	}
 	
-	if ( $( '#data' ).length ) {
-		$( '#data' ).remove();
-	} else {
-		$( '#banner' ).after( '<pre id="data">'+ COMMON.json.highlight( S ) +'</pre>' );
-	}
+	COMMON.statusToggle();
 } ).press( () => {
 	if ( V.debug ) {
 		COMMON.debug( 'disable' );
@@ -1739,3 +1749,74 @@ $( '#debug' ).on( 'click', function() {
 } );
 $( '#banner' ).on( 'click', BANNER_HIDE );
 $( '.pagerefresh' ).press( () => location.reload() );
+// select ---------------------------------------------------------------------------------------------
+$( 'body' ).on( 'click', function( e ) {
+	var $dropdown = $( '.dropdown:not( .hide' );
+	if ( ! $dropdown.length || $( e.target ).closest( '.select, .dropdown' ).length ) return
+	
+	$dropdown.prev().trigger( 'click' );
+} ).on( 'click', '.select:not( .single )', function() {
+	var $this      = $( this );
+	var active     = $this.hasClass( 'active' );
+	$( '.select' ) // reset all
+		.removeClass( 'active' )
+		.next( '.dropdown' ).addClass( 'hide' );
+	$( '.dropdown input' ).each( ( i, input ) => {
+		COMMON.search.reset( $( input ), $( input ).parent().next() );
+	} );
+	var $origin    = $this.prev();
+	var id         = $origin[ 0 ].id;
+	if ( active ) {
+		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.i2smodule.hide();
+		return
+	}
+	
+	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.option[ id ]() ) return // <option> not yet ready
+	
+	var index      = $origin.find( 'option:selected' ).index();
+	var $dropdown  = $this.next();
+	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
+		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
+		var html_li = '';
+		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
+		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
+		$dropdown   = $this.next();
+	}
+	$this.addClass( 'active' );
+	$dropdown
+		.css( 'min-width', $this.css( 'width' ) )
+		.removeClass( 'hide' )
+		.find( 'ul' ).scrollTop( index * 40 - 40 )
+			.find( 'li' ).eq( index ).addClass( 'selected' );
+	COMMON.scrollToView( $dropdown );
+} ).on( 'click', '.dropdown li', function() {
+	var $this     = $( this );
+	var $dropdown = $this.parents( '.dropdown' );
+	var $select   = $dropdown.prev();
+	var $origin   = $select.prev();
+	$dropdown
+		.addClass( 'hide' )
+		.find( 'li.selected' ).removeClass( 'selected' );
+	$this.addClass( 'selected' );
+	$select
+		.html( $this.html() )
+		.toggleClass( 'active' );
+	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
+	$origin.trigger( 'input' );
+} ).on( 'input', '.dropdown input', function() {
+	var $this   = $( this );
+	var keyword = $this.val();
+	var regex   = new RegExp( keyword, 'ig' );
+	$this.parent().next().find( 'li' ).each( ( i, li ) => {
+		var $li  = $( li );
+		var text = $li.text();
+		if ( regex.test( text ) ) {
+			text = COMMON.search.addTag( text, regex );
+			$li.html( text );
+			$li.removeClass( 'hide' );
+		} else {
+			$li.addClass( 'hide' );
+			COMMON.search.removeTag( $li );
+		}
+	} );
+} );

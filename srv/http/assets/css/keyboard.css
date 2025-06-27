@@ -1,0 +1,101 @@
+#keyboard {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	padding: 5px 0 5px 5px;
+	background: var( --cga );
+	box-shadow: var( --shadow-bar );
+	-webkit-touch-callout: none;
+}
+#keyboard > div {
+	margin: auto;
+	width: 550px;
+	background: none;
+}
+#keyboard .row {
+	margin-bottom: 5px;
+}
+#keyboard .kr1 {
+	transform: translateX( 15px );
+}
+#keyboard .kr2 {
+	transform: translateX( 30px );
+}
+#keyboard a {
+	display: inline-block;
+	margin-right: 5px;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 22px;
+	text-align: center;
+	text-shadow: var( --shadow-text );
+	background: var( --cg );
+	box-shadow: var( --shadow-btn );
+	border-radius: var( --radius-btn );
+	border-top: 1px solid var( --cg60 );
+	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
+}
+#keyboard a:last-child {
+	margin-right: 0;
+}
+#ks a {
+	vertical-align: middle;
+}
+#ks {
+	width: 100%;
+	position: relative;
+}
+#keyboard .backspace {
+	color: #f00;
+	width: 55px;
+}
+#keyboard .space {
+	width: 310px;
+}
+#keyboard .enter,
+#keyboard .shift {
+	width: 85px;
+}
+#keyboard .enter {
+	font-size: 16px;
+	background: var( --glossy-btn );
+	background-color: var( --cm );
+}
+@media ( max-width: 540px ) {
+	#keyboard > div {
+		width: 100%;
+	}
+	#keyboard .row {
+		margin-bottom: 4px;
+	}
+	#keyboard .kr1 {
+		transform: translateX( 3% );
+	}
+	#keyboard .kr2 {
+		transform: translateX( 6% );
+	}
+	#keyboard a {
+		margin-right: 4px;
+		width: 7%;
+	}
+	#keyboard .backspace {
+		width: 10%;
+	}
+	#keyboard .enter,
+	#keyboard .shift {
+		width: 15%;
+	}
+	#keyboard .space {
+		width: 55%;
+	}
+}
+@media ( max-height: 480px ) {
+	#keyboard a {
+		height: 30px;
+		line-height: 30px;
+		font-size: 18px;
+	}
+}

@@ -13,10 +13,11 @@ W = {
 		DISPLAY.library();
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
+		S.coverart = data.cover;
 		if ( V.library ) return
 		
-		var src = data.cover + UTIL.versionHash();
-		$( '#coverart' ).attr( 'src', src );
+		var src    = data.cover + UTIL.versionHash();
+		$COVERART.attr( 'src', src );
 		PLAYLIST.coverart( src );
 	}
 	, coverart  : data => { // change
@@ -40,7 +41,7 @@ W = {
 				}
 				data.current = path0 === path1;
 			}
-			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + UTIL.versionHash() );
+			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		} else {
 			UTIL.refresh();
 		}
@@ -64,7 +65,7 @@ W = {
 		if ( ! D.covervu && ! D.vumeter ) {
 			$( '#vu' ).remove();
 		} else if ( ! $( '#vu' ).length ) {
-			$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu">'+ data +'</div>' ), 'text' );
+			$.get( '/assets/img/vu.svg', data => $COVERART.after( '<div id="vu">'+ data +'</div>' ), 'text' );
 		}
 		DISPLAY.bars();
 		$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
@@ -116,7 +117,6 @@ W = {
 			PLAYBACK.elapsed();
 		} else {
 			PROGRESS.set( 0 );
-			UTIL.blinkDot();
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
@@ -239,24 +239,6 @@ W = {
 			}
 		}
 	}
-	, volume    : data => {
-		if ( V.drag || V.volume ) return
-		
-		if ( 'volumenone' in data ) {
-			D.volumenone = data.volumenone;
-			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
-			return
-		}
-		
-		if ( data.type === 'mute' ) {
-			S.volume     = 0;
-			S.volumemute = data.val;
-		} else {
-			S.volume     = data.val;
-			S.volumemute = 0;
-		}
-		VOLUME.set();
-	}
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
@@ -283,7 +265,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				LIBRARY.padding( MODE.album() ? $( '.coverart' ).eq( 0 ).height() : false );
+				LIBRARY.padding();
 			}
 		} else {
 			PLAYLIST.render.padding();
@@ -302,6 +284,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
-	UTIL.intervalClear.all();
-	DISPLAY.guideHide();
+	UTIL.intervalClear();
+	if ( S.elapsed && S.state === 'play' ) PROGRESS.set( S.elapsed );
 }

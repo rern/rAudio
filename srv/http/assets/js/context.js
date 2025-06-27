@@ -317,16 +317,16 @@ var CONTEXT  = {
 	}
 	, thumbnail     : () => {
 		if ( V.playback ) { // radio only
-			var coverart  = $( '#coverart' ).attr( 'src' );
-			var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-			var name      = S.station;
-			var dir       = '';
+			var src     = $COVERART.attr( 'src' );
+			var mode    = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+			var name    = S.station;
+			var dir     = '';
 		} else {
-			var $liicon   = $LI.find( '.li-icon' );
-			var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-			var mode      = V.mode;
-			var name      = V.list.name;
-			var dir       = $LI.hasClass( 'dir' );
+			var $liicon = $LI.find( '.li-icon' );
+			var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
+			var mode    = V.mode;
+			var name    = V.list.name;
+			var dir     = $LI.hasClass( 'dir' );
 		}
 		if ( dir ) {
 			mode               = 'folder';
@@ -340,11 +340,11 @@ var CONTEXT  = {
 		INFO( {
 			  icon        : V.icoverart
 			, title       : dir ? 'Folder Thumbnail' : 'Station Art'
-			, message     : '<img class="imgold" src="'+ coverart +'" >'
+			, message     : '<img class="imgold" src="'+ src +'" >'
 						   +'<p class="infoimgname">'+ name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, beforeshow  : () => {
-				$( '.extrabtn' ).toggleClass( 'hide', coverart.replace( /\?v=.*/, '' ) === V.coverdefault );
+				$( '.extrabtn' ).toggleClass( 'hide', src.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
 			, buttonlabel : V.library ? ICON( mode ) +' Icon' : ICON( 'remove' ) +' Remove'
 			, buttoncolor : V.orange
@@ -376,12 +376,14 @@ var CONTEXT  = {
 			, message : msg
 			, list    : [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ]
 			, ok      : () => {
-				COMMON.formSubmit( {
-					  alias      : 'thumbnail'
-					, title      : 'Album Thumbnails'
-					, label      : 'Update'
-					, installurl : "albumthumbnail.sh '"+ path +"' "+ _INFO.val()
-					, backhref   : '/'
+				BASH( [ 'albumthumbnail', path, _INFO.val(), 'CMD DIR OVERWRITE' ], () => { // easier escaping path with quotes
+					COMMON.formSubmit( {
+						  alias      : 'thumbnail'
+						, title      : 'Album Thumbnails'
+						, label      : 'Update'
+						, installurl : 'albumthumbnail.sh'
+						, backhref   : '/'
+					} );
 				} );
 			}
 		} );

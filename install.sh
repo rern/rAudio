@@ -4,9 +4,19 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250530
+# 20250627
 file=/etc/pacman.conf
 grep -q mpd $file && sed -i 's/ mpd//' $file
+
+if ! locale | grep -q ^LANG=.*UTF-8; then
+	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
+	loc+=.UTF-8
+	if ! grep -q ^$loc /etc/locale.gen; then
+		echo "$loc UTF-8" >> /etc/locale.gen
+		locale-gen
+	fi
+	localectl set-locale LANG=$loc
+fi
 
 # 20250502
 if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
@@ -14,11 +24,6 @@ if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
 		sort -o $dirmpd/$t{,}
 		sort -o $dirmpd/$t'byartist'{,}
 	done
-fi
-
-if ! locale | grep -qi ^LANG=.*utf-*8; then
-	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
-	localectl set-locale LANG=C.utf8
 fi
 
 file=/etc/systemd/system/cava.service
@@ -32,23 +37,6 @@ if ! grep -q ^User $file; then
 		echo $conf > $file 
 	fi
 	[[ -e $dirsystem/vuled ]] && systemctl start cava
-fi
-
-# 20250404
-file=/etc/systemd/system/localbrowser.service
-if grep -q startx$ $file; then
-	sed -i -E 's|^(ExecStart=).*|\1/usr/bin/startx /srv/http/bash/startx.sh|' $file
-	systemctl daemon-reload
-	rm /etc/X11/xinit/xinitrc
-fi
-
-if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
-	pacman -Sy --noconfirm snapcast
-	if [[ $? == 0 ]]; then
-		sed -i -e '/^bind_to_address/ d' -e '/^#bind_to_address/ a\bind_to_address = 0.0.0.0' /etc/snapserver.conf
-	else
-		echo $warn upgrade snapcast failed.
-	fi
 fi
 
 #-------------------------------------------------------------------------------

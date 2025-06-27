@@ -99,17 +99,6 @@ case 'sort': // from cmd-list.sh
 		file_put_contents( $file, $list );
 	}
 	break;
-case 'timezonelist': // $.post from system.js
-	$list   = timezone_identifiers_list();
-	$option = '<option value="auto">Auto</option>';
-	foreach( $list as $key => $zone ) {
-		$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
-		$offset   = $datetime->format( 'P' );
-		$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' &middot; ' ], $zone );
-		$option  .= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
-	}
-	echo $option;
-	break;
 	
 }
 

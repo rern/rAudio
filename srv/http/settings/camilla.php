@@ -140,9 +140,9 @@ $body     = [
 		, '
 <div id="volume" class="slider">
 	<div class="track"></div>
-	<div class="thumb" tabindex="0"></div>
+	<div id="vol"><div class="thumb" tabindex="0"></div></div>
 	<div id="volume-band"></div>
-</div>'.icon(  'plus' ).'<c id="volume-level"></c>'.icon(  'volume' )
+</div>'.icon(  'plus' ).'<c id="volume-level"></c><c id="volume-mute"></c>'.icon(  'volume' )
 	)
 	, htmlSectionStatus(
 		  'state'

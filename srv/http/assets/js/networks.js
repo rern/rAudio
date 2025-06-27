@@ -125,22 +125,27 @@ function renderPage() {
 	[ 'bluetooth', 'wlan', 'lan' ].forEach( k => {
 		S.device[ k ] ? RENDER[ k ]() : $( '#div'+ k ).addClass( 'hide' );
 	} );
-	$( '#divap' ).toggleClass( 'hide', ! S.ap );
 	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
 	}
 	
 	if ( S.ap ) {
-		var html = S.apconf.ssid
-				  +'<br>'+ S.apconf.passphrase
-				  +'<br>'+ COMMON.qrCode( S.apconf.qr )
-		$( '#qrap' ).html( html );
+		$( '#qrap' )
+			.html(
+				 '<wh>'+ S.apconf.ssid
+				+'<br>'+ S.apconf.passphrase +'</wh>'
+				+ QRCode( S.apconf.qr )
+			)
+			.removeClass( 'hide' );
+	} else {
+		$( '#divap' ).addClass( 'hide', ! S.ap );
 	}
-	var html = '<gr>http://</gr>'+ S.ip
-			 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-			 +'<br>'+ COMMON.qrCode( 'http://'+ S.ip )
-	$( '#qrurl' ).html( html );
+	$( '#qrurl' ).html(
+		  'http://<wh>'+ S.ip +'</wh>'
+		 + ( S.hostname ? '<br>http://'+ S.hostname : '' )
+		 + QRCode( 'http://'+ S.ip )
+	);
 	$( '#divwebui' ).removeClass( 'hide' );
 	CONTENT();
 }
@@ -374,7 +379,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	if ( MENU.isActive( $li, e ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
-	V[ $li.parent().prop( 'id' ) ] = true;
+	V[ $li.parent()[ 0 ].id ] = true;
 	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $li.find( 'grn' ).length === 1;

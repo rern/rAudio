@@ -6,7 +6,7 @@ Naming must be the same for:
 */
 $MENU      = $( '#menu' );
 function CONTENT() {
-	if ( $( 'select' ).length ) COMMON.select.set( $( 'select' ) );
+	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select.set();
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();
@@ -59,11 +59,7 @@ function REFRESHDATA() {
 		
 		SWITCH.set();
 		renderPage();
-		if ( $( '#data .infobtn' ).length ) {
-			$( '#data' ).remove();
-		} else if ( $( '#data' ).length ) {
-			$( '#data' ).html( COMMON.json.highlight( S ) );
-		}
+		COMMON.statusToggle( 'refresh' );
 	} );
 }
 function SETTING( id, callback ) {
@@ -167,7 +163,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	$( '.playback' ).on( 'click', function() {
 		S.state = S.state === 'play' ? 'pause' : 'play'
 		headIcon();
-		if ( PAGE === 'camilla' && S.state === 'pause' ) render.statusStop();
+		if ( PAGE === 'camilla' && S.state === 'pause' ) RENDER.statusStop();
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
@@ -227,7 +223,7 @@ $( '#close' ).on( 'click', function() {
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
 	$this.toggleClass( 'bl' );
-	var $helpblock = $this.parent().prop( 'id' ) ? $this.parent().next() : $this.parents( '.section' ).find( '.helpblock' );
+	var $helpblock = $this.parent()[ 0 ].id ? $this.parent().next() : $this.parents( '.section' ).find( '.helpblock' );
 	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
@@ -322,8 +318,6 @@ $( document ).on( 'keydown', function( e ) {
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
-			if ( V.select2 ) return
-			
 			e.preventDefault();
 			if ( ! camilla && tabs ) return
 			
@@ -380,16 +374,22 @@ $( document ).on( 'keydown', function( e ) {
 			e.preventDefault();
 			if ( menu ) {
 				$( '.menu' ).addClass( 'hide' );
-			} else if ( V.select2 ) {
-				$( '.select2-hidden-accessible' ).select2( 'close' );
-			} else if ( $( '#data' ).length ) {
-				$( '#data' ).remove();
+			} else if ( $( '.dropdown:not( .hide )' ).length ) {
+				$( '.dropdown:not( .hide )' ).prev().trigger( 'click' );
+			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
+				COMMON.statusToggle( 'hide' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				COMMON.loaderHide();
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 				$( '.focus' ).trigger( 'focus' );
 			} else {
+				if ( ! $( '#loader' ).hasClass( 'hide' ) ) {
+					COMMON.loaderHide();
+					$( '#bar-bottom' ).css( 'z-index', '' );
+				}
+				
 				COMMON.loader( 'fader' );
+				$( '#bar-bottom' ).css( 'z-index', 121 );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				var $focus = $( '#bar-bottom div.active' );
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
@@ -409,7 +409,7 @@ $( document ).on( 'keydown', function( e ) {
 		case 'x':
 			if ( ! e.ctrlKey ) return
 			
-			$( '#data' ).length ? $( '#data' ).remove() : $( '#close' ).trigger( 'click' );
+			$( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':

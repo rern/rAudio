@@ -1,7 +1,4 @@
 <?php // for library.php, playlist.php
-$LAZYLOAD = isset( $_POST[ 'lazyload' ] );
-$lazy     = $LAZYLOAD ? ' lazyload" data-src="' :'" loading="lazy" src="';
-
 function countMnt() {
 	$lsmnt     = ( object ) [];
 	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
@@ -46,8 +43,7 @@ function icon(  $icon, $menu = '' ) {
 	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
 function iconThumb( $thumbsrc, $menu ) {
-	global $lazy;
-	return '<img class="iconthumb li-icon'.$lazy.rawurlencode( $thumbsrc ).'^^^" data-menu="'.$menu.'">';
+	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).'^^^" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
 	$indexbar  = '<a class="indexed">#</a>';

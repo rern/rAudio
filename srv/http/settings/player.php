@@ -151,8 +151,8 @@ Support: FLAC, Ogg Vorbis, Musepack and MP3
 
 $B->gear
 ■ Gain control - Mixer device:
- • <c>replay_gain_handler "mixer"</c>
- • Available when Volume Control = MPD software
+ · <c>replay_gain_handler "mixer"</c>
+ · Available when Volume Control = MPD software
 EOF
 	]
 ];
@@ -250,9 +250,9 @@ htmlHead( [
 	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories/folders excluded from database.
 To restore:
-• Edit file <c>.../.mpdignore</c> in parent directory
-• Remove lines contain directory to restore
-• Update Library
+ · Edit file <c>.../.mpdignore</c> in parent directory
+ · Remove lines contain directory to restore
+ · Update Library
 
 Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T->system$L->shareddata
 EOF

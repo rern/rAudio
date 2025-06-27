@@ -14,7 +14,7 @@ Audio player for
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Local display ${\textsf{\color{gray}(not on RPi Zero and 1)}}$ 
+	- Local display (not on RPi Zero and 1) 
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
@@ -28,9 +28,9 @@ Audio player for
 - `*.jpg`, `*.png` and animated `*.gif` applicable
 - `*.wav` - album artists and sort tracks
 - `*.cue` - virtually as individual tracks in all modes and user playlists
-- VU meter as coverart ${\textsf{\color{gray}(for remote screen)}}$
+- VU meter as coverart (for remote screen)
 - Wi-Fi connection can be pre-configured for headless mode.
-- Access point - `hostapd`
+- Access point - `iwd`
 - File sharing - `samba`
 - Easy update and extra features with Addons
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
@@ -48,12 +48,12 @@ Audio player for
 	- DLNA / UPnP
 - Streamers
 	- Bluetooth audio sender
-	- HTTP ${\textsf{\color{gray}(no metadata)}}$
+	- HTTP (no metadata)
 	- SnapServer - Multiroom audio client
 	- Web Radio
-	- DAB Radio ${\textsf{\color{gray}(not on RPi Zero and 1)}}$
+	- DAB Radio (not on RPi Zero and 1)
 - Digital Signal Processors
-	- CamillaDSP ${\textsf{\color{gray}(not on RPi Zero and 1)}}$
+	- CamillaDSP (not on RPi Zero and 1)
 	- Equalizer
 
 ### Supported devices
@@ -64,17 +64,17 @@ Audio player for
 	- Bluetooth
 	- DAC
 	- Keyboard and mouse
-	- SDR ${\textsf{\color{gray}(for DAB Radio)}}$
+	- SDR (for DAB Radio)
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio/blob/main/I2S_modules.md)
-	- [Character LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcdchar.jpg) ${\textsf{\color{gray}(16x2, 20x4)}}$
+	- [Character LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
 	- Power on/off button
 	- [Relay module](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/relays.jpg)
 	- [Rotary encoder](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/rotaryencoder.jpg)
-	- [Spectrum OLED](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/mpdoled.jpg) ${\textsf{\color{gray}(128x64)}}$
-	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) ${\textsf{\color{gray}(320x420)}}$
-	- VU LED ${\textsf{\color{gray}(LEDs+Rs)}}$
+	- [Spectrum OLED](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
+	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
+	- VU LED (LEDs+Rs)
 
 ### Default root password
 - `ros`

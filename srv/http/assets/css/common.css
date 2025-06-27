@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1747959063' );
+	src         : url( '/assets/fonts/rern.woff2?v=1750729548' );
 }
 @font-face {
 	font-family : Lato;
@@ -43,12 +43,10 @@ i {
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
 .i-audio::before,
-.i-rotaryencoder::before,
 .i-volume::before,
 #divbluealsa .i-gear::before,
 #divmixer .i-gear::before  { content: '\F516' }
-.i-autoplay::before,
-.i-play::before            { content: '\F503' }
+.i-autoplay::before        { content: '\F53A' }
 .i-back::before            { content: '\F602' }
 .i-backspace::before       { content: '\F608' }
 .i-backup::before,
@@ -68,14 +66,14 @@ i {
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
-.i-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
+.i-camilladsp::after       { content: '\F59C'; }
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
 .i-close::before,
 .i-disconnect::before,
 .i-unmount::before         { content: '\F56C' }
-.i-code::before            { content: '\F59E' }
+.i-code::before            { content: '\F591' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
@@ -88,8 +86,6 @@ i {
 .i-features::before,
 .i-sliders::before         { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
-.i-coverart::before        { content: '\F58A'; position: absolute; }
-.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 0.6; -webkit-text-stroke: 1px var( --cgl ); }
 .i-crop::before            { content: '\F568' }
 .i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
@@ -151,8 +147,8 @@ i {
 .i-libupdate::before       { content: '\F506' }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
-.i-localbrowser::before    { content: '\F58C'; position: absolute; }
-.i-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
+.i-localbrowser::before    { content: '\F58A'; position: absolute; }
+.i-localbrowser::after     { content: '\F58B'; color: var( --cg60 ); }
 .i-lock::before,
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
@@ -175,11 +171,12 @@ i {
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
 .i-pipeline::before        { content: '\F52B' }
+.i-play::before            { content: '\F503' }
+.divmap .i-play::before    { content: '\F50E' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
 .i-play-cd::before         { content: '\F539' }
 .i-play-plus::before       { content: '\F532' }
-.i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
 .i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
@@ -187,8 +184,8 @@ i {
 .i-processors::before,
 .i-soundprofile::before    { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
-.i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
-.i-radioparadise::after    { content: '\F594'; position: relative; }
+.i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cg50 ); }
+.i-radioparadise::after    { content: '\F594'; }
 .i-random::before          { content: '\F512' }
 .i-raudio-nobg::before     { content: '\F500' }
 .i-reboot::before          { content: '\F521' }
@@ -198,8 +195,8 @@ i {
 .i-refreshlibrary::before,
 .i-refresh-library::before { content: '\F536' }
 .i-refresh-overlay         { position: absolute; left: -12px; }
-.i-refresh-overlay::before { content: '\F595'; position: absolute; color: var( --cg ); z-index: 1; }
-.i-refresh-overlay::after  { content: '\F596'; position: absolute; color: var( --cw ); z-index: 2; }
+.i-refresh-overlay::before { content: '\F595'; position: absolute; color: var( --cg ); }
+.i-refresh-overlay::after  { content: '\F596'; position: absolute; color: var( --cw ); }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
 .i-repeat::before          { content: '\F511' }
@@ -207,6 +204,7 @@ i {
 .i-replace::before         { content: '\F531' }
 .i-reset::before           { content: '\F527' }
 .i-restore::before         { content: '\F544' }
+.i-rotaryencoder::before   { content: '\F57F' }
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before,
@@ -217,7 +215,7 @@ i {
 .i-shift::before           { content: '\F606' }
 .i-shuffle::before         { content: '\F513' }
 .i-single::before          { content: '\F514' }
-.i-smb::before             { content: '\F58E' }
+.i-smb::before             { content: '\F584' }
 .i-snapcast::before,
 .i-snapclient::before,
 .i-snapserver::before      { content: '\F587' }
@@ -262,12 +260,11 @@ body {
 *,
 *::before,
 *::after {
-	-webkit-box-sizing :border-box;
-	-moz-box-sizing    :border-box;
 	box-sizing         :border-box;
 }
 i,
 .infobtn,
+.selectnone,
 #debug {
 	user-select: none;
 	-webkit-user-select: none;
@@ -282,21 +279,26 @@ sp {
 }
 .hide { display: none !important }
 .hidden { visibility: hidden }
+
 @keyframes blinkopaque {
 	50% { opacity: 0 } 
 }
-
 .blink::before,
-.blink::after {
+.blink::after,
+#loader svg {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }
+.dot  { animation: 1s infinite blinkopaque }
+.blink.local::before,
+.blink.local::after,
+.dot.local {
+	animation: blinkopaque 1.5s step-start infinite; /* lower cpu load on localbrowser */
+}
+.dot2 { animation-delay: 250ms !important }
+.dot3 { animation-delay: 500ms !important }
 input:focus {
 	outline: none;
-}
-.select2-container.focus {
-	outline: 2px solid var(--cgl );
-	outline-offset: 1px;
 }
 #loader {
 	position   : fixed;
@@ -314,7 +316,6 @@ input:focus {
 	right     : 0;
 	margin    : auto;
 	width     : 50px;
-	animation : blinkopaque 1.5s linear infinite;
 }
 .logo rect {
 	fill: var( --cm );
@@ -348,7 +349,7 @@ input:focus {
 
 codered  {
 	padding : 0px 5px 3px 5px;
-	border-radius : 3px;
+	border-radius : var( --radius-chk );
 	color : var( --cw );
 	background : #f00;
 }
@@ -418,7 +419,7 @@ code {
 	color: var( --cg75 );
 	background-color: var( --cgd );
 	padding: 0 4px;
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 }
 
 /* banner() */
@@ -517,7 +518,7 @@ input[ type=range ]::-webkit-slider-thumb {
 	width: 40px;
 	margin-top: -20px;
 	border: none;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
@@ -526,7 +527,7 @@ input[ type=range ]::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
 	width: 40px;
 	border: none;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
@@ -588,7 +589,7 @@ input[ type=checkbox ] {
 	height: 34px !important;
 	line-height: 34px;
 	border: none;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	white-space: nowrap;
 	font-family: Lato;
 	font-size: 14px;
@@ -666,10 +667,10 @@ hr {
 }
 #infoBox {
 	position: relative;
+	margin: 50vh auto;
 	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 50vh auto;
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
@@ -779,8 +780,7 @@ hr {
 #infoList td:last-child { /* chekbox only which has no label */
 	text-align: left;
 }
-#infoList input:not( [ type=range ] ).focus,
-.select2-container.active {
+#infoList input:not( [ type=range ] ).focus {
 	outline: 2px solid var(--cgl );
 	outline-offset: 1px;
 }
@@ -884,7 +884,7 @@ hr {
 	height: 100px;
 	margin: 0 !important;
 	padding: 0 10px;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	border: none;
 	outline: none;
 	font-family: Inconsolata;
@@ -907,7 +907,7 @@ input[ type=password ] {
 	padding: 10px 9px;
 	color: var( --cw );
 	background-color: #000000;
-	border-radius: 5px;
+	border-radius: var( --radius-btn );
 	border: none;
 	font-size: 16px;
 	font-family: Lato;
@@ -915,12 +915,12 @@ input[ type=password ] {
 input[ type=password ]::-ms-reveal {
 	display: none;
 }
-.col-r input[ type=text ],
 input[ type=text ]:disabled,
 input[ type=number ]:disabled {
-	background: none !important;
+	opacity: 0.7;
+}
+.col-r input[ type=text ] {
 	border: 1px solid var( --cgl );
-	opacity: 1;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
@@ -938,7 +938,7 @@ input[ type=checkbox ] {
 	margin: 3px 6px 3px 1px;
 	vertical-align: -10px;
 	border: none;
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 	background-color: var( --cg );
 }
 input[ type=radio ] {
@@ -970,10 +970,6 @@ input[ type=radio ]:disabled {
 	margin-right: 5px !important;
 	vertical-align: -10px;
 	border: none;
-}
-#infoList .select2-container {
-	max-width     : none;
-	margin-bottom : 0;
 }
 #infoFilename {
 	padding: 0 10px 10px;
@@ -1008,18 +1004,6 @@ input[ type=radio ]:disabled {
 #infoPrompt {
 	margin-top: 20px;
 }
-@keyframes blinkdot {
-	50% { opacity: 0 }
-}
-.dot {
-	animation: 1s infinite blinkdot;
-}
-.dot2 {
-	animation-delay: 250ms;
-}
-.dot3 {
-	animation-delay: 500ms;
-}
 .msgrelays object {
 	vertical-align: -40px;
 }
@@ -1029,6 +1013,99 @@ input[ type=radio ]:disabled {
 	font-weight: 300;
 	font-size: 18px;
 	text-align: right;
+}
+/* select ---------------------------------------------------------------------------- */
+.select {
+	position: relative;
+	display: inline-block;
+	width: 230px;
+	margin-bottom: 5px;
+	padding-right: 20px !important;
+	border-radius: var( --radius-btn );
+	background: var( --cg ) !important;
+	box-shadow: var( --shadow-select );
+}
+#infoList .select {
+	display: block;
+	margin-bottom: 0;
+}
+.select::after {
+	content: '\F605';
+}
+.select.active::after {
+	content: '\F604';
+}
+.select.single::after {
+	content: '';
+}
+.select::after,
+.select.active::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 30px !important;
+	text-align: center;
+	line-height: 40px !important;
+	font-family : rern;
+}
+.dropdown {
+	position: absolute;
+	margin-top: -9px;
+	box-shadow: var( --shadow-drop );
+	z-index: 1;
+}
+#infoList .dropdown {
+	margin-top: 1px;
+}
+.dropdown .search {
+	position: relative;
+	width: 100%;
+	height: 40px;
+	background: var( --cgl );
+}
+.dropdown input {
+	margin: 3px !important;
+	max-width: calc( 100% - 6px ) !important;
+	height: 34px !important;
+	border: none !important;
+}
+.dropdown ul {
+	width: 100%;
+	max-height: 400px;
+	padding: 0;
+	overflow-x: hidden;
+}
+.select,
+.dropdown li {
+	padding: 0 8px;
+	font-size: 16px;
+	line-height: 40px;
+	background: var( --cga );
+	list-style: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
+}
+.dropdown li.selected {
+	background: var( --cg );
+}
+.dropdown li:hover {
+	background: var( --cg );
+}
+.dropdown li.selected:hover {
+	background: var( --cg50 );
+}
+.qr {
+	color: var( --cg60 );
+}
+.qr svg {
+	display: block;
+	width: 122px;
+	shape-rendering: crispEdges;
+}
+.qr rect {
+	fill: var( --cg60 );
 }
 
 @media ( max-height: 420px ) {

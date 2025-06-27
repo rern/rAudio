@@ -55,15 +55,15 @@
 	text-shadow: none;
 	font-family: Inconsolata;
 	background: var( --cg );
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 	cursor: pointer;
 }
 #eq .label.dn,
 #eq .label.up {
 	max-width: unset;
 	user-select: none;
-	-webkit-touch-callout: none;
 	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 #eq .label.dn a {
 	background: var( --cgd );
@@ -114,4 +114,5 @@
 	display: inline-block;
 	width: 230px;
 	height: 42px;
+	vertical-align: middle;
 }

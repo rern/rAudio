@@ -24,16 +24,16 @@
 	--cma  : hsl( var( --h ), var( --s ), var( --ml30 ) );
 	--cmd  : hsl( var( --h ), var( --s ), var( --ml20 ) );
 	
-	--shadow-btn    : -2px  2px 4px      #000;
-	--shadow-btn-u  : -2px -2px 4px      #000;
+	--shadow-btn    : -2px  2px  4px     #000;
+	--shadow-btn-u  : -2px -2px  4px     #000;
 	--shadow-bar    :  0    0   10px 4px #000;
-	--shadow-check  : -1px  1px 2px  1px #000;
+	--shadow-check  : -1px  1px  2px 1px #000;
+	--shadow-drop   : -2px  2px  4px 2px #000;
 	--shadow-menu   :  4px  4px 10px     #000;
 	--shadow-menu-l : -4px  4px 10px     #000;
 	--shadow-menu-u : -4px -4px 10px     #000;
-	--shadow-search : -2px  2px 4px      #000;
-	--shadow-select : -1px  1px 1px      #000;
-	--shadow-text   : -1px  0   2px      #000;
+	--shadow-select : -1px  1px  1px     #000;
+	--shadow-text   : -1px  0    2px     #000;
 								   /* w    h      x    y   inner(color)       w    outer(color)       w */
 	--glossy-btn   : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%, 0) 55% );
 	--glossy-btn-l : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%, 0) 55% );
@@ -41,6 +41,9 @@
 	--glossy-btn-m : linear-gradient( to bottom,           hsla(0,0%,100%,.3)  0%, hsla(0,0%,100%,.3) 45%, hsla(0,0%,0%,0) 50%, hsla(0,0%,0%,0) 100% );
 	
 	--wheel        : conic-gradient( in hsl longer hue, red 0 100% );
+	
+	--radius-btn : 4px;
+	--radius-chk : 3px;
 }
 
 bl,  .bl  { color : var( --cm ) !important }

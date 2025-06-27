@@ -23,7 +23,7 @@
 	line-height: 17px;
 	text-align: center;
 	background: var( --cg );
-	border-radius: 3px;
+	border-radius: var( --radius-chk );
 }
 #in::before {
 	color: #000;
@@ -63,6 +63,9 @@
 	width: 0;
 	background: var( --cm );
 	transition-duration: 0.1s;
+}
+.bar.local {
+	transition-duration: 0s !important; /* lower cpu load on localbrowser */
 }
 #vugrid {
 	position: absolute;
@@ -130,7 +133,8 @@
 	color: var( --cg60 );
 }
 .db,
-#volume-level {
+#volume-level,
+#volume-mute {
 	display: inline-block;
 	width: 45px;
 	min-width: 45px;
@@ -138,6 +142,9 @@
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
+}
+#volume-mute {
+	color: var( --cml );
 }
 .db {
 	float: left;
@@ -203,12 +210,6 @@ i.bypassed {
 	line-height: 14px;
 	color: var( --cg60 );
 }
-.tab .select2-container {
-	margin-bottom: 1px;
-}
-.tab .select2-container.channel {
-	width: 65px !important;
-}
 #divsampling .statuslist {
 	margin-top: 15px;
 }
@@ -257,11 +258,6 @@ i.bypassed {
 .lihead.main {
 	background: var( --cgd );
 }
-.lihead .select2 {
-	float: none;
-	display: inline-block;
-	width: 65px !important;
-}
 .lihead .i-back {
 	float: right !important;
 	margin-right: 3px !important;
@@ -303,16 +299,9 @@ i.bypassed {
 	width: 142px;
 	min-width: 142px;
 }
-.liinput.main div:first-child,
-.liinput .select2-container {
+.liinput.main div:first-child {
 	width: 60px !important;
 	min-width: 60px;
-}
-.liinput .selection,
-.liinput .select2-selection,
-.liinput .select2-selection__rendered {
-	width: 100% !important;
-	height: 40px !important;
 }
 .liinput i {
 	height: 38px;
@@ -392,14 +381,20 @@ i.disabled {
 	top: 0;
 	left: 0;
 }
-.slider .thumb {
+#vol {
 	position: relative;
+	width: 190px;
+	height: 40px;
+}
+.slider .thumb {
+	position: absolute;
 	width: 40px;
 	height: 40px;
-	border-radius: 4px;
+	border-radius: var( --radius-btn );
 	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
+	transition: all 0s linear;
 }
 .slider.disabled .thumb {
 	background-color: var( --cmd );

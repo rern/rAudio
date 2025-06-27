@@ -101,17 +101,17 @@ $body = [
 	  htmlSectionStatus(
 		  'ap'
 		, 'Access Point<br>Password'
-		, '<div id="qrap"></div>
+		, '<div id="qrap" class="qr"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
- • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.$T->features.$L->accesspoint.'
+ · Connect <wh>Access Point</wh> with the password or scan QR code
+ · Access point setting: '.$T->features.$L->accesspoint.'
 
 Note: No internet connection.</div>'
 	)
 	, htmlSectionStatus(
 		  'url'
 		, 'Browser URL'
-		, '<div id="qrurl"></div>
+		, '<div id="qrurl" class="qr"></div>
 		   <div class="helpblock hide"> • Open <wh>URL</wh> with any web browsers or scan QR code</div>'
 	)
 ];

@@ -1,3 +1,7 @@
+#infoOverlay {
+	height: 100%;
+	min-height: unset
+}
 /* :hover *********************************************************/
 #lib-title a:hover {
 	color: var( --cm );
@@ -95,7 +99,7 @@ li:not( .licover ),
 .index i,
 .licoverimg,
 .liinfo,
-.map,
+.divmap i,
 .menu a,
 .mode:not( .nodata ),
 .point,
