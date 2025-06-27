@@ -1792,7 +1792,7 @@ var SETTING   = {
 			var filters  = Object.keys( FIL );
 		}
 		var list     = [ [ ICON( 'output gr' ), 'html', channels ] ];
-		var select   = [ ICON( 'filters gr' ),  'select', { kv: filters, suffix: ICON( 'remove' ) } ];
+		var select   = [ ICON( 'filters gr' ),  'select', filters ];
 		if ( edit ) {
 			var data = COMMON.json.clone( PIP[ index ] );
 			var nL   = edit ? data.names.length : 1;
@@ -1806,40 +1806,16 @@ var SETTING   = {
 			, tablabel     : edit ? '' : [ ICON( 'filters' ) +' Filter', ICON( 'mixers' ) +' Mixer' ]
 			, tab          : edit ? '' : [ '', SETTING.pipelineMixer ]
 			, list         : list
+			, checkchanged : edit
 			, values       : edit ? [ ...data.channels, ...data.names ] : ''
 			, beforeshow   : () => {
 				$( '#infoList td' ).eq( 0 ).css( 'width', '40px' );
-				$( '#infoList tr' ).eq( 0 ).append( '<td>'+ ICON( 'add' ) +'</td>' );
 				if ( edit ) {
 					$( '#infoOk' ).addClass( 'disabled' );
 				} else {
 					$( '#infoList input' ).prop( 'checked', true );
 				}
-				var setChanged = () => {
-					if ( edit ) {
-						$input = $( '#infoList' ).find( 'input, select' );
-						$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === _INFO.val().join( '' ) );
-					}
-					setDisabled();
-				}
-				var setDisabled = () => {
-					var $remove = $( '#infoList .i-remove' );
-					$remove.toggleClass( 'disabled', $remove.length === 1 );
-					$( '#infoList input:checked' ).prop( 'disabled', $( 'input:checked' ).length === 1 );
-					$( '#infoList .i-add' ).toggleClass( 'disabled', FIL[ $( '#infoList select' ).val() ].type === 'Conv' );
-				}
-				setDisabled();
-				$( '#infoList' ).on( 'input', function() {
-					setChanged();
-				} ).on( 'click', '.i-add', function() {
-					var $trlast = $( '#infoList tr' ).last();
-					$( '#infoList table' ).append( $trlast.clone() );
-					var $trnew  = $( '#infoList tr' ).last();
-					setChanged();
-				} ).on( 'click', '.i-remove', function() {
-					$( this ).parents( 'tr' ).remove();
-					setChanged();
-				} );
+				_INFO.addRemove();
 			}
 			, ok           : () => {
 				var channels = [];

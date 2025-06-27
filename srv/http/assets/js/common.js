@@ -917,8 +917,11 @@ var _INFO     = {
 			var $this = $( this );
 			var add   = $this.hasClass( 'i-plus' );
 			if ( add ) {
-				var $tr = $( '#infoList tr' ).last();
+				var $tr     = $( '#infoList tr' ).last();
+				var val     = $tr.find( 'select' ).val();
 				$tr.after( $tr.clone() );
+				var $select = $( '#infoList tr' ).last().find( 'select' );
+				if ( $select.length ) $select.val( val );
 			} else {
 				$this.parents( 'tr' ).remove();
 			}
