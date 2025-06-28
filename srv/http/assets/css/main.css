@@ -1341,9 +1341,8 @@ div.pagerefresh {
 #countradio {
 	margin-left: 10px;
 }
-#lib-title,
-#mode-title {
-	max-width: calc( 100% - 105px );
+#lib-title {
+	max-width: calc( 100% - 80px );
 }
 #pl-title {
 	display: inline-block;
