@@ -1343,7 +1343,7 @@ div.pagerefresh {
 }
 #lib-title,
 #mode-title {
-	max-width: calc( 100% - 120px );
+	max-width: calc( 100% - 105px );
 }
 #pl-title {
 	display: inline-block;
