@@ -6,7 +6,21 @@ Naming must be the same for:
 */
 $MENU      = $( '#menu' );
 function CONTENT() {
-	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select.set();
+	var $select = $( '.container select' );
+	if ( $select.length ) {
+		if ( $( '.select' ).length ) {
+			$select.each( ( i, el ) => {
+				var $el = $( el );
+				var label = COMMON.select.label( $el.find( 'option:selected' ).text() );
+				$el.next()
+					.html( label )
+					.removeClass( 'active' );
+			} );
+			if( PAGE !== 'system' ) $( '.dropdown' ).remove();
+		} else {
+			COMMON.select.set();
+		}
+	}
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();
