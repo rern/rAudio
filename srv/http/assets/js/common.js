@@ -1776,7 +1776,7 @@ $( 'body' ).on( 'click', function( e ) {
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
 	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
-		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
+		var search  = $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
 		var html_li = '';
 		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
 		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
@@ -1799,7 +1799,7 @@ $( 'body' ).on( 'click', function( e ) {
 		.find( 'li.selected' ).removeClass( 'selected' );
 	$this.addClass( 'selected' );
 	$select
-		.html( $this.html() )
+		.html( $this.html().replace( /<\/*bll>/g, '' ) )
 		.toggleClass( 'active' );
 	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
 	$origin.trigger( 'input' );
@@ -1811,8 +1811,8 @@ $( 'body' ).on( 'click', function( e ) {
 		var $li  = $( li );
 		var text = $li.text();
 		if ( regex.test( text ) ) {
-			text = COMMON.search.addTag( text, regex );
-			$li.html( text );
+			var html = COMMON.search.addTag( text, regex );
+			$li.html( COMMON.select.label( html ) );
 			$li.removeClass( 'hide' );
 		} else {
 			$li.addClass( 'hide' );
