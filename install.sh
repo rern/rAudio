@@ -4,9 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250627
+# 20250704
 file=/etc/pacman.conf
-grep -q mpd $file && sed -i 's/ mpd//' $file
+
+if [[ -e /boot/kernel7.img ]]; then
+	grep -q libunwind $file && sed -i 's/ *libunwind//' $file
+	[[ $( pacman -Q libunwind ) < 'libunwind 1.8.2-1' ]] && pacman -Sy --needed --noconfirm libunwind
+fi
+
+# 20250627
+grep -q mpd $file && sed -i 's/ *mpd//' $file
 
 if ! locale | grep -q ^LANG=.*UTF-8; then
 	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
@@ -16,27 +23,6 @@ if ! locale | grep -q ^LANG=.*UTF-8; then
 		locale-gen
 	fi
 	localectl set-locale LANG=$loc
-fi
-
-# 20250502
-if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
-	for t in album latest; do
-		sort -o $dirmpd/$t{,}
-		sort -o $dirmpd/$t'byartist'{,}
-	done
-fi
-
-file=/etc/systemd/system/cava.service
-if ! grep -q ^User $file; then
-	sed -i -e '/^ExecStart/ i\User=root' -e 's/cava/vu/' $file
-	ln -s /etc/cava.conf /root/.config/cava
-	systemctl daemon-reload
-	file=$dirsystem/vuled.conf
-	if [[ -e $file ]] && grep -q = $file; then
-		conf=$( sed 's/.*=//' $file )
-		echo $conf > $file 
-	fi
-	[[ -e $dirsystem/vuled ]] && systemctl start cava
 fi
 
 #-------------------------------------------------------------------------------
