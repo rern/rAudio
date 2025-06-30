@@ -407,7 +407,7 @@ startx )
 	cat << EOF > /root/.mozilla/firefox/$profile/user.js
 user_pref("sidebar.revamp", false);
 user_pref("sidebar.verticalTabs", false);
-user_pref("layout.css.devPixelsPerPx", "$scale");Add commentMore actions
+user_pref("layout.css.devPixelsPerPx", "$scale");
 EOF
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
