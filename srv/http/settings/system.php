@@ -141,7 +141,6 @@ $body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'label'    => 'Audio - I²S'
-		, 'sub'      => 'HAT'
 		, 'help'     => $helpi2s
 	]
 	, [
