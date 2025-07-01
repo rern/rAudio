@@ -1057,12 +1057,15 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
+	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
+	if ( aplayname === S.audioaplayname && output === S.audiooutput ) return
+	
 	if ( aplayname === 'cirrus-wm5102' ) {
 		UTIL.wm5102();
 	} else {
-		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
+		BASH( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
 			UTIL.i2smodule.hide();
 			var msg = 'Disable ...';
@@ -1075,8 +1078,11 @@ $( '#i2smodule' ).on( 'input', function() {
 $( '#ledcalc' ).on( 'click', UTIL.ledcalc );
 $( '#hostname' ).on( 'click', UTIL.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
+	var timezone = this.value;
+	if ( timezone === S.timezone ) return
+	
 	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
-	BASH( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
+	BASH( [ 'timezone', timezone, 'CMD TIMEZONE' ] );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );

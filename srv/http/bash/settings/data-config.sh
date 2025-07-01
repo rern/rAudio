@@ -211,7 +211,7 @@ servermirror )
 		elif [[ ${line:0:3} == '## ' ]];then
 			city=${line:3}
 		else
-			[[ $city ]] && cc="$country ($city)" || cc=$country
+			[[ $city ]] && cc="$country · $city" || cc=$country
 			[[ $cc == $ccprev ]] && cc+=" 2"
 			ccprev=$cc
 			codelist+=',"'$cc'":"'$line'"'
