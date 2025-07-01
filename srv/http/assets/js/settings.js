@@ -101,14 +101,15 @@ function STATUS( id, arg, info ) {
 		var cmd   = id;
 	}
 	BASH( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
+		BANNER_HIDE();
 		if ( info ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
-			.removeClass( 'hide' )[ 0 ]
-				.scrollIntoView( { block: 'end' } );
-		BANNER_HIDE();
+			.removeClass( 'hide' );
+		if ( V.statusclick ) COMMON.scrollToView( $code );
+		delete V.statusclick;
 	} );
 }
 var SWITCH = {
@@ -190,7 +191,12 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
 	var $code = $( '#code'+ id );
-	$code.hasClass( 'hide' ) ? STATUS( id ) : $code.addClass( 'hide' );
+	if ( $code.hasClass( 'hide' ) ) {
+		V.statusclick = true;
+		STATUS( id );
+	} else {
+		$code.addClass( 'hide' );
+	}
 	$this.toggleClass( 'active' );
 	$MENU.addClass( 'hide' );
 } );
