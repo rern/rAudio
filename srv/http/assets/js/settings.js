@@ -106,9 +106,8 @@ function STATUS( id, arg, info ) {
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
-			.removeClass( 'hide' ).promise().done( () => {
-				if ( PAGE === 'player' ) UTIL.statusScroll( id );
-			} );
+			.removeClass( 'hide' )[ 0 ]
+				.scrollIntoView( { block: 'end' } );
 		BANNER_HIDE();
 	} );
 }
