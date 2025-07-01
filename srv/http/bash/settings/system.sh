@@ -436,7 +436,7 @@ wlan )
 		iw wlan0 set power_save off
 		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
 		if [[ $REGDOM ]] && ! grep -q $REGDOM /etc/conf.d/wireless-regdom; then
-			sed -i 's/".*"/"'$REGDOM'"/' /etc/conf.d/wireless-regdom
+			echo 'WIRELESS_REGDOM="'$REGDOM'"' > /etc/conf.d/wireless-regdom
 			iw reg set $REGDOM
 		fi
 	else
