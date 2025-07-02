@@ -929,7 +929,7 @@ function renderPage() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		UTIL.i2smodule.selected();
 	} else {
-		$( '#i2smodule' ).html( option( S.audiooutput || '<gr>(None / Auto detect)</gr>' ) );
+		$( '#i2smodule' ).html( option( S.audiooutput || '(None / Auto detect)' ) );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
@@ -940,7 +940,7 @@ function renderPage() {
 	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( option( S.timezone.replace( '/', ' · ' ) +' <gr>('+ S.timezoneoffset +')</gr>' ) );
+		$( '#timezone' ).html( option( S.timezone.replace( '/', ' · ' ) +' ('+ S.timezoneoffset +')' ) );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
