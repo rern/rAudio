@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1750729548' );
+	src         : url( '/assets/fonts/rern.woff2?v=1751420777' );
 }
 @font-face {
 	font-family : Lato;
@@ -1036,7 +1036,7 @@ input[ type=radio ]:disabled {
 	content: '\F604';
 }
 .select.single::after {
-	content: '';
+	color: var( --cg60 );
 }
 .select::after,
 .select.active::after {
