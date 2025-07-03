@@ -102,7 +102,7 @@ var EDIT   = {
 				  [ 'IP',      'text' ]
 				, [ 'Gateway', 'text' ]
 			]
-			, footer       : S.ip ===  location.hostname ? WIFI.warning( 'This is' ) : ''
+			, footer       : S.ip ===  location.hostname ? WLAN.warning( 'This is' ) : ''
 			, values       : values
 			, focus        : 0
 			, checkchanged : true
@@ -127,7 +127,7 @@ var EDIT   = {
 			}
 		} );
 	}
-	, wifi : values => {
+	, wlan : values => {
 		if ( ! values ) values = { ESSID: '', KEY: '', SECURITY: false, HIDDEN: false }
 		var dhcp = ! ( 'ADDRESS' in values );
 		var list = [
@@ -152,7 +152,7 @@ var EDIT   = {
 				v.GATEWAY = S.gateway;
 				var val   = {};
 				keys.forEach( k => val[ k ] = v[ k ] );
-				EDIT.wifi( val );
+				EDIT.wlan( val );
 			} ];
 			list.splice( 2, 2 );
 		} else {
@@ -161,13 +161,13 @@ var EDIT   = {
 				var val = _INFO.val();
 				delete val.ADDRESS;
 				delete val.GATEWAY;
-				EDIT.wifi( val );
+				EDIT.wlan( val );
 			}, '' ]
 			json.checkip = [ 2, 3 ];
 		}
 		if ( V.edit ) {
 			if ( ! dhcp ) json.focus = 2
-			json.footer = WIFI.warning( 'This is' );
+			json.footer = WLAN.warning( 'This is' );
 			json.checkchanged = true;
 		} else {
 			json.focus = 0
@@ -189,7 +189,7 @@ var EDIT   = {
 				} else {
 					CHANGE.switch( val.ADDRESS );
 				}
-				WIFI.connect( val );
+				WLAN.connect( val );
 			}
 		} );
 	}
@@ -309,7 +309,7 @@ var SCAN   = {
 		}, 'json' );
 	}
 }
-var WIFI   = {
+var WLAN   = {
 	  ap2ssid   : ( ssid, val ) => {
 		var changeip = S.ap && S.apconf.ip === location.hostname;
 		INFO( {
@@ -319,7 +319,7 @@ var WIFI   = {
 					   +'<br>· Connected clients will be dropped.'
 					   + ( changeip ? '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c>' : '' ) +'</p>'
 			, ok      : () => {
-				typeof val === 'object' ? WIFI.connect( val ) : CHANGE.ssid( ssid );
+				typeof val === 'object' ? WLAN.connect( val ) : CHANGE.ssid( ssid );
 			}
 		} );
 	}
@@ -329,7 +329,7 @@ var WIFI   = {
 		$( 'li.active i' ).addClass( 'blink' );
 		NOTIFY( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 		BASH( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
-			CHANGE.ip( result, I.icon, I.title, val, EDIT.wifi );
+			CHANGE.ip( result, I.icon, I.title, val, EDIT.wlan );
 		} );
 	}
 	, disconnect : () => {
@@ -373,7 +373,7 @@ $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
 	if ( $this.hasClass( 'profile' ) ) {
-		S.ap ? WIFI.ap2ssid( ssid ) : CHANGE.ssid( ssid );
+		S.ap ? WLAN.ap2ssid( ssid ) : CHANGE.ssid( ssid );
 		return
 	}
 	
@@ -387,7 +387,7 @@ $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 			clearTimeout( V.timeoutscan );
 			var val = { ESSID: ssid }
 			if ( encrypt ) val = { ...val, IP: 'dhcp', KEY: _INFO.val(), SECURITY: security }
-			S.ap ? WIFI.ap2ssid( ssid, val ) : WIFI.connect( val );
+			S.ap ? WLAN.ap2ssid( ssid, val ) : WLAN.connect( val );
 			$( '.divscan heading .blink' ).removeClass( 'blink' );
 			$this.find( 'i' ).eq( 0 ).addClass( 'blink' );
 		}
@@ -419,20 +419,20 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	MENU.show( $li );
 } );
 $( '.i-add' ).on( 'click', function() {
-	EDIT[ $( this ).parents( '#divlan' ).length ? 'lan' : 'wifi' ]();
+	EDIT[ $( this ).parents( '#divlan' ).length ? 'lan' : 'wlan' ]();
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var cmd = MENU.command( $( this ), e );
 	if ( ! cmd ) return
 
 	var $li = $( 'li.active' );
+	if ( V.bluetooth ) {
+		BT( cmd, $li );
+		return
+	}
+	
 	switch ( cmd ) {
 		case 'connect':
-			if ( V.bluetooth ) {
-				BT( 'connect', $li );
-				return
-			}
-			
 			var ssid = $li.data( 'id' );
 			if ( ! S.ap || V.localhost ) {
 				CHANGE.ssid( ssid );
@@ -448,20 +448,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => CHANGE.ssid( ssid )
 					} );
 				} else {
-					WIFI.ap2ssid( ssid );
+					WLAN.ap2ssid( ssid );
 				}
 			} else {
 				CHANGE.ssid( ssid );
 			}
 			break
 		case 'disconnect':
-			if ( V.bluetooth ) {
-				BT( 'disconnect', $li );
-				return
-			}
-			
 			if ( $li.data( 'ip' ) !== location.hostname ) {
-				WIFI.disconnect();
+				WLAN.disconnect();
 				return
 			}
 			
@@ -469,32 +464,27 @@ $( '#menu a' ).on( 'click', function( e ) {
 				  icon       : 'wifi'
 				, title      : 'Wi-Fi'
 				, message    : 'SSID: <wh>'+ ssid +'</wh>'
-				, footer     : WIFI.warning( 'Disconnect' )
+				, footer     : WLAN.warning( 'Disconnect' )
 				, okcolor    : V.orange
-				, ok         : WIFI.disconnect
+				, ok         : WLAN.disconnect
 			} );
 			break
 		case 'edit':
 			if ( V.wlan ) {
 				V.edit = $li.data( 'ip' ) ? true : 'editonly';
-				SETTING( 'wlanprofile "'+ $li.data( 'id' ) +'"', values => EDIT.wifi( values ) );
+				SETTING( 'wlanprofile "'+ $li.data( 'id' ) +'"', values => EDIT.wlan( values ) );
 			} else {
 				EDIT.lan();
 			}
 			break
 		case 'forget':
-			if ( V.bluetooth ) {
-				BT( 'remove', $li );
-				return
-			}
-			
 			var ssid = $li.data( 'id' );
 			var icon = 'wifi';
 			INFO( {
 				  icon       : icon
 				, title      : 'Wi-Fi'
 				, message    : 'SSID: <wh>'+ ssid +'</wh>'
-				, footer     : WIFI.warning( 'Forget' )
+				, footer     : WLAN.warning( 'Forget' )
 				, oklabel    : ICON( 'remove' ) +'Forget'
 				, okcolor    : V.red
 				, ok         : () => {
