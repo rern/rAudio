@@ -182,8 +182,12 @@ var EDIT   = {
 			, checklength  : { 1: [ 8, 'min' ] }
 			, ok           : () => {
 				var val = _INFO.val();
+				if ( V.edit === 'editonly' ) {
+					val.EDITONLY = true;
+				} else {
+					CHANGE.switch( val.ADDRESS );
+				}
 				WIFI.connect( val );
-				CHANGE.switch( val.ADDRESS );
 			}
 		} );
 	}
@@ -474,7 +478,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break
 		case 'edit':
 			if ( V.wlan ) {
-				V.edit = true;
+				V.edit = $li.data( 'ip' ) ? true : 'editonly';
 				SETTING( 'wlanprofile "'+ $li.data( 'id' ) +'"', values => EDIT.wifi( values ) );
 			} else {
 				EDIT.lan();
