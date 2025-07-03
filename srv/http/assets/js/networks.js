@@ -173,6 +173,8 @@ var EDIT   = {
 			json.focus = 0
 			json.checkchanged = false;
 		}
+		var editonly = V.edit === 'editonly';
+		delete V.edit;
 		INFO( {
 				...json
 			, boxwidth     : 180
@@ -182,7 +184,7 @@ var EDIT   = {
 			, checklength  : { 1: [ 8, 'min' ] }
 			, ok           : () => {
 				var val = _INFO.val();
-				if ( V.edit === 'editonly' ) {
+				if ( editonly ) {
 					val.EDITONLY = true;
 				} else {
 					CHANGE.switch( val.ADDRESS );
@@ -350,10 +352,6 @@ $( '.back' ).on( 'click', function() {
 	$( '.divscan .blink' ).removeClass( 'blink' );
 	REFRESHDATA();
 } );
-$( '.wladd' ).on( 'click', function() {
-	delete V.edit;
-	EDIT.wifi();
-} );
 $( '.i-search' ).on( 'click', function() {
 	var type = $( this ).parents( '#divwlan' ).length ? 'wlan' : 'bluetooth';
 	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
@@ -420,8 +418,8 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	}
 	MENU.show( $li );
 } );
-$( '.lanadd' ).on( 'click', function() {
-	EDIT.lan();
+$( '.i-add' ).on( 'click', function() {
+	EDIT[ $( this ).parents( '#divlan' ).length ? 'lan' : 'wifi' ]();
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var cmd = MENU.command( $( this ), e );

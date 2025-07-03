@@ -74,7 +74,7 @@ $B->lan Context menu
 EOF
 ];
 $body = [ '<ul id="lan" class="entries"></ul>' ];
-htmlSection( $head, $body, 'wlan' );
+htmlSection( $head, $body, 'lan' );
 // ----------------------------------------------------------------------------------
 ?>
 </div>
