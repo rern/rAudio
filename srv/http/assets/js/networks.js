@@ -63,10 +63,9 @@ function connectWiFi( val ) {
 	} );
 }
 function onPageInactive() {
-	if ( $( '#divscanbluetooth' ).hasClass( 'hide' ) && $( '#divscanwlan' ).hasClass( 'hide' ) ) return
+	if ( $( '.divscan.hide' ).length === 2 ) return
 	
 	clearTimeout( V.timeoutscan );
-	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
 var RENDER = {
@@ -340,27 +339,30 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.back' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 	SCAN.hide();
+	$( '.divscan .blink' ).removeClass( 'blink' );
 	REFRESHDATA();
 } );
 $( '.wladd' ).on( 'click', function() {
 	delete V.edit;
 	SETTING.wifi();
 } );
-$( '.btscan, .wlscan' ).on( 'click', function() {
-	var type = $( this ).is( '.btscan' ) ? 'bluetooth' : 'wlan';
+$( '.i-search' ).on( 'click', function() {
+	var type = $( this ).parents( '#divwlan' ).length ? 'wlan' : 'bluetooth';
 	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
-	$( '#divscan'+ type ).removeClass( 'hide' );
+	$( '#divscan'+ type )
+		.removeClass( 'hide' )
+		.find( 'i' ).eq( 0 ).addClass( 'blink' );
 	SCAN[ type ]();
 } );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
+	var $this    = $( this );
 	if ( this.id === 'divscanbluetooth' ) {
 		clearTimeout( V.timeoutscan );
 		COMMON.loader();
-		bluetoothCommand( 'pair', $( this ) );
+		bluetoothCommand( 'pair', $this );
 		return
 	}
 	
-	var $this    = $( this );
 	var ssid     = $this.data( 'id' );
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
@@ -380,6 +382,8 @@ $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 			var val = { ESSID: ssid }
 			if ( encrypt ) val = { ...val, IP: 'dhcp', KEY: _INFO.val(), SECURITY: security }
 			S.ap ? accesspoint2ssid( ssid, val ) : connectWiFi( val );
+			$( '.divscan heading .blink' ).removeClass( 'blink' );
+			$this.find( 'i' ).eq( 0 ).addClass( 'blink' );
 		}
 	} );
 } );

@@ -13,7 +13,7 @@ commonVariables( [
 $head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => 'search btscan'
+	, 'button' => 'search'
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
@@ -47,7 +47,7 @@ htmlSection( $head, $body, 'bluetooth' );
 $head = [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
-	, 'button' => [ 'add wladd', 'search wlscan' ]
+	, 'button' => [ 'add wladd', 'search' ]
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Manual connect
@@ -82,7 +82,7 @@ htmlSection( $head, $body, 'wlan' );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Bluetooth'
-	, 'button' => 'bluetooth blink scanning-bt'
+	, 'button' => 'bluetooth'
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanbluetooth" class="entries scan"></ul>' ];
@@ -90,7 +90,7 @@ htmlSection( $head, $body, 'scanbluetooth', 'divscan hide' );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Wi-Fi'
-	, 'button' => 'wifi blink scanning-wifi'
+	, 'button' => 'wifi'
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanwlan" class="entries scan"></ul>' ];
