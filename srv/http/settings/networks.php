@@ -86,7 +86,7 @@ $head = [
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanbluetooth" class="entries scan"></ul>' ];
-htmlSection( $head, $body, 'scanbluetooth', 'hide' );
+htmlSection( $head, $body, 'scanbluetooth', 'divscan hide' );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Wi-Fi'
@@ -94,7 +94,7 @@ $head = [
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanwlan" class="entries scan"></ul>' ];
-htmlSection( $head, $body, 'scanwlan', 'hide' );
+htmlSection( $head, $body, 'scanwlan', 'divscan hide' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title'  => 'Web <a class="hideN">User </a>Interface' ];
 $body = [

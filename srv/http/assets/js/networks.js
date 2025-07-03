@@ -122,9 +122,16 @@ var RENDER = {
 	}
 }
 function renderPage() {
+	SCAN.hide();
 	[ 'bluetooth', 'wlan', 'lan' ].forEach( k => {
-		S.device[ k ] ? RENDER[ k ]() : $( '#div'+ k ).addClass( 'hide' );
+		if ( S.device[ k ] ) {
+			RENDER[ k ]();
+			$( '#div'+ k ).removeClass( 'hide' );
+		} else {
+			$( '#div'+ k ).addClass( 'hide' );
+		}
 	} );
+	$( '#divinterface' ).removeClass( 'hide' );
 	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
@@ -173,6 +180,12 @@ var SCAN = {
 			$( '#scanbluetooth' ).html( htmlbt );
 			V.timeoutscan = setTimeout( SCAN.bluetooth, 12000 );
 		}, 'json' );
+	}
+	, hide      : () => {
+		$( '.divscan' )
+			.addClass( 'hide' )
+			.find( 'ul' ).empty();
+		$( '.helphead, #divinterface, #divwebui' ).removeClass( 'hide' );
 	}
 	, wlan      : () => {
 		BASH( 'networks-scan.sh wlan', data => {
@@ -326,31 +339,27 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.back' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
-	$( '#divscanbluetooth, #divscanwlan' ).addClass( 'hide' );
-	$( '#scanwlan, #scanbluetooth' ).empty();
-	$( '.helphead, #divinterface, #divwebui' ).removeClass( 'hide' );
+	SCAN.hide();
 	REFRESHDATA();
-} );
-$( '.btscan' ).on( 'click', function() {
-	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
-	$( '#divscanbluetooth' ).removeClass( 'hide' );
-	SCAN.bluetooth();
 } );
 $( '.wladd' ).on( 'click', function() {
 	delete V.edit;
 	SETTING.wifi();
 } );
-$( '.wlscan' ).on( 'click', function() {
+$( '.btscan, .wlscan' ).on( 'click', function() {
+	var type = $( this ).is( '.btscan' ) ? 'bluetooth' : 'wlan';
 	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
-	$( '#divscanwlan' ).removeClass( 'hide' );
-	SCAN.wlan();
+	$( '#divscan'+ type ).removeClass( 'hide' );
+	SCAN[ type ]();
 } );
-$( '#scanbluetooth' ).on( 'click', 'li:not( .current )', function() {
-	clearTimeout( V.timeoutscan );
-	COMMON.loader();
-	bluetoothCommand( 'pair', $( this ) );
-} );
-$( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
+$( '.scan' ).on( 'click', 'li:not( .current )', function() {
+	if ( this.id === 'divscanbluetooth' ) {
+		clearTimeout( V.timeoutscan );
+		COMMON.loader();
+		bluetoothCommand( 'pair', $( this ) );
+		return
+	}
+	
 	var $this    = $( this );
 	var ssid     = $this.data( 'id' );
 	var security = $this.data( 'wpa' ) === 'wep';
