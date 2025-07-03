@@ -81,7 +81,7 @@ Security='$security
 	[[ $HIDDEN ]] && data+='
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
-	[[ $( iwgetid -r ) ]] && netctlSwitch
+	netctlSwitch
 	;;
 disconnect )
 	netctl stop "$SSID"
