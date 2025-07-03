@@ -202,7 +202,8 @@ var RENDER = {
 		if ( S.list.bluetooth ) {
 			S.list.bluetooth.forEach( list => {
 				html   += '<li class="bt" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-						+ ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + ( list.connected ? +'<grn>•</grn>&ensp;' : '' ) + list.name +'</li>';
+						+ ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + list.name
+						+ ( list.connected ? '&ensp;<grn>•</grn>' : '' ) +'</li>';
 			} );
 		}
 		LIST.render( 'bluetooth', html );
@@ -362,7 +363,7 @@ $( '.i-search' ).on( 'click', function() {
 } );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
-	if ( this.id === 'divscanbluetooth' ) {
+	if ( $this.parent()[ 0 ].id === 'scanbluetooth' ) {
 		clearTimeout( V.timeoutscan );
 		COMMON.loader();
 		BT( 'pair', $this );
