@@ -199,11 +199,12 @@ var RENDER = {
 		if ( LIST.equal( 'bluetooth' ) ) return
 		
 		var html  = '';
+		var cls;
 		if ( S.list.bluetooth ) {
 			S.list.bluetooth.forEach( list => {
-				html   += '<li class="bt" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-						+ ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + list.name
-						+ ( list.connected ? '&ensp;<grn>•</grn>' : '' ) +'</li>';
+				cls   = list.connected ? ' current' : '';
+				html += '<li class="bt'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
+					  + ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'<a>'+ list.name +'</a></li>';
 			} );
 		}
 		LIST.render( 'bluetooth', html );
@@ -213,12 +214,14 @@ var RENDER = {
 		var html = '';
 		if ( S.list.lan ) {
 			var ipeth = S.list.lan.ADDRESS;
-			html      =  '<li data-ip="'+ ipeth +'">'
-						+ ICON( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth +'&ensp;<gr>&raquo;&ensp;'+ S.list.lan.GATEWAY +'</gr></li>';
+			var cls   = ipeth ? ' class="current"' : '';
+			html      =  '<li data-ip="'+ ipeth +'"'+ cls +'>'
+						+ ICON( 'lan' ) +'<a>'+ ipeth +'</a><gr>'+ RENDER.raquo + S.list.lan.GATEWAY +'</gr></li>';
 		}
 		$( '#lan' ).html( html );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
+	, raquo     : '&ensp;&raquo;&ensp;'
 	, wlan      : () => {
 		if ( LIST.equal( 'wlan' ) ) return
 		
@@ -231,13 +234,12 @@ var RENDER = {
 			S.list.wlan.forEach( ( list, i ) => {
 				if ( S.ap ) i++;
 				var ssid  = list.ssid;
-				html += '<li class="wl" data-id="'+ ssid +'"';
+				html += '<li data-id="'+ ssid +'" class="wl';
 				if ( list.ip ) {
-					html +=  ' data-ip="'+ list.ip +'">'
-							+ ICON( list.icon ) +'<a>'+ ssid 
-							+'</a>&ensp;<grn>•</grn>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
+					html +=  ' current" data-ip="'+ list.ip +'">'
+							+ ICON( list.icon ) +'<a>'+ ssid +'</a><gr>'+ RENDER.raquo + list.ip + RENDER.raquo + list.gateway +'</gr></li>';
 				} else {
-					html +=  '>'
+					html +=  '">'
 							+ ICON( 'wifi' ) + ssid +'</li>';
 				}
 			} );
@@ -257,13 +259,12 @@ var SCAN   = {
 					icon   = ICON( 'bluetooth' );
 					cls    = 'btscan';
 					if ( list.current ) {
-						icon += '<grn>•</grn>';
 						cls  += ' current';
 					} else if ( list.paired ) {
-						icon += '<gr>•</gr>';
+						cls  += ' profile';
 					}
 					htmlbt += '<li class="'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-							+ icon +'&ensp;<wh>'+ list.name +'</wh></li>';
+							+ icon +'&ensp;<a>'+ list.name +'</a></li>';
 				} );
 			} else {
 				htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
@@ -284,19 +285,19 @@ var SCAN   = {
 			if ( data ) {
 				var scan   = data.scan;
 				scan.sort( ( a, b ) => b.signal - a.signal );
-				var cls, icon, signal;
+				var cls, signal;
 				scan.forEach( list => {
 					ssid    = list.ssid;
 					signal  = list.signal;
 					nwifi   = signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
-					cls     = '';
+					cls     = 'wlscan';
 					if ( ssid === data.current ) {
-						cls = ' current';
+						cls  += ' current';
 					} else if ( data.profiles && data.profiles.includes( ssid ) ) {
-						cls = ' profile';
+						cls  += ' profile';
 					}
 					if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
-					htmlwl += '<li class="wlscan'+ cls +'" data-id="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
+					htmlwl += '<li class="'+ cls +'" data-id="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
 							+ ICON( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
 					htmlwl += list.encrypt === 'on' ? ICON( 'lock' ) : '&ensp;';
 					htmlwl += signal != 0 ? '<gr>'+ signal +' dBm</gr>' : '';

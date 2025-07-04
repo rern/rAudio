@@ -4,7 +4,7 @@
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
 li.current a::before,
 li.profile a::before {
-	content: '• ';
+	content: '•\2002';
 }
 li.current a::before {
 	color: #0f0;
@@ -268,6 +268,7 @@ heading i {
 }
 heading i.back {
 	width: 40px;
+	font-size: 26px;
 }
 heading i.help {
 	float: right;
