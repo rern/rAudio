@@ -146,7 +146,12 @@ case 'home':
 	}
 	$lsmnt     = countMnt();
 	$fileorder = $dirsystem.'order.json';
-	$order     = file_exists( $fileorder ) ? json_decode( file_get_contents( $fileorder ) ) : false;
+	if ( file_exists( $fileorder ) ) {
+		$order = file_get_contents( $fileorder );
+		$order = $order ? json_decode( $order ) : false;
+	} else {
+		$order = false;
+	}
 	echo json_encode( [
 		  'html'  => $htmlmode
 		, 'lsmnt' => $lsmnt
