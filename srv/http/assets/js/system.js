@@ -807,9 +807,9 @@ var UTIL          = {
 		S.list.storage.forEach( list => {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
-			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) + mountpoint.slice( 9 ) +'&ensp;'
-							+ ( list.size ? '<grn>•</grn>' : '<red>•</red>' ) +'&ensp;'+ list.size +' <c>'+ source +'</c></li>';
+			var cls        = list.size ? 'current' : 'profile';
+			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
+							+ ICON( list.icon ) +'<a>'+ mountpoint.slice( 9 ) +'</a> · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
