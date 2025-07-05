@@ -204,7 +204,7 @@ var RENDER = {
 			S.list.bluetooth.forEach( list => {
 				cls   = list.connected ? ' current' : '';
 				html += '<li class="bt'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-					  + ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'<a>'+ list.name +'</a></li>';
+					  + ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'<a></a>'+ list.name +'</li>';
 			} );
 		}
 		LIST.render( 'bluetooth', html );
@@ -216,7 +216,7 @@ var RENDER = {
 			var ipeth = S.list.lan.ADDRESS;
 			var cls   = ipeth ? ' class="current"' : '';
 			html      =  '<li data-ip="'+ ipeth +'"'+ cls +'>'
-						+ ICON( 'lan' ) +'<a>'+ ipeth +'</a><gr>'+ RENDER.raquo + S.list.lan.GATEWAY +'</gr></li>';
+						+ ICON( 'lan' ) +'<a></a>'+ ipeth +'<gr>'+ RENDER.raquo + S.list.lan.GATEWAY +'</gr></li>';
 		}
 		$( '#lan' ).html( html );
 		$( '#divlan' ).removeClass( 'hide' );
@@ -237,10 +237,10 @@ var RENDER = {
 				html += '<li data-id="'+ ssid +'" class="wl';
 				if ( list.ip ) {
 					html +=  ' current" data-ip="'+ list.ip +'">'
-							+ ICON( list.icon ) +'<a>'+ ssid +'</a><gr>'+ RENDER.raquo + list.ip + RENDER.raquo + list.gateway +'</gr></li>';
+							+ ICON( list.icon ) +'<a></a>'+ ssid +'<gr>'+ RENDER.raquo + list.ip + RENDER.raquo + list.gateway +'</gr></li>';
 				} else {
 					html +=  '">'
-							+ ICON( 'wifi' ) + ssid +'</li>';
+							+ ICON( 'wifi' ) +'<a></a>'+ ssid +'</li>';
 				}
 			} );
 		}
@@ -264,7 +264,7 @@ var SCAN   = {
 						cls  += ' profile';
 					}
 					htmlbt += '<li class="'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-							+ icon +'&ensp;<a>'+ list.name +'</a></li>';
+							+ icon +'<a></a>'+ list.name +'</li>';
 				} );
 			} else {
 				htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
@@ -298,7 +298,7 @@ var SCAN   = {
 					}
 					if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
 					htmlwl += '<li class="'+ cls +'" data-id="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
-							+ ICON( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
+							+ ICON( 'wifi'+ nwifi ) +'<a></a>'+ ssid;
 					htmlwl += list.encrypt === 'on' ? ICON( 'lock' ) : '&ensp;';
 					htmlwl += signal != 0 ? '<gr>'+ signal +' dBm</gr>' : '';
 					htmlwl += '</li>';
