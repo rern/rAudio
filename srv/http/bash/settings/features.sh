@@ -87,9 +87,9 @@ brightness )
 camilladsp )
 	if [[ $ON ]]; then
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
-		validate=$( camilladsp -c "$fileconf" )
-		if [[ $validate != 'Config is valid' ]]; then
-			notify 'warning yl blink' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}"
+		error=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
+		if [[ $error ]]; then
+			notify 'warning yl blink' CamillaDSP "$( sed 's/$/<br>/' <<< $error )"
 			exit
 # --------------------------------------------------------------------
 		fi
