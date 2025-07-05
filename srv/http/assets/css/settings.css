@@ -2,12 +2,12 @@
 .menu { z-index: 11 }
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
-li.current a::before,
-li.profile a::before {
+li.current dot::before,
+li.profile dot::before {
 	content: '• ';
 	color: #0f0;
 }
-li.profile a::before {
+li.profile dot::before {
 	color: var( --cg60 );;
 }
 .menu {

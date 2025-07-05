@@ -809,7 +809,7 @@ var UTIL          = {
 			var source     = list.source;
 			var cls        = list.size ? 'current' : 'profile';
 			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) +'<a>'+ mountpoint.slice( 9 ) +'</a> · '+ list.size +' <c>'+ source +'</c></li>';
+							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
