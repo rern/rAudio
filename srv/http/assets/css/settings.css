@@ -3,13 +3,13 @@
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
 li.current dot::before,
-li.profile dot::before {
+li.profile dot::before,
+li.unmount dot::before {
 	content: '• ';
-	color: #0f0;
 }
-li.profile dot::before {
-	color: var( --cg60 );;
-}
+li.current dot::before { color: #0f0 }
+li.profile dot::before { color: var( --cg60 ) }
+#storage li.profile dot::before { color: #f00 }
 .menu {
 	position: absolute;
 	margin-left: 40px;
