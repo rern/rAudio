@@ -28,7 +28,7 @@ $list
 }"
 }
 # sd
-mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd /mnt/MPD/SD /dev/mmcblk0p2 true )
+[[ -e /mnt/MPD/SD ]] && mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd /mnt/MPD/SD /dev/mmcblk0p2 true )
 # usb
 usb=$( ls /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
