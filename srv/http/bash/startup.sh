@@ -140,6 +140,7 @@ fi
 # lan ip || usb wlan || no wlan profiles + not ap
 if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 
 touch $dirshm/startup
