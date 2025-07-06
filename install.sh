@@ -4,9 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250704
-file=/etc/pacman.conf
+# 20250707
+file=$dirmpdconf/mpd.conf
+if [[ $( pacman -Q mpd | cut -c 5-8 ) == 0.24 ]] && ! grep -q ^metadata_to_use $file; then
+	sed -i '/^db_file/ a\
+metadata_to_use     "album,albumartist,artist,composer,conductor,date,genre,title,track"
+' $file
+fi
 
+file=/etc/pacman.conf
 if [[ -e /boot/kernel7.img ]]; then
 	grep -q libunwind $file && sed -i 's/ *libunwind//' $file
 	[[ $( pacman -Q libunwind ) < 'libunwind 1.8.2-1' ]] && pacman -Sy --needed --noconfirm libunwind
