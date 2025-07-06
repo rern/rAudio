@@ -14,14 +14,17 @@ function LIST( query, callback, json ) {
 function REFRESHDATA() {
 	BASH( [ 'status.sh' ], list => {
 		if ( list == -1 ) {
+		COMMON.loaderHide();
 			INFO( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : V.i_warning +'<wh>Server offline</wh>'
-							+'<br><br>Disable and restore local data?'
-				, cancel  : loader
-				, okcolor : V.orange
-				, ok      : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+				  icon        : 'networks'
+				, title       : 'Shared Data'
+				, message     : V.i_warning +'<wh>Server offline</wh>'
+								+'<br><br>Disable and restore local data?'
+				, buttonlabel : ICON( 'refresh' ) +'Retry'
+				, button      : REFRESHDATA
+				, oklabel     : ICON( 'flash' ) +'Disable'
+				, okcolor     : V.orange
+				, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
 			} );
 			return
 		}
