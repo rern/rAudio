@@ -8,8 +8,8 @@ args2var "$1"
 # --------------------------------------------------------------------
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
-	if grep -q "^$mountpoint$" <<< $( awk '{print $2}' /etc/fstab ); then
-		echo "Name <c>${mountpoint/*\/}</c> already exists"
+	if grep -q "^${mountpoint// /\\\\040}$" <<< $( awk '{print $2}' /etc/fstab ); then
+		echo "Name <c>$NAME</c> already exists"
 		exit
 # --------------------------------------------------------------------
 	fi

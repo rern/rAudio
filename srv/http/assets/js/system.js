@@ -808,7 +808,8 @@ var UTIL          = {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
 			var cls        = list.size ? 'current' : 'profile';
-			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
+			var shareddata = list.shareddata ? ' data-shareddata="true"' : '';
+			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'"'+ shareddata +'>'
 							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
@@ -1031,9 +1032,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	var mountpoint = $li.data( 'mountpoint' );
-	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
-	if ( shareddata ) {
+	if ( $li.data( 'shareddata' ) ) {
 		INFO( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
@@ -1042,6 +1041,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
+	var mountpoint = $li.data( 'mountpoint' );
 	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
@@ -1049,7 +1049,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var mounted = $li.find( 'grn' ).length === 1;
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
+		$( '#menu .forget' ).toggleClass( 'hide', usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}

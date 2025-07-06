@@ -17,6 +17,12 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
+	datasource=$dirshareddata/source
+	if [[ $icon == networks && -e $datasource ]]; then
+		[[ $mountpoint == $dirshareddata || ${mountpoint// /\\040} == $( awk '{print $2}' $datasource ) ]] && shareddata=true
+		list+='
+, "shareddata" : '$shareddata
+	fi
 	echo ", {
 $list
 }"
