@@ -77,12 +77,11 @@ else # if no connections, start accesspoint
 		[[ $ipaddress ]] && break || sleep 1
 	done
 	if [[ $ipaddress ]]; then
-		readarray -t lines <<< $( grep $dirnas /etc/fstab )
-		if [[ $lines ]]; then
+		if grep -q noauto /etc/fstab; then
 			cp /etc/fstab{,.backup}
 			sed -i 's/noauto,//' /etc/fstab
-			mount -a
-			cp -f /etc/fstab{.backup,}
+			mount -a &> /dev/null
+			mv -f /etc/fstab{.backup,}
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then
