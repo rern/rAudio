@@ -5,6 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250707
+file=$dirmpdconf/conf/httpd.conf
+grep -q quality $file && sed -i '/quality/ d' $file
+
 file=$dirmpdconf/mpd.conf
 if [[ $( pacman -Q mpd | cut -c 5-8 ) == 0.24 ]] && ! grep -q ^metadata_to_use $file; then
 	sed -i '/^db_file/ a\

@@ -137,8 +137,8 @@ if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
+# lan ip || usb wlan || no wlan profiles + not ap
+if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
