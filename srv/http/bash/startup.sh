@@ -79,13 +79,10 @@ else # if no connections, start accesspoint
 	if [[ $ipaddress ]]; then
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
-			for line in "${lines[@]}"; do
-				mp=$( awk '{print $2}' <<< $line )
-				for i in {1..10}; do
-					mount "${mp//\\040/ }" && break || sleep 2
-				done
-				! mountpoint -q "$mp" && notify networks NAS "Mount failed: <wh>$mp</wh>" 10000
-			done
+			cp /etc/fstab{,.backup}
+			sed -i 's/noauto,//' /etc/fstab
+			mount -a
+			cp -f /etc/fstab{.backup,}
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then
