@@ -10,6 +10,12 @@ isChanged() {
 		[[ $prev != ${!k} ]] && return 0
 	done
 }
+onWhilePlay() {
+	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
+		export DISPLAY=:0
+		[[ $state == play ]] && xset -dpms || xset +dpms
+	fi
+}
 
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
@@ -17,6 +23,7 @@ echo $$ > $dirshm/pidstatuspush
 if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
 	statusradio=1
+	onWhilePlay
 else
 	status=$( $dirbash/status.sh | jq )
 	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
@@ -27,6 +34,7 @@ else
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
+	onWhilePlay
 	if [[ $webradio == true ]]; then
 		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
@@ -42,11 +50,6 @@ else
 		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
 	fi
 	mv -f $dirshm/status{new,}
-fi
-
-if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-	export DISPLAY=:0
-	[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
 fi
 
 clientip=$( snapclientIP )
