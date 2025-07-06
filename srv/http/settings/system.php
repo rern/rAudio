@@ -179,7 +179,7 @@ EOF
  · Can be enabled and run as a test without a connected relay module.
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
-Toggle: $B->gear>
+Toggle: $B->gear
 	<tab style="width: 115px">Sequence</tab>$B->power All
 	<tab>Pin - Name</tab>$greendot
 EOF
@@ -327,23 +327,28 @@ Note:
 	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
  • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create shares for music <c>source</c> and <c>data</c>
-	 · Linux permissions:
-		· NFS: <c>777</c>
-		· CIFS (SMB): <c>read only = no</c>
-	 · Windows <btn>Folder</btn> <btn>Properties</btn> - right-click 
-		· <btn>Sharing</btn> <btn>Advanced Sharing...</btn>
-		· <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
-	Clients:
+	<wh>Server</wh>: Create 2 shares: <gr>(any names)</gr>
+		· <c>SOURCE</c> for music files
+		· <c>DATABASE</c> for database and settings
+		Permissions: <gr>Full Control</gr>
+		  · Linux:
+			· NFS » <c>777</c>
+			· CIFS/SMB » <c>read only = no</c>
+		  · Windows:
+			· <tab>Sharing</tab>
+				<btn>Advanced Sharing...</btn> ■ Share this folder
+				<btn>Permissions</btn> » Everyone ■ Full Control
+			· <tab>Security</tab>
+				<btn>Edit...</btn> » Everyone ■ Full Control
+	<wh>Clients</wh>:
 	 · 1st client:
-		· $L->storage $B->add Add <c>source</c>
+		· $L->storage $B->add » <c>SOURCE</c>
 		· $M->refreshlibrary Update database
-		· $L->shareddata Connect <c>data</c>
-		· Local data will be transfered to <c>data</c>
+		· $L->shareddata » <c>DATABASE</c>
+		· Local data will be transfered to <c>DATABASE</c>
 	 · Other clients:
-		· $L->shareddata Connect <c>data</c>
-		· <c>source</c> will be connected accordingly
+		· $L->shareddata » <c>DATABASE</c>
+		· <c>SOURCE</c> will be connected accordingly
 EOF
 	]
 ];
