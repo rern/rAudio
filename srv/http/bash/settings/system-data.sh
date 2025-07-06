@@ -19,9 +19,9 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-templimit yl'></i>CPU X"
+	it="<i class='i-templimit yl'></i> CPU X"
 	ito="${it/yl/gr} $occurred"
-	iv="<ora><i class='i-voltage blink local'></i>Under-voltage</ora>"
+	iv="<ora><i class='i-voltage blink local'></i> Under-voltage</ora>"
 	ivy="${iv//ora/yl} $occurred"
 	declare -A warnings=(
 		 [0]=${ito/X/throttling}
@@ -130,10 +130,11 @@ data+='
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
+	ifwlan0=
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( [[ $( ifconfig wlan0 | grep inet ) ]] && echo true )
+, "wlanconnected"  : '$( [[ $( ifconfig wlan0 2> /dev/null | grep inet ) ]] && echo true )
 ##########
 	data+='
 , "btconnected"    : '$( exists $dirshm/btconnected )

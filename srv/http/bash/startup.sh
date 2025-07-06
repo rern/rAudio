@@ -112,6 +112,9 @@ CMD TIMEZONE'
 		fi
 	fi
 fi
+if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wlan
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+fi
 
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
@@ -136,11 +139,6 @@ if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
-fi
-# lan ip || usb wlan || no wlan profiles + not ap
-if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
-	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 
 touch $dirshm/startup
