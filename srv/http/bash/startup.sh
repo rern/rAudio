@@ -112,12 +112,13 @@ CMD TIMEZONE'
 		fi
 	fi
 fi
-if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wlan
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+if [[ $ap ]]; then
+	$dirsettings/features.sh iwctlap
 fi
-
-[[ $ap ]] && $dirsettings/features.sh iwctlap
-
+if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
+fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
