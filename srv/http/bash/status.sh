@@ -9,8 +9,10 @@
 . /srv/http/bash/common.sh
 
 if [[ -L $dirmpd && ! -e $dirsystem/display.json ]]; then # shared data server offline
-	mount $dirnas/data
-	[[ $? != 0 ]] && echo -1 && exit
+	for i in {0..5}; do
+		mount $dirnas/data &> /dev/null && break || sleep 1
+	done
+	[[ $i == 5 ]] && exit
 fi
 
 ip=$( ipAddress )
