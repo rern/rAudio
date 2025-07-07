@@ -32,11 +32,11 @@ function REFRESHDATA() {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			if ( V.error ) {
-				delete V.error;
+			if ( V.retry ) {
+				delete V.retry;
 				COMMON.dataError( e.message, list );
 			} else {
-				V.error = true;
+				V.retry = true;
 				REFRESHDATA();
 			}
 			return false
