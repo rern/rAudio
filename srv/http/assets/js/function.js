@@ -14,7 +14,7 @@ function LIST( query, callback, json ) {
 function REFRESHDATA() {
 	BASH( [ 'status.sh' ], list => {
 		if ( list == -1 ) {
-		COMMON.loaderHide();
+			COMMON.loaderHide();
 			INFO( {
 				  icon        : 'networks'
 				, title       : 'Shared Data'
@@ -32,7 +32,13 @@ function REFRESHDATA() {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			COMMON.dataError( e.message, list );
+			if ( V.error ) {
+				delete V.error;
+				COMMON.dataError( e.message, list );
+			} else {
+				V.error = true;
+				REFRESHDATA();
+			}
 			return false
 		}
 		
