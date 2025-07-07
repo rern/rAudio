@@ -20,8 +20,6 @@ statusData() {
 	fi
 }
 
-[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit
-# --------------------------------------------------------------------
 if [[ -e $dirshm/nosound ]]; then
 	volumenone=true
 else
