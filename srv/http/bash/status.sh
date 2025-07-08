@@ -9,7 +9,7 @@
 . /srv/http/bash/common.sh
 
 if [[ -L $dirmpd ]] && ! timeout 0.5 mountpoint -q $dirnas/data; then # shared data server offline or not mounted
-	mountFstab
+	fstabMount
 	! timeout 0.5 mountpoint -q $dirnas/data && echo -1 && exit
 # --------------------------------------------------------------------
 fi

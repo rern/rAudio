@@ -247,6 +247,17 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
+fstabMount() {
+	nas=$( grep /mnt/MPD/NAS /etc/fstab )
+	[[ ! $nas ]] && return
+	
+	mountpoint=$( awk '{print $2}' <<< $nas | sed 's/\\040/ /g' )
+	while read mountpoint; do
+		timeout 0.5 mountpoint -q "$mountpoint" && continue
+		
+		timeout 0.5 mount "$mountpoint" &> /dev/null
+	done <<< $mountpoint
+}
 fstabSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
@@ -346,17 +357,6 @@ logoLcdOled() {
 		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
 		mpd_oled -o $chip -x logo
 	fi
-}
-mountFstab() {
-	nas=$( grep /mnt/MPD/NAS /etc/fstab )
-	[[ ! $nas ]] && return
-	
-	mountpoint=$( awk '{print $2}' <<< $nas | sed 's/\\040/ /g' )
-	while read mountpoint; do
-		timeout 0.5 mountpoint -q "$mountpoint" && continue
-		
-		timeout 0.5 mount "$mountpoint" &> /dev/null
-	done <<< $mountpoint
 }
 mpcElapsed() {
 	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
