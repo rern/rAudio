@@ -8,11 +8,15 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd && ! -e $dirsystem/display.json ]]; then # shared data server offline
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data server offline or not mounted
 	for i in {0..5}; do
-		mount $dirnas/data &> /dev/null && break || sleep 1
+		mountFstab
+		[[ -e $dirmpd/counts ]] && break
+		
+		[[ $i == 5 ]] && echo -1 && exit
+# --------------------------------------------------------------------
+		sleep 1
 	done
-	[[ $i == 5 ]] && exit
 fi
 
 ip=$( ipAddress )

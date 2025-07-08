@@ -78,10 +78,7 @@ else # if no connections, start accesspoint
 	done
 	if [[ $ipaddress ]]; then
 		if grep -q noauto /etc/fstab; then
-			cp /etc/fstab{,.backup}
-			sed -i 's/noauto,//' /etc/fstab
-			mount -a &> /dev/null
-			mv -f /etc/fstab{.backup,}
+			mountFstab
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then

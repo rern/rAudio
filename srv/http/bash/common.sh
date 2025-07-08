@@ -324,6 +324,12 @@ logoLcdOled() {
 		mpd_oled -o $chip -x logo
 	fi
 }
+mountFstab() {
+	cp /etc/fstab{,.backup}
+	sed -i 's/noauto,//' /etc/fstab
+	mount -a &> /dev/null
+	mv -f /etc/fstab{.backup,}
+}
 mountpointSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
