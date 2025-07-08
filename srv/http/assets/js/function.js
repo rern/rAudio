@@ -32,13 +32,7 @@ function REFRESHDATA() {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			if ( V.retry ) { // fix: error from some startup with shared data
-				delete V.retry;
-				COMMON.dataError( e.message, list );
-			} else {
-				V.retry = true;
-				REFRESHDATA();
-			}
+			COMMON.dataError( e.message, list );
 			return false
 		}
 		
