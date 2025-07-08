@@ -9,14 +9,9 @@
 . /srv/http/bash/common.sh
 
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data server offline or not mounted
-	for i in {0..5}; do
-		mountFstab
-		[[ -e $dirmpd/counts ]] && break
-		
-		[[ $i == 5 ]] && echo -1 && exit
+	mountFstab
+	[[ ! -e $dirmpd/counts ]] && echo -1 && exit
 # --------------------------------------------------------------------
-		sleep 1
-	done
 fi
 
 ip=$( ipAddress )
