@@ -1032,9 +1032,8 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	if ( $li.data( 'shareddata' ) && $li.hasClass( 'current' ) ) {
-		BANNER( 'networks', 'Shared Data', 'Currently in use', 5000 );
-	}
+	var shareddata = $li.data( 'shareddata' );
+	if ( shareddata && $li.hasClass( 'current' ) ) BANNER( 'networks', 'Shared Data', 'Currently in use', 5000 );
 	var mountpoint = $li.data( 'mountpoint' );
 	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -1043,7 +1042,9 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var mounted = $li.hasClass( 'current' );
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb );
+		$( '#menu .forget' )
+			.toggleClass( 'hide', usb )
+			.toggleClass( 'disabled', shareddata );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
