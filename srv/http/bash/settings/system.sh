@@ -146,16 +146,7 @@ bluetoothstart )
 	;;
 forget | mount | unmount )
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		if [[ $CMD == mount ]]; then
-			mount "$MOUNTPOINT"
-		else
-			if [[ -e /srv/http/mnt/MPD/NAS/data ]]; then
-				echo -1
-				exit
-# --------------------------------------------------------------------
-			fi
-			umount -l "$MOUNTPOINT"
-		fi
+		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
 	else
 		[[ $CMD == mount ]] && udevil mount $SOURCE || udevil umount -l "$MOUNTPOINT"
 	fi
