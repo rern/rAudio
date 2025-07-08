@@ -1032,15 +1032,9 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	if ( $li.data( 'shareddata' ) ) {
-		INFO( {
-			  icon    : 'networks'
-			, title   : 'Network Storage'
-			, message : 'Used by <wh>Shared Data '+ ICON( 'networks' ) +'</wh>'
-		} );
-		return
+	if ( $li.data( 'shareddata' ) && $li.hasClass( 'current' ) ) {
+		BANNER( 'networks', 'Shared Data', 'Currently in use', 5000 );
 	}
-	
 	var mountpoint = $li.data( 'mountpoint' );
 	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
