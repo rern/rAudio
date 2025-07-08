@@ -353,7 +353,9 @@ mountFstab() {
 	
 	mountpoint=$( awk '{print $2}' <<< $nas | sed 's/\\040/ /g' )
 	while read mountpoint; do
-		! mountpoint -q "$mountpoint" && mount "$mountpoint"
+		timeout 0.5 mountpoint -q "$mountpoint" && continue
+		
+		timeout 0.5 mount "$mountpoint" &> /dev/null
 	done <<< $mountpoint
 }
 mpcElapsed() {
