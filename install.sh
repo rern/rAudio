@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250707
+# 20250711
 if grep -q username=guest /etc/fstab; then
 	sed -i 's/username=guest/&,password=/' /etc/fstab
 	systemctl daemon-reload

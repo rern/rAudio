@@ -247,6 +247,29 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
+fstabSet() {
+	umount -ql "$1"
+	mkdir -p "$1"
+	chown mpd:audio "$1"
+	cp -f /etc/fstab /tmp
+	fstab="\
+$( < /etc/fstab )
+$2"
+	column -t <<< $fstab > /etc/fstab
+	systemctl daemon-reload
+	std=$( mount "$1" 2>&1 )
+	if [[ $? != 0 ]]; then
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed -n '1 {s/.*: //; p}' <<< $std
+	else
+		for i in {1..10}; do
+			sleep 1
+			mountpoint -q "$1" && break
+		done
+	fi
+}
 getContent() {
 	if [[ -e $1 ]]; then
 		cat "$1"
@@ -332,29 +355,6 @@ mountFstab() {
 	while read mountpoint; do
 		! mountpoint -q "$mountpoint" && mount "$mountpoint"
 	done <<< $mountpoint
-}
-mountpointSet() {
-	umount -ql "$1"
-	mkdir -p "$1"
-	chown mpd:audio "$1"
-	cp -f /etc/fstab /tmp
-	fstab="\
-$( < /etc/fstab )
-$2"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	std=$( mount "$1" 2>&1 )
-	if [[ $? != 0 ]]; then
-		mv -f /tmp/fstab /etc
-		rmdir "$1"
-		systemctl daemon-reload
-		sed -n '1 {s/.*: //; p}' <<< $std
-	else
-		for i in {1..10}; do
-			sleep 1
-			mountpoint -q "$1" && break
-		done
-	fi
 }
 mpcElapsed() {
 	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
@@ -508,9 +508,7 @@ sharedDataLink() {
 	readarray -t source <<< $( < $dirshareddata/source )
 	for s in "${source[@]}"; do
 		ip_share=${s/ *}
-		grep -q "${ip_share//\\/\\\\}" /etc/fstab && continue
-		
-		mountpointSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
+		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
 	done
 }
 sharedDataReset() {
