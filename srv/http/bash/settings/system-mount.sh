@@ -27,7 +27,7 @@ if [[ $PROTOCOL == cifs ]]; then
 	source="//$IP/$share"
 	options=noauto
 	if [[ ! $USR ]]; then
-		options+=,username=guest
+		options+=',username=guest,password='
 	else
 		options+=",username=$USR,password=$PASSWORD"
 	fi

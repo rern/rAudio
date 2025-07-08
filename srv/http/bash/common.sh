@@ -325,10 +325,13 @@ logoLcdOled() {
 	fi
 }
 mountFstab() {
-	cp /etc/fstab{,.backup}
-	sed -i 's/noauto,//' /etc/fstab
-	mount -a &> /dev/null
-	mv -f /etc/fstab{.backup,}
+	nas=$( grep /mnt/MPD/NAS /etc/fstab )
+	[[ ! $nas ]] && return
+	
+	mountpoint=$( awk '{print $2}' <<< $nas | sed 's/\\040/ /g' )
+	while read mountpoint; do
+		! mountpoint -q "$mountpoint" && mount "$mountpoint"
+	done <<< $mountpoint
 }
 mountpointSet() {
 	umount -ql "$1"

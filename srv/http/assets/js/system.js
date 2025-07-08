@@ -1046,7 +1046,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = $li.find( 'grn' ).length === 1;
+		var mounted = $li.hasClass( 'current' );
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', usb );

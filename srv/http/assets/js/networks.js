@@ -402,8 +402,8 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $li.parent()[ 0 ].id ] = true;
 	$( '#menu a' ).addClass( 'hide' );
+	var connected = $li.hasClass( 'current' );
 	if ( V.bluetooth ) {
-		var connected = $li.find( 'grn' ).length === 1;
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$MENU.find( '.forget, .info' ).removeClass( 'hide' );
 		$MENU.find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
@@ -412,7 +412,6 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	} else if ( $li.hasClass( 'ap' ) ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var connected = $li.data( 'ip' ) !== undefined;
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );

@@ -9,7 +9,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	source=$3
 	mounted=$4
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size $mountpoint | awk '!/Used/ {print $1"B/"$2"B"}' )
+		size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		[[ ${source:0:4} == /dev ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	fi
 	list='
@@ -52,16 +52,11 @@ fi
 # nas
 nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
 if [[ $nas ]]; then
-	nas=$( awk '{print $1"^"$2}' <<< $nas | sed 's/\\040/ /g' | sort )
+	nas=$( awk '{print $2"^"$1}' <<< $nas | sed 's/\\040/ /g' | sort )
 	while read line; do
-		source=${line/^*}
-		mountpoint=${line/*^}
-		if mountpoint -q "$mountpoint"; then
-			mounted=true
-		else
-			mountFstab
-			mountpoint -q "$mountpoint" || mounted=false
-		fi
+		mountpoint=${line/^*}
+		source=${line/*^}
+		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem networks "$mountpoint" "$source" $mounted )
 	done <<< $nas
 fi
