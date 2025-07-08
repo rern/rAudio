@@ -13,6 +13,8 @@ function LIST( query, callback, json ) {
 }
 function REFRESHDATA() {
 	BASH( [ 'status.sh' ], list => {
+		if ( ! list ) return // empty on some startup with shared data
+		
 		if ( list == -1 ) {
 			COMMON.loaderHide();
 			INFO( {
