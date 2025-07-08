@@ -50,13 +50,18 @@ if [[ $usb ]]; then
 	done <<< $usb
 fi
 # nas
-nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab )
+nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
 if [[ $nas ]]; then
 	nas=$( awk '{print $1"^"$2}' <<< $nas | sed 's/\\040/ /g' | sort )
 	while read line; do
 		source=${line/^*}
 		mountpoint=${line/*^}
-		mountpoint -q "$mountpoint" && mounted=true || mounted=false
+		if mountpoint -q "$mountpoint"; then
+			mounted=true
+		else
+			mountFstab
+			mountpoint -q "$mountpoint" || mounted=false
+		fi
 		list+=$( listItem networks "$mountpoint" "$source" $mounted )
 	done <<< $nas
 fi
