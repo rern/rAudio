@@ -23,7 +23,10 @@ function REFRESHDATA() {
 				, message     : V.i_warning +'<wh>Server offline</wh>'
 								+'<br><br>Disable and restore local data?'
 				, buttonlabel : ICON( 'refresh' ) +'Retry'
-				, button      : REFRESHDATA
+				, button      : () => {
+					REFRESHDATA();
+					COMMON.loader();
+				}
 				, oklabel     : ICON( 'flash' ) +'Disable'
 				, okcolor     : V.orange
 				, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
