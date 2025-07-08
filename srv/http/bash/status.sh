@@ -8,9 +8,9 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data server offline or not mounted
+if [[ -L $dirmpd ]] && ! timeout 1 mountpoint -q $dirnas/data; then # shared data server offline or not mounted
 	mountFstab
-	[[ ! -e $dirmpd/counts ]] && echo -1 && exit
+	! timeout 1 mountpoint -q $dirnas/data && echo -1 && exit
 # --------------------------------------------------------------------
 fi
 
