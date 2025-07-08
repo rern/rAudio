@@ -17,6 +17,7 @@ $head = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
+$B->bluetooth$B->btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
@@ -37,8 +38,6 @@ $B->search Available devices
 	
 Note:
 Forget / remove should be done on both rAudio and sender
-
-$B->bluetooth$B->btsender Context menu
 EOF
 ];
 $body = [ '<ul id="bluetooth" class="entries"></ul>' ];
@@ -52,12 +51,11 @@ $head = [
 	, 'help'   => <<< EOF
 $B->add Manual connect
 $B->search Available networks
+$B->wifi$B->ap Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar $B->wifi1 might be unstable.
-
-$B->wifi$B->ap Context menu
 EOF
 ];
 $body = [ '<ul id="wlan" class="entries"></ul>' ];

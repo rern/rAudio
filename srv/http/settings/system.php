@@ -61,6 +61,7 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Add network storage
+$B->microsd$B->usbdrive$B->networks Context menu
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by $B->add Add network storage:
@@ -79,8 +80,7 @@ Note:
  · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
  · Windows shares without password: <c>net user guest /active:yes</c>
 
-<div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
-$B->microsd$B->usbdrive$B->networks Context menu</div>
+<div class="helpblock hide">Path: <c>/mnt/MPD/...</c></div>
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
