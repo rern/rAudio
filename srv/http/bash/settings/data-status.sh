@@ -168,7 +168,7 @@ $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )"
-	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
+	ignorepkg=$( grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf )
 	[[ $ignorepkg ]] && config+="
 	
 <bll># grep ^IgnorePkg /etc/pacman.conf</bll>
