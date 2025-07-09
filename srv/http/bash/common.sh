@@ -257,6 +257,7 @@ fstabMount() {
 		
 		timeout 0.5 mount "$mountpoint" &> /dev/null
 	done <<< $mountpoint
+	pushStorage
 }
 fstabSet() {
 	umount -ql "$1"
@@ -430,6 +431,9 @@ pushRefresh() {
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
+}
+pushStorage() {
+	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 }
 pushWebsocket() {
 	local channel data ip
