@@ -8,11 +8,13 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd ]] && ! timeout 0.5 mountpoint -q $dirnas/data; then # shared data server offline or not mounted
-	fstabMount
-	! timeout 0.5 mountpoint -q $dirnas/data && echo -1 && exit
+if [[ -L $dirmpd ]] && ! systemctl -q is-active nfs-server; then
+	if ! timeout 0.5 mountpoint -q $dirnas/data; then # shared data server offline or not mounted
+		fstabMount
+		! timeout 0.5 mountpoint -q $dirnas/data && echo -1 && exit
 # --------------------------------------------------------------------
-	systemctl start mpd
+		systemctl start mpd
+	fi
 fi
 
 ip=$( ipAddress )
