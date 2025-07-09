@@ -808,8 +808,7 @@ var UTIL          = {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
 			var cls        = list.size ? 'current' : 'profile';
-			var shareddata = list.shareddata ? ' data-shareddata="true"' : '';
-			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'"'+ shareddata +'>'
+			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
 							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
@@ -1036,8 +1035,6 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	var shareddata = $li.data( 'shareddata' );
-	if ( shareddata && $li.hasClass( 'current' ) ) BANNER( 'networks', 'Shared Data', 'Currently in use', 5000 );
 	var mountpoint = $li.data( 'mountpoint' );
 	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -1046,9 +1043,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var mounted = $li.hasClass( 'current' );
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' )
-			.toggleClass( 'hide', usb )
-			.toggleClass( 'disabled', shareddata !== undefined );
+		$( '#menu .forget' ).toggleClass( 'hide', usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
@@ -1130,8 +1125,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 	}
 	switch ( cmd ) {
 		case 'forget':
-			NOTIFY( icon, title, 'Forget ...' );
-			BASH( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
+		case 'unmount':
+			if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint ) ) {
+				_INFO.warning( 'networks', 'NAS', 'Used by <wh>Shared Data</wh>' );
+				BANNER_HIDE();
+				return
+			}
+			
+			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
+			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
 			STATUS( 'storage', source, 'info' );
@@ -1166,10 +1168,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					}
 				} );
 			} );
-			break
-		case 'unmount':
-			NOTIFY( icon, title, 'Unmount ...' )
-			BASH( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
 } );
