@@ -2,12 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+dot='<gr>·</gr>'
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
-load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
+load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | '$dot' |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
-date=$( date +'%F <gr>·</gr> %T' )
+date=$( date +"%F $dot %T" )
 date+="<wide class='gr'>&ensp;${timezone/\// · }</wide>"
 since=$( uptime -s | cut -d: -f1-2 | sed 's/ / · /' )
 uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
@@ -83,7 +84,7 @@ else
 				cpu=Cortex-A76
 				soc=2712;;
 		esac
-		[[ $C != 0 ]] && cpu="4 x $cpu"
+		[[ $C != 0 ]] && cpu="$cpu x 4"
 		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
 		soc=BCM$soc
 		free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
@@ -94,7 +95,7 @@ else
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
 $model<br>\
-$soc <gr>•</gr> $free<br>\
+$soc $dot $free<br>\
 $cpu @ $speed"
 	echo $system > $dirshm/system
 fi
