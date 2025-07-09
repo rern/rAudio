@@ -913,9 +913,13 @@ function renderPage() {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
 		if ( 'wlan' in S ) {
-			$( '#wlan' )
-				.toggleClass( 'disabled', S.ap || S.wlanconnected )
-				.prev().html( S.ap ? LABEL_ICON( 'Access Point', 'ap' ) +' is currently enabled.' : LABEL_ICON( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
+			var wlandisabled = '';
+			if ( S.ap ) {
+				wlandisabled = LABEL_ICON( 'Access Point', 'ap' ) +' is currently enabled.';
+			} else if ( S.wlanconnected ) {
+				wlandisabled = LABEL_ICON( 'Wi-Fi', 'wifi' ) +' is currently connected.';
+			}
+			DISABLE( 'wlan', wlandisabled );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );

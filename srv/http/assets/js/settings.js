@@ -25,6 +25,11 @@ function CONTENT() {
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();
 }
+function DISABLE( id, disabled ) {
+	$( '#'+ id )
+		.toggleClass( 'disabled', disabled !== '' )
+		.prev().html( disabled );
+}
 function LABEL_ICON( label, icon ) {
 	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
 }

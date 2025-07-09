@@ -534,26 +534,14 @@ function renderPage() {
 	} else if ( S.shareddata ) {
 		smbdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
 	}
-	if ( smbdisabled ) {
-		$( '#smb' )
-			.addClass( 'disabled' )
-			.prev().html( smbdisabled );
-	} else {
-		$( '#smb' ).removeClass( 'disabled' );
-	}
+	DISABLE( 'smb', smbdisabled );
 	var nfsdisabled = '';
 	if ( S.smb ) {
 		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) +' is currently enabled.';
 	} else if ( S.nfsserver && S.nfsconnected ) {
 		nfsdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) +' is currently connected by clients';
 	}
-	if ( nfsdisabled ) {
-		$( '#nfsserver' )
-			.addClass( 'disabled' )
-			.prev().html( smbdisabled );
-	} else {
-		$( '#nfsserver' ).removeClass( 'disabled' );
-	}
+	DISABLE( 'nfsserver', nfsdisabled );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

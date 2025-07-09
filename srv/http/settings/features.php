@@ -222,7 +222,7 @@ EOF
 		, 'sub'      => 'smbd'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->serverraudio.$isenabled
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP or ftp when transfer large or a lot of files
