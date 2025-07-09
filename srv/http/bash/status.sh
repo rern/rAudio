@@ -12,6 +12,7 @@ if [[ -L $dirmpd ]] && ! timeout 0.5 mountpoint -q $dirnas/data; then # shared d
 	fstabMount
 	! timeout 0.5 mountpoint -q $dirnas/data && echo -1 && exit
 # --------------------------------------------------------------------
+	systemctl start mpd
 fi
 
 ip=$( ipAddress )
