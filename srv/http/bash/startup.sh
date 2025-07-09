@@ -65,7 +65,9 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 echo mpd > $dirshm/player
 
-lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
+if lsmod | grep -q -m1 brcmfmac; then
+	touch $dirshm/onboardwlan # initial status
+fi
 
 netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
