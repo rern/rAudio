@@ -1048,7 +1048,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' )
 			.toggleClass( 'hide', usb )
-			.toggleClass( 'disabled', shareddata );
+			.toggleClass( 'disabled', shareddata !== undefined );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
