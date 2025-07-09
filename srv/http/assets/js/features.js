@@ -528,16 +528,29 @@ var UTIL        = {
 	}
 }
 function renderPage() {
-	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	if ( S.nfsconnected || S.shareddata || S.smb ) {
-		var nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
-		$( '#nfsserver' ).addClass( 'disabled' );
-		if ( S.smb ) {
-			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
-		} else if ( S.nfsserver && S.nfsconnected ) {
-			nfsdisabled = 'Currently connected by clients';
-		}
-		$( '#nfsserver' ).prev().html( nfsdisabled );
+	var smbdisabled = '';
+	if ( S.nfsserver ) {
+		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) +' is currently enabled.';
+	} else if ( S.shareddata ) {
+		smbdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
+	}
+	if ( smbdisabled ) {
+		$( '#smb' )
+			.addClass( 'disabled' )
+			.prev().html( smbdisabled );
+	} else {
+		$( '#smb' ).removeClass( 'disabled' );
+	}
+	var nfsdisabled = '';
+	if ( S.smb ) {
+		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) +' is currently enabled.';
+	} else if ( S.nfsserver && S.nfsconnected ) {
+		nfsdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) +' is currently connected by clients';
+	}
+	if ( nfsdisabled ) {
+		$( '#nfsserver' )
+			.addClass( 'disabled' )
+			.prev().html( smbdisabled );
 	} else {
 		$( '#nfsserver' ).removeClass( 'disabled' );
 	}
