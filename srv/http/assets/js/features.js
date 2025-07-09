@@ -528,18 +528,19 @@ var UTIL        = {
 	}
 }
 function renderPage() {
+	var currently   = ' Currently enabled.';
 	var smbdisabled = '';
 	if ( S.nfsserver ) {
-		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) +' is currently enabled.';
+		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) + currently;
 	} else if ( S.shareddata ) {
-		smbdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
+		smbdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
 	}
 	DISABLE( 'smb', smbdisabled );
 	var nfsdisabled = '';
 	if ( S.smb ) {
-		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) +' is currently enabled.';
+		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) + currently;
 	} else if ( S.nfsserver && S.nfsconnected ) {
-		nfsdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) +' is currently connected by clients';
+		nfsdisabled = 'Currently connected by clients';
 	}
 	DISABLE( 'nfsserver', nfsdisabled );
 	if ( S.nosound ) {
