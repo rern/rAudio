@@ -100,9 +100,9 @@ var CONFIG       = {
 				, [ '',                          'checkbox' ]
 			]
 			, footer       : _INFO.footerIcon( {
-				  Reload     : 'reload'
-				, Screenoff  : 'screenoff'
-				, Brightness : 'brightness'
+				  Reload          : 'reload'
+				, 'Screen on/off' : 'screenoff'
+				, Brightness      : 'brightness'
 			} )
 			, boxwidth     : 70
 			, values       : { ...data.values, R_CHANGED: false, RESTART: false }

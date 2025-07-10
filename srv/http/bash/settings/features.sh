@@ -34,21 +34,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-localbrowserXset() {
-	local off
-	. $dirsystem/localbrowser.conf
-	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
-	xset s off
-	xset dpms $off $off $off
-	if [[ $off == 0 ]]; then
-		xset -dpms
-	elif [[ $onwhileplay ]]; then
-		[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
-	else
-		xset +dpms
-	fi
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -277,7 +262,7 @@ screentoggle )
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
 	xset dpms force $onoff
-	xset q | grep 'Monitor is'
+	echo Screen $onoff
 	;;
 scrobblekey )
 	. <( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | sed 's/.*, //; s/ *: /=/' )
@@ -399,7 +384,13 @@ spotifytoken )
 	pushRefresh
 	;;
 startx )
-	localbrowserXset
+	. $dirsystem/localbrowser.conf
+	export DISPLAY=:0
+	off=$(( $screenoff * 60 ))
+	xset s off
+	xset dpms $off $off $off
+	[[ $off == 0 ]] && xset -dpms || xset +dpms
+	[[ $onwhileplay && $( mpcState ) == play ]] && xset -dpms || xset +dpms
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 	profile=$( ls /root/.mozilla/firefox | grep release$ )
@@ -413,6 +404,7 @@ EOF
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
+	cp -f /.Xauthority /root
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
