@@ -41,7 +41,7 @@ fi
 if [[ -d /sys/class/backlight/rpi_backlight ]]; then
 	echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 elif [[ -e $dirsystem/localbrowser ]]; then
-	DISPLAY=:0 xset dpms force off
+	DISPLAY=:0 sudo xset dpms force off
 fi
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

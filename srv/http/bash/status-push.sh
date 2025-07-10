@@ -14,10 +14,10 @@ onWhilePlay() {
 	if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 		export DISPLAY=:0
 		if [[ $state == play ]]; then
-			xset -dpms
-			xset dpms force on
+			sudo xset dpms force on
+			sudo xset -dpms
 		else
-			xset +dpms
+			sudo xset +dpms
 		fi
 	fi
 }

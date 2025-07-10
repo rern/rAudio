@@ -260,8 +260,8 @@ screentoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
-	xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
-	xset dpms force $onoff
+	sudo xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
+	sudo xset dpms force $onoff
 	echo Screen $onoff
 	;;
 scrobblekey )
@@ -387,10 +387,12 @@ startx )
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
 	off=$(( $screenoff * 60 ))
-	xset s off
-	xset dpms $off $off $off
-	[[ $off == 0 ]] && xset -dpms || xset +dpms
-	[[ $onwhileplay && $( mpcState ) == play ]] && xset -dpms || xset +dpms
+	sudo xset s off
+	sudo xset dpms $off $off $off
+	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
+	if [[ $onwhileplay ]]; then
+		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
+	fi
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 	profile=$( ls /root/.mozilla/firefox | grep release$ )
