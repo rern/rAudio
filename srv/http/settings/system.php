@@ -356,16 +356,8 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
-	    'Inconsolata font'
-	  , 'A monospace font designed for printed code listings and the like'
-	  , 'https://fonts.google.com/specimen/Inconsolata'
-	],[
-	    'Lato-Fonts'
-	  , 'A san-serif typeface family'
-	  , 'http://www.latofonts.com/lato-free-fonts'
-	],[
 	    'pica'
-	  , 'Resize image in browser with high quality and high speed'
+	  , 'Resize image in browser'
 	  , 'https://github.com/nodeca/pica'
 	],[
 	    'Plotly'
@@ -404,11 +396,15 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 		<a href="https://whatwg.org">HTML</a> · Hypertext Markup Language for displaying documents in web browsers<br>
 		<a href="https://nginx.org/en/">nginx</a> · HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
 		<a href="https://www.php.net">PHP</a> · PHP: Hypertext Preprocessor - A scripting language for web server side<br>
-		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model on client side<br>
+		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model<br>
 		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
 	</div>
-	<div class="listtitle jsplugins">Javascript Plugins:</div>
-	<div class="list hide"><?=$uihtml?></div>
+	<div class="listtitle jsplugins">Plugins and Fonts:</div>
+	<div class="list hide">
+		<?=$uihtml?>
+		Fonts: <a href="https://fonts.google.com/specimen/Inconsolata" target="_blank" tabindex="-1">Inconsolata</a>
+		<a href="http://www.latofonts.com/lato-free-fonts" target="_blank" tabindex="-1">Lato</a>
+	</div>
 	
 	<heading class="subhead">Data</heading>
 	<div class="list">
