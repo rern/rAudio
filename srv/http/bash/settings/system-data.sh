@@ -60,7 +60,6 @@ else
 	if [[ $model == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		[[ $C == 2 ]] && C+=$BB
 		case $C in
 			0 )
 				cpu=ARM1176JZF-S
@@ -68,15 +67,14 @@ else
 			1 )
 				cpu=Cortex-A7
 				soc=2836;;
-			204 | 208 )
+			2 )
 				cpu=Cortex-A53
-				soc=2837;;
-			20d | 20e )
-				cpu=Cortex-A53
-				soc=2837B0;;
-			212 )
-				cpu=Cortex-A53
-				soc=2710A1;;
+				case $BB in
+					04 ) soc=2837;;
+					0d ) soc=2837B0;;
+					12 ) soc=2710A1;;
+				esac
+				;;
 			3 )
 				cpu=Cortex-A72
 				soc=2711;;
