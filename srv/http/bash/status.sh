@@ -8,9 +8,9 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd ]] && timeout 0.5 ! test -e $dirmpd; then # shared data server offline or not mounted
+if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server offline or not mounted
 	fstabMount
-	timeout 0.5 ! test -e $dirmpd && echo -1 && exit
+	! timeout 0.5 test -e $dirmpd && echo -1 && exit
 # --------------------------------------------------------------------
 	systemctl start mpd
 fi
