@@ -8,9 +8,9 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd && ! -e $dirdata/mpd ]]; then # shared data server offline or not mounted
+if [[ -L $dirmpd && ! -e $dirmpd ]]; then # shared data server offline or not mounted
 	fstabMount
-	[[ ! -e $dirdata/mpd ]] && echo -1 && exit
+	[[ ! -e $dirmpd ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	systemctl start mpd
 fi

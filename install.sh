@@ -5,10 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250711
-if grep -q 'username=guest' /etc/fstab && ! grep -q 'username=guest,password=,' /etc/fstab; then
-	sed -i 's/username=guest/&,password=/' /etc/fstab
-	systemctl daemon-reload
-fi
+for file in /etc/fstab $dirnas/data/source; do
+	if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
+		sed -i 's/username=guest/&,password=/' $file
+		systemctl daemon-reload
+	fi
+done
 
 file=$dirmpdconf/conf/httpd.conf
 grep -q quality $file && sed -i '/quality/ d' $file
