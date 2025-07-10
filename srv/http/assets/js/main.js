@@ -440,8 +440,9 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 		clearTimeout( V.volumebar );
 		VOLUME.barHide( 0 );
 		return
-		
-	} else if ( 'screenoff' in V ) {
+	}
+	
+	if ( V.screenoff ) {
 		delete V.screenoff;
 		return
 	}

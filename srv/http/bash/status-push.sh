@@ -11,9 +11,14 @@ isChanged() {
 	done
 }
 onWhilePlay() {
-	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
+	if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 		export DISPLAY=:0
-		[[ $state == play ]] && xset -dpms || xset +dpms
+		if [[ $state == play ]]; then
+			xset -dpms
+			xset dpms force on
+		else
+			xset +dpms
+		fi
 	fi
 }
 
