@@ -257,7 +257,6 @@ fstabMount() {
 		
 		timeout 0.5 mount "$mountpoint" &> /dev/null
 	done <<< $mountpoint
-	pushStorage
 }
 fstabSet() {
 	umount -ql "$1"
