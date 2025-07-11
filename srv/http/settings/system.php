@@ -64,7 +64,7 @@ $B->add Add network storage
 $B->microsd$B->usbdrive$B->networks Context menu
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by $B->add Add network storage:
+ · Commands used by $B->add:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
@@ -121,7 +121,8 @@ EOF
 		, 'help'     => <<< EOF
 $B->gear
 Country of Wi-Fi regulatory domain:
-	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
+<c>00</c> Least common denominator settings
+	· Channels and transmit power permitted in all countries.
 	· The connected router may override it to a certain country.
 ■ Auto start Access Point - On failed connection or no router
 EOF
@@ -319,8 +320,8 @@ Connect shared data as client for:
 
 Note:
  • Enabled - $B->microsd SD and $B->usbdrive USB:
-	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
-	 · Not availble in Library home
+	· Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
+	· Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
@@ -330,25 +331,25 @@ Note:
 	<wh>Server</wh>: Create 2 shares: <gr>(any names)</gr>
 		· <c>SOURCE</c> for music files
 		· <c>DATABASE</c> for database and settings
-		Permissions: <gr>Full Control</gr>
-		  · Linux:
-			· NFS » <c>777</c>
-			· CIFS/SMB » <c>read only = no</c>
-		  · Windows:
-			· <tab>Sharing</tab>
-				<btn>Advanced Sharing...</btn> ■ Share this folder
-				<btn>Permissions</btn> » Everyone ■ Full Control
-			· <tab>Security</tab>
-				<btn>Edit...</btn> » Everyone ■ Full Control
+		· Permissions: <gr>Full Control</gr>
+			· Linux:
+				NFS » <c>777</c>
+				CIFS/SMB » <c>read only = no</c>
+			· Windows:
+				<tab>Sharing</tab>
+					<btn>Advanced Sharing...</btn> ■ Share this folder
+					<btn>Permissions</btn> » Everyone ■ Full Control
+				<tab>Security</tab>
+					<btn>Edit...</btn> » Everyone ■ Full Control
 	<wh>Clients</wh>:
-	 · 1st client:
-		· $L->storage $B->add » <c>SOURCE</c>
-		· $M->refreshlibrary Update database
-		· $L->shareddata » <c>DATABASE</c>
-		· Local data will be transfered to <c>DATABASE</c>
-	 · Other clients:
-		· $L->shareddata » <c>DATABASE</c>
-		· <c>SOURCE</c> will be connected accordingly
+		· 1st client:
+			$L->storage $B->add » <c>SOURCE</c>
+			$M->refreshlibrary Update database
+			$L->shareddata » <c>DATABASE</c>
+			<gr>(Local data will be transfered to <c>DATABASE</c>)</gr>
+		· Other clients:
+			$L->shareddata » <c>DATABASE</c>
+			<gr>(<c>SOURCE</c> will be connected accordingly.)</gr>
 EOF
 	]
 ];
@@ -356,6 +357,30 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
+	    'CSS'
+	  , 'Cascading Style Sheets for describing the presentation of HTMLs'
+	  , 'https://www.w3.org/TR/CSS'
+	],[
+	    'HTML'
+	  , 'Hypertext Markup Language for displaying documents in web browsers'
+	  , 'https://whatwg.org'
+	],[
+	    'nginx'
+	  , 'HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server'
+	  , 'https://nginx.org/en/'
+	],[
+	    'PHP'
+	  , 'PHP: Hypertext Preprocessor - A scripting language for web server side'
+	  , 'https://www.php.net'
+	],[
+	    'JavaScript'
+	  , 'A scripting language for working with HTML Document Object Model'
+	  , 'https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+	],[
+	    'jQuery'
+	  , 'A JavaScript library for simplifying HTML DOM tree traversal and manipulation'
+	  , 'https://jquery.com/'
+	],[
 	    'pica'
 	  , 'Resize image in browser'
 	  , 'https://github.com/nodeca/pica'
@@ -367,6 +392,14 @@ $listui      = [
 	    'qr.js'
 	  , 'QR code generator'
 	  , 'https://github.com/lifthrasiir/qr.js'
+	],[
+	    'Lato'
+	  , 'Main font'
+	  , 'http://www.latofonts.com/lato-free-fonts'
+	],[
+	    'Inconsolata'
+	  , 'Code font'
+	  , 'https://fonts.google.com/specimen/Inconsolata'
 	]
 ];
 $uihtml      = '';
@@ -391,20 +424,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	<div class="list"></div>
 	
 	<heading class="subhead">Front End</heading>
-	<div class="list">
-		<a href="https://www.w3.org/TR/CSS">CSS</a> · Cascading Style Sheets for describing the presentation of HTMLs<br>
-		<a href="https://whatwg.org">HTML</a> · Hypertext Markup Language for displaying documents in web browsers<br>
-		<a href="https://nginx.org/en/">nginx</a> · HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
-		<a href="https://www.php.net">PHP</a> · PHP: Hypertext Preprocessor - A scripting language for web server side<br>
-		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model<br>
-		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
-	</div>
-	<div class="listtitle jsplugins">Plugins and Fonts:</div>
-	<div class="list hide">
-		<?=$uihtml?>
-		Fonts: <a href="https://fonts.google.com/specimen/Inconsolata" target="_blank" tabindex="-1">Inconsolata</a>
-		<a href="http://www.latofonts.com/lato-free-fonts" target="_blank" tabindex="-1">Lato</a>
-	</div>
+	<div class="list"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>
 	<div class="list">

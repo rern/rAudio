@@ -117,6 +117,7 @@ div.helpblock {
 	line-height: 22px;
 	color: var( --cg75 );
 	white-space: pre-wrap;
+	tab-size: 20px;
 }
 heading + .helpblock {
 	margin-bottom: 30px;
@@ -197,14 +198,16 @@ heading + .helpblock {
 btn,
 tab {
 	display: inline-block;
-	line-height: 22px;
-	padding: 0 3px;
+	line-height: 20px;
+	padding: 0 7px;
 	border: 1px solid var( --cg );
 	border-radius: var( --radius-chk );
+	background: var( --cga );
 }
 tab {
-	padding: 0 20px;
-	border-radius: 3px 3px 0 0;
+	padding: 2px 20px 0;
+	border-radius: 4px 4px 0 0;
+	border: none;
 }
 .clear {
 	clear: both;
