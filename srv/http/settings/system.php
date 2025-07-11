@@ -316,7 +316,7 @@ EOF
 Connect shared data as client for:
  · Library database
  · Data: Audio CD, bookmarks, lyrics, saved playlists and Web Radio
- · Display: Item toggles and order of Library home
+ · Display: Items, options and order of Library home
 
 Note:
  • Enabled - $B->microsd SD and $B->usbdrive USB:
