@@ -349,7 +349,7 @@ Note:
 			<gr>(Local data will be transfered to <c>DATABASE</c>)</gr>
 		· Other clients:
 			$L->shareddata » <c>DATABASE</c>
-			<gr>(<c>SOURCE</c> will be connected accordingly.)</gr>
+			<gr>(<c>SOURCE</c> will be arranged accordingly.)</gr>
 EOF
 	]
 ];
