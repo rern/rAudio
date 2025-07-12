@@ -89,8 +89,8 @@ Require:
 
 To create Spotify private app:
 <btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
-	- with normal Spotify account
-	- Verify email if prompted
+	» With normal Spotify account
+	» Verify email if prompted
 <btn>Create app</btn>
 	» App name: <c>rAudio</c>
 	» App description: <c>(any)</c>
@@ -98,11 +98,11 @@ To create Spotify private app:
 	» Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
 	<btn>Save</btn>
 <btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>Settings</btn>
-	» <btn>Basic Information</btn> » <btn>User Management</btn>
+	<btn>Basic Information</btn> » <btn>User Management</btn>
 		» Fullname - <c>(any)</c>
 		» Email - <c>(Spotify Account email)</c>
 		<btn>Add user</btn>
-	» <btn>Basic Information</btn> (the required data)
+	<btn>Basic Information</btn> (the required data)
 		- <c>Client ID</c>
 		- <c>Client secret</c>
 EOF
