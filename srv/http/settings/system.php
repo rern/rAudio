@@ -396,7 +396,7 @@ $listplugin  = [
 	  , 'https://github.com/nodeca/pica'
 	],[
 	    'Plotly'
-	  , 'Graphing Library (for Camilla DSP)'
+	  , 'Graphing Library <gr>(for Camilla DSP)</gr>'
 	  , 'https://plotly.com/javascript/'
 	],[
 	    'qr.js'
