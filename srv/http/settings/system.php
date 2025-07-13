@@ -431,7 +431,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	
 	<heading class="subhead">Front End</heading>
 	<div class="list"><?=hrefList( $listui )?></div>
-	<div class="listtitle jsplugins">Plugins:</div>
+	<div class="listtitle plugins">Plugins:</div>
 	<div class="list hide"><?=hrefList( $listplugin )?></div>
 	
 	<heading class="subhead">Data</heading>

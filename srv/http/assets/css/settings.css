@@ -234,7 +234,7 @@ heading.subhead {
 heading.status .headtitle::after,
 .col-l.status gr::after,
 #ffmpegfiletype::after,
-.listtitle.jsplugins::after,
+.listtitle.plugins::after,
 .divaddon .revision::after {
 	display: inline-block;
 	width: 40px;
@@ -249,13 +249,13 @@ heading.status .headtitle::after,
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
 #ffmpegfiletype.active::after,
-.listtitle.jsplugins.active::after,
+.listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
 }
 .col-l.status gr::after,
 #ffmpegfiletype::after,
-.listtitle.jsplugins::after,
+.listtitle.plugins::after,
 .divaddon .revision::after {
 	width: 17px;
 	font-size: 14px;
