@@ -20,6 +20,13 @@ commonVariables( [
 	]
 	, 'tabs'    => [ 'features', 'player' ]
 ] );
+function hrefList( $list ) {
+	$html      = '';
+	foreach( $list as $l ) {
+		$html.= '<a href="'.$l[ 2 ].'">'.$l[ 0 ].'</a> · '.$l[ 1 ].'<br>';
+	}
+	return $html;
+}
 // ----------------------------------------------------------------------------------
 $head        = [
 	  'title'  => 'System'
@@ -357,14 +364,6 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
-	    'CSS'
-	  , 'Cascading Style Sheets for describing the presentation of HTMLs'
-	  , 'https://www.w3.org/TR/CSS'
-	],[
-	    'HTML'
-	  , 'Hypertext Markup Language for displaying documents in web browsers'
-	  , 'https://whatwg.org'
-	],[
 	    'nginx'
 	  , 'HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server'
 	  , 'https://nginx.org/en/'
@@ -373,10 +372,21 @@ $listui      = [
 	  , 'PHP: Hypertext Preprocessor - A scripting language for web server side'
 	  , 'https://www.php.net'
 	],[
+	    'CSS'
+	  , 'Cascading Style Sheets for describing the presentation of HTMLs'
+	  , 'https://www.w3.org/TR/CSS'
+	],[
+	    'HTML'
+	  , 'Hypertext Markup Language for displaying documents in web browsers'
+	  , 'https://whatwg.org'
+	],[
 	    'JavaScript'
 	  , 'A scripting language for working with HTML Document Object Model'
 	  , 'https://developer.mozilla.org/en-US/docs/Web/JavaScript'
-	],[
+	]
+];
+$listplugin  = [
+	[
 	    'jQuery'
 	  , 'A JavaScript library for simplifying HTML DOM tree traversal and manipulation'
 	  , 'https://jquery.com/'
@@ -386,7 +396,7 @@ $listui      = [
 	  , 'https://github.com/nodeca/pica'
 	],[
 	    'Plotly'
-	  , 'Graphing Library'
+	  , 'Graphing Library (for Camilla DSP)'
 	  , 'https://plotly.com/javascript/'
 	],[
 	    'qr.js'
@@ -398,14 +408,10 @@ $listui      = [
 	  , 'http://www.latofonts.com/lato-free-fonts'
 	],[
 	    'Inconsolata'
-	  , 'Code font'
+	  , 'Monospace font'
 	  , 'https://fonts.google.com/specimen/Inconsolata'
 	]
 ];
-$uihtml      = '';
-foreach( $listui as $ui ) {
-	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
-}
 $indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 ?>
@@ -424,7 +430,9 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	<div class="list"></div>
 	
 	<heading class="subhead">Front End</heading>
-	<div class="list"><?=$uihtml?></div>
+	<div class="list"><?=hrefList( $listui )?></div>
+	<div class="listtitle jsplugins">Plugins:</div>
+	<div class="list hide"><?=hrefList( $listplugin )?></div>
 	
 	<heading class="subhead">Data</heading>
 	<div class="list">
