@@ -129,7 +129,7 @@ $body         = [
 	[
 		  'id'       => 'httpd'
 		, 'label'    => 'For browsers'
-		, 'sub'      => 'MPD httpd'
+		, 'sub'      => 'mpd httpd'
 		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
@@ -219,7 +219,7 @@ EOF
 	, [
 		  'id'       => 'smb'
 		, 'label'    => 'File Sharing'
-		, 'sub'      => 'smbd'
+		, 'sub'      => 'samba'
 		, 'status'   => true
 		, 'exist'    => true
 		, 'disabled' => 'js'
@@ -246,7 +246,6 @@ EOF
 	, [
 		  'id'       => 'multiraudio'
 		, 'label'    => 'Multiple rAudios'
-		, 'sub'      => 'multiraudio'
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: $M->multiraudio
@@ -255,7 +254,6 @@ EOF
 	, [
 		  'id'       => 'login'
 		, 'label'    => 'Password Login'
-		, 'sub'      => 'password_hash'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: $M->lock
@@ -264,7 +262,6 @@ EOF
 	, [
 		  'id'       => 'scrobble'
 		, 'label'    => 'Scrobbler'
-		, 'sub'      => 'Last.fm'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
