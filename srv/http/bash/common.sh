@@ -247,16 +247,10 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
-fstabMount() {
-	nas=$( grep /mnt/MPD/NAS /etc/fstab )
-	[[ ! $nas ]] && return
-	
-	mountpoint=$( awk '{print $2}' <<< $nas | sed 's/\\040/ /g' )
-	while read mountpoint; do
-		timeout 0.5 mountpoint -q "$mountpoint" && continue
-		
-		timeout 0.5 mount "$mountpoint" &> /dev/null
-	done <<< $mountpoint
+fstabMountpoint() {
+	grep /mnt/MPD/NAS /etc/fstab \
+		| awk '{print $2}' \
+		| sed 's/\\040/ /g'
 }
 fstabSet() {
 	umount -ql "$1"

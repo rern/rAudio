@@ -13,7 +13,11 @@ if [[ -e /boot/expand ]]; then # run once
 	mv /var/log/journal/{$id0,$id1}
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	if [[ ${partition:0:7} == /dev/sd ]]; then
+		dev=${partition:0:-1}
+	else
+		dev=${partition:0:-2}
+	fi
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
@@ -52,12 +56,16 @@ fi
 
 logoLcdOled
 
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
+if [[ -e $dirsystem/soundprofile ]]; then
+	$dirsettings/system.sh soundprofileset
+fi
 
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
 	chmod 666 $dirbacklight/{brightness,bl_power}
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $dirbacklight/brightness
+	if [[ -e $dirsystem/brightness ]]; then
+		cat $dirsystem/brightness > $dirbacklight/brightness
+	fi
 fi
 
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
@@ -73,14 +81,25 @@ netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
 	ap=1
 else # if no connections, start accesspoint
-	[[ $netctllist ]] && sec=30 || sec=5 # wlan || lan
+	if [[ $netctllist ]]; then
+		sec=30
+	else
+		sec=5
+	fi
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
-		[[ $ipaddress ]] && break || sleep 1
+		if [[ $ipaddress ]]; then
+			break
+		else
+			sleep 1
+		fi
 	done
 	if [[ $ipaddress ]]; then
-		if grep -q noauto /etc/fstab; then
-			fstabMount
+		nas=$( fstabMountpoint )
+		if [[ $nas ]]; then
+			while read mp; do
+				mount "$mp" &> /dev/null
+			done <<< $nas
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then
@@ -99,11 +118,15 @@ CMD TIMEZONE'
 	else
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $netctllist ]]; then
-				[[ ! -e $dirsystem/wlannoap ]] && ap=1
+				if [[ ! -e $dirsystem/wlannoap ]]; then
+					ap=1
+				fi
 			else
 				ap=1
 			fi
-			[[ $ap ]] && touch $dirshm/apstartup
+			if [[ $ap ]]; then
+				touch $dirshm/apstartup
+			fi
 		fi
 	fi
 fi
