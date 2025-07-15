@@ -6,7 +6,9 @@ alias=r1
 
 # 20250718
 file=/lib/systemd/system/mpd_oled.service
-if ! grep User $file; then
+if [[ -e $file ]] && ! grep User $file; then
+	rm -f /root/.config/cava
+	ln -sf /etc/cava.conf /root/.config
 	sed -i '/EnvironmentFile/ i\User=root' $file
 	reload=1
 fi
