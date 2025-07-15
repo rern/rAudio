@@ -4,10 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250711
+# 20250718
 file=/lib/systemd/system/mpd_oled.service
-if ! grep HOME $file; then
-	sed -i '/EnvironmentFile/ i\Environment=HOME=/tmp' $file
+if ! grep User $file; then
+	sed -i '/EnvironmentFile/ i\User=root' $file
 	reload=1
 fi
 
