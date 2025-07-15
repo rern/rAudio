@@ -5,12 +5,19 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250711
+file=/lib/systemd/system/mpd_oled.service
+if ! grep HOME $file; then
+	sed -i '/EnvironmentFile/ i\Environment=HOME=/tmp' $file
+	reload=1
+fi
+
 for file in /etc/fstab $dirnas/data/source; do
 	if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
 		sed -i 's/username=guest/&,password=/' $file
-		systemctl daemon-reload
+		reload=1
 	fi
 done
+[[ $reload ]] && systemctl daemon-reload
 
 file=$dirmpdconf/conf/httpd.conf
 grep -q quality $file && sed -i '/quality/ d' $file

@@ -580,7 +580,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			PLAYBACK.stop();
 			PROGRESS.set( 0 );
 			if ( S.webradio ) {
-				console.log(9)
 				S.coverart = false;
 				PLAYBACK.coverart();
 				PLAYBACK.info.set();

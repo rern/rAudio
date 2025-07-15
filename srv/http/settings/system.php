@@ -161,7 +161,7 @@ $body        = [
 	, [
 		  'id'       => 'lcdchar'
 		, 'label'    => 'Character LCD'
-		, 'sub'      => 'RPLCD'
+		, 'sub'      => 'python-rplcd'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
@@ -206,6 +206,7 @@ EOF
 		  'id'       => 'mpdoled'
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
+		, 'status'   => true
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 

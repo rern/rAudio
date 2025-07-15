@@ -78,6 +78,10 @@ $( tty2std 'timeout 0.1 rtl_test -t' )"
 $conf"
 		skip+='|configuration file does not exist|wildmidi'
 		;;
+	mpdoled )
+		PKG=mpd_oled
+		SERVICE=mpd_oled
+		;;
 	nfsserver )
 		PKG=nfs-utils
 		SERVICE=nfs-server
