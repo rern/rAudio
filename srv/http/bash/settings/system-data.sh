@@ -133,6 +133,10 @@ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' )"
 	data+='
 , "shareddata"     : true
 , "sharedpoint"    : '$( line2array "$mountpoint" )
+else
+	data+='
+, "shareddata"     : false
+, "sharedpoint"    : []'
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	ifwlan0=

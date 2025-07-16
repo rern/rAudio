@@ -278,12 +278,12 @@ $2"
 	column -t <<< $fstab > /etc/fstab
 	TEMP_fstab
 	systemctl daemon-reload
-	std=$( mount "$1" 2>&1 )
-	if [[ $? != 0 ]]; then
+	std=$( mount -a 2>&1 > /dev/null )
+	if [[ $std ]]; then
 		mv -f /tmp/fstab /etc
 		rmdir "$1"
 		systemctl daemon-reload
-		sed -n '1 {s/.*: //; p}' <<< $std
+		sed 's/$/<br>/' <<< $std
 	else
 		for i in {1..10}; do
 			sleep 1
