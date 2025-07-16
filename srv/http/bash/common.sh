@@ -17,6 +17,26 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
+TEMP_fstab() { # 20250718
+	for file in /etc/fstab $dirnas/data/source; do
+		[[ ! -e $file ]] && continue
+		
+		if grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
+			sed -i 's/username=guest/&,password=/' $file
+			reload=1
+		fi
+		if grep -q noauto, $file; then
+			sed -i 's/noauto,//' $file
+			reload=1
+		fi
+	done
+	if [[ $reload ]]; then
+		fstab=$( < /etc/fstab )
+		column -t <<< $fstab > /etc/fstab
+		systemctl daemon-reload
+	fi
+}
+
 # args2var "\
 #	command
 #	v1
@@ -672,24 +692,4 @@ volumeLimit() {
 		. $dirshm/output 
 	fi
 	$fn_volume $val% "$mixer" $card
-}
-
-TEMP_fstab() {
-	for file in /etc/fstab $dirnas/data/source; do
-		[[ ! -e $file ]] && continue
-		
-		if grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
-			sed -i 's/username=guest/&,password=/' $file
-			reload=1
-		fi
-		if grep -q noauto, $file; then
-			sed -i 's/noauto,//' $file
-			reload=1
-		fi
-	done
-	if [[ $reload ]]; then
-		fstab=$( < /etc/fstab )
-		column -t <<< $fstab > /etc/fstab
-		systemctl daemon-reload
-	fi
 }
