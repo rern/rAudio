@@ -676,11 +676,13 @@ volumeLimit() {
 
 TEMP_fstab() {
 	for file in /etc/fstab $dirnas/data/source; do
-		if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
+		[[ ! -e $file ]] && continue
+		
+		if grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
 			sed -i 's/username=guest/&,password=/' $file
 			reload=1
 		fi
-		if [[ -e $file ]] && grep -q noauto, $file; then
+		if grep -q noauto, $file; then
 			sed -i 's/noauto,//' $file
 			reload=1
 		fi
