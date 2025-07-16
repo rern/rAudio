@@ -26,10 +26,10 @@ share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
 	[[ ! $USR ]] && USR=quest
 	source="//$IP/$share"
-	options="noauto,username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
+	options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
 else
 	source="$IP:/$share"
-	options=defaults,noauto,bg,soft,timeo=5
+	options=defaults,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
 fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
