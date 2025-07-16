@@ -77,11 +77,11 @@ mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
-      -o noauto,username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
+      -o username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
 
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
-      -o defaults,noauto,bg,soft,timeo=5
+      -o defaults,bg,soft,timeo=5
 </pre>
 Note:
  · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
