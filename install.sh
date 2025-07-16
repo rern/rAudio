@@ -10,20 +10,8 @@ if [[ -e $file ]] && ! grep User $file; then
 	rm -f /root/.config/cava
 	ln -sf /etc/cava.conf /root/.config
 	sed -i '/EnvironmentFile/ i\User=root' $file
-	reload=1
+	systemctl daemon-reload
 fi
-
-for file in /etc/fstab $dirnas/data/source; do
-	if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
-		sed -i 's/username=guest/&,password=/' $file
-		reload=1
-	fi
-	if [[ -e $file ]] && grep -q noauto, $file; then
-		sed -i 's/noauto,//' $file
-		reload=1
-	fi
-done
-[[ $reload ]] && systemctl daemon-reload
 
 file=$dirmpdconf/conf/httpd.conf
 grep -q quality $file && sed -i '/quality/ d' $file
@@ -65,5 +53,8 @@ getinstallzip
 dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+
+# 20250718
+TEMP_fstab
 
 installfinish

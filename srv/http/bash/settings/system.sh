@@ -310,12 +310,12 @@ shareddatadisable )  # server rAudio / other server
 	if grep -q $dirshareddata /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
-		for s in "${source[@]}"; do
+		while read s; do
 			mp=${s//\040/ }
 			umount -l "$mp"
 			rmdir "$mp" &> /dev/null
 			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
-		done
+		done <<< $source
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
 	else                                       # server rAudio

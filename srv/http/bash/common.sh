@@ -256,6 +256,7 @@ fstabSet() {
 $( < /etc/fstab )
 $2"
 	column -t <<< $fstab > /etc/fstab
+	TEMP_fstab
 	systemctl daemon-reload
 	std=$( mount "$1" 2>&1 )
 	if [[ $? != 0 ]]; then
@@ -500,10 +501,11 @@ sharedDataLink() {
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 	
 	readarray -t source <<< $( < $dirshareddata/source )
-	for s in "${source[@]}"; do
+	while read s; do
 		ip_share=${s/ *}
 		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
-	done
+	done <<< $source
+	TEMP_fstab
 }
 sharedDataReset() {
 	mpc -q clear
@@ -670,4 +672,22 @@ volumeLimit() {
 		. $dirshm/output 
 	fi
 	$fn_volume $val% "$mixer" $card
+}
+
+TEMP_fstab() {
+	for file in /etc/fstab $dirnas/data/source; do
+		if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
+			sed -i 's/username=guest/&,password=/' $file
+			reload=1
+		fi
+		if [[ -e $file ]] && grep -q noauto, $file; then
+			sed -i 's/noauto,//' $file
+			reload=1
+		fi
+	done
+	if [[ $reload ]]; then
+		fstab=$( < /etc/fstab )
+		column -t <<< $fstab > /etc/fstab
+		systemctl daemon-reload
+	fi
 }

@@ -42,18 +42,6 @@ fi
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
 rm -rf $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-
-# temp 20250716---------------------------------->>
-for file in /etc/fstab $dirnas/data/source; do
-	if [[ -e $file ]] && grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
-		sed -i 's/username=guest/&,password=/' $file
-	fi
-	if [[ -e $file ]] && grep -q noauto, $file; then
-		sed -i 's/noauto,//' $file
-	fi
-done
-# temp 20250716----------------------------------<<
-
 dirs=$( ls -d $dirnas/*/ 2> /dev/null )
 if [[ $dirs ]]; then
 	while read dir; do
@@ -69,6 +57,11 @@ if [[ $mountpoints ]]; then
 		chown mpd:audio "$mp"
 	done <<< $mountpoints
 fi
+
+# temp 20250716---------------------------------->>
+TEMP_fstab
+# temp 20250716----------------------------------<<
+
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
 
 $dirbash/power.sh reboot
