@@ -18,6 +18,10 @@ for file in /etc/fstab $dirnas/data/source; do
 		sed -i 's/username=guest/&,password=/' $file
 		reload=1
 	fi
+	if [[ -e $file ]] && grep -q noauto, $file; then
+		sed -i 's/noauto,//' $file
+		reload=1
+	fi
 done
 [[ $reload ]] && systemctl daemon-reload
 

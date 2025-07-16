@@ -95,11 +95,8 @@ else # if no connections, start accesspoint
 		fi
 	done
 	if [[ $ipaddress ]]; then
-		nas=$( fstabMountpoint )
-		if [[ $nas ]]; then
-			while read mp; do
-				mount "$mp" &> /dev/null
-			done <<< $nas
+		if grep -q /mnt/MPD/NAS /etc/fstab; then
+			mount -a &> /dev/null
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then
