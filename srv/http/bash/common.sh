@@ -525,7 +525,6 @@ sharedDataLink() {
 		ip_share=${s/ *}
 		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
 	done <<< $source
-	TEMP_fstab
 }
 sharedDataReset() {
 	mpc -q clear
