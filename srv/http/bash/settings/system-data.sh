@@ -103,7 +103,6 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
-
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
@@ -120,7 +119,6 @@ data+='
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "rpi3plus"       : '$rpi3plus'
-, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data && echo true )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
@@ -128,6 +126,14 @@ data+='
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
+if [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data; then
+	mountpoint="\
+/mnt/MPD/NAS/data
+$( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' )"
+	data+='
+, "shareddata"     : true
+, "sharedpoint"    : '$( line2array "$mountpoint" )
+fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	ifwlan0=
 ##########

@@ -1126,7 +1126,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
-			if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint ) ) {
+			if ( S.sharedpoint.includes( mountpoint ) ) {
 				_INFO.warning( 'networks', 'NAS', 'Used by <wh>Shared Data</wh>' );
 				BANNER_HIDE();
 				return
