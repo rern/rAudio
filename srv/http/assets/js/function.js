@@ -2299,7 +2299,6 @@ var UTIL      = {
 		
 		$.post( 'cmd.php', data, std => {
 			if ( std == -1 ) {
-				BANNER_HIDE();
 				var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
 				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 			}

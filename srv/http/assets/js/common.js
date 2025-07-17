@@ -1132,6 +1132,7 @@ var _INFO     = {
 		return v                                                        // json
 	}
 	, warning       : ( icon, title, message, callback ) => {
+		BANNER_HIDE();
 		INFO( {
 			  icon    : icon
 			, title   : title

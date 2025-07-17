@@ -58,8 +58,7 @@ var CONFIG        = {
 										BANNER_HIDE();
 									}, 1000 );
 								} ).catch( () => {
-									_INFO.warning( SW.icon, SW.title, 'File download failed.' )
-									BANNER_HIDE();
+									_INFO.warning( SW.icon, SW.title, 'File download failed.' );
 								} );
 						} else {
 							INFO( {
@@ -93,10 +92,7 @@ var CONFIG        = {
 						.then( response => response.text() )
 						.then( message => {
 							COMMON.loaderHide();
-							if ( message ) {
-								BANNER_HIDE();
-								_INFO.warning(  SW.icon,  SW.title, message );
-							}
+							if ( message ) _INFO.warning(  SW.icon,  SW.title, message );
 						} );
 					COMMON.loader();
 				}
@@ -522,7 +518,6 @@ var UTIL          = {
 					}
 				}
 				, cancel     : SWITCH.cancel
-				, oknoreset  : true
 				, ok         : () => {
 					var infoval = _INFO.val();
 					if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
@@ -543,7 +538,6 @@ var UTIL          = {
 				, values    : values || { IP: I.active && I.values ? _INFO.val().IP : COMMON.ipSub( S.ip ) }
 				, checkip   : [ 0 ]
 				, cancel    : SWITCH.cancel
-				, oknoreset : true
 				, ok        : () => {
 					var infoval = _INFO.val();
 					NOTIFY( SW.icon, SW.title, 'Connect Server rAudio ...' );
@@ -555,10 +549,8 @@ var UTIL          = {
 			BASH( [ 'settings/system-mount.sh', 'cmd', ...args ], error => {
 				if ( error ) {
 					_INFO.warning( SW.icon, SW.title, '<wh>Mount failed:</wh><br><br>'+ error, () => {
-						'PROTOCOL' in values ? UTIL.mount.mount( values ) : UTIL.mount.rServer( values );
-					} )
-				} else {
-					$( '#infoX' ).trigger( 'click' );
+						UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( values );
+					} );
 				}
 			} );
 		}
@@ -1128,7 +1120,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'unmount':
 			if ( S.sharedpoint.includes( mountpoint ) ) {
 				_INFO.warning( 'networks', 'NAS', 'Used by <wh>Shared Data</wh>' );
-				BANNER_HIDE();
 				return
 			}
 			

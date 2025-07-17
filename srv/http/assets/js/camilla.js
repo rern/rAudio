@@ -2119,10 +2119,7 @@ var SETTING   = {
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( message => {
-						if ( message ) {
-							BANNER_HIDE();
-							_INFO.warning(  V.tab,  title, message );
-						}
+						if ( message ) _INFO.warning(  V.tab,  title, message );
 					} );
 			}
 		} );
