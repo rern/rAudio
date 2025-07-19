@@ -208,7 +208,7 @@ nfsserver )
 	mpc | grep -q ^Updating && systemctl restart mpd
 	rm -f $dirmpd/{listing,updating}
 	if [[ $ON ]]; then
-		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
+		mv /mnt/MPD/{SD,USB} $dirnas
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		ip=$( ipAddress )
@@ -222,8 +222,12 @@ nfsserver )
 		chmod 777 $dirnas $dirnas/{SD,USB}
 		chmod -R 777 $dirshareddata
 		sharedDataLink rserver
+		if [[ -e $dirbackup/mpd/mpd.db.backup ]]; then
+			backup=1
+			cp -f $dirbackup/mpd/mpd.db{.backup,}
+		fi
 		systemctl restart mpd
-		$dirbash/cmd.sh "mpcupdate
+		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
 CMD ACTION PATHMPD"
@@ -237,9 +241,10 @@ CMD ACTION PATHMPD"
 			done <<< $files
 		fi
 	else
-		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
-		rm -rf /mnt/MPD/NAS/data
-		rm -f /mnt/MPD/NAS/.mpdignore
+		mv $dirnas/{SD,USB} /mnt/MPD
+		mv $dirnas/data/mpd/mpd.db $dirbackup/mpd/mpd.db.backup
+		rm -rf $dirnas/data
+		rm -f $dirnas/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		chmod 755 $dirnas $dirnas/{SD,USB}

@@ -511,6 +511,7 @@ sharedDataCopy() {
 }
 sharedDataLink() {
 	local ip_share s
+	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
 	mv -f $dirsystem/{display,order}.json $dirbackup
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata

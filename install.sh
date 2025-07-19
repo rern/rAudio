@@ -4,7 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250718
+# 20250725
+file=/etc/exports
+if [[ -e $file ]] && ! grep -q '/mnt/MPD/NAS .*crossmnt' $file; then
+	sed -i '\|^/mnt/MPD/NAS | s/)/,crossmnt)/' $file
+	systemctl restart nfs-server
+fi
+
 file=/lib/systemd/system/mpd_oled.service
 if [[ -e $file ]] && ! grep User $file; then
 	rm -f /root/.config/cava
