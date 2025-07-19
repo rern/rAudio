@@ -31,7 +31,7 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	onWhilePlay
 else
 	status=$( $dirbash/status.sh )
-	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd (<rpi4)
+	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
 	status=$( jq <<< $status )
 	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
 		filter+='|^  "'$k'"'
