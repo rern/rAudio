@@ -14,7 +14,7 @@ if [[ $PROTOCOL ]]; then
 # --------------------------------------------------------------------
 	fi
 else # server rAudio client
-	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+	path=$( timeout --signal KILL 3s showmount --no-headers -e $IP )
 	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	rserver=rserver
