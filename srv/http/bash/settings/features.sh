@@ -212,21 +212,18 @@ nfsserver )
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		ip=$( ipAddress )
-		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check)" > /etc/exports
+		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
-		if [[ ! -e $dirshareddata/mpd ]]; then
-			rescan=1
-			sharedDataCopy rserver
-			chown -R http:http $dirshareddata
-			chown -R mpd:audio $dirshareddata/{mpd,playlists}
-		fi
+		sharedDataCopy rserver
+		chown -R http:http $dirshareddata
+		chown -R mpd:audio $dirshareddata/{mpd,playlists}
 		chmod 777 $dirnas $dirnas/{SD,USB}
 		chmod -R 777 $dirshareddata
 		sharedDataLink rserver
 		systemctl restart mpd
-		[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+		$dirbash/cmd.sh "mpcupdate
 rescan
 
 CMD ACTION PATHMPD"

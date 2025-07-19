@@ -2216,7 +2216,10 @@ var PROGRESS  = {
 	, set     : elapsed => { // if defined - no animate
 		if ( ! D.time && ! D.cover ) return
 		
-		if ( S.state !== 'play' || ! S.elapsed ) UTIL.intervalClear( 'elapsed' );
+		if ( S.state !== 'play' || ! S.elapsed ) {
+			elapsed = 0;
+			UTIL.intervalClear( 'elapsed' );
+		}
 		if ( elapsed === undefined ) {
 			var s = S.Time - S.elapsed; // seconds from current to full
 			var l = 1;                  // full circle

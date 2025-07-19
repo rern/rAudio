@@ -87,7 +87,7 @@ Note:
  · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
  · Windows shares without password: <c>net user guest /active:yes</c>
 
-<div class="helpblock hide">Path: <c>/mnt/MPD/...</c></div>
+Path: <c>/mnt/MPD/...</c>
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

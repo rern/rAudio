@@ -279,6 +279,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
  • <wh>rAudio Shared Data server:</wh>
+	· On enable: Library will be rescanned to a new database.
 	· IP address - This rAudio must be set to static / fixed.
 	· Password - If changed, must be the same on all clients.)
 	· In $T->library
