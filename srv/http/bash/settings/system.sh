@@ -145,6 +145,7 @@ bluetoothstart )
 	bluetoothctl pairable yes &> /dev/null
 	;;
 forget | mount | unmount )
+	[[ $CMD != mount ]] && systemctl restart mpd
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
 		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
 	else
