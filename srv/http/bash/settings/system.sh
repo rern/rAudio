@@ -304,11 +304,12 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddatadisable )  # server rAudio / other server
+	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	mv /mnt/{SD,USB} /mnt/MPD
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
-	if grep -q $dirshareddata /etc/fstab; then # other server
+	if ! grep -q "$dirnas " /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
 		while read s; do
@@ -326,7 +327,7 @@ shareddatadisable )  # server rAudio / other server
 	sharedDataReset
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	systemctl restart mpd
+	systemctl start mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
 	;;
