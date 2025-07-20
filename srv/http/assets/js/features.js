@@ -541,6 +541,8 @@ function renderPage() {
 		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) + currently;
 	} else if ( S.nfsserver && S.nfsconnected ) {
 		nfsdisabled = 'Currently connected by clients';
+	} else if ( S.shareddata ) {
+		nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
 	}
 	DISABLE( 'nfsserver', nfsdisabled );
 	if ( S.nosound ) {
