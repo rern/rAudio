@@ -203,10 +203,11 @@ multiraudioreset )
 	pushSubmenu multiraudio false
 	;;
 nfsserver )
+	dirshared=$dirdata/mpdshared
 	mpc -q clear
 	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
-	mpc | grep -q ^Updating && systemctl restart mpd
 	rm -f $dirmpd/{listing,updating}
+	systemctl stop mpd
 	if [[ $ON ]]; then
 		mv /mnt/MPD/{SD,USB} $dirnas
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
@@ -222,11 +223,12 @@ nfsserver )
 		chmod 777 $dirnas $dirnas/{SD,USB}
 		chmod -R 777 $dirshareddata
 		sharedDataLink rserver
-		if [[ -e $dirbackup/mpd/mpd.db.backup ]]; then
+		if [[ -e $dirshared ]]; then
 			backup=1
-			cp -f $dirbackup/mpd/mpd.db{.backup,}
+			cp -f $dirshared/* $dirmpd
+			rm -rf $dirshared
 		fi
-		systemctl restart mpd
+		systemctl start mpd
 		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
@@ -242,7 +244,7 @@ CMD ACTION PATHMPD"
 		fi
 	else
 		mv $dirnas/{SD,USB} /mnt/MPD
-		mv $dirnas/data/mpd/mpd.db $dirbackup/mpd/mpd.db.backup
+		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
 		rm -f $dirnas/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
@@ -252,7 +254,7 @@ CMD ACTION PATHMPD"
 		> /etc/exports
 		rm $filesharedip
 		sharedDataReset
-		systemctl restart mpd
+		systemctl start mpd
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
