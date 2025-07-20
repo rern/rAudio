@@ -394,9 +394,7 @@ var CONTEXT  = {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'
 			, message    : ICON( 'folder' ) +' /mnt/MPD/<wh>'+ V.list.path +'</wh>'
-			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
-			, values     : 'update'
-			, ok         : () => BASH( [ 'mpcupdate', _INFO.val(), V.list.path, 'CMD ACTION PATHMPD' ] )
+			, ok         : () => BASH( [ 'mpcupdate', 'update', V.list.path, 'CMD ACTION PATHMPD' ] )
 		} );
 	}
 	, wrdelete      : () => {

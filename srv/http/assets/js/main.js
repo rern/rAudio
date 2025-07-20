@@ -712,33 +712,32 @@ $( '#button-lib-update' ).on( 'click', function() {
 	modes.forEach( k => {
 		message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
 	} );
-	var kv   = {
-		  'Update changed files'    : 'update'
-		, 'Update all files'        : 'rescan'
-	}
 	INFO( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : message +'&ensp;<hr>'
 		, list       : [
-			  [ '',                   'radio', { kv: kv, sameline: false } ]
+			  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, [ 'Append Latest list', 'checkbox' ]
 		]
 		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
 		, beforeshow : () => {
 			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+			$( '#infoList input:radio' ).on( 'input', function() {
+				$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
+			} );
 		}
 		, ok         : () => {
-			var val = _INFO.val();
-			var path = '';
-			if ( val.ACTION !== 'refresh' ) {
-				var modes = [];
+			var val     = _INFO.val();
+			var pathmpd = '';
+			if ( val.ACTION === 'update' ) {
+				var path = [];
 				modes.forEach( k => {
-					if ( val[ k ] ) modes.push( k );
+					if ( val[ k ] ) path.push( k );
 				} );
-				if ( modes.length < 3 ) path = modes.join( ' ' );
+				if ( path.length < 3 ) pathmpd = path.join( ' ' );
 			}
-			BASH( [ 'mpcupdate', val.ACTION, path, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
+			BASH( [ 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
 		}
 	} );
 } );
