@@ -800,6 +800,7 @@ var UTIL          = {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
 			var cls        = list.size ? 'current' : 'profile';
+			if ( list.shareddata ) cls += ' shareddata';
 			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
 							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
@@ -1032,9 +1033,9 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = $li.hasClass( 'current' );
-		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
-		var shareddata = S.sharedpoint.includes( mountpoint );
+		var mounted    = $li.hasClass( 'current' );
+		var usb        = mountpoint.substr( 9, 3 ) === 'USB';
+		var shareddata = $li.hasClass( 'shareddata' );
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', usb || shareddata );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );

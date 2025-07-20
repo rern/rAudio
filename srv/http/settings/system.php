@@ -88,6 +88,7 @@ Note:
  · Windows shares without password: <c>net user guest /active:yes</c>
 
 Path: <c>/mnt/MPD/...</c>
+<i class="btn">«</i> Managed by $L->shareddata
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

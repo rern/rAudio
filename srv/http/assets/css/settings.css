@@ -9,6 +9,9 @@ li.profile dot::before {
 }
 li.profile dot::before { color: var( --cg60 ) }
 #storage li.profile dot::before { color: #f00 }
+#storage li.shareddata::after {
+	content: ' «';
+}
 .menu {
 	position: absolute;
 	margin-left: 40px;

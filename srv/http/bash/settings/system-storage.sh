@@ -17,6 +17,15 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
+	if [[ $icon == networks && -L $dirmpd ]] && ! systemctl -q is-active nfs-server; then
+		if [[ $mountpoint == /mnt/MPD/NAS || $mountpoint == /mnt/MPD/NAS/data ]]; then
+			shareddata=1
+		elif [[ -e $dirnas/data/source ]]; then
+			[[ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' ) == $mountpoint ]] && shareddata=1
+		fi
+		[[ $shareddata ]] && list+='
+, "shareddata" : true'
+	fi
 	echo ", {
 $list
 }"
