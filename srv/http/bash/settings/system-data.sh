@@ -128,6 +128,7 @@ data+='
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data; then
 	mountpoint="\
+/mnt/MPD/NAS
 /mnt/MPD/NAS/data
 $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' )"
 	data+='
