@@ -35,6 +35,8 @@ fi
 fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 
 if [[ $SHAREDDATA ]]; then
+	mpc -q clear
+	systemctl stop mpd
 	mv /mnt/MPD/{SD,USB} /mnt
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
@@ -45,8 +47,7 @@ if [[ $SHAREDDATA ]]; then
 	fi
 	sharedDataLink $rserver
 	appendSortUnique $filesharedip $( ipAddress )
-	mpc -q clear
-	systemctl restart mpd
+	systemctl start mpd
 	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
