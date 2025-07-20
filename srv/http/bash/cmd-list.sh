@@ -61,7 +61,7 @@ if [[ $song == 0 ]]; then
 fi
 ##### album
 albumList
-if [[ ! $mpclistall && $( mpc status %length% ) > 0 ]]; then # very large database
+if [[ ! $mpclistall ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 20; i++ )); do # increase buffer
