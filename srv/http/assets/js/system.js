@@ -1034,10 +1034,11 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.hasClass( 'current' );
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		var shareddata = S.sharedpoint.includes( mountpoint );
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb );
+		$( '#menu .forget' ).toggleClass( 'hide', usb || shareddata );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || shareddata );
 	}
 	MENU.show( $li );
 } );
@@ -1118,11 +1119,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
-			if ( S.sharedpoint.includes( mountpoint ) ) {
-				_INFO.warning( 'networks', 'NAS', 'Used by <wh>Shared Data</wh>' );
-				return
-			}
-			
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
