@@ -528,7 +528,6 @@ sharedDataLink() {
 	done <<< $source
 }
 sharedDataReset() {
-	mpc -q clear
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
 	rm $dirsystem/{display,order}.json
 	mv -f $dirbackup/{display,order}.json $dirsystem

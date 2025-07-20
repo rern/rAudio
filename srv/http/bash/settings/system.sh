@@ -324,12 +324,13 @@ shareddatadisable )  # server rAudio / other server
 		umount -l $dirnas &> /dev/null
 		fstab=$( grep -v $dirnas /etc/fstab )
 	fi
-	sharedDataReset
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
+	sharedDataReset
 	systemctl start mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
+	pushDirCounts nas
 	;;
 soundprofileset )
 	soundProfile
