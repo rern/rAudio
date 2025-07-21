@@ -66,6 +66,6 @@ if [[ $1 ]]; then
   "playlists" : 0
 , "webradio"  : 4
 }' > $dirmpd/counts
-else
+elif systemctl -q is-active mpd; then
 	$dirbash/cmd-list.sh
 fi
