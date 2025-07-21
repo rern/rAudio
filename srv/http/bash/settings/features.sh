@@ -204,9 +204,9 @@ multiraudioreset )
 	;;
 nfsserver )
 	dirshared=$dirdata/mpdshared
-	mpc -q clear
 	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
 	rm -f $dirmpd/{listing,updating}
+	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
 		mv /mnt/MPD/{SD,USB} $dirnas

@@ -304,6 +304,7 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddatadisable )  # server rAudio / other server
+	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	mv /mnt/{SD,USB} /mnt/MPD
