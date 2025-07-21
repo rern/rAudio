@@ -18,7 +18,7 @@ commonVariables( [
 		  'refreshlibrary' => 'library'
 		, 'relays'       => 'system'
 	]
-	, 'tabs'    => [ 'features', 'player' ]
+	, 'tabs'    => [ 'features', 'library', 'player' ]
 ] );
 function hrefList( $list ) {
 	$html      = '';
@@ -329,17 +329,12 @@ Connect shared data as client for:
  · Data: Audio CD, bookmarks, lyrics, saved playlists and Web Radio
  · Display: Items, options and order of Library home
 
-Note:
- • Enabled - $B->microsd SD and $B->usbdrive USB:
-	· Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
-	· Not availble in Library home
-
- • <wh>rAudio as server:</wh> (Alternative 1)
+• <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
 	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
- • <wh>Other servers:</wh> (Alternative 2)
-	<wh>Server</wh>: Create 2 shares: <gr>(any names)</gr>
+• <wh>Other servers:</wh> (Alternative 2)
+	Server: Create 2 shares: <gr>(any names)</gr>
 		· <c>SOURCE</c> for music files
 		· <c>DATABASE</c> for database and settings
 		· Permissions: <gr>Full Control</gr>
@@ -352,7 +347,7 @@ Note:
 					<btn>Permissions</btn> » Everyone ■ Full Control
 				<tab>Security</tab>
 					<btn>Edit...</btn> » Everyone ■ Full Control
-	<wh>Clients</wh>:
+	Clients:
 		· 1st client:
 			$L->storage $B->add » <c>SOURCE</c>
 			$M->refreshlibrary Update database
@@ -361,6 +356,10 @@ Note:
 		· Other clients:
 			$L->shareddata » <c>DATABASE</c>
 			<gr>(<c>SOURCE</c> will be arranged accordingly.)</gr>
+			
+Note:
+ · $B->microsd SD and $B->usbdrive USB : Hidden while enabled
+
 EOF
 	]
 ];

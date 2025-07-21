@@ -35,18 +35,12 @@ $list
 }
 # sd
 devmmc=/dev/mmcblk0p2
-if [[ -e $devmmc ]]; then
-	if [[ -e $dirsd ]]; then
-		sd=$dirsd
-	elif [[ -e /mnt/SD ]]; then
-		sd=/mnt/SD
-	else
-		sd=$dirnas/SD
-	fi
+if [[ ! -e /mnt/SD && -e $devmmc ]]; then
+	[[ -e $dirsd ]] && sd=$dirsd || sd=$dirnas/SD
 	mount | grep -q -m1 ^$devmmc && list+=$( listItem microsd $sd $devmmc true )
 fi
 # usb
-usb=$( ls /dev/sd* 2> /dev/null )
+[[ ! -e /mnt/USB ]] && usb=$( ls /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
 		type=$( blkid -o value -s TYPE $source )
