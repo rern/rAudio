@@ -18,12 +18,10 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
 	if systemctl -q is-active nfs-server; then
-		rserver=1
 		[[ $mountpoint == $dirnas/SD || $mountpoint == $dirnas/USB ]] && list+='
 , "rserver"    : true'
-	fi
-	if [[ $icon == networks && -L $dirmpd ]] && ! $rserver; then
-		if [[ $mountpoint == /mnt/MPD/NAS || $mountpoint == /mnt/MPD/NAS/data ]]; then
+	elif [[ $icon == networks && -L $dirmpd ]]; then
+		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
 			shareddata=1
 		elif [[ -e $dirnas/data/source ]]; then
 			[[ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' ) == $mountpoint ]] && shareddata=1
@@ -38,7 +36,13 @@ $list
 # sd
 devmmc=/dev/mmcblk0p2
 if [[ -e $devmmc ]]; then
-	[[ -e /mnt/MPD/SD ]] && sd=$dirsd || sd=$dirnas/SD
+	if [[ -e $dirsd ]]; then
+		sd=$dirsd
+	elif [[ -e /mnt/SD ]]; then
+		sd=/mnt/SD
+	else
+		sd=$dirnas/SD
+	fi
 	mount | grep -q -m1 ^$devmmc && list+=$( listItem microsd $sd $devmmc true )
 fi
 # usb

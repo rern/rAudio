@@ -812,7 +812,7 @@ var UTIL          = {
 				cls += ' rserver';
 			}
 			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
+							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}

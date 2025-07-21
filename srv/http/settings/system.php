@@ -89,7 +89,8 @@ Windows shares without password: <c>net user guest /active:yes</c>
 
 List:
 	Path: <c>/mnt/MPD/...</c>
-	<i class="btn">»</i> <i class="btn">«</i> Managed by $L->serverraudio $L->shareddata
+	<i class="btn">«</i> $L->shareddata
+	<i class="btn">»</i> $L->serverraudio
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

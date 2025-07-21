@@ -12,7 +12,7 @@ if [[ -e $file ]] && ! grep -q '/mnt/MPD/NAS .*crossmnt' $file; then
 fi
 
 file=/lib/systemd/system/mpd_oled.service
-if [[ -e $file ]] && ! grep User $file; then
+if [[ -e $file ]] && ! grep -q User $file; then
 	rm -f /root/.config/cava
 	ln -sf /etc/cava.conf /root/.config
 	sed -i '/EnvironmentFile/ i\User=root' $file
