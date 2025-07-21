@@ -800,7 +800,11 @@ var UTIL          = {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
 			var cls        = list.size ? 'current' : 'profile';
-			if ( list.shareddata ) cls += ' shareddata';
+			if ( list.shareddata ) {
+				cls += ' shareddata';
+			} else if ( list.rserver ) {
+				cls += ' rserver';
+			}
 			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
 							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.slice( 9 ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
@@ -1029,17 +1033,18 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	if ( MENU.isActive( $li, e ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
-	if ( mountpoint === '/mnt/MPD/SD' ) {
+	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted    = $li.hasClass( 'current' );
-		var usb        = mountpoint.substr( 9, 3 ) === 'USB';
+		var usb        = $li.find( '.i-usbdrive' ).length > 0;
 		var shareddata = $li.hasClass( 'shareddata' );
+		var shareddata = $li.hasClass( 'rserver' );
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb || shareddata );
+		$( '#menu .forget' ).toggleClass( 'hide', usb || shareddata || rserver );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || shareddata );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || shareddata || rserver );
 	}
 	MENU.show( $li );
 } );
