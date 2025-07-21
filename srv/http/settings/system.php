@@ -84,12 +84,12 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,bg,soft,timeo=5
 </pre>
 Note:
- · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
- · Windows shares without password: <c>net user guest /active:yes</c>
+» <c>Name</c> - Reserved: <c>data</c> <c>SD</c> <c>USB</c>
+Windows shares without password: <c>net user guest /active:yes</c>
 
-Path: <c>/mnt/MPD/...</c>
-<i class="btn">»</i> Managed by $L->serverraudio
-<i class="btn">«</i> Managed by $L->shareddata
+List:
+	Path: <c>/mnt/MPD/...</c>
+	<i class="btn">»</i> <i class="btn">«</i> Managed by $L->serverraudio $L->shareddata
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

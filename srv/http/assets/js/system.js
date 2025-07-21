@@ -478,8 +478,8 @@ var UTIL          = {
 			var tab        = nfs ? [ UTIL.mount.mount, '' ] : [ '', () => UTIL.mount.mount( 'nfs' ) ];
 			var shareddata = SW.id === 'shareddata';
 			if ( shareddata ) tab.push( UTIL.mount.rServer );
-			var icon       = 'networks';
-			var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+			SW.icon        = 'networks';
+			SW.title       = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 			var suffix     = { suffix: '<wh>*</wh>' }
 			var list       = [
 				  [ 'Type',      'hidden' ]
@@ -492,8 +492,7 @@ var UTIL          = {
 			];
 			if ( nfs ) list.splice( 4, 2 );
 			INFO( {
-				  icon       : icon
-				, title      : title
+				  ...SW
 				, tablabel   : shareddata ? UTIL.mount.tab : [ 'CIFS', 'NFS' ]
 				, tab        : tab
 				, list       : list
@@ -520,7 +519,14 @@ var UTIL          = {
 				, cancel     : SWITCH.cancel
 				, ok         : () => {
 					var infoval = _INFO.val();
-					if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
+					if ( ! shareddata && [ 'data', 'SD', 'USB' ].includes( infoval.NAME ) ) {
+						var type = infoval.NAME == 'data' ? LABEL_ICON( 'Shared Data', 'networks' ) : LABEL_ICON( 'Server rAudio', 'nfsserver' );
+						_INFO.warning( SW.icon, SW.title, 'Name <c>'+ infoval.NAME +'</c> reserved for '+ type, () => {
+							UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( infoval );
+						} );
+						return
+					}
+					
 					infoval.SHAREDDATA = shareddata;
 					var keys = Object.keys( infoval );
 					var vals = Object.values( infoval );
@@ -1039,12 +1045,11 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted    = $li.hasClass( 'current' );
 		var usb        = $li.find( '.i-usbdrive' ).length > 0;
-		var shareddata = $li.hasClass( 'shareddata' );
-		var shareddata = $li.hasClass( 'rserver' );
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb || shareddata || rserver );
+		$( '#menu .forget' ).toggleClass( 'hide', usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || shareddata || rserver );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
 	}
 	MENU.show( $li );
 } );
