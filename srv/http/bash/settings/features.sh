@@ -164,11 +164,7 @@ localbrowser )
 			sleep 1
 		fi
 	else
-		ply-image /srv/http/assets/img/splash.png
-		systemctl disable --now bootsplash localbrowser
-		systemctl enable --now getty@tty1
-		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+		localBrowserOff
 	fi
 	pushRefresh
 	;;

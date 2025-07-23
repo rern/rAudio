@@ -25,10 +25,7 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
 	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
-		systemctl enable getty@tty1
-		systemctl disable --now bootsplash localbrowser
-		sed -i 's/tty3 .*/tty1/' /boot/cmdline.txt
-		mv /usr/bin/firefox{,.backup}
+		localBrowserOff
 	fi
 fi
 
@@ -36,6 +33,11 @@ backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 if [[ -e $backupfile ]]; then
 	mv "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
+fi
+
+if [[ -e /boot/nolocalbrowser ]]; then
+	rm /boot/nolocalbrowser
+	localBrowserOff
 fi
 
 if [[ $wlandev ]]; then

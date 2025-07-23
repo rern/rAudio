@@ -361,6 +361,13 @@ lineCount() {
 line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
+localBrowserOff() {
+	ply-image /srv/http/assets/img/splash.png
+	systemctl disable --now bootsplash localbrowser
+	systemctl enable --now getty@tty1
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+}
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
