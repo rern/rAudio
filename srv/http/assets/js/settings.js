@@ -159,6 +159,7 @@ W.refresh  = data => { // except camilla
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		SWITCH.set();
 		renderPage();
+		$( '.col-r' ).css( 'pointer-events', '' );
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
@@ -322,6 +323,7 @@ $( '.switch' ).on( 'click', function() {
 			BASH( [ id, 'OFF' ] );
 		}
 	}
+	$( '.col-r' ).css( 'pointer-events', 'none' );
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;

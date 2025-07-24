@@ -509,6 +509,10 @@ input.disabled + .switchlabel {
 input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
 }
+.switch.disabled {
+	pointer-events: auto;
+}
+
 .setting,
 .settingedit {
 	width: 40px !important;

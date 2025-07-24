@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1752402263' );
+	src         : url( '/assets/fonts/rern.woff2?v=1753055903' );
 }
 @font-face {
 	font-family : Lato;
@@ -621,8 +621,9 @@ input[ type=checkbox ] {
 #infoOk.disabled {
 	pointer-events: auto;
 }
-input[ type=checkbox ].disabled {
-	pointer-events: auto;
+input[ disabled ],
+label:has( input[ disabled ] ) {
+	cursor: default;
 }
 .infobtn i {
 	font-size: 18px;
@@ -1122,9 +1123,7 @@ input[ type=radio ]:disabled {
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
 	label,
-	input[ type=checkbox ],
-	input[ type=radio ],
-	input[ type=range ],
+	input,
 	.btnbottom i,
 	.btnbottom span,
 	.divgain,
