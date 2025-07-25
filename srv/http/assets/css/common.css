@@ -1102,6 +1102,7 @@ input[ type=radio ]:disabled {
 	width: 122px;
 	shape-rendering: crispEdges;
 }
+.qr circle,
 .qr rect {
 	fill: var( --cg60 );
 }
