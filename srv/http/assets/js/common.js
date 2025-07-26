@@ -1468,12 +1468,12 @@ var COMMON    = {
 	}
 	, powerAction   : action => {
 		V[ action ] = true;
-		COMMON.loader();
 		BASH( [ 'power.sh', action ], nfs => {
-			if ( nfs != -1 ) return
+			if ( nfs != -1 ) {
+				COMMON.loader();
+				return
+			}
 			
-			COMMON.loaderHide();
-			BANNER_HIDE();
 			INFO( {
 				  icon    : 'power'
 				, title   : 'Power'
@@ -1483,7 +1483,10 @@ var COMMON    = {
 							+'<br><br>Continue?'
 				, oklabel : ICON( action ) + COMMON.capitalize( action )
 				, okcolor : COLOR[ action === 'off' ? 'red' : 'orange' ]
-				, ok      : () => BASH( [ 'power.sh', action || '', 'confirm' ] )
+				, ok      : () => {
+					BASH( [ 'power.sh', action || '', 'confirm' ] );
+					COMMON.loader();
+				}
 			} );
 		} );
 	}

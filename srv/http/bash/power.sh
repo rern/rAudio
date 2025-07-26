@@ -2,6 +2,19 @@
 
 . /srv/http/bash/common.sh
 
+ip=$( ipAddress )
+if systemctl -q is-active nfs-server; then # server rAudio
+	ipclients=$( grep -v $ip $filesharedip )
+	if [[ $ipclients ]]; then
+		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
+# --------------------------------------------------------------------
+		[[ $reboot ]] && msg='Reboot ...' || msg='Power off ...'
+		for ip in $ipclients; do
+			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
+		done
+	fi
+fi
+[[ -e $filesharedip ]] && sed -i "/$ip/ d" $filesharedip
 $dirbash/cmd.sh playerstop
 logoLcdOled
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
@@ -14,19 +27,6 @@ else
 	audioCDplClear
 	pushData power '{ "type": "off" }'
 fi
-ipserver=$( ipAddress )
-if systemctl -q is-active nfs-server; then # server rAudio
-	ipclients=$( grep -v $ipserver $filesharedip )
-	if [[ $ipclients ]]; then
-		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
-# --------------------------------------------------------------------
-		[[ $reboot ]] && msg='Reboot ...' || msg='Power off ...'
-		for ip in $ipclients; do
-			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
-		done
-	fi
-fi
-[[ -e $filesharedip ]] && sed -i "/$ipserver/ d" $filesharedip
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
 
