@@ -11,9 +11,14 @@ if systemctl -q is-active nfs-server; then # server rAudio
 	if [[ $ipclients ]]; then
 		[[ ! $CONFIRM ]] && echo -1 && exit # $2 confirm proceed
 # --------------------------------------------------------------------
-		[[ $reboot ]] && msg='Reboot ...' || msg='Power off ...'
+		if [[ $reboot ]]; then
+			msg=Reboot
+		else
+			msg='Power off'
+			blink=' blink'
+		fi
 		for ip in $ipclients; do
-			notify -ip $ip 'nfsserver blink' 'Server rAudio' "$msg"
+			notify -ip $ip "nfsserver$blink" 'Server rAudio' "$msg ..." -1
 		done
 	fi
 fi
