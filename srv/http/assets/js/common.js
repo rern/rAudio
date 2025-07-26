@@ -1468,7 +1468,7 @@ var COMMON    = {
 	}
 	, powerAction   : action => {
 		V[ action ] = true;
-		BASH( [ 'power.sh', action ], nfs => {
+		BASH( [ 'power.sh', action, 'CMD' ], nfs => {
 			if ( nfs != -1 ) {
 				COMMON.loader();
 				return
@@ -1482,9 +1482,9 @@ var COMMON    = {
 							+'<br>(Resume when server online again)'
 							+'<br><br>Continue?'
 				, oklabel : ICON( action ) + COMMON.capitalize( action )
-				, okcolor : COLOR[ action === 'off' ? 'red' : 'orange' ]
+				, okcolor : action === 'off' ? V.red : V.orange
 				, ok      : () => {
-					BASH( [ 'power.sh', action || '', 'confirm' ] );
+					BASH( [ 'power.sh', action, 'confirm', 'CMD CONFIRM' ] );
 					COMMON.loader();
 				}
 			} );

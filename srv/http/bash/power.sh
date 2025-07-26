@@ -2,12 +2,14 @@
 
 . /srv/http/bash/common.sh
 
+args2var "$1"
+
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $( ipAddress ) $filesharedip )
 	if [[ $ipclients ]]; then
-		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
+		[[ ! $CONFIRM ]] && echo -1 && exit # $2 confirm proceed
 # --------------------------------------------------------------------
-		[[ $1 == reboot ]] && msg='Reboot ...' || msg='Power off ...'
+		[[ $CMD == reboot ]] && msg='Reboot ...' || msg='Power off ...'
 		for ip in $ipclients; do
 			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
 		done
@@ -17,7 +19,7 @@ fi
 $dirbash/cmd.sh playerstop
 logoLcdOled
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
-if [[ $1 == reboot ]]; then
+if [[ $CMD == reboot ]]; then
 	audioCDplClear && $dirbash/status-push.sh
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
