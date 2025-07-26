@@ -107,8 +107,8 @@ else # if no connections, start accesspoint
 					notify -ip $ip networks 'Server rAudio' Online
 				done
 			fi
-			appendSortUnique $ipaddress $filesharedip
 		fi
+		[[ -e $filesharedip ]] && appendSortUnique $filesharedip $ipaddress
 		if [[ $partition ]] && ipOnline 8.8.8.8; then
 			$dirsettings/system.sh 'timezone
 auto
