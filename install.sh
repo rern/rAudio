@@ -6,9 +6,9 @@ alias=r1
 
 # 20250725
 file=/etc/exports
-if [[ -e $file ]] && ! grep -q '/mnt/MPD/NAS .*crossmnt' $file; then
-	sed -i '\|^/mnt/MPD/NAS | s/)/,crossmnt)/' $file
-	systemctl restart nfs-server
+if grep -q "^$dirnas" $file && ! grep -q "^$dirnas .*crossmnt" $file; then
+	sed -i "\|^$dirnas | s/)/,crossmnt)/" $file
+	systemctl -q is-enabled nfs-server && systemctl restart nfs-server
 fi
 
 file=/lib/systemd/system/mpd_oled.service
