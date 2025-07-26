@@ -369,6 +369,7 @@ W             = {  // ws push
 			}
 		}
 		BANNER( icon, title, message, delay );
+		if ( title === 'Server rAudio' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
 	}
 	, power     : data => {
 		var action  = data.type;
