@@ -5,8 +5,9 @@
 args2var "$1"
 
 [[ $CMD = reboot ]] && reboot=1
+ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
-	ipclients=$( grep -v $( ipAddress ) $filesharedip )
+	ipclients=$( grep -v $ipaddress $filesharedip )
 	if [[ $ipclients ]]; then
 		[[ ! $CONFIRM ]] && echo -1 && exit # $2 confirm proceed
 # --------------------------------------------------------------------
@@ -16,7 +17,7 @@ if systemctl -q is-active nfs-server; then # server rAudio
 		done
 	fi
 fi
-[[ -e $filesharedip ]] && sed -i "/$ip/ d" $filesharedip
+[[ -e $filesharedip ]] && sed -i "/$ipaddress/ d" $filesharedip
 $dirbash/cmd.sh playerstop
 logoLcdOled
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
