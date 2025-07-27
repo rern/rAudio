@@ -420,16 +420,16 @@ pushData() {
 		data=true
 	fi
 	pushWebsocket 127.0.0.1 $channel $data
-	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
-	# shared data
-	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
+	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
+	
+	sharedip=$( grep -v $( ipAddress ) $filesharedip )
+	[[ ! $sharedip ]] && return # no other cilents
 	
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
 		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
 	done
