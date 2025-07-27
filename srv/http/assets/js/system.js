@@ -120,7 +120,7 @@ var CONFIG        = {
 			SETTING( 'i2smodule', values => {
 				INFO( {
 					  ...SW
-					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
+					, list         : [ 'Disable EEPROM read', 'checkbox' ]
 					, values       : values
 					, checkchanged : true
 					, ok           : () => BASH( [ 'i2seeprom', _INFO.val() ] )

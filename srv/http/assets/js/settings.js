@@ -132,6 +132,7 @@ var SWITCH = {
 		var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 		NOTIFY_COMMON();
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
+		$( '.col-r' ).css( 'pointer-events', 'none' );
 		delete SW;
 	}
 	, set    : () => {
@@ -275,9 +276,9 @@ $( '.switch, .setting' ).on( 'click', function() {
 	}
 } );
 $( '.switch' ).on( 'click', function() {
-	var id = SW.id;
-	var $this   = $( this );
-	var checked = $this.prop( 'checked' );
+	var id       = SW.id;
+	var $this    = $( this );
+	var checked  = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {     // disabled
 		$this.prop( 'checked', ! checked );
 		INFO( {
@@ -289,7 +290,7 @@ $( '.switch' ).on( 'click', function() {
 	
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id ); 
-	if ( checked ) {                  // enable
+	if ( checked ) {
 		if ( id in CONFIG ) {                //    config
 			$setting.trigger( 'click' );
 		} else if ( id in CONFIG._prompt ) { //    prompt
@@ -309,8 +310,9 @@ $( '.switch' ).on( 'click', function() {
 					} );
 				}
 			}, 'text' );
+			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
-	} else {                                 // disable
+	} else {
 		$( '#setting-'+ id ).addClass( 'hide' );
 		if ( PAGE === 'camilla' ) {
 			DEV[ id ] = null;
@@ -321,9 +323,9 @@ $( '.switch' ).on( 'click', function() {
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );
 			BASH( [ id, 'OFF' ] );
+			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
 	}
-	$( '.col-r' ).css( 'pointer-events', 'none' );
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;

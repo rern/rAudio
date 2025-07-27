@@ -142,10 +142,10 @@ htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 $helpi2s     = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
- · HAT with EEPROM could be automatically detected.
+ · I²S devices with EEPROM might be automatically detected.
  · See  if it's already set: $T->player$L->device
 $B->gear
-Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+Option to disable I²S EEPROM read for I²S devices with obsolete EEPROM
 EOF;
 $head        = [ 'title' => 'GPIO Devices' ];
 $body        = [
@@ -157,7 +157,6 @@ $body        = [
 	, [
 		  'id'       => 'i2smodule'
 		, 'label'    => 'Audio - I²S'
-		, 'sub'      => 'HAT'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
