@@ -401,7 +401,7 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
 	list=$( lsblk -no path,vendor,model | grep -v ' $' )

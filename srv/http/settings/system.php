@@ -330,6 +330,7 @@ Connect shared data as client for:
 
 • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
+		· Permissions: <c>777</c>
 	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
 • <wh>Other servers:</wh> (Alternative 2)
@@ -338,7 +339,7 @@ Connect shared data as client for:
 		· <c>DATABASE</c> for database and settings
 		· Permissions: <gr>Full Control</gr>
 			· Linux:
-				NFS » <c>777</c>
+				NFS » <c>rw</c>
 				CIFS/SMB » <c>read only = no</c>
 			· Windows:
 				<tab>Sharing</tab>

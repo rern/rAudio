@@ -155,11 +155,15 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	fi
 	;;
 storage )
-	echo -n "\
+	data="\
 <bll># cat /etc/fstab</bll>
-$( < /etc/fstab )
+$( < /etc/fstab )"
+	usb=$( mount | grep ^/dev/sd )
+	[[ $usb ]] && data+="
 
-$2"
+<bll># mount | grep ^/dev/sd</bll>
+$usb"
+	echo "$data"
 	;;
 system )
 	config="\

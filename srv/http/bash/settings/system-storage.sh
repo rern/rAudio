@@ -18,7 +18,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
 	if systemctl -q is-active nfs-server; then
-		[[ $mountpoint == $dirnas/SD || $mountpoint == $dirnas/USB ]] && list+='
+		[[ $mountpoint == "$dirnas/"* ]] && list+='
 , "rserver"    : true'
 	elif [[ $icon == networks && -L $dirmpd ]]; then
 		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
