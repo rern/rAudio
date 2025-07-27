@@ -430,7 +430,7 @@ pushData() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	[[ $channel == mpdupdate && $data == *'"done": true'* ]] && updatedone=1
+	[[ $channel == mpdupdate && $data == *'"done"'* ]] && updatedone=1
 	for ip in $sharedip; do
 		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
 	done
