@@ -826,9 +826,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 	var $target = '';
 	if ( MODE.album() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( MODE.file( '+radio' ) ) {
-		var $breadcrumbs = $( '#lib-title a' );
-		$target = $breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ) : $( '#library' );
 	} else if ( V.query.length === 1 && ! MODE.radio() ) {
 		$target = $( '#library' );
 	}
