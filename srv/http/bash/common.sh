@@ -124,9 +124,6 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
-cmdshWebsocket() {
-	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
-}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
@@ -430,9 +427,12 @@ pushData() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	[[ $channel == mpdupdate && $data == *'"done"'* ]] && updatedone=1
+	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
+		channel=cmdsh
+		data='{ "cmd": "shareddataupdate" }'
+	fi
 	for ip in $sharedip; do
-		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
+		pushWebsocket $ip $channel $data
 	done
 }
 pushDirCounts() {
@@ -556,7 +556,7 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && cmdshWebsocket $ip playerstop || clientip+=" ${l/*:}"
+			[[ $1 ]] && pushWebsocket $ip cmdsh '{ "cmd": "playerstop" }' || clientip+=" ${l/*:}"
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip

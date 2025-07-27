@@ -743,7 +743,7 @@ shairport )
 shairportstop )
 	shairportStop
 	;;
-shareddatampdupdate )
+shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
 	$dirbash/status-push.sh
