@@ -393,7 +393,7 @@ var CONTEXT  = {
 		INFO( {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'
-			, message    : ICON( 'folder' ) +' /mnt/MPD/<wh>'+ V.list.path +'</wh>'
+			, message    : ICON( 'folder' ) +' '+ V.list.path
 			, ok         : () => BASH( [ 'mpcupdate', 'update', V.list.path, 'CMD ACTION PATHMPD' ] )
 		} );
 	}
