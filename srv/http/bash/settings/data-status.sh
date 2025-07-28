@@ -158,10 +158,10 @@ storage )
 	data="\
 <bll># cat /etc/fstab</bll>
 $( < /etc/fstab )"
-	usb=$( mount | grep ^/dev/sd )
+	usb=$( mount | grep /mnt/MPD )
 	[[ $usb ]] && data+="
 
-<bll># mount | grep ^/dev/sd</bll>
+<bll># mount | grep /mnt/MPD</bll>
 $usb"
 	echo "$data"
 	;;
