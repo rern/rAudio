@@ -2216,7 +2216,7 @@ var PROGRESS  = {
 	, set     : elapsed => { // if defined - no animate
 		if ( ! D.time && ! D.cover ) return
 		
-		if ( S.state !== 'play' || ! S.elapsed ) {
+		if ( S.state === 'stop' || ! S.elapsed ) {
 			elapsed = 0;
 			UTIL.intervalClear( 'elapsed' );
 		}

@@ -277,8 +277,8 @@ EOF
 		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
- • <wh>rAudio Shared Data server:</wh>
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for $L->shareddata
+ • <wh>Server:</wh>
 	· On enable:
 		· 1st time: Library will be rescanned to a new database.
 		· Previously enabled: Database from previous will be used.
@@ -287,22 +287,17 @@ EOF
 	· In $T->library
 		· $B->microsd SD and $B->usbdrive USB will be hidden.
 		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
-	· On reboot / power off:
-		· Shared Data on clients will be temporarily disabled
-		· Re-enabled by itself once the server is back online.
 	
- • <wh>rAudio Shared Data clients:</wh>
+ • <wh>Clients:</wh>
 	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	· Automatically setup: discover, connect shared files and data
 	
- • <wh>Windows NFS clients:</wh>
+ • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
 	· $fileexpl_nfs
 
-Note:
 <i class="i-warning"></i> Permissions:
- · Set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
- · Every <i class="i-raudio"></i> rAudio can set/update shared data.
+Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
 EOF
 	]
 	, [

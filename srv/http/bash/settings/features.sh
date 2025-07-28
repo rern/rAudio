@@ -216,8 +216,7 @@ nfsserver )
 		sharedDataCopy rserver
 		chown -R http:http $dirshareddata
 		chown -R mpd:audio $dirshareddata/{mpd,playlists}
-		chmod 777 $dirnas $dirnas/{SD,USB}
-		chmod -R 777 $dirshareddata
+		chmod -R 777 $dirnas
 		sharedDataLink rserver
 		if [[ -e $dirshared ]]; then
 			backup=1
