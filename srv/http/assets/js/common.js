@@ -328,7 +328,6 @@ W             = {  // ws push
 		}
 		BANNER_HIDE();
 	}
-	, cmdsh     : data => BASH( [ 'cmd.sh', data.cmd ] )
 	, color     : data => {
 		V.color = data;
 		COLOR.cssSet( data.hsl );

@@ -211,6 +211,9 @@ data2jsonPatch() { # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,,
 		s/,\s*,/, false,/g
 		s/,\s*]/, false ]/g' <<< $1
 }
+dataCmdsh() {
+	echo '{ "filesh": [ "cmd.sh", "'$1'" ] }'
+}
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
 	if [[ ! -e /usr/bin/camilladsp ]]; then
@@ -428,11 +431,12 @@ pushData() {
 	fi
 	
 	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
-		channel=cmdsh
-		data='{ "cmd": "shareddataupdate" }'
+		data=$( dataCmdsh shareddataupdate )
+	else
+		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
 	for ip in $sharedip; do
-		pushWebsocket $ip $channel $data
+		websocat ws://$ip:8080 <<< $data
 	done
 }
 pushDirCounts() {
@@ -546,7 +550,8 @@ sharedDataReset() {
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
 	
-	local clientip connected line 
+	local clientip connected data ip lines
+	[[ $1 ]] && data=$( dataCmdsh playerstop )
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
 				| grep -E '"connected":|"ip":' \
 				| tr -d ' ",' )
@@ -556,7 +561,12 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && pushWebsocket $ip cmdsh '{ "cmd": "playerstop" }' || clientip+=" ${l/*:}"
+			ip=${l/*:}
+			if [[ $data ]]; then
+				websocat ws://$ip:8080 <<< $data
+			else
+				clientip+=" $ip"
+			fi
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip

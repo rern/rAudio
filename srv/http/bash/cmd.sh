@@ -747,6 +747,8 @@ shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
 	$dirbash/status-push.sh
+	data=$( sed '$ i\,"done": true' $dirmpd/counts )
+	pushData mpdupdate "$data"
 	;;
 snapserverlist )
 	snapserverList
