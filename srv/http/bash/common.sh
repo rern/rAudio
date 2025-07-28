@@ -211,9 +211,6 @@ data2jsonPatch() { # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,,
 		s/,\s*,/, false,/g
 		s/,\s*]/, false ]/g' <<< $1
 }
-dataCmdsh() {
-	echo '{ "filesh": [ "cmd.sh", "'$1'" ] }'
-}
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
 	if [[ ! -e /usr/bin/camilladsp ]]; then
@@ -431,7 +428,7 @@ pushData() {
 	fi
 	
 	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
-		data=$( dataCmdsh shareddataupdate )
+		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
@@ -551,7 +548,7 @@ snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
 	
 	local clientip connected data ip lines
-	[[ $1 ]] && data=$( dataCmdsh playerstop )
+	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
 				| grep -E '"connected":|"ip":' \
 				| tr -d ' ",' )
