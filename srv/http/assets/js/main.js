@@ -707,30 +707,38 @@ $( '#button-lib-update' ).on( 'click', function() {
 		return
 	}
 	
-	var modes   = [ 'NAS', 'SD', 'USB' ];
 	var message = '';
-	modes.forEach( k => {
-		message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
-	} );
+	if ( S.shareddata ) {
+		values    = { ACTION: 'update', LATEST: false }
+	} else {
+		var modes = [ 'NAS', 'SD', 'USB' ];
+		modes.forEach( k => {
+			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+		} );
+		message  += '&ensp;<hr>';
+		values    = { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+	}
 	INFO( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : message +'&ensp;<hr>'
+		, message    : message
 		, list       : [
 			  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, [ 'Append Latest list', 'checkbox' ]
 		]
-		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+		, values     : values
 		, beforeshow : () => {
 			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
-			$( '#infoList input:radio' ).on( 'input', function() {
-				$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
-			} );
+			if ( S.shareddata ) {
+				$( '#infoList input:radio' ).on( 'input', function() {
+					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
+				} );
+			}
 		}
 		, ok         : () => {
 			var val     = _INFO.val();
 			var pathmpd = '';
-			if ( val.ACTION === 'update' ) {
+			if ( ! S.shareddata && val.ACTION === 'update' ) {
 				var path = [];
 				modes.forEach( k => {
 					if ( val[ k ] ) path.push( k );
