@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250725
+# 20250801
+grep -q dirshm/listing $dirbash/mpdidle.sh && restartmpd=1
+
 file=/etc/exports
 if grep -q "^$dirnas" $file && ! grep -q "^$dirnas .*crossmnt" $file; then
 	sed -i "\|^$dirnas | s/)/,crossmnt)/" $file
@@ -60,7 +62,9 @@ dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20250718
+# 20250001
+[[ $restartmpd ]] && systemctl restart mpd
+
 TEMP_fstab
 
 installfinish

@@ -39,7 +39,7 @@ updateDone() {
 	echo $updatetime > $dirmpd/updatetime
 	rm -f $dirmpd/listing $dirshm/albumprev
 	$dirbash/status-push.sh
-	( sleep 3 && rm -f $dirshm/listing ) &
+	rm -f $dirshm/listing
 }
 
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle
