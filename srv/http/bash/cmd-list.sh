@@ -9,6 +9,9 @@
 
 . /srv/http/bash/common.sh
 
+killProcess cmdlist
+echo $$ > $dirshm/pidcmdlist
+
 file_album_prev=$dirshm/albumprev
 file_album_a_y=$dirmpd/albumbyartist-year
 file_latest_a_y=$dirmpd/latestbyartist-year
