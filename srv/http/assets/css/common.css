@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1753055903' );
+	src         : url( '/assets/fonts/rern.woff2?v=1753689136' );
 }
 @font-face {
 	font-family : Lato;
@@ -1124,7 +1124,8 @@ input[ type=radio ]:disabled {
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
 	label,
-	input,
+	input[ type=checkbox ],
+	input[ type=radio ],
 	.btnbottom i,
 	.btnbottom span,
 	.divgain,
