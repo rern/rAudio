@@ -746,11 +746,8 @@ shairportstop )
 shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	data='{
-  "counts"      : '$( getContent $dirmpd/counts '{}' )'
-, "updating_db" : false
-}'
-	pushData mpdplayer "$data"
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
 	;;
 snapserverlist )
 	snapserverList

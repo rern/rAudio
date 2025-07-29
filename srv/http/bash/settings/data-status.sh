@@ -155,15 +155,9 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	fi
 	;;
 storage )
-	data="\
+	echo "\
 <bll># cat /etc/fstab</bll>
 $( < /etc/fstab )"
-	usb=$( mount | grep /mnt/MPD )
-	[[ $usb ]] && data+="
-
-<bll># mount | grep /mnt/MPD</bll>
-$usb"
-	echo "$data"
 	;;
 system )
 	config="\
