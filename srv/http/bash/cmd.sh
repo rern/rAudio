@@ -648,7 +648,7 @@ mpcupdatestop )
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating} $dirshm/listing
+		rm -f $dirmpd/{listing,updating}
 	fi
 	;;
 mpdignore )

@@ -34,15 +34,14 @@ timeFormat() {
 }
 updateDone() {
 	jq -S <<< "{ $counts }" > $dirmpd/counts
-	pushData mpdupdate '{ '$counts', "done": true }'
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	rm -f $dirmpd/listing $dirshm/albumprev
+	pushData mpdupdate '{ '$counts', "done": true }'
 	$dirbash/status-push.sh
-	rm -f $dirshm/listing
 }
 
-touch $dirmpd/listing $dirshm/listing # for debounce mpdidle
+touch $dirmpd/listing
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 grep -qs LATEST=true $dirmpd/updating && latestappend=1
 [[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev && albumprev=1
