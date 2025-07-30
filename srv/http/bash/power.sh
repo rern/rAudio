@@ -9,7 +9,7 @@ ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipaddress $filesharedip )
 	if [[ $ipclients ]]; then
-		[[ ! $CONFIRM ]] && echo -1 && exit # $2 confirm proceed
+		[[ ! $CONFIRM ]] && echo -1 && exit
 # --------------------------------------------------------------------
 		if [[ $reboot ]]; then
 			msg=Reboot

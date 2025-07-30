@@ -242,7 +242,7 @@ $( '#close' ).on( 'click', function() {
 			, cancel       : () => location.href = '/'
 			, okcolor      : V.orange
 			, oklabel      : ICON( 'reboot' ) +'Reboot'
-			, ok           : () => COMMON.powerAction( 'reboot' )
+			, ok           : COMMON.powerOk
 		} );
 	}, 'json' );
 } );

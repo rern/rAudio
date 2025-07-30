@@ -1461,34 +1461,32 @@ var COMMON    = {
 			, message     : ICON( 'raudio gr' ) +'&ensp;<a style="font-weight: 300">r A u d i o</a>'
 			, buttonlabel : ICON( 'reboot' ) +'Reboot'
 			, buttoncolor : V.orange
-			, button      : () => COMMON.powerAction( 'reboot' )
+			, button      : COMMON.powerOk
 			, oklabel     : ICON( 'power' ) +'Off'
 			, okcolor     : V.red
-			, ok          : () => COMMON.powerAction( 'off' )
+			, ok          : () => COMMON.powerOk( 'off' )
 		} );
 	}
-	, powerAction   : action => {
+	, powerOk       : ( action, confirm ) => {
+		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
-		BASH( [ 'power.sh', action, 'CMD' ], nfs => {
-			if ( nfs != -1 ) {
-				COMMON.loader();
-				return
+		COMMON.loader();
+		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], nfs => {
+			if ( nfs == -1 ) {
+				$( '#loader' ).addClass( 'hide' );
+				BANNER_Hide();
+				INFO( {
+					  icon    : 'power'
+					, title   : 'Power'
+					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
+								+'<br><wh>Shared Data</wh> on clients will stop.'
+								+'<br>(Resume when server online again)'
+								+'<br><br>Continue?'
+					, oklabel : ICON( action ) + COMMON.capitalize( action )
+					, okcolor : action === 'off' ? V.red : V.orange
+					, ok      : () => COMMON.powerOk( action, true )
+				} );
 			}
-			
-			INFO( {
-				  icon    : 'power'
-				, title   : 'Power'
-				, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will stop.'
-							+'<br>(Resume when server online again)'
-							+'<br><br>Continue?'
-				, oklabel : ICON( action ) + COMMON.capitalize( action )
-				, okcolor : action === 'off' ? V.red : V.orange
-				, ok      : () => {
-					BASH( [ 'power.sh', action, 'confirm', 'CMD CONFIRM' ] );
-					COMMON.loader();
-				}
-			} );
 		} );
 	}
 	, scrollToView  : $el => {
