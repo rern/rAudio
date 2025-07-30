@@ -258,6 +258,11 @@ spotifyoutput )
 	volume=$( getVar volume_controller /etc/spotifyd.conf )
 	echo '{ "values": { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }, "devices": [ "Default"'$devices' ] }'
 	;;
+stoptimer )
+	file=$dirsystem/stoptimer.conf
+	[[ -e $file ]] && values=$( conf2json $file ) || values='{ "MIN": 30, "POWEROFF": false }'
+	echo '{ "values": '$values', "active": '$( exists $dirshm/pidstoptimer )' }'
+	;;
 templimit )
 	line=$( grep ^temp_soft_limit /boot/config.txt )
 	[[ $line ]] && degree=$( cut -d= -f2 <<< $line ) || degree=60
@@ -319,7 +324,6 @@ wlanprofile )
 , "MTU"        : '$( cat $dirlan/mtu )'
 , "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
 }';;
-			stoptimer )     echo '{ "values": { "MIN": 30, "POWEROFF": false }, "active": '$( exists $dirshm/pidstoptimer )' }';;
 			volumelimit )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50
