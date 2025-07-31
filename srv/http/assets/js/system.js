@@ -530,7 +530,7 @@ var UTIL          = {
 					infoval.SHAREDDATA = shareddata;
 					var keys = Object.keys( infoval );
 					var vals = Object.values( infoval );
-					NOTIFY( SW.icon, SW.title, shareddata ? 'Enable ...' : 'Add ...' );
+					NOTIFY( SW.icon, SW.title.replace( ' Server', '' ), shareddata ? 'Enable ...' : 'Add ...' );
 					UTIL.mount.set( [ ...vals, 'CMD '+ keys.join( ' ' ) ], infoval );
 				}
 			} );
