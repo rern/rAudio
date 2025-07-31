@@ -17,6 +17,7 @@ killProcess stoptimer
 echo $$ > $dirshm/pidstoptimer
 
 killProcess relaystimer
+pushData mpdplayer '{ "stoptimer": true }'
 
 sleep $(( min * 60 ))
 
