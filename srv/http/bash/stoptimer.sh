@@ -27,6 +27,7 @@ volume=$( volumeGet )
 
 volumeToggle $volume 0
 $dirbash/cmd.sh playerstop
+sleep 1
 volumeToggle 0 $volume
 
 if [[ $poweroff ]]; then
