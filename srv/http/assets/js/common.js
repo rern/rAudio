@@ -312,8 +312,8 @@ var SWIPE     = () => {
 	} );
 }
 //-----------------------------------------------------------------------------------------------------------------
-W             = {  // ws push
-	  bluetooth : () => {
+W             = {  // from websocket.py (server)
+	  bluetooth : data => {
 		if ( PAGE === 'networks' ) {
 			S.listbt = data;
 			renderBluetooth();
@@ -1593,7 +1593,7 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 }
-var WEBSOCKET = {
+var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	  connect : ip => {
 		if ( WS ) WS.close();                                                      // terminate existing
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init

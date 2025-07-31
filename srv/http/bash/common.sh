@@ -408,7 +408,7 @@ pushBookmark() {
 	data=$( php /srv/http/library.php home )
 	pushData bookmark "$data"
 }
-pushData() {
+pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy
 	channel=$1
 	if [[ $2 ]]; then
@@ -433,7 +433,7 @@ pushData() {
 		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
 	for ip in $sharedip; do
-		websocat ws://$ip:8080 <<< $data
+		websocat ws://$ip:8080 <<< $data # send to remote websocket.py
 	done
 }
 pushDirCounts() {
@@ -453,7 +453,7 @@ pushRefresh() {
 pushStorage() {
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 }
-pushWebsocket() {
+pushWebsocket() { # send to remote websocket.py (server)
 	local channel data ip
 	ip=$1
 	channel=$2
