@@ -385,16 +385,18 @@ var CONFIG       = {
 			} );
 		}
 	}
-	, stoptimer    : data => {
+	, stoptimer    : values => {
+		console.log(values)
 		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
 				, [ 'Power off on stop', 'checkbox', { colspan: 2 } ]
+				, [ 'Time each play',    'checkbox' ]
 			]
 			, boxwidth     : 70
-			, values       : data.values
-			, checkchanged : data.active
+			, values       : values
+			, checkchanged : S.stoptimer
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 			, fileconf     : true

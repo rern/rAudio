@@ -132,6 +132,8 @@ var SWITCH = {
 		var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 		NOTIFY_COMMON();
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
+		if ( V.debug ) return
+		
 		$( '.col-r' ).css( 'pointer-events', 'none' );
 		delete SW;
 	}

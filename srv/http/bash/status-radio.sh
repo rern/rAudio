@@ -12,6 +12,8 @@ case $id in
 	mellow ) id=1;;
 	rock )   id=2;;
 	global ) id=3;;
+#	x )      id=4;;
+	beyond ) id=5;;
 	fip )           id=7;;  # FIP
 	fipelectro )    id=74;; # Electro
 	fipgroove )     id=66;; # Groove

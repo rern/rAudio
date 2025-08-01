@@ -411,11 +411,12 @@ EOF
 stoptimer )
 	killProcess stoptimer
 	if [[ $ON ]]; then
-		$dirbash/stoptimer.sh &> /dev/null &
+		[[ $TYPE == onplay ]] && touch $dirsystem/stoptimer
+		$dirbash/status-push.sh
 	else
-		rm -f $dirshm/pidstoptimer
-		if [[ -e $dirshm/relayson ]]; then
-			grep -q timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
+		rm -f $dirsystem/stoptimer
+		if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
+			$dirbash/relays-timer.sh &> /dev/null &
 		fi
 	fi
 	pushRefresh

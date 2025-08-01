@@ -10,8 +10,11 @@ isChanged() {
 		[[ $prev != ${!k} ]] && return 0
 	done
 }
-onWhilePlay() {
-	if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+onPlay() {
+	if [[ $state == play && -e $dirsystem/stoptimer && ! -e $dirshm/pidstoptimer ]]; then
+		grep -q ^type=onplay $dirsystem/stoptimer.conf && $dirbash/stoptimer.sh &> /dev/null &
+	fi
+	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
 		export DISPLAY=:0
 		if [[ $state == play ]]; then
 			sudo xset dpms force on
@@ -28,7 +31,7 @@ echo $$ > $dirshm/pidstatuspush
 if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
 	statusradio=1
-	onWhilePlay
+	onPlay
 else
 	status=$( $dirbash/status.sh )
 	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
@@ -41,7 +44,7 @@ else
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
-	onWhilePlay
+	onPlay
 	if [[ $webradio == true ]]; then
 		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
