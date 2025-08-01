@@ -20,7 +20,9 @@ onPlay() {
 				rm $dirsystem/stoptimer
 				pushData refresh '{ "page": "features", "stoptimer": false }'
 			fi
-			pushData mpdplayer '{ "stoptimer": false }'
+			$dirbash/status-push.sh
+			exit
+# --------------------------------------------------------------------
 		fi
 	fi
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
