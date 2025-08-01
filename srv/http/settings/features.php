@@ -304,7 +304,7 @@ EOF
 		  'id'       => 'stoptimer'
 		, 'label'    => 'Stop Timer'
 		, 'help'     => <<< EOF
-Stop timer:
+Stop timer: <gr>(Timer start on play)</gr>
  · Mute
  · Stop player
  · Set volume back as before mute

@@ -389,9 +389,9 @@ var CONFIG       = {
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox' ]
-				, [ 'Run on play',       'checkbox' ]
+				  [ 'Minutes',            'number',   { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop',  'checkbox' ]
+				, [ 'Rerun on each play', 'checkbox' ]
 			]
 			, boxwidth     : 70
 			, values       : values

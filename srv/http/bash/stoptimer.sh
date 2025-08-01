@@ -13,6 +13,7 @@ pushData mpdplayer '{ "stoptimer": true }'
 sleep $(( min * 60 ))
 
 rm $dirshm/pidstoptimer
+[[ ! $onplay ]] && rm $dirsystem/stoptimer
 volume=$( volumeGet )
 . <( grep -E '^card|^mixer' $dirshm/output )
 

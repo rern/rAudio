@@ -411,7 +411,7 @@ EOF
 stoptimer )
 	killProcess stoptimer
 	if [[ $ON ]]; then
-		[[ $TYPE == onplay ]] && touch $dirsystem/stoptimer
+		touch $dirsystem/stoptimer
 		$dirbash/status-push.sh
 	else
 		rm -f $dirsystem/stoptimer
