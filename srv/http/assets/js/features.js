@@ -386,13 +386,12 @@ var CONFIG       = {
 		}
 	}
 	, stoptimer    : values => {
-		console.log(values)
 		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox', { colspan: 2 } ]
-				, [ 'Time each play',    'checkbox' ]
+				, [ 'Power off on stop', 'checkbox' ]
+				, [ 'Run on play',       'checkbox' ]
 			]
 			, boxwidth     : 70
 			, values       : values
