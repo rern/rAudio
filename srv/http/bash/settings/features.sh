@@ -409,12 +409,11 @@ EOF
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
+	enableFlagSet
 	killProcess stoptimer
 	if [[ $ON ]]; then
-		touch $dirsystem/stoptimer
 		$dirbash/status-push.sh
 	else
-		rm -f $dirsystem/stoptimer
 		if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 			$dirbash/relays-timer.sh &> /dev/null &
 		fi

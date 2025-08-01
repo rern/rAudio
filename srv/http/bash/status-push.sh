@@ -11,8 +11,17 @@ isChanged() {
 	done
 }
 onPlay() {
-	if [[ $state == play && -e $dirsystem/stoptimer && ! -e $dirshm/pidstoptimer ]]; then
-		grep -q ^type=onplay $dirsystem/stoptimer.conf && $dirbash/stoptimer.sh &> /dev/null &
+	if [[ -e $dirsystem/stoptimer ]]; then
+		if [[ $state == play ]]; then
+			[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
+		elif [[ -e $dirshm/pidstoptimer ]]; then
+			killProcess stoptimer
+			if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
+				rm $dirsystem/stoptimer
+				pushData refresh '{ "page": "features", "stoptimer": false }'
+			fi
+			pushData mpdplayer '{ "stoptimer": false }'
+		fi
 	fi
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
 		export DISPLAY=:0

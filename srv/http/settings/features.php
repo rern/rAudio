@@ -304,11 +304,16 @@ EOF
 		  'id'       => 'stoptimer'
 		, 'label'    => 'Stop Timer'
 		, 'help'     => <<< EOF
-Stop timer: <gr>(Timer start on play)</gr>
+Stop timer:
  · Mute
  · Stop player
  · Set volume back as before mute
  · If set, power off.
+
+Note:
+ · On enable - Timer starts if playing of will start on play.
+ · Rerun on each play - Timer will restart on play.
+ · Timer stops when not playing.
 EOF
 	]
 	, [
