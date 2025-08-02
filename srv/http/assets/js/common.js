@@ -380,7 +380,7 @@ W             = {  // from websocket.py (server)
 		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
-				$( '#loader svg' ).css( 'animation', 'none' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
 				$( '#banner' ).addClass( 'hide' );
 			}, 12000 );
 		} else { // reconnect after reboot
