@@ -987,7 +987,7 @@ var _INFO     = {
 		}
 	}
 	, clearTimeout  : all => { // ok for both timeout and interval
-		if ( ! ( 'timeout' in V ) ) return
+		if ( ! ( 'timeout' in I ) ) return
 		
 		var timeout = all ? Object.keys( I.timeout ) : [ 'updni', 'updnt' ];
 		timeout.forEach( k => clearTimeout( I.timeout[ k ] ) );
@@ -1505,6 +1505,21 @@ var COMMON    = {
 			$ul.find( 'li' ).removeClass( 'hide' );
 		}
 	}
+	, second2HMS    : second => {
+		if ( ! second || second < 1 ) return ''
+		
+		var second = Math.round( second );
+		if ( second < 60 ) return second;
+		
+		var ss = second % 60;
+		var mm = Math.floor( ( second % 3600 ) / 60 );
+		if ( ss < 10 ) ss = '0'+ ss;
+		if ( second < 3600 ) return mm +':'+ ss;
+		
+		if ( mm < 10 ) mm = '0'+ mm;
+		var hh = Math.floor( second / 3600 );
+		return hh  +':'+ mm +':'+ ss;
+	}
 	, select        : {
 		  label  : text => text
 							.replace( '(', '<gr>(' )
@@ -1558,6 +1573,23 @@ var COMMON    = {
 				.empty()
 				.addClass( 'hide' );
 		}
+	}
+	, timerElapsed  : ( elapsed, total ) => {
+		console.log(elapsed, total)
+		var mmss = COMMON.second2HMS( elapsed );
+		$( '#infoTitle' ).html( SW.title +'&emsp;<gr>'+ mmss +'</gr>' );
+		V.intervaltimer = setInterval( () => {
+			elapsed++;
+			if ( elapsed < total * 60 ) {
+				$( '#infoTitle gr' ).text( COMMON.second2HMS( elapsed ) );
+			} else {
+				clearInterval( V.intervaltimer );
+				$( '#infoTitle' ).text( SW.title );
+			}
+		}, 1000 );
+		$( '#infoOk, #infoX' ).on( 'click', function() {
+			clearInterval( V.intervaltimer );
+		} );
 	}
 }
 var VOLUME    = {

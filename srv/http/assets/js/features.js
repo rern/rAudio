@@ -385,7 +385,7 @@ var CONFIG       = {
 			} );
 		}
 	}
-	, stoptimer    : values => {
+	, stoptimer    : data => {
 		INFO( {
 			  ...SW
 			, list         : [
@@ -394,8 +394,11 @@ var CONFIG       = {
 				, [ 'Rerun on each play', 'checkbox' ]
 			]
 			, boxwidth     : 70
-			, values       : values
+			, values       : data.values
 			, checkchanged : S.stoptimer
+			, beforeshow   : () => {
+				if ( data.elapsed ) COMMON.timerElapsed( data.elapsed, data.values.MIN );
+			}
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 			, fileconf     : true

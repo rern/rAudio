@@ -12,6 +12,7 @@ pushData mpdplayer '{ "stoptimer": true }'
 
 sleep $(( min * 60 ))
 
+notify stoptimer 'Stop Timer' 'Stop ...'
 rm $dirshm/pidstoptimer
 [[ ! $onplay ]] && rm $dirsystem/stoptimer
 volume=$( volumeGet )

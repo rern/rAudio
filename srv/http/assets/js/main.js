@@ -474,7 +474,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( S.Time ? UTIL.second2HMS( S.Time ) : '' );
+					.text( S.Time ? COMMON.second2HMS( S.Time ) : '' );
 			}
 			if ( ! volume && ! D.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent hide' );

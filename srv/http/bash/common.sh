@@ -226,7 +226,13 @@ dirPermissions() {
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 }
+elapsedPid() {
+	local file
+	file=$dirshm/pid$1
+	[[ -e $file ]] && ps -o etimes= -p $( < $file ) | tr -d ' ' || echo false
+}
 enableFlagSet() {
+	local file
 	file=$dirsystem/$CMD
 	[[ $ON ]] && touch $file || rm -f $file
 }
@@ -234,6 +240,7 @@ exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 fifoToggle() { # mpdoled vuled vumeter
+	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
 	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
 	[[ -e $dirsystem/vuled ]] && vuled=1
@@ -265,6 +272,7 @@ fifoToggle() { # mpdoled vuled vumeter
 	fi
 }
 fstabSet() {
+	local fstab stb
 	umount -ql "$1"
 	mkdir -p "$1"
 	chown mpd:audio "$1"

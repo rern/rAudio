@@ -1506,7 +1506,7 @@ var PLAYBACK  = {
 		var elapsedhms;
 		var t_e      = S.elapsed === false ? '#total' : '#elapsed';
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
-		if ( S.elapsed ) $elapsed.text( UTIL.second2HMS( S.elapsed ) );
+		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
 			 PROGRESS.set( S.elapsed );
 		} else { // elapsed only
@@ -1523,7 +1523,7 @@ var PLAYBACK  = {
 					PROGRESS.arc( S.elapsed / S.Time );
 					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				}
-				elapsedhms = UTIL.second2HMS( S.elapsed );
+				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
 				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
 			} else {
@@ -1549,8 +1549,8 @@ var PLAYBACK  = {
 		
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
-		V.timehms      = S.Time ? UTIL.second2HMS( S.Time ) : '';
-		var elapsedhms = S.elapsed ? UTIL.second2HMS( S.elapsed ) : '';
+		V.timehms      = S.Time ? COMMON.second2HMS( S.Time ) : '';
+		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		if ( S.state === 'stop' ) {
@@ -1979,7 +1979,7 @@ var PLAYLIST  = {
 			var time = $time.data( 'time' ) - $li.find( '.time' ).data( 'time' );
 			$time
 				.data( 'time', time )
-				.text( UTIL.second2HMS( time ) );
+				.text( COMMON.second2HMS( time ) );
 		}
 		$li.remove();
 		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
@@ -2097,9 +2097,9 @@ var PLAYLIST  = {
 			if ( S.elapsed === false ) return
 			
 			$liactive.addClass( S.state );
-			if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( UTIL.second2HMS( S.Time ) );
+			if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( COMMON.second2HMS( S.Time ) );
 			if ( S.state === 'pause' ) {
-				elapsedtxt = UTIL.second2HMS( S.elapsed );
+				elapsedtxt = COMMON.second2HMS( S.elapsed );
 				$liactive.find( '.elapsed' ).text( elapsedtxt );
 				PLAYLIST.render.width();
 			} else {
@@ -2189,11 +2189,11 @@ var PROGRESS  = {
 	, bar     : e => {
 		var ratio      = UTIL.xy.ratio( e, 'time' );
 		S.elapsed      = Math.round( ratio * S.Time );
-		var elapsedhms = UTIL.second2HMS( S.elapsed );
+		var elapsedhms = COMMON.second2HMS( S.elapsed );
 		if ( S.elapsed ) {
 			$( '#progress span' ).html( elapsedhms );
 		} else {
-			$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ UTIL.second2HMS( S.Time ) );
+			$( '#progress' ).html( ICON( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ COMMON.second2HMS( S.Time ) );
 		}
 		$( '#time-bar' ).css( 'width', ( ratio * 100 ) +'%' );
 	}
@@ -2205,8 +2205,8 @@ var PROGRESS  = {
 		PROGRESS.set( S.elapsed );
 		$( '#elapsed, #total' ).removeClass( 'gr' );
 		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
-		$( '#elapsed' ).text( UTIL.second2HMS( S.elapsed ) );
-		$( '#total' ).text( UTIL.second2HMS( S.Time ) );
+		$( '#elapsed' ).text( COMMON.second2HMS( S.elapsed ) );
+		$( '#total' ).text( COMMON.second2HMS( S.Time ) );
 		if ( S.state === 'stop' && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#pause' ).addClass( 'active' );
@@ -2418,21 +2418,6 @@ var UTIL      = {
 		DISPLAY.playback();
 		PLAYBACK.main();
 		BANNER_HIDE();
-	}
-	, second2HMS      : second => {
-		if ( ! second || second < 1 ) return ''
-		
-		var second = Math.round( second );
-		if ( second < 60 ) return second;
-		
-		var ss = second % 60;
-		var mm = Math.floor( ( second % 3600 ) / 60 );
-		if ( ss < 10 ) ss = '0'+ ss;
-		if ( second < 3600 ) return mm +':'+ ss;
-		
-		if ( mm < 10 ) mm = '0'+ mm;
-		var hh = Math.floor( second / 3600 );
-		return hh  +':'+ mm +':'+ ss;
 	}
 	, switchPage      : page => {
 		UTIL.intervalClear();
