@@ -729,7 +729,6 @@ var UTIL          = {
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
-					if ( data.elapsed ) COMMON.timerElapsed( data.elapsed, pin.TIMER );
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
 					var $tdtimer = $( '#infoList tr:last td' );

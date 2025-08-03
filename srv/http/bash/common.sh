@@ -226,11 +226,6 @@ dirPermissions() {
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 }
-elapsedPid() {
-	local file
-	file=$dirshm/pid$1
-	[[ -e $file ]] && ps -o etimes= -p $( < $file ) | tr -d ' ' || echo false
-}
 enableFlagSet() {
 	local file
 	file=$dirsystem/$CMD

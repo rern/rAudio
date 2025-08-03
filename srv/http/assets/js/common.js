@@ -1574,23 +1574,6 @@ var COMMON    = {
 				.addClass( 'hide' );
 		}
 	}
-	, timerElapsed  : ( elapsed, total ) => {
-		console.log(elapsed, total)
-		var mmss = COMMON.second2HMS( elapsed );
-		$( '#infoTitle' ).html( SW.title +'&emsp;<gr>'+ mmss +'</gr>' );
-		V.intervaltimer = setInterval( () => {
-			elapsed++;
-			if ( elapsed < total * 60 ) {
-				$( '#infoTitle gr' ).text( COMMON.second2HMS( elapsed ) );
-			} else {
-				clearInterval( V.intervaltimer );
-				$( '#infoTitle' ).text( SW.title );
-			}
-		}, 1000 );
-		$( '#infoOk, #infoX' ).on( 'click', function() {
-			clearInterval( V.intervaltimer );
-		} );
-	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute

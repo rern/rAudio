@@ -173,7 +173,6 @@ relays )
 }
 , "names"  : '$names'
 , "state"  : '$( gpioState )'
-, "elapsed" : '$( elapsedPid relaystimer )'
 }'
 	;;
 replaygain )
@@ -265,7 +264,8 @@ stoptimer )
 	else
 		values='{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }'
 	fi
-	echo '{ "values": '$values', "elapsed": '$( elapsedPid stoptimer )' }'
+	[[ -e $dirshm/pidstoptimer ]] && elapsed=$( ps -o etimes= -p $( < $dirshm/pidstoptimer ) | tr -d ' ' ) || elapsed=false
+	echo '{ "values": '$values', "elapsed": '$elapsed' }'
 	;;
 templimit )
 	line=$( grep ^temp_soft_limit /boot/config.txt )

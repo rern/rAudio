@@ -397,7 +397,22 @@ var CONFIG       = {
 			, values       : data.values
 			, checkchanged : S.stoptimer
 			, beforeshow   : () => {
-				if ( data.elapsed ) COMMON.timerElapsed( data.elapsed, data.values.MIN );
+				var elapsed = data.elapsed;
+				if ( ! elapsed ) return
+				
+				$( '#infoTitle' ).html( SW.title +'&emsp;<gr>'+ COMMON.second2HMS( elapsed ) +'</gr>' );
+				V.intervaltimer = setInterval( () => {
+					elapsed++;
+					if ( elapsed < data.values.MIN * 60 ) {
+						$( '#infoTitle gr' ).text( COMMON.second2HMS( elapsed ) );
+					} else {
+						clearInterval( V.intervaltimer );
+						$( '#infoTitle' ).text( SW.title );
+					}
+				}, 1000 );
+				$( '#infoOk, #infoX' ).on( 'click', function() {
+					clearInterval( V.intervaltimer );
+				} );
 			}
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
