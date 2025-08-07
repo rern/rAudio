@@ -95,10 +95,12 @@ To create Spotify private app:
 	» App name: <c>rAudio</c>
 	» App description: <c>(any)</c>
 	» Website: <c>(any)</c>
-	» Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	» Redirect URI:
+		- <c>https://rern.github.io/raudio/spotify</c>
+		- <btn>Add</btn>
+	» API/SDKs: Check all
 	<btn>Save</btn>
-<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>Settings</btn>
-	<btn>Basic Information</btn> » <btn>User Management</btn>
+<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>User Management</btn>
 		» Fullname - <c>(any)</c>
 		» Email - <c>(Spotify Account email)</c>
 		<btn>Add user</btn>
