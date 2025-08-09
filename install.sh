@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250801
+# 20250809
 grep -q dirshm/listing $dirbash/mpdidle.sh && restartmpd=1
 
 file=/etc/exports
