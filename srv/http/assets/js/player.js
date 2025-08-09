@@ -320,13 +320,6 @@ var UTIL     = {
 			} );
 		}
 	}
-	, statusScroll : id => {
-		if ( id === 'mpdconf' ) {
-			$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-		} else if ( [ 'albumignore', 'mpdignore' ].includes( id ) ) {
-			$( '.container' ).scrollTop( $( '#'+ id ).offset().top + window.innerHeight );
-		}
-	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
 		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
@@ -394,12 +387,18 @@ function renderPage() {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
+	var device = this.value;
+	if ( device === S.output.name ) return
+	
 	NOTIFY( 'volume', 'Output Device', 'Change ...' );
-	BASH( [ 'device', this.value, 'CMD DEVICE' ] );
+	BASH( [ 'device', device, 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
+	var mixer = this.value;
+	if ( mixer === S.output.mixer ) return
+	
 	NOTIFY( 'volume', 'Mixer Device', 'Change ...' );
-	BASH( [ 'mixer', this.value, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
+	BASH( [ 'mixer', mixer, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );

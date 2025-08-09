@@ -18,8 +18,15 @@ commonVariables( [
 		  'refreshlibrary' => 'library'
 		, 'relays'       => 'system'
 	]
-	, 'tabs'    => [ 'features', 'player' ]
+	, 'tabs'    => [ 'features', 'library', 'player' ]
 ] );
+function hrefList( $list ) {
+	$html      = '';
+	foreach( $list as $l ) {
+		$html.= '<a href="'.$l[ 2 ].'">'.$l[ 0 ].'</a> · '.$l[ 1 ].'<br>';
+	}
+	return $html;
+}
 // ----------------------------------------------------------------------------------
 $head        = [
 	  'title'  => 'System'
@@ -61,26 +68,29 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Add network storage
+$B->microsd$B->usbdrive$B->networks Context menu
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by $B->add Add network storage:
+ · Commands used by $B->add:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
-      -o noauto,username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
+      -o username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
 
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
-      -o defaults,noauto,bg,soft,timeo=5
+      -o defaults,bg,soft,timeo=5
 </pre>
 Note:
- · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
- · Windows shares without password: <c>net user guest /active:yes</c>
+» <c>Name</c> - Reserved: <c>data</c> <c>SD</c> <c>USB</c>
+Windows shares without password: <c>net user guest /active:yes</c>
 
-<div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
-$B->microsd$B->usbdrive$B->networks Context menu</div>
+List:
+	Path: <c>/mnt/MPD/...</c>
+	<i class="btn">«</i> $L->shareddata
+	<i class="btn">»</i> $L->serverraudio
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
@@ -121,7 +131,8 @@ EOF
 		, 'help'     => <<< EOF
 $B->gear
 Country of Wi-Fi regulatory domain:
-	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
+<c>00</c> Least common denominator settings
+	· Channels and transmit power permitted in all countries.
 	· The connected router may override it to a certain country.
 ■ Auto start Access Point - On failed connection or no router
 EOF
@@ -131,30 +142,28 @@ htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 $helpi2s     = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
- · HAT with EEPROM could be automatically detected.
+ · I²S devices with EEPROM might be automatically detected.
  · See  if it's already set: $T->player$L->device
 $B->gear
-Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+Option to disable I²S EEPROM read for I²S devices with obsolete EEPROM
 EOF;
 $head        = [ 'title' => 'GPIO Devices' ];
 $body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'label'    => 'Audio - I²S'
-		, 'sub'      => 'HAT'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'i2smodule'
 		, 'label'    => 'Audio - I²S'
-		, 'sub'      => 'HAT'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'lcdchar'
 		, 'label'    => 'Character LCD'
-		, 'sub'      => 'RPLCD'
+		, 'sub'      => 'python-rplcd'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
@@ -180,7 +189,7 @@ EOF
  · Can be enabled and run as a test without a connected relay module.
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
-Toggle: $B->gear>
+Toggle: $B->gear
 	<tab style="width: 115px">Sequence</tab>$B->power All
 	<tab>Pin - Name</tab>$greendot
 EOF
@@ -199,6 +208,7 @@ EOF
 		  'id'       => 'mpdoled'
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
+		, 'status'   => true
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 
@@ -316,35 +326,40 @@ EOF
 Connect shared data as client for:
  · Library database
  · Data: Audio CD, bookmarks, lyrics, saved playlists and Web Radio
- · Display: Item toggles and order of Library home
+ · Display: Items, options and order of Library home
 
-Note:
- • Enabled - $B->microsd SD and $B->usbdrive USB:
-	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
-	 · Not availble in Library home
-
- • <wh>rAudio as server:</wh> (Alternative 1)
+• <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
+		· Permissions: <c>777</c>
 	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
- • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create shares for music <c>source</c> and <c>data</c>
-	 · Linux permissions:
-		· NFS: <c>777</c>
-		· CIFS (SMB): <c>read only = no</c>
-	 · Windows <btn>Folder</btn> <btn>Properties</btn> - right-click 
-		· <btn>Sharing</btn> <btn>Advanced Sharing...</btn>
-		· <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
+• <wh>Other servers:</wh> (Alternative 2)
+	Server: Create 2 shares: <gr>(any names)</gr>
+		· <c>SOURCE</c> for music files
+		· <c>DATABASE</c> for database and settings
+		· Permissions: <gr>Full Control</gr>
+			· Linux:
+				NFS » <c>rw</c>
+				CIFS/SMB » <c>read only = no</c>
+			· Windows:
+				<tab>Sharing</tab>
+					<btn>Advanced Sharing...</btn> ■ Share this folder
+					<btn>Permissions</btn> » Everyone ■ Full Control
+				<tab>Security</tab>
+					<btn>Edit...</btn> » Everyone ■ Full Control
 	Clients:
-	 · 1st client:
-		· $L->storage $B->add Add <c>source</c>
-		· $M->refreshlibrary Update database
-		· $L->shareddata Connect <c>data</c>
-		· Local data will be transfered to <c>data</c>
-	 · Other clients:
-		· $L->shareddata Connect <c>data</c>
-		· <c>source</c> will be connected accordingly
+		· 1st client:
+			$L->storage $B->add » <c>SOURCE</c>
+			$M->refreshlibrary Update database
+			$L->shareddata » <c>DATABASE</c>
+			<gr>(Local data will be transfered to <c>DATABASE</c>)</gr>
+		· Other clients:
+			$L->shareddata » <c>DATABASE</c>
+			<gr>(<c>SOURCE</c> will be arranged accordingly.)</gr>
+			
+Note:
+ · $B->microsd SD and $B->usbdrive USB : Hidden while enabled
+
 EOF
 	]
 ];
@@ -352,31 +367,54 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
-	    'Inconsolata font'
-	  , 'A monospace font designed for printed code listings and the like'
-	  , 'https://fonts.google.com/specimen/Inconsolata'
+	    'nginx'
+	  , 'HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server'
+	  , 'https://nginx.org/en/'
 	],[
-	    'Lato-Fonts'
-	  , 'A san-serif typeface family'
-	  , 'http://www.latofonts.com/lato-free-fonts'
+	    'PHP'
+	  , 'PHP: Hypertext Preprocessor - A scripting language for web server side'
+	  , 'https://www.php.net'
+	],[
+	    'CSS'
+	  , 'Cascading Style Sheets for describing the presentation of HTMLs'
+	  , 'https://www.w3.org/TR/CSS'
+	],[
+	    'HTML'
+	  , 'Hypertext Markup Language for displaying documents in web browsers'
+	  , 'https://whatwg.org'
+	],[
+	    'JavaScript'
+	  , 'A scripting language for working with HTML Document Object Model'
+	  , 'https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+	]
+];
+$listplugin  = [
+	[
+	    'jQuery'
+	  , 'A JavaScript library for simplifying HTML DOM tree traversal and manipulation'
+	  , 'https://jquery.com/'
 	],[
 	    'pica'
-	  , 'Resize image in browser with high quality and high speed'
+	  , 'Resize image in browser'
 	  , 'https://github.com/nodeca/pica'
 	],[
 	    'Plotly'
-	  , 'Graphing Library'
+	  , 'Graphing Library <gr>(for Camilla DSP)</gr>'
 	  , 'https://plotly.com/javascript/'
 	],[
 	    'qr.js'
 	  , 'QR code generator'
 	  , 'https://github.com/lifthrasiir/qr.js'
+	],[
+	    'Lato'
+	  , 'Main font'
+	  , 'http://www.latofonts.com/lato-free-fonts'
+	],[
+	    'Inconsolata'
+	  , 'Monospace font'
+	  , 'https://fonts.google.com/specimen/Inconsolata'
 	]
 ];
-$uihtml      = '';
-foreach( $listui as $ui ) {
-	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
-}
 $indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 ?>
@@ -395,16 +433,9 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	<div class="list"></div>
 	
 	<heading class="subhead">Front End</heading>
-	<div class="list">
-		<a href="https://www.w3.org/TR/CSS">CSS</a> · Cascading Style Sheets for describing the presentation of HTMLs<br>
-		<a href="https://whatwg.org">HTML</a> · Hypertext Markup Language for displaying documents in web browsers<br>
-		<a href="https://nginx.org/en/">nginx</a> · HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
-		<a href="https://www.php.net">PHP</a> · PHP: Hypertext Preprocessor - A scripting language for web server side<br>
-		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model on client side<br>
-		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
-	</div>
-	<div class="listtitle jsplugins">Javascript Plugins:</div>
-	<div class="list hide"><?=$uihtml?></div>
+	<div class="list"><?=hrefList( $listui )?></div>
+	<div class="listtitle plugins">Plugins:</div>
+	<div class="list hide"><?=hrefList( $listplugin )?></div>
 	
 	<heading class="subhead">Data</heading>
 	<div class="list">

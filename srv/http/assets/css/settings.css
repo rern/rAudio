@@ -2,13 +2,15 @@
 .menu { z-index: 11 }
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
-li.current a::before,
-li.profile a::before {
+li.current dot::before,
+li.profile dot::before {
 	content: '• ';
-}
-li.current a::before {
 	color: #0f0;
 }
+li.profile dot::before          { color: var( --cg60 ) }
+#storage li.profile dot::before { color: #f00 }
+#storage li.rserver::after      { content: ' »' }
+#storage li.shareddata::after   { content: ' «' }
 .menu {
 	position: absolute;
 	margin-left: 40px;
@@ -117,6 +119,7 @@ div.helpblock {
 	line-height: 22px;
 	color: var( --cg75 );
 	white-space: pre-wrap;
+	tab-size: 20px;
 }
 heading + .helpblock {
 	margin-bottom: 30px;
@@ -161,6 +164,7 @@ heading + .helpblock {
 	padding-left: 15px;
 	text-align: right;
 	background: var( --cga );
+	border-bottom: 1px solid #000;
 }
 .helpmenu.label i {
 	margin: 0 8px;
@@ -197,14 +201,16 @@ heading + .helpblock {
 btn,
 tab {
 	display: inline-block;
-	line-height: 22px;
-	padding: 0 3px;
+	line-height: 20px;
+	padding: 0 7px;
 	border: 1px solid var( --cg );
 	border-radius: var( --radius-chk );
+	background: var( --cga );
 }
 tab {
-	padding: 0 20px;
-	border-radius: 3px 3px 0 0;
+	padding: 2px 20px 0;
+	border-radius: 4px 4px 0 0;
+	border: none;
 }
 .clear {
 	clear: both;
@@ -231,7 +237,7 @@ heading.subhead {
 heading.status .headtitle::after,
 .col-l.status gr::after,
 #ffmpegfiletype::after,
-.listtitle.jsplugins::after,
+.listtitle.plugins::after,
 .divaddon .revision::after {
 	display: inline-block;
 	width: 40px;
@@ -246,13 +252,13 @@ heading.status .headtitle::after,
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
 #ffmpegfiletype.active::after,
-.listtitle.jsplugins.active::after,
+.listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
 }
 .col-l.status gr::after,
 #ffmpegfiletype::after,
-.listtitle.jsplugins::after,
+.listtitle.plugins::after,
 .divaddon .revision::after {
 	width: 17px;
 	font-size: 14px;
@@ -268,6 +274,7 @@ heading i {
 }
 heading i.back {
 	width: 40px;
+	font-size: 26px;
 }
 heading i.help {
 	float: right;
@@ -502,6 +509,10 @@ input.disabled + .switchlabel {
 input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
 }
+.switch.disabled {
+	pointer-events: auto;
+}
+
 .setting,
 .settingedit {
 	width: 40px !important;
@@ -589,6 +600,12 @@ input.disabled + .switchlabel::after {
 	float: left;
 	white-space: nowrap !important;
 	line-height: 26px;
+}
+.col-r.text i {
+	margin-right: 5px;
+}
+.col-r input[ type=text ] {
+	border: 1px solid var( --cg );
 }
 #fliptxt {
 	display: none;

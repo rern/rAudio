@@ -8,12 +8,15 @@ killProcess stoptimer
 echo $$ > $dirshm/pidstoptimer
 
 killProcess relaystimer
+pushData mpdplayer '{ "stoptimer": true }'
 
 sleep $(( min * 60 ))
 
+notify stoptimer 'Stop Timer' 'Stop ...'
 rm $dirshm/pidstoptimer
-. <( grep -E '^card|^mixer' $dirshm/output )
+[[ ! $onplay ]] && rm $dirsystem/stoptimer
 volume=$( volumeGet )
+. <( grep -E '^card|^mixer' $dirshm/output )
 
 $dirbash/cmd.sh "volume
 $volume
@@ -21,12 +24,12 @@ $volume
 $mixer
 $card
 CMD CURRENT TARGET CONTROL CARD"
+
 $dirbash/cmd.sh playerstop
-$dirbash/cmd.sh "volumesetat
-0
-$mixer
-$card
-CMD TARGET CONTROL CARD"
+
+sleep 1
+fn_volume=$( < $dirshm/volumefunction )
+$fn_volume $volume% "$mixer" $card
 
 if [[ $poweroff ]]; then
 	$dirbash/power.sh

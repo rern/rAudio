@@ -10,6 +10,31 @@ isChanged() {
 		[[ $prev != ${!k} ]] && return 0
 	done
 }
+onPlay() {
+	if [[ -e $dirsystem/stoptimer ]]; then
+		if [[ $state == play ]]; then
+			[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
+		elif [[ -e $dirshm/pidstoptimer ]]; then
+			killProcess stoptimer
+			if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
+				rm $dirsystem/stoptimer
+				pushData refresh '{ "page": "features", "stoptimer": false }'
+			fi
+			$dirbash/status-push.sh
+			exit
+# --------------------------------------------------------------------
+		fi
+	fi
+	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
+		export DISPLAY=:0
+		if [[ $state == play ]]; then
+			sudo xset dpms force on
+			sudo xset -dpms
+		else
+			sudo xset +dpms
+		fi
+	fi
+}
 
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
@@ -17,8 +42,11 @@ echo $$ > $dirshm/pidstatuspush
 if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
 	statusradio=1
+	onPlay
 else
-	status=$( $dirbash/status.sh | jq )
+	status=$( $dirbash/status.sh )
+	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
+	status=$( jq <<< $status )
 	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
 		filter+='|^  "'$k'"'
 	done
@@ -27,6 +55,7 @@ else
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
+	onPlay
 	if [[ $webradio == true ]]; then
 		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
@@ -42,11 +71,6 @@ else
 		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
 	fi
 	mv -f $dirshm/status{new,}
-fi
-
-if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-	export DISPLAY=:0
-	[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
 fi
 
 clientip=$( snapclientIP )

@@ -9,7 +9,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	source=$3
 	mounted=$4
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size $mountpoint | awk '!/Used/ {print $1"B/"$2"B"}' )
+		size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		[[ ${source:0:4} == /dev ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	fi
 	list='
@@ -17,14 +17,30 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
+	if systemctl -q is-active nfs-server; then
+		[[ $mountpoint == "$dirnas/"* ]] && list+='
+, "rserver"    : true'
+	elif [[ $icon == networks && -L $dirmpd ]]; then
+		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
+			shareddata=1
+		elif [[ -e $dirnas/data/source ]]; then
+			[[ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' ) == $mountpoint ]] && shareddata=1
+		fi
+		[[ $shareddata ]] && list+='
+, "shareddata" : true'
+	fi
 	echo ", {
 $list
 }"
 }
 # sd
-mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd /mnt/MPD/SD /dev/mmcblk0p2 true )
+devmmc=/dev/mmcblk0p2
+if [[ ! -e /mnt/SD && -e $devmmc ]]; then
+	[[ -e $dirsd ]] && sd=$dirsd || sd=$dirnas/SD
+	mount | grep -q -m1 ^$devmmc && list+=$( listItem microsd $sd $devmmc true )
+fi
 # usb
-usb=$( ls /dev/sd* 2> /dev/null )
+[[ ! -e /mnt/USB ]] && usb=$( ls /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
 		type=$( blkid -o value -s TYPE $source )
@@ -44,12 +60,12 @@ if [[ $usb ]]; then
 	done <<< $usb
 fi
 # nas
-nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab )
+nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
 if [[ $nas ]]; then
-	nas=$( awk '{print $1"^"$2}' <<< $nas | sed 's/\\040/ /g' | sort )
+	nas=$( awk '{print $2"^"$1}' <<< $nas | sed 's/\\040/ /g' | sort )
 	while read line; do
-		source=${line/^*}
-		mountpoint=${line/*^}
+		mountpoint=${line/^*}
+		source=${line/*^}
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem networks "$mountpoint" "$source" $mounted )
 	done <<< $nas

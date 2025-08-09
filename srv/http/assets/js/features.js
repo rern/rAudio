@@ -100,9 +100,9 @@ var CONFIG       = {
 				, [ '',                          'checkbox' ]
 			]
 			, footer       : _INFO.footerIcon( {
-				  Reload     : 'reload'
-				, Screenoff  : 'screenoff'
-				, Brightness : 'brightness'
+				  Reload          : 'reload'
+				, 'Screen on/off' : 'screenoff'
+				, Brightness      : 'brightness'
 			} )
 			, boxwidth     : 70
 			, values       : { ...data.values, R_CHANGED: false, RESTART: false }
@@ -389,12 +389,31 @@ var CONFIG       = {
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox', { colspan: 2 } ]
+				  [ 'Minutes',            'number',   { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop',  'checkbox' ]
+				, [ 'Rerun on each play', 'checkbox' ]
 			]
 			, boxwidth     : 70
 			, values       : data.values
-			, checkchanged : data.active
+			, checkchanged : S.stoptimer
+			, beforeshow   : () => {
+				var elapsed = data.elapsed;
+				if ( ! elapsed ) return
+				
+				$( '#infoTitle' ).html( SW.title +'&emsp;<gr>'+ COMMON.second2HMS( elapsed ) +'</gr>' );
+				V.intervaltimer = setInterval( () => {
+					elapsed++;
+					if ( elapsed < data.values.MIN * 60 ) {
+						$( '#infoTitle gr' ).text( COMMON.second2HMS( elapsed ) );
+					} else {
+						clearInterval( V.intervaltimer );
+						$( '#infoTitle' ).text( SW.title );
+					}
+				}, 1000 );
+				$( '#infoOk, #infoX' ).on( 'click', function() {
+					clearInterval( V.intervaltimer );
+				} );
+			}
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 			, fileconf     : true
@@ -528,19 +547,23 @@ var UTIL        = {
 	}
 }
 function renderPage() {
-	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	if ( S.nfsconnected || S.shareddata || S.smb ) {
-		var nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) +' is currently enabled.';
-		$( '#nfsserver' ).addClass( 'disabled' );
-		if ( S.smb ) {
-			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
-		} else if ( S.nfsserver && S.nfsconnected ) {
-			nfsdisabled = 'Currently connected by clients';
-		}
-		$( '#nfsserver' ).prev().html( nfsdisabled );
-	} else {
-		$( '#nfsserver' ).removeClass( 'disabled' );
+	var currently   = ' Currently enabled.';
+	var smbdisabled = '';
+	if ( S.nfsserver ) {
+		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) + currently;
+	} else if ( S.shareddata ) {
+		smbdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
 	}
+	DISABLE( 'smb', smbdisabled );
+	var nfsdisabled = '';
+	if ( S.smb ) {
+		nfsdisabled = LABEL_ICON( 'File Sharing', 'networks' ) + currently;
+	} else if ( S.nfsserver && S.nfsconnected ) {
+		nfsdisabled = 'Currently connected by clients';
+	} else if ( S.shareddata ) {
+		nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
+	}
+	DISABLE( 'nfsserver', nfsdisabled );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

@@ -4,9 +4,41 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250627
+# 20250801
+grep -q dirshm/listing $dirbash/mpdidle.sh && restartmpd=1
+
+file=/etc/exports
+if grep -q "^$dirnas" $file && ! grep -q "^$dirnas .*crossmnt" $file; then
+	sed -i "\|^$dirnas | s/)/,crossmnt)/" $file
+	systemctl -q is-enabled nfs-server && systemctl restart nfs-server
+fi
+
+file=/lib/systemd/system/mpd_oled.service
+if [[ -e $file ]] && ! grep -q User $file; then
+	rm -f /root/.config/cava
+	ln -sf /etc/cava.conf /root/.config
+	sed -i '/EnvironmentFile/ i\User=root' $file
+	systemctl daemon-reload
+fi
+
+file=$dirmpdconf/conf/httpd.conf
+grep -q quality $file && sed -i '/quality/ d' $file
+
+file=$dirmpdconf/mpd.conf
+if [[ $( pacman -Q mpd | cut -c 5-8 ) == 0.24 ]] && ! grep -q ^metadata_to_use $file; then
+	sed -i '/^db_file/ a\
+metadata_to_use     "album,albumartist,artist,composer,conductor,date,genre,title,track"
+' $file
+fi
+
 file=/etc/pacman.conf
-grep -q mpd $file && sed -i 's/ mpd//' $file
+if [[ -e /boot/kernel7.img ]]; then
+	grep -q libunwind $file && sed -i 's/ *libunwind//' $file
+	[[ $( pacman -Q libunwind ) < 'libunwind 1.8.2-1' ]] && pacman -Sy --needed --noconfirm libunwind
+fi
+
+# 20250627
+grep -q mpd $file && sed -i 's/ *mpd//' $file
 
 if ! locale | grep -q ^LANG=.*UTF-8; then
 	[[ -e /usr/share/i18n/locales/C ]] && loc=C || loc=en_US
@@ -16,27 +48,6 @@ if ! locale | grep -q ^LANG=.*UTF-8; then
 		locale-gen
 	fi
 	localectl set-locale LANG=$loc
-fi
-
-# 20250502
-if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
-	for t in album latest; do
-		sort -o $dirmpd/$t{,}
-		sort -o $dirmpd/$t'byartist'{,}
-	done
-fi
-
-file=/etc/systemd/system/cava.service
-if ! grep -q ^User $file; then
-	sed -i -e '/^ExecStart/ i\User=root' -e 's/cava/vu/' $file
-	ln -s /etc/cava.conf /root/.config/cava
-	systemctl daemon-reload
-	file=$dirsystem/vuled.conf
-	if [[ -e $file ]] && grep -q = $file; then
-		conf=$( sed 's/.*=//' $file )
-		echo $conf > $file 
-	fi
-	[[ -e $dirsystem/vuled ]] && systemctl start cava
 fi
 
 #-------------------------------------------------------------------------------
@@ -50,5 +61,10 @@ getinstallzip
 dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+
+# 20250001
+[[ $restartmpd ]] && systemctl restart mpd
+
+TEMP_fstab
 
 installfinish

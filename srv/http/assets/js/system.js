@@ -58,8 +58,7 @@ var CONFIG        = {
 										BANNER_HIDE();
 									}, 1000 );
 								} ).catch( () => {
-									_INFO.warning( SW.icon, SW.title, 'File download failed.' )
-									BANNER_HIDE();
+									_INFO.warning( SW.icon, SW.title, 'File download failed.' );
 								} );
 						} else {
 							INFO( {
@@ -93,10 +92,7 @@ var CONFIG        = {
 						.then( response => response.text() )
 						.then( message => {
 							COMMON.loaderHide();
-							if ( message ) {
-								BANNER_HIDE();
-								_INFO.warning(  SW.icon,  SW.title, message );
-							}
+							if ( message ) _INFO.warning(  SW.icon,  SW.title, message );
 						} );
 					COMMON.loader();
 				}
@@ -124,7 +120,7 @@ var CONFIG        = {
 			SETTING( 'i2smodule', values => {
 				INFO( {
 					  ...SW
-					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
+					, list         : [ 'Disable EEPROM read', 'checkbox' ]
 					, values       : values
 					, checkchanged : true
 					, ok           : () => BASH( [ 'i2seeprom', _INFO.val() ] )
@@ -482,8 +478,8 @@ var UTIL          = {
 			var tab        = nfs ? [ UTIL.mount.mount, '' ] : [ '', () => UTIL.mount.mount( 'nfs' ) ];
 			var shareddata = SW.id === 'shareddata';
 			if ( shareddata ) tab.push( UTIL.mount.rServer );
-			var icon       = 'networks';
-			var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+			SW.icon        = 'networks';
+			SW.title       = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 			var suffix     = { suffix: '<wh>*</wh>' }
 			var list       = [
 				  [ 'Type',      'hidden' ]
@@ -496,8 +492,7 @@ var UTIL          = {
 			];
 			if ( nfs ) list.splice( 4, 2 );
 			INFO( {
-				  icon       : icon
-				, title      : title
+				  ...SW
 				, tablabel   : shareddata ? UTIL.mount.tab : [ 'CIFS', 'NFS' ]
 				, tab        : tab
 				, list       : list
@@ -522,14 +517,20 @@ var UTIL          = {
 					}
 				}
 				, cancel     : SWITCH.cancel
-				, oknoreset  : true
 				, ok         : () => {
 					var infoval = _INFO.val();
-					if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
+					if ( ! shareddata && [ 'data', 'SD', 'USB' ].includes( infoval.NAME ) ) {
+						var type = infoval.NAME == 'data' ? LABEL_ICON( 'Shared Data', 'networks' ) : LABEL_ICON( 'Server rAudio', 'nfsserver' );
+						_INFO.warning( SW.icon, SW.title, 'Name <c>'+ infoval.NAME +'</c> reserved for '+ type, () => {
+							UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( infoval );
+						} );
+						return
+					}
+					
 					infoval.SHAREDDATA = shareddata;
 					var keys = Object.keys( infoval );
 					var vals = Object.values( infoval );
-					NOTIFY( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
+					NOTIFY( SW.icon, SW.title.replace( ' Server', '' ), shareddata ? 'Enable ...' : 'Add ...' );
 					UTIL.mount.set( [ ...vals, 'CMD '+ keys.join( ' ' ) ], infoval );
 				}
 			} );
@@ -543,7 +544,6 @@ var UTIL          = {
 				, values    : values || { IP: I.active && I.values ? _INFO.val().IP : COMMON.ipSub( S.ip ) }
 				, checkip   : [ 0 ]
 				, cancel    : SWITCH.cancel
-				, oknoreset : true
 				, ok        : () => {
 					var infoval = _INFO.val();
 					NOTIFY( SW.icon, SW.title, 'Connect Server rAudio ...' );
@@ -555,10 +555,8 @@ var UTIL          = {
 			BASH( [ 'settings/system-mount.sh', 'cmd', ...args ], error => {
 				if ( error ) {
 					_INFO.warning( SW.icon, SW.title, '<wh>Mount failed:</wh><br><br>'+ error, () => {
-						'PROTOCOL' in values ? UTIL.mount.mount( values ) : UTIL.mount.rServer( values );
-					} )
-				} else {
-					$( '#infoX' ).trigger( 'click' );
+						UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( values );
+					} );
 				}
 			} );
 		}
@@ -807,9 +805,14 @@ var UTIL          = {
 		S.list.storage.forEach( list => {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
-			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) + mountpoint.slice( 9 ) +'&ensp;'
-							+ ( list.size ? '<grn>•</grn>' : '<red>•</red>' ) +'&ensp;'+ list.size +' <c>'+ source +'</c></li>';
+			var cls        = list.size ? 'current' : 'profile';
+			if ( list.shareddata ) {
+				cls += ' shareddata';
+			} else if ( list.rserver ) {
+				cls += ' rserver';
+			}
+			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
+							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size +' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
@@ -912,9 +915,13 @@ function renderPage() {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
 		if ( 'wlan' in S ) {
-			$( '#wlan' )
-				.toggleClass( 'disabled', S.ap || S.wlanconnected )
-				.prev().html( S.ap ? LABEL_ICON( 'Access Point', 'ap' ) +' is currently enabled.' : LABEL_ICON( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
+			var wlandisabled = '';
+			if ( S.ap ) {
+				wlandisabled = LABEL_ICON( 'Access Point', 'ap' ) +' is currently enabled.';
+			} else if ( S.wlanconnected ) {
+				wlandisabled = LABEL_ICON( 'Wi-Fi', 'wifi' ) +' is currently connected.';
+			}
+			DISABLE( 'wlan', wlandisabled );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );
@@ -925,11 +932,11 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
-	var option = label => '<option></option><option selected data-label="'+ label +'">'+ label +'</option>'
+	var option = '<option></option><option selected>';
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		UTIL.i2smodule.selected();
 	} else {
-		$( '#i2smodule' ).html( option( S.audiooutput || '<gr>(None / Auto detect)</gr>' ) );
+		$( '#i2smodule' ).html( option + ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
@@ -940,7 +947,7 @@ function renderPage() {
 	if ( $( '#timezone option' ).length > 2 ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
-		$( '#timezone' ).html( option( S.timezone.replace( '/', ' · ' ) +' <gr>('+ S.timezoneoffset +')</gr>' ) );
+		$( '#timezone' ).html( option + ( S.timezone.replace( '/', ' · ' ) +' ('+ S.timezoneoffset +')' ) +'</option>' );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
@@ -1032,37 +1039,31 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	if ( MENU.isActive( $li, e ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
-	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
-	if ( shareddata ) {
-		INFO( {
-			  icon    : 'networks'
-			, title   : 'Network Storage'
-			, message : 'Used by <wh>Shared Data '+ ICON( 'networks' ) +'</wh>'
-		} );
-		return
-	}
-	
-	if ( mountpoint === '/mnt/MPD/SD' ) {
+	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = $li.find( 'grn' ).length === 1;
-		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		var mounted    = $li.hasClass( 'current' );
+		var usb        = $li.find( '.i-usbdrive' ).length > 0;
 		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
+		$( '#menu .forget' ).toggleClass( 'hide', usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
 	}
 	MENU.show( $li );
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
+	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
+	if ( aplayname === S.audioaplayname && output === S.audiooutput ) return
+	
 	if ( aplayname === 'cirrus-wm5102' ) {
 		UTIL.wm5102();
 	} else {
-		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
+		BASH( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
 			UTIL.i2smodule.hide();
 			var msg = 'Disable ...';
@@ -1075,8 +1076,11 @@ $( '#i2smodule' ).on( 'input', function() {
 $( '#ledcalc' ).on( 'click', UTIL.ledcalc );
 $( '#hostname' ).on( 'click', UTIL.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
+	var timezone = this.value;
+	if ( timezone === S.timezone ) return
+	
 	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
-	BASH( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
+	BASH( [ 'timezone', timezone, 'CMD TIMEZONE' ] );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );
@@ -1125,8 +1129,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 	}
 	switch ( cmd ) {
 		case 'forget':
-			NOTIFY( icon, title, 'Forget ...' );
-			BASH( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
+		case 'unmount':
+			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
+			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
 			STATUS( 'storage', source, 'info' );
@@ -1161,10 +1166,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					}
 				} );
 			} );
-			break
-		case 'unmount':
-			NOTIFY( icon, title, 'Unmount ...' )
-			BASH( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
 } );

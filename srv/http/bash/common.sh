@@ -17,6 +17,26 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
+TEMP_fstab() { # 20250718
+	for file in /etc/fstab $dirnas/data/source; do
+		[[ ! -e $file ]] && continue
+		
+		if grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
+			sed -i 's/username=guest/&,password=/' $file
+			reload=1
+		fi
+		if grep -q noauto, $file; then
+			sed -i 's/noauto,//' $file
+			reload=1
+		fi
+	done
+	if [[ $reload ]]; then
+		fstab=$( < /etc/fstab )
+		column -t <<< $fstab > /etc/fstab
+		systemctl daemon-reload
+	fi
+}
+
 # args2var "\
 #	command
 #	v1
@@ -103,9 +123,6 @@ camillaDSPstart() {
 	else
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
-}
-cmdshWebsocket() {
-	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
 }
 conf2json() {
 	local file json k keys only l lines v
@@ -210,6 +227,7 @@ dirPermissions() {
 	chmod -R +x $dirbash
 }
 enableFlagSet() {
+	local file
 	file=$dirsystem/$CMD
 	[[ $ON ]] && touch $file || rm -f $file
 }
@@ -217,6 +235,7 @@ exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 fifoToggle() { # mpdoled vuled vumeter
+	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
 	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
 	[[ -e $dirsystem/vuled ]] && vuled=1
@@ -245,6 +264,31 @@ fifoToggle() { # mpdoled vuled vumeter
 		fi
 		[[ ! $mpdoled ]] && systemctl stop mpd_oled
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
+	fi
+}
+fstabSet() {
+	local fstab stb
+	umount -ql "$1"
+	mkdir -p "$1"
+	chown mpd:audio "$1"
+	cp -f /etc/fstab /tmp
+	fstab="\
+$( < /etc/fstab )
+$2"
+	column -t <<< $fstab > /etc/fstab
+	TEMP_fstab
+	systemctl daemon-reload
+	std=$( mount -a 2>&1 > /dev/null )
+	if [[ $std ]]; then
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed 's/$/<br>/' <<< $std
+	else
+		for i in {1..10}; do
+			sleep 1
+			mountpoint -q "$1" && break
+		done
 	fi
 }
 getContent() {
@@ -317,34 +361,18 @@ lineCount() {
 line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
+localBrowserOff() {
+	ply-image /srv/http/assets/img/splash.png
+	systemctl disable --now bootsplash localbrowser
+	systemctl enable --now getty@tty1
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+}
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
 		mpd_oled -o $chip -x logo
-	fi
-}
-mountpointSet() {
-	umount -ql "$1"
-	mkdir -p "$1"
-	chown mpd:audio "$1"
-	cp -f /etc/fstab /tmp
-	fstab="\
-$( < /etc/fstab )
-$2"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	std=$( mount "$1" 2>&1 )
-	if [[ $? != 0 ]]; then
-		mv -f /tmp/fstab /etc
-		rmdir "$1"
-		systemctl daemon-reload
-		sed -n '1 {s/.*: //; p}' <<< $std
-	else
-		for i in {1..10}; do
-			sleep 1
-			mountpoint -q "$1" && break
-		done
 	fi
 }
 mpcElapsed() {
@@ -383,7 +411,7 @@ pushBookmark() {
 	data=$( php /srv/http/library.php home )
 	pushData bookmark "$data"
 }
-pushData() {
+pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy
 	channel=$1
 	if [[ $2 ]]; then
@@ -392,18 +420,23 @@ pushData() {
 		data=true
 	fi
 	pushWebsocket 127.0.0.1 $channel $data
-	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
-	# shared data
-	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
+	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
+	
+	sharedip=$( grep -v $( ipAddress ) $filesharedip )
+	[[ ! $sharedip ]] && return # no other cilents
 	
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
+	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
+		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
+	else
+		data='{ "channel": "'$channel'", "data": '$data' }'
+	fi
 	for ip in $sharedip; do
-		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
+		websocat ws://$ip:8080 <<< $data # send to remote websocket.py
 	done
 }
 pushDirCounts() {
@@ -420,7 +453,10 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushWebsocket() {
+pushStorage() {
+	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
+}
+pushWebsocket() { # send to remote websocket.py (server)
 	local channel data ip
 	ip=$1
 	channel=$2
@@ -487,6 +523,7 @@ sharedDataCopy() {
 }
 sharedDataLink() {
 	local ip_share s
+	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
 	mv -f $dirsystem/{display,order}.json $dirbackup
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
@@ -497,15 +534,12 @@ sharedDataLink() {
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 	
 	readarray -t source <<< $( < $dirshareddata/source )
-	for s in "${source[@]}"; do
+	while read s; do
 		ip_share=${s/ *}
-		grep -q "${ip_share//\\/\\\\}" /etc/fstab && continue
-		
-		mountpointSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
-	done
+		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
+	done <<< $source
 }
 sharedDataReset() {
-	mpc -q clear
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
 	rm $dirsystem/{display,order}.json
 	mv -f $dirbackup/{display,order}.json $dirsystem
@@ -516,7 +550,8 @@ sharedDataReset() {
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
 	
-	local clientip connected line 
+	local clientip connected data ip lines
+	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
 				| grep -E '"connected":|"ip":' \
 				| tr -d ' ",' )
@@ -526,7 +561,12 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && cmdshWebsocket $ip playerstop || clientip+=" ${l/*:}"
+			ip=${l/*:}
+			if [[ $data ]]; then
+				websocat ws://$ip:8080 <<< $data
+			else
+				clientip+=" $ip"
+			fi
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip

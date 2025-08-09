@@ -145,6 +145,7 @@ bluetoothstart )
 	bluetoothctl pairable yes &> /dev/null
 	;;
 forget | mount | unmount )
+	[[ $CMD != mount ]] && systemctl restart mpd
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
 		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
 	else
@@ -303,31 +304,34 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddatadisable )  # server rAudio / other server
+	$dirbash/cmd.sh mpcremove
+	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	mv /mnt/{SD,USB} /mnt/MPD
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
-	if grep -q $dirshareddata /etc/fstab; then # other server
+	if ! grep -q "$dirnas " /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
-		for s in "${source[@]}"; do
+		while read s; do
 			mp=${s//\040/ }
 			umount -l "$mp"
 			rmdir "$mp" &> /dev/null
 			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
-		done
+		done <<< $source
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
 	else                                       # server rAudio
 		umount -l $dirnas &> /dev/null
 		fstab=$( grep -v $dirnas /etc/fstab )
 	fi
-	sharedDataReset
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	systemctl restart mpd
+	sharedDataReset
+	systemctl start mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
+	pushDirCounts nas
 	;;
 soundprofileset )
 	soundProfile
@@ -397,7 +401,7 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
 	list=$( lsblk -no path,vendor,model | grep -v ' $' )
@@ -415,7 +419,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 		notify usbdrive "$name" Removed
 	fi
 	echo "$list" > $dirshm/lsblkusb
-	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
+	pushStorage
 	pushDirCounts usb
 	;;
 vuled )
@@ -436,7 +440,7 @@ wlan )
 		iw wlan0 set power_save off
 		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
 		if [[ $REGDOM ]] && ! grep -q $REGDOM /etc/conf.d/wireless-regdom; then
-			sed -i 's/".*"/"'$REGDOM'"/' /etc/conf.d/wireless-regdom
+			echo 'WIRELESS_REGDOM="'$REGDOM'"' > /etc/conf.d/wireless-regdom
 			iw reg set $REGDOM
 		fi
 	else

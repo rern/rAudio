@@ -149,7 +149,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 	refreshPages
 ########################################################################################################
 # from rAudio networks.js - with MAC
-elif [[ $ACTION == disconnect || $ACTION == remove ]]; then
+elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	bluetoothctl disconnect $MAC &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do

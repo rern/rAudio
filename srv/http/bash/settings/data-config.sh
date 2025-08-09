@@ -211,7 +211,7 @@ servermirror )
 		elif [[ ${line:0:3} == '## ' ]];then
 			city=${line:3}
 		else
-			[[ $city ]] && cc="$country - $city" || cc=$country
+			[[ $city ]] && cc="$country · $city" || cc=$country
 			[[ $cc == $ccprev ]] && cc+=" 2"
 			ccprev=$cc
 			codelist+=',"'$cc'":"'$line'"'
@@ -257,6 +257,15 @@ spotifyoutput )
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
 	volume=$( getVar volume_controller /etc/spotifyd.conf )
 	echo '{ "values": { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }, "devices": [ "Default"'$devices' ] }'
+	;;
+stoptimer )
+	if [[ -e $dirsystem/stoptimer.conf ]]; then
+		values=$( conf2json $dirsystem/stoptimer.conf )
+	else
+		values='{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }'
+	fi
+	[[ -e $dirshm/pidstoptimer ]] && elapsed=$( ps -o etimes= -p $( < $dirshm/pidstoptimer ) | tr -d ' ' ) || elapsed=false
+	echo '{ "values": '$values', "elapsed": '$elapsed' }'
 	;;
 templimit )
 	line=$( grep ^temp_soft_limit /boot/config.txt )
@@ -319,7 +328,7 @@ wlanprofile )
 , "MTU"        : '$( cat $dirlan/mtu )'
 , "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
 }';;
-			stoptimer )     echo '{ "values": { "MIN": 30, "POWEROFF": false }, "active": '$( exists $dirshm/pidstoptimer )' }';;
+			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }';;
 			volumelimit )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50

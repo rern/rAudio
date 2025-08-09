@@ -8,13 +8,13 @@ args2var "$1"
 # --------------------------------------------------------------------
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
-	if grep -q "^$mountpoint$" <<< $( awk '{print $2}' /etc/fstab ); then
-		echo "Name <c>${mountpoint/*\/}</c> already exists"
+	if grep -q "^${mountpoint// /\\\\040}$" <<< $( awk '{print $2}' /etc/fstab ); then
+		echo "Name <c>$NAME</c> already exists"
 		exit
 # --------------------------------------------------------------------
 	fi
 else # server rAudio client
-	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+	path=$( timeout --signal KILL 3s showmount --no-headers -e $IP )
 	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	rserver=rserver
@@ -24,22 +24,19 @@ else # server rAudio client
 fi
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
+	[[ ! $USR ]] && USR=quest
 	source="//$IP/$share"
-	options=noauto
-	if [[ ! $USR ]]; then
-		options+=,username=guest
-	else
-		options+=",username=$USR,password=$PASSWORD"
-	fi
-	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+	options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
 else
 	source="$IP:/$share"
-	options=defaults,noauto,bg,soft,timeo=5
+	options=defaults,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
-mountpointSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
+fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 
 if [[ $SHAREDDATA ]]; then
+	mpc -q clear
+	systemctl stop mpd
 	mv /mnt/MPD/{SD,USB} /mnt
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
@@ -50,8 +47,7 @@ if [[ $SHAREDDATA ]]; then
 	fi
 	sharedDataLink $rserver
 	appendSortUnique $filesharedip $( ipAddress )
-	mpc -q clear
-	systemctl restart mpd
+	systemctl start mpd
 	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 

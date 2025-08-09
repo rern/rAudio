@@ -1393,10 +1393,10 @@ var RENDER    = {
 		
 		var li = '';
 		S.ls.configs.forEach( f => {
-			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
+			var cls  = f === S.configname ? ' class="current"' : '';
 			var $pre = $( '#config li[data-id="'+ f +'"] pre' );
 			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ICON( 'close infoclose' ) : '';
-			li += '<li data-id="'+ f +'">'+ ICON( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
+			li += '<li'+ cls +' data-id="'+ f +'">'+ ICON( 'file liicon' ) +'<dot></dot><a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
 		LIST.render( 'camilla', li );
 	} //-----------------------------------------------------------------------------------
@@ -2119,10 +2119,7 @@ var SETTING   = {
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( message => {
-						if ( message ) {
-							BANNER_HIDE();
-							_INFO.warning(  V.tab,  title, message );
-						}
+						if ( message ) _INFO.warning(  V.tab,  title, message );
 					} );
 			}
 		} );

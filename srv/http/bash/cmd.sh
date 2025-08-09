@@ -648,7 +648,7 @@ mpcupdatestop )
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating} $dirshm/listing
+		rm -f $dirmpd/{listing,updating}
 	fi
 	;;
 mpdignore )
@@ -743,10 +743,11 @@ shairport )
 shairportstop )
 	shairportStop
 	;;
-shareddatampdupdate )
+shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	$dirbash/status-push.sh
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
 	;;
 snapserverlist )
 	snapserverList

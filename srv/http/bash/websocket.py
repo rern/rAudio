@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+# websocket server
+# - receive from local + remote: 
+#    - WS.send (common.js)      : (channel, client, filesh, json, ping, status) + data
+#    - websocat (common.sh)     : channel + data
+# - send to local only:
+#    - WS.onmessage (common.js) : channel + data
+
 import asyncio
 import json
 import subprocess

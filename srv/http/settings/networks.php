@@ -13,10 +13,11 @@ commonVariables( [
 $head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => 'search btscan'
+	, 'button' => 'search'
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
+$B->bluetooth$B->btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
@@ -37,8 +38,6 @@ $B->search Available devices
 	
 Note:
 Forget / remove should be done on both rAudio and sender
-
-$B->bluetooth$B->btsender Context menu
 EOF
 ];
 $body = [ '<ul id="bluetooth" class="entries"></ul>' ];
@@ -47,17 +46,16 @@ htmlSection( $head, $body, 'bluetooth' );
 $head = [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
-	, 'button' => [ 'add wladd', 'search wlscan' ]
+	, 'button' => [ 'add wladd', 'search' ]
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Manual connect
 $B->search Available networks
+$B->wifi$B->ap Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar $B->wifi1 might be unstable.
-
-$B->wifi$B->ap Context menu
 EOF
 ];
 $body = [ '<ul id="wlan" class="entries"></ul>' ];
@@ -74,7 +72,7 @@ $B->lan Context menu
 EOF
 ];
 $body = [ '<ul id="lan" class="entries"></ul>' ];
-htmlSection( $head, $body, 'wlan' );
+htmlSection( $head, $body, 'lan' );
 // ----------------------------------------------------------------------------------
 ?>
 </div>
@@ -82,19 +80,19 @@ htmlSection( $head, $body, 'wlan' );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Bluetooth'
-	, 'button' => 'bluetooth blink scanning-bt'
+	, 'button' => 'bluetooth'
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanbluetooth" class="entries scan"></ul>' ];
-htmlSection( $head, $body, 'scanbluetooth', 'hide' );
+htmlSection( $head, $body, 'scanbluetooth', 'divscan hide' );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Wi-Fi'
-	, 'button' => 'wifi blink scanning-wifi'
+	, 'button' => 'wifi'
 	, 'back'   => true
 ];
 $body = [ '<ul id="scanwlan" class="entries scan"></ul>' ];
-htmlSection( $head, $body, 'scanwlan', 'hide' );
+htmlSection( $head, $body, 'scanwlan', 'divscan hide' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title'  => 'Web <a class="hideN">User </a>Interface' ];
 $body = [

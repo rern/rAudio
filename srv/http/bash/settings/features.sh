@@ -34,21 +34,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-localbrowserXset() {
-	local off
-	. $dirsystem/localbrowser.conf
-	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
-	xset s off
-	xset dpms $off $off $off
-	if [[ $off == 0 ]]; then
-		xset -dpms
-	elif [[ $onwhileplay ]]; then
-		[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
-	else
-		xset +dpms
-	fi
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -87,9 +72,9 @@ brightness )
 camilladsp )
 	if [[ $ON ]]; then
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
-		validate=$( camilladsp -c "$fileconf" )
-		if [[ $validate != 'Config is valid' ]]; then
-			notify 'warning yl blink' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}"
+		error=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
+		if [[ $error ]]; then
+			notify 'warning yl blink' CamillaDSP "$( sed 's/$/<br>/' <<< $error )"
 			exit
 # --------------------------------------------------------------------
 		fi
@@ -179,11 +164,7 @@ localbrowser )
 			sleep 1
 		fi
 	else
-		ply-image /srv/http/assets/img/splash.png
-		systemctl disable --now bootsplash localbrowser
-		systemctl enable --now getty@tty1
-		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+		localBrowserOff
 	fi
 	pushRefresh
 	;;
@@ -218,30 +199,32 @@ multiraudioreset )
 	pushSubmenu multiraudio false
 	;;
 nfsserver )
-	mpc -q clear
+	dirshared=$dirdata/mpdshared
 	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
-	mpc | grep -q ^Updating && systemctl restart mpd
 	rm -f $dirmpd/{listing,updating}
+	$dirbash/cmd.sh mpcremove
+	systemctl stop mpd
 	if [[ $ON ]]; then
-		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
+		mv /mnt/MPD/{SD,USB} $dirnas
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		ip=$( ipAddress )
-		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check)" > /etc/exports
+		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
-		if [[ ! -e $dirshareddata/mpd ]]; then
-			rescan=1
-			sharedDataCopy rserver
-			chown -R http:http $dirshareddata
-			chown -R mpd:audio $dirshareddata/{mpd,playlists}
-		fi
-		chmod 777 $dirnas $dirnas/{SD,USB}
-		chmod -R 777 $dirshareddata
+		sharedDataCopy rserver
+		chown -R http:http $dirshareddata
+		chown -R mpd:audio $dirshareddata/{mpd,playlists}
+		chmod -R 777 $dirnas
 		sharedDataLink rserver
-		systemctl restart mpd
-		[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+		if [[ -e $dirshared ]]; then
+			backup=1
+			cp -f $dirshared/* $dirmpd
+			rm -rf $dirshared
+		fi
+		systemctl start mpd
+		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
 CMD ACTION PATHMPD"
@@ -255,9 +238,10 @@ CMD ACTION PATHMPD"
 			done <<< $files
 		fi
 	else
-		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
-		rm -rf /mnt/MPD/NAS/data
-		rm -f /mnt/MPD/NAS/.mpdignore
+		mv $dirnas/{SD,USB} /mnt/MPD
+		cp -rL $dirmpd $dirshared
+		rm -rf $dirnas/data
+		rm -f $dirnas/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		chmod 755 $dirnas $dirnas/{SD,USB}
@@ -265,7 +249,7 @@ CMD ACTION PATHMPD"
 		> /etc/exports
 		rm $filesharedip
 		sharedDataReset
-		systemctl restart mpd
+		systemctl start mpd
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
@@ -275,9 +259,9 @@ screentoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
-	xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
-	xset dpms force $onoff
-	xset q | grep 'Monitor is'
+	sudo xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
+	sudo xset dpms force $onoff
+	echo Screen $onoff
 	;;
 scrobblekey )
 	. <( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | sed 's/.*, //; s/ *: /=/' )
@@ -399,25 +383,39 @@ spotifytoken )
 	pushRefresh
 	;;
 startx )
-	localbrowserXset
+	. $dirsystem/localbrowser.conf
+	export DISPLAY=:0
+	off=$(( $screenoff * 60 ))
+	sudo xset s off
+	sudo xset dpms $off $off $off
+	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
+	if [[ $onwhileplay ]]; then
+		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
+	fi
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 	profile=$( ls /root/.mozilla/firefox | grep release$ )
-	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
+#	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
+	cat << EOF > /root/.mozilla/firefox/$profile/user.js
+user_pref("sidebar.revamp", false);
+user_pref("sidebar.verticalTabs", false);
+user_pref("layout.css.devPixelsPerPx", "$scale");
+EOF
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
+	cp -f /.Xauthority /root
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
+	enableFlagSet
 	killProcess stoptimer
 	if [[ $ON ]]; then
-		$dirbash/stoptimer.sh &> /dev/null &
+		$dirbash/status-push.sh
 	else
-		rm -f $dirshm/pidstoptimer
-		if [[ -e $dirshm/relayson ]]; then
-			grep -q timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
+		if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
+			$dirbash/relays-timer.sh &> /dev/null &
 		fi
 	fi
 	pushRefresh

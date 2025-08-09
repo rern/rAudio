@@ -120,9 +120,9 @@ Audio player for
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
 	- Use only backup made from rAudio with the latest update
-- Before power on:
-	- Wired LAN connection is recommended
-	- Wi-Fi pre-configure: (any of)
+- Before power on: (Wired LAN connection is recommended)
+	- `/BOOT/wifi` Wi-Fi pre-configure: (any of)
+		- `BOOT` - SD card drive (1st partition)
 		- Edit template file:
 			- Rename `wifi0` in `BOOT` to `wifi`
 			- Edit ESSID and Key.
@@ -130,7 +130,7 @@ Audio player for
 		- From existing
 			- Copy an existing profile file from `/etc/netctl`
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
-	- Wi-Fi access point mode
+	- `/BOOT/accesspoint` Wi-Fi access point mode
 		- Auto start: No IP address assigned from connected wired/wireless network
 		- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
 		- On client devices, select `rAudio` from Wi-Fi network list to connect with password `raudioap`.
@@ -139,17 +139,19 @@ Audio player for
 		- Select access point to connect
 		- Reboot
 		- Browser refreshes when ready. (Manually refresh if it's too long.)
-	- System pre-configure: (Run once)
+	- `/BOOT/backup_file.gz` System pre-configure: (Run once)
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy rAudio backup file to `BOOT`
 			- Use only backup made from rAudio with the latest update
 		- Expand `root` partition:
 			- By default, `root` partition will be expanded on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-   - Display (if needed)
-     	- Connect before boot
-     	- HDMI display on RPi 4 and 5 - Use `HDMI0` port
-
+	- `/BOOT/nolocalbrowser` No display / monitor:
+		- Create a blank file `nolocalbrowser` in `BOOT`
+		- (or disable `Browser` in Settings > Features after boot)
+	- Display / Monitor: (optional - Local browser enabled by default)
+		- Connect before boot
+		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds

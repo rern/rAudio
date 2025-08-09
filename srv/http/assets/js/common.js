@@ -312,8 +312,8 @@ var SWIPE     = () => {
 	} );
 }
 //-----------------------------------------------------------------------------------------------------------------
-W             = {  // ws push
-	  bluetooth : () => {
+W             = {  // from websocket.py (server)
+	  bluetooth : data => {
 		if ( PAGE === 'networks' ) {
 			S.listbt = data;
 			renderBluetooth();
@@ -369,6 +369,7 @@ W             = {  // ws push
 			}
 		}
 		BANNER( icon, title, message, delay );
+		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
 	}
 	, power     : data => {
 		var action  = data.type;
@@ -379,7 +380,7 @@ W             = {  // ws push
 		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
-				$( '#loader svg' ).css( 'animation', 'none' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
 				$( '#banner' ).addClass( 'hide' );
 			}, 12000 );
 		} else { // reconnect after reboot
@@ -986,7 +987,7 @@ var _INFO     = {
 		}
 	}
 	, clearTimeout  : all => { // ok for both timeout and interval
-		if ( ! ( 'timeout' in V ) ) return
+		if ( ! ( 'timeout' in I ) ) return
 		
 		var timeout = all ? Object.keys( I.timeout ) : [ 'updni', 'updnt' ];
 		timeout.forEach( k => clearTimeout( I.timeout[ k ] ) );
@@ -1132,6 +1133,7 @@ var _INFO     = {
 		return v                                                        // json
 	}
 	, warning       : ( icon, title, message, callback ) => {
+		BANNER_HIDE();
 		INFO( {
 			  icon    : icon
 			, title   : title
@@ -1459,31 +1461,32 @@ var COMMON    = {
 			, message     : ICON( 'raudio gr' ) +'&ensp;<a style="font-weight: 300">r A u d i o</a>'
 			, buttonlabel : ICON( 'reboot' ) +'Reboot'
 			, buttoncolor : V.orange
-			, button      : () => COMMON.powerAction( 'reboot' )
+			, button      : COMMON.powerOk
 			, oklabel     : ICON( 'power' ) +'Off'
 			, okcolor     : V.red
-			, ok          : () => COMMON.powerAction( 'off' )
+			, ok          : () => COMMON.powerOk( 'off' )
 		} );
 	}
-	, powerAction   : action => {
+	, powerOk       : ( action, confirm ) => {
+		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
 		COMMON.loader();
-		BASH( [ 'power.sh', action ], nfs => {
-			if ( nfs != -1 ) return
-			
-			COMMON.loaderHide();
-			BANNER_HIDE();
-			INFO( {
-				  icon    : 'power'
-				, title   : 'Power'
-				, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will stop.'
-							+'<br>(Resume when server online again)'
-							+'<br><br>Continue?'
-				, oklabel : ICON( action ) + COMMON.capitalize( action )
-				, okcolor : COLOR[ action === 'off' ? 'red' : 'orange' ]
-				, ok      : () => BASH( [ 'power.sh', action || '', 'confirm' ] )
-			} );
+		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], nfs => {
+			if ( nfs == -1 ) {
+				$( '#loader' ).addClass( 'hide' );
+				BANNER_Hide();
+				INFO( {
+					  icon    : 'power'
+					, title   : 'Power'
+					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
+								+'<br><wh>Shared Data</wh> on clients will stop.'
+								+'<br>(Resume when server online again)'
+								+'<br><br>Continue?'
+					, oklabel : ICON( action ) + COMMON.capitalize( action )
+					, okcolor : action === 'off' ? V.red : V.orange
+					, ok      : () => COMMON.powerOk( action, true )
+				} );
+			}
 		} );
 	}
 	, scrollToView  : $el => {
@@ -1501,6 +1504,21 @@ var COMMON    = {
 			$ul.find( 'li:not( .hide )' ).each( ( i, li ) => COMMON.search.removeTag( $( li ) ) );
 			$ul.find( 'li' ).removeClass( 'hide' );
 		}
+	}
+	, second2HMS    : second => {
+		if ( ! second || second < 1 ) return ''
+		
+		var second = Math.round( second );
+		if ( second < 60 ) return second;
+		
+		var ss = second % 60;
+		var mm = Math.floor( ( second % 3600 ) / 60 );
+		if ( ss < 10 ) ss = '0'+ ss;
+		if ( second < 3600 ) return mm +':'+ ss;
+		
+		if ( mm < 10 ) mm = '0'+ mm;
+		var hh = Math.floor( second / 3600 );
+		return hh  +':'+ mm +':'+ ss;
 	}
 	, select        : {
 		  label  : text => text
@@ -1590,7 +1608,7 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 }
-var WEBSOCKET = {
+var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	  connect : ip => {
 		if ( WS ) WS.close();                                                      // terminate existing
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
@@ -1776,7 +1794,7 @@ $( 'body' ).on( 'click', function( e ) {
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
 	if ( ! $dropdown.hasClass( 'dropdown' ) ) {
-		var search  = ! I.active && $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text"></div>' : '';
+		var search  = $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text" spellcheck="false"></div>' : '';
 		var html_li = '';
 		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
 		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
@@ -1799,7 +1817,7 @@ $( 'body' ).on( 'click', function( e ) {
 		.find( 'li.selected' ).removeClass( 'selected' );
 	$this.addClass( 'selected' );
 	$select
-		.html( $this.html() )
+		.html( $this.html().replace( /<\/*bll>/g, '' ) )
 		.toggleClass( 'active' );
 	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
 	$origin.trigger( 'input' );
@@ -1811,8 +1829,8 @@ $( 'body' ).on( 'click', function( e ) {
 		var $li  = $( li );
 		var text = $li.text();
 		if ( regex.test( text ) ) {
-			text = COMMON.search.addTag( text, regex );
-			$li.html( text );
+			var html = COMMON.search.addTag( text, regex );
+			$li.html( COMMON.select.label( html ) );
 			$li.removeClass( 'hide' );
 		} else {
 			$li.addClass( 'hide' );

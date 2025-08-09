@@ -89,20 +89,22 @@ Require:
 
 To create Spotify private app:
 <btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
-	- with normal Spotify account
-	- Verify email if prompted
+	» With normal Spotify account
+	» Verify email if prompted
 <btn>Create app</btn>
 	» App name: <c>rAudio</c>
 	» App description: <c>(any)</c>
 	» Website: <c>(any)</c>
-	» Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	» Redirect URI:
+		- <c>https://rern.github.io/raudio/spotify</c>
+		- <btn>Add</btn>
+	» API/SDKs: Check all
 	<btn>Save</btn>
-<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>Settings</btn>
-	» <btn>Basic Information</btn> » <btn>User Management</btn>
+<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>User Management</btn>
 		» Fullname - <c>(any)</c>
 		» Email - <c>(Spotify Account email)</c>
 		<btn>Add user</btn>
-	» <btn>Basic Information</btn> (the required data)
+	<btn>Basic Information</btn> (the required data)
 		- <c>Client ID</c>
 		- <c>Client secret</c>
 EOF
@@ -129,7 +131,7 @@ $body         = [
 	[
 		  'id'       => 'httpd'
 		, 'label'    => 'For browsers'
-		, 'sub'      => 'MPD httpd'
+		, 'sub'      => 'mpd httpd'
 		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
@@ -219,10 +221,10 @@ EOF
 	, [
 		  'id'       => 'smb'
 		, 'label'    => 'File Sharing'
-		, 'sub'      => 'smbd'
+		, 'sub'      => 'samba'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->serverraudio.$isenabled
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP or ftp when transfer large or a lot of files
@@ -246,7 +248,6 @@ EOF
 	, [
 		  'id'       => 'multiraudio'
 		, 'label'    => 'Multiple rAudios'
-		, 'sub'      => 'multiraudio'
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: $M->multiraudio
@@ -255,7 +256,6 @@ EOF
 	, [
 		  'id'       => 'login'
 		, 'label'    => 'Password Login'
-		, 'sub'      => 'password_hash'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: $M->lock
@@ -264,7 +264,6 @@ EOF
 	, [
 		  'id'       => 'scrobble'
 		, 'label'    => 'Scrobbler'
-		, 'sub'      => 'Last.fm'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
@@ -280,29 +279,27 @@ EOF
 		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
- • <wh>rAudio Shared Data server:</wh>
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for $L->shareddata
+ • <wh>Server:</wh>
+	· On enable:
+		· 1st time: Library will be rescanned to a new database.
+		· Previously enabled: Database from previous will be used.
 	· IP address - This rAudio must be set to static / fixed.
-	· Password - If changed, must be the same on all clients.)
+	· Password - If changed, must be the same on all clients.
 	· In $T->library
 		· $B->microsd SD and $B->usbdrive USB will be hidden.
 		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
-	· On reboot / power off:
-		· Shared Data on clients will be temporarily disabled
-		· Re-enabled by itself once the server is back online.
 	
- • <wh>rAudio Shared Data clients:</wh>
+ • <wh>Clients:</wh>
 	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	· Automatically setup: discover, connect shared files and data
 	
- • <wh>Windows NFS clients:</wh>
+ • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
 	· $fileexpl_nfs
 
-Note:
 <i class="i-warning"></i> Permissions:
- · Set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
- · Every <i class="i-raudio"></i> rAudio can set/update shared data.
+Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
 EOF
 	]
 	, [
@@ -314,6 +311,11 @@ Stop timer:
  · Stop player
  · Set volume back as before mute
  · If set, power off.
+
+Note:
+ · On enable - Timer starts if playing of will start on play.
+ · Rerun on each play - Timer will restart on play.
+ · Timer stops when not playing.
 EOF
 	]
 	, [

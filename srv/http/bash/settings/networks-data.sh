@@ -11,7 +11,7 @@ if [[ $devices ]]; then
 		mac=$( cut -d' ' -f2 <<< $dev )
 		info=$( bluetoothctl info $mac )
 		listbluetooth+=',{
-"mac"       : "'$mac'"
+  "mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
 , "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
@@ -40,7 +40,7 @@ if [[ $profiles ]]; then
 				icon=wifi2
 			fi
 			listwlan=',{
-"gateway" : "'$gateway'"
+  "gateway" : "'$gateway'"
 , "icon"    : "'$icon'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"

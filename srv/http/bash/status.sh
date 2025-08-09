@@ -8,6 +8,13 @@
 
 . /srv/http/bash/common.sh
 
+if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server offline or not mounted
+	timeout 1 mount -a &> /dev/null
+	! timeout 0.5 test -e $dirmpd && echo -1 && exit
+# --------------------------------------------------------------------
+	systemctl start mpd
+fi
+
 ip=$( ipAddress )
 
 statusData() {
@@ -20,8 +27,6 @@ statusData() {
 	fi
 }
 
-[[ -L $dirmpd && ! -s $dirmpd ]] && echo -1 && exit
-# --------------------------------------------------------------------
 if [[ -e $dirshm/nosound ]]; then
 	volumenone=true
 else

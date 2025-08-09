@@ -6,10 +6,29 @@ Naming must be the same for:
 */
 $MENU      = $( '#menu' );
 function CONTENT() {
-	if ( $( 'select' ).length && ! $( '.select' ).length ) COMMON.select.set();
+	var $select = $( '.container select' );
+	if ( $select.length ) {
+		if ( $( '.select' ).length ) {
+			$select.each( ( i, el ) => {
+				var $el = $( el );
+				var label = COMMON.select.label( $el.find( 'option:selected' ).text() );
+				$el.next()
+					.html( label )
+					.removeClass( 'active' );
+			} );
+			if( PAGE !== 'system' ) $( '.dropdown' ).remove();
+		} else {
+			COMMON.select.set();
+		}
+	}
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	COMMON.loaderHide();
+}
+function DISABLE( id, disabled ) {
+	$( '#'+ id )
+		.toggleClass( 'disabled', disabled !== '' )
+		.prev().html( disabled );
 }
 function LABEL_ICON( label, icon ) {
 	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
@@ -87,15 +106,15 @@ function STATUS( id, arg, info ) {
 		var cmd   = id;
 	}
 	BASH( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
+		BANNER_HIDE();
 		if ( info ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
-			.removeClass( 'hide' ).promise().done( () => {
-				if ( PAGE === 'player' ) UTIL.statusScroll( id );
-			} );
-		BANNER_HIDE();
+			.removeClass( 'hide' );
+		if ( V.statusclick ) COMMON.scrollToView( $code );
+		delete V.statusclick;
 	} );
 }
 var SWITCH = {
@@ -113,6 +132,9 @@ var SWITCH = {
 		var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 		NOTIFY_COMMON();
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
+		if ( V.debug ) return
+		
+		$( '.col-r' ).css( 'pointer-events', 'none' );
 		delete SW;
 	}
 	, set    : () => {
@@ -140,6 +162,7 @@ W.refresh  = data => { // except camilla
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		SWITCH.set();
 		renderPage();
+		$( '.col-r' ).css( 'pointer-events', '' );
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
@@ -177,7 +200,12 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
 	var $code = $( '#code'+ id );
-	$code.hasClass( 'hide' ) ? STATUS( id ) : $code.addClass( 'hide' );
+	if ( $code.hasClass( 'hide' ) ) {
+		V.statusclick = true;
+		STATUS( id );
+	} else {
+		$code.addClass( 'hide' );
+	}
 	$this.toggleClass( 'active' );
 	$MENU.addClass( 'hide' );
 } );
@@ -216,7 +244,7 @@ $( '#close' ).on( 'click', function() {
 			, cancel       : () => location.href = '/'
 			, okcolor      : V.orange
 			, oklabel      : ICON( 'reboot' ) +'Reboot'
-			, ok           : () => COMMON.powerAction( 'reboot' )
+			, ok           : COMMON.powerOk
 		} );
 	}, 'json' );
 } );
@@ -250,9 +278,9 @@ $( '.switch, .setting' ).on( 'click', function() {
 	}
 } );
 $( '.switch' ).on( 'click', function() {
-	var id = SW.id;
-	var $this   = $( this );
-	var checked = $this.prop( 'checked' );
+	var id       = SW.id;
+	var $this    = $( this );
+	var checked  = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {     // disabled
 		$this.prop( 'checked', ! checked );
 		INFO( {
@@ -264,7 +292,7 @@ $( '.switch' ).on( 'click', function() {
 	
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id ); 
-	if ( checked ) {                  // enable
+	if ( checked ) {
 		if ( id in CONFIG ) {                //    config
 			$setting.trigger( 'click' );
 		} else if ( id in CONFIG._prompt ) { //    prompt
@@ -284,8 +312,9 @@ $( '.switch' ).on( 'click', function() {
 					} );
 				}
 			}, 'text' );
+			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
-	} else {                                 // disable
+	} else {
 		$( '#setting-'+ id ).addClass( 'hide' );
 		if ( PAGE === 'camilla' ) {
 			DEV[ id ] = null;
@@ -296,6 +325,7 @@ $( '.switch' ).on( 'click', function() {
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );
 			BASH( [ id, 'OFF' ] );
+			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
 	}
 } );

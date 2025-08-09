@@ -25,7 +25,7 @@ data+='
 , "shareddata"   : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data && echo true )'
 , "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
-, "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
-, "wlan"         : '$( [[ -e $dirshm/wlan ]] && echo true )
+, "stoptimer"    : '$( [[ -e $dirsystem/stoptimer || -e $dirshm/pidstoptimer ]] && echo true )'
+, "wlan"         : '$( exists $dirshm/wlan )
 
 data2json "$data" $1

@@ -2,12 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+dot='<gr>·</gr>'
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
-load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
+load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | '$dot' |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
-date=$( date +'%F <gr>·</gr> %T' )
+date=$( date +"%F $dot %T" )
 date+="<wide class='gr'>&ensp;${timezone/\// · }</wide>"
 since=$( uptime -s | cut -d: -f1-2 | sed 's/ / · /' )
 uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
@@ -59,7 +60,6 @@ else
 	if [[ $model == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		[[ $C == 2 ]] && C+=$BB
 		case $C in
 			0 )
 				cpu=ARM1176JZF-S
@@ -67,15 +67,14 @@ else
 			1 )
 				cpu=Cortex-A7
 				soc=2836;;
-			204 | 208 )
+			2 )
 				cpu=Cortex-A53
-				soc=2837;;
-			20d | 20e )
-				cpu=Cortex-A53
-				soc=2837B0;;
-			212 )
-				cpu=Cortex-A53
-				soc=2710A1;;
+				case $BB in
+					04 ) soc=2837;;
+					0d ) soc=2837B0;;
+					12 ) soc=2710A1;;
+				esac
+				;;
 			3 )
 				cpu=Cortex-A72
 				soc=2711;;
@@ -83,7 +82,7 @@ else
 				cpu=Cortex-A76
 				soc=2712;;
 		esac
-		[[ $C != 0 ]] && cpu="4 x $cpu"
+		[[ $C != 0 ]] && cpu="$cpu x 4"
 		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
 		soc=BCM$soc
 		free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
@@ -94,7 +93,7 @@ else
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
 $model<br>\
-$soc <gr>•</gr> $free<br>\
+$soc $dot $free<br>\
 $cpu @ $speed"
 	echo $system > $dirshm/system
 fi
@@ -104,7 +103,6 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
-
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
@@ -130,10 +128,11 @@ data+='
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
+	ifwlan0=
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( ip route | grep -q -m1 wlan0 && echo true )
+, "wlanconnected"  : '$( [[ $( ifconfig wlan0 2> /dev/null | grep inet ) ]] && echo true )
 ##########
 	data+='
 , "btconnected"    : '$( exists $dirshm/btconnected )

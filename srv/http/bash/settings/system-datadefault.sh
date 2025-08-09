@@ -61,4 +61,11 @@ rm -f /root/.bash_history
 # webradio
 curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
 dirPermissions
-$dirbash/cmd-list.sh
+if [[ $1 ]]; then
+	echo '{
+  "playlists" : 0
+, "webradio"  : 4
+}' > $dirmpd/counts
+elif systemctl -q is-active mpd; then
+	$dirbash/cmd-list.sh
+fi

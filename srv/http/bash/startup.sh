@@ -13,7 +13,11 @@ if [[ -e /boot/expand ]]; then # run once
 	mv /var/log/journal/{$id0,$id1}
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	if [[ ${partition:0:7} == /dev/sd ]]; then
+		dev=${partition:0:-1}
+	else
+		dev=${partition:0:-2}
+	fi
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
@@ -21,10 +25,7 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
 	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
-		systemctl enable getty@tty1
-		systemctl disable --now bootsplash localbrowser
-		sed -i 's/tty3 .*/tty1/' /boot/cmdline.txt
-		mv /usr/bin/firefox{,.backup}
+		localBrowserOff
 	fi
 fi
 
@@ -32,6 +33,11 @@ backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 if [[ -e $backupfile ]]; then
 	mv "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
+fi
+
+if [[ -e /boot/nolocalbrowser ]]; then
+	rm /boot/nolocalbrowser
+	localBrowserOff
 fi
 
 if [[ $wlandev ]]; then
@@ -52,12 +58,16 @@ fi
 
 logoLcdOled
 
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
+if [[ -e $dirsystem/soundprofile ]]; then
+	$dirsettings/system.sh soundprofileset
+fi
 
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
 	chmod 666 $dirbacklight/{brightness,bl_power}
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $dirbacklight/brightness
+	if [[ -e $dirsystem/brightness ]]; then
+		cat $dirsystem/brightness > $dirbacklight/brightness
+	fi
 fi
 
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
@@ -65,27 +75,30 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 echo mpd > $dirshm/player
 
-lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
+if lsmod | grep -q -m1 brcmfmac; then
+	touch $dirshm/onboardwlan # initial status
+fi
 
 netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
 	ap=1
 else # if no connections, start accesspoint
-	[[ $netctllist ]] && sec=30 || sec=5 # wlan || lan
+	if [[ $netctllist ]]; then
+		sec=30
+	else
+		sec=5
+	fi
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
-		[[ $ipaddress ]] && break || sleep 1
+		if [[ $ipaddress ]]; then
+			break
+		else
+			sleep 1
+		fi
 	done
 	if [[ $ipaddress ]]; then
-		readarray -t lines <<< $( grep $dirnas /etc/fstab )
-		if [[ $lines ]]; then
-			for line in "${lines[@]}"; do
-				mp=$( awk '{print $2}' <<< $line )
-				for i in {1..10}; do
-					mount "${mp//\\040/ }" && break || sleep 2
-				done
-				! mountpoint -q "$mp" && notify networks NAS "Mount failed: <wh>$mp</wh>" 10000
-			done
+		if grep -q /mnt/MPD/NAS /etc/fstab; then
+			mount -a &> /dev/null
 		fi
 		if systemctl -q is-active nfs-server; then
 			if [[ -s $filesharedip ]]; then
@@ -94,8 +107,8 @@ else # if no connections, start accesspoint
 					notify -ip $ip networks 'Server rAudio' Online
 				done
 			fi
-			appendSortUnique $ipaddress $filesharedip
 		fi
+		[[ -e $filesharedip ]] && appendSortUnique $filesharedip $ipaddress
 		if [[ $partition ]] && ipOnline 8.8.8.8; then
 			$dirsettings/system.sh 'timezone
 auto
@@ -104,17 +117,25 @@ CMD TIMEZONE'
 	else
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $netctllist ]]; then
-				[[ ! -e $dirsystem/wlannoap ]] && ap=1
+				if [[ ! -e $dirsystem/wlannoap ]]; then
+					ap=1
+				fi
 			else
 				ap=1
 			fi
-			[[ $ap ]] && touch $dirshm/apstartup
+			if [[ $ap ]]; then
+				touch $dirshm/apstartup
+			fi
 		fi
 	fi
 fi
-
-[[ $ap ]] && $dirsettings/features.sh iwctlap
-
+if [[ $ap ]]; then
+	$dirsettings/features.sh iwctlap
+fi
+if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
+fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
@@ -136,10 +157,6 @@ if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
-fi
-# usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
 touch $dirshm/startup

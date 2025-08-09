@@ -440,8 +440,9 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 		clearTimeout( V.volumebar );
 		VOLUME.barHide( 0 );
 		return
-		
-	} else if ( 'screenoff' in V ) {
+	}
+	
+	if ( V.screenoff ) {
 		delete V.screenoff;
 		return
 	}
@@ -473,7 +474,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( S.Time ? UTIL.second2HMS( S.Time ) : '' );
+					.text( S.Time ? COMMON.second2HMS( S.Time ) : '' );
 			}
 			if ( ! volume && ! D.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent hide' );
@@ -579,7 +580,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			PLAYBACK.stop();
 			PROGRESS.set( 0 );
 			if ( S.webradio ) {
-				console.log(9)
 				S.coverart = false;
 				PLAYBACK.coverart();
 				PLAYBACK.info.set();
@@ -707,38 +707,45 @@ $( '#button-lib-update' ).on( 'click', function() {
 		return
 	}
 	
-	var modes   = [ 'NAS', 'SD', 'USB' ];
 	var message = '';
-	modes.forEach( k => {
-		message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
-	} );
-	var kv   = {
-		  'Update changed files'    : 'update'
-		, 'Update all files'        : 'rescan'
+	if ( S.shareddata ) {
+		values    = { ACTION: 'update', LATEST: false }
+	} else {
+		var modes = [ 'NAS', 'SD', 'USB' ];
+		modes.forEach( k => {
+			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+		} );
+		message  += '&ensp;<hr>';
+		values    = { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
 	}
 	INFO( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : message +'&ensp;<hr>'
+		, message    : message
 		, list       : [
-			  [ '',                   'radio', { kv: kv, sameline: false } ]
+			  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, [ 'Append Latest list', 'checkbox' ]
 		]
-		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+		, values     : values
 		, beforeshow : () => {
 			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+			if ( S.shareddata ) {
+				$( '#infoList input:radio' ).on( 'input', function() {
+					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
+				} );
+			}
 		}
 		, ok         : () => {
-			var val = _INFO.val();
-			var path = '';
-			if ( val.ACTION !== 'refresh' ) {
-				var modes = [];
+			var val     = _INFO.val();
+			var pathmpd = '';
+			if ( ! S.shareddata && val.ACTION === 'update' ) {
+				var path = [];
 				modes.forEach( k => {
-					if ( val[ k ] ) modes.push( k );
+					if ( val[ k ] ) path.push( k );
 				} );
-				if ( modes.length < 3 ) path = modes.join( ' ' );
+				if ( path.length < 3 ) pathmpd = path.join( ' ' );
 			}
-			BASH( [ 'mpcupdate', val.ACTION, path, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
+			BASH( [ 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
 		}
 	} );
 } );
@@ -827,9 +834,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 	var $target = '';
 	if ( MODE.album() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( MODE.file( '+radio' ) ) {
-		var $breadcrumbs = $( '#lib-title a' );
-		$target = $breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ) : $( '#library' );
 	} else if ( V.query.length === 1 && ! MODE.radio() ) {
 		$target = $( '#library' );
 	}
