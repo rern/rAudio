@@ -28,7 +28,7 @@ function BANNER( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function BANNER_HIDE() {
-	if ( V.bannerdelay || V.relays || V.reboot || V.off ) return
+	if ( V.bannerdelay || V.relaysbanner || V.reboot || V.off ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -346,7 +346,7 @@ W             = {  // from websocket.py (server)
 			return
 		}
 		
-		if ( V.relays ) {
+		if ( V.relaysbanner ) {
 			if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
 			return
 		}
@@ -356,7 +356,7 @@ W             = {  // from websocket.py (server)
 		var message = data.message;
 		var delay   = data.delay;
 		if ( ! title ) {
-			V.relays    = true;
+			V.relaysbanner = true;
 			$( '#infoX' ).trigger( 'click' )
 		}
 		if ( ! PAGE ) {
@@ -404,8 +404,8 @@ W             = {  // from websocket.py (server)
 			}
 		}
 		if ( 'done' in data ) {
-			S.relayson = data.done;
-			V.relays   = false;
+			S.relayson     = data.done;
+			V.relaysbanner = false;
 			relaysToggle();
 			return
 		}

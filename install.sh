@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250816
+if [[ $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
+	pacman -R spotifyd
+	pacman -Sy --noconfirm spotifyd	
+fi
+
 # 20250809
 grep -q dirshm/listing $dirbash/mpdidle.sh && restartmpd=1
 

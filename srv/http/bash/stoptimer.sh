@@ -18,18 +18,19 @@ rm $dirshm/pidstoptimer
 volume=$( volumeGet )
 . <( grep -E '^card|^mixer' $dirshm/output )
 
-$dirbash/cmd.sh "volume
-$volume
-0
+volumeToggle() {
+	$dirbash/cmd.sh "volume
+$1
+$2
 $mixer
 $card
 CMD CURRENT TARGET CONTROL CARD"
+}
 
+volumeToggle $volume 0
 $dirbash/cmd.sh playerstop
-
 sleep 1
-fn_volume=$( < $dirshm/volumefunction )
-$fn_volume $volume% "$mixer" $card
+volumeToggle 0 $volume
 
 if [[ $poweroff ]]; then
 	$dirbash/power.sh
