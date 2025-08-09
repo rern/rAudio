@@ -24,11 +24,11 @@ done
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
-	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
-	message=$( quoteEscape $message )
-	[[ ! $relayson ]] && message="<wh>$message</wh>"
-	notify 'relays blink' '' "$message"
+	sequence=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
+	sequence=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $sequence )
+	sequence=$( quoteEscape $sequence )
+	[[ ! $relayson ]] && sequence="<wh>$sequence</wh>"
+	pushData relays '{ "sequence": "'$sequence'" }'
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
@@ -38,7 +38,6 @@ if [[ $relayson ]]; then
 	[[ $timeron ]] && $dirbash/relays-timer.sh &> /dev/null &
 else
 	done=false
-	killProcess relaystimer
 	rm -f $dirshm/relayson
 fi
 sleep 1
