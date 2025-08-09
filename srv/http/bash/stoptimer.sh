@@ -1,8 +1,17 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-
 . $dirsystem/stoptimer.conf
+. <( grep -E '^card|^mixer' $dirshm/output )
+
+volumeToggle() {
+	$dirbash/cmd.sh "volume
+$1
+$2
+$mixer
+$card
+CMD CURRENT TARGET CONTROL CARD"
+}
 
 killProcess stoptimer
 echo $$ > $dirshm/pidstoptimer
@@ -16,17 +25,6 @@ notify stoptimer 'Stop Timer' 'Stop ...'
 rm $dirshm/pidstoptimer
 [[ ! $onplay ]] && rm $dirsystem/stoptimer
 volume=$( volumeGet )
-. <( grep -E '^card|^mixer' $dirshm/output )
-
-volumeToggle() {
-	$dirbash/cmd.sh "volume
-$1
-$2
-$mixer
-$card
-CMD CURRENT TARGET CONTROL CARD"
-}
-
 volumeToggle $volume 0
 $dirbash/cmd.sh playerstop
 sleep 1
