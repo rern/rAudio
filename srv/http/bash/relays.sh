@@ -33,7 +33,7 @@ for pin in $pins; do
 	sequence=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
 	sequence=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $sequence )
 	sequence=$( quoteEscape $sequence )
-	[[ ! $relayson ]] && sequence="<wh>$sequence</wh>"
+	[[ $relayson == false ]] && sequence="<wh>$sequence</wh>"
 	pushData relays '{ "sequence": "'$sequence'" }'
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))

@@ -11,8 +11,6 @@ V    = {
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
 function BANNER( icon, title, message, delay ) {
-	if ( V.relayssequense ) return
-	
 	clearTimeout( V.timeoutbanner );
 	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
 	if ( icon[ 0 ] !== '<' ) icon = ICON( icon );
@@ -95,6 +93,8 @@ function LOCAL( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 function NOTIFY( icon, title, message, delay ) {
+	if ( V.relayssequense ) return
+	
 	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
 	BANNER( icon +' blink', title, message, delay || -1 );
 }
