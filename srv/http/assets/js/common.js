@@ -11,6 +11,8 @@ V    = {
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
 function BANNER( icon, title, message, delay ) {
+	if ( V.relayssequense ) return
+	
 	clearTimeout( V.timeoutbanner );
 	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
 	if ( icon[ 0 ] !== '<' ) icon = ICON( icon );
@@ -388,25 +390,27 @@ W             = {  // from websocket.py (server)
 				, buttoncolor : V.red
 				, button      : () => BASH( [ 'relays.sh', 'off' ] )
 				, oklabel     : ICON( 'set0' ) +'Reset'
-				, ok          : () => BASH( [ 'cmd.sh', 'relaystimerreset' ] )
+				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
 			} );
 			var delay        = 59;
 			V.intervalrelays = setInterval( () => {
 				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
 			}, 1000 );
-		} else if ( 'done' in data ) {
-			S.relayson     = data.done;
-			COMMON.relaysToggle();
-		} else if ( 'reset' in data ) {
+		} else if ( 'countdownreset' in data ) {
 			$( '#infoX' ).trigger( 'click' );
-			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
+			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
 		} else if ( 'sequence' in data ) {
+			V.relayssequense = true;
 			if ( $( '#banner' ).hasClass( 'hide' ) ) {
 				$( '#infoX' ).trigger( 'click' );
 				BANNER( 'relays blink', '', data.sequence, -1 );
 			} else {
 				$( '#bannerMessage' ).html( data.sequence );
 			}
+		} else if ( 'sequencedone' in data ) {
+			S.relayson     = data.sequencedone;
+			delete V.relayssequense;
+			COMMON.relaysToggle();
 		}
 	}
 	, reload    : () => {

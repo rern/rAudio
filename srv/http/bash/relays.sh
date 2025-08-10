@@ -3,14 +3,21 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
+if [[ $1 == reset ]]; then
+	$dirbash/relays-timer.sh &> /dev/null &
+	pushData relays '{ "countdownreset": '$timer' }'
+	exit
+fi
+
 if [[ ! $1 ]]; then
-	relayson=1
+	relayson=true
 	pins=$on
 	onoff=1
 	delay=( $ond )
 	color=wh
 else
 	killProcess relaystimer
+	relayson=false
 	pins=$off
 	onoff=0
 	delay=( $offd )
@@ -32,13 +39,11 @@ for pin in $pins; do
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $relayson ]]; then
-	done=true
+if [[ $relayson == true ]]; then
 	touch $dirshm/relayson
 	[[ $timeron ]] && $dirbash/relays-timer.sh &> /dev/null &
 else
-	done=false
 	rm -f $dirshm/relayson
 fi
 sleep 1
-pushData relays '{ "done": '$done' }'
+pushData relays '{ "sequencedone": '$relayson' }'
