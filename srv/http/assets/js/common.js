@@ -21,10 +21,10 @@ function BANNER( icon, title, message, delay ) {
 		.removeClass( 'hide' );
 	V.bannerdelay = delay !== -1;
 	if ( V.bannerdelay ) V.timeoutbanner = setTimeout( () => {
-		delete V.bannerdelay;
 		$( '#banner' )
 			.addClass( 'hide' )
 			.empty();
+		delete V.bannerdelay;
 	}, delay || 3000 );
 }
 function BANNER_HIDE() {
@@ -408,7 +408,7 @@ W             = {  // from websocket.py (server)
 				$( '#bannerMessage' ).html( data.sequence );
 			}
 		} else if ( 'sequencedone' in data ) {
-			S.relayson     = data.sequencedone;
+			S.relayson = data.sequencedone;
 			delete V.relayssequense;
 			COMMON.relaysToggle();
 		}
