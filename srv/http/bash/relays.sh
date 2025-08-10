@@ -22,7 +22,7 @@ else
 	delay=( $ond )
 	color=wh
 fi
-. <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
+. <( json2var $dirsystem/relays.json | sed 's/^/p/' )
 for pin in $pins; do
 	ppin=p$pin
 	order+=${!ppin}$'\n'
