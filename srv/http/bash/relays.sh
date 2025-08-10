@@ -7,21 +7,20 @@ if [[ $1 == reset ]]; then
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushData relays '{ "countdownreset": '$timer' }'
 	exit
-fi
-
-if [[ ! $1 ]]; then
-	relayson=true
-	pins=$on
-	onoff=1
-	delay=( $ond )
-	color=wh
-else
+# --------------------------------------------------------------------
+elif [[ $1 == off ]]; then
 	killProcess relaystimer
 	relayson=false
 	pins=$off
 	onoff=0
 	delay=( $offd )
 	color=gr
+else
+	relayson=true
+	pins=$on
+	onoff=1
+	delay=( $ond )
+	color=wh
 fi
 . <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
 for pin in $pins; do
