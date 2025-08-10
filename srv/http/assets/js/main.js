@@ -834,7 +834,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 	var $target = '';
 	if ( MODE.album() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( V.query.length === 1 && ! MODE.radio() ) {
+	} else if ( V.query.length === 1 ) {
 		$target = $( '#library' );
 	}
 	if ( $target ) {

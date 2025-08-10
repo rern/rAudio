@@ -1090,11 +1090,11 @@ var LIBRARY   = {
 									.replace( 'MARTIST', 'M ARTIST' )
 									.replace( 'BRADIO', 'B RADIO' );
 		}
-		if ( 'count' in data && V.mode !== 'latest' ) {
+		if ( ! data.path ) { // radio root
+			var htmlpath = ICON( V.mode ) + data.modetitle;
+		} else if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			var htmlpath = '';
-		} else if ( data.path === '/srv/http/data/'+ V.mode ) { // radio root
-			var htmlpath = ICON( V.mode ) + data.modetitle;
 		} else if ( ! MODE.file( '+radio' ) ) {
 			var htmlpath = ICON( V.search ? 'search' : V.mode ) + data.modetitle;
 		} else if ( data.path ) { // dir breadcrumbs
