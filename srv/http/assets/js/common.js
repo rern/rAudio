@@ -28,7 +28,7 @@ function BANNER( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function BANNER_HIDE() {
-	if ( V.bannerdelay || V.reboot || V.off ) return
+	if ( V.bannerdelay || V.relayssequense || V.reboot || V.off ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -93,8 +93,6 @@ function LOCAL( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 function NOTIFY( icon, title, message, delay ) {
-	if ( V.relayssequense ) return
-	
 	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
 	BANNER( icon +' blink', title, message, delay || -1 );
 }
@@ -343,6 +341,8 @@ W             = {  // from websocket.py (server)
 		delete V.color;
 	}
 	, notify    : data => {
+		if ( V.relayssequense ) return
+		
 		if ( data === false ) {
 			BANNER_HIDE();
 			return
