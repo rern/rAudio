@@ -132,7 +132,8 @@ fi
 if [[ $ap ]]; then
 	$dirsettings/features.sh iwctlap
 fi
-if [[ $( ifconfig $( lanDevice ) | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
+landevice=$( lanDevice )
+if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
