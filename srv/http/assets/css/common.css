@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1753689136' );
+	src         : url( '/assets/fonts/rern.woff2?v=1754923208' );
 }
 @font-face {
 	font-family : Lato;
@@ -1017,6 +1017,7 @@ input[ type=radio ]:disabled {
 	position: relative;
 	display: inline-block;
 	width: 230px;
+	max-width: 100%;
 	margin-bottom: 5px;
 	padding-right: 20px !important;
 	border-radius: var( --radius-btn );
