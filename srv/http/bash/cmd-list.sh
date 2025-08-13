@@ -118,16 +118,21 @@ else
 fi
 ##### latest
 if [[ $albumprev && $albumlist ]]; then # skip if initial scan
-	if [[ $latestappend && -e $file_latest_a_y ]]; then
-		latest=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) )
+	latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
+                 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
+	if [[ $latestappend && -e $file_latest_a_y ]]; then # omit removed albums
+		latestprev=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) )
+                         # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
+		[[ $latestprev ]] && latest+="
+$latestprev"
 	fi
-	if [[ $albumlist ]]; then
-		latest+=$'\n'$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
-	fi                      #-23 suppress: in 2 only && in 3(both) >> in 1 only -new latest
-	latest=$( sort -u <<< $latest | awk NF )
-	[[ $latest ]] && list2file latest "$latest"
 fi
-[[ ! $latest ]] && rm -f $dirmpd/latest*
+if [[ $latest ]]; then
+	latest=$( awk NF <<< $latest | sort -u )
+	list2file latest "$latest"
+else
+	rm -f $dirmpd/latest*
+fi
 ##### mode others
 modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
 modelatest='latest latestbyartist latestbyartist-year'
