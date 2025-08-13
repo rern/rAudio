@@ -68,7 +68,7 @@ dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20250001
+# 20250809
 [[ $restartmpd ]] && systemctl restart mpd
 
 TEMP_fstab

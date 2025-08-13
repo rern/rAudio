@@ -17,7 +17,7 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
-TEMP_fstab() { # 20250718
+TEMP_fstab() { # 20250809
 	for file in /etc/fstab $dirnas/data/source; do
 		[[ ! -e $file ]] && continue
 		
