@@ -1090,7 +1090,7 @@ var LIBRARY   = {
 									.replace( 'MARTIST', 'M ARTIST' )
 									.replace( 'BRADIO', 'B RADIO' );
 		}
-		if ( ! data.path ) { // radio root
+		if ( ! data.path || [ '/srv/http/data/webradio', '/srv/http/data/dabradio' ].includes( data.path ) ) { // mode root
 			var htmlpath = ICON( V.mode ) + data.modetitle;
 		} else if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
@@ -1118,7 +1118,7 @@ var LIBRARY   = {
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
-		if ( MODE.radio () ) $( '#lib-title a' ).slice( 0, 4 ).remove();
+		if ( MODE.radio() ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 		
