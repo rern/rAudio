@@ -1110,9 +1110,9 @@ var LIBRARY   = {
 			}
 		}
 		if ( V.mode === 'webradio' ) {
-			htmlpath += ICON( 'add btntitle button-webradio-new' );
+			htmlpath += ICON( 'add btntitle button-webradio-new wh' );
 		} else if ( V.mode === 'latest' ) {
-			htmlpath += ICON( 'flash btntitle button-latest-clear' );
+			htmlpath += ICON( 'flash btntitle button-latest-clear wh' );
 		}
 		$( '#lib-title' )
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
