@@ -12,7 +12,6 @@
 killProcess cmdlist
 echo $$ > $dirshm/pidcmdlist
 
-file_album_prev=$dirshm/albumprev
 file_album_a_y=$dirmpd/albumbyartist-year
 file_latest_a_y=$dirmpd/latestbyartist-year
 format='[%albumartist%|%artist%]^^%date%^^%album%^^%file%'
@@ -45,9 +44,10 @@ updateDone() {
 }
 
 touch $dirmpd/listing
-[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 grep -qs LATEST=true $dirmpd/updating && latestappend=1
-[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev && albumprev=1
+[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
+[[ -e $file_album_a_y ]] &&  sed -i 's/^...//' $file_album_a_y  # remove I^^ leading index
+[[ -e $file_latest_a_y ]] && sed -i 's/^...//' $file_latest_a_y # ^^
 rm -f $dirmpd/{updatestart,updating}
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
@@ -117,11 +117,11 @@ else
 	rm -f $dirmpd/{album,albumbyartist*}
 fi
 ##### latest
-if [[ $albumprev && $albumlist ]]; then # skip if initial scan
-	latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
+if [[ -e $file_album_a_y && $albumlist ]]; then # skip if initial scan
+	latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_a_y )
                  # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
-	if [[ $latestappend && -e $file_latest_a_y ]]; then
-		latestprev=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) ) # omit removed albums
+	if [[ -e $file_latest_a_y && ( ! $latest || $latestappend ) ]]; then
+		latestprev=$( comm -12 --nocheck-order $file_latest_a_y <( echo "$albumlist" ) ) # omit removed albums
                          # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
 		[[ $latestprev ]] && latest+="
 $latestprev"
