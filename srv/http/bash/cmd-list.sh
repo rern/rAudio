@@ -112,20 +112,20 @@ if [[ $albumlist ]]; then
 		done <<< $dirwav
 	fi
 	albumlist=$( sort -u <<< $albumlist | awk NF )
+##### latest
+	if [[ -e $file_album ]]; then # skip if initial scan
+		latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
+					 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
+		if [[ -e $file_latest && ( ! $latest || $latestappend ) ]]; then
+			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # omit removed albums
+							 # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
+			[[ $latestprev ]] && latest+="
+$latestprev"
+		fi
+	fi
 	list2file album "$albumlist"
 else
 	rm -f $dirmpd/{album,albumbyartist*}
-fi
-##### latest
-if [[ -e $file_album && $albumlist ]]; then # skip if initial scan
-	latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
-                 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
-	if [[ -e $file_latest && ( ! $latest || $latestappend ) ]]; then
-		latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # omit removed albums
-                         # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
-		[[ $latestprev ]] && latest+="
-$latestprev"
-	fi
 fi
 if [[ $latest ]]; then
 	latest=$( awk NF <<< $latest | sort -u )
