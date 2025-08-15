@@ -46,8 +46,6 @@ updateDone() {
 touch $dirmpd/listing
 grep -qs LATEST=true $dirmpd/updating && latestappend=1
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-[[ -e $file_album ]] &&  sed -i 's/^...//' $file_album  # remove I^^ leading index
-[[ -e $file_latest ]] && sed -i 's/^...//' $file_latest # ^^
 rm -f $dirmpd/{updatestart,updating}
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
@@ -114,10 +112,12 @@ if [[ $albumlist ]]; then
 	albumlist=$( sort -u <<< $albumlist | awk NF )
 ##### latest
 	if [[ -e $file_album ]]; then # skip if initial scan
+		sed -i 's/^...//' $file_album  # remove I^^ leading index for compare
 		latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
 					 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
 		if [[ -e $file_latest && ( ! $latest || $latestappend ) ]]; then
-			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # omit removed albums
+			sed -i 's/^...//' $file_latest
+			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # previous latest - omit removed albums
 							 # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
 			[[ $latestprev ]] && latest+="
 $latestprev"
@@ -125,12 +125,12 @@ $latestprev"
 	fi
 	list2file album "$albumlist"
 else
-	rm -f $dirmpd/{album,albumbyartist*}
+	rm -f $dirmpd/{album,albumby*}
 fi
 if [[ $latest ]]; then
 	latest=$( awk NF <<< $latest | sort -u )
 	list2file latest "$latest"
-elif [[ ! $albumlist ]]; then
+elif [[ ! $latest || ! $albumlist ]]; then
 	rm -f $dirmpd/latest*
 fi
 ##### mode others

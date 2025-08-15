@@ -1,7 +1,7 @@
 W = {
 	  ...W // from common.js
 	, airplay   : data => {
-		statusUpdate( data );
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( V.playback ) PLAYBACK.main();
 	}
 	, bookmark  : data => {
@@ -96,7 +96,7 @@ W = {
 				delete data.control;
 				delete data.volume;
 			}
-			statusUpdate( data );
+			UTIL.statusUpdate( data );
 			if ( V.playback ) {
 				UTIL.refreshPlayback();
 			} else if ( V.library ) {
@@ -109,7 +109,7 @@ W = {
 		}, 300 );
 	}
 	, mpdradio  : data => {
-		statusUpdate( data );
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		if ( D.radioelapsed ) {
@@ -242,11 +242,6 @@ W = {
 	, vumeter   : data => $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ) // 0-100 : 0-42 degree
 }
 
-function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) DISPLAY.bottom();
-	DISPLAY.bars();
-}
 // page resize -----------------------------------------------------------------
 window.addEventListener( 'resize', () => { // resize / rotate
 	var wW = window.innerWidth;

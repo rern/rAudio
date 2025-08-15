@@ -41,21 +41,7 @@ function REFRESHDATA() {
 			return false
 		}
 		
-		C = status.counts;
-		delete status.counts;
-		if ( 'display' in status ) {
-			D              = status.display;
-			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
-			delete status.display;
-			delete V.coverTL;
-			DISPLAY.subMenu();
-			BANNER_HIDE();
-			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
-		}
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		COMMON.statusToggle( 'refresh' );
-		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
-		DISPLAY.controls();
+		UTIL.statusUpdate( status );
 	} );
 }
 //-----------------------------------------------------------------------------------------------------------------
@@ -2390,6 +2376,8 @@ var UTIL      = {
 		if ( V.library ) {
 			if ( V.libraryhome ) {
 				LIBRARY.get();
+			} else if ( ! C[ V.mode ] ) {
+				$( '#library' ).trigger( 'click' );
 			} else {
 				var query = V.query[ V.query.length -1 ];
 				LIST( query, function( html ) {
@@ -2418,6 +2406,25 @@ var UTIL      = {
 		DISPLAY.playback();
 		PLAYBACK.main();
 		BANNER_HIDE();
+	}
+	, statusUpdate    : status => {
+		if ( 'counts' in status ) {
+			C              = status.counts;
+			delete status.counts;
+		}
+		if ( 'display' in status ) {
+			D              = status.display;
+			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+			delete status.display;
+			delete V.coverTL;
+			DISPLAY.subMenu();
+			BANNER_HIDE();
+			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
+		}
+		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.statusToggle( 'refresh' );
+		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
+		DISPLAY.controls();
 	}
 	, switchPage      : page => {
 		UTIL.intervalClear();
