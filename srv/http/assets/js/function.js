@@ -2391,6 +2391,11 @@ var UTIL      = {
 					}
 				} );
 			}
+		} else if ( V.playback ) {
+			DISPLAY.bars();
+			DISPLAY.playback();
+			PLAYBACK.main();
+			BANNER_HIDE();
 		} else {
 			if ( V.playlisthome ) {
 				PLAYLIST.get();
@@ -2400,12 +2405,6 @@ var UTIL      = {
 				PLAYLIST.playlists.list( $( '#pl-title .name' ).text() );
 			}
 		}
-	}
-	, refreshPlayback : () => {
-		DISPLAY.bars();
-		DISPLAY.playback();
-		PLAYBACK.main();
-		BANNER_HIDE();
 	}
 	, statusUpdate    : status => {
 		if ( 'counts' in status ) {
@@ -2423,7 +2422,7 @@ var UTIL      = {
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		COMMON.statusToggle( 'refresh' );
-		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
+		UTIL.refresh();
 		DISPLAY.controls();
 	}
 	, switchPage      : page => {

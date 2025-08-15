@@ -98,7 +98,7 @@ W = {
 			}
 			UTIL.statusUpdate( data );
 			if ( V.playback ) {
-				UTIL.refreshPlayback();
+				UTIL.refresh();
 			} else if ( V.library ) {
 				REFRESHDATA();
 			} else {
@@ -126,8 +126,8 @@ W = {
 			if ( 'done' in data ) {
 				BANNER( 'refresh-library', 'Library Update', 'Done' );
 				delete data.done;
+				C = data;
 			}
-			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
 			V.playback ? REFRESHDATA() : UTIL.refresh();
 		}
