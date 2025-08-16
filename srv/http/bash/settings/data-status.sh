@@ -165,10 +165,7 @@ system )
 $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( grep -Ev '^#|^\s*$' /boot/config.txt )
-
-<bll># pacman -Q linux-firmware-whence</bll>
-$( pacman -Q linux-firmware-whence )"
+$( grep -Ev '^#|^\s*$' /boot/config.txt )"
 	ignorepkg=$( grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf )
 	[[ $ignorepkg ]] && config+="
 	

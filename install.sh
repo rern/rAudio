@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250816
+rm -f $dirshm/system
+
 if [[ $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
 	pacman -R spotifyd
 	pacman -Sy --noconfirm spotifyd	
