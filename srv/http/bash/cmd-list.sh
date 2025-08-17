@@ -17,11 +17,14 @@ file_latest=$dirmpd/latestbyartist-year
 format='[%albumartist%|%artist%]^^%date%^^%album%^^%file%'
 
 albumList() {
+	local mpclistall
 	mpclistall=$( mpc -f $format listall 2> /dev/null )
-	[[ $mpclistall ]] && albumlist=$( excludeNoAlbum "$mpclistall" )
+	[[ $mpclistall ]] && albumSort "$mpclistall"
 }
-excludeNoAlbum() { # exclude no album tag, strip filename, sort unique
-	awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}' <<< $1
+albumSort() { # exclude blank, no %album% | sort unique without %file%
+	awk NF <<< $1 \
+		| grep -v '^^.*^^\s*^^' \
+		| awk -F'/[^/]*$' '!/^\^/ {print $1 | "sort -u"}'
 }
 list2file() {
 	echo "$2" > $dirmpd/$1'byartist-year' # %artist%^^%date^^%album%^^%file%
@@ -60,8 +63,8 @@ if [[ $song == 0 ]]; then
 # --------------------------------------------------------------------
 fi
 ##### album
-albumList
-if [[ ! $mpclistall ]]; then # very large database
+albumlist=$( albumList )
+if [[ ! $albumlist ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 20; i++ )); do # increase buffer
@@ -69,11 +72,11 @@ if [[ ! $mpclistall ]]; then # very large database
 		notifyError "Large Library: Increase buffer to $buffer k ..."
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
-		albumList
-		[[ $mpclistall ]] && break
+		albumlist=$( albumList )
+		[[ $albumlist ]] && break
 	done
 	
-	if [[ ! $mpclistall ]]; then # too large - get by album list instead
+	if [[ ! $albumlist ]]; then # too large - get by album list instead
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		albums=$( mpc list album 2> /dev/null )
@@ -91,7 +94,7 @@ if [[ ! $mpclistall ]]; then # very large database
 		if [[ $albums ]]; then
 			while read a; do
 				mpclistfind=$( mpc -f $format find album "$a" )
-				albumlist+=$( excludeNoAlbum "$mpclistfind" )
+				albumlist+=$( albumSort "$mpclistfind" )
 			done <<< $albums
 		else
 			notifyError 'Library is too large.<br>Album list will not be available.'
@@ -109,7 +112,7 @@ if [[ $albumlist ]]; then
 			[[ $albumartist ]] && albumlist=$( sed -n '\|\^'$dir'\/.*wav$| {s/[^^]*/'$albumartist'/; p}' <<< $albumlist )
 		done <<< $dirwav
 	fi
-	albumlist=$( sort -u <<< $albumlist | awk NF )
+	albumlist=$( sort -u <<< $albumlist )
 ##### latest
 	if [[ -e $file_album ]]; then # skip if initial scan
 		sed -i 's/^...//' $file_album  # remove I^^ leading index for compare
