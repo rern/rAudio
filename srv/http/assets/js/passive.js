@@ -129,7 +129,6 @@ W = {
 				C = data;
 			}
 			V.html = {}
-			V.playback ? REFRESHDATA() : UTIL.refresh();
 		}
 		PLAYBACK.button.updating();
 	}

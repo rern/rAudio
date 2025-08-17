@@ -2378,6 +2378,8 @@ var UTIL      = {
 				LIBRARY.get();
 			} else if ( ! C[ V.mode ] ) {
 				$( '#library' ).trigger( 'click' );
+			} else if ( V.query.length === 1 ) {
+				$( '.mode.'+ V.mode ).trigger( 'click' );
 			} else {
 				var query = V.query[ V.query.length -1 ];
 				if ( ! query.path ) {
