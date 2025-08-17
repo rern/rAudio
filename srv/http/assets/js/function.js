@@ -2380,6 +2380,11 @@ var UTIL      = {
 				$( '#library' ).trigger( 'click' );
 			} else {
 				var query = V.query[ V.query.length -1 ];
+				if ( ! query.path ) {
+					$( '.mode.'+ V.mode ).trigger( 'click' );
+					return
+				}
+				
 				LIST( query, function( html ) {
 					if ( html ) {
 						var data = {
