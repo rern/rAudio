@@ -21,14 +21,14 @@ function BANNER( icon, title, message, delay ) {
 		.removeClass( 'hide' );
 	V.bannerdelay = delay !== -1;
 	if ( V.bannerdelay ) V.timeoutbanner = setTimeout( () => {
-		delete V.bannerdelay;
 		$( '#banner' )
 			.addClass( 'hide' )
 			.empty();
+		delete V.bannerdelay;
 	}, delay || 3000 );
 }
 function BANNER_HIDE() {
-	if ( V.bannerdelay || V.relays || V.reboot || V.off ) return
+	if ( V.bannerdelay || V.relayssequense || V.reboot || V.off ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -341,13 +341,10 @@ W             = {  // from websocket.py (server)
 		delete V.color;
 	}
 	, notify    : data => {
+		if ( V.relayssequense ) return
+		
 		if ( data === false ) {
 			BANNER_HIDE();
-			return
-		}
-		
-		if ( V.relays ) {
-			if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
 			return
 		}
 		
@@ -355,10 +352,6 @@ W             = {  // from websocket.py (server)
 		var title   = data.title;
 		var message = data.message;
 		var delay   = data.delay;
-		if ( ! title ) {
-			V.relays    = true;
-			$( '#infoX' ).trigger( 'click' )
-		}
 		if ( ! PAGE ) {
 			if ( message === 'Change track ...' ) { // audiocd
 				UTIL.intervalClear();
@@ -388,44 +381,37 @@ W             = {  // from websocket.py (server)
 		}
 	}
 	, relays    : data => {
-		if ( 'reset' in data ) {
+		if ( 'countdown' in data ) {
+			INFO( {
+				  icon        : 'relays'
+				, title       : 'Equipments Off'
+				, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+				, buttonlabel : ICON( 'relays' ) +'Off'
+				, buttoncolor : V.red
+				, button      : () => BASH( [ 'relays.sh', 'off' ] )
+				, oklabel     : ICON( 'set0' ) +'Reset'
+				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
+			} );
+			var delay        = 59;
+			V.intervalrelays = setInterval( () => {
+				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
+			}, 1000 );
+		} else if ( 'countdownreset' in data ) {
 			$( '#infoX' ).trigger( 'click' );
-			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
-			return
-		}
-		
-		var relaysToggle = function() {
-			clearInterval( V.intervalrelays );
-			BANNER_HIDE();
-			$( '#infoX' ).trigger( 'click' );
-			if ( ! PAGE ) {
-				$( '#relays' ).toggleClass( 'on', S.relayson );
-				$( ( PROGRESS.visible() ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
+		} else if ( 'sequence' in data ) {
+			V.relayssequense = true;
+			if ( $( '#banner' ).hasClass( 'hide' ) ) {
+				$( '#infoX' ).trigger( 'click' );
+				BANNER( 'relays blink', '', data.sequence, -1 );
+			} else {
+				$( '#bannerMessage' ).html( data.sequence );
 			}
+		} else if ( 'sequencedone' in data ) {
+			S.relayson = data.sequencedone;
+			delete V.relayssequense;
+			COMMON.relaysToggle();
 		}
-		if ( 'done' in data ) {
-			S.relayson = data.done;
-			V.relays   = false;
-			relaysToggle();
-			return
-		}
-		
-		if ( ! ( 'countdown' in data ) ) return
-		
-		INFO( {
-			  icon        : 'relays'
-			, title       : 'Equipments Off'
-			, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
-			, buttonlabel : ICON( 'relays' ) +'Off'
-			, buttoncolor : V.red
-			, button      : () => BASH( [ 'relays.sh', 'off' ] )
-			, oklabel     : ICON( 'set0' ) +'Reset'
-			, ok          : () => BASH( [ 'cmd.sh', 'relaystimerreset' ] )
-		} );
-		var delay        = 59;
-		V.intervalrelays = setInterval( () => {
-			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
-		}, 1000 );
 	}
 	, reload    : () => {
 		if ( V.localhost ) location.reload();
@@ -1488,6 +1474,15 @@ var COMMON    = {
 				} );
 			}
 		} );
+	}
+	, relaysToggle  : () => {
+		clearInterval( V.intervalrelays );
+		BANNER_HIDE();
+		if ( I.active ) $( '#infoX' ).trigger( 'click' );
+		if ( ! PAGE ) {
+			$( '#relays' ).toggleClass( 'on', S.relayson );
+			$( ( PROGRESS.visible() ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+		}
 	}
 	, scrollToView  : $el => {
 		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).offset().top ) {

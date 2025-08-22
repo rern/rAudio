@@ -1,7 +1,7 @@
 W = {
 	  ...W // from common.js
 	, airplay   : data => {
-		statusUpdate( data );
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( V.playback ) PLAYBACK.main();
 	}
 	, bookmark  : data => {
@@ -96,9 +96,9 @@ W = {
 				delete data.control;
 				delete data.volume;
 			}
-			statusUpdate( data );
+			UTIL.statusUpdate( data );
 			if ( V.playback ) {
-				UTIL.refreshPlayback();
+				UTIL.refresh();
 			} else if ( V.library ) {
 				REFRESHDATA();
 			} else {
@@ -109,7 +109,7 @@ W = {
 		}, 300 );
 	}
 	, mpdradio  : data => {
-		statusUpdate( data );
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		if ( D.radioelapsed ) {
@@ -126,10 +126,9 @@ W = {
 			if ( 'done' in data ) {
 				BANNER( 'refresh-library', 'Library Update', 'Done' );
 				delete data.done;
+				C = data;
 			}
-			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
-			V.playback ? REFRESHDATA() : UTIL.refresh();
 		}
 		PLAYBACK.button.updating();
 	}
@@ -242,11 +241,6 @@ W = {
 	, vumeter   : data => $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ) // 0-100 : 0-42 degree
 }
 
-function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) DISPLAY.bottom();
-	DISPLAY.bars();
-}
 // page resize -----------------------------------------------------------------
 window.addEventListener( 'resize', () => { // resize / rotate
 	var wW = window.innerWidth;

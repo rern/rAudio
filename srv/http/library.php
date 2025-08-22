@@ -511,12 +511,13 @@ function htmlRadio() {
 		sortList( $array );
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
-			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg';
+			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg'; // /srv/http/data/webradio/... > /data/webradio/...
 			$icon      = iconThumb( $thumbsrc, 'wrdir' );
-			$html.= '
+			$path      = substr( $each->dir, 24 ); // /srv/http/data/webradio/sub > sub
+			$html     .= '
 <li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
 	'.$icon.'
-	<a class="lipath">'.$each->dirname.'</a>
+	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$each->dirname.'</span>
 </li>';
 		}

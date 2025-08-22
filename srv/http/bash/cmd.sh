@@ -690,10 +690,6 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
-relaystimerreset )
-	$dirbash/relays-timer.sh &> /dev/null &
-	pushData relays '{ "reset": '$( getVar timer $dirsystem/relays.conf )' }'
-	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
 	savedPlCount

@@ -55,6 +55,7 @@ else
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
 	# system
+	firmware=$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )
 	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
 	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
 	if [[ $model == *BeagleBone* ]]; then
@@ -92,6 +93,7 @@ else
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
+$firmware<br>\
 $model<br>\
 $soc $dot $free<br>\
 $cpu @ $speed"

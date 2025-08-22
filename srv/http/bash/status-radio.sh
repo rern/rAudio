@@ -8,12 +8,13 @@ id=$( basename ${file/-*} )
 [[ ! $id ]] && id=francemusique
 
 case $id in
+	beyond ) id=5;;
 	flac )   id=0;;
+	global ) id=3;;
 	mellow ) id=1;;
 	rock )   id=2;;
-	global ) id=3;;
-#	x )      id=4;;
-	beyond ) id=5;;
+#	x )      id=?;;
+#	y )      id=?;;
 	fip )           id=7;;  # FIP
 	fipelectro )    id=74;; # Electro
 	fipgroove )     id=66;; # Groove
@@ -40,7 +41,7 @@ esac
 
 i=0
 metadataGet() {
-	if [[ $id < 4 ]]; then
+	if [[ $id < 4 || $id == 5 ]]; then
 		radioparadise=1
 		icon=radioparadise
 		json=$( curl -sGk -m 5 --data-urlencode "chan=$id" https://api.radioparadise.com/api/now_playing )

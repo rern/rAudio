@@ -36,6 +36,7 @@ $head        = [
 ];
 $labels      = 'Version
 	<br>Kernel
+	<br>Firmware
 	<br>Hardware
 	<br>SoC
 	<br>CPU';

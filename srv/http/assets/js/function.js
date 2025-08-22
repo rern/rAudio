@@ -41,21 +41,7 @@ function REFRESHDATA() {
 			return false
 		}
 		
-		C = status.counts;
-		delete status.counts;
-		if ( 'display' in status ) {
-			D              = status.display;
-			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
-			delete status.display;
-			delete V.coverTL;
-			DISPLAY.subMenu();
-			BANNER_HIDE();
-			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
-		}
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		COMMON.statusToggle( 'refresh' );
-		V.playback ? UTIL.refreshPlayback() : UTIL.refresh();
-		DISPLAY.controls();
+		UTIL.statusUpdate( status );
 	} );
 }
 //-----------------------------------------------------------------------------------------------------------------
@@ -1090,11 +1076,11 @@ var LIBRARY   = {
 									.replace( 'MARTIST', 'M ARTIST' )
 									.replace( 'BRADIO', 'B RADIO' );
 		}
-		if ( 'count' in data && V.mode !== 'latest' ) {
+		if ( ! data.path || [ '/srv/http/data/webradio', '/srv/http/data/dabradio' ].includes( data.path ) ) { // mode root
+			var htmlpath = ICON( V.mode ) + data.modetitle;
+		} else if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			var htmlpath = '';
-		} else if ( data.path === '/srv/http/data/'+ V.mode ) { // radio root
-			var htmlpath = ICON( V.mode ) + data.modetitle;
 		} else if ( ! MODE.file( '+radio' ) ) {
 			var htmlpath = ICON( V.search ? 'search' : V.mode ) + data.modetitle;
 		} else if ( data.path ) { // dir breadcrumbs
@@ -1110,15 +1096,15 @@ var LIBRARY   = {
 			}
 		}
 		if ( V.mode === 'webradio' ) {
-			htmlpath += ICON( 'add btntitle button-webradio-new' );
+			htmlpath += ICON( 'add btntitle button-webradio-new wh' );
 		} else if ( V.mode === 'latest' ) {
-			htmlpath += ICON( 'flash btntitle button-latest-clear' );
+			htmlpath += ICON( 'flash btntitle button-latest-clear wh' );
 		}
 		$( '#lib-title' )
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
-		if ( MODE.radio () ) $( '#lib-title a' ).slice( 0, 4 ).remove();
+		if ( MODE.radio() ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 		
@@ -2390,8 +2376,17 @@ var UTIL      = {
 		if ( V.library ) {
 			if ( V.libraryhome ) {
 				LIBRARY.get();
+			} else if ( ! C[ V.mode ] ) {
+				$( '#library' ).trigger( 'click' );
+			} else if ( V.query.length === 1 ) {
+				$( '.mode.'+ V.mode ).trigger( 'click' );
 			} else {
 				var query = V.query[ V.query.length -1 ];
+				if ( ! query.path ) {
+					$( '.mode.'+ V.mode ).trigger( 'click' );
+					return
+				}
+				
 				LIST( query, function( html ) {
 					if ( html ) {
 						var data = {
@@ -2403,6 +2398,11 @@ var UTIL      = {
 					}
 				} );
 			}
+		} else if ( V.playback ) {
+			DISPLAY.bars();
+			DISPLAY.playback();
+			PLAYBACK.main();
+			BANNER_HIDE();
 		} else {
 			if ( V.playlisthome ) {
 				PLAYLIST.get();
@@ -2413,11 +2413,24 @@ var UTIL      = {
 			}
 		}
 	}
-	, refreshPlayback : () => {
-		DISPLAY.bars();
-		DISPLAY.playback();
-		PLAYBACK.main();
-		BANNER_HIDE();
+	, statusUpdate    : status => {
+		if ( 'counts' in status ) {
+			C              = status.counts;
+			delete status.counts;
+		}
+		if ( 'display' in status ) {
+			D              = status.display;
+			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+			delete status.display;
+			delete V.coverTL;
+			DISPLAY.subMenu();
+			BANNER_HIDE();
+			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
+		}
+		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.statusToggle( 'refresh' );
+		UTIL.refresh();
+		DISPLAY.controls();
 	}
 	, switchPage      : page => {
 		UTIL.intervalClear();

@@ -3,20 +3,26 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
-if [[ ! $1 ]]; then
-	relayson=1
-	pins=$on
-	onoff=1
-	delay=( $ond )
-	color=wh
-else
+if [[ $1 == reset ]]; then
+	$dirbash/relays-timer.sh &> /dev/null &
+	pushData relays '{ "countdownreset": '$timer' }'
+	exit
+# --------------------------------------------------------------------
+elif [[ $1 == off ]]; then
 	killProcess relaystimer
+	relayson=false
 	pins=$off
 	onoff=0
 	delay=( $offd )
 	color=gr
+else
+	relayson=true
+	pins=$on
+	onoff=1
+	delay=( $ond )
+	color=wh
 fi
-. <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
+. <( json2var $dirsystem/relays.json | sed 's/^/p/' )
 for pin in $pins; do
 	ppin=p$pin
 	order+=${!ppin}$'\n'
@@ -24,22 +30,19 @@ done
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
-	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
-	message=$( quoteEscape $message )
-	[[ ! $relayson ]] && message="<wh>$message</wh>"
-	notify 'relays blink' '' "$message"
+	sequence=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
+	sequence=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $sequence )
+	sequence=$( quoteEscape $sequence )
+	[[ $relayson == false ]] && sequence="<wh>$sequence</wh>"
+	pushData relays '{ "sequence": "'$sequence'" }'
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $relayson ]]; then
-	done=true
+if [[ $relayson == true ]]; then
 	touch $dirshm/relayson
 	[[ $timeron ]] && $dirbash/relays-timer.sh &> /dev/null &
 else
-	done=false
-	killProcess relaystimer
 	rm -f $dirshm/relayson
 fi
 sleep 1
-pushData relays '{ "done": '$done' }'
+pushData relays '{ "sequencedone": '$relayson' }'

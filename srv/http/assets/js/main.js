@@ -834,7 +834,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 	var $target = '';
 	if ( MODE.album() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( V.query.length === 1 && ! MODE.radio() ) {
+	} else if ( V.query.length === 1 ) {
 		$target = $( '#library' );
 	}
 	if ( $target ) {
@@ -1164,7 +1164,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			var modetitle = libpath; // keep title of non-file modes
 		}
 	} else if ( MODE.radio() ) { // dabradio, webradio
-		path          = libpath +'/'+ path;
+		path          = '/srv/http/data/'+ V.mode +'/'+ path;
 		var query     = {
 			  library : 'radio'
 			, string  : path

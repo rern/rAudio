@@ -12,17 +12,19 @@
 killProcess cmdlist
 echo $$ > $dirshm/pidcmdlist
 
-file_album_prev=$dirshm/albumprev
-file_album_a_y=$dirmpd/albumbyartist-year
-file_latest_a_y=$dirmpd/latestbyartist-year
+file_album=$dirmpd/albumbyartist-year
+file_latest=$dirmpd/latestbyartist-year
 format='[%albumartist%|%artist%]^^%date%^^%album%^^%file%'
 
 albumList() {
+	local mpclistall
 	mpclistall=$( mpc -f $format listall 2> /dev/null )
-	[[ $mpclistall ]] && albumlist=$( excludeNoAlbum "$mpclistall" )
+	[[ $mpclistall ]] && albumSort "$mpclistall"
 }
-excludeNoAlbum() { # exclude no album tag, strip filename, sort unique
-	awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}' <<< $1
+albumSort() { # exclude blank, no %album% | sort unique without %file%
+	awk NF <<< $1 \
+		| grep -v '^^.*^^\s*^^' \
+		| awk -F'/[^/]*$' '!/^\^/ {print $1 | "sort -u"}'
 }
 list2file() {
 	echo "$2" > $dirmpd/$1'byartist-year' # %artist%^^%date^^%album%^^%file%
@@ -45,9 +47,8 @@ updateDone() {
 }
 
 touch $dirmpd/listing
-[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 grep -qs LATEST=true $dirmpd/updating && latestappend=1
-[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev && albumprev=1
+[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 rm -f $dirmpd/{updatestart,updating}
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
@@ -62,8 +63,8 @@ if [[ $song == 0 ]]; then
 # --------------------------------------------------------------------
 fi
 ##### album
-albumList
-if [[ ! $mpclistall ]]; then # very large database
+albumlist=$( albumList )
+if [[ ! $albumlist ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 20; i++ )); do # increase buffer
@@ -71,11 +72,11 @@ if [[ ! $mpclistall ]]; then # very large database
 		notifyError "Large Library: Increase buffer to $buffer k ..."
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
-		albumList
-		[[ $mpclistall ]] && break
+		albumlist=$( albumList )
+		[[ $albumlist ]] && break
 	done
 	
-	if [[ ! $mpclistall ]]; then # too large - get by album list instead
+	if [[ ! $albumlist ]]; then # too large - get by album list instead
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		albums=$( mpc list album 2> /dev/null )
@@ -93,7 +94,7 @@ if [[ ! $mpclistall ]]; then # very large database
 		if [[ $albums ]]; then
 			while read a; do
 				mpclistfind=$( mpc -f $format find album "$a" )
-				albumlist+=$( excludeNoAlbum "$mpclistfind" )
+				albumlist+=$( albumSort "$mpclistfind" )
 			done <<< $albums
 		else
 			notifyError 'Library is too large.<br>Album list will not be available.'
@@ -111,23 +112,30 @@ if [[ $albumlist ]]; then
 			[[ $albumartist ]] && albumlist=$( sed -n '\|\^'$dir'\/.*wav$| {s/[^^]*/'$albumartist'/; p}' <<< $albumlist )
 		done <<< $dirwav
 	fi
-	albumlist=$( sort -u <<< $albumlist | awk NF )
+	albumlist=$( sort -u <<< $albumlist )
+##### latest
+	if [[ -e $file_album ]]; then # skip if initial scan
+		sed -i 's/^...//' $file_album  # remove I^^ leading index for compare
+		latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
+					 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
+		if [[ -e $file_latest && ( ! $latest || $latestappend ) ]]; then
+			sed -i 's/^...//' $file_latest
+			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # previous latest - omit removed albums
+							 # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
+			[[ $latestprev ]] && latest+="
+$latestprev"
+		fi
+	fi
 	list2file album "$albumlist"
 else
-	rm -f $dirmpd/{album,albumbyartist*}
+	rm -f $dirmpd/{album,albumby*}
 fi
-##### latest
-if [[ $albumprev && $albumlist ]]; then # skip if initial scan
-	if [[ $latestappend && -e $file_latest_a_y ]]; then
-		latest=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) )
-	fi
-	if [[ $albumlist ]]; then
-		latest+=$'\n'$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
-	fi                      #-23 suppress: in 2 only && in 3(both) >> in 1 only -new latest
-	latest=$( sort -u <<< $latest | awk NF )
-	[[ $latest ]] && list2file latest "$latest"
+if [[ $latest ]]; then
+	latest=$( awk NF <<< $latest | sort -u )
+	list2file latest "$latest"
+elif [[ ! $latest || ! $albumlist ]]; then
+	rm -f $dirmpd/latest*
 fi
-[[ ! $latest ]] && rm -f $dirmpd/latest*
 ##### mode others
 modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
 modelatest='latest latestbyartist latestbyartist-year'

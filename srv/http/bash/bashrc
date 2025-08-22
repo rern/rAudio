@@ -6,3 +6,4 @@ PS1='\[\e[38;5;242m\]\h\[\e[0m\]\
 \[\e[30m\e[46m\] \$ \[\e[0m\] '
 export DISPLAY=:0
 export MAKEFLAGS="-j$( expr $( nproc ) )"
+export XDG_CONFIG_HOME=$HOME/.config
