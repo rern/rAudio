@@ -324,7 +324,7 @@ var UTIL     = {
 		var htmlstatus =  S.version +'<br>';
 		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
 			var count = S.counts[ k ];
-			if ( count ) htmlstatus += ICON( k +' gr' ) +'&ensp;'+ count.toLocaleString() + COMMON.sp( 15 );
+			if ( count ) htmlstatus += ICON( k +' gr' ) + count.toLocaleString() +' &ensp;';
 		} );
 		if ( S.updating_db ) htmlstatus += ICON( 'library gr blink' );
 		htmlstatus    += '<br>'+ S.lastupdate;
