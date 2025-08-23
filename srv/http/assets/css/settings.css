@@ -240,14 +240,19 @@ heading.status .headtitle::after,
 .listtitle.plugins::after,
 .divaddon .revision::after {
 	display: inline-block;
-	width: 40px;
+	width: 17px;
 	font-family: rern;
 	font-style: normal;
-	font-size: 22px;
+	font-size: 14px;
 	content: '\F605';
 	text-align: center;
 	color: var( --cg60 );
-	letter-spacing: normal;
+	letter-spacing: right;
+}
+heading.status .headtitle::after {
+	width: 40px;
+	font-size: 22px;
+	text-align: center;
 }
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
@@ -255,14 +260,6 @@ heading.status .headtitle.active::after,
 .listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
-}
-.col-l.status gr::after,
-#ffmpegfiletype::after,
-.listtitle.plugins::after,
-.divaddon .revision::after {
-	width: 17px;
-	font-size: 14px;
-	text-align: right;
 }
 heading i {
 	width: 35px;
@@ -604,6 +601,15 @@ input.disabled + .switchlabel::after {
 .col-r.text i {
 	margin-right: 5px;
 }
+#tabledb {
+	display: grid;
+	grid-template-columns: repeat( 5, 1fr );
+	gap: 5px;
+}
+#tabledb i {
+	font-size: 24px;
+	vertical-align: middle;
+}
 .col-r input[ type=text ] {
 	border: 1px solid var( --cg );
 }
@@ -666,6 +672,7 @@ circle.on {
 	.head { padding-right: 0 !important }
 	#bar-bottom span,
 	wide { display: none }
+	#tabledb { grid-template-columns: repeat( 4, 1fr ) }
 }
 @media (max-width: 515px) {
 	.col-r .helpblock {
@@ -673,6 +680,7 @@ circle.on {
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
+	#tabledb { grid-template-columns: repeat( 3, 1fr ) }
 }
 @media (max-width: 465px) {
 	.settingedit { display: none }

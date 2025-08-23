@@ -321,15 +321,15 @@ var UTIL     = {
 		}
 	}
 	, statusSet : () => {
-		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
+		var updating   = S.updating_db ? '&ensp;'+ ICON( 'library gr blink' ) : '';
+		var htmlstatus = S.version
+						+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
+						+'<div id="tabledb">';
+		[ 'song', 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre', 'webradio', 'dabradio' ].forEach( k => {
 			var count = S.counts[ k ];
-			if ( count ) htmlstatus += ICON( k +' gr' ) + count.toLocaleString() +' &ensp;';
+			if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 		} );
-		if ( S.updating_db ) htmlstatus += ICON( 'library gr blink' );
-		htmlstatus    += '<br>'+ S.lastupdate;
-		if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
-		$( '#divstatus .value' ).html( htmlstatus );
+		$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	}
 	, volumeSet : () => {
 		V.local = false;
@@ -386,6 +386,9 @@ function renderPage() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.col-l.text gr' ).on( 'click', function() {
+	console.log(0)
+} );
 $( '#device' ).on( 'input', function() {
 	var device = this.value;
 	if ( device === S.output.name ) return

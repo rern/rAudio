@@ -26,8 +26,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 EOF
 ];
 $labels    = 'Version
-	<br>Database
-	<br>Since';
+	<br>Database';
 $body      = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
