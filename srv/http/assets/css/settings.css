@@ -601,12 +601,13 @@ input.disabled + .switchlabel::after {
 .col-r.text i {
 	margin-right: 5px;
 }
-#tabledb {
+#database {
 	display: grid;
-	grid-template-columns: repeat( 5, 1fr );
-	gap: 5px;
+	column-gap: 15px;
+	row-gap: 5px;
+	grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
 }
-#tabledb i {
+#database i {
 	font-size: 24px;
 	vertical-align: middle;
 }
@@ -671,8 +672,8 @@ circle.on {
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
 	#bar-bottom span,
-	wide { display: none }
-	#tabledb { grid-template-columns: repeat( 4, 1fr ) }
+	wide,
+	#database { display: none }
 }
 @media (max-width: 515px) {
 	.col-r .helpblock {
@@ -680,7 +681,6 @@ circle.on {
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
-	#tabledb { grid-template-columns: repeat( 3, 1fr ) }
 }
 @media (max-width: 465px) {
 	.settingedit { display: none }

@@ -324,7 +324,7 @@ var UTIL     = {
 		var updating   = S.updating_db ? '&ensp;'+ ICON( 'library gr blink' ) : '';
 		var htmlstatus = S.version
 						+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
-						+'<div id="tabledb">';
+						+'<div id="database">';
 		[ 'song', 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre', 'webradio', 'dabradio' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
