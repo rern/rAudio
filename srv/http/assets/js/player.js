@@ -325,7 +325,7 @@ var UTIL     = {
 		var htmlstatus = S.version
 						+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
 						+'<div id="database">';
-		[ 'song', 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre', 'webradio', 'dabradio' ].forEach( k => {
+		[ 'song', 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre', 'playlists' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 		} );
