@@ -1,10 +1,5 @@
 W.mpdupdate  = data => {
-	if ( 'done' in data ) {
-		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
-		S.updatetime  = data.updatetime
-		S.updating_db = false;
-		UTIL.statusSet();
-	}
+	if ( 'done' in data ) REFRESHDATA();
 }
 W.volume     = data => {
 	if ( ! ( 'db' in data ) ) return
