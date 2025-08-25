@@ -326,25 +326,19 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	C = S.counts;
+	C              = S.counts;
 	delete S.counts;
 	$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';
-	var l          = 0;
 	[ 'song'
 	, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
 	, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
 		var count = C[ k ];
-		if ( count ) {
-			count = count.toLocaleString();
-			htmlstatus += '<a>'+ ICON( k +' gr' ) + count +'</a>';
-			if ( count.length > l ) l = count.length;
-		}
+		if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
-	$( '#database a' ).css( 'width', ( l * 9 + 18 ) +'px' );
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
@@ -381,6 +375,12 @@ function renderPage() {
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	CONTENT();
+	var w          = 0;
+	$( '#database a' ).each( ( i, el ) => {
+		var elW = $( el ).width();
+		if ( elW > w ) w = elW;
+	} );
+	$( '#database a' ).css( 'width', ( w + 15 ) +'px' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
