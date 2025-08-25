@@ -603,12 +603,13 @@ input.disabled + .switchlabel::after {
 }
 #database {
 	display: flex;
-	column-gap: 15px;
-	row-gap: 5px;
 	flex-wrap: wrap;
+	line-height: 30px;
 }
 #database i {
+	width: 25px;
 	font-size: 24px;
+	text-align: center;
 	vertical-align: middle;
 }
 .col-r input[ type=text ] {
