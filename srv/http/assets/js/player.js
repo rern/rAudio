@@ -1,6 +1,3 @@
-W.mpdupdate  = data => {
-	if ( 'done' in data ) REFRESHDATA();
-}
 W.volume     = data => {
 	if ( ! ( 'db' in data ) ) return
 	 
@@ -329,15 +326,17 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	var updating   = S.updating_db ? '&ensp;'+ ICON( 'library gr blink' ) : '';
+	C = S.counts;
+	delete S.counts;
+	$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
 	var htmlstatus = S.version
-					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
+					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';
 	var l          = 0;
 	[ 'song'
 	, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
 	, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
-		var count = S.counts[ k ];
+		var count = C[ k ];
 		if ( count ) {
 			count = count.toLocaleString();
 			htmlstatus += '<a>'+ ICON( k +' gr' ) + count +'</a>';
@@ -386,9 +385,7 @@ function renderPage() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.col-l.text gr' ).on( 'click', function() {
-	console.log(0)
-} );
+$( '.button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#device' ).on( 'input', function() {
 	var device = this.value;
 	if ( device === S.output.name ) return

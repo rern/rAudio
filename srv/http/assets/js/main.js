@@ -694,61 +694,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 } ).on ( 'click', '#thumbupdate', function() {
 	CONTEXT.thumbupdate( 'modealbum' );
 } );
-$( '#button-lib-update' ).on( 'click', function() {
-	if ( S.updating_db ) {
-		INFO( {
-			  icon    : 'refresh-library'
-			, title   : 'Library Database'
-			, message : 'Currently updating ...'
-			, oklabel : ICON( 'flash' ) +'Stop'
-			, okcolor : V.orange
-			, ok      : () => BASH( [ 'mpcupdatestop' ] )
-		} );
-		return
-	}
-	
-	var message = '';
-	if ( S.shareddata ) {
-		values    = { ACTION: 'update', LATEST: false }
-	} else {
-		var modes = [ 'NAS', 'SD', 'USB' ];
-		modes.forEach( k => {
-			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
-		} );
-		message  += '&ensp;<hr>';
-		values    = { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
-	}
-	INFO( {
-		  icon       : 'refresh-library'
-		, title      : 'Library Database'
-		, message    : message
-		, list       : [
-			  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
-			, [ 'Append Latest list', 'checkbox' ]
-		]
-		, values     : values
-		, beforeshow : () => {
-			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
-			if ( S.shareddata ) {
-				$( '#infoList input:radio' ).on( 'input', function() {
-					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
-				} );
-			}
-		}
-		, ok         : () => {
-			var val     = _INFO.val();
-			var pathmpd = '';
-			if ( ! S.shareddata && val.ACTION === 'update' ) {
-				var path = [];
-				modes.forEach( k => {
-					if ( val[ k ] ) path.push( k );
-				} );
-				if ( path.length < 3 ) pathmpd = path.join( ' ' );
-			}
-			BASH( [ 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
-		}
-	} );
-} );
+$( '#button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
 		$( '#page-library .content-top .title, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
