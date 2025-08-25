@@ -3,7 +3,7 @@ W.mpdupdate  = data => {
 		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
 		S.updatetime  = data.updatetime
 		S.updating_db = false;
-		UTIL.renderStatus();
+		UTIL.statusSet();
 	}
 }
 W.volume     = data => {
@@ -326,7 +326,9 @@ var UTIL     = {
 						+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
 						+'<div id="database">';
 		var l          = 0;
-		[ 'song', 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre', 'playlists' ].forEach( k => {
+		[ 'song'
+		, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
+		, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) {
 				count = count.toLocaleString();
