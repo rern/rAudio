@@ -1459,15 +1459,15 @@ var COMMON    = {
 		}
 		
 		var message = '';
-		if ( S.shareddata ) {
-			values    = { ACTION: 'update', LATEST: false }
+		var modes = [ 'NAS', 'SD', 'USB' ];
+		modes.forEach( k => {
+			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+		} );
+		message  += '&ensp;<hr>';
+		if ( ! C.nas && ! C.sd && ! C.usb ) {
+			var values = { NAS: true, SD: true, USB: true }
 		} else {
-			var modes = [ 'NAS', 'SD', 'USB' ];
-			modes.forEach( k => {
-				message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
-			} );
-			message  += '&ensp;<hr>';
-			values    = { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+			var values = { NAS: C.nas, SD: C.sd, USB: C.usb }
 		}
 		INFO( {
 			  icon       : 'refresh-library'
@@ -1477,19 +1477,17 @@ var COMMON    = {
 				  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 				, [ 'Append Latest list', 'checkbox' ]
 			]
-			, values     : values
+			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
-				if ( S.shareddata ) {
-					$( '#infoList input:radio' ).on( 'input', function() {
-						$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
-					} );
-				}
+				$( '#infoList input:radio' ).on( 'input', function() {
+					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
+				} );
 			}
 			, ok         : () => {
 				var val     = _INFO.val();
 				var pathmpd = '';
-				if ( ! S.shareddata && val.ACTION === 'update' ) {
+				if ( val.ACTION === 'update' ) {
 					var path = [];
 					modes.forEach( k => {
 						if ( val[ k ] ) path.push( k );
