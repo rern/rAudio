@@ -315,25 +315,6 @@ var UTIL     = {
 			} );
 		}
 	}
-	, statusSet : () => {
-		var updating   = S.updating_db ? '&ensp;'+ ICON( 'library gr blink' ) : '';
-		var htmlstatus = S.version
-						+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
-						+'<div id="database">';
-		var l          = 0;
-		[ 'song'
-		, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
-		, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
-			var count = S.counts[ k ];
-			if ( count ) {
-				count = count.toLocaleString();
-				htmlstatus += '<a>'+ ICON( k +' gr' ) + count +'</a>';
-				if ( count.length > l ) l = count.length;
-			}
-		} );
-		$( '#divstatus .value' ).html( htmlstatus +'</div>' );
-		$( '#database a' ).css( 'width', ( l * 9 + 18 ) +'px' );
-	}
 	, volumeSet : () => {
 		V.local = false;
 		$( '.inforange .value' ).text( S.volume );
@@ -348,7 +329,23 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	UTIL.statusSet();
+	var updating   = S.updating_db ? '&ensp;'+ ICON( 'library gr blink' ) : '';
+	var htmlstatus = S.version
+					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime + updating +'</gr>'
+					+'<div id="database">';
+	var l          = 0;
+	[ 'song'
+	, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
+	, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
+		var count = S.counts[ k ];
+		if ( count ) {
+			count = count.toLocaleString();
+			htmlstatus += '<a>'+ ICON( k +' gr' ) + count +'</a>';
+			if ( count.length > l ) l = count.length;
+		}
+	} );
+	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
+	$( '#database a' ).css( 'width', ( l * 9 + 18 ) +'px' );
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
