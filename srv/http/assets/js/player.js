@@ -328,7 +328,7 @@ function renderPage() {
 	headIcon();
 	C              = S.counts;
 	delete S.counts;
-	$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
+	$( '.button-lib-update' ).toggleClass( 'bl', S.updating_db );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';
