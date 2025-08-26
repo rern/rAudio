@@ -571,6 +571,7 @@ input.disabled + .switchlabel::after {
 .col-l gr {
 	display: block;
 	font-family: Inconsolata;
+	color: var( --cg50 ) !important;
 }
 .col-l.single { padding-top: 11px }
 .col-l.single gr { display: none }
