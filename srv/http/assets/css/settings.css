@@ -570,7 +570,7 @@ input.disabled + .switchlabel::after {
 }
 .col-l gr {
 	display: block;
-	font-weight: 300;
+	font-family: Inconsolata;
 }
 .col-l.single { padding-top: 11px }
 .col-l.single gr { display: none }
