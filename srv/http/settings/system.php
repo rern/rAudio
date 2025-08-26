@@ -321,7 +321,6 @@ EOF
 	, [
 		  'id'       => 'shareddata'
 		, 'label'    => 'Shared Data'
-		, 'sub'      => 'Client'
 		, 'disabled' => $L->serverraudio.$isenabled
 		, 'help'     => <<< EOF
 Connect shared data as client for:

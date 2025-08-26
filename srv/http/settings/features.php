@@ -131,9 +131,8 @@ $body         = [
 	[
 		  'id'       => 'httpd'
 		, 'label'    => 'For browsers'
-		, 'sub'      => 'mpd httpd'
 		, 'help'     => <<< EOF
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
+MPD <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
