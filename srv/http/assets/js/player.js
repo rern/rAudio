@@ -326,12 +326,11 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	C              = S.counts;
-	delete S.counts;
 	$( '.button-lib-update' ).toggleClass( 'bl', S.updating_db );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';
+	C              = S.counts;
 	[ 'song'
 	, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
 	, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
