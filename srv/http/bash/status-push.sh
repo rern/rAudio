@@ -82,13 +82,14 @@ if [[ $clientip ]]; then
 	done
 fi
 
-if [[ -e $dirsystem/lcdchar ]]; then
-	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
-	systemctl restart lcdchar
-fi
-
 [[ $state == play ]] && start_stop=start || start_stop=stop
-[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+if [[ ! -e $dirshm/power ]]; then
+	if [[ -e $dirsystem/lcdchar ]]; then
+		[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
+		systemctl restart lcdchar
+	fi
+	[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+fi
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 

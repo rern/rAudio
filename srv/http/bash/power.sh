@@ -4,8 +4,8 @@
 
 args2var "$1"
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-touch $dirshm/power # suppress lcdchar action after logo
+logoLcdOled
+touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
 ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
@@ -40,7 +40,6 @@ else
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
-logoLcdOled
 ply-image /srv/http/assets/img/splash.png &> /dev/null
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
