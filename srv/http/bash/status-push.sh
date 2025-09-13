@@ -72,7 +72,6 @@ else
 	fi
 	mv -f $dirshm/status{new,}
 fi
-
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
 	status=$( $dirbash/status.sh snapclient )
@@ -81,20 +80,17 @@ if [[ $clientip ]]; then
 		pushWebsocket $ip mpdplayer $status
 	done
 fi
-
 [[ $state == play ]] && start_stop=start || start_stop=stop
-if [[ ! -e $dirshm/power ]]; then
-	if [[ -e $dirsystem/lcdchar ]]; then
-		[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
-		systemctl restart lcdchar
-	fi
-	[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-fi
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
-
+[[ -e $dirshm/power ]] && exit
+# --------------------------------------------------------------------
+if [[ -e $dirsystem/lcdchar ]]; then
+	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
+	systemctl restart lcdchar
+fi
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
-
 [[ ! -e $dirsystem/scrobble ]] && exit
 # --------------------------------------------------------------------
 [[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
