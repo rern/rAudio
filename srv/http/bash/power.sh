@@ -4,7 +4,7 @@
 
 args2var "$1"
 
-[[ $CMD = reboot ]] && reboot=1
+[[ $CMD == reboot ]] && reboot=1
 ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipaddress $filesharedip )
