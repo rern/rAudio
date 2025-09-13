@@ -1,8 +1,12 @@
 #!/usr/bin/python
 
+import os
 import sys
 import json
 
+if os.path.isfile( '/srv/http/data/shm/power' ):
+    sys.exit()
+   
 with open( '/srv/http/data/system/lcdchar.json' ) as f: CONF = json.load( f )
 locals().update( CONF ) # INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
 rows   = COLS < 20 and 2 or 4
