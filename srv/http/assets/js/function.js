@@ -2374,19 +2374,14 @@ var UTIL      = {
 	}
 	, refresh         : () => {
 		if ( V.library ) {
+			if ( V.search ) return
+			
 			if ( V.libraryhome ) {
-				LIBRARY.get();
-			} else if ( ! C[ V.mode ] ) {
 				$( '#library' ).trigger( 'click' );
 			} else if ( V.query.length === 1 ) {
 				$( '.mode.'+ V.mode ).trigger( 'click' );
 			} else {
-				var query = V.query[ V.query.length -1 ];
-				if ( ! query.path ) {
-					$( '.mode.'+ V.mode ).trigger( 'click' );
-					return
-				}
-				
+				var query = V.query[ V.query.length - 1 ];
 				LIST( query, function( html ) {
 					if ( html ) {
 						var data = {
