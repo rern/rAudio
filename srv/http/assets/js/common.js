@@ -1695,8 +1695,11 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 					if ( V.reboot && S.login ) {
 						location.href = '/';                                      // > if S.login, reload page to logout
 					} else {
-						delete V.reboot;
 						REFRESHDATA();                                            // > refresh data / get data - start page
+						if ( V.reboot ) {
+							delete V.reboot;
+							COMMON.loaderHide()
+						}
 					}
 				}
 			}, 100 );
