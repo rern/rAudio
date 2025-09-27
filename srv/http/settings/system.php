@@ -219,7 +219,6 @@ EOF
 	, [
 		  'id'       => 'tft'
 		, 'label'    => 'TFT 3.5" LCD'
-		, 'sub'      => 'Xorg'
 		, 'exist'    => '/usr/bin/firefox'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
