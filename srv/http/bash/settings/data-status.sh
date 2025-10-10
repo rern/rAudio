@@ -46,13 +46,10 @@ infostorage )
 	DEV=$2
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
-		for k in cid csd scr; do
-			data+="\
-<bll># mmc $k read $dev</bll>
-$( mmc $k read $dev )
+		echo "\
+<bll># for c in cid csd scr; do mmc \$c read $dev; done</bll>
+$( for c in cid csd scr; do mmc $c read $dev; done )
 "
-		done
-		echo "$data"
 	else
 		dev=$( tr -d 0-9 <<< $DEV )
 		data="\
