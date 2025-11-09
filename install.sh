@@ -7,7 +7,7 @@ alias=r1
 # 20250822
 rm -f $dirshm/system
 
-if [[ $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
+if [[ ! -e /boot/kernel.img && $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
 	pacman -R spotifyd
 	pacman -Sy --noconfirm spotifyd	
 fi
