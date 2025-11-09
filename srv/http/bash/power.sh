@@ -4,7 +4,9 @@
 
 args2var "$1"
 
-[[ $CMD = reboot ]] && reboot=1
+logoLcdOled
+touch $dirshm/power # maintain lcdchar/oled logo
+[[ $CMD == reboot ]] && reboot=1
 ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipaddress $filesharedip )
@@ -24,7 +26,9 @@ if systemctl -q is-active nfs-server; then # server rAudio
 fi
 [[ -e $filesharedip ]] && sed -i "/$ipaddress/ d" $filesharedip
 $dirbash/cmd.sh playerstop
-logoLcdOled
+snapclientIP playerstop
+cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+[[ $cdda ]] && mpc -q del $cdda
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 if [[ $reboot ]]; then
 	audioCDplClear && $dirbash/status-push.sh
@@ -35,11 +39,7 @@ else
 	pushData power '{ "type": "off" }'
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
-touch $dirshm/power
 
-snapclientIP playerstop
-cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-[[ $cdda ]] && mpc -q del $cdda
 ply-image /srv/http/assets/img/splash.png &> /dev/null
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null

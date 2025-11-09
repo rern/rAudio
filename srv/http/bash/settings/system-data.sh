@@ -121,7 +121,7 @@ data+='
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "rpi3plus"       : '$rpi3plus'
-, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data && echo true )'
+, "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"

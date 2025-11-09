@@ -2,7 +2,7 @@
 
 import sys
 import json
-
+   
 with open( '/srv/http/data/system/lcdchar.json' ) as f: CONF = json.load( f )
 locals().update( CONF ) # INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
 rows   = COLS < 20 and 2 or 4

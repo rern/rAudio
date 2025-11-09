@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'stop', 'volume' ]
+	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
 		  'DAB Radio'      => 'dabradio'
 		, 'Device'         => ''
@@ -17,17 +17,17 @@ commonVariables( [
 $head      = [
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
-	, 'button' => 'play playback'
+	, 'button' => [ 'play playback', 'refresh-library button-lib-update' ]
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
+$B->refreshlibrary Library database update
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 EOF
 ];
 $labels    = 'Version
-	<br>Database
-	<br>Since';
+	<br>Database';
 $body      = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
@@ -225,7 +225,6 @@ EOF
 	, [
 		  'id'       => 'custom'
 		, 'label'    => "User's Configurations"
-		, 'sub'      => 'custom'
 		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];

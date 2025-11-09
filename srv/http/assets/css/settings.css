@@ -240,14 +240,19 @@ heading.status .headtitle::after,
 .listtitle.plugins::after,
 .divaddon .revision::after {
 	display: inline-block;
-	width: 40px;
+	width: 17px;
 	font-family: rern;
 	font-style: normal;
-	font-size: 22px;
+	font-size: 14px;
 	content: '\F605';
 	text-align: center;
 	color: var( --cg60 );
-	letter-spacing: normal;
+	letter-spacing: right;
+}
+heading.status .headtitle::after {
+	width: 40px;
+	font-size: 22px;
+	text-align: center;
 }
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
@@ -255,14 +260,6 @@ heading.status .headtitle.active::after,
 .listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
-}
-.col-l.status gr::after,
-#ffmpegfiletype::after,
-.listtitle.plugins::after,
-.divaddon .revision::after {
-	width: 17px;
-	font-size: 14px;
-	text-align: right;
 }
 heading i {
 	width: 35px;
@@ -573,7 +570,8 @@ input.disabled + .switchlabel::after {
 }
 .col-l gr {
 	display: block;
-	font-weight: 300;
+	font-family: Inconsolata;
+	color: var( --cg50 ) !important;
 }
 .col-l.single { padding-top: 11px }
 .col-l.single gr { display: none }
@@ -603,6 +601,17 @@ input.disabled + .switchlabel::after {
 }
 .col-r.text i {
 	margin-right: 5px;
+}
+#database {
+	display: flex;
+	flex-wrap: wrap;
+	line-height: 30px;
+}
+#database i {
+	width: 25px;
+	font-size: 24px;
+	text-align: center;
+	vertical-align: middle;
 }
 .col-r input[ type=text ] {
 	border: 1px solid var( --cg );

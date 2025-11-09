@@ -1,11 +1,3 @@
-W.mpdupdate  = data => {
-	if ( 'done' in data ) {
-		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
-		S.updatetime  = data.updatetime
-		S.updating_db = false;
-		UTIL.renderStatus();
-	}
-}
 W.volume     = data => {
 	if ( ! ( 'db' in data ) ) return
 	 
@@ -320,17 +312,6 @@ var UTIL     = {
 			} );
 		}
 	}
-	, statusSet : () => {
-		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
-			var count = S.counts[ k ];
-			if ( count ) htmlstatus += ICON( k +' gr' ) +'&ensp;'+ count.toLocaleString() + COMMON.sp( 15 );
-		} );
-		if ( S.updating_db ) htmlstatus += ICON( 'library gr blink' );
-		htmlstatus    += '<br>'+ S.lastupdate;
-		if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
-		$( '#divstatus .value' ).html( htmlstatus );
-	}
 	, volumeSet : () => {
 		V.local = false;
 		$( '.inforange .value' ).text( S.volume );
@@ -345,7 +326,18 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	UTIL.statusSet();
+	$( '.button-lib-update' ).toggleClass( 'bl', S.updating_db );
+	var htmlstatus = S.version
+					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
+					+'<div id="database">';
+	C              = S.counts;
+	[ 'song'
+	, 'album',     'albumartist', 'artist', 'composer', 'conductor', 'date', 'genre'
+	, 'playlists', 'webradio',    'dabradio' ].forEach( k => {
+		var count = C[ k ];
+		if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
+	} );
+	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
@@ -382,10 +374,17 @@ function renderPage() {
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	CONTENT();
+	var w          = 0;
+	$( '#database a' ).each( ( i, el ) => {
+		var elW = $( el ).width();
+		if ( elW > w ) w = elW;
+	} );
+	$( '#database a' ).css( 'width', ( w + 15 ) +'px' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#device' ).on( 'input', function() {
 	var device = this.value;
 	if ( device === S.output.name ) return

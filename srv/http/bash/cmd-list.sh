@@ -101,6 +101,7 @@ if [[ ! $albumlist ]]; then # very large database
 		fi
 	fi
 	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
+	rm $dirmpdconf/outputbuffer.conf
 	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then

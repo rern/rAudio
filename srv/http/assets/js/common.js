@@ -340,6 +340,26 @@ W             = {  // from websocket.py (server)
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;
 	}
+	, mpdupdate : data => {
+		S.updating_db = typeof data === 'boolean';
+		if ( ! S.updating_db ) {
+			if ( 'done' in data ) {
+				BANNER( 'refresh-library', 'Library Update', 'Done' );
+				if ( PAGE ) {
+					REFRESHDATA();
+				} else {
+					delete data.done;
+					C = data;
+					V.html = {}
+				}
+			}
+		}
+		if ( PAGE ) {
+			$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
+		} else {
+			PLAYBACK.button.updating();
+		}
+	}
 	, notify    : data => {
 		if ( V.relayssequense ) return
 		
@@ -1425,6 +1445,59 @@ var COMMON    = {
 			}, {} );
 		}
 	}
+	, libraryUpdate : () => {
+		if ( S.updating_db ) {
+			INFO( {
+				  icon    : 'refresh-library'
+				, title   : 'Library Database'
+				, message : 'Currently updating ...'
+				, oklabel : ICON( 'flash' ) +'Stop'
+				, okcolor : V.orange
+				, ok      : () => BASH( [ 'mpcupdatestop' ] )
+			} );
+			return
+		}
+		
+		var message = '';
+		var modes = [ 'NAS', 'SD', 'USB' ];
+		modes.forEach( k => {
+			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+		} );
+		message  += '&ensp;<hr>';
+		if ( ! C.nas && ! C.sd && ! C.usb ) {
+			var values = { NAS: true, SD: true, USB: true }
+		} else {
+			var values = { NAS: C.nas, SD: C.sd, USB: C.usb }
+		}
+		INFO( {
+			  icon       : 'refresh-library'
+			, title      : 'Library Database'
+			, message    : message
+			, list       : [
+				  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
+				, [ 'Append Latest list', 'checkbox' ]
+			]
+			, values     : { ... values, ACTION: 'update', LATEST: false }
+			, beforeshow : () => {
+				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+				$( '#infoList input:radio' ).on( 'input', function() {
+					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
+				} );
+			}
+			, ok         : () => {
+				var val     = _INFO.val();
+				var pathmpd = '';
+				if ( val.ACTION === 'update' ) {
+					var path = [];
+					modes.forEach( k => {
+						if ( val[ k ] ) path.push( k );
+					} );
+					if ( path.length < 3 ) pathmpd = path.join( ' ' );
+				}
+				BASH( [ 'cmd.sh', 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
+			}
+		} );
+	}
 	, loader        : fader => {
 		$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 		$( '#loader' ).removeClass( 'hide' );
@@ -1622,8 +1695,11 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 					if ( V.reboot && S.login ) {
 						location.href = '/';                                      // > if S.login, reload page to logout
 					} else {
-						delete V.reboot;
 						REFRESHDATA();                                            // > refresh data / get data - start page
+						if ( V.reboot ) {
+							delete V.reboot;
+							COMMON.loaderHide()
+						}
 					}
 				}
 			}, 100 );

@@ -120,18 +120,7 @@ W = {
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
-	, mpdupdate : data => {
-		S.updating_db = typeof data === 'boolean';
-		if ( ! S.updating_db ) {
-			if ( 'done' in data ) {
-				BANNER( 'refresh-library', 'Library Update', 'Done' );
-				delete data.done;
-				C = data;
-			}
-			V.html = {}
-		}
-		PLAYBACK.button.updating();
-	}
+	//, mpdupdate in common.js
 	, option    : data => {
 		if ( V.local ) return
 		
