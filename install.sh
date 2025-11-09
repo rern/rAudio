@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250822
+# 20251109
 rm -f $dirshm/system
 
 if [[ ! -e /boot/kernel.img && $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
