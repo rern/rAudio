@@ -257,17 +257,6 @@ var CONFIG        = {
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
-				$( '#infoList .infofooter' ).on( 'click', function() {
-					var pins = _INFO.val();
-					var on   = ! pins.some( p => data.state[ p ] );
-					var pin  = '';
-					pins.forEach( p => {
-						data.state[ p ] = on;
-						pin += p +'='+ on +' ';
-						$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-					} );
-					BASH( [ 'gpiotoggle', pin, 'CMD PIN' ] );
-				} );
 				_INFO.addRemove( () => {
 					var infoval = _INFO.val( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
@@ -312,7 +301,7 @@ var UTIL          = {
 			var $el = $( el );
 			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
 		} );
-		$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
+		$( '#infoList' ).on( 'click', 'circle', function( e ) {
 			var p = $( this ).data( 'bcm' );
 			var on  = ! state[ p ];
 			state[ p ] = on;

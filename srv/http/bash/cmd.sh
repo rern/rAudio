@@ -4,18 +4,6 @@
 
 args2var "$1" # $2 $3 ... if any, still valid
 
-cacheBust() {
-	if [[ $TYPE ]]; then
-		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
-		return
-# --------------------------------------------------------------------
-	fi
-	local hash
-	hash=$( date +%s )"'"
-	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
-	[[ $TIME ]] && hash="'.time()"
-	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
-}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop

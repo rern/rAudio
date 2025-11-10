@@ -17,26 +17,6 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
-TEMP_fstab() { # 20250809
-	for file in /etc/fstab $dirnas/data/source; do
-		[[ ! -e $file ]] && continue
-		
-		if grep -q 'username=guest' $file && ! grep -q 'username=guest,password=,' $file; then
-			sed -i 's/username=guest/&,password=/' $file
-			reload=1
-		fi
-		if grep -q noauto, $file; then
-			sed -i 's/noauto,//' $file
-			reload=1
-		fi
-	done
-	if [[ $reload ]]; then
-		fstab=$( < /etc/fstab )
-		column -t <<< $fstab > /etc/fstab
-		systemctl daemon-reload
-	fi
-}
-
 # args2var "\
 #	command
 #	v1
@@ -112,6 +92,18 @@ audioCDplClear() {
 		mpc -q del $cdtracks
 		return 0
 	fi
+}
+cacheBust() {
+	if [[ $TYPE ]]; then
+		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
+		return
+# --------------------------------------------------------------------
+	fi
+	local hash
+	hash=$( date +%s )"'"
+	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
+	[[ $TIME ]] && hash="'.time()"
+	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -225,6 +217,7 @@ dirPermissions() {
 	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
+	cacheBust
 }
 enableFlagSet() {
 	local file
@@ -276,7 +269,6 @@ fstabSet() {
 $( < /etc/fstab )
 $2"
 	column -t <<< $fstab > /etc/fstab
-	TEMP_fstab
 	systemctl daemon-reload
 	std=$( mount -a 2>&1 > /dev/null )
 	if [[ $std ]]; then
