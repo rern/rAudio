@@ -15,28 +15,30 @@ case $id in
 	rock )   id=2;;
 #	x )      id=?;;
 #	y )      id=?;;
-	fip )           id=7;;  # FIP
-	fipelectro )    id=74;; # Electro
-	fipgroove )     id=66;; # Groove
-	fiphiphop )     id=95;; # Hip-Hop
-	fipjazz )       id=65;; # Jazz
-	fipmetal )      id=77;; # Metal
-	fipnouveautes ) id=70;; # Nouveautés
-	fippop )        id=78;; # Pop
-	fipreggae )     id=71;; # Reggae
-	fiprock )       id=64;; # Rock
-	fipworld )      id=69;; # Monde
+#                                                             openapi (no coverart)
+	fip )           id=7;;  # FIP                             FIP
+	fipelectro )    id=74;; # Electro                         FIP_ELECTRO
+	fipgroove )     id=66;; # Groove                          FIP_GROOVE
+	fiphiphop )     id=95;; # Hip-Hop                         FIP_HIP_HOP ***
+	fipjazz )       id=65;; # Jazz                            FIP_JAZZ
+	fipmetal )      id=77;; # Metal                           FIP_METAL
+	fipnouveautes ) id=70;; # Nouveautés                      FIP_NOUVEAUTES
+	fippop )        id=78;; # Pop                             FIP_POP
+	fipreggae )     id=71;; # Reggae                          FIP_REGGAE
+	fiprock )       id=64;; # Rock                            FIP_ROCK
+	fipworld )      id=69;; # Monde                           FIP_WORLD
 	
-	francemusique )       id=4;;   # France Musique
-	baroque )             id=408;; # La Baroque
-	classiqueplus )       id=402;; # Classique Plus
-	concertsradiofrance ) id=403;; # Concerts Radio France
-	easyclassique )       id=401;; # Classique Easy
-	labo )                id=407;; # Musique de Films
-	lacontemporaine )     id=406;; # La Contemporaine
-	lajazz )              id=405;; # La Jazz
-	ocoramonde )          id=404;; # Ocora Musiques du Monde
-	opera )               id=409;; # Opéra
+	francemusique )       id=4;;   # France Musique           FRANCEMUSIQUE
+	baroque )             id=408;; # La Baroque               FRANCEMUSIQUE_LA_BAROQUE
+	classiqueplus )       id=402;; # Classique Plus           FRANCEMUSIQUE_CLASSIQUE_PLUS
+	concertsradiofrance ) id=403;; # Concerts Radio France    FRANCEMUSIQUE_CONCERT_RF
+	easyclassique )       id=401;; # Classique Easy           FRANCEMUSIQUE_CLASSIQUE_EASY
+	labo )                id=407;; # Musique de Films         FRANCEMUSIQUE_LA_BO
+	lacontemporaine )     id=406;; # La Contemporaine         FRANCEMUSIQUE_LA_CONTEMPORAINE
+	lajazz )              id=405;; # La Jazz                  FRANCEMUSIQUE_LA_JAZZ
+	ocoramonde )          id=404;; # Ocora Musiques du Monde  FRANCEMUSIQUE_OCORA_MONDE
+	opera )               id=409;; # Opéra                    FRANCEMUSIQUE_OPERA
+#	pianozen )            id=410;; # Piano Zen                FRANCEMUSIQUE_PIANO_ZEN ***
 esac
 
 i=0
