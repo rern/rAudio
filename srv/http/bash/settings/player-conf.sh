@@ -212,7 +212,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	hw0=$( getVar device $fileconf )
 	if [[ $hw0 != $hwspotifyd ]]; then
 #--------------->
-		CONF=$( grep -Ev '^device|^control' /etc/spotifyd.conf )
+		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
