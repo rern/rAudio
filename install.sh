@@ -7,11 +7,6 @@ alias=r1
 # 20251109
 rm -f $dirshm/system
 
-if [[ ! -e /boot/kernel.img && $( spotifyd -V ) != 'spotifyd 0.3.5' ]]; then
-	pacman -R spotifyd
-	pacman -Sy --noconfirm spotifyd	
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
