@@ -217,7 +217,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
 control = "'$hwspotifyd'"'
-		[[ ! $mixerno ]] && CON+F='
+			[[ ! $mixerno ]] && CONF+='
 mixer = "hw"'
 		fi
 #---------------<
