@@ -5,10 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20251128
-file=/boot/cmdline.txt
-grep -q ipv6.disable $file && sed -i 's/ipv6.disable=1 //' $file
-file=/etc/spotifyd.conf
-! grep -q 'mixer = "hw"' $file && sed -i 's/mixer = "hw"/mixer = "hw"/' $file
+if [[ ! -e /boot/kernel.img ]]; then
+	file=/boot/cmdline.txt
+	grep -q ipv6.disable $file && sed -i 's/ipv6.disable=1 //' $file
+	file=/etc/spotifyd.conf
+	! grep -q 'mixer = "hw"' $file && sed -i 's/mixer = "hw"/mixer = "hw"/' $file
+fi
 
 # 20251109
 rm -f $dirshm/system
