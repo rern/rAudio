@@ -58,13 +58,7 @@ else
 	firmware=$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )
 	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
 	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ $model == *BeagleBone* ]]; then
-		cpu=Cortex-A8
-		soc=AM3358
-	elif [[ $model == *Cubieboard2* ]]; then
-		cpu=Cortex-A7
-		soc=A20
-	else
+	if [[ ${model:0:1} == R ]]; then
 		case $C in
 			0 )
 				cpu=ARM1176JZF-S
@@ -89,10 +83,16 @@ else
 		esac
 		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
 		soc=BCM$soc
-		free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
+	elif [[ $model == *BeagleBone* ]]; then
+		cpu=Cortex-A8
+		soc=AM3358
+	elif [[ $model == *Cubieboard2* ]]; then
+		cpu=Cortex-A7
+		soc=A20
 	fi
 	core=$( grep -c ^processor /proc/cpuinfo )
 	(( $core > 1 )) && cpu+=" x $core"
+	free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
 	speed=$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	system="\
