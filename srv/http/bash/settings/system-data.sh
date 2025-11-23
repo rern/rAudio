@@ -81,14 +81,14 @@ else
 				cpu=Cortex-A76
 				soc=2712;;
 		esac
-		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
 		soc=BCM$soc
+		[[ $BB == 0d ]] && rpi3plus=true && touch $dirshm/rpi3plus
 	elif [[ $model == *BeagleBone* ]]; then
 		cpu=Cortex-A8
-		soc=AM3358
+		soc='TI AM3358'
 	elif [[ $model == *Cubieboard2* ]]; then
 		cpu=Cortex-A7
-		soc=A20
+		soc='Allwinner A20'
 	fi
 	core=$( grep -c ^processor /proc/cpuinfo )
 	(( $core > 1 )) && cpu+=" x $core"
