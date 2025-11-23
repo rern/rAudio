@@ -51,7 +51,8 @@ if [[ -e $dirshm/system ]]; then
 	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
 	# cpu
-	revision=$( grep ^Revision /proc/cpuinfo )
+	cpuinfo=$( < /proc/cpuinfo )
+	revision=$( grep ^Revision <<< $cpuinfo )
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
 	# system
@@ -90,7 +91,7 @@ else
 		cpu=Cortex-A7
 		soc='Allwinner A20'
 	fi
-	core=$( grep -c ^processor /proc/cpuinfo )
+	core=$( grep -c ^processor <<< $cpuinfo )
 	(( $core > 1 )) && cpu+=" x $core"
 	free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
 	speed=$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )
