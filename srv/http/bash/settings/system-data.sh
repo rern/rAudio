@@ -50,58 +50,46 @@ if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
-	# cpu
-	cpuinfo=$( < /proc/cpuinfo )
-	revision=$( grep ^Revision <<< $cpuinfo )
-	BB=${revision: -3:2}
-	C=${revision: -4:1}
-	# system
 	firmware=$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )
 	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
+	# cpu
 	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ ${model:0:1} == R ]]; then
-		case $C in
-			0 )
-				cpu=ARM1176JZF-S
-				soc=2835;;
-			1 )
-				cpu=Cortex-A7
-				soc=2836;;
-			2 )
-				cpu=Cortex-A53
-				case $BB in
-					04 ) soc=2837;;
-					0d ) soc=2837B0;;
+	if [[ ${model/ *} == Raspberry ]]; then
+		revision=$( grep ^Revision /proc/cpuinfo ) # Revision : EDCBBA
+		case ${revision: -4:1} in                  # C
+			4 ) soc=2712;;
+			3 ) soc=2711;;
+			2 ) case ${revision: -3:2} in          # BB
 					12 ) soc=2710A1;;
+					0d ) soc=2837B0
+						 rpi3plus=true
+						 touch $dirshm/rpi3plus
+						 ;;
+					04 ) soc=2837;;
 				esac
 				;;
-			3 )
-				cpu=Cortex-A72
-				soc=2711;;
-			4 )
-				cpu=Cortex-A76
-				soc=2712;;
+			1 ) soc=2836;;
+			0 ) soc=2835;;
 		esac
 		soc=BCM$soc
-		[[ $BB == 0d ]] && rpi3plus=true && touch $dirshm/rpi3plus
 	elif [[ $model == *BeagleBone* ]]; then
-		cpu=Cortex-A8
 		soc='TI AM3358'
 	elif [[ $model == *Cubieboard2* ]]; then
-		cpu=Cortex-A7
 		soc='Allwinner A20'
 	fi
-	core=$( grep -c ^processor <<< $cpuinfo )
-	(( $core > 1 )) && cpu+=" x $core"
-	free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
-	speed=$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )
+	readarray -t lscpu <<< $( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
+	cores=${lscpu[0]}
+	cpu=${lscpu[@]:1:2}
+	speed=$( cut -d. -f1 <<< ${lscpu[3]} )
+	(( $cores > 1 )) && cpu+=" x $cores"
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
+	ram=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
 $firmware<br>\
 $model<br>\
-$soc $dot $free<br>\
+$soc $dot $ram<br>\
 $cpu @ $speed"
 	echo $system > $dirshm/system
 fi
