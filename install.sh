@@ -5,11 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20251128
-if [[ ! -e /boot/kernel.img ]]; then
+if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
 	file=/boot/cmdline.txt
 	grep -q ipv6.disable $file && sed -i 's/ipv6.disable=1 //' $file
 	file=/etc/spotifyd.conf
 	! grep -q 'mixer = "hw"' $file && sed -i 's/mixer = "hw"/mixer = "hw"/' $file
+	echo ', "spotifyd": "Spotify"' >> $dirshm/reboot
 fi
 
 # 20251109
