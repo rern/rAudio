@@ -50,16 +50,13 @@ if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
-	firmware=$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )
-	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
-	# cpu
-	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ ${model/ *} == Raspberry ]]; then
-		revision=$( grep ^Revision /proc/cpuinfo ) # Revision : EDCBBA
-		case ${revision: -4:1} in                  # C
+	# soc
+	. <( sed -E -n '/^Revision|^Model/ {s/\s*: /="/; s/$/"/; p}' /proc/cpuinfo )
+	if [[ ${Model/ *} == Raspberry ]]; then
+		case ${Revision: -4:1} in         # C
 			4 ) soc=2712;;
 			3 ) soc=2711;;
-			2 ) case ${revision: -3:2} in          # BB
+			2 ) case ${Revision: -3:2} in # BB
 					12 ) soc=2710A1;;
 					0d ) soc=2837B0
 						 rpi3plus=true
@@ -72,11 +69,12 @@ else
 			0 ) soc=2835;;
 		esac
 		soc=BCM$soc
-	elif [[ $model == *BeagleBone* ]]; then
+	elif [[ $Model == *BeagleBone* ]]; then
 		soc='TI AM3358'
-	elif [[ $model == *Cubieboard2* ]]; then
+	elif [[ $Model == *Cubieboard2* ]]; then
 		soc='Allwinner A20'
 	fi
+	# cpu
 	readarray -t lscpu <<< $( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
 	cores=${lscpu[0]}
 	cpu=${lscpu[@]:1:2}
@@ -86,9 +84,9 @@ else
 	ram=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
-$kernel<br>\
-$firmware<br>\
-$model<br>\
+$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
+$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
+$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
 $soc $dot $ram<br>\
 $cpu @ $speed"
 	echo $system > $dirshm/system
