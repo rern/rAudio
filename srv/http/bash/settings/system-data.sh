@@ -2,10 +2,16 @@
 
 . /srv/http/bash/common.sh
 
+mhz2ghz() {
+	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz
+}
+
 dot='<gr>·</gr>'
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | '$dot' |g' )'&emsp;<c>'$temp'°C</c>'
+#khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq )
+#load+=" @ $( mhz2ghz ${khz:0:-3} )"
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 date=$( date +"%F $dot %T" )
@@ -68,7 +74,7 @@ else
 			1 ) soc=2836;;
 			0 ) soc=2835;;
 		esac
-		soc=BCM$soc
+		soc="Broadcom BCM$soc"
 	elif [[ $Model == *BeagleBone* ]]; then
 		soc='TI AM3358'
 	elif [[ $Model == *Cubieboard2* ]]; then
@@ -77,18 +83,15 @@ else
 	# cpu
 	readarray -t lscpu <<< $( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
 	cores=${lscpu[0]}
-	cpu=${lscpu[@]:1:2}
-	speed=$( cut -d. -f1 <<< ${lscpu[3]} )
-	(( $cores > 1 )) && cpu+=" x $cores"
-	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
-	ram=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
+	cpus=${lscpu[@]:1:2}
+	(( $cores > 1 )) && cpus+=" x $cores"
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
 $( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
 $( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
-$soc $dot $ram<br>\
-$cpu @ $speed"
+$soc $dot $( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )<br>\
+$cpus @ $( mhz2ghz ${lscpu[3]/.*} )"
 	echo $system > $dirshm/system
 fi
 # i2smodule
