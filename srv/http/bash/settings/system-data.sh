@@ -63,7 +63,7 @@ else
 			4 ) soc=2712;;
 			3 ) soc=2711;;
 			2 ) case ${Revision: -3:2} in # BB
-					12 ) soc=2710A1;;
+					12 ) soc=RP3A0;;
 					0d ) soc=2837B0
 						 rpi3plus=true
 						 touch $dirshm/rpi3plus
