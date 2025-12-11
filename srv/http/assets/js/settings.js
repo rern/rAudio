@@ -209,9 +209,6 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	$this.toggleClass( 'active' );
 	$MENU.addClass( 'hide' );
 } );
-$( '.page-icon' ).on( 'click', function() {
-	$( '#debug' ).trigger( 'click' );
-} );
 $( '.head .i-gear' ).on( 'click', function() {
 	$( '#bar-bottom' ).toggle();
 } );
