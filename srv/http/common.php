@@ -92,7 +92,7 @@ if ( ! $add_guide )  {
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	'.( $keyboard ?? '' ).'
 	<pre id="data" class="hide"></pre>
-	<i id="debug" class="i-info"></i>
+	<i id="debug" class="i-pause"></i>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
 ';

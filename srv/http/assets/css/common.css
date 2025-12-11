@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1754923208' );
+	src         : url( '/assets/fonts/rern.woff2?v=1762779753' );
 }
 @font-face {
 	font-family : Lato;
@@ -394,14 +394,13 @@ codered  {
 	bottom: 0;
 	width: 40px;
 	line-height: 40px;
-	font-size: 24px;
+	font-size: 40px;
 	text-align: center;
 	color: transparent;
 	z-index: 110;
 }
 #debug.active {
-	color: #000;
-	background : #fff;
+	color: #f00;
 }
 .splash {
 	background: #000000 !important;
