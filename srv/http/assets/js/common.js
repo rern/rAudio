@@ -1636,10 +1636,12 @@ var COMMON    = {
 			$data
 				.html( COMMON.json.highlight( S ) )
 				.removeClass( 'hide' );
+			$( '.helphead' ).addClass( 'hide' );
 		} else {
 			$data
 				.empty()
 				.addClass( 'hide' );
+			$( '.helphead' ).removeClass( 'hide' );
 		}
 	}
 }
