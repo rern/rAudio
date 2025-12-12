@@ -1807,6 +1807,8 @@ $( '#debug' ).on( 'click', function() {
 		return
 	}
 	
+	if ( ! $( '#data' ).hasClass( 'hide' ) ) return
+	
 	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
