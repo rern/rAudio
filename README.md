@@ -7,12 +7,13 @@ r A u d i o
 		- Legacy: `1` `Zero`
 	- BeagleBone Black
 	- CubieBoard2
+- [Features](#features)
 - [Supported Devices](#supported-devices)
 - [Image Files](#image-files)
 - [How-to](#how-to)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
-
+### Features
 - Based on [Arch Linux Arm](https://archlinuxarm.org)
 - Control via GUI
 	- Remote with any browsers
