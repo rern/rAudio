@@ -14,6 +14,26 @@ r A u d i o
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
+- Player - Local files
+	- USB HDD
+	- USB Audio CD
+	- NAS
+	- SD card
+- Renderers / Clients - with metadata and coverarts
+	- AirPlay
+	- Bluetooth audio receiver
+	- SnapClient - Multiroom audio client
+	- Spotify Connect
+	- DLNA / UPnP
+- Streamers
+	- Bluetooth audio sender
+	- HTTP (no metadata)
+	- SnapServer - Multiroom audio client
+	- Web Radio
+	- DAB Radio (not on RPi Zero and 1)
+- Digital Signal Processors
+	- CamillaDSP (not on RPi Zero and 1)
+	- Equalizer
 - Based on [Arch Linux Arm](https://archlinuxarm.org)
 - Control via GUI
 	- Remote with any browsers
@@ -38,27 +58,6 @@ r A u d i o
 - File sharing - `samba`
 - Easy update and extra features with Addons
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
-
-- Player - Local files
-	- USB HDD
-	- USB Audio CD
-	- NAS
-	- SD card
-- Renderers / Clients - with metadata and coverarts
-	- AirPlay
-	- Bluetooth audio receiver
-	- SnapClient - Multiroom audio client
-	- Spotify Connect
-	- DLNA / UPnP
-- Streamers
-	- Bluetooth audio sender
-	- HTTP (no metadata)
-	- SnapServer - Multiroom audio client
-	- Web Radio
-	- DAB Radio (not on RPi Zero and 1)
-- Digital Signal Processors
-	- CamillaDSP (not on RPi Zero and 1)
-	- Equalizer
 
 ### Supported devices
 - Bluetooth:
