@@ -34,8 +34,8 @@ Audio player for
 - File sharing - `samba`
 - Easy update and extra features with Addons
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
--
-- Local files
+
+- Player - Local files
 	- USB HDD
 	- USB Audio CD
 	- NAS
