@@ -1,6 +1,6 @@
 r A u d i o
 ---
-Audio player for 
+Audio player for:
 - **Raspberry Pi**s:
 	- 64bit: `5` `4` `3` `2 (BCM2837)` `Zero 2`
 	- 32bit: `3` `2`
