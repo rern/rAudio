@@ -1,12 +1,15 @@
 r A u d i o
 ---
-Audio player for:
-- **Raspberry Pi**s:
-	- 64bit: `5` `4` `3` `2 (BCM2837)` `Zero 2`
-	- 32bit: `3` `2`
-	- Legacy: `1` `Zero`
-- BeagleBone Black
-- CubieBoard2
+- Audio player for:
+	- **Raspberry Pi**s:
+		- 64bit: `5` `4` `3` `2 (BCM2837)` `Zero 2`
+		- 32bit: `3` `2`
+		- Legacy: `1` `Zero`
+	- BeagleBone Black
+	- CubieBoard2
+- [Supported Devices](https://github.com/rern/rAudio/tree/main#supported-devices)
+- [Image Files](https://github.com/rern/rAudio/edit/main/README.md#image-files)
+- [How-to](https://github.com/rern/rAudio/edit/main/README.md#how-to)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
@@ -76,10 +79,6 @@ Audio player for:
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (LEDs+Rs)
 
-### Default root password
-- `ros`
-- If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
-
 ### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
 
@@ -87,6 +86,8 @@ Audio player for:
 - Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
 - BeagleBone Black - [DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
+
+Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
