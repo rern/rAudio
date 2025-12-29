@@ -7,9 +7,9 @@ r A u d i o
 		- Legacy: `1` `Zero`
 	- BeagleBone Black
 	- CubieBoard2
-- [Supported Devices](https://github.com/rern/rAudio/tree/main#supported-devices)
-- [Image Files](https://github.com/rern/rAudio/edit/main/README.md#image-files)
-- [How-to](https://github.com/rern/rAudio/edit/main/README.md#how-to)
+- [Supported Devices](#supported-devices)
+- [Image Files](#image-files)
+- [How-to](#how-to)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
