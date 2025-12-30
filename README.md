@@ -11,6 +11,8 @@ r A u d i o
 - [Supported Devices](#supported-devices)
 - [Image Files](#image-files)
 - [How-to](#how-to)
+- [Tips](#tips)
+- [Q&A](#qa)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
