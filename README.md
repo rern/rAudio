@@ -100,7 +100,7 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 	- Download an [image file](#image-files)
 	- **Raspberry Pi Imager:**
 		- Device - (No need)
-		- OS
+		- OS:
     		- Select "Use custom" (bottom of the list)
         	- Select the image file
            	- `NEXT`
@@ -111,7 +111,7 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 				- Should be used only when USB drive is faster than SD card.
 			- `NEXT`
-    	- Writing
+    	- Writing:
         	- `... ERASE AND WRITE`
     	- On Windows - To ensure filesystem set properly:
        		- `CANCEL WRITE` when reach at least 2% on 1st write.
