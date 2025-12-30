@@ -90,26 +90,29 @@ r A u d i o
 Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
 
 ### How-to
-- Write an [image file](#image-files) to a micro SD card (8GB or more):
-	- Install **Raspberry Pi Imager**
-		- Windows, MacOS, Linux: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Arch Linux: `pacman -Sy rpi-imager`
-		- [Build and install](https://github.com/raspberrypi/rpi-imager)
-	- Download an image file
+- Write an image file to a micro SD card (8GB or more):
+	- Install:
+		- [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+		- Linux comand line:
+    		- `apt install rpi-imager`
+    		- `pacman -Sy rpi-imager`
+			- [`make install`](https://github.com/raspberrypi/rpi-imager)
+	- Download an [image file](#image-files)
 	- **Raspberry Pi Imager:**
-		- `CHOOSE DEVICE` - (No need)
-		- `CHOOSE OS`
+		- Device - (No need)
+		- OS
     		- Select "Use custom" (bottom of the list)
         	- Select the image file
-		- `CHOOSE STORAGE`:
-			- Select SD card - normal boot
-			- Select USB drive - boot from USB drive without SD card
+           	- `NEXT`
+		- Storage:
+			- Select target SD card - normal
+			- Select target USB drive - boot from USB drive without SD card
 				- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
 				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 				- Should be used only when USB drive is faster than SD card.
-		- `NEXT`
-    		- `NO` customization settings
-        	- `YES` continue
+			- `NEXT`
+    	- Writing
+        	- `... ERASE AND WRITE`
     	- On Windows - To ensure filesystem set properly:
        		- `CANCEL WRITE` when reach at least 2% on 1st write.
            	- Continue with `NEXT` again and let the writing finish.
