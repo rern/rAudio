@@ -79,18 +79,13 @@ r A u d i o
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (LEDs+Rs)
 
-### Q&A
-- [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
-
 ### Image files
 - Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
-- BeagleBone Black - [DIY](https://github.com/rern/rAudio/discussions/299)
-- CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
-
+- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
+- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
+- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
+  
 Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
-
-### DIY Image file
-- [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
 - Write an image file to a micro SD card (8GB or more):
@@ -178,7 +173,6 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 - If not connected, temporarily connect wired LAN then remove after Wi-Fi setup successfully.
 - Still no - Download the image file and start over again
 
-
 ### Tips
 - Best sound quality:
 	- Settings > Player > Bit-perfect - Enable
@@ -231,3 +225,6 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 		- Create and compress image file
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
+
+### Q&A
+- [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
