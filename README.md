@@ -8,8 +8,8 @@ r A u d i o
 	- BeagleBone Black
 	- CubieBoard2
 - [Features](#features)
-- [Supported Devices](#supported-devices)
-- [Image Files](#image-files)
+- [Supported devices](#supported-devices)
+- [Image files](#image-files)
 - [How-to](#how-to)
 - [Tips](#tips)
 - [Q&A](#qa)
