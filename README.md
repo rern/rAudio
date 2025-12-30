@@ -90,7 +90,7 @@ r A u d i o
 Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
 
 ### How-to
-- Write an image file to a micro SD card (8GB or more):
+- Write an [image file](#image-files) to a micro SD card (8GB or more):
 	- Install **Raspberry Pi Imager**
 		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 		- Manjaro: `pacman -Sy rpi-imager`
