@@ -93,7 +93,7 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 - Write an [image file](#image-files) to a micro SD card (8GB or more):
 	- Install **Raspberry Pi Imager**
 		- Windows, MacOS, Linux: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Manjaro: `pacman -Sy rpi-imager`
+		- Arch Linux: `pacman -Sy rpi-imager`
 		- [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file
 	- **Raspberry Pi Imager:**
