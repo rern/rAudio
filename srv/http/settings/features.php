@@ -214,7 +214,9 @@ EOF
  · Rotate - TFT 3.5" LCD needs reboot.
  · Screen off: $M->screenoff (Backlight still on - no energy saved)
 
-Note: Connect display to rAudio before boot. Otherwise reboot required.
+Note:
+ · Connect display to rAudio before boot. Otherwise reboot required.
+ · Dual HDMI ports - Use HDMI0
 EOF
 	]
 	, [
