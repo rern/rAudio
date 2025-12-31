@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20251212
+# 20260101
+[[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
+
 file=/boot/cmdline.txt
 if [[ ! -e /boot/kernel.img ]] && grep -q ipv6.disable $file; then
 	sed -i 's/ipv6.disable=1 //' $file
