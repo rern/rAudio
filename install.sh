@@ -5,11 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260101
-if [[ -e /boot/kernel8.img ]]; then
-	file=/etc/pacman.conf
-	! grep -q linux-rpi $file && sed -i -E 's/.*(IgnorePkg   =)/\1 linux-rpi/' $file
-fi
-
 [[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
 
 file=/boot/cmdline.txt
