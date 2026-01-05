@@ -184,9 +184,6 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
 	- Settings > Features
-	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
-		- After system upgrade `pacman -Syu` which kernel `linux-raspberrypi` also upgraded.
-		- On 64bit version - Very likely, kernel upgraded or not.
 - Full screen UI
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
    		- APK for obsolete Android: [rAudio app](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio.apk)
