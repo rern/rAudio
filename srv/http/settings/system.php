@@ -9,14 +9,16 @@ commonVariables( [
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
+		, 'RPi Touch Display 2' => ''
 		, 'Server rAudio' => 'rserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
+		, 'TFT 3.5" LCD'  => 'tft'
 	]
 	, 'menus'   => [
 		  'refreshlibrary' => 'library'
-		, 'relays'       => 'system'
+		, 'relays'         => 'system'
 	]
 	, 'tabs'    => [ 'features', 'library', 'player' ]
 ] );
@@ -220,6 +222,7 @@ EOF
 		  'id'       => 'tft'
 		, 'label'    => 'TFT 3.5" LCD'
 		, 'exist'    => '/usr/bin/firefox'
+		, 'disabled' => $L->rpitouchdisplay2.$isenabled
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
 	, [
@@ -278,6 +281,15 @@ $B->gear
  · Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue
 	· High - improve performance under high load
+EOF
+	]
+	, [
+		  'id'       => 'rpidisplay2'
+		, 'label'    => 'RPi Touch Display 2'
+		, 'exist'    => '/usr/bin/firefox'
+		, 'disabled' => $L->tft35lcd.$isenabled
+		, 'help'     => <<< EOF
+Driver and settings for Raspberry Pi Touch Display 2
 EOF
 	]
 	, [

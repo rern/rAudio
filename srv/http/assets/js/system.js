@@ -939,6 +939,8 @@ function renderPage() {
 		$( '#timezone' ).html( option + ( S.timezone.replace( '/', ' · ' ) +' ('+ S.timezoneoffset +')' ) +'</option>' );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
+	$( '#tft' ).toggleClass( 'disabled', S.rpidisplay2 );
+	$( '#rpidisplay2' ).toggleClass( 'disabled', S.tft );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	CONTENT();

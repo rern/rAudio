@@ -116,6 +116,7 @@ data+='
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "rpi3plus"       : '$rpi3plus'
+, "rpidisplay2"    : '$( grep -q dsi-ili9881-5inch /boot/config.txt && echo true )'
 , "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'

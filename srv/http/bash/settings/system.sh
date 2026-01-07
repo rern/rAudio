@@ -303,6 +303,22 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
+rpidisplay2 )
+	cmd='vt.global_cursor_default=0 video=DSI-1:720x1280@60,rotate=180'
+	if [[ $ON ]]; then
+		sed -i "s/$/ $cmd/" $file_cmdline
+		sed -i '/hdmi_force_hotplug/ d' $file_config
+		echo "\
+hdmi_ignore_hotplug=1
+display_auto_detect=1
+dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
+	else
+		sed -i "s/ $cmd//" $file_cmdline
+		sed -i -E '/hdmi_ignore_hotplug|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
+	fi
+	configTxt
+	;;
 shareddatadisable )  # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
@@ -360,9 +376,9 @@ temp_soft_limit=$DEGREE"
 	;;
 tft )
 	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' $file_config )
-	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' $file_cmdline
+	cmd='fbcon=map:10 fbcon=font:ProFont6x11'
 	if [[ $ON ]]; then
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' $file_cmdline
+		sed -i "1 s/$/ $cmd/" $file_cmdline
 		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 		config+="
 hdmi_force_hotplug=1
@@ -372,6 +388,7 @@ dtoverlay=$MODEL:rotate=$rotate"
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		systemctl enable localbrowser
 	else
+		sed -i "s/ $cmd//" $file_cmdline
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
 	i2cset=1
