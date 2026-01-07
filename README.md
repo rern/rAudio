@@ -151,8 +151,9 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 		- Create a blank file `nolocalbrowser` in `BOOT`
 		- (or disable `Browser` in Settings > Features after boot)
 	- Display / Monitor: (optional - Local browser enabled by default)
-		- Connect before boot
+		- Connect before boot to ensure proper detection
 		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
+		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
