@@ -51,15 +51,6 @@ $( getContent $dirmpdconf/conf/custom.conf )
 ^^
 $( getContent "$dirsystem/custom-output-$name" )"
 	;;
-display )
-	if grep -q -m1 dsi-ili9881-5inch $file_config; then
-		model=rpidisplay2
-	else
-		model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' $file_config )
-		[[ ! model ]] && model=tft35a
-	fi
-	echo '{ "MODEL": "'$model'" }'
-	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
 	[[ $apm ]] && echo $apm || echo false
@@ -115,6 +106,14 @@ localbrowser )
   "values"     : '$( conf2json localbrowser.conf )'
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
+	;;
+monitor )
+	if grep -q -m1 dsi-ili9881-5inch $file_config; then
+		model=rpidisplay2
+	else
+		model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' $file_config )
+	fi
+	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
 	opt=$( < /etc/default/mpd_oled )

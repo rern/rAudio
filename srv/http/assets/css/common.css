@@ -96,8 +96,6 @@ i {
 .i-delete::before,
 .i-forget::before,
 .i-remove::before          { content: '\F563' }
-.i-display::before,
-.i-tft::before             { content: '\F577' }
 .i-drag::before            { content: '\F601' }
 .i-edit::before,
 .i-rename::before          { content: '\F565' }
@@ -155,6 +153,7 @@ i {
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
 .i-minus::before           { content: '\F518' }
+.i-monitor::before         { content: '\F577' }
 .i-mpd::before,
 .i-player::before          { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }

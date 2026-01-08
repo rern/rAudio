@@ -113,9 +113,6 @@ var CONFIG        = {
 			, ok           : SWITCH.enable
 		} );
 	}
-	, display       : values => {
-		UTIL.display[ values.MODEL === 'rpidisplay2' ? 'rpidisplay2' : 'tft' ]( values );
-	}
 	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
 			UTIL.wm5102();
@@ -133,6 +130,9 @@ var CONFIG        = {
 	}
 	, lcdchar       : data => {
 		UTIL.lcdchar[ data.values.INF ]( data );
+	}
+	, monitor       : values => {
+		UTIL.monitor[ values.MODEL === 'rpidisplay2' ? 'rpidisplay2' : 'tft' ]( values );
 	}
 	, mpdoled       : values => {
 		var chip       = {
@@ -270,10 +270,10 @@ var UTIL          = {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
-	, display       : {
+	, monitor       : {
 		  json        : {
-			  icon       : 'display'
-			, title      : 'Display'
+			  icon       : 'monitor'
+			, title      : 'Monitor'
 			, tablabel     : [ 'TFT 3.5" LCD', 'RPi Touch 2' ]
 		}
 		, tft         : values => {
@@ -284,10 +284,10 @@ var UTIL          = {
 				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 				, 'Waveshare (C)'         : 'waveshare35c'
 			}
-			var enabled = S.display && S.displaymodel !== 'rpidisplay2';
+			var enabled = S.monitor && S.monitormodel !== 'rpidisplay2';
 			INFO( {
-				  ...UTIL.display.json
-				, tab          : [ '', UTIL.display.rpidisplay2 ]
+				  ...UTIL.monitor.json
+				, tab          : [ '', UTIL.monitor.rpidisplay2 ]
 				, list         : [ 'Type', 'select', type ]
 				, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
 				, values       : values
@@ -307,13 +307,13 @@ var UTIL          = {
 		}
 		, rpidisplay2 : values => {
 			INFO( {
-				  ...UTIL.display.json
-				, tab          : [ () => UTIL.display.tft(), '' ]
+				  ...UTIL.monitor.json
+				, tab          : [ () => UTIL.monitor.tft(), '' ]
 				, list         : [ 'Raspberry Pi Touch Display 2', 'checkbox' ]
 				, values       : true
-				, checkchanged : S.display && S.displaymodel === 'rpidisplay2'
+				, checkchanged : S.monitor && S.monitormodel === 'rpidisplay2'
 				, cancel       : SWITCH.cancel
-				, ok           : () => BASH( [ 'display', 'rpidisplay2', _INFO.val(), 'CMD MODEL ON' ] )
+				, ok           : () => BASH( [ 'monitor', 'rpidisplay2', _INFO.val(), 'CMD MODEL ON' ] )
 			} );
 		}
 	}

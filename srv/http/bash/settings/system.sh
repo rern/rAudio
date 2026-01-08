@@ -151,37 +151,6 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-display )
-	displayConfigClear
-	if [[ $MODEL == rpidisplay2 ]]; then
-		if [[ $ON ]]; then
-			sed -i "s/$/ $video/" $file_cmdline
-			sed -i '/hdmi_force_hotplug/ d' $file_config
-			echo "\
-hdmi_ignore_hotplug=1
-display_auto_detect=1
-dtoverlay=vc4-kms-v3d
-dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
-		systemctl enable localbrowser
-		fi
-		configTxt
-		exit
-# --------------------------------------------------------------------
-	fi
-	if [[ $ON ]]; then
-		sed -i "1 s/$/ $fbcon/" $file_cmdline
-		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-		echo "\
-hdmi_force_hotplug=1
-dtoverlay=$MODEL:rotate=$rotate" >> $file_config
-		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
-		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		systemctl enable localbrowser
-	fi
-	i2cset=1
-	configTxt
-	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
@@ -270,6 +239,37 @@ mirror )
 	[[ $MIRROR ]] && MIRROR+=.
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 	pushRefresh
+	;;
+monitor )
+	displayConfigClear
+	if [[ $MODEL == rpidisplay2 ]]; then
+		if [[ $ON ]]; then
+			sed -i "s/$/ $video/" $file_cmdline
+			sed -i '/hdmi_force_hotplug/ d' $file_config
+			echo "\
+hdmi_ignore_hotplug=1
+display_auto_detect=1
+dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
+		systemctl enable localbrowser
+		fi
+		configTxt
+		exit
+# --------------------------------------------------------------------
+	fi
+	if [[ $ON ]]; then
+		sed -i "1 s/$/ $fbcon/" $file_cmdline
+		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+		echo "\
+hdmi_force_hotplug=1
+dtoverlay=$MODEL:rotate=$rotate" >> $file_config
+		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
+		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
+		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		systemctl enable localbrowser
+	fi
+	i2cset=1
+	configTxt
 	;;
 mpdoled )
 	enableFlagSet

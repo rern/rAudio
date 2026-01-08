@@ -164,14 +164,6 @@ $body        = [
 		, 'help'     => $helpi2s
 	]
 	, [
-		  'id'       => 'lcdchar'
-		, 'label'    => 'Character LCD'
-		, 'sub'      => 'python-rplcd'
-		, 'help'     => <<< EOF
-<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
-EOF
-	]
-	, [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
 		, 'sub'      => 'libgpiod'
@@ -207,17 +199,6 @@ EOF
  · Push to play/pause
 EOF
 	]
-	,[
-		  'id'       => 'mpdoled'
-		, 'label'    => 'Spectrum OLED'
-		, 'sub'      => 'mpd_oled'
-		, 'status'   => true
-		, 'help'     => <<<EOF
-<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-
-Note: Not yet support $L->airplay $L->spotify
-EOF
-	]
 	, [
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
@@ -233,6 +214,43 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'gpio' );
+// ----------------------------------------------------------------------------------
+$head        = [ 'title' => 'Display' ];
+$body        = [
+	  [
+		  'id'       => 'lcdchar'
+		, 'label'    => 'Character LCD'
+		, 'sub'      => 'python-rplcd'
+		, 'help'     => <<< EOF
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
+EOF
+	]
+	,[
+		  'id'       => 'mpdoled'
+		, 'label'    => 'Spectrum OLED'
+		, 'sub'      => 'mpd_oled'
+		, 'status'   => true
+		, 'help'     => <<<EOF
+<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
+
+Note: Not yet support $L->airplay $L->spotify
+EOF
+	]
+	, [
+		  'id'       => 'monitor'
+		, 'label'    => 'Monitor'
+		, 'exist'    => '/usr/bin/firefox'
+		, 'help'     => <<< EOF
+For:
+ · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
+ · Raspberry Pi Touch Display 2
+No settings needed:
+ · HDMI displays
+ · Raspberry Pi Touch Display (1)
+EOF
+	]
+];
+htmlSection( $head, $body, 'display' );
 // ----------------------------------------------------------------------------------
 $head        = [ 'title' => 'Environment' ];
 $body        = [
@@ -256,19 +274,6 @@ EOF
 		, 'help'     => <<< EOF
 $B->gear
 Servers for time sync and package mirror
-EOF
-	]
-	, [
-		  'id'       => 'display'
-		, 'label'    => 'Local Display'
-		, 'exist'    => '/usr/bin/firefox'
-		, 'help'     => <<< EOF
-For local display / monitor:
- · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
- · Raspberry Pi Touch Display 2
-No settings needed:
- · HDMI displays
- · Raspberry Pi Touch Display (1)
 EOF
 	]
 	, [
