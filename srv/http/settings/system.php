@@ -260,15 +260,15 @@ EOF
 	]
 	, [
 		  'id'       => 'display'
-		, 'label'    => 'Display'
+		, 'label'    => 'Local Display'
 		, 'exist'    => '/usr/bin/firefox'
 		, 'help'     => <<< EOF
 For local display / monitor:
- · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
- · RPi Touch Display 2
-
-Notes:
-No needs for HDMI displays and others.
+ · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
+ · Raspberry Pi Touch Display 2
+No settings needed:
+ · HDMI displays
+ · Raspberry Pi Touch Display (1)
 EOF
 	]
 	, [
