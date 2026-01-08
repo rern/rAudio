@@ -110,19 +110,18 @@ data+='
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
+, "display"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "rpi3plus"       : '$rpi3plus'
-, "rpidisplay2"    : '$( grep -q dsi-ili9881-5inch /boot/config.txt && echo true )'
 , "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
-, "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then

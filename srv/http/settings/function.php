@@ -124,7 +124,7 @@ function htmlSetting( $data ) {
 	// col-l
 	$html   .= '<div class="col-l'.( $sub ? '' : ' single' ).$dstatus.'">';
 	$html   .= $sub ? '<a>'.$label.'<gr>'.$sub.'</gr></a>' : $label;
-	$html   .= $icon ? icon(  $icon ) : ''; // icon
+	$html   .= $icon ? icon( $icon ) : ''; // icon
 	$html   .= '</div>';
 	// col-r
 	$html   .= '<div class="col-r">';

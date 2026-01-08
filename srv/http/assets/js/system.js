@@ -113,6 +113,9 @@ var CONFIG        = {
 			, ok           : SWITCH.enable
 		} );
 	}
+	, display       : values => {
+		UTIL.display[ values.MODEL === 'rpidisplay2' ? 'rpidisplay2' : 'tft' ]( values );
+	}
 	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
 			UTIL.wm5102();
@@ -216,33 +219,6 @@ var CONFIG        = {
 		} );
 	}
 	, timezone      : () => UTIL.server.ntp()
-	, tft           : values => {
-		var type = {
-			  'Generic'               : 'tft35a'
-			, 'Waveshare (A)'         : 'waveshare35a'
-			, 'Waveshare (B)'         : 'waveshare35b'
-			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-			, 'Waveshare (C)'         : 'waveshare35c'
-		}
-		INFO( {
-			  ...SW
-			, list         : [ 'Type', 'select', type ]
-			, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
-			, values       : values
-			, checkchanged : S.tft
-			, boxwidth     : 190
-			, beforeshow   : () => {
-				$( '.infofooter span' )
-					.toggleClass( 'disabled', ! S.tft )
-					.on( 'click', function() {
-						NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-						BASH( [ 'tftcalibrate' ] );
-				} );
-			}
-			, cancel       : SWITCH.cancel
-			, ok           : SWITCH.enable
-		} );
-	}
 	, vuled         : data => {
 		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
 		var prefix = '<gr>#</gr> ';
@@ -293,6 +269,51 @@ var UTIL          = {
 	  board2bcm     : {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+	}
+	, display       : {
+		  json        : {
+			  icon       : 'display'
+			, title      : 'Display'
+			, tablabel     : [ 'TFT 3.5" LCD', 'RPi Touch 2' ]
+		}
+		, tft         : values => {
+			var type = {
+				  'Generic'               : 'tft35a'
+				, 'Waveshare (A)'         : 'waveshare35a'
+				, 'Waveshare (B)'         : 'waveshare35b'
+				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+				, 'Waveshare (C)'         : 'waveshare35c'
+			}
+			INFO( {
+				  ...UTIL.display.json
+				, tab          : [ '', UTIL.display.rpidisplay2 ]
+				, list         : [ 'Type', 'select', type ]
+				, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
+				, values       : values
+				, checkchanged : S.display
+				, boxwidth     : 190
+				, beforeshow   : () => {
+					$( '.infofooter span' )
+						.toggleClass( 'disabled', ! S.display )
+						.on( 'click', function() {
+							NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
+							BASH( [ 'tftcalibrate' ] );
+					} );
+				}
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.enable
+			} );
+		}
+		, rpidisplay2 : () => {
+			INFO( {
+				  ...UTIL.display.json
+				, tab          : [ () => UTIL.display.tft(), '' ]
+				, list         : [ 'Raspberry Pi Touch Display 2', 'checkbox' ]
+				, values       : true
+				, cancel       : SWITCH.cancel
+				, ok           : () => BASH( [ 'rpidisplay2', _INFO.val(), 'CMD ENABLE' ] )
+			} );
+		}
 	}
 	, gpioState     : state => {
 		if ( ! state ) return // relays / vuled active
@@ -939,8 +960,6 @@ function renderPage() {
 		$( '#timezone' ).html( option + ( S.timezone.replace( '/', ' · ' ) +' ('+ S.timezoneoffset +')' ) +'</option>' );
 	}
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
-	$( '#tft' ).toggleClass( 'disabled', S.rpidisplay2 );
-	$( '#rpidisplay2' ).toggleClass( 'disabled', S.tft );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	CONTENT();

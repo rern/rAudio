@@ -219,13 +219,6 @@ Note: Not yet support $L->airplay $L->spotify
 EOF
 	]
 	, [
-		  'id'       => 'tft'
-		, 'label'    => 'TFT 3.5" LCD'
-		, 'exist'    => '/usr/bin/firefox'
-		, 'disabled' => $L->rpitouchdisplay2.$isenabled
-		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
-	]
-	, [
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
 		, 'sub'      => 'cava'
@@ -266,6 +259,19 @@ Servers for time sync and package mirror
 EOF
 	]
 	, [
+		  'id'       => 'display'
+		, 'label'    => 'Display'
+		, 'exist'    => '/usr/bin/firefox'
+		, 'help'     => <<< EOF
+For local display / monitor:
+ · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
+ · RPi Touch Display 2
+
+Notes:
+No needs for HDMI displays and others.
+EOF
+	]
+	, [
 		  'id'       => 'soundprofile'
 		, 'label'    => 'Sound Profile'
 		, 'help'     => <<< EOF
@@ -281,15 +287,6 @@ $B->gear
  · Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue
 	· High - improve performance under high load
-EOF
-	]
-	, [
-		  'id'       => 'rpidisplay2'
-		, 'label'    => 'RPi Touch Display 2'
-		, 'exist'    => '/usr/bin/firefox'
-		, 'disabled' => $L->tft35lcd.$isenabled
-		, 'help'     => <<< EOF
-Driver and settings for Raspberry Pi Touch Display 2
 EOF
 	]
 	, [

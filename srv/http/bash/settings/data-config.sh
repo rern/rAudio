@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+file_config=/boot/config.txt
+
 gpioState() {
 	[[ -e $dirsystem/vuled ]] && grep -q '^state="play"' $dirshm/status && vuledactive=1
 	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
@@ -49,6 +51,15 @@ $( getContent $dirmpdconf/conf/custom.conf )
 ^^
 $( getContent "$dirsystem/custom-output-$name" )"
 	;;
+display )
+	if grep -q -m1 dsi-ili9881-5inch $file_config; then
+		model=rpidisplay2
+	else
+		model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' $file_config )
+		[[ ! model ]] && model=tft35a
+	fi
+	echo '{ "MODEL": "'$model'" }'
+	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
 	[[ $apm ]] && echo $apm || echo false
@@ -57,7 +68,7 @@ hwparams )
 	cat $dirshm/hwparams
 	;;
 i2seeprom )
-	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false
+	grep -q -m1 ^force_eeprom_read=0 $file_config && echo true || echo false
 	;;
 i2slist )
 	cat /srv/http/assets/data/system-i2s.json
@@ -93,7 +104,11 @@ lcdchar )
 	else
 		address=', "0x27": 39, "0x3f": 63'
 	fi
-	echo '{ "values": '$values', "current": "'$current'", "address": { '${address:1}' } }'
+	echo '{
+  "values"  : '$values'
+, "current" : "'$current'"
+, "address" : { '${address:1}' }
+}'
 	;;
 localbrowser )
 	echo '{
@@ -105,7 +120,7 @@ mpdoled )
 	opt=$( < /etc/default/mpd_oled )
 	chip=$( cut -d' ' -f2 <<< $opt )
 	spectrum=$( grep -q '\-X' <<< $opt && echo true || echo false )
-	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;
@@ -218,7 +233,10 @@ servermirror )
 		fi
 	done <<< $lines
 	mirror=$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )
-	echo '{ "list": { '$codelist' }, "values": { "MIRROR": "'$mirror'" } }'
+	echo '{
+  "list"   : { '$codelist' }
+, "values" : { "MIRROR": "'$mirror'" }
+}'
 	;;
 serverntp )
 	echo '{
@@ -256,7 +274,10 @@ spotifyoutput )
 	fi
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
 	volume=$( getVar volume_controller /etc/spotifyd.conf )
-	echo '{ "values": { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }, "devices": [ "Default"'$devices' ] }'
+	echo '{
+  "values"  : { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }
+, "devices" : [ "Default"'$devices' ]
+}'
 	;;
 stoptimer )
 	if [[ -e $dirsystem/stoptimer.conf ]]; then
@@ -265,19 +286,18 @@ stoptimer )
 		values='{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }'
 	fi
 	[[ -e $dirshm/pidstoptimer ]] && elapsed=$( ps -o etimes= -p $( < $dirshm/pidstoptimer ) | tr -d ' ' ) || elapsed=false
-	echo '{ "values": '$values', "elapsed": '$elapsed' }'
+	echo '{
+  "values"  : '$values'
+, "elapsed" : '$elapsed'
+}'
 	;;
 templimit )
-	line=$( grep ^temp_soft_limit /boot/config.txt )
+	line=$( grep ^temp_soft_limit $file_config )
 	[[ $line ]] && degree=$( cut -d= -f2 <<< $line ) || degree=60
 	echo '{ "DEGREE": '$degree' }'
 	;;
 timezonelist )
 	cat /srv/http/assets/data/timezone.json
-	;;
-tft )
-	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
-	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
 vuled )
 	file=$dirsystem/vuled.conf
@@ -319,7 +339,7 @@ wlanprofile )
 		case $ID in
 			autoplay )      echo '{ "BLUETOOTH": true, "STARTUP": true }';;
 			lyrics )        echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
-			powerbutton )   grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true || echo '{ "ON":3, "SW": 3, "LED": 21 }';;
+			powerbutton )   grep -q 'poweroff,gpiopin=22' $file_config && echo true || echo '{ "ON":3, "SW": 3, "LED": 21 }';;
 			rotaryencoder ) echo '{ "PINA": 27, "PINB": 22, "PINS": 23, "STEP": 1 }';;
 			soundprofile )
 				dirlan=/sys/class/net/$( lanDevice )

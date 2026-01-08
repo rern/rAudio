@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1762779753' );
+	src         : url( '/assets/fonts/rern.woff2?v=1767583738' );
 }
 @font-face {
 	font-family : Lato;
@@ -96,6 +96,8 @@ i {
 .i-delete::before,
 .i-forget::before,
 .i-remove::before          { content: '\F563' }
+.i-display::before,
+.i-tft::before             { content: '\F577' }
 .i-drag::before            { content: '\F601' }
 .i-edit::before,
 .i-rename::before          { content: '\F565' }
@@ -224,7 +226,6 @@ i {
 .i-stop::before            { content: '\F502' }
 .i-stoptimer::before       { content: '\F570' }
 .i-tag::before             { content: '\F55B' }
-.i-tft::before             { content: '\F577' }
 .i-templimit::before       { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
 .i-track::before           { content: '\F54C' }
