@@ -67,7 +67,6 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		[[ $CMD == rpidisplay2 ]] && CMD=display
 		pushData reboot '{ "id": "'$CMD'" }'
 		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
 		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
@@ -154,6 +153,21 @@ bluetoothstart )
 	;;
 display )
 	displayConfigClear
+	if [[ $MODEL == rpidisplay2 ]]; then
+		if [[ $ON ]]; then
+			sed -i "s/$/ $video/" $file_cmdline
+			sed -i '/hdmi_force_hotplug/ d' $file_config
+			echo "\
+hdmi_ignore_hotplug=1
+display_auto_detect=1
+dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
+		systemctl enable localbrowser
+		fi
+		configTxt
+		exit
+# --------------------------------------------------------------------
+	fi
 	if [[ $ON ]]; then
 		sed -i "1 s/$/ $fbcon/" $file_cmdline
 		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
@@ -326,20 +340,6 @@ rotaryencoder )
 		dtoverlay -r rotary-encoder
 	fi
 	pushRefresh
-	;;
-rpidisplay2 )
-	displayConfigClear
-	if [[ $ON ]]; then
-		sed -i "s/$/ $video/" $file_cmdline
-		sed -i '/hdmi_force_hotplug/ d' $file_config
-		echo "\
-hdmi_ignore_hotplug=1
-display_auto_detect=1
-dtoverlay=vc4-kms-v3d
-dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
-		systemctl enable localbrowser
-	fi
-	configTxt
 	;;
 shareddatadisable )  # server rAudio / other server
 	$dirbash/cmd.sh mpcremove

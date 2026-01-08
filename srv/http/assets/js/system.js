@@ -313,7 +313,7 @@ var UTIL          = {
 				, values       : true
 				, checkchanged : S.display && S.displaymodel === 'rpidisplay2'
 				, cancel       : SWITCH.cancel
-				, ok           : () => BASH( [ 'rpidisplay2', _INFO.val(), 'CMD ON' ] )
+				, ok           : () => BASH( [ 'display', 'rpidisplay2', _INFO.val(), 'CMD MODEL ON' ] )
 			} );
 		}
 	}
