@@ -67,6 +67,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
+		[[ $CMD == rpidisplay2 ]] && CMD=display
 		pushData reboot '{ "id": "'$CMD'" }'
 		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
 		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
@@ -328,7 +329,7 @@ rotaryencoder )
 	;;
 rpidisplay2 )
 	displayConfigClear
-	if [[ $ENABLE == true ]]; then
+	if [[ $ON ]]; then
 		sed -i "s/$/ $video/" $file_cmdline
 		sed -i '/hdmi_force_hotplug/ d' $file_config
 		echo "\

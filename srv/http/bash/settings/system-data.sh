@@ -111,6 +111,7 @@ data+='
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
 , "display"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
+, "displaymodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"

@@ -284,17 +284,18 @@ var UTIL          = {
 				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 				, 'Waveshare (C)'         : 'waveshare35c'
 			}
+			var enabled = S.display && S.displaymodel !== 'rpidisplay2';
 			INFO( {
 				  ...UTIL.display.json
 				, tab          : [ '', UTIL.display.rpidisplay2 ]
 				, list         : [ 'Type', 'select', type ]
 				, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
 				, values       : values
-				, checkchanged : S.display
+				, checkchanged : enabled
 				, boxwidth     : 190
 				, beforeshow   : () => {
 					$( '.infofooter span' )
-						.toggleClass( 'disabled', ! S.display )
+						.toggleClass( 'disabled', ! enabled )
 						.on( 'click', function() {
 							NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
 							BASH( [ 'tftcalibrate' ] );
@@ -304,14 +305,15 @@ var UTIL          = {
 				, ok           : SWITCH.enable
 			} );
 		}
-		, rpidisplay2 : () => {
+		, rpidisplay2 : values => {
 			INFO( {
 				  ...UTIL.display.json
 				, tab          : [ () => UTIL.display.tft(), '' ]
 				, list         : [ 'Raspberry Pi Touch Display 2', 'checkbox' ]
 				, values       : true
+				, checkchanged : S.display && S.displaymodel === 'rpidisplay2'
 				, cancel       : SWITCH.cancel
-				, ok           : () => BASH( [ 'rpidisplay2', _INFO.val(), 'CMD ENABLE' ] )
+				, ok           : () => BASH( [ 'rpidisplay2', _INFO.val(), 'CMD ON' ] )
 			} );
 		}
 	}
