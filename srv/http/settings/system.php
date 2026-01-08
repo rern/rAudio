@@ -228,6 +228,7 @@ EOF
 	, [
 		  'id'       => 'monitor'
 		, 'label'    => 'Monitor'
+		, 'sub'      => 'non-HDMI'
 		, 'exist'    => '/usr/bin/firefox'
 		, 'help'     => <<< EOF
 For:
