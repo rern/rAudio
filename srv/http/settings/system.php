@@ -225,17 +225,6 @@ $body        = [
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
 	]
-	,[
-		  'id'       => 'mpdoled'
-		, 'label'    => 'Spectrum OLED'
-		, 'sub'      => 'mpd_oled'
-		, 'status'   => true
-		, 'help'     => <<<EOF
-<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-
-Note: Not yet support $L->airplay $L->spotify
-EOF
-	]
 	, [
 		  'id'       => 'monitor'
 		, 'label'    => 'Monitor'
@@ -247,6 +236,17 @@ For:
 No settings needed:
  · HDMI displays
  · Raspberry Pi Touch Display (1)
+EOF
+	]
+	,[
+		  'id'       => 'mpdoled'
+		, 'label'    => 'Spectrum OLED'
+		, 'sub'      => 'mpd_oled'
+		, 'status'   => true
+		, 'help'     => <<<EOF
+<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
+
+Note: Not yet support $L->airplay $L->spotify
 EOF
 	]
 ];
