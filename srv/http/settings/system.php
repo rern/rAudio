@@ -215,7 +215,7 @@ EOF
 ];
 htmlSection( $head, $body, 'gpio' );
 // ----------------------------------------------------------------------------------
-$head        = [ 'title' => 'Display' ];
+$head        = [ 'title' => 'Displays' ];
 $body        = [
 	  [
 		  'id'       => 'lcdchar'
