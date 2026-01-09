@@ -231,12 +231,13 @@ EOF
 		, 'sub'      => 'non-HDMI'
 		, 'exist'    => '/usr/bin/firefox'
 		, 'help'     => <<< EOF
-For:
+Only for:
  · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
  · Raspberry Pi Touch Display 2
-No settings needed:
- · HDMI displays
- · Raspberry Pi Touch Display (1)
+
+Note: No settings needed for:
+ · HDMI connected displays
+ · Raspberry Pi Touch Display (1st gen.)
 EOF
 	]
 	,[
