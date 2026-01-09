@@ -235,9 +235,7 @@ Only for:
  · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
  · Raspberry Pi Touch Display 2
 
-Note: No settings needed for:
- · HDMI connected displays
- · Raspberry Pi Touch Display (1st gen.)
+Note: HDMI connected displays need no settings.
 EOF
 	]
 	,[
