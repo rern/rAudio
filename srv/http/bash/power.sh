@@ -40,15 +40,17 @@ else
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
-ply-image /srv/http/assets/img/splash.png &> /dev/null
+[[ -e /bin/ply-image ]] && ply-image /srv/http/assets/img/splash.png
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
-if [[ -d /sys/class/backlight/rpi_backlight ]]; then
-	echo 1 > /sys/class/backlight/rpi_backlight/bl_power
+dir=/sys/class/backlight/rpi_backlight
+if [[ -d $dir ]]; then
+	sudo echo 1 > $dir/bl_power
 elif [[ -e $dirsystem/localbrowser ]]; then
 	DISPLAY=:0 sudo xset dpms force off
 fi
-[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
+file=/boot/shutdown.sh
+[[ -e $file ]] && $file
 [[ $reboot ]] && reboot || poweroff

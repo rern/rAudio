@@ -58,10 +58,6 @@ if [[ $mountpoints ]]; then
 	done <<< $mountpoints
 fi
 
-# temp 20250716---------------------------------->>
-TEMP_fstab
-# temp 20250716----------------------------------<<
-
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
 
 $dirbash/power.sh reboot

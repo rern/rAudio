@@ -9,14 +9,16 @@ commonVariables( [
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
+		, 'RPi Touch Display 2' => ''
 		, 'Server rAudio' => 'rserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
+		, 'TFT 3.5" LCD'  => 'tft'
 	]
 	, 'menus'   => [
 		  'refreshlibrary' => 'library'
-		, 'relays'       => 'system'
+		, 'relays'         => 'system'
 	]
 	, 'tabs'    => [ 'features', 'library', 'player' ]
 ] );
@@ -162,14 +164,6 @@ $body        = [
 		, 'help'     => $helpi2s
 	]
 	, [
-		  'id'       => 'lcdchar'
-		, 'label'    => 'Character LCD'
-		, 'sub'      => 'python-rplcd'
-		, 'help'     => <<< EOF
-<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
-EOF
-	]
-	, [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
 		, 'sub'      => 'libgpiod'
@@ -205,23 +199,6 @@ EOF
  · Push to play/pause
 EOF
 	]
-	,[
-		  'id'       => 'mpdoled'
-		, 'label'    => 'Spectrum OLED'
-		, 'sub'      => 'mpd_oled'
-		, 'status'   => true
-		, 'help'     => <<<EOF
-<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-
-Note: Not yet support $L->airplay $L->spotify
-EOF
-	]
-	, [
-		  'id'       => 'tft'
-		, 'label'    => 'TFT 3.5" LCD'
-		, 'exist'    => '/usr/bin/firefox'
-		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
-	]
 	, [
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
@@ -237,6 +214,43 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'gpio' );
+// ----------------------------------------------------------------------------------
+$head        = [ 'title' => 'Displays' ];
+$body        = [
+	  [
+		  'id'       => 'lcdchar'
+		, 'label'    => 'Character LCD'
+		, 'sub'      => 'python-rplcd'
+		, 'help'     => <<< EOF
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
+EOF
+	]
+	, [
+		  'id'       => 'monitor'
+		, 'label'    => 'Monitor'
+		, 'sub'      => 'non-HDMI'
+		, 'exist'    => '/usr/bin/firefox'
+		, 'help'     => <<< EOF
+Only for:
+ · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
+ · Raspberry Pi Touch Display 2
+
+Note: HDMI connected displays need no settings.
+EOF
+	]
+	,[
+		  'id'       => 'mpdoled'
+		, 'label'    => 'Spectrum OLED'
+		, 'sub'      => 'mpd_oled'
+		, 'status'   => true
+		, 'help'     => <<<EOF
+<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
+
+Note: Not yet support $L->airplay $L->spotify
+EOF
+	]
+];
+htmlSection( $head, $body, 'display' );
 // ----------------------------------------------------------------------------------
 $head        = [ 'title' => 'Environment' ];
 $body        = [

@@ -131,6 +131,9 @@ var CONFIG        = {
 	, lcdchar       : data => {
 		UTIL.lcdchar[ data.values.INF ]( data );
 	}
+	, monitor       : values => {
+		UTIL.monitor[ values.MODEL === 'rpidisplay2' ? 'rpidisplay2' : 'tft' ]( values );
+	}
 	, mpdoled       : values => {
 		var chip       = {
 			  'SSD130x SP'  : 1
@@ -216,33 +219,6 @@ var CONFIG        = {
 		} );
 	}
 	, timezone      : () => UTIL.server.ntp()
-	, tft           : values => {
-		var type = {
-			  'Generic'               : 'tft35a'
-			, 'Waveshare (A)'         : 'waveshare35a'
-			, 'Waveshare (B)'         : 'waveshare35b'
-			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-			, 'Waveshare (C)'         : 'waveshare35c'
-		}
-		INFO( {
-			  ...SW
-			, list         : [ 'Type', 'select', type ]
-			, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
-			, values       : values
-			, checkchanged : S.tft
-			, boxwidth     : 190
-			, beforeshow   : () => {
-				$( '.infofooter span' )
-					.toggleClass( 'disabled', ! S.tft )
-					.on( 'click', function() {
-						NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-						BASH( [ 'tftcalibrate' ] );
-				} );
-			}
-			, cancel       : SWITCH.cancel
-			, ok           : SWITCH.enable
-		} );
-	}
 	, vuled         : data => {
 		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
 		var prefix = '<gr>#</gr> ';
@@ -257,17 +233,6 @@ var CONFIG        = {
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
-				$( '#infoList .infofooter' ).on( 'click', function() {
-					var pins = _INFO.val();
-					var on   = ! pins.some( p => data.state[ p ] );
-					var pin  = '';
-					pins.forEach( p => {
-						data.state[ p ] = on;
-						pin += p +'='+ on +' ';
-						$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-					} );
-					BASH( [ 'gpiotoggle', pin, 'CMD PIN' ] );
-				} );
 				_INFO.addRemove( () => {
 					var infoval = _INFO.val( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
@@ -305,6 +270,53 @@ var UTIL          = {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
+	, monitor       : {
+		  json        : {
+			  icon       : 'monitor'
+			, title      : 'Monitor'
+			, tablabel     : [ 'TFT 3.5" LCD', 'RPi Touch 2' ]
+		}
+		, tft         : values => {
+			var type = {
+				  'Generic'               : 'tft35a'
+				, 'Waveshare (A)'         : 'waveshare35a'
+				, 'Waveshare (B)'         : 'waveshare35b'
+				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+				, 'Waveshare (C)'         : 'waveshare35c'
+			}
+			var enabled = S.monitor && S.monitormodel !== 'rpidisplay2';
+			INFO( {
+				  ...UTIL.monitor.json
+				, tab          : [ '', UTIL.monitor.rpidisplay2 ]
+				, list         : [ 'Type', 'select', type ]
+				, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
+				, values       : values
+				, checkchanged : enabled
+				, boxwidth     : 190
+				, beforeshow   : () => {
+					$( '.infofooter span' )
+						.toggleClass( 'disabled', ! enabled )
+						.on( 'click', function() {
+							NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
+							BASH( [ 'tftcalibrate' ] );
+					} );
+				}
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.enable
+			} );
+		}
+		, rpidisplay2 : values => {
+			INFO( {
+				  ...UTIL.monitor.json
+				, tab          : [ () => UTIL.monitor.tft(), '' ]
+				, list         : [ 'Raspberry Pi Touch Display 2', 'checkbox' ]
+				, values       : true
+				, checkchanged : S.monitor && S.monitormodel === 'rpidisplay2'
+				, cancel       : SWITCH.cancel
+				, ok           : () => BASH( [ 'monitor', 'rpidisplay2', _INFO.val(), 'CMD MODEL ON' ] )
+			} );
+		}
+	}
 	, gpioState     : state => {
 		if ( ! state ) return // relays / vuled active
 		
@@ -312,7 +324,7 @@ var UTIL          = {
 			var $el = $( el );
 			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
 		} );
-		$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
+		$( '#infoList' ).on( 'click', 'circle', function( e ) {
 			var p = $( this ).data( 'bcm' );
 			var on  = ! state[ p ];
 			state[ p ] = on;

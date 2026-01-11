@@ -136,6 +136,10 @@ localbrowser )
 # --------------------------------------------------------------------
 				fi
 			fi
+		elif grep -q ili9881-5inch $file_config; then
+			ROTATE=$(( ROTATE + 180 ))
+			$(( $ROTATE >= 360 )) && ROTATE=$(( ROTATE - 360 ))
+			sed -i -E "s/(rotate=).*/\1$ROTATE/" $file_cmdline
 		else # hdmi
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
@@ -166,6 +170,7 @@ localbrowser )
 	else
 		localBrowserOff
 	fi
+	sed -i -E '/^r_changed|^restart/ d' $dirsystem/localbrowser.conf
 	pushRefresh
 	;;
 login )

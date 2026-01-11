@@ -2,10 +2,16 @@
 
 . /srv/http/bash/common.sh
 
+mhz2ghz() {
+	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz
+}
+
 dot='<gr>·</gr>'
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | '$dot' |g' )'&emsp;<c>'$temp'°C</c>'
+#khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq )
+#load+=" @ $( mhz2ghz ${khz:0:-3} )"
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 date=$( date +"%F $dot %T" )
@@ -50,53 +56,42 @@ if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
-	# cpu
-	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	C=${revision: -4:1}
-	# system
-	firmware=$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )
-	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
-	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ $model == *BeagleBone* ]]; then
-		soc=AM3358
-	else
-		case $C in
-			0 )
-				cpu=ARM1176JZF-S
-				soc=2835;;
-			1 )
-				cpu=Cortex-A7
-				soc=2836;;
-			2 )
-				cpu=Cortex-A53
-				case $BB in
+	# soc
+	. <( sed -E -n '/^Revision|^Model/ {s/\s*: /="/; s/$/"/; p}' /proc/cpuinfo )
+	if [[ ${Model/ *} == Raspberry ]]; then
+		case ${Revision: -4:1} in         # C
+			4 ) soc=2712;;
+			3 ) soc=2711;;
+			2 ) case ${Revision: -3:2} in # BB
+					12 ) soc=RP3A0;;
+					0d ) soc=2837B0
+						 rpi3plus=true
+						 touch $dirshm/rpi3plus
+						 ;;
 					04 ) soc=2837;;
-					0d ) soc=2837B0;;
-					12 ) soc=2710A1;;
 				esac
 				;;
-			3 )
-				cpu=Cortex-A72
-				soc=2711;;
-			4 )
-				cpu=Cortex-A76
-				soc=2712;;
+			1 ) soc=2836;;
+			0 ) soc=2835;;
 		esac
-		[[ $C != 0 ]] && cpu="$cpu x 4"
-		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
-		soc=BCM$soc
-		free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
+		soc="Broadcom BCM$soc"
+	elif [[ $Model == *BeagleBone* ]]; then
+		soc='TI AM3358'
+	elif [[ $Model == *Cubieboard2* ]]; then
+		soc='Allwinner A20'
 	fi
-	speed=$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )
-	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
+	# cpu
+	readarray -t lscpu <<< $( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
+	cores=${lscpu[0]}
+	cpus=${lscpu[@]:1:2}
+	(( $cores > 1 )) && cpus+=" x $cores"
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
-$kernel<br>\
-$firmware<br>\
-$model<br>\
-$soc $dot $free<br>\
-$cpu @ $speed"
+$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
+$( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
+$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
+$soc $dot $( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )<br>\
+$cpus @ $( mhz2ghz ${lscpu[3]/.*} )"
 	echo $system > $dirshm/system
 fi
 # i2smodule
@@ -120,13 +115,14 @@ data+='
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
+, "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
+, "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "rpi3plus"       : '$rpi3plus'
 , "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
-, "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then

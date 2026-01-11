@@ -570,6 +570,7 @@ input.disabled + .switchlabel::after {
 }
 .col-l gr {
 	display: block;
+	font-size: 15px;
 	font-family: Inconsolata;
 	color: var( --cg50 ) !important;
 }

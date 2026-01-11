@@ -75,6 +75,13 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
 	fi
 }
+displayConfigClear() {
+	fbcon='fbcon=map:10 fbcon=font:ProFont6x11'
+	video='vt.global_cursor_default=0 video=DSI-1:720x1280@60,rotate=180'
+	sed -i -E "s/ $fbcon| $video//g" $file_cmdline
+	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+}
 soundProfile() {
 	local lan mtu swappiness txqueuelen
 	if [[ $1 == reset ]]; then
@@ -233,6 +240,37 @@ mirror )
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 	pushRefresh
 	;;
+monitor )
+	displayConfigClear
+	if [[ $MODEL == rpidisplay2 ]]; then
+		if [[ $ON ]]; then
+			sed -i "s/$/ $video/" $file_cmdline
+			sed -i '/hdmi_force_hotplug/ d' $file_config
+			echo "\
+hdmi_ignore_hotplug=1
+display_auto_detect=1
+dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
+		systemctl enable localbrowser
+		fi
+		configTxt
+		exit
+# --------------------------------------------------------------------
+	fi
+	if [[ $ON ]]; then
+		sed -i "1 s/$/ $fbcon/" $file_cmdline
+		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+		echo "\
+hdmi_force_hotplug=1
+dtoverlay=$MODEL:rotate=$rotate" >> $file_config
+		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
+		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
+		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		systemctl enable localbrowser
+	fi
+	i2cset=1
+	configTxt
+	;;
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
@@ -356,25 +394,6 @@ templimit )
 		config+="
 temp_soft_limit=$DEGREE"
 	fi
-	configTxt
-	;;
-tft )
-	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' $file_config )
-	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' $file_cmdline
-	if [[ $ON ]]; then
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' $file_cmdline
-		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-		config+="
-hdmi_force_hotplug=1
-dtoverlay=$MODEL:rotate=$rotate"
-		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
-		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		systemctl enable localbrowser
-	else
-		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	fi
-	i2cset=1
 	configTxt
 	;;
 tftcalibrate )

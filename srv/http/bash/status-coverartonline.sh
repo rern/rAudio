@@ -4,6 +4,15 @@
 
 args2var "$1"
 
+### 0 - itunes ##################################################
+# term="$ARTIST+$ALBUM"
+# data=$( curl -sfG -m 5 \
+#			--data-urlencode "term=$term" \
+#			--data-urlencode "entity=album" \
+#			https://itunes.apple.com/search \
+#		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
+# [[ $? == 0 && $data ]] && url=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
+	
 ### 1 - lastfm ##################################################
 if [[ $MODE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
 	param="album=${ALBUM//&/ and }"
@@ -15,12 +24,12 @@ else
 fi
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
-	--data-urlencode "artist=$ARTIST" \
-	--data-urlencode "$param" \
-	--data "$method" \
-	--data "api_key=$apikey" \
-	--data "format=json" \
-	http://ws.audioscrobbler.com/2.0 )
+			--data-urlencode "artist=$ARTIST" \
+			--data-urlencode "$param" \
+			--data "$method" \
+			--data "api_key=$apikey" \
+			--data "format=json" \
+			http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 && $data ]]; then
 	[[ $artist_title ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
 	[[ $album ]] && image=$( jq -r '.image // empty' <<< $album )

@@ -210,16 +210,15 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	fi
 	fileconf=/etc/spotifyd.conf
 	hw0=$( getVar device $fileconf )
-	mixer0=$( getVar mixer $fileconf )
-	if [[ $hw0 != $hwspotifyd || $mixer0 != $mixer ]]; then
+	if [[ $hw0 != $hwspotifyd ]]; then
 #--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
-control = "'$hwspotifyd'"
-mixer = "'$mixer'"'
-		[[ $mixerno ]] && CONF=$( grep -v ^mixer <<< $CONF )
+control = "'$hwspotifyd'"'
+			[[ ! $mixerno ]] && CONF+='
+mixer = "hw"'
 		fi
 #---------------<
 ######## >

@@ -2424,7 +2424,7 @@ var UTIL      = {
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		COMMON.statusToggle( 'refresh' );
-		UTIL.refresh();
+		if ( ! V.library ) UTIL.refresh();
 		DISPLAY.controls();
 	}
 	, switchPage      : page => {

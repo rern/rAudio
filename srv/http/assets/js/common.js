@@ -1247,11 +1247,11 @@ var COMMON    = {
 			V.debug = false;
 			REFRESHDATA();
 			$( '#debug' ).removeClass( 'active' );
-			console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+			console.log( '\x1B[32mDebug\x1B[0m Disabled' );
 		} else {
 			V.debug = true;
 			$( '#debug' ).addClass( 'active' );
-			console.log( '\x1B[36mDebug\x1B[0m Block: send - Show: command, pushed data' );
+			console.log( '\x1B[31mDebug\x1B[0m Show commands but not send to server' );
 		}
 	}
 	, debugConsole  : data => {
@@ -1636,10 +1636,12 @@ var COMMON    = {
 			$data
 				.html( COMMON.json.highlight( S ) )
 				.removeClass( 'hide' );
+			$( '.helphead' ).addClass( 'hide' );
 		} else {
 			$data
 				.empty()
 				.addClass( 'hide' );
+			$( '.helphead' ).removeClass( 'hide' );
 		}
 	}
 }
@@ -1804,6 +1806,8 @@ $( '#debug' ).on( 'click', function() {
 		COMMON.debug( 'disable' );
 		return
 	}
+	
+	if ( ! $( '#data' ).hasClass( 'hide' ) ) return
 	
 	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {

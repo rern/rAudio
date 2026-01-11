@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1754923208' );
+	src         : url( '/assets/fonts/rern.woff2?v=1767583738' );
 }
 @font-face {
 	font-family : Lato;
@@ -153,6 +153,7 @@ i {
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
 .i-minus::before           { content: '\F518' }
+.i-monitor::before         { content: '\F577' }
 .i-mpd::before,
 .i-player::before          { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
@@ -224,7 +225,6 @@ i {
 .i-stop::before            { content: '\F502' }
 .i-stoptimer::before       { content: '\F570' }
 .i-tag::before             { content: '\F55B' }
-.i-tft::before             { content: '\F577' }
 .i-templimit::before       { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
 .i-track::before           { content: '\F54C' }
@@ -394,14 +394,13 @@ codered  {
 	bottom: 0;
 	width: 40px;
 	line-height: 40px;
-	font-size: 24px;
+	font-size: 40px;
 	text-align: center;
 	color: transparent;
 	z-index: 110;
 }
 #debug.active {
-	color: #000;
-	background : #fff;
+	color: #f00;
 }
 .splash {
 	background: #000000 !important;
