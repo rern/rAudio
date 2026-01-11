@@ -7,9 +7,8 @@ alias=r1
 # 20260101
 [[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
 
-file=/boot/cmdline.txt
-if [[ ! -e /boot/kernel.img ]] && grep -q ipv6.disable $file; then
-	sed -i 's/ipv6.disable=1 //' $file
+if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
+	sed -i 's/ipv6.disable=1 //' /boot/cmdline.txt
 	pacman -Sy --needed --noconfirm spotifyd
 	file=/etc/spotifyd.conf
 	! grep -q '^mixer = "hw"' $file && sed -i -E 's/^(mixer = ).*/\1"hw"/' $file
