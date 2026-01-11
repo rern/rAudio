@@ -1,15 +1,41 @@
 r A u d i o
 ---
-Audio player for 
-- **Raspberry Pi**s:
-	- 64bit: `5` `4` `3` `2` `Zero 2`
-	- 32bit: `2 (BCM2836)`
-	- Legacy: `1` `Zero`
-- BeagleBone Black
-- CubieBoard2
+- Audio player for:
+	- **Raspberry Pi**s:
+		- 64bit: `5` `4` `3` `2 (BCM2837)` `Zero 2`
+		- 32bit: `3` `2`
+		- Legacy: `1` `Zero`
+	- BeagleBone Black
+	- CubieBoard2
+- [Features](#features)
+- [Supported devices](#supported-devices)
+- [Image files](#image-files)
+- [How-to](#how-to)
+- [Tips](#tips)
+- [Q&A](#qa)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
-
+### Features
+- Player - Local files
+	- USB HDD
+	- USB Audio CD
+	- NAS
+	- SD card
+- Renderers / Clients - with metadata and coverarts
+	- AirPlay
+	- Bluetooth audio receiver
+	- SnapClient - Multiroom audio client
+	- Spotify Connect
+	- DLNA / UPnP
+- Streamers
+	- Bluetooth audio sender
+	- HTTP (no metadata)
+	- SnapServer - Multiroom audio client
+	- Web Radio
+	- DAB Radio (not on RPi Zero and 1)
+- Digital Signal Processors
+	- CamillaDSP (not on RPi Zero and 1)
+	- Equalizer
 - Based on [Arch Linux Arm](https://archlinuxarm.org)
 - Control via GUI
 	- Remote with any browsers
@@ -34,27 +60,6 @@ Audio player for
 - File sharing - `samba`
 - Easy update and extra features with Addons
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
--
-- Local files
-	- USB HDD
-	- USB Audio CD
-	- NAS
-	- SD card
-- Renderers / Clients - with metadata and coverarts
-	- AirPlay
-	- Bluetooth audio receiver
-	- SnapClient - Multiroom audio client
-	- Spotify Connect
-	- DLNA / UPnP
-- Streamers
-	- Bluetooth audio sender
-	- HTTP (no metadata)
-	- SnapServer - Multiroom audio client
-	- Web Radio
-	- DAB Radio (not on RPi Zero and 1)
-- Digital Signal Processors
-	- CamillaDSP (not on RPi Zero and 1)
-	- Equalizer
 
 ### Supported devices
 - Bluetooth:
@@ -76,42 +81,38 @@ Audio player for
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (LEDs+Rs)
 
-### Default root password
-- `ros`
-- If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
-
-### Q&A
-- [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
-
 ### Image files
-- Raspberry Pi - [**Release i20250627**](https://github.com/rern/rAudio/releases/tag/i20250627)
-- BeagleBone Black - [DIY](https://github.com/rern/rAudio/discussions/299)
-- CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
-
-### DIY Image file
-- [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
+- Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
+- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
+- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
+- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
+  
+Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
 
 ### How-to
 - Write an image file to a micro SD card (8GB or more):
-	- Install **Raspberry Pi Imager**
-		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Manjaro: `pacman -Sy rpi-imager`
-		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
-	- Download an image file
+	- Install:
+		- [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+		- Linux comand line:
+    		- `apt install rpi-imager`
+    		- `pacman -Sy rpi-imager`
+			- [`make install`](https://github.com/raspberrypi/rpi-imager)
+	- Download an [image file](#image-files)
 	- **Raspberry Pi Imager:**
-		- `CHOOSE DEVICE` - (No need)
-		- `CHOOSE OS`
+		- Device - (No need)
+		- OS:
     		- Select "Use custom" (bottom of the list)
         	- Select the image file
-		- `CHOOSE STORAGE`:
-			- Select SD card - normal boot
-			- Select USB drive - boot from USB drive without SD card
+           	- `NEXT`
+		- Storage:
+			- Select target SD card - normal
+			- Select target USB drive - boot from USB drive without SD card
 				- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
 				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 				- Should be used only when USB drive is faster than SD card.
-		- `NEXT`
-    		- `NO` customization settings
-        	- `YES` continue
+			- `NEXT`
+    	- Writing:
+        	- `... ERASE AND WRITE`
     	- On Windows - To ensure filesystem set properly:
        		- `CANCEL WRITE` when reach at least 2% on 1st write.
            	- Continue with `NEXT` again and let the writing finish.
@@ -150,8 +151,9 @@ Audio player for
 		- Create a blank file `nolocalbrowser` in `BOOT`
 		- (or disable `Browser` in Settings > Features after boot)
 	- Display / Monitor: (optional - Local browser enabled by default)
-		- Connect before boot
+		- Connect before boot to ensure proper detection
 		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
+		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
@@ -177,16 +179,12 @@ Audio player for
 - If not connected, temporarily connect wired LAN then remove after Wi-Fi setup successfully.
 - Still no - Download the image file and start over again
 
-
 ### Tips
 - Best sound quality:
 	- Settings > Player > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
 	- Settings > Features
-	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
-		- After system upgrade `pacman -Syu` which kernel `linux-raspberrypi` also upgraded.
-		- On 64bit version - Very likely, kernel upgraded or not.
 - Full screen UI
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
    		- APK for obsolete Android: [rAudio app](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio.apk)
@@ -230,3 +228,6 @@ Audio player for
 		- Create and compress image file
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
+
+### Q&A
+- [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports

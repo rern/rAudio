@@ -14,6 +14,7 @@ if [[ ! -e /boot/kernel.img ]] && grep -q ipv6.disable $file; then
 	file=/etc/spotifyd.conf
 	! grep -q '^mixer = "hw"' $file && sed -i -E 's/^(mixer = ).*/\1"hw"/' $file
 	echo ', "spotifyd": "Spotify"' >> $dirshm/reboot
+
 fi
 
 # 20251109
