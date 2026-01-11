@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260101
+# 20260111
 [[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
 
 if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
