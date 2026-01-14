@@ -427,7 +427,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	if ( ! cmd ) return
 
 	var $li = $( 'li.active' );
-	if ( V.bluetooth ) {
+	if ( V.bluetooth && cmd !== 'info' ) {
 		BT( cmd, $li );
 		return
 	}
