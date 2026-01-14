@@ -270,7 +270,6 @@ elif [[ $stream ]]; then
 , "Title"  : "'$Title'"'
 		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( alphaNumeric $Artist$Album )
-			covername=${covername,,}
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart="${onlinefile:9}"
 		fi
@@ -341,7 +340,6 @@ elif [[ $stream ]]; then
 				fi
 				# fetched coverart
 				covername=$( alphaNumeric "$Artist${Title/ (*}" ) # remove '... (extra tag)'
-				covername=${covername,,}
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart="${coverfile:9}"

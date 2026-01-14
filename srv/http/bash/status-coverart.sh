@@ -7,7 +7,7 @@ args2var "$1"
 if playerActive upnp; then
 	upnp=1
 	name=$( alphaNumeric $ARTIST$ALBUM )
-	localfile=$dirshm/local/${name,,}
+	localfile=$dirshm/local/$name
 else
 	filename=$( basename "$FILE" )
 	path="/mnt/MPD/$FILE"
@@ -27,7 +27,7 @@ embeddedfile=$dirshm/embedded/$embeddedname
 # --------------------------------------------------------------------
 # found online
 covername=$( alphaNumeric $ARTIST$ALBUM )
-onlinefile=$( ls -X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head -1 )
+onlinefile=$( ls -X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 # --------------------------------------------------------------------
 ##### cover file

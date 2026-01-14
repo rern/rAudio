@@ -37,7 +37,7 @@ fi
 #	k2=v2
 #	...
 alphaNumeric() {
-	tr -dc [:alnum:] <<< $@
+	tr -dc [:alnum:] <<< ${@,,}
 }
 appendSortUnique() {
 	local data file lines
