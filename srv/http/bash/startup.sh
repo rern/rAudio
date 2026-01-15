@@ -138,7 +138,9 @@ if [[ $landevice && $( ifconfig $landevice | grep inet ) ]]; then # lan ip
 	wlanonboarddisable=1
 elif (( $( rfkill | grep -c wlan ) > 1 )); then # usb wifi
 	profile=$( netctl list | grep '^\*' | sed 's/^\* //' )
-	if [[ $( getVar Interface "/etc/netctl/$profile" ) != wlan0 ]]; then
+	if [[ $( getVar Interface "/etc/netctl/$profile" ) == wlan0 ]]; then # connected with wlan0
+		echo wlan0 > $dirshm/wlan
+	else
 		wlanonboarddisable=1
 	fi
 fi
