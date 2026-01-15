@@ -18,6 +18,9 @@ $( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
 bluetooth )
 	echo "\
+<bll># rfkill | grep bluetooth</bll>
+$( rfkill | grep bluetooth )
+
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
@@ -210,10 +213,15 @@ $( iw dev )
 $( iwconfig $wlandev )"
 	;;
 wlan )
-	echo '<bll># iw reg get</bll>'
-	iw reg get
-	echo '<bll># iw list</bll>'
-	iw list
+	echo "\
+<bll># rfkill | grep wlan</bll>
+$( rfkill | grep wlan )
+
+<bll># iw reg get</bll>
+$( iw reg get )
+
+<bll># iw list</bll>
+$( iw list )"
 	;;
 * )
 	$dirsettings/data-service.sh $1
