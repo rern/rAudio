@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-wlandev=$( $dirsettings/networks.sh wlandevice )
+wlanDevice
 
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -40,9 +40,10 @@ if [[ -e /boot/nolocalbrowser ]]; then
 	localBrowserOff
 fi
 
-if [[ $wlandev ]]; then
+if [[ -e $dirshm/wlan ]]; then
 	if [[ -e /boot/wifi ]]; then
 		ssid=$( getVar ESSID /boot/wifi )
+		wlandev=$( < $dirshm/wlan )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
@@ -115,7 +116,7 @@ auto
 CMD TIMEZONE'
 		fi
 	else
-		if [[ $wlandev && ! $ap ]]; then
+		if [[ -e $dirshm/wlan && ! $ap ]]; then
 			if [[ $netctllist ]]; then
 				if [[ ! -e $dirsystem/wlannoap ]]; then
 					ap=1
@@ -133,8 +134,16 @@ if [[ $ap ]]; then
 	$dirsettings/features.sh iwctlap
 fi
 landevice=$( lanDevice )
-if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+if [[ $landevice && $( ifconfig $landevice | grep inet ) ]]; then # lan ip
+	wlanonboarddisable=1
+elif (( $( rfkill | grep -c wlan ) > 1 )); then # usb wifi
+	profile=$( netctl list | grep '^\*' | sed 's/^\* //' )
+	if [[ $( getVar Interface "/etc/netctl/$profile" ) != wlan0 ]]; then
+		wlanonboarddisable=1
+	fi
+fi
+if [[ $wlanonboarddisable ]]; then
+	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 if [[ -e $dirsystem/btreceiver ]]; then

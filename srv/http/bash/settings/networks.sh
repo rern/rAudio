@@ -26,16 +26,6 @@ netctlSwitch() {
 		fi
 	fi
 }
-wlanDevice() {
-	local wlandev
-	if test -e /sys/class/net/w*; then
-		wlandev=$( ls /sys/class/net | grep ^w )
-		echo $wlandev | tee $dirshm/wlan
-		( sleep 1 && iw $wlandev set power_save off ) &
-	else
-		rm -f $dirshm/wlan
-	fi
-}
 
 case $CMD in
 
@@ -157,9 +147,6 @@ usbwifioff )
 	wlanDevice
 	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
-	;;
-wlandevice )
-	wlanDevice
 	;;
 	
 esac

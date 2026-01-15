@@ -463,8 +463,7 @@ wlan )
 			iw reg set $REGDOM
 		fi
 	else
-		lsmod | grep -q brcmfmac_cyw && mod=cyw || mod=wcc
-		rmmod brcmfmac_$mod brcmfmac &> /dev/null
+		wlanOnboardDisable
 	fi
 	pushRefresh
 	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false
