@@ -17,12 +17,14 @@ audio )
 $( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
 bluetooth )
+	cmd="rfkill | grep '^I\|bluetooth'"
+	cmd1='bluetoothctl show'
 	echo "\
-<bll># rfkill | grep bluetooth</bll>
-$( rfkill | grep bluetooth )
+<bll># $cmd</bll>
+$( eval $cmd )
 
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show )"
+<bll># $cmd1</bll>
+$( eval $cmd1 )"
 	;;
 device )
 	card=$( getVar card $dirshm/output )
@@ -35,37 +37,40 @@ device )
 $data"
 	;;
 infobluetooth )
+	cmd="bluetoothctl info $2"
 	echo "\
-<bll># bluetoothctl info $2</bll>
-$( bluetoothctl info $2 )"
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 infocamilla | configuration )
 	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
+	cmd="cat $file"
 	echo "\
-<bll># cat $file</bll>
-$( cat "$file" )"
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 infostorage )
 	DEV=$2
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
-		echo "\
-<bll># for c in cid csd scr; do mmc \$c read $dev; done</bll>
-$( for c in cid csd scr; do mmc $c read $dev; done )
-"
+		cmd="for c in cid csd scr; do mmc \$c read $dev; done"
 	else
 		dev=$( tr -d 0-9 <<< $DEV )
-		data="\
-<bll># lsblk -no vendor,model $dev</bll>
-$( lsblk -no vendor,model $dev )"
+		cmd="lsblk -no vendor,model $dev"
 		param=$( hdparm -I $DEV )
 		if [[ $param ]]; then
-			data+="
+			data="
+
 <bll># hdparm -I $DEV</bll>
 $( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
 		fi
-		echo "$data"
 	fi
+	status="\
+<bll># $cmd</bll>
+$( eval $cmd )"
+	[[ $data ]] && status+="
+$data"
+	echo "$status"
 	;;
 infowlan )
 	if [[ $2 ]]; then
@@ -74,10 +79,11 @@ infowlan )
 			down=1
 			ifconfig $wlandev up
 		fi
-		data=$( iw dev $wlandev scan ssid "$2" )
+		cmd="iw dev $wlandev scan ssid \"$2\""
+		data=$( eval $cmd )
 		[[ ! $data ]] && data='(Not found)'
 		echo "\
-<bll># iw dev $wlandev scan ssid \"$2\"</bll>
+<bll># $cmd</bll>
 $data"
 		[[ $down ]] && ifconfig $wlandev down
 	else
@@ -86,9 +92,10 @@ $data"
 	;;
 lan )
 	lan=$( lanDevice )
+	cmd="ifconfig $lan"
 	echo "\
-<bll># ifconfig $lan</bll>
-$( ifconfig $lan )"
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 mpdignore )
 	files=$( < $dirmpd/mpdignorelist )
@@ -113,63 +120,77 @@ output )
 					| head -1 )
 	[[ $bluealsa ]] && devices="\
 <bll># amixer -D bluealsa scontrols</bll>
-$bluealsa"$'\n'$'\n'
-	devices+="\
-<bll># cat /proc/asound/cards | grep ]</bll>
-$( cat /proc/asound/cards | grep ] )
+$bluealsa"
+	cmd='cat /proc/asound/cards | grep ]'
+	cmd1='aplay -l | grep ^card'
+	devices+="
 
-<bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card )"$'\n'
+<bll># $cmd</bll>
+$( eval $cmd )
+
+<bll># $cmd1</bll>
+$( eval $cmd1 )"
 	if [[ ! -e $dirsystem/camilladsp ]]; then
+		cmd2='amixer scontrols'
 		devices+="
-<bll># amixer scontrols</bll>"$'\n'
+
+<bll># $cmd2</bll>"
 		card=$( < $dirsystem/asoundcard )
 		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 		if [[ $aplayname != RPi-Cirrus ]]; then
-			mixers=$( amixer scontrols )
+			mixers=$( $cmd2 )
 			[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
-			devices+="$mixers"$'\n'
+			devices+="
+$mixers"
 		else
-			devices+='(custom controls)'$'\n'
+			devices+="
+(custom controls)"
 		fi
 	fi
+	cmd3='cat /etc/asound.conf'
 	devices+="
-<bll># cat /etc/asound.conf</bll>
-$( < /etc/asound.conf )"
+
+<bll># $cmd3</bll>
+$( eval $cmd3 )"
 	echo "$devices"
 	;;
 status )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 # --------------------------------------------------------------------
-	startupfinished=$( systemd-analyze | head -1 )
+	cmd='systemd-analyze | head -1'
+	startupfinished=$( eval $cmd )
 	if grep -q 'Startup finished' <<< $startupfinished; then
+		cmd1='journalctl -b'
 		echo "\
-<bll># systemd-analyze | head -1</bll>
+<bll># $cmd</bll>
 $startupfinished
 
-<bll># journalctl -b</bll>
-$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
+<bll># $cmd1</bll>
+$( eval $cmd1 | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	else
-		journalctl -b
+		eval $cmd1
 	fi
 	;;
 storage )
+	cmd='cat /etc/fstab'
 	echo "\
-<bll># cat /etc/fstab</bll>
-$( < /etc/fstab )"
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 system )
+	cmd='cat /boot/cmdline.txt'
 	config="\
-<bll># cat /boot/cmdline.txt</bll>
-$( < /boot/cmdline.txt )
+<bll># $cmd</bll>
+$( eval $cmd )
 
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )"
-	ignorepkg=$( grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf )
+	cmd1="grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf"
+	ignorepkg=$( eval $cmd1 )
 	[[ $ignorepkg ]] && config+="
 	
-<bll># grep ^IgnorePkg /etc/pacman.conf</bll>
+<bll># $cmd1</bll>
 $ignorepkg"
 	filemodule=/etc/modules-load.d/raspberrypi.conf
 	module=$( grep -v snd-bcm2835 $filemodule )
@@ -179,49 +200,52 @@ $ignorepkg"
 <bll># cat $filemodule</bll>
 $module"
 		devi2c=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		[[ $devi2c ]] && config+="
+		if [[ $devi2c ]]; then
+			cmd2="i2cdetect -y $devi2c"
+			config+="
 		
-<bll># i2cdetect -y $devi2c</bll>
-$( i2cdetect -y $devi2c )"
+<bll># $cmd2</bll>
+$( eval $cmd2 )"
+		fi
 	fi
 	echo "$config"
 	;;
 timezone )
+	cmd=timedatectl
 	echo "\
-<bll># timedatectl</bll>
-$( timedatectl )
+<bll># $cmd</bll>
+$( eval $cmd )
 
 <bll># cat /etc/systemd/timesyncd.conf</bll>
 $( grep -v ^# /etc/systemd/timesyncd.conf | awk NF )
 
 <bll># cat /etc/pacman.d/mirrorlist</bll>
-$( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )
-"
-	;;
-webui )
-	echo "\
-<bll># avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print \$7\": \"\$8}'</bll>
-$( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$8}' )"
+$( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )"
 	;;
 wl )
 	wlandev=$( < $dirshm/wlan )
+	cmd='iw dev'
+	cmd2="iwconfig $wlandev"
 	echo "\
-<bll># iw dev</bll>
-$( iw dev )
+<bll># $cmd</bll>
+$( eval $cmd )
 
-<bll># iwconfig $wlandev</bll>
-$( iwconfig $wlandev )"
+<bll># $cmd1</bll>
+$( eval $cmd1 )"
 	;;
 wlan )
+	cmd='rfkill | grep wlan'
+	cmd1='iw reg get'
+	cmd2='iw list'
 	echo "\
-<bll># rfkill | grep wlan</bll>
+<bll># $cmd</bll>
 $( rfkill | grep wlan )
 
-<bll># iw reg get</bll>
-$( iw reg get )
+<bll># #cmd1</bll>
+$( eval $cmd1 )
 
-<bll># iw list</bll>
-$( iw list )"
+<bll># $cmd2</bll>
+$( eval $cmd2 )"
 	;;
 * )
 	$dirsettings/data-service.sh $1
