@@ -115,8 +115,18 @@ dtparam=audio=on"
 	;;
 bluetooth )
 	inOutputConf device.*bluealsa && bluealsa=1
+	if [[ -e /boot/kernel8.img ]]; then
+		kernel8=1
+		touch $dirshm/btonoff
+	fi
 	if [[ $ON ]]; then
-		config=$( grep -E -v 'disable-bt' $file_config )
+		if [[ $kernel8 ]]; then
+			modprobe hci_uart btbcm bnep bluetooth
+			rm -f $dirsystem/btdisable
+		else # fix: armv7 bug - rmmod > modprobe
+			config="\
+$( grep -E -v 'disable-bt' $file_config )"
+		fi
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -134,15 +144,20 @@ bluetooth )
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		config="$( < $file_config )
+		systemctl stop bluetooth
+		if [[ $kernel8 ]]; then
+			rmmod hci_uart btbcm bnep bluetooth
+			touch $dirsystem/btdisable
+		else # fix: armv7 bug - rmmod > modprobe
+			config="\
+$( < $file_config )
 dtoverlay=disable-bt"
-		if rfkill | grep -q -m1 bluetooth; then
-			systemctl stop bluetooth
-			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			[[ $bluealsa ]] && $dirsettings/player-conf.sh
 		fi
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
-	configTxt
+	[[ $kernel8 ]] && rm $dirshm/btonoff
+	pushRefresh
 	;;
 bluetoothstart )
 	sleep 3

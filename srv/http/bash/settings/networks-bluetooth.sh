@@ -5,7 +5,7 @@
 # Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
 
-[[ -e /dev/shm/bluetooth_rules ]] && exit # debounce bluetooth.rules
+[[ -e /dev/shm/bluetooth_rules || -e $dirshm/btonoff ]] && exit # debounce bluetooth.rules
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
