@@ -155,8 +155,6 @@ var SWITCH = {
 W.refresh  = data => { // except camilla
 	if ( data.page !== PAGE ) return
 	
-	if ( data.page === 'system' && typeof data.bluetooth !== 'boolean' ) return // debounce - enable bluetooth
-	
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 	
 	clearTimeout( V.debounce );

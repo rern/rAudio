@@ -15,6 +15,8 @@ pushStatus() {
 	status=$( $dirbash/status.sh )
 	pushData mpdplayer "$status"
 	pushRefresh player
+	[[ -e $dirshm/btonoff ]] && return
+# --------------------------------------------------------------------
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 }
