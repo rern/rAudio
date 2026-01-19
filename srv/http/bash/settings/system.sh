@@ -67,13 +67,16 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot '{ "id": "'$CMD'" }'
-		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
-		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
+		configTxtReboot
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
 		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
 	fi
+}
+configTxtReboot() {
+	pushData reboot '{ "id": "'$CMD'" }'
+	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 displayConfigClear() {
 	fbcon='fbcon=map:10 fbcon=font:ProFont6x11'
@@ -114,18 +117,12 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
+	touch $dirshm/btonoff
 	inOutputConf device.*bluealsa && bluealsa=1
-	if [[ -e /boot/kernel8.img ]]; then
-		kernel8=1
-		touch $dirshm/btonoff
-	fi
 	if [[ $ON ]]; then
-		if [[ $kernel8 ]]; then
-			modprobe hci_uart btbcm bnep bluetooth
+		if [[ -e /boot/kernel8.img ]]; then
+			modprobe -a bluetooth bnep btbcm hci_uart
 			rm -f $dirsystem/btdisable
-		else # fix: armv7 bug - rmmod > modprobe
-			config="\
-$( grep -E -v 'disable-bt' $file_config )"
 		fi
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
@@ -143,20 +140,15 @@ $( grep -E -v 'disable-bt' $file_config )"
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
+		[[ ! -e /boot/kernel8.img ]] && configTxtReboot # fix: armv7 module bug
 	else
 		systemctl stop bluetooth
-		if [[ $kernel8 ]]; then
-			rmmod hci_uart btbcm bnep bluetooth
-			touch $dirsystem/btdisable
-		else # fix: armv7 bug - rmmod > modprobe
-			config="\
-$( < $file_config )
-dtoverlay=disable-bt"
-		fi
+		rmmod hci_uart btbcm bnep bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		touch $dirsystem/btdisable
 		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
-	[[ $kernel8 ]] && rm $dirshm/btonoff
+	rm $dirshm/btonoff
 	pushRefresh
 	;;
 bluetoothstart )

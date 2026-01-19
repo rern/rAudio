@@ -148,15 +148,15 @@ if [[ $wlanonboarddisable ]]; then
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
+if [[ ! -e $dirsystem/btdisable ]]; then
+	modprobe -a bluetooth bnep btbcm hci_uart
+fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
 	$dirsettings/networks-bluetooth.sh connect $mac # include - player-conf.sh
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 else
-	if [[ -e $dirsystem/btdisable ]]; then
-		rmmod hci_uart btbcm bnep bluetooth
-	fi
 	$dirsettings/player-conf.sh
 fi
 
