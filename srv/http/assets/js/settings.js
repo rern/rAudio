@@ -155,8 +155,13 @@ var SWITCH = {
 W.refresh  = data => { // except camilla
 	if ( data.page !== PAGE ) return
 	
+	if ( data.page === 'system'
+		&& typeof data.bluetooth !== 'boolean'
+		&& $( '#bluetooth' ).hasClass( 'disabled' )
+	) return
+	
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
-		
+	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
