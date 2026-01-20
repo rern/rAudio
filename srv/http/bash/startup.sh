@@ -135,7 +135,7 @@ if [[ $ap ]]; then
 fi
 landevice=$( lanDevice )
 if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 if [[ ! -e $dirsystem/btdisable ]]; then
