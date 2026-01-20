@@ -149,7 +149,7 @@ if [[ ! -e $dirsystem/btdisable ]]; then
 		fi
 	fi
 fi
-if systemctl -q is-active mpd; then
+if ! systemctl -q is-active mpd; then
 	$dirsettings/player-conf.sh
 fi
 if [[ -e $dirsystem/volumelimit ]]; then
