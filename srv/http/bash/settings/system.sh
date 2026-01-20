@@ -67,16 +67,13 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		configTxtReboot
+		pushData reboot '{ "id": "'$CMD'" }'
+		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
 		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
 	fi
-}
-configTxtReboot() {
-	pushData reboot '{ "id": "'$CMD'" }'
-	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
-	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 displayConfigClear() {
 	fbcon='fbcon=map:10 fbcon=font:ProFont6x11'
@@ -120,43 +117,37 @@ bluetooth )
 	touch $dirshm/btonoff
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
-		if [[ -e /boot/kernel8.img ]]; then
+		rm -f $dirsystem/btdisable
+		btdiscoverable=$dirsystem/btdiscoverable
+		[[ $DISCOVERABLE ]] && touch $btdiscoverable || rm $btdiscoverable
+		btformat=$dirsystem/btformat
+		[[ -e $btformat ]] && format=true
+		[[ $FORMAT ]] && touch $btformat || rm -f $btformat
+		if ! lsmod | grep -q bluetooth; then
 			modprobe -a bluetooth bnep btbcm hci_uart
-			rm -f $dirsystem/btdisable
+			btmgmt power on # needed if not aarch64
+			btmgmt discov $TF
 		fi
-		if [[ $DISCOVERABLE ]]; then
-			yesno=yes
-			touch $dirsystem/btdiscoverable
-		else
-			yesno=no
-			rm $dirsystem/btdiscoverable
-		fi
-		if ls -l /sys/class/bluetooth 2> /dev/null | grep -q -m1 serial; then
-			systemctl start bluetooth
-			bluetoothctl discoverable $yesno &> /dev/null
-			[[ ! $bluealsa ]] && $dirsettings/player-conf.sh
-			rfkill | grep -q -m1 bluetooth && pushData refresh '{ "page": "networks", "activebt": true }'
-		fi
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
-		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
-		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
-		[[ ! -e /boot/kernel8.img ]] && configTxtReboot # fix: armv7 module bug
+		systemctl start bluetooth
+		[[ ! $bluealsa || ( $FORMAT != $format ) ]] && $dirsettings/player-conf.sh
 	else
-		systemctl stop bluetooth
-		rmmod hci_uart btbcm bnep bluetooth
-		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		touch $dirsystem/btdisable
+		systemctl stop bluetooth
+		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
+	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
+	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
 	rm $dirshm/btonoff
 	pushRefresh
 	;;
 bluetoothstart )
 	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
-	bluetoothctl discoverable $yesno &> /dev/null
 	bluetoothctl discoverable-timeout 0 &> /dev/null
-	bluetoothctl pairable yes &> /dev/null
+	[[ -e $dirsystem/btdiscoverable ]] && discoverable=yes || discoverable=no
+	btmgmt discov $discoverable &> /dev/null
+	btmgmt pairable yes &> /dev/null
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd

@@ -99,7 +99,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
+	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
 	mpc -q clear
