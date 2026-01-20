@@ -139,11 +139,17 @@ bluetooth )
 		if [[ $bluealsa ]]; then
 			btformat=$dirsystem/btformat
 			if [[ $FORMAT ]]; then
-				[[ ! -e $btformat ]] && restaerplayer=1 && touch $btformat
+				if [[ ! -e $btformat ]]; then
+					touch $btformat
+					$dirsettings/player-conf.sh
+				fi
 			else
-				[[ -e $btformat ]] && restaerplayer=1 && rm -f $btformat
+				if [[ -e $btformat ]]; then
+					restartplayer=1
+					rm -f $btformat
+					$dirsettings/player-conf.sh
+				fi
 			fi
-			[[ $bluealsa && $restaerplayer ]] && $dirsettings/player-conf.sh
 		fi
 	else
 		touch $dirsystem/btdisable

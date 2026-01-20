@@ -357,7 +357,7 @@ function renderPage() {
 		$( '#device' )
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
-		if ( S.mixers ) {
+		if ( S.mixers && ! S.bluetooth ) {
 			$( '#mixer' )
 				.html( COMMON.select.option( S.mixers ) )
 				.val( S.output.mixer );
