@@ -57,6 +57,9 @@ CMD ESSID"
 fi
 # pre-configure <<<-----------------------------------------------------------
 
+if [[ ! -e $dirsystem/btdisable ]]; then
+	modprobe -a bluetooth bnep btbcm hci_uart
+fi
 logoLcdOled
 
 if [[ -e $dirsystem/soundprofile ]]; then
@@ -138,15 +141,12 @@ if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | gr
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
-if [[ ! -e $dirsystem/btdisable ]]; then
-	modprobe -a bluetooth bnep btbcm hci_uart
-	if [[ -e $dirsystem/btreceiver ]]; then
-		mac=$( < $dirsystem/btreceiver )
-		rm $dirsystem/btreceiver
-		$dirsettings/networks-bluetooth.sh connect $mac
-		if [[ -e $dirsystem/camilladsp ]]; then
-			$dirsettings/camilla-bluetooth.sh btreceiver
-		fi
+if [[ -e $dirsystem/btreceiver ]]; then
+	mac=$( < $dirsystem/btreceiver )
+	rm $dirsystem/btreceiver
+	$dirsettings/networks-bluetooth.sh connect $mac
+	if [[ -e $dirsystem/camilladsp ]]; then
+		$dirsettings/camilla-bluetooth.sh btreceiver
 	fi
 fi
 if ! systemctl -q is-active mpd; then
