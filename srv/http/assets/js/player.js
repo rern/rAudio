@@ -141,8 +141,7 @@ audio_output {
 		} );
 	}
 	, mixer        : () => {
-		var bluealsa = SW.id.slice( -1 ) === 'a';
-		if ( bluealsa ) {
+		if ( S.bluetooth ) {
 			var control = S.btmixer.replace( / *-* A2DP/, '' );
 			var cmd     = [ 'volume', S.btmixer, '', S.volume ];
 			var cmd0db  = 'volume0dbbt';
@@ -357,7 +356,7 @@ function renderPage() {
 		$( '#device' )
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
-		if ( S.mixers && ! S.bluetooth ) {
+		if ( S.mixers ) {
 			$( '#mixer' )
 				.html( COMMON.select.option( S.mixers ) )
 				.val( S.output.mixer );
