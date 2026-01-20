@@ -114,45 +114,50 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
+	touch $dirshm/btonoff
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
-		config="\
-$( grep -E -v 'disable-bt' $file_config )"
+		rm -f $dirsystem/btdisable
+		btdiscoverable=$dirsystem/btdiscoverable
 		if [[ $DISCOVERABLE ]]; then
-			yesno=yes
-			touch $dirsystem/btdiscoverable
+			discov=yes
+			touch $btdiscoverable
 		else
-			yesno=no
-			rm $dirsystem/btdiscoverable
+			discov=no
+			rm -f $btdiscoverable
 		fi
-		if [[ -d /sys/class/bluetooth/hci0 ]]; then
+		if ! systemctl -q is-active bluetooth; then
+			modprobe -a bluetooth bnep btbcm hci_uart
+			if [[ ! -e /boot/kernel8.img ]]; then
+				sleep 2
+				btmgmt power on &> /dev/null
+			fi
+			sleep 1
 			systemctl start bluetooth
-			btmgmt discov $yesno &> /dev/null
 		fi
+		bluetoothctl discoverable $discov &> /dev/null
 		btformat=$dirsystem/btformat
-		[[ -e $btformat  ]] && prevbtformat=true
+		[[ -e $btformat ]] && format=true
 		[[ $FORMAT ]] && touch $btformat || rm -f $btformat
-		[[ ! $bluealsa || ( $FORMAT != $prevbtformat ) ]] && $dirsettings/player-conf.sh
+		[[ ! $bluealsa || ( $FORMAT != $format ) ]] && $dirsettings/player-conf.sh
 	else
-		config="\
-$( < $file_config )
-dtoverlay=disable-bt"
-		if rfkill | grep -q -m1 bluetooth; then
-			systemctl stop bluetooth
-			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			[[ $bluealsa ]] && $dirsettings/player-conf.sh
-		fi
+		touch $dirsystem/btdisable
+		systemctl stop bluetooth
+		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
-	configTxt
+	rm $dirshm/btonoff
+	pushRefresh
 	;;
 bluetoothstart )
 	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
-	btmgmt discov $yesno &> /dev/null
-	btmgmt pairable yes &> /dev/null
+	[[ -e $dirsystem/btdiscoverable ]] && discov=yes || discov=no
+	bluetoothctl discoverable $discov &> /dev/null
 	bluetoothctl discoverable-timeout 0 &> /dev/null
+	bluetoothctl pairable yes &> /dev/null
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
@@ -466,7 +471,7 @@ wlan )
 			iw reg set $REGDOM
 		fi
 	else
-		wlanOnboardDisable
+		rmmod brcmfmac_wcc brcmfmac &> /dev/null
 	fi
 	pushRefresh
 	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false

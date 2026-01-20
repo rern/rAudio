@@ -42,8 +42,8 @@ fi
 
 if [[ -e $dirshm/wlan ]]; then
 	if [[ -e /boot/wifi ]]; then
-		ssid=$( getVar ESSID /boot/wifi )
 		wlandev=$( < $dirshm/wlan )
+		ssid=$( getVar ESSID /boot/wifi )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
@@ -134,29 +134,24 @@ if [[ $ap ]]; then
 	$dirsettings/features.sh iwctlap
 fi
 landevice=$( lanDevice )
-if [[ $landevice && $( ifconfig $landevice | grep inet ) ]]; then # lan ip
-	wlanonboarddisable=1
-elif (( $( rfkill | grep -c wlan ) > 1 )); then # usb wifi
-	profile=$( netctl list | grep '^\*' | sed 's/^\* //' )
-	if [[ $( getVar Interface "/etc/netctl/$profile" ) == wlan0 ]]; then # connected with wlan0
-		echo wlan0 > $dirshm/wlan
-	else
-		wlanonboarddisable=1
-	fi
-fi
-if [[ $wlanonboarddisable ]]; then
-	wlanOnboardDisable
+if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
-if [[ -e $dirsystem/btreceiver ]]; then
-	mac=$( < $dirsystem/btreceiver )
-	rm $dirsystem/btreceiver
-	$dirsettings/networks-bluetooth.sh connect $mac # include - player-conf.sh
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
-else
+if [[ ! -e $dirsystem/btdisable ]]; then
+	modprobe -a bluetooth bnep btbcm hci_uart
+	if [[ -e $dirsystem/btreceiver ]]; then
+		mac=$( < $dirsystem/btreceiver )
+		rm $dirsystem/btreceiver
+		$dirsettings/networks-bluetooth.sh connect $mac
+		if [[ -e $dirsystem/camilladsp ]]; then
+			$dirsettings/camilla-bluetooth.sh btreceiver
+		fi
+	fi
+fi
+if systemctl -q is-active mpd; then
 	$dirsettings/player-conf.sh
 fi
-
 if [[ -e $dirsystem/volumelimit ]]; then
 	volumeLimit startup
 fi
