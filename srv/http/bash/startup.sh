@@ -148,9 +148,6 @@ if [[ $wlanonboarddisable ]]; then
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
-if [[ ! -e $dirsystem/btdisable ]]; then
-	modprobe -a bluetooth bnep btbcm hci_uart
-fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver

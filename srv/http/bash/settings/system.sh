@@ -114,40 +114,44 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	touch $dirshm/btonoff
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
-		rm -f $dirsystem/btdisable
-		btdiscoverable=$dirsystem/btdiscoverable
-		[[ $DISCOVERABLE ]] && touch $btdiscoverable || rm $btdiscoverable
-		btformat=$dirsystem/btformat
-		[[ -e $btformat ]] && format=true
-		[[ $FORMAT ]] && touch $btformat || rm -f $btformat
-		if ! lsmod | grep -q bluetooth; then
-			modprobe -a bluetooth bnep btbcm hci_uart
-			btmgmt power on # needed if not aarch64
-			btmgmt discov $TF
+		config="\
+$( grep -E -v 'disable-bt' $file_config )"
+		if [[ $DISCOVERABLE ]]; then
+			yesno=yes
+			touch $dirsystem/btdiscoverable
+		else
+			yesno=no
+			rm $dirsystem/btdiscoverable
 		fi
-		systemctl start bluetooth
-		[[ ! $bluealsa || ( $FORMAT != $format ) ]] && $dirsettings/player-conf.sh
+		if [[ -d /sys/class/bluetooth/hci0 ]]; then
+			systemctl start bluetooth
+			btmgmt discov $yesno &> /dev/null
+		fi
+		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
+		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
+		[[ ! $bluealsa || ( $FORMAT != $prevbtformat ) ]] && $dirsettings/player-conf.sh
 	else
-		touch $dirsystem/btdisable
-		systemctl stop bluetooth
-		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
-		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		[[ $bluealsa ]] && $dirsettings/player-conf.sh
+		config="\
+$( < $file_config )
+dtoverlay=disable-bt"
+		if rfkill | grep -q -m1 bluetooth; then
+			systemctl stop bluetooth
+			rm -f $dirshm/{btdevice,btreceiver,btsender}
+			[[ $bluealsa ]] && $dirsettings/player-conf.sh
+		fi
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
-	rm $dirshm/btonoff
-	pushRefresh
+	configTxt
 	;;
 bluetoothstart )
 	sleep 3
-	bluetoothctl discoverable-timeout 0 &> /dev/null
-	[[ -e $dirsystem/btdiscoverable ]] && discoverable=yes || discoverable=no
-	btmgmt discov $discoverable &> /dev/null
+	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
+	btmgmt discov $yesno &> /dev/null
 	btmgmt pairable yes &> /dev/null
+	bluetoothctl discoverable-timeout 0 &> /dev/null
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
