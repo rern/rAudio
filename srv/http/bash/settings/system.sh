@@ -136,10 +136,15 @@ bluetooth )
 			systemctl start bluetooth
 		fi
 		bluetoothctl discoverable $discov &> /dev/null
-		btformat=$dirsystem/btformat
-		[[ -e $btformat ]] && format=true
-		[[ $FORMAT ]] && touch $btformat || rm -f $btformat
-		[[ ! $bluealsa || ( $FORMAT != $format ) ]] && $dirsettings/player-conf.sh
+		if [[ $bluealsa ]]; then
+			btformat=$dirsystem/btformat
+			if [[ $FORMAT ]]; then
+				[[ ! -e $btformat ]] && restaerplayer=1 && touch $btformat
+			else
+				[[ -e $btformat ]] && restaerplayer=1 && rm -f $btformat
+			fi
+			[[ $bluealsa && $restaerplayer ]] && $dirsettings/player-conf.sh
+		fi
 	else
 		touch $dirsystem/btdisable
 		systemctl stop bluetooth
