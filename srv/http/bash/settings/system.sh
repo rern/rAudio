@@ -129,8 +129,9 @@ $( grep -E -v 'disable-bt' $file_config )"
 			systemctl start bluetooth
 			btmgmt discov $yesno &> /dev/null
 		fi
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
-		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
+		btformat=$dirsystem/btformat
+		[[ -e $btformat  ]] && prevbtformat=true
+		[[ $FORMAT ]] && touch $btformat || rm -f $btformat
 		[[ ! $bluealsa || ( $FORMAT != $prevbtformat ) ]] && $dirsettings/player-conf.sh
 	else
 		config="\
