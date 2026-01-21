@@ -38,8 +38,7 @@ disconnectRemove() {
 	refreshPages
 }
 refreshPages() {
-	pushRefresh features
-	sleep 1
+	sleep 2
 	pushRefresh networks
 	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
 	pushRefresh system

@@ -26,11 +26,6 @@ netctlSwitch() {
 		fi
 	fi
 }
-refreshPages() {
-	notify bluetooth 'USB Bluetooth' $1
-	pushRefresh features
-	pushRefresh
-}
 
 case $CMD in
 
@@ -133,13 +128,15 @@ usbbluetoothon ) # from usbbluetooth.rules
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	sleep 3
-	refreshPages Ready
+	notify bluetooth 'USB Bluetooth' Ready
+	pushRefresh
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
 	[[ -e $dirshm/btonoff ]] && exit # suppress onboard
 # --------------------------------------------------------------------
 	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
-	refreshPages Removed
+	notify bluetooth 'USB Bluetooth' Removed
+	pushRefresh
 	;;
 usbwifion )
 	wlanDevice
