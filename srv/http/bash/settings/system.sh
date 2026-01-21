@@ -136,10 +136,6 @@ bluetooth )
 		fi
 		if ! systemctl -q is-active bluetooth; then
 			modprobe -a bluetooth bnep btbcm hci_uart
-			if [[ ! -e /boot/kernel8.img ]]; then
-				sleep 2
-				btmgmt power on &> /dev/null
-			fi
 			sleep 1
 			systemctl start bluetooth
 		fi
