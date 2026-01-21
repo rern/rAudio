@@ -142,7 +142,7 @@ audio_output {
 	}
 	, mixer        : () => {
 		if ( S.bluetooth ) {
-			var control = S.btmixer.replace( / *-* A2DP/, '' );
+			var control = 'BlueALSA';
 			var cmd     = [ 'volume', S.btmixer, '', S.volume ];
 			var cmd0db  = 'volume0dbbt';
 		} else {
@@ -338,7 +338,7 @@ function renderPage() {
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	if ( S.bluetooth ) {
-		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 	} else {
 		$( '#divbluealsa' ).addClass( 'hide' );
@@ -357,9 +357,7 @@ function renderPage() {
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
 		if ( S.mixers ) {
-			$( '#mixer' )
-				.html( COMMON.select.option( S.mixers ) )
-				.val( S.output.mixer );
+			$( '#mixer' ).html( '<option>BlueALSA</option>' );
 			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume || S.novolume );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {

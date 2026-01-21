@@ -42,6 +42,7 @@ refreshPages() {
 	sleep 1
 	pushRefresh networks
 	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
+	pushRefresh system
 }
 ########################################################################################################
 # from bluetooth.rules: disconnect from paired device - no MAC

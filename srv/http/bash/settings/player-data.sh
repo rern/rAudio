@@ -10,7 +10,7 @@ data+=$( settingsEnabled \
 			
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )
-[[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
+[[ -e $dirshm/amixercontrol ]] && volume=( $( volumeGet valdb hw ) )
 
 ##########
 data+='
