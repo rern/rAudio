@@ -61,7 +61,12 @@ EOF
 		  'id'       => 'mixer'
 		, 'label'    => 'Mixer Device'
 		, 'input'    => 'mixer'
-		, 'help'     => $B->volume.' Mixer device volume control'
+		, 'help'     => <<< EOF
+$B->volume Mixer device volume control
+Bluetooth:
+ · Sender - Should be set at 0dB
+ · Receiver - Use as level control 
+EOF
 	]
 	, [
 		  'id'       => 'mixertype'
