@@ -951,6 +951,9 @@ function renderPage() {
 		$( '#i2smodule' ).html( option + ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
+	[ 'bluetooth', 'wlan' ].forEach( id => {
+		if ( ! S[ id ] && ! $( '#code'+ id ).hasClass( 'hide' ) ) $( '#code'+ id ).addClass( 'hide' );
+	} );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )

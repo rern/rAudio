@@ -8,6 +8,11 @@ file_module=/etc/modules-load.d/raspberrypi.conf
 
 args2var "$1"
 
+configReboot() {
+	pushData reboot '{ "id": "'$CMD'" }'
+	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
+}
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
 	local chip i2clcdchar i2cmpdoled module spimpdoled tft
 	tmp_cmdline=/tmp/cmdline.txt
@@ -67,9 +72,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot '{ "id": "'$CMD'" }'
-		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
-		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
+		configReboot
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
 		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
@@ -125,6 +128,11 @@ bluetooth )
 		else
 			discov=no
 			rm -f $btdiscoverable
+		fi
+		if [[ ! -e /boot/kernel8.img ]]; then
+			configReboot
+			exit
+# --------------------------------------------------------------------
 		fi
 		if ! systemctl -q is-active bluetooth; then
 			modprobe -a bluetooth bnep btbcm hci_uart
