@@ -129,30 +129,26 @@ bluetooth )
 			discov=no
 			rm -f $btdiscoverable
 		fi
-		if [[ ! -e /boot/kernel8.img ]]; then
-			configReboot
-			exit
+		if systemctl -q is-active bluetooth; then
+			bluetoothctl discoverable $discov &> /dev/null
+		else
+			if [[ ! -e /boot/kernel8.img ]]; then
+				configReboot
+				exit
 # --------------------------------------------------------------------
-		fi
-		if ! systemctl -q is-active bluetooth; then
+			fi
 			modprobe -a bluetooth bnep btbcm hci_uart
 			sleep 1
 			systemctl start bluetooth
 		fi
-		bluetoothctl discoverable $discov &> /dev/null
 		if [[ $bluealsa ]]; then
 			btformat=$dirsystem/btformat
 			if [[ $FORMAT ]]; then
-				if [[ ! -e $btformat ]]; then
-					touch $btformat
-					$dirsettings/player-conf.sh
-				fi
+				touch $btformat
+				$dirsettings/player-conf.sh
 			else
-				if [[ -e $btformat ]]; then
-					restartplayer=1
-					rm -f $btformat
-					$dirsettings/player-conf.sh
-				fi
+				rm -f $btformat
+				$dirsettings/player-conf.sh
 			fi
 		fi
 	else
@@ -162,8 +158,7 @@ bluetooth )
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
-	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
-	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
+	pushData refresh '{ "page": "networks", "activebt": '$TF' }'
 	rm $dirshm/btonoff
 	pushRefresh
 	;;
