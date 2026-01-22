@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
+	  'buttons' => [ 'btsender', 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
 		  'DAB Radio'      => 'dabradio'
 		, 'Device'         => ''
@@ -63,9 +63,10 @@ EOF
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
-Bluetooth:
- · Sender - Should be set at 0dB
- · Receiver - Use as level control 
+
+Note: BlueALSA $B->btsender- Bluetooth as sender:
+ · Should be set at 0dB
+ · Use volume control on receiver devices to set level
 EOF
 	]
 	, [
