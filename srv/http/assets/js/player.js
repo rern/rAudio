@@ -357,7 +357,7 @@ function renderPage() {
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
 		if ( S.mixers ) {
-			$( '#mixer' ).html( '<option>BlueALSA</option>' );
+			$( '#mixer' ).html( '<option>'+ ( S.bluetooth ? 'BlueALSA' : S.mixers ) +'</option>' );
 			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume || S.novolume );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
