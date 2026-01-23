@@ -624,7 +624,7 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	fn_volume=$( < $dirshm/volumefunction )
+	[[ $CARD == bluealsa ]] && fn_volume=volumeBlueAlsa || fn_volume=$( < $dirshm/volumefunction ) # from player settings
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
@@ -655,7 +655,7 @@ volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
 # --------------------------------------------------------------------
 	local args card db mixer val val_db volume
-	if [[ -e $dirshm/btreceiver ]]; then # bluetooth
+	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		val_db=$( amixer -MD bluealsa 2> /dev/null \
 					| grep -m1 % \
 					| awk -F'[][]' '{print $2" "$4}' )

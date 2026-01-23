@@ -70,8 +70,8 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	if [[ -e $dirshm/btreceiver ]]; then
-		card='"btreceiver"'
+	if [[ -e $dirshm/btreceiver && ! $dirsystem/devicewithbt ]]; then
+		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
 	else
 		. <( grep -E '^card|^mixer' $dirshm/output )

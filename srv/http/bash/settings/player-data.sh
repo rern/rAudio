@@ -10,7 +10,6 @@ data+=$( settingsEnabled \
 			
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )
-[[ -e $dirshm/amixercontrol ]] && volume=( $( volumeGet valdb hw ) )
 
 ##########
 data+='
@@ -36,16 +35,20 @@ data+='
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db" : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volume"      : '${volume[0]}'
-, "volumedb"    : '${volume[1]}'
 , "volumemax"   : '$( volumeMaxGet )
 
-filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
-if [[ ${volume[1]/.00} != 0 ]] || grep -q -m1 -E $filter <<< $data; then
-	novolume=false
-else
-	novolume=true
+if [[ -e $dirshm/amixercontrol ]]; then
+	valdb=$( volumeGet valdb hw )
+	data+='
+, "volume"      : { "val": '${valdb/ *}', "db": '${valdb/* }' }'
 fi
+if [[ -e $dirshm/btreceiver ]]; then
+	valdb=$( volumeGet valdb )
+	data+='
+, "volumebt"    : { "val": '${valdb/ *}', "db": '${valdb/* }' }'
+fi
+filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
+grep -q -m1 -E $filter <<< $data && novolume=false
 data+='
 , "novolume"    : '$novolume
 

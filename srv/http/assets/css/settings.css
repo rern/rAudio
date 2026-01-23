@@ -654,6 +654,10 @@ input.disabled + .switchlabel::after {
 .head .i-gear {
 	display: none;
 }
+#divmixerbt {
+	margin-bottom: 10px;
+	border-bottom: 1px solid var( --cg );
+}
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;

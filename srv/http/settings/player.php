@@ -11,7 +11,7 @@ commonVariables( [
 		, 'Volume Control' => ''
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features', 'playback', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head      = [
@@ -37,9 +37,20 @@ $head      = [
 ];
 $body      = [
 	[
-		  'id'       => 'bluealsa'
-		, 'label'    => 'Bluetooth'
-		, 'input'    => 'btreceiver'
+		  'id'       => 'devicebt'
+		, 'label'    => icon( 'bluetooth gr' )
+		, 'input'    => 'devicebt'
+	]
+	, [
+		  'id'       => 'mixerbt'
+		, 'label'    => 'Mixer'.icon( 'btsender gr' )
+		, 'input'    => 'mixerbt'
+		, 'help'     => <<< EOF
+$B->volume Mixer device volume control
+<i class="i-btsender"></i> rAudio as Bluetooth sender:
+	 · Should be set at 0dB
+	 · Use volume control on receiver devices to set level
+EOF
 	]
 	, [
 		  'id'       => 'device'
@@ -59,10 +70,6 @@ EOF
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
-
-Note: BlueALSA <i class="i-btsender"></i> - rAudio as Bluetooth sender:
- · Should be set at 0dB
- · Use volume control on receiver devices to set level
 EOF
 	]
 	, [
@@ -86,6 +93,7 @@ EOF
 		, 'help'     => <<< EOF
  · Keep Output $L->device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
+ · Enabled: $T->playback Volume - Mixer Device
 EOF
 	]
 ];

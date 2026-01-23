@@ -179,6 +179,8 @@ $data
 	;;
 volume )
 	volume
+	[[ $CARD != bluealsa ]] && hw=hw
+	volumeGet push $hw
 	;;
 volume0db )
 	amixer0dB
@@ -186,11 +188,7 @@ volume0db )
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
 	volumeBlueAlsa 0dB "$btmixer"
-	volumeGet push hw
-	;;
-volumepush )
-	[[ ! $BT ]] && hw=hw
-	volumeGet push $hw
+	volumeGet push
 	;;
 	
 esac
