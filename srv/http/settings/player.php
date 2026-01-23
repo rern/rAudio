@@ -66,7 +66,7 @@ EOF
 	]
 	, [
 		  'id'       => 'mixer'
-		, 'label'    => 'Mixer Device'
+		, 'label'    => 'Mixer'
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
