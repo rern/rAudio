@@ -38,12 +38,12 @@ $head      = [
 $body      = [
 	[
 		  'id'       => 'devicebt'
-		, 'label'    => icon( 'bluetooth gr' )
+		, 'label'    => 'Device'.icon( 'bluetooth' )
 		, 'input'    => 'devicebt'
 	]
 	, [
 		  'id'       => 'mixerbt'
-		, 'label'    => 'Mixer'.icon( 'btsender gr' )
+		, 'label'    => 'Mixer'.icon( 'btsender' )
 		, 'input'    => 'mixerbt'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
