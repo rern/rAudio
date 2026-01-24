@@ -143,7 +143,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		$dirsettings/player-conf.sh
 		grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
 	fi
-	echo $MAC $type $name >> $dirshm/btconnected
+	appendSortUnique $dirshm/btconnected $MAC $type $name
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
 	refreshPages
