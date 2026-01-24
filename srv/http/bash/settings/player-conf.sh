@@ -70,7 +70,7 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 #---------------< bluetooth
 	AUDIOOUTPUTBT='
-	name        "'$( < $dirshm/btname )'"
+	name        "BlueALSA"
 	device      "'$hw'"
 	type        "alsa"'
 	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
