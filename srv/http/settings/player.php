@@ -38,7 +38,7 @@ $head      = [
 $body      = [
 	[
 		  'id'       => 'btreceiver'
-		, 'label'    => 'Device'
+		, 'label'    => 'Bluetooth'
 		, 'sub'      => 'bluealsa-aplay'
 		, 'status'   => true
 		, 'icon'     => true
@@ -46,7 +46,7 @@ $body      = [
 	]
 	, [
 		  'id'       => 'btsender'
-		, 'label'    => 'Mixer'
+		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'
 		, 'status'   => true
 		, 'icon'     => true
