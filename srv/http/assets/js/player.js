@@ -63,6 +63,9 @@ var CONFIG   = {
 			}
 		}
 	}
+	, btsender      : () => {
+		UTIL.mixer( 'bluetooth' );
+	}
 	, buffer       : values => {
 		INFO( {
 			  ...SW
@@ -144,9 +147,6 @@ audio_output {
 	, mixer        : () => {
 		UTIL.mixer();
 	}
-	, mixerbt      : () => {
-		UTIL.mixer( 'bluetooth' );
-	}
 	, mixertype    : () => {
 		INFO( {
 			  ...SW
@@ -193,7 +193,7 @@ audio_output {
 }
 var UTIL     = {
 	  mixer        : () => {
-		var bt = SW.id === 'mixerbt';
+		var bt = SW.id === 'btsender';
 		INFO( {
 			  icon       : bt ? 'btsender' : 'volume'
 			, title      : ( bt ? 'Sender' : 'Mixer Device' ) + ' Volume'
@@ -314,7 +314,7 @@ var UTIL     = {
 	}
 	, volumeSet : () => {
 		V.local = false;
-		var volume = SW.id === 'mixerbt' ? 'volumebt' : 'volume';
+		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
 		var val = S[ volume ].val;
 		var db = S[ volume ].db;
 		$( '.inforange .value' ).text( val );
@@ -342,17 +342,17 @@ function renderPage() {
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	if ( S.bluetooth ) {
-		$( '#devicebt' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
-		$( '#mixerbt' ).html( '<option>BlueALSA</option>' );
-		$( '#divdevicebt, #divmixerbt' ).removeClass( 'hide' );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
+		$( '#btsender' ).html( '<option>BlueALSA</option>' );
+		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
 	} else {
-		$( '#divdevicebt, #divmixerbt' ).addClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
 	}
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
 		if ( S[ k ] ) V.icondsp = ICON( k );
 	} );
 	$( '#divdevice .col-l i' ).remove();
-	if ( V.icondsp ) $( '#devicebt .col-l, #divdevice .col-l' ).append( V.icondsp );
+	if ( V.icondsp ) $( '#btreceiver .col-l, #divdevice .col-l' ).append( V.icondsp );
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).toggleClass( 'hide', ! S.bluetooth );
 	} else {

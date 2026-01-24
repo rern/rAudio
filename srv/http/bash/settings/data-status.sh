@@ -26,15 +26,23 @@ $( eval $cmd )
 <bll># $cmd1</bll>
 $( eval $cmd1 )"
 	;;
-device )
-	card=$( getVar card $dirshm/output )
-	data=$( tty2std "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
-				| sed '1,/^---/ d; /^---/,$ d' \
-				| column -t -l2 -o ' ' )
-	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
+btreceiver )
+	cmd='bluealsa-aplay -L'
 	echo "\
-<bll># aplay -D hw:$card /dev/zero --dump-hw-params</bll>
-$data"
+<bll># $cmd</bll>
+$( eval $cmd )"
+	;;
+btsender )
+	cmd1='amixer -D bluealsa scontrols'
+	echo "\
+<bll># $cmd1</bll>
+$( eval $cmd1 )"
+	;;
+device )
+	cmd='aplay -l | grep ^card'
+	echo "\
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 infobluetooth )
 	cmd="bluetoothctl info $2"
@@ -97,6 +105,23 @@ lan )
 <bll># $cmd</bll>
 $( eval $cmd )"
 	;;
+mixer )
+	cmd='amixer scontrols'
+	devices="\
+<bll># $cmd</bll>"
+	card=$( < $dirsystem/asoundcard )
+	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
+	if [[ $aplayname != RPi-Cirrus ]]; then
+		mixers=$( $cmd )
+		[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
+		devices+="
+$mixers"
+	else
+		devices+="
+(custom controls)"
+	fi
+	echo "$devices"
+	;;
 mpdignore )
 	files=$( < $dirmpd/mpdignorelist )
 	list="\
@@ -115,44 +140,19 @@ nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
 output )
-	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
-					| grep -B1 pvolume \
-					| head -1 )
-	[[ $bluealsa ]] && devices="\
-<bll># amixer -D bluealsa scontrols</bll>
-$bluealsa"
-	cmd='cat /proc/asound/cards | grep ]'
-	cmd1='aplay -l | grep ^card'
-	devices+="
-
+	cmd='cat /etc/asound.conf'
+	card=$( getVar card $dirshm/output )
+	cmd1="aplay -D hw:$card /dev/zero --dump-hw-params"
+	data=$( tty2std "timeout 0.1 $cmd1" \
+				| sed '1,/^---/ d; /^---/,$ d' \
+				| column -t -l2 -o ' ' )
+	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
+	echo "\
 <bll># $cmd</bll>
 $( eval $cmd )
 
 <bll># $cmd1</bll>
-$( eval $cmd1 )"
-	if [[ ! -e $dirsystem/camilladsp ]]; then
-		cmd2='amixer scontrols'
-		devices+="
-
-<bll># $cmd2</bll>"
-		card=$( < $dirsystem/asoundcard )
-		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
-		if [[ $aplayname != RPi-Cirrus ]]; then
-			mixers=$( $cmd2 )
-			[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
-			devices+="
-$mixers"
-		else
-			devices+="
-(custom controls)"
-		fi
-	fi
-	cmd3='cat /etc/asound.conf'
-	devices+="
-
-<bll># $cmd3</bll>
-$( eval $cmd3 )"
-	echo "$devices"
+$data"
 	;;
 status )
 	filebootlog=/tmp/bootlog

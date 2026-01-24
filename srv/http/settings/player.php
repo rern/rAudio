@@ -37,14 +37,20 @@ $head      = [
 ];
 $body      = [
 	[
-		  'id'       => 'devicebt'
-		, 'label'    => 'Device'.icon( 'bluetooth' )
-		, 'input'    => 'devicebt'
+		  'id'       => 'btreceiver'
+		, 'label'    => 'Device'
+		, 'sub'      => 'bluealsa-aplay'
+		, 'status'   => true
+		, 'icon'     => true
+		, 'input'    => 'btreceiver'
 	]
 	, [
-		  'id'       => 'mixerbt'
-		, 'label'    => 'Mixer'.icon( 'btsender' )
-		, 'input'    => 'mixerbt'
+		  'id'       => 'btsender'
+		, 'label'    => 'Mixer'
+		, 'sub'      => 'amixer'
+		, 'status'   => true
+		, 'icon'     => true
+		, 'input'    => 'btsender'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
@@ -67,6 +73,8 @@ EOF
 	, [
 		  'id'       => 'mixer'
 		, 'label'    => 'Mixer'
+		, 'sub'      => 'amixer'
+		, 'status'   => true
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume Mixer device volume control
