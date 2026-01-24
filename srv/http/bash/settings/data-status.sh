@@ -33,10 +33,10 @@ btreceiver )
 $( eval $cmd )"
 	;;
 btsender )
-	cmd1='amixer -D bluealsa scontrols'
+	cmd='amixer -MD bluealsa'
 	echo "\
-<bll># $cmd1</bll>
-$( eval $cmd1 )"
+<bll># $cmd</bll>
+$( eval $cmd )"
 	;;
 device )
 	cmd='aplay -l | grep ^card'
@@ -106,7 +106,7 @@ lan )
 $( eval $cmd )"
 	;;
 mixer )
-	cmd='amixer scontrols'
+	cmd='amixer -M'
 	devices="\
 <bll># $cmd</bll>"
 	card=$( < $dirsystem/asoundcard )

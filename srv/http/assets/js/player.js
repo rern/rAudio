@@ -321,6 +321,7 @@ var UTIL     = {
 		$( '.inforange input' ).val( val );
 		$( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
+		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
 	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
 				 +'<gr>Signal will be set to original level at 0dB.</gr><br>'

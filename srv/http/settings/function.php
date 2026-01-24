@@ -115,9 +115,10 @@ function htmlSetting( $data ) {
 	$label   = $data->label;
 	$status  = $data->status ?? false;
 	$label   = '<span class="label">'.$label.'</span>';
+	$icon    = $data->icon ?? false;
+	if ( ! $icon ) $icon = $iconlabel ? $id : '';
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;
-	$icon    = $iconlabel || $data->icon ? $id : '';
 	$dstatus = $status ? ' status" data-status="'.$id : '';
 	
 	$html    = '<div id="div'.$id.'" class="row">';
