@@ -1,35 +1,17 @@
-W.volume     = data => {
-	if ( ! ( 'db' in data ) ) return
+W.volume     = values => {
+	if ( ! ( 'db' in values ) || ! $( '#infoList .inforange' ).length ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
-	S[ volume ].val = data.val;
-	S[ volume ].db  = data.db;
-	if ( ! $( '#infoList .inforange' ).length ) return
-	
-	$( '#novolume' ).prop( 'checked', S.novolume );
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		V.local = true;
-		$( '#infoList' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		UTIL.volumeSet();
-	}, 300 );
+	$( '#infoList' ).removeClass( 'hide' );
+	$( '.confirm' ).addClass( 'hide' );
+	V.local = true;
+	UTIL.volumeSet( values );
 }
 
 var CONFIG   = {
 	  _disable     : {
 		  mixertype : () => {
-			if ( S.volume.db > -2 ) {
-				UTIL.mixerSet( 'none' );
-			} else {
-				INFO( {
-					  icon    : 'volume'
-					, title   : 'Volume Control'
-					, message : UTIL.warning
-					, cancel  : SWITCH.cancel
-					, ok      : () => UTIL.mixerSet( 'none' )
-				} );
-			}
+			UTIL.novolume.warning();
 		}
 		, novolume : () => {
 			INFO( {
@@ -63,8 +45,8 @@ var CONFIG   = {
 			}
 		}
 	}
-	, btsender      : () => {
-		UTIL.mixer( 'bluetooth' );
+	, btsender      : values => {
+		UTIL.mixer( values );
 	}
 	, buffer       : values => {
 		INFO( {
@@ -144,8 +126,8 @@ audio_output {
 			} );
 		} );
 	}
-	, mixer        : () => {
-		UTIL.mixer();
+	, mixer        : values => {
+		UTIL.mixer( values );
 	}
 	, mixertype    : () => {
 		INFO( {
@@ -192,14 +174,15 @@ audio_output {
 	}
 }
 var UTIL     = {
-	  mixer        : () => {
-		var bt = SW.id === 'btsender';
+	  mixer        : values => {
+		var bt  = SW.id === 'btsender';
+		var val = values.val;
 		INFO( {
 			  icon       : bt ? 'btsender' : 'volume'
 			, title      : ( bt ? 'Sender' : 'Mixer Device' ) + ' Volume'
 			, list       : [ bt ? 'BlueALSA' : S.output.mixer, 'range' ]
 			, footer     : '<br>'+ UTIL.warning
-			, values     : S[ bt ? 'volumebt' : 'volume' ] .val
+			, values     : val
 			, beforeshow : () => {
 				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
 				$( '.infofooter' ).addClass( 'hide' );
@@ -207,19 +190,17 @@ var UTIL     = {
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				var volume  = bt ? 'volumebt' : 'volume';
-				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', S.volumebt.val ] : [ 'volume', S.output.mixer, S.output.card, S.volume.val ];
+				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', val ] : [ 'volume', S.output.mixer, S.output.card, val ];
 				$range.on( 'input', function() {
 					var target      = +this.value;
-					S[ volume ].val = target;
 					BASH( [ ...cmd, target, 'CMD CONTROL CARD CURRENT TARGET' ] );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
-					S[ volume ].val = +$range.value;
 					$range
 						.trigger( 'input' )
 						.trigger( 'keyup' );
 				} );
-				UTIL.volumeSet();
+				UTIL.volumeSet( values );
 			}
 			, cancel     : () => {
 				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
@@ -232,7 +213,7 @@ var UTIL     = {
 			, oknoreset  : true
 			, ok         : () => {
 				var cmd0db = bt ? 'volume0dbbt' : 'volume0db';
-				if ( S[ bt ? 'volumebt' : 'volume' ].db > -2 ) {
+				if ( values.db > -2 ) {
 					BASH( [ cmd0db ] );
 				} else {
 					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ cmd0db ] );
@@ -247,16 +228,12 @@ var UTIL     = {
 	}
 	, novolume  : {
 		  warning : () => {
-			if ( S.volume.db > -2 ) {
-				UTIL.novolume.set();
-			} else {
-				INFO( {
-					  ...SW
-					, message : UTIL.warning
-					, cancel  : SWITCH.cancel
-					, ok      : UTIL.novolume.set
-				} );
-			}
+			INFO( {
+				  ...SW
+				, message : UTIL.warning
+				, cancel  : SWITCH.cancel
+				, ok      : UTIL.novolume.set
+			} );
 		}
 		, set     : () => {
 			NOTIFY_COMMON( 'Enable ...' );
@@ -312,11 +289,11 @@ var UTIL     = {
 			} );
 		}
 	}
-	, volumeSet : () => {
-		V.local = false;
+	, volumeSet : values => {
+		V.local    = false;
 		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
-		var val = S[ volume ].val;
-		var db = S[ volume ].db;
+		var val    = values.val;
+		var db     = values.db;
 		$( '.inforange .value' ).text( val );
 		$( '.inforange input' ).val( val );
 		$( '.inforange .sub' ).text( db +' dB' );

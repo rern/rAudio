@@ -681,6 +681,7 @@ volumeGet() {
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
 		valdb ) echo $val $db;;
+		json )  echo '{ "val": '$val', "db": '$db' }';;
 		db )    echo $db;;
 		* )     echo $val;;
 	esac

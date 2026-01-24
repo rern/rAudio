@@ -37,16 +37,6 @@ data+='
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumemax"   : '$( volumeMaxGet )
 
-if [[ -e $dirshm/amixercontrol ]]; then
-	valdb=$( volumeGet valdb hw )
-	data+='
-, "volume"      : { "val": '${valdb/ *}', "db": '${valdb/* }' }'
-fi
-if [[ -e $dirshm/btreceiver ]]; then
-	valdb=$( volumeGet valdb )
-	data+='
-, "volumebt"    : { "val": '${valdb/ *}', "db": '${valdb/* }' }'
-fi
 filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
 grep -q -m1 -E $filter <<< $data && novolume=false
 data+='

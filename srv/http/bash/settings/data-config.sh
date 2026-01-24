@@ -39,6 +39,9 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
 	;;
+btsender )
+	volumeGet json
+	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
 	;;
@@ -107,6 +110,9 @@ localbrowser )
   "values"     : '$( conf2json localbrowser.conf )'
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
+	;;
+mixer )
+	volumeGet json
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then
