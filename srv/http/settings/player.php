@@ -61,7 +61,7 @@ EOF
 	, [
 		  'id'       => 'device'
 		, 'label'    => 'Device'
-		, 'sub'      => 'hw_params'
+		, 'sub'      => 'aplay'
 		, 'status'   => true
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
