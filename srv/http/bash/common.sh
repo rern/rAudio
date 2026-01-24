@@ -672,7 +672,7 @@ volumeGet() {
 			[[ $val_db ]] && break || sleep 1
 		done
 	fi
-	[[ $val_db ]] && val_db=$( tr -dc '[:digit:]-. ' <<< $val_db ) || val_db='false false'
+	[[ $val_db ]] && val_db=$( tr -dc '[:digit:]-. ' <<< $val_db ) || val_db='-1 -1'
 	val=${val_db/ *}
 	db=${val_db/* }
 	case $1 in
