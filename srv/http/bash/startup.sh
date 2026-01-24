@@ -144,7 +144,10 @@ fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
-	$dirsettings/networks-bluetooth.sh connect $mac
+	$dirsettings/networks-bluetooth.sh "cmd
+connect
+$mac
+CMD ACTION MAC"
 	if [[ -e $dirsystem/camilladsp ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver
 	fi
