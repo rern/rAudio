@@ -654,7 +654,7 @@ input.disabled + .switchlabel::after {
 .head .i-gear {
 	display: none;
 }
-#divmixerbt {
+#divbtsender {
 	margin-bottom: 10px;
 	border-bottom: 1px solid var( --cg );
 }
