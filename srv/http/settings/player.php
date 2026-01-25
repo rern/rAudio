@@ -89,8 +89,8 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · Mixer device: Good - DAC hardware via GUI knob (if available)
- · MPD software: Basic - GUI knob
+ · Mixer device: Good - DAC hardware (if available)
+ · MPD software: Basic
  
 Note: Should be disabled for best sound quality
  · GUI knob hidden
