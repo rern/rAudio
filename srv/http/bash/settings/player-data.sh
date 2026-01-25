@@ -38,7 +38,7 @@ data+='
 , "volumemax"   : '$( volumeMaxGet )
 
 filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
-grep -q -m1 -E $filter <<< $data && novolume=false
+grep -q -m1 -E $filter <<< $data && novolume=false || novolume=true
 data+='
 , "novolume"    : '$novolume
 
