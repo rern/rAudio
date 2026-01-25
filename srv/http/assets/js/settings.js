@@ -163,7 +163,7 @@ W.refresh  = data => { // except camilla
 		SWITCH.set();
 		renderPage();
 		$( '.col-r' ).css( 'pointer-events', '' );
-		if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( COMMON.json.highlight( S ) );
+		COMMON.statusToggle( 'refresh' );
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
