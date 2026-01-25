@@ -43,10 +43,7 @@ i {
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
 .i-audio::before,
-.i-volume::before,
-#divbluealsa .i-gear::before,
-#divmixer .i-gear::before,
-#divmixerbt .i-gear::before  { content: '\F516' }
+.i-volume::before          { content: '\F516' }
 .i-autoplay::before        { content: '\F53A' }
 .i-back::before            { content: '\F602' }
 .i-backspace::before       { content: '\F608' }

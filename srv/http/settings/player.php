@@ -6,6 +6,7 @@ commonVariables( [
 		, 'Device'         => ''
 		, 'DSP'            => 'camilla'
 		, 'Equalizer'      => 'equalizer'
+		, 'Mixer'          => 'mixer'
 		, 'Shared Data'    => 'networks'
 		, 'SoX Resampler'  => ''
 		, 'Volume Control' => ''
@@ -51,8 +52,9 @@ $body      = [
 		, 'status'   => true
 		, 'icon'     => true
 		, 'input'    => 'btsender'
+		, 'volume'   => true
 		, 'help'     => <<< EOF
-$B->volume Mixer device volume control
+$B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
 	 · Should be set at 0dB
 	 · Use volume control on receiver devices to set level
@@ -76,8 +78,9 @@ EOF
 		, 'sub'      => 'amixer'
 		, 'status'   => true
 		, 'input'    => 'mixer'
+		, 'volume'   => true
 		, 'help'     => <<< EOF
-$B->volume Mixer device volume control
+$B->volume DAC hardware volume level
 EOF
 	]
 	, [
@@ -99,9 +102,9 @@ EOF
 		  'id'       => 'devicewithbt'
 		, 'label'    => 'Device + Bluetooth'
 		, 'help'     => <<< EOF
- · Keep Output $L->device enabled when Bluetooth connected.
+ · Also output to $L->device when Bluetooth connected.
+ · $T->playback volume - $L->mixer volume
  · Should be disabled if not used simultaneously
- · Enabled: $T->playback Volume - Mixer Device
 EOF
 	]
 ];
