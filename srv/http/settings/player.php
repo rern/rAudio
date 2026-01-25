@@ -89,7 +89,7 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · Mixer device: Good - DAC hardware (if available)
+ · DAC hardware (Mixer device): Good (if available)
  · MPD software: Basic
  
 Note: Should be disabled for best sound quality
