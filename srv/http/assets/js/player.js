@@ -132,7 +132,7 @@ audio_output {
 	, mixertype    : () => {
 		INFO( {
 			  ...SW
-			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Device Mmxer)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 			, values       : S.mixertype ? S.output.mixertype : 'hardware'
 			, checkchanged : S.mixertype
 			, cancel       : SWITCH.cancel
