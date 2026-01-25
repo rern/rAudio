@@ -329,6 +329,7 @@ snapclient )
 		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
 		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
 		systemctl -q is-active snapserver && mv $dirsystem/snapclient{,server}
+		$dirbash/snapclient.sh start
 	else
 		$dirbash/snapclient.sh stop
 		rm -f $dirsystem/snapclient*
