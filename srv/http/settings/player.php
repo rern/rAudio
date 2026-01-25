@@ -89,7 +89,7 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · DAC hardware (Device mixer): Good (if available)
+ · DAC hardware $L->mixer : Good (if available)
  · MPD software: Basic
  
 Note: Should be disabled for best sound quality
@@ -115,6 +115,7 @@ $body      = [
 	[
 		  'id'       => 'novolume'
 		, 'label'    => 'No Volume'
+		, 'disabled' => 'To disable: Enable any volume related settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.

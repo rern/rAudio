@@ -13,14 +13,6 @@ var CONFIG   = {
 		  mixertype : () => {
 			UTIL.novolume.warning();
 		}
-		, novolume : () => {
-			INFO( {
-				  icon    : 'set0'
-				, title   : 'No Volume'
-				, message : 'To disable: Enable any volume related settings'
-			} );
-			$( '#novolume' ).prop( 'checked', true );
-		}
 	}
 	, _prompt      : {
 		  novolume : () => {
@@ -348,7 +340,9 @@ function renderPage() {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
-		$( '#novolume' ).prop( 'checked', S.novolume );
+		$( '#novolume' )
+			.prop( 'checked', S.novolume )
+			.toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
