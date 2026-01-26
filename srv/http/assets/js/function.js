@@ -490,6 +490,7 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
@@ -1394,7 +1395,7 @@ var PLAYBACK  = {
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 			var time = PROGRESS.visible();
 			var prefix = time ? 'ti' : 'mi';
-			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
+			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btsender );
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {

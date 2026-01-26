@@ -59,7 +59,8 @@ i {
 .i-bluetooth::before,
 .i-btreceiver::before      { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }
-.i-btsender::before        { content: '\F51B' }
+.i-btsender::before,
+.i-volume.btsender::before { content: '\F51B' }
 .i-bypass::before          { content: '\F56F' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }

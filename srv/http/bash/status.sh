@@ -32,7 +32,7 @@ if [[ -e $dirshm/nosound ]]; then
 else
 	. <( grep -E '^mixer|^mixertype' $dirshm/output )
 	if [[ $mixertype != none ]] \
-		|| [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] \
+		|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
 		|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
 		volumenone=false
 	else
@@ -70,7 +70,7 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	if [[ -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ]]; then
+	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
 	else
@@ -80,7 +80,7 @@ else
 ########
 	status+='
 , "player"       : "'$player'"
-, "btreceiver"   : '$( exists $dirshm/btreceiver )'
+, "btsender"     : '$( exists $dirshm/btmixer )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
 , "counts"       : '$( getContent $dirmpd/counts '{}' )'
