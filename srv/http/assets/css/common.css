@@ -1032,7 +1032,7 @@ input[ type=radio ]:disabled {
 	content: '\F604';
 }
 .select.single::after {
-	color: var( --cg60 );
+	color: var( --cgl );
 }
 .select::after,
 .select.active::after {

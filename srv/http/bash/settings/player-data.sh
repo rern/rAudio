@@ -8,14 +8,10 @@ data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
-crossfade=$( mpc crossfade | cut -d' ' -f2 )
-mixers=$( getContent $dirshm/mixers )
-
 ##########
 data+='
 , "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
-, "bluetooth"   : '$( exists $dirshm/btreceiver )'
-, "btmixer"     : "'$( getContent $dirshm/btmixer )'"
+, "btmixer"     : '$( [[ -e $dirshm/btmixer ]] && echo '"'$( < $dirshm/btmixer )'"' )'
 , "counts"      : '$( < $dirmpd/counts )'
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'
@@ -26,7 +22,7 @@ data+='
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 	, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }
-, "mixers"      : '$mixers'
+, "mixers"      : '$( getContent $dirshm/mixers )'
 , "mixertype"   : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "output"      : '$( conf2json -nocap $dirshm/output )'
 , "player"      : "'$( < $dirshm/player )'"
@@ -36,10 +32,5 @@ data+='
 , "updating_db" : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumemax"   : '$( volumeMaxGet )
-
-filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
-grep -q -m1 -E $filter <<< $data && novolume=false || novolume=true
-data+='
-, "novolume"    : '$novolume
 
 data2json "$data" $1

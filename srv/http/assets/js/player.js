@@ -146,7 +146,7 @@ audio_output {
 	, replaygain   : values => {
 		var list = [
 			  [ '',                               'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' } } ]
-			, [ 'Gain control with Mixer Device', 'checkbox' ]
+			, [ 'Gain control with Device Mixer', 'checkbox' ]
 		];
 		if ( S.output.mixertype !== 'software' || ! S.mixers ) {
 			delete values.HARDWARE;
@@ -171,7 +171,7 @@ var UTIL     = {
 		var val = values.val;
 		INFO( {
 			  icon       : bt ? 'btsender' : 'volume'
-			, title      : ( bt ? 'Sender' : 'Mixer Device' ) + ' Volume'
+			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
 			, list       : [ bt ? 'BlueALSA' : S.output.mixer, 'range' ]
 			, footer     : '<br>'+ UTIL.warning
 			, values     : val
@@ -311,7 +311,8 @@ function renderPage() {
 		if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
-	if ( S.bluetooth ) {
+	var bluetooth = S.btmixer !== false;
+	if ( bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
 		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
@@ -324,25 +325,28 @@ function renderPage() {
 	$( '#divdevice .col-l i' ).remove();
 	if ( V.icondsp ) $( '#btreceiver .col-l, #divdevice .col-l' ).append( V.icondsp );
 	if ( S.asoundcard === -1 ) {
-		$( '#divoutput, #divbitperfect, #divvolume' ).toggleClass( 'hide', ! S.bluetooth );
+		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
+		$( '#divbitperfect' ).addClass( 'hide' );
 	} else {
-		var devicehide = S.bluetooth && ! S.devicewithbt;
-		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
+		var devicehide = bluetooth && ! S.devicewithbt;
+		var novolume   = ! [ 'camilladsp', 'crossfade', 'equalizer', 'mixertype', 'normalization', 'replaygain', 'soxr' ].some( k => S[ k ] );
+		$( '#divoutput' ).removeClass( 'hide' );
+		$( '#divbitperfect' ).toggleClass( 'hide', bluetooth && ! S.devicewithbt );
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', devicehide );
 		$( '#device' )
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.name );
 		if ( ! devicehide && S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', S.novolume );
+			$( '#setting-mixer' ).toggleClass( 'hide', novolume );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
 		$( '#novolume' )
-			.prop( 'checked', S.novolume )
-			.toggleClass( 'disabled', S.novolume );
+			.prop( 'checked', novolume )
+			.toggleClass( 'disabled', novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
@@ -371,7 +375,7 @@ $( '#mixer' ).on( 'input', function() {
 	var mixer = this.value;
 	if ( mixer === S.output.mixer ) return
 	
-	NOTIFY( 'volume', 'Mixer Device', 'Change ...' );
+	NOTIFY( 'volume', 'Mixer', 'Change ...' );
 	BASH( [ 'mixer', mixer, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
