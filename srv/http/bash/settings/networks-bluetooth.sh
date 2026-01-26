@@ -156,6 +156,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 			bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && sleep 1 || break
 		done
 	else
+		bluetoothctl untrust $MAC &> /dev/null
 		bluetoothctl remove $MAC &> /dev/null
 		for i in {1..5}; do
 			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
