@@ -145,10 +145,10 @@ function htmlSetting( $data ) {
 	$html   .= icon( $seticon.' setting', 'setting-'.$id );
 	// help
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
-	$html   .= '</div>
-					</div>';
+	$html   .= '</div>';
 	// status
 	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
+	$html   .= '</div>';
 	if ( isset( $data->returnhtml ) ) return $html;
 	
 	echo $html;
