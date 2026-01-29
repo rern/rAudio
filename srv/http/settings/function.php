@@ -15,7 +15,6 @@ $body = [
 		, 'label'    => 'LABEL'
 		, 'sub'      => 'SUB'
 		, 'icon'     => true         // (Player page only) show icon 
-		, 'volume'   => true         // (Player page only) volume icon for setting
 		, 'status'   => true         // include status icon and status box
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
 		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
@@ -113,11 +112,11 @@ function htmlSetting( $data ) {
 		return;
 	}
 	
-	global $iconlabel;
+	global $features, $system;
 	$label   = $data->label;
 	$status  = $data->status ?? false;
 	$label   = '<span class="label">'.$label.'</span>';
-	$icon    = $iconlabel || isset( $data->icon ) ? $id : '';
+	$icon    = $features || $system || $id === 'btreceiver' || $id === 'btsender' ? $id : '';
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;
 	$dstatus = $status ? ' status" data-status="'.$id : '';
@@ -141,8 +140,7 @@ function htmlSetting( $data ) {
 			$html.= '<select id="'.$input.'"></select>';
 		}
 	}
-	$seticon = isset( $data->volume ) ? 'volume' : 'gear';
-	$html   .= icon( $seticon.' setting', 'setting-'.$id );
+	$html   .= icon( 'gear setting', 'setting-'.$id );
 	// help
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= '</div>';

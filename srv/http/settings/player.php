@@ -42,7 +42,6 @@ $body      = [
 		, 'label'    => 'Bluetooth'
 		, 'sub'      => 'bluealsa'
 		, 'status'   => true
-		, 'icon'     => true
 		, 'input'    => 'btreceiver'
 	]
 	, [
@@ -50,9 +49,7 @@ $body      = [
 		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'
 		, 'status'   => true
-		, 'icon'     => true
 		, 'input'    => 'btsender'
-		, 'volume'   => true
 		, 'help'     => <<< EOF
 $B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
@@ -78,7 +75,6 @@ EOF
 		, 'sub'      => 'amixer'
 		, 'status'   => true
 		, 'input'    => 'mixer'
-		, 'volume'   => true
 		, 'help'     => <<< EOF
 $B->volume DAC hardware volume level
 EOF

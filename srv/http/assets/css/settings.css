@@ -654,6 +654,10 @@ input.disabled + .switchlabel::after {
 .head .i-gear {
 	display: none;
 }
+#setting-btsender::before,
+#setting-mixer::before {
+	content: '\F516';
+}
 #divbtsender {
 	margin-bottom: 10px;
 	border-bottom: 1px solid var( --cg );
