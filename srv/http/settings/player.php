@@ -35,9 +35,6 @@ htmlSection( $head, $body, 'mpd' );
 $head      = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
-	, 'help'   => <<< EOF
-$B->camilla$B->equalizer $T->features Signal Processors enabled
-EOF
 ];
 $body      = [
 	[
@@ -88,6 +85,8 @@ EOF
 $B->gear Type:
  · DAC hardware $L->mixer : Good (if available)
  · MPD software: Basic
+$B->camilla$B->equalizer Shown:
+ · $T->features Signal Processors enabled
  
 Note: Should be disabled for best sound quality
  · GUI knob hidden
