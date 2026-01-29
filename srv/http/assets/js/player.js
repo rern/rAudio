@@ -319,9 +319,9 @@ function renderPage() {
 	} else {
 		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
 	}
-	$( '#divmixertype .col-l i' ).remove();
+	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
-		if ( S[ k ] ) $( '#divmixertype .col-l' ).append( ICON( k ) );
+		if ( S[ k ] ) $( '#divoutput heading' ).prepend( ICON( k ) );
 	} );
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
