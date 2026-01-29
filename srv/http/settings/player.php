@@ -35,6 +35,9 @@ htmlSection( $head, $body, 'mpd' );
 $head      = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
+	, 'help'   => <<< EOF
+$B->camilla$B->equalizer $T->features Signal Processors enabled
+EOF
 ];
 $body      = [
 	[
@@ -64,8 +67,6 @@ EOF
 		, 'status'   => true
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
-$B->camilla$B->equalizer $T->features Signal Processors enabled
-
 Note: HDMI may not be available unless connect before boot.
 EOF
 	]
