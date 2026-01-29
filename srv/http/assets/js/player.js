@@ -319,11 +319,10 @@ function renderPage() {
 	} else {
 		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
 	}
+	$( '#divoutput heading i' ).remove();
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
-		if ( S[ k ] ) V.icondsp = ICON( k );
+		if ( S[ k ] ) $( '#divoutput heading' ).prepend( ICON( k ) +'&nbsp;' );
 	} );
-	$( '#divdevice .col-l i' ).remove();
-	if ( V.icondsp ) $( '#btreceiver .col-l, #divdevice .col-l' ).append( V.icondsp );
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
 		$( '#divbitperfect' ).addClass( 'hide' );
