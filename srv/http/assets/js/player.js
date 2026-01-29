@@ -320,8 +320,12 @@ function renderPage() {
 		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
 	}
 	$( '#divmixertype .col-l i' ).remove();
-	[ 'camilladsp', 'equalizer' ].forEach( k => {
-		if ( S[ k ] ) $( '#divmixertype .col-l' ).append( ICON( k ) );
+	[ 'camilladsp', 'equalizer' ].some( k => {
+		if ( S[ k ] ) {
+			$( '#divmixertype .col-l' ).append( ICON( k ) );
+			DISABLE( 'mixertype', LABEL_ICON( k[ 0 ] === 'c' ? 'CamillaDSP' : 'Equalizer', k ) +' Currently enabled.' );
+			return false
+		}
 	} );
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
@@ -342,7 +346,7 @@ function renderPage() {
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
-		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
+		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp || S.equalizer );
 		$( '#novolume' )
 			.prop( 'checked', novolume )
 			.toggleClass( 'disabled', novolume );

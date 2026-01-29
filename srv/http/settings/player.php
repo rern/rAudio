@@ -80,7 +80,7 @@ EOF
 	, [
 		  'id'       => 'mixertype'
 		, 'label'    => 'Volume Control'
-		, 'disabled' => $L->dsp.$isenabled
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 $B->gear Type:
  · DAC hardware $L->mixer : Good (if available)
