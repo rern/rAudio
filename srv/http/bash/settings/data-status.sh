@@ -111,12 +111,6 @@ lan )
 $( eval $cmd )"
 	;;
 mixer )
-	if [[ -e $dirsystem/camilladsp ]]; then
-		echo "\
-<gr>(CamillaDSP)</gr>"
-		exit
-# --------------------------------------------------------------------
-	fi
 	cmd='amixer scontents'
 	devices="\
 <bll># $cmd</bll>"

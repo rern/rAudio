@@ -151,7 +151,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
 							, message : 'Select server:'
-							, list    : [ '', 'radio', { kv: data } ]
+							, list    : [ '', 'radio', { kv: data, sameline: false } ]
 							, ok      : () => BASH( [ 'snapclient.sh', _INFO.val().replace( /.* /, '' ) ] )
 						} );
 					}

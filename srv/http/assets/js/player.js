@@ -339,6 +339,8 @@ function renderPage() {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
 			$( '#setting-mixer' ).toggleClass( 'hide', novolume );
 			$( '#divmixer' ).removeClass( 'hide' );
+			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
+			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}

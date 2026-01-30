@@ -245,9 +245,7 @@ heading.status .headtitle::after,
 	font-style: normal;
 	font-size: 14px;
 	content: '\F605';
-	text-align: center;
 	color: var( --cg60 );
-	letter-spacing: right;
 }
 heading.status .headtitle::after {
 	width: 40px;
