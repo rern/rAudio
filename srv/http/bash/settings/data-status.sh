@@ -39,10 +39,15 @@ btsender )
 $( eval $cmd )"
 	;;
 device )
-	cmd='aplay -l | grep ^card'
+	card=$( getVar card $dirshm/output )
+	cmd="aplay -D hw:$card /dev/zero --dump-hw-params"
+	data=$( tty2std "timeout 0.1 $cmd" \
+				| sed '1,/^---/ d; /^---/,$ d' \
+				| column -t -l2 -o ' ' )
+	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
 	echo "\
 <bll># $cmd</bll>
-$( eval $cmd )"
+$data"
 	;;
 infobluetooth )
 	cmd="bluetoothctl info $2"
@@ -106,7 +111,13 @@ lan )
 $( eval $cmd )"
 	;;
 mixer )
-	cmd='amixer -M'
+	if [[ -e $dirsystem/camilladsp ]]; then
+		echo "\
+<gr>(CamillaDSP)</gr>"
+		exit
+# --------------------------------------------------------------------
+	fi
+	cmd='amixer scontents'
 	devices="\
 <bll># $cmd</bll>"
 	card=$( < $dirsystem/asoundcard )
@@ -140,19 +151,14 @@ nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
 output )
-	cmd='cat /etc/asound.conf'
-	card=$( getVar card $dirshm/output )
-	cmd1="aplay -D hw:$card /dev/zero --dump-hw-params"
-	data=$( tty2std "timeout 0.1 $cmd1" \
-				| sed '1,/^---/ d; /^---/,$ d' \
-				| column -t -l2 -o ' ' )
-	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
+	cmd='aplay -l | grep ^card'
+	cmd1='cat /etc/asound.conf'
 	echo "\
 <bll># $cmd</bll>
 $( eval $cmd )
 
 <bll># $cmd1</bll>
-$data"
+$( eval $cmd1 )"
 	;;
 status )
 	filebootlog=/tmp/bootlog
