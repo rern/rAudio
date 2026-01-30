@@ -290,14 +290,13 @@ elif [[ $stream ]]; then
 		url=${file/\#charset*}
 		urlname=${url//\//|}
 		radiofile=$dirradio/$urlname
+		stationcover=${dirradio:9}/img/$urlname.jpg
 		[[ ! -e $radiofile  ]] && radiofile=$( find $dirradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
 			station=${radiodata[0]}
 			radiosampling=${radiodata[1]}
 		fi
-		stationcover=${dirradio:9}/img/$urlname.jpg
-		stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 		if [[ $state != play ]]; then
 			state=stop
 			Title=
