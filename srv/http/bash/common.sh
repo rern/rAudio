@@ -572,7 +572,7 @@ snapclientIP() {
 }
 snapserverList() {
 	local name_ip
-	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*11704;$/&&!/^=;l/ {print $7" "$8}' )
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7" "$8}' )
 	if [[ $name_ip ]] ; then
 		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
 		echo '[ '${name_ip:1}' ]'
