@@ -296,6 +296,8 @@ elif [[ $stream ]]; then
 			station=${radiodata[0]}
 			radiosampling=${radiodata[1]}
 		fi
+		stationcover=${dirradio:9}/img/$urlname.jpg
+		stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 		if [[ $state != play ]]; then
 			state=stop
 			Title=
@@ -310,8 +312,6 @@ elif [[ $stream ]]; then
 				sampling=$radiosampling
 				if [[ ! -e $dirshm/radio ]]; then
 					state=play
-					stationcover=${dirradio:9}/img/$urlname.jpg
-					stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 					datastation='
   "coverart"     : "'$stationcover'"
 , "file"         : "'$file'"
@@ -347,11 +347,6 @@ elif [[ $stream ]]; then
 					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
-		fi
-		if [[ $displaycover ]]; then
-			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
-			stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 		fi
 ########
 		status+='
