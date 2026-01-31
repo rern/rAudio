@@ -27,24 +27,32 @@ statusData() {
 	fi
 }
 
-if [[ -e $dirshm/nosound ]]; then
-	volumenone=true
+if [[ $1 == snapclient ]]; then
+	snapclient=1
+	player=mpd
+	icon=snapcast
 else
-	. <( grep -E '^mixer|^mixertype' $dirshm/output )
-	if [[ $mixertype != none ]] \
-		|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
-		|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
-		volumenone=false
-	else
+	player=$( < $dirshm/player )
+	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
+	[[ $player != mpd ]] && icon=$player
+	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
+	else
+		. <( grep -E '^mixer|^mixertype' $dirshm/output )
+		if [[ $mixertype != none ]] \
+			|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
+			|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
+			volumenone=false
+		else
+			volumenone=true
+		fi
 	fi
-fi
-grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-display=$( grep -v } $dirsystem/display.json )
-[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
-[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
-[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-display+='
+	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
+	display=$( grep -v } $dirsystem/display.json )
+	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
+	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
+	display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
@@ -56,20 +64,11 @@ display+='
 , "multiraudio"  : '$( exists $dirsystem/multiraudio )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'
-, "snapclient"   : '$( [[ $1 == snapclient || -e $dirsystem/snapclient ]] && echo true )'
+, "snapclient"   : '$( exists $dirsystem/snapclient )'
 , "volumenone"   : '$volumenone'
 }'
 status+='
 , "display"      : '$display
-
-if [[ $1 == snapclient ]]; then
-	snapclient=1
-	player=mpd
-	icon=snapcast
-else
-	player=$( < $dirshm/player )
-	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
-	[[ $player != mpd ]] && icon=$player
 	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
