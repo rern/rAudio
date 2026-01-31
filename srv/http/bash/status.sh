@@ -35,6 +35,14 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
+	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+		card='"bluealsa"'
+		mixer=$( < $dirshm/btmixer )
+	else
+		. <( grep -E '^card|^mixer' $dirshm/output )
+	fi
+	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && updating_db=true || updating_db=false
+#-----------------------------------------------------------------------------------------
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
@@ -48,10 +56,9 @@ else
 		fi
 	fi
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-	display=$( grep -v '{\|}' $dirsystem/display.json )
-	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
+	display=$( grep -Ev '{|}' $dirsystem/display.json )
 	display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
@@ -66,15 +73,7 @@ else
 , "screenoff"    : '$screenoff'
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
 , "volumenone"   : '$volumenone
-status+='
-, "display"      : { '$display' }'
-	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-		card='"bluealsa"'
-		mixer=$( < $dirshm/btmixer )
-	else
-		. <( grep -E '^card|^mixer' $dirshm/output )
-	fi
-	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && updating_db=true || updating_db=false
+#-----------------------------------------------------------------------------------------
 ########
 	status+='
 , "player"       : "'$player'"
@@ -82,6 +81,7 @@ status+='
 , "card"         : '$card'
 , "control"      : "'$mixer'"
 , "counts"       : '$( getContent $dirmpd/counts '{}' )'
+, "display"      : { '$display' }
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
@@ -226,7 +226,7 @@ if [[ $pllength == 0 && ! $snapclient ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $display ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then

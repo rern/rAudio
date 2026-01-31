@@ -2424,6 +2424,7 @@ var UTIL      = {
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
 		COMMON.statusToggle( 'refresh' );
 		if ( ! V.library ) UTIL.refresh();
 		DISPLAY.controls();
