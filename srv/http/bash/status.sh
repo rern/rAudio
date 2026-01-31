@@ -48,7 +48,7 @@ else
 		fi
 	fi
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-	display=$( grep -v } $dirsystem/display.json )
+	display=$( grep -v '{\|}' $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
@@ -65,10 +65,9 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
-, "volumenone"   : '$volumenone'
-}'
+, "volumenone"   : '$volumenone
 status+='
-, "display"      : '$display
+, "display"      : { '$display' }'
 	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
