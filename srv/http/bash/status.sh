@@ -58,8 +58,7 @@ else
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	display=$( grep -Ev '{|}' $dirsystem/display.json )
-	display+='
+	display=$( grep -Ev '{|}' $dirsystem/display.json )'
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
