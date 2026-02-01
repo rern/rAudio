@@ -157,7 +157,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 					}
 				}, 'json' );
 			}
-			BANNER( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ), -1 );
+			NOTIFY( 'snapcast', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
@@ -595,7 +595,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 					, spotify   : 'Spotify'
 					, upnp      : 'UPnP'
 				}
-				BANNER( S.player, icon_player[ S.player ], 'Stop ...', -1 );
+				NOTIFY( S.player, icon_player[ S.player ], 'Stop ...' );
 				return
 			}
 			

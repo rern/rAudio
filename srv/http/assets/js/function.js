@@ -1174,7 +1174,7 @@ var LIBRARY   = {
 }
 var LYRICS    = {
 	  fetch        : refresh => {
-		BANNER( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
+		NOTIFY( 'lyrics', 'Lyrics', 'Fetch ...' );
 		var artist = LYRICS.plain( V.lyricsartist );
 		var title  = LYRICS.plain( V.lyricstitle );
 		BASH( [ 'lyrics', artist, title, S.file, refresh || '', 'CMD ARTIST TITLE FILE ACTION' ], data => {
@@ -1298,7 +1298,7 @@ var MENU      = {
 		var webradio  = $LI.hasClass( 'webradio' );
 		V.list        = {};
 		V.list.path   = $LI.find( '.lipath' ).text();
-		V.list.name   = $LI.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
+		V.list.name   = $LI.find( webradio ? '.li1 .name' : '.name' ).eq( 0 ).text();
 		V.list.index  = $LI.index();
 		var $menu = $( '#menu-plaction' );
 		var menushow  = ! $menu.hasClass( 'hide' );
@@ -1770,7 +1770,7 @@ var PLAYLIST  = {
 	, addSimilar  : () => {
 		var icon  = 'lastfm';
 		var title = 'Add Similar';
-		BANNER( icon +' blink', title, 'Get similar tracks ...', -1 );
+		NOTIFY( icon, title, 'Get similar tracks ...' );
 		BASH( [ 'mpcsimilar', V.list.path, 'CMD FILE' ], error => {
 			if ( error ) {
 				BANNER_HIDE();
@@ -1805,7 +1805,7 @@ var PLAYLIST  = {
 		}
 		
 		if ( $( '#pl-list' ).is( ':empty' ) ) {
-			if ( $( '#bar-top' ).hasClass( 'hide' ) ) BANNER( 'playlist blink', 'Playlist', 'Get ...', -1 )
+			if ( $( '#bar-top' ).hasClass( 'hide' ) ) NOTIFY( 'playlist', 'Playlist', 'Get ...' )
 		}
 		PLAYLIST.blink();
 		LIST( { playlist: 'current' }, data => {
@@ -1815,7 +1815,8 @@ var PLAYLIST  = {
 		}, 'json' );
 	}
 	, insert      : {
-		  position : pos => {
+		  banner   : () => NOTIFY( 'cursor', 'Add to a playlist', 'Select position to insert' )
+		, position : pos => {
 			var plname = $( '#pl-title .lipath' ).text();
 			BANNER( 'playlists', V.pladd.name, 'Add ...' );
 			BASH( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
@@ -1836,12 +1837,11 @@ var PLAYLIST  = {
 				, buttoncolor : V.orange
 				, button      : () => {
 					_INFO.reset();
-					BANNER( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
+					PLAYLIST.insert.banner();
 				}
 				, cancel      : PLAYLIST.playlists.addClear
 				, ok          : () => PLAYLIST.insert.position( +_INFO.val() + V.pladd.index )
 			} );
-			BANNER_HIDE();
 		}
 		, set      : () => {
 			$( '.infomessage' ).addClass( 'tagmessage' );
@@ -1854,16 +1854,17 @@ var PLAYLIST  = {
 				, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 				, values     : 'last'
 				, beforeshow : () => {
+					BANNER_HIDE();
 					PLAYLIST.insert.set();
 					$( '#infoList label' ).eq( 1 ).on( 'click', function() {
-						$( '#infoX' ).trigger( 'click' );
-						BANNER( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
+						_INFO.reset();
+						$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
+						PLAYLIST.insert.banner();
 					} );
 				}
 				, cancel     : PLAYLIST.playlists.addClear
 				, ok         : () => PLAYLIST.insert.position( _INFO.val() )
 			} );
-			BANNER_HIDE();
 		}
 	}
 	, load        : ( name, play, replace ) => {
@@ -1992,7 +1993,7 @@ var PLAYLIST  = {
 					V.rangei  = $( this ).parent().index();
 					$( '#infoOverlay' ).addClass( 'hide' );
 					$disabled.addClass( 'disabled' );
-					BANNER( 'cursor blink', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...', -1 );
+					NOTIFY( 'cursor', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...' );
 				} );
 			}
 			, cancel     : clear
@@ -2293,7 +2294,7 @@ var UTIL      = {
 				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 			}
 		} );
-		BANNER( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
+		BANNER( V.icoverart, I.title, 'Change ...', -1 );
 	}
 	, infoTitle       : () => {
 		var artist = S.Artist;
@@ -2650,7 +2651,7 @@ var WEBRADIO  = {
 			}
 			, ok         : () => {
 				var val = _INFO.val();
-				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) BANNER( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
+				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) NOTIFY( 'webradio', 'Web Radio', 'Get URL ...' );
 				BASH( COMMON.cmd_json2args( 'webradioadd', val ), error => {
 					BANNER_HIDE();
 					if ( error ) WEBRADIO.exists( error, val.NAME, val.URL, val.CHARSET );
