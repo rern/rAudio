@@ -1289,10 +1289,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, title      : 'Remove From Playlist'
 			, list       : [ '', 'radio', { 
 				  kv       : {
-					  '<i class="i-flash red"></i> All'        : 'all'
-					, '<i class="i-cursor"></i>    Select ...' : 'select'
-					, '<i class="i-track"></i>     Range ...'  : 'range'
-					, '<i class="i-crop yl"></i>   Crop'       : 'crop'
+					  '<i class="i-flash red"></i>All'     : 'all'
+					, '<i class="i-cursor"></i>Select ...' : 'select'
+					, '<i class="i-track"></i>Range ...'   : 'range'
+					, '<i class="i-crop yl"></i>Crop'      : 'crop'
 				}
 				, sameline : false
 			} ]

@@ -1853,7 +1853,13 @@ var PLAYLIST  = {
 			V.pladd.title = 'Add to '+ V.pladd.name;
 			INFO( {
 				  ...V.pladd
-				, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
+				, list       : [ 'Position:', 'radio', {
+					kv       : {
+						  First                                : 1
+						, '<i class="i-cursor"></i>Select...' : 'select'
+						, Last                                 : 'last'
+					}
+				} ]
 				, values     : 'last'
 				, beforeshow : () => {
 					BANNER_HIDE();
