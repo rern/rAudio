@@ -17,8 +17,8 @@ fi
 
 statusData() {
 	if [[ $snapclient ]]; then
-		status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$ip'\2|
-						  s|^(, "coverart" *: ")(.+")|\1http://'$ip'\2|' <<< ${status:1} )
+		status+='
+, "snapserverip" : "'$ip'"'
 		data2jsonPatch "$status"
 	else
 		data2json "$status"
