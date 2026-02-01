@@ -2425,7 +2425,12 @@ var UTIL      = {
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
-		if ( S.player === 'snapcast' ) [ 'coverart', 'stationcover' ].forEach( k => S[ k ] = 'http://'+ S.snapserverip + S[ k ] );
+		if ( S.player === 'snapcast' ) {
+			[ 'coverart', 'stationcover' ].forEach( k => {
+				console.log( S[ k ] )
+				if ( S[ k ] ) S[ k ] = 'http://'+ S.snapserverip + S[ k ];
+			} );
+		}
 		COMMON.statusToggle( 'refresh' );
 		if ( ! V.library ) UTIL.refresh();
 		DISPLAY.controls();
