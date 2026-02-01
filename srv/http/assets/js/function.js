@@ -1815,7 +1815,7 @@ var PLAYLIST  = {
 		}, 'json' );
 	}
 	, insert      : {
-		  banner   : () => NOTIFY( 'cursor', 'Add to a playlist', 'Select position to insert' )
+		  banner   : () => NOTIFY( 'cursor', V.pladd.title, 'Select position to insert' )
 		, position : pos => {
 			var plname = $( '#pl-title .lipath' ).text();
 			BANNER( 'playlists', V.pladd.name, 'Add ...' );
