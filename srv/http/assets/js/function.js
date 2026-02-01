@@ -1275,6 +1275,7 @@ var MENU      = {
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
+			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
