@@ -145,19 +145,19 @@ $( '#settings' ).on( 'click', '.settings', function() {
 					}
 					
 					if ( data.length === 1 ) {
-						BASH( [ 'snapclient.sh', data[ 0 ].replace( /.* /, '' ) ] );
+						UTIL.snapcastConnect( data[ 0 ] );
 					} else {
 						INFO( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
 							, message : 'Select server:'
 							, list    : [ '', 'radio', { kv: data, sameline: false } ]
-							, ok      : () => BASH( [ 'snapclient.sh', _INFO.val().replace( /.* /, '' ) ] )
+							, ok      : UTIL.snapcastConnect( _INFO.val() )
 						} );
 					}
 				}, 'json' );
 			}
-			BANNER( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
+			BANNER( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ), -1 );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
@@ -595,7 +595,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 					, spotify   : 'Spotify'
 					, upnp      : 'UPnP'
 				}
-				BANNER( S.player, icon_player[ S.player ], 'Stop ...' );
+				BANNER( S.player, icon_player[ S.player ], 'Stop ...', -1 );
 				return
 			}
 			

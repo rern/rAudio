@@ -17,7 +17,6 @@ if [[ $1 == stop ]]; then
 	$dirbash/cmd.sh playerstop
 	rm -f $dirshm/snapserverip
 else
-	notify snapcast SnapServer "Connect $1 ..."
 	echo $1 > $dirshm/snapserverip
 	echo snapcast > $dirshm/player
 	systemctl start snapclient

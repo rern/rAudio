@@ -2409,6 +2409,11 @@ var UTIL      = {
 			}
 		}
 	}
+	, snapcastConnect : server => {
+		var ip = server.replace( /.* /, '' );
+		BANNER( 'snapcast blink', 'SnapClient', 'Connect '+ ip +' ...', -1 );
+		BASH( [ 'snapclient.sh', ip ], () => BANNER_HIDE() );
+	}
 	, statusUpdate    : status => {
 		if ( 'counts' in status ) {
 			C              = status.counts;
@@ -2427,7 +2432,6 @@ var UTIL      = {
 		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
 		if ( S.player === 'snapcast' ) {
 			[ 'coverart', 'stationcover' ].forEach( k => {
-				console.log( S[ k ] )
 				if ( S[ k ] ) S[ k ] = 'http://'+ S.snapserverip + S[ k ];
 			} );
 		}
