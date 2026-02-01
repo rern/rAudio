@@ -163,6 +163,12 @@ $body        = [
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
+	,[
+		  'id'       => 'nvme'
+		, 'label'    => 'NVMe Storage'
+		, 'help'     => 'NVMe drives via GPIO HAT'
+		, 'exist'    => 'x'
+	]
 	, [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
