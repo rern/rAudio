@@ -16,13 +16,7 @@ if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server 
 fi
 
 statusData() {
-	if [[ $snapclient ]]; then
-		status+='
-, "snapserverip" : "'$ip'"'
-		data2jsonPatch "$status"
-	else
-		data2json "$status"
-	fi
+	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status"
 }
 
 ip=$( ipAddress )
@@ -32,6 +26,8 @@ if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
 	icon=snapcast
+	status+='
+, "snapserverip" : "'$ip'"'
 else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
