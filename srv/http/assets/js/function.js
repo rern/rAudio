@@ -1855,9 +1855,9 @@ var PLAYLIST  = {
 				  ...V.pladd
 				, list       : [ 'Position:', 'radio', {
 					kv       : {
-						  First                                : 1
+						  First                               : 1
 						, '<i class="i-cursor"></i>Select...' : 'select'
-						, Last                                 : 'last'
+						, Last                                : 'last'
 					}
 				} ]
 				, values     : 'last'
