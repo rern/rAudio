@@ -1835,8 +1835,8 @@ var PLAYLIST  = {
 				, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 				, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 				, beforeshow  : PLAYLIST.insert.set
-				, buttonlabel : ICON( 'undo' ) +'Select'
-				, buttoncolor : V.orange
+				, buttonlabel : ICON( 'cursor' ) +'Reselect'
+				, buttoncolor : 'var( --cg )'
 				, button      : () => {
 					_INFO.reset();
 					PLAYLIST.insert.banner();
