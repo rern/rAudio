@@ -2411,7 +2411,7 @@ var UTIL      = {
 	}
 	, snapcastConnect : server => {
 		var ip = server.replace( /.* /, '' );
-		BANNER( 'snapcast blink', 'SnapClient', 'Connect '+ ip +' ...', -1 );
+		NOTIFY( 'snapcast', 'SnapClient', 'Connect '+ ip +' ...' );
 		BASH( [ 'snapclient.sh', ip ], () => BANNER_HIDE() );
 	}
 	, statusUpdate    : status => {
