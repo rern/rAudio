@@ -15,8 +15,6 @@ if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server 
 	systemctl start mpd
 fi
 
-ip=$( ipAddress )
-
 statusData() {
 	if [[ $snapclient ]]; then
 		status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$ip'\2|
@@ -26,6 +24,9 @@ statusData() {
 		data2json "$status"
 	fi
 }
+
+ip=$( ipAddress )
+displayjson=$( < $dirsystem/display.json )
 
 if [[ $1 == snapclient ]]; then
 	snapclient=1
@@ -58,7 +59,7 @@ else
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	display=$( grep -Ev '{|}' $dirsystem/display.json )'
+	display=$( grep -Ev '{|}' <<< $displayjson )'
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
@@ -225,7 +226,7 @@ if [[ $pllength == 0 && ! $snapclient ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $display ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $displayjson ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
