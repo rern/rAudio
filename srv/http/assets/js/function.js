@@ -1828,6 +1828,7 @@ var PLAYLIST  = {
 			} );
 		}
 		, select   : () => {
+			BANNER_HIDE();
 			INFO( {
 				  ...V.pladd
 				, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
