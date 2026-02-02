@@ -59,6 +59,14 @@ if [[ $usb ]]; then
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
+# unpartitioned
+blk=$( blkid | grep PTUUID )
+if [[ $blk ]]; then
+	while read dev; do
+		[[ ${dev:5:2} == sd ]] && icon=usbdrive || icon=nvme
+		list+=$( listItem $icon '' $dev )
+	done <<< ${blk/:*}
+fi
 # nas
 nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
 if [[ $nas ]]; then

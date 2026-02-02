@@ -823,8 +823,9 @@ var UTIL          = {
 			} else if ( list.rserver ) {
 				cls += ' rserver';
 			}
-			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size +' <c>'+ source +'</c></li>';
+			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ICON( list.icon ) +'<dot></dot>';
+			if ( mountpoint ) html += mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size;
+			html          += ' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
@@ -1058,13 +1059,16 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted    = $li.hasClass( 'current' );
-		var usb        = $li.find( '.i-usbdrive' ).length > 0;
-		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
+		var mounted = $li.hasClass( 'current' );
+		var usb     = $li.find( '.i-usbdrive' ).length > 0;
+		var nopart  = mountpoint === '';
+		$( '#menu .info' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', usb );
-		$( '#menu .mount' ).toggleClass( 'hide', mounted );
+		$( '#menu .mount' ).toggleClass( 'hide', mounted || nopart );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
+		$( '#menu .sleep' ).toggleClass( 'hide', ! usb || nopart );
+		$( '#menu .format' ).toggleClass( 'hide', ! nopart );
 	}
 	MENU.show( $li );
 } );
@@ -1148,6 +1152,17 @@ $( '#menu a' ).on( 'click', function( e ) {
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
+		case 'format':
+			INFO( {
+				  icon    : 'format'
+				, title   : 'Format Drive'
+				, message : ICON( 'warning yl' ) +' All data in <c>'+ source +'</c> will be ERASED!'
+				, ok      : () => {
+					NOTIFY( icon, title, 'Format ...' );
+					BASH( [ 'format', source, 'CMD DEV' ] );
+				}
+			} );
+			break;
 		case 'info':
 			STATUS( 'storage', source, 'info' );
 			break

@@ -182,6 +182,16 @@ CMD ACTION PATHMPD"
 	fi
 	pushRefresh
 	;;
+format )
+	echo -e "o\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
+	partprobe $DEV
+	blk=$( blkid | grep ^$DEV )
+	part=${blk/:*}
+	umount -l $part
+	[[ ! $LABEL ]] && LABEL=Storage
+	mkfs.ext4 -F $part -L "$LABEL"
+	pushRefresh
+	;;
 gpiotoggle )
 	gpioset -t0 -c0 $PIN
 	;;

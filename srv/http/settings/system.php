@@ -166,7 +166,7 @@ $body        = [
 	,[
 		  'id'       => 'nvme'
 		, 'label'    => 'NVMe Storage'
-		, 'help'     => 'NVMe drives on GPIO HAT via PCI express connector'
+		, 'help'     => 'NVMe storage on GPIO HAT with PCIe connector'
 		, 'exist'    => '/srv/http/data/shm/rpi5'
 	]
 	, [
@@ -466,4 +466,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 </div>
 
 <?php
-htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount' ] );
+htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format' ] );

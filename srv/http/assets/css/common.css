@@ -80,6 +80,7 @@ i {
 .i-current::before,
 .i-mount::before           { content: '\F56D' }
 .i-consume::before,
+.i-format::before,
 .i-flash::before           { content: '\F566' }
 .i-controls::before,
 .i-features::before,
