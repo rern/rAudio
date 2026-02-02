@@ -166,8 +166,8 @@ $body        = [
 	,[
 		  'id'       => 'nvme'
 		, 'label'    => 'NVMe Storage'
-		, 'help'     => 'NVMe drives via GPIO HAT'
-		, 'exist'    => 'x'
+		, 'help'     => 'NVMe drives on GPIO HAT via PCI express connector'
+		, 'exist'    => '/srv/http/data/shm/rpi5'
 	]
 	, [
 		  'id'       => 'powerbutton'

@@ -24,7 +24,10 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
+	BB=${revision: -3:2}
+	if [[ $BB == 17 ]]; then   # rpi 5
+		touch $dirshm/rpi5
+	elif [[ $BB == 12 ]]; then # zero 2
 		localBrowserOff
 	fi
 fi
