@@ -3,7 +3,7 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
+	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
@@ -71,7 +71,6 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Add network storage
-$B->microsd$B->usbdrive$B->networks Context menu
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by $B->add:
@@ -94,6 +93,8 @@ List:
 	Path: <c>/mnt/MPD/...</c>
 	<i class="btn">«</i> $L->shareddata
 	<i class="btn">»</i> $L->serverraudio
+	
+$B->microsd$B->usbdrive$B->nvme$B->networks Context menu
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

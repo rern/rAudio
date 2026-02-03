@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1769936036' );
+	src         : url( '/assets/fonts/rern.woff2?v=1769936038' );
 }
 @font-face {
 	font-family : Lato;
@@ -80,7 +80,6 @@ i {
 .i-current::before,
 .i-mount::before           { content: '\F56D' }
 .i-consume::before,
-.i-format::before,
 .i-flash::before           { content: '\F566' }
 .i-controls::before,
 .i-features::before,
@@ -116,15 +115,16 @@ i {
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }
 .i-folder-plus::before     { content: '\F54D' }
+.i-format::before          { content: '\F609' }
 .i-gear::before,
 .i-settings::before        { content: '\F509' }
 .i-gears::before           { content: '\F50A' }
 .i-genre::before           { content: '\F55A' }
 .i-github::before          { content: '\F583' }
-.i-gpiopins::before,
-.i-nvme::after             { content: '\F572' }
+.i-gpiopins::before        { content: '\F572' }
 .i-graph::before           { content: '\F52C' }
 .i-guide::before           { content: '\F579' }
+.i-hdd::before             { content: '\F60A' }
 .i-hddsleep::before,
 .i-usb::before,
 .i-usbdrive::before        { content: '\F553' }
@@ -167,6 +167,7 @@ i {
 .i-next::before            { content: '\F505' }
 .i-nfsserver::before,
 .i-rserver::before         { content: '\F53C' }
+.i-nvme::before            { content: '\F60B' }
 .i-off::before,
 .i-power::before,
 .i-powerbutton::before     { content: '\F520' }

@@ -817,15 +817,21 @@ var UTIL          = {
 		S.list.storage.forEach( list => {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
+			var size       = list.size;
 			var cls        = list.size ? 'current' : 'profile';
+			var icon       = ICON( list.icon );
 			if ( list.shareddata ) {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
 				cls += ' rserver';
 			}
-			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ICON( list.icon ) +'<dot></dot>';
-			if ( mountpoint ) html += mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size;
-			html          += ' <c>'+ source +'</c></li>';
+			html     += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="';
+			if ( mountpoint ) {
+				html += mountpoint +'">'+ icon +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ size;
+			} else {
+				html += size +'">'+ icon +'<gr>('+ size +')</gr> ·';
+			}
+			html     += ' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
@@ -1061,14 +1067,14 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.hasClass( 'current' );
 		var usb     = $li.find( '.i-usbdrive' ).length > 0;
-		var nopart  = mountpoint === '';
+		var format  = mountpoint[ 0 ] !== '/';
 		$( '#menu .info' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', usb );
-		$( '#menu .mount' ).toggleClass( 'hide', mounted || nopart );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
+		$( '#menu .mount' ).toggleClass( 'hide', mounted || format );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || format );
 		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
-		$( '#menu .sleep' ).toggleClass( 'hide', ! usb || nopart );
-		$( '#menu .format' ).toggleClass( 'hide', ! nopart );
+		$( '#menu .sleep' ).toggleClass( 'hide', ! usb || format );
+		$( '#menu .format' ).toggleClass( 'hide', ! format );
 	}
 	MENU.show( $li );
 } );
@@ -1153,13 +1159,18 @@ $( '#menu a' ).on( 'click', function( e ) {
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'format':
+			icon  = 'format';
+			title = 'Format Drive';
 			INFO( {
-				  icon    : 'format'
-				, title   : 'Format Drive'
-				, message : ICON( 'warning yl' ) +' All data in <c>'+ source +'</c> will be ERASED!'
+				  icon    : icon
+				, title   : title
+				, list    : [ 'Label', 'text' ]
+				, checkblank : true
 				, ok      : () => {
-					NOTIFY( icon, title, 'Format ...' );
-					BASH( [ 'format', source, 'CMD DEV' ] );
+					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
+						NOTIFY( icon, title, 'Format ...' );
+						BASH( [ 'format', source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
+					} );
 				}
 			} );
 			break;

@@ -8,6 +8,9 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mountpoint=$2
 	source=$3
 	mounted=$4
+	if [[ ! $mountpoint ]]; then
+		blkid $source | grep -q PTUUID && size=(unpartitioned) || size=(unformatted)
+	fi
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
 		size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		[[ ${source:0:4} == /dev ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
@@ -59,14 +62,6 @@ if [[ $usb ]]; then
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
-# unpartitioned
-blk=$( blkid | grep PTUUID )
-if [[ $blk ]]; then
-	while read dev; do
-		[[ ${dev:5:2} == sd ]] && icon=usbdrive || icon=nvme
-		list+=$( listItem $icon '' $dev )
-	done <<< ${blk/:*}
-fi
 # nas
 nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
 if [[ $nas ]]; then
@@ -77,5 +72,13 @@ if [[ $nas ]]; then
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem networks "$mountpoint" "$source" $mounted )
 	done <<< $nas
+fi
+# unpartitioned
+blk=$( blkid | grep -v ' TYPE="' )
+if [[ $blk ]]; then
+	while read dev; do
+		[[ ${dev:5:2} == sd ]] && icon=usbdrive || icon=nvme
+		list+=$( listItem $icon '' $dev )
+	done <<< ${blk/:*}
 fi
 echo "[ ${list:1} ]"

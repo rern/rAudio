@@ -183,13 +183,15 @@ CMD ACTION PATHMPD"
 	pushRefresh
 	;;
 format )
-	echo -e "o\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
-	partprobe $DEV
-	blk=$( blkid | grep ^$DEV )
-	part=${blk/:*}
-	umount -l $part
-	[[ ! $LABEL ]] && LABEL=Storage
-	mkfs.ext4 -F $part -L "$LABEL"
+	if [[ $UNPART ]]; then
+		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
+		blk=$( blkid | grep ^$DEV )
+		DEV=${blk/:*}
+	fi
+	umount -l $DEV
+	touch $dirshm/formatting
+	mkfs.ext4 -F $DEV -L "$LABEL"
+	rm -f $dirshm/formatting
 	pushRefresh
 	;;
 gpiotoggle )
