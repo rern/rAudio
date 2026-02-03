@@ -163,21 +163,25 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-filesystem )
-	fstab="\
-$( < /etc/fstab )
-$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	mount -a
-	pushRefresh
-	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
+	dir=${MOUNTPOINT:9:3}
+	if [[ $CMD == mount ]]; then
+		if [[ $dir == NAS ]]; then
+			mount "$MOUNTPOINT"
+		elif [[ $dir == USB ]]; then
+			udevil mount $SOURCE
+		else # nvme / sata
+			mkdir -p $MOUNTPOINT
+			fstab="\
+$( < /etc/fstab )
+$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
+			column -t <<< $fstab > /etc/fstab
+			systemctl daemon-reload
+			mount -a
+		fi
 	else
-		[[ $CMD == mount ]] && udevil mount $SOURCE || udevil umount -l "$MOUNTPOINT"
+		[[ $dir == USB ]] && udevil umount -l "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
 	fi
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null

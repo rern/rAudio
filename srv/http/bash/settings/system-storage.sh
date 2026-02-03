@@ -42,10 +42,6 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		[[ $shareddata ]] && list+='
 , "shareddata" : true'
 	fi
-	if [[ $icon == nvme || $icon == sata ]] && grep -q ^$source /etc/fstab; then
-		list+='
-, "fstab"      : true'
-	fi
 	echo ", {
 $list
 }"

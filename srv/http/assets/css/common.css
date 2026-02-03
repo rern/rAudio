@@ -31,8 +31,7 @@ i {
 	font-style  : normal;
 }
 .i-add::before,
-.i-plus::before,
-.i-filesystem:before       { content: '\F519' }
+.i-plus::before            { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before,
 .i-shairportsync::before,

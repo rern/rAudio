@@ -824,8 +824,6 @@ var UTIL          = {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
 				cls += ' rserver';
-			} else if ( list.fstab ) {
-				cls += ' fstab';
 			}
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
@@ -1067,7 +1065,6 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var networks = $li.hasClass( 'networks' );
 		var usb      = $li.hasClass( 'usb' );
 		var format   = mountpoint[ 0 ] === '(';
-		var fstab    = $li.hasClass( 'fstab' );
 		var shared   = $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' );
 		$( '#menu .info' ).toggleClass( 'hide', networks );
 		$( '#menu .forget' ).toggleClass( 'hide', usb || format );
@@ -1076,7 +1073,6 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', shared );
 		$( '#menu .sleep' ).toggleClass( 'hide', usb || format );
 		$( '#menu .format' ).toggleClass( 'hide', ! format );
-		$( '#menu .filesystem' ).toggleClass( 'hide', usb || networks || fstab );
 	}
 	MENU.show( $li );
 } );
@@ -1177,9 +1173,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 				}
 			} );
 			break;
-		case 'filesystem':
-			BASH( [ cmd, source, mountpoint, 'CMD SOURCE MOUNTPOINT' ] );
-			break
 		case 'info':
 			STATUS( 'storage', source, 'info' );
 			break
