@@ -163,6 +163,15 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
+filesystem )
+	fstab="\
+$( < /etc/fstab )
+$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
+	column -t <<< $fstab > /etc/fstab
+	systemctl daemon-reload
+	mount -a
+	pushRefresh
+	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then

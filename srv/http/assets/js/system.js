@@ -815,6 +815,7 @@ var UTIL          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
+			var icon   = list.icon;
 			var mp     = list.mountpoint;
 			var source = list.source;
 			var size   = list.size;
@@ -823,8 +824,10 @@ var UTIL          = {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
 				cls += ' rserver';
+			} else if ( list.fstab ) {
+				cls += ' fstab';
 			}
-			html      += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( list.icon );
+			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
 			html      += ' <c>'+ source +'</c></li>';
 		} );
@@ -1060,16 +1063,20 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = $li.hasClass( 'current' );
-		var usb     = $li.find( '.i-usbdrive' ).length > 0;
-		var format  = mountpoint[ 0 ] === '(';
-		$( '#menu .info' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb );
+		var mounted  = $li.hasClass( 'current' );
+		var networks = $li.hasClass( 'networks' );
+		var usb      = $li.hasClass( 'usb' );
+		var format   = mountpoint[ 0 ] === '(';
+		var fstab    = $li.hasClass( 'fstab' );
+		var shared   = $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' );
+		$( '#menu .info' ).toggleClass( 'hide', networks );
+		$( '#menu .forget' ).toggleClass( 'hide', usb || format );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted || format );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || format );
-		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
-		$( '#menu .sleep' ).toggleClass( 'hide', ! usb || format );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', shared );
+		$( '#menu .sleep' ).toggleClass( 'hide', usb || format );
 		$( '#menu .format' ).toggleClass( 'hide', ! format );
+		$( '#menu .filesystem' ).toggleClass( 'hide', usb || networks || fstab );
 	}
 	MENU.show( $li );
 } );
@@ -1164,12 +1171,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 				, ok      : () => {
 					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
 						NOTIFY( icon, title, 'Format ...' );
-						BASH( [ 'format', source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
+						BASH( [ cmd, source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
 						$li.find( 'i' ).addClass( 'blink' );
 					} );
 				}
 			} );
 			break;
+		case 'filesystem':
+			BASH( [ cmd, source, mountpoint, 'CMD SOURCE MOUNTPOINT' ] );
+			break
 		case 'info':
 			STATUS( 'storage', source, 'info' );
 			break

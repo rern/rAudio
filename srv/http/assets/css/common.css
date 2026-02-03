@@ -31,7 +31,8 @@ i {
 	font-style  : normal;
 }
 .i-add::before,
-.i-plus::before            { content: '\F519' }
+.i-plus::before,
+.i-filesystem:before       { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before,
 .i-shairportsync::before,
@@ -124,7 +125,6 @@ i {
 .i-gpiopins::before        { content: '\F572' }
 .i-graph::before           { content: '\F52C' }
 .i-guide::before           { content: '\F579' }
-.i-hdd::before             { content: '\F60A' }
 .i-hddsleep::before,
 .i-usb::before,
 .i-usbdrive::before        { content: '\F553' }
@@ -208,6 +208,7 @@ i {
 .i-reset::before           { content: '\F527' }
 .i-restore::before         { content: '\F544' }
 .i-rotaryencoder::before   { content: '\F57F' }
+.i-sata::before            { content: '\F60A' }
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before,

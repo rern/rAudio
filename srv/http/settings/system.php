@@ -461,4 +461,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 </div>
 
 <?php
-htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format' ] );
+htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format', 'filesystem' ] );

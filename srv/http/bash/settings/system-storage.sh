@@ -2,6 +2,10 @@
 
 . /srv/http/bash/common.sh
 
+dev2disk() {
+	[[ ${1:5:2} == sd ]] && disk=${1:5:3} || disk=${1:5:7}
+	lsblk -no NAME,TRAN | awk '/^'$disk'/ {print $NF}'
+}
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	local apm hdapm icon info list mounted mountpoint size usf
 	icon=$1
@@ -12,7 +16,8 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		elif [[ $mountpoint ]]; then
-			size=$( lsblk -no SIZE $source )B
+			gib=$( lsblk -no SIZE $source )
+			size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B
 		fi
 		size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	else
@@ -37,6 +42,10 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		[[ $shareddata ]] && list+='
 , "shareddata" : true'
 	fi
+	if [[ $icon == nvme || $icon == sata ]] && grep -q ^$source /etc/fstab; then
+		list+='
+, "fstab"      : true'
+	fi
 	echo ", {
 $list
 }"
@@ -54,17 +63,22 @@ if [[ $usb ]]; then
 		type=$( blkid -o value -s TYPE $source )
 		[[ ! $type ]] && continue
 		
+		icon=$( dev2disk $source )
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( lsblk -no label $source )"
+			if [[ $icon == usb ]]; then
+				mountpoint="$dirusb/$( lsblk -no label $source )"
+			else
+				mountpoint=/mnt/MPD/${icon^^}
+			fi
 		fi
 		[[ $mountpoint == $mountpointprev ]] && continue
 		
 		mountpointprev=$mountpoint
-		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
+		list+=$( listItem $icon "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
 # nas
@@ -78,11 +92,11 @@ if [[ $nas ]]; then
 		list+=$( listItem networks "$mountpoint" "$source" $mounted )
 	done <<< $nas
 fi
-# unpartitioned
+# unformatted / unpartitioned
 blk=$( blkid | grep -v ' TYPE="' )
 if [[ $blk ]]; then
 	while read dev; do
-		[[ ${dev:5:2} == sd ]] && icon=usbdrive || icon=nvme
+		icon=$( dev2disk $dev )
 		list+=$( listItem $icon '' $dev )
 	done <<< ${blk/:*}
 fi
