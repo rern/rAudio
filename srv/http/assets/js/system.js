@@ -815,23 +815,18 @@ var UTIL          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
-			var mountpoint = list.mountpoint;
-			var source     = list.source;
-			var size       = list.size;
-			var cls        = list.size ? 'current' : 'profile';
-			var icon       = ICON( list.icon );
+			var mp     = list.mountpoint;
+			var source = list.source;
+			var size   = list.size;
+			var cls    = list.mounted ? 'current' : 'profile';
 			if ( list.shareddata ) {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
 				cls += ' rserver';
 			}
-			html     += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="';
-			if ( mountpoint ) {
-				html += mountpoint +'">'+ icon +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ size;
-			} else {
-				html += size +'">'+ icon +'<gr>('+ size +')</gr> ·';
-			}
-			html     += ' <c>'+ source +'</c></li>';
+			html      += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( list.icon );
+			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
+			html      += ' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
 	}
@@ -1067,7 +1062,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.hasClass( 'current' );
 		var usb     = $li.find( '.i-usbdrive' ).length > 0;
-		var format  = mountpoint[ 0 ] !== '/';
+		var format  = mountpoint[ 0 ] === '(';
 		$( '#menu .info' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted || format );
@@ -1170,6 +1165,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
 						NOTIFY( icon, title, 'Format ...' );
 						BASH( [ 'format', source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
+						$li.find( 'i' ).addClass( 'blink' );
 					} );
 				}
 			} );

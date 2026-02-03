@@ -8,16 +8,21 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mountpoint=$2
 	source=$3
 	mounted=$4
-	if [[ ! $mountpoint ]]; then
+	if [[ $mountpoint ]]; then
+		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
+		elif [[ $mountpoint ]]; then
+			size=$( lsblk -no SIZE $source )B
+		fi
+		size+=" <c>$( blkid -o value -s TYPE $source )</c>"
+	else
+		[[ $source == $( getContent $dirshm/formatting ) ]] && icon+=' blink'
 		blkid $source | grep -q PTUUID && size=(unpartitioned) || size=(unformatted)
-	fi
-	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
-		[[ ${source:0:4} == /dev ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	fi
 	list='
   "icon"       : "'$icon'"
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
+, "mounted"    : '$mounted'
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
 	if systemctl -q is-active nfs-server; then

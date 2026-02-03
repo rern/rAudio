@@ -188,8 +188,8 @@ format )
 		blk=$( blkid | grep ^$DEV )
 		DEV=${blk/:*}
 	fi
+	echo $DEV > $dirshm/formatting
 	umount -l $DEV
-	touch $dirshm/formatting
 	mkfs.ext4 -F $DEV -L "$LABEL"
 	rm -f $dirshm/formatting
 	pushRefresh
