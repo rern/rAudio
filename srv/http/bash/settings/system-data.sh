@@ -117,7 +117,6 @@ data+='
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
-, "nvme"           : '$( grep -q dtoverlay=nvme /boot/config.txt && echo true )'
 , "rpi3plus"       : '$rpi3plus'
 , "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"

@@ -516,7 +516,7 @@ var UTIL          = {
 					var $input = $( '#infoList input' );
 					var $name  = $input.eq( 1 );
 					$input.eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
-					$input.slice( 4 ).prop( 'placeholder', '(optional)' );
+					$input.last().prop( 'placeholder', '(optional)' );
 					if ( shareddata ) {
 						$name
 							.val( 'data' )

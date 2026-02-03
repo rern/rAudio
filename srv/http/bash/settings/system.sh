@@ -317,19 +317,6 @@ NTP=$NTP" > /etc/systemd/timesyncd.conf
 	timedatectl set-ntp true
 	pushRefresh
 	;;
-nvme )
-	fstab=$( grep -v nvme /etc/fstab )
-	if [[ $ON ]]; then
-		echo "\
-dtoverlay=nvme" >> $file_config
-		fstab+='
-/dev/nvme0n1p1  /mnt/MPD/USB  ext4  defaults,noatime  0  0'
-	else
-		sed -i '/dtoverlay=nvme/ d' $file_config
-	fi
-	column -t <<< $fstab > /etc/fstab
-	configTxt
-	;;
 powerbutton )
 	enableFlagSet
 	if [[ $ON ]]; then

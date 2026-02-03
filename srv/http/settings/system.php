@@ -70,7 +70,7 @@ $head        = [
 	, 'button' => 'add addnas'
 	, 'list'   => true
 	, 'help'   => <<< EOF
-$B->add Add network storage
+$B->add Add network or local storage
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by $B->add:
@@ -163,12 +163,6 @@ $body        = [
 		, 'label'    => 'Audio - I²S'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
-	]
-	,[
-		  'id'       => 'nvme'
-		, 'label'    => 'NVMe Storage'
-		, 'help'     => 'NVMe storage on GPIO HAT with PCIe connector'
-		, 'exist'    => '/srv/http/data/shm/rpi5'
 	]
 	, [
 		  'id'       => 'powerbutton'
