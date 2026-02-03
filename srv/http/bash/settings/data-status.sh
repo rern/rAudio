@@ -73,14 +73,13 @@ infostorage )
 		param=$( hdparm -I $DEV )
 		if [[ $param ]]; then
 			data="
-
 <bll># hdparm -I $DEV</bll>
 $( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
 		fi
 	fi
 	status="\
 <bll># $cmd</bll>
-$( eval $cmd )"
+$( eval $cmd | awk NF )"
 	[[ $data ]] && status+="
 $data"
 	echo "$status"
