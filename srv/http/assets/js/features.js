@@ -285,13 +285,12 @@ var CONFIG       = {
 		data.key ? UTIL.scrobble.player( data.values ) : UTIL.scrobble.key();
 	}
 	, smb          : values => {
+		var list = [];
+		Object.keys( values ).forEach( k => list.push( [ '<gr>/mnt/MPD/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {
 			  ...SW
 			, message      : '<wh>Write</wh> permission:'
-			, list         : [
-				  [ '<gr>/mnt/MPD/</gr>SD',  'checkbox' ]
-				, [ '<gr>/mnt/MPD/</gr>USB', 'checkbox' ]
-			]
+			, list         : list
 			, values       : values
 			, checkchanged : S.smb
 			, cancel       : SWITCH.cancel

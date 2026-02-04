@@ -179,10 +179,18 @@ $SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
 			column -t <<< $fstab > /etc/fstab
 			systemctl daemon-reload
 			mount -a
+			echo "\
+[$dir]
+	path = $MOUNTPOINT
+	read only = no
+	dfree command = /srv/http/bash/smbdfree.sh" >> /etc/samba/smb.conf
 		fi
 	else
 		[[ $dir == USB ]] && udevil umount -l "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
-		[[ $dir == NVME || $dir == SATA ]] && rm -f $MOUNTPOINT
+		if [[ $dir == NVME || $dir == SATA ]]; then
+			rm -f $MOUNTPOINT
+			sed -i '/^\['$dir'/, /dfree command =/ d' /etc/samba/smb.conf
+		fi
 	fi
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null
