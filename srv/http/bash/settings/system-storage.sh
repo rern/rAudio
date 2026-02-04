@@ -2,10 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-dev2disk() {
-	[[ ${1:5:2} == sd ]] && disk=${1:5:3} || disk=${1:5:7}
-	lsblk -no NAME,TRAN | awk '/^'$disk'/ {print $NF}'
-}
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	local apm hdapm icon info list mounted mountpoint size usf
 	icon=$1
@@ -17,9 +13,9 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		elif [[ $mountpoint ]]; then
 			gib=$( lsblk -no SIZE $source )
-			size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B
+			[[ $size ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B
 		fi
-		size+=" <c>$( blkid -o value -s TYPE $source )</c>"
+		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	else
 		[[ $source == $( getContent $dirshm/formatting ) ]] && icon+=' blink'
 		blkid $source | grep -q PTUUID && size=(unpartitioned) || size=(unformatted)
@@ -59,40 +55,37 @@ if [[ $usb ]]; then
 		type=$( blkid -o value -s TYPE $source )
 		[[ ! $type ]] && continue
 		
-		icon=$( dev2disk $source )
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
 		else
 			mounted=false
-			if [[ $icon == usb ]]; then
-				mountpoint="$dirusb/$( lsblk -no label $source )"
-			else
-				mountpoint=/mnt/MPD/${icon^^}
-			fi
+			mountpoint="$dirusb/$( lsblk -no label $source )"
 		fi
 		[[ $mountpoint == $mountpointprev ]] && continue
 		
 		mountpointprev=$mountpoint
-		list+=$( listItem $icon "$mountpoint" "$source" $mounted )
+		list+=$( listItem usb "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
-# nas
-nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
-if [[ $nas ]]; then
-	nas=$( awk '{print $2"^"$1}' <<< $nas | sed 's/\\040/ /g' | sort )
+# nas nvme sata
+lines=$( grep -v ^PARTUUID /etc/fstab )
+if [[ $lines ]]; then
+	lines=$( awk '{print $2"^"$1}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
 		mountpoint=${line/^*}
 		source=${line/*^}
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
-		list+=$( listItem networks "$mountpoint" "$source" $mounted )
-	done <<< $nas
+		icon=${mountpoint:9:4}
+		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted )
+	done <<< $lines
 fi
 # unformatted / unpartitioned
 blk=$( blkid | grep -v ' TYPE="' )
 if [[ $blk ]]; then
 	while read dev; do
-		icon=$( dev2disk $dev )
+		[[ ${dev:5:2} == sd ]] && disk=${dev:5:-1} || disk=${dev:5:-2} # /dev/sda1 > sda ; /dev/nvme0n1p1 > nvme0n1
+		icon=$( lsblk -no NAME,TRAN | awk '/^'$disk'/ {print $NF}' )   # usb, sata       ; nvme
 		list+=$( listItem $icon '' $dev )
 	done <<< ${blk/:*}
 fi
