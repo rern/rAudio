@@ -327,8 +327,8 @@ dirdelete )
 	;;
 dirnew )
 	mkdir -p "$DIR"
-	chown -h http:http "$$DIR"
-	chmod 755 "$$DIR"
+	chown -h http:http "$DIR"
+	chmod 755 "$DIR"
 	pushRadioList
 	;;
 dirrename )
