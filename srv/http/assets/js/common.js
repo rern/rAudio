@@ -1459,16 +1459,16 @@ var COMMON    = {
 		}
 		
 		var message = '';
-		var modes = [ 'NAS', 'SD', 'USB' ];
+		var modes   = [ 'nas', 'sd', 'usb' ];
+		if ( C.nvme ) modes.push( 'nvme' );
+		if ( C.sata ) modes.push( 'sata' );
 		modes.forEach( k => {
-			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+			label = modes.length < 4 ? k : '';
+			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
 		} );
-		message  += '&ensp;<hr>';
-		if ( ! C.nas && ! C.sd && ! C.usb ) {
-			var values = { NAS: true, SD: true, USB: true }
-		} else {
-			var values = { NAS: C.nas, SD: C.sd, USB: C.usb }
-		}
+		message    += '&ensp;<hr>';
+		var values  = {}
+		modes.forEach( k => { values[ k ] = true } );
 		INFO( {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'
@@ -1488,9 +1488,11 @@ var COMMON    = {
 				var val     = _INFO.val();
 				var pathmpd = '';
 				if ( val.ACTION === 'update' ) {
+					var key;
 					var path = [];
 					modes.forEach( k => {
-						if ( val[ k ] ) path.push( k );
+						key = k.toUpperCase()
+						if ( val[ key ] ) path.push( key );
 					} );
 					if ( path.length < 3 ) pathmpd = path.join( ' ' );
 				}

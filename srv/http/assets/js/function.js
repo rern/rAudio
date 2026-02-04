@@ -1027,7 +1027,7 @@ var LIBRARY   = {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
-			[ 'nas', 'nvme', 'sata', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
+			[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
@@ -1267,7 +1267,7 @@ var MENU      = {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 		} else {
-			var album_file_radio = [ 'album', 'latest', 'nas', 'nvme', 'sata', 'sd', 'usb', 'webradio', 'dabradio' ].includes( mode );
+			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
