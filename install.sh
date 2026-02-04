@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260123
+# 20260212
 file=/etc/modprobe.d/blacklist.conf
 if [[ ! -e $file ]]; then
 	echo "\

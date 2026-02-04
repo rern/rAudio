@@ -68,15 +68,15 @@ if [[ $usb ]]; then
 		list+=$( listItem usb "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
-# nas nvme sata
+# fstab - nas nvme sata
 lines=$( grep -v ^PARTUUID /etc/fstab )
 if [[ $lines ]]; then
 	lines=$( awk '{print $2"^"$1}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
 		mountpoint=${line/^*}
 		source=${line/*^}
+		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
-		icon=${mountpoint:9:4}
 		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted )
 	done <<< $lines
 fi
