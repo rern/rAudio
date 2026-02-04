@@ -1144,13 +1144,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
 	var source     = $li.data( 'id' );
-	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon  = 'networks';
-		var title = 'Network Mount';
-	} else {
-		var icon  = 'usbdrive';
-		var title = 'Local Mount';
-	}
+	var icon       = $li.find( 'i' ).prop( 'class' ).slice( 2 );
+	var title      = ( icon === 'nas' ? 'Network' : 'Local' ) +' Storage';
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
