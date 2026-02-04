@@ -98,15 +98,15 @@ case 'findartist': // artist, albumartist
 	echo $html;
 	break;
 case 'home':
-	$modes     = [ 'Album',  'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre'
-				 , 'Latest', 'NAS',    'SD',           'USB',      'Playlists', 'Web Radio', 'DAB Radio' ];
+	$modes     = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
+				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
 	$modes_l   = [];
 	$htmlmode  = '';
 	foreach( $modes as $mode ) {
 		$lipath    = str_replace( ' ', '', $mode );
 		$mode_l    = strtolower( $lipath );
 		$modes_l[] = $mode_l;
-		$gr        = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
+		$gr        = modeFile( $mode_l ) ? '' : '<gr></gr>';
 		$htmlmode .= '
 <li class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
@@ -363,6 +363,9 @@ function escape( $string ) { // for passing bash arguments
 
 	return esc( $string );
 }
+function modeFile( $mode ) {
+	return in_array( $mode, [ 'nas', 'nvme', 'sata', 'sd', 'usb' ] );
+}
 function htmlDirectory() {
 	global $GMODE, $html, $index0, $indexes, $lists;
 	foreach( $lists as $list ) {
@@ -378,7 +381,7 @@ function htmlDirectory() {
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$dataindex = dataIndex( $each->sort );
-		$name      = in_array( $GMODE, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
+		$name      = modeFile( $GMODE ) ? basename( $path ) : $path;
 		$dir       = is_dir( '/mnt/MPD/'.$path );
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );

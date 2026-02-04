@@ -745,9 +745,13 @@ var DISPLAY   = {
 			var $this = $( el );
 			var mode  = $this.data( 'mode' );
 			var count = C[ mode ];
-			$this
-				.toggleClass( 'hide', ! D[ mode ] )
-				.toggleClass( 'nodata', ! count );
+			if ( mode === 'nvme' || mode === 'sata' ) {
+				$this.toggleClass( 'hide', ! count );
+			} else {
+				$this
+					.toggleClass( 'hide', ! D[ mode ] )
+					.toggleClass( 'nodata', ! count );
+			}
 			var $gr   = $this.find( 'gr' );
 			if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 		} );
@@ -1023,7 +1027,7 @@ var LIBRARY   = {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
-			[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
+			[ 'nas', 'nvme', 'sata', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
@@ -1263,7 +1267,7 @@ var MENU      = {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 		} else {
-			var album_file_radio = [ 'album', 'latest', 'nas', 'sd', 'usb', 'webradio', 'dabradio' ].includes( mode );
+			var album_file_radio = [ 'album', 'latest', 'nas', 'nvme', 'sata', 'sd', 'usb', 'webradio', 'dabradio' ].includes( mode );
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
@@ -1351,7 +1355,7 @@ var MODE      = {
 		return [ 'album', 'latest' ].includes( V.mode )
 	}
 	, file  : radio => {
-		var modes = [ 'sd', 'nas', 'usb' ];
+		var modes = [ 'nas', 'nvme', 'sata', 'sd', 'usb' ];
 		if ( radio ) modes.push( 'dabradio', 'webradio' );
 		return modes.includes( V.mode )
 	}
