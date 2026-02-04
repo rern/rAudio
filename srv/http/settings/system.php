@@ -3,7 +3,7 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'usbdrive' ]
+	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
@@ -72,8 +72,7 @@ $head        = [
 	, 'help'   => <<< EOF
 $B->add Add network or local storage
 
- · USB drives  Will be found and mounted automatically.
- · Commands used by $B->add:
+ · Commands used by $B->add Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
@@ -94,7 +93,10 @@ List:
 	<i class="btn">«</i> $L->shareddata
 	<i class="btn">»</i> $L->serverraudio
 	
-$B->microsd$B->usbdrive$B->nvme$B->networks Context menu
+ · $B->usbdrive USB: Mounted automatically.
+ · $B->nvme$B->sata NVMe, SATA: Must be mounted manually.
+
+$B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
@@ -461,4 +463,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 </div>
 
 <?php
-htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format', 'filesystem' ] );
+htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format' ] );
