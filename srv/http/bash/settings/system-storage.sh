@@ -13,7 +13,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		elif [[ $mountpoint ]]; then
 			gib=$( lsblk -no SIZE $source )
-			[[ $size ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B
+			[[ $gib ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B
 		fi
 		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	else
