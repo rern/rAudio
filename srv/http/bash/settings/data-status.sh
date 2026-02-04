@@ -2,6 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+statusCmd() {
+	status=$( eval "$1" )
+	echo "\
+<bll># $1</bll>
+$status"
+}
+
 case $1 in
 
 albumignore )
@@ -17,26 +24,15 @@ audio )
 $( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
 bluetooth )
-	cmd="rfkill | grep '^I\|bluetooth'"
-	cmd1='bluetoothctl show'
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )
-
-<bll># $cmd1</bll>
-$( eval $cmd1 )"
+	statusCmd "rfkill | grep '^I\|bluetooth'"
+	echo
+	statusCmd 'bluetoothctl show'
 	;;
 btreceiver )
-	cmd='bluealsa-aplay -L'
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd 'bluealsa-aplay -L'
 	;;
 btsender )
-	cmd='amixer -MD bluealsa'
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd 'amixer -MD bluealsa'
 	;;
 device )
 	card=$( getVar card $dirshm/output )
@@ -50,17 +46,11 @@ device )
 $data"
 	;;
 infobluetooth )
-	cmd="bluetoothctl info $2"
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd "bluetoothctl info $2"
 	;;
 infocamilla | configuration )
 	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
-	cmd="cat $file"
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd "cat $file"
 	;;
 infostorage )
 	DEV=$2
@@ -104,10 +94,7 @@ $data"
 	;;
 lan )
 	lan=$( lanDevice )
-	cmd="ifconfig $lan"
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd "ifconfig $lan"
 	;;
 mixer )
 	cmd='amixer scontents'
@@ -144,14 +131,9 @@ nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
 output )
-	cmd='aplay -l | grep ^card'
-	cmd1='cat /etc/asound.conf'
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )
-
-<bll># $cmd1</bll>
-$( eval $cmd1 )"
+	statusCmd 'aplay -l | grep ^card'
+	echo
+	statusCmd 'cat /etc/asound.conf'
 	;;
 status )
 	filebootlog=/tmp/bootlog
@@ -172,49 +154,34 @@ $( eval $cmd1 | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	fi
 	;;
 storage )
-	cmd='cat /etc/fstab'
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )"
+	statusCmd 'cat /etc/fstab'
 	;;
 system )
-	cmd='cat /boot/cmdline.txt'
-	config="\
-<bll># $cmd</bll>
-$( eval $cmd )
-
+	statusCmd 'cat /boot/cmdline.txt'
+	echo "
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )"
-	cmd1="grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf"
-	ignorepkg=$( eval $cmd1 )
-	[[ $ignorepkg ]] && config+="
-	
-<bll># $cmd1</bll>
+	cmd="grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf"
+	ignorepkg=$( eval $cmd )
+	[[ $ignorepkg ]] && echo "
+<bll># $cmd</bll>
 $ignorepkg"
 	filemodule=/etc/modules-load.d/raspberrypi.conf
 	module=$( grep -v snd-bcm2835 $filemodule )
 	if [[ $module ]]; then
-		config+="
-
+		echo "
 <bll># cat $filemodule</bll>
 $module"
 		devi2c=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 		if [[ $devi2c ]]; then
-			cmd2="i2cdetect -y $devi2c"
-			config+="
-		
-<bll># $cmd2</bll>
-$( eval $cmd2 )"
+			echo
+			statusCmd "i2cdetect -y $devi2c"
 		fi
 	fi
-	echo "$config"
 	;;
 timezone )
-	cmd=timedatectl
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )
-
+	statusCmd timedatectl
+	echo "
 <bll># cat /etc/systemd/timesyncd.conf</bll>
 $( grep -v ^# /etc/systemd/timesyncd.conf | awk NF )
 
@@ -223,28 +190,16 @@ $( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )"
 	;;
 wl )
 	wlandev=$( < $dirshm/wlan )
-	cmd='iw dev'
-	cmd2="iwconfig $wlandev"
-	echo "\
-<bll># $cmd</bll>
-$( eval $cmd )
-
-<bll># $cmd1</bll>
-$( eval $cmd1 )"
+	statusCmd 'iw dev'
+	echo
+	statusCmd "iwconfig $wlandev"
 	;;
 wlan )
-	cmd='rfkill | grep wlan'
-	cmd1='iw reg get'
-	cmd2='iw list'
-	echo "\
-<bll># $cmd</bll>
-$( rfkill | grep wlan )
-
-<bll># #cmd1</bll>
-$( eval $cmd1 )
-
-<bll># $cmd2</bll>
-$( eval $cmd2 )"
+	statusCmd 'rfkill | grep wlan'
+	echo
+	statusCmd 'iw reg get'
+	echo
+	statusCmd 'iw list'
 	;;
 * )
 	$dirsettings/data-service.sh $1

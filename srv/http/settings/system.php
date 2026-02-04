@@ -158,11 +158,13 @@ $body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'dtoverlay'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'i2smodule'
 		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'dtoverlay'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
@@ -260,6 +262,8 @@ $body        = [
 	[
 		  'id'       => 'hostname'
 		, 'label'    => 'Player Name'
+		, 'sub'      => 'hostnamectl'
+		, 'status'   => true
 		, 'input'    => '<input type="text" id="hostname" readonly>'
 		, 'help'     => <<< EOF
 For:
