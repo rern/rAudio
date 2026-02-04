@@ -1068,9 +1068,9 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var unformat = $li.hasClass( 'unformat' );
 		var shared   = $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' );
 		$( '#menu .info' ).toggleClass( 'hide', networks );
-		$( '#menu .forget' ).toggleClass( 'hide', usb || format );
-		$( '#menu .mount' ).toggleClass( 'hide', mounted || format );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || format );
+		$( '#menu .forget' ).toggleClass( 'hide', usb || unformat );
+		$( '#menu .mount' ).toggleClass( 'hide', mounted || unformat );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || unformat );
 		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', shared );
 		$( '#menu .sleep' ).toggleClass( 'hide', usb || unformat );
 		$( '#menu .format' ).toggleClass( 'hide', ! unformat );
