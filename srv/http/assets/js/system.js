@@ -825,6 +825,7 @@ var UTIL          = {
 			} else if ( list.rserver ) {
 				cls += ' rserver';
 			}
+			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
 			html      += ' <c>'+ source +'</c></li>';
@@ -1064,15 +1065,15 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		var mounted  = $li.hasClass( 'current' );
 		var networks = $li.hasClass( 'networks' );
 		var usb      = $li.hasClass( 'usb' );
-		var format   = mountpoint[ 0 ] === '(';
+		var unformat = $li.hasClass( 'unformat' );
 		var shared   = $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' );
 		$( '#menu .info' ).toggleClass( 'hide', networks );
 		$( '#menu .forget' ).toggleClass( 'hide', usb || format );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted || format );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || format );
 		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', shared );
-		$( '#menu .sleep' ).toggleClass( 'hide', usb || format );
-		$( '#menu .format' ).toggleClass( 'hide', ! format );
+		$( '#menu .sleep' ).toggleClass( 'hide', usb || unformat );
+		$( '#menu .format' ).toggleClass( 'hide', ! unformat );
 	}
 	MENU.show( $li );
 } );
