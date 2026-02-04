@@ -182,6 +182,7 @@ $SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
 		fi
 	else
 		[[ $dir == USB ]] && udevil umount -l "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
+		[[ $dir == NVME || $dir == SATA ]] && rm -f $MOUNTPOINT
 	fi
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null
