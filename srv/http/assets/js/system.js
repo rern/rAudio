@@ -1159,7 +1159,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break
 		case 'format':
 			icon  = 'format';
-			title = 'Format Drive';
+			title = 'Format Storage';
 			INFO( {
 				  icon    : icon
 				, title   : title
