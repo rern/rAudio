@@ -259,8 +259,12 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
+fstabColumnReload() {
+	column -t <<< $1 > /etc/fstab
+	systemctl daemon-reload
+}
 fstabSet() {
-	local fstab stb
+	local fstab std
 	umount -ql "$1"
 	mkdir -p "$1"
 	chown mpd:audio "$1"
@@ -268,8 +272,7 @@ fstabSet() {
 	fstab="\
 $( < /etc/fstab )
 $2"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
+	fstabColumnReload "$fstab"
 	std=$( mount -a 2>&1 > /dev/null )
 	if [[ $std ]]; then
 		mv -f /tmp/fstab /etc
@@ -535,7 +538,10 @@ sharedDataLink() {
 	readarray -t source <<< $( < $dirshareddata/source )
 	while read s; do
 		ip_share=${s/ *}
-		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
+		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then
+			
+			fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$src"
+		fi
 	done <<< $source
 }
 sharedDataReset() {

@@ -167,36 +167,34 @@ forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
 	dir=${MOUNTPOINT:9:3}
 	if [[ $CMD == mount ]]; then
-		if [[ $dir == NAS ]]; then
-			mount "$MOUNTPOINT"
-		elif [[ $dir == USB ]]; then
+		if [[ $dir == USB ]]; then
 			udevil mount $SOURCE
+		elif [[ $dir == NAS ]]; then
+			mount "$MOUNTPOINT"
 		else # nvme / sata
-			mkdir -p $MOUNTPOINT
-			fstab="\
-$( < /etc/fstab )
-$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
-			column -t <<< $fstab > /etc/fstab
-			systemctl daemon-reload
-			mount -a
+			fstabSet $MOUNTPOINT "$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
+			! grep -q "^$SOURCE" /etc/fstab && exit
+# --------------------------------------------------------------------
 			echo "\
 [$dir]
 	path = $MOUNTPOINT
-	read only = no
 	dfree command = /srv/http/bash/smbdfree.sh" >> /etc/samba/smb.conf
 		fi
 	else
-		[[ $dir == USB ]] && udevil umount -l "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
-		if [[ $dir == NVME || $dir == SATA ]]; then
-			rm -f $MOUNTPOINT
-			sed -i '/^\['$dir'/, /dfree command =/ d' /etc/samba/smb.conf
+		if [[ $dir == USB ]]; then
+			udevil umount -l "$MOUNTPOINT"
+		else
+			umount -l "$MOUNTPOINT"
+			if [[ $dir != NAS ]]; then # nvme / sata
+				rm -f $MOUNTPOINT
+				sed -i '/^\['$dir'/, /dfree command =/ d' /etc/samba/smb.conf
+			fi
 		fi
 	fi
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null
 		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
-		column -t <<< $fstab > /etc/fstab
-		systemctl daemon-reload
+		fstabColumnReload "$fstab"
 		$dirbash/cmd.sh "mpcupdate
 update
 NAS
@@ -391,7 +389,7 @@ shareddatadisable )  # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	mv /mnt/{SD,USB} /mnt/MPD
+	mv -f /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 	if ! grep -q "$dirnas " /etc/fstab; then # other server
@@ -405,12 +403,11 @@ shareddatadisable )  # server rAudio / other server
 		done <<< $source
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
-	else                                       # server rAudio
+	else                                     # server rAudio
 		umount -l $dirnas &> /dev/null
 		fstab=$( grep -v $dirnas /etc/fstab )
 	fi
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
+	fstabColumnReload "$fstab"
 	sharedDataReset
 	systemctl start mpd
 	pushRefresh

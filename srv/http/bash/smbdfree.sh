@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # for /etc/samba/smb.conf
-df | grep /mnt/MPD/USB | sort | head -1 | awk '{print $2" "$4}'
+df "$1" | tail -1 | awk '{print $(NF-4),$(NF-2)}'

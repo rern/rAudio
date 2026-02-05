@@ -210,8 +210,8 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		mv /mnt/MPD/{SD,USB} $dirnas
-		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
+		mv -f /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
+		sed -i -E 's|(/mnt/MPD/)USB|\1NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		ip=$( ipAddress )
 		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
@@ -239,17 +239,17 @@ CMD ACTION PATHMPD"
 		files=$( awk NF <<< $files )
 		if [[ $files ]]; then
 			while read file; do
-				sed -E -i '/^SD|^USB/ s|^|NAS/|' "$file"
+				sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
 			done <<< $files
 		fi
 	else
-		mv $dirnas/{SD,USB} /mnt/MPD
+		mv $dirnas/{NVME,SATA,SD,USB} /mnt/MPD
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
 		rm -f $dirnas/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
-		chmod 755 $dirnas $dirnas/{SD,USB}
+		chmod -f 755 $dirnas $dirnas/{NVME,SATA,SD,USB}
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
@@ -309,11 +309,11 @@ shairportsync | spotifyd | upmpdcli )
 	pushRefresh
 	;;
 smb )
-	chmod 755 /mnt/MPD /mnt/MPD/{SD,USB}
+	chmod -f 755 /mnt/MPD /mnt/MPD/{NVME,SATA,SD,USB}
 	if [[ $ON ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
-		for dir in SD NVME SATA USB; do
+		for dir in NVME SATA SD USB; do
 			[[ ! ${!dir} ]] && continue
 			
 			sed -i '/path = .*'$dir'/ a\
