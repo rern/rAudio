@@ -74,7 +74,7 @@ $B->add Add network or local storage
 
  · Commands used by $B->add Add network storage:
 <pre class="gr">
-mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
+mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
@@ -85,7 +85,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,bg,soft,timeo=5
 </pre>
 Note:
-» <c>Name</c> - Reserved: <c>data</c> <c>SD</c> <c>USB</c>
+» <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
 Windows shares without password: <c>net user guest /active:yes</c>
 
 List:
@@ -95,6 +95,7 @@ List:
 	
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: Must be mounted manually.
+ · Unformatted / Unpartitioned devices can be formated to <c>ext4</c> only.
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 EOF

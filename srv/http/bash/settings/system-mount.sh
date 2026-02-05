@@ -37,7 +37,7 @@ fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${op
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear
 	systemctl stop mpd
-	mv /mnt/MPD/{SD,USB} /mnt
+	mv -f /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 	mkdir -p $dirbackup $dirshareddata

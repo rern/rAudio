@@ -531,7 +531,7 @@ var UTIL          = {
 				, cancel     : SWITCH.cancel
 				, ok         : () => {
 					var infoval = _INFO.val();
-					if ( ! shareddata && [ 'data', 'SD', 'USB' ].includes( infoval.NAME ) ) {
+					if ( ! shareddata && [ 'data', 'NVME', 'SATA', 'SD', 'USB' ].includes( infoval.NAME ) ) {
 						var type = infoval.NAME == 'data' ? LABEL_ICON( 'Shared Data', 'networks' ) : LABEL_ICON( 'Server rAudio', 'nfsserver' );
 						_INFO.warning( SW.icon, SW.title, 'Name <c>'+ infoval.NAME +'</c> reserved for '+ type, () => {
 							UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( infoval );
