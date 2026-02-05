@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260212
-file=/etc/udev/rules.d/usbunformatted.rules
+file=/etc/udev/rules.d/usbunpartitioned.rules
 if [[ ! $file ]]; then
 	echo 'KERNEL=="sd[a-z]" \
 ACTION=="add", \
