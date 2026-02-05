@@ -1156,11 +1156,12 @@ $( '#menu a' ).on( 'click', function( e ) {
 			icon  = 'format';
 			title = 'Format Storage';
 			INFO( {
-				  icon    : icon
-				, title   : title
-				, list    : [ 'Label', 'text' ]
-				, checkblank : true
-				, ok      : () => {
+				  icon        : icon
+				, title       : title
+				, list        : [ 'Label', 'text' ]
+				, checkblank  : true
+				, checklength : { 0: [ 16, 'max' ] }
+				, ok          : () => {
 					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
 						NOTIFY( icon, title, 'Format ...' );
 						BASH( [ cmd, source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
