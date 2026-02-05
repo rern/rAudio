@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1769936038' );
+	src         : url( '/assets/fonts/rern.woff2?v=1770204401' );
 }
 @font-face {
 	font-family : Lato;
@@ -70,8 +70,7 @@ i {
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
 .i-close::before,
-.i-disconnect::before,
-.i-unmount::before         { content: '\F56C' }
+.i-disconnect::before      { content: '\F56C' }
 .i-code::before            { content: '\F591' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
@@ -231,6 +230,7 @@ i {
 .i-timezone::before        { content: '\F575' }
 .i-track::before           { content: '\F54C' }
 .i-undo::before            { content: '\F523' }
+.i-unmount::before         { content: '\F60C' }
 .i-upmpdcli::before,
 .i-upnp::before            { content: '\F581' }
 .i-volumelimit::before     { content: '\F51E' }
