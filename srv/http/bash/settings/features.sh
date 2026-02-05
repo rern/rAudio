@@ -42,13 +42,6 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
-smbWrite() {
-	if sed -i '/path = .*'$1'/   a\	read only = no' $smbconf; then
-		chmod 777 /mnt/MPD/$1 /mnt/MPD
-	else
-		chmod 755 /mnt/MPD/$1
-	fi
-}
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
 }
@@ -320,10 +313,14 @@ smb )
 	if [[ $ON ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
-		[[ $SD ]]   && smbWrite SD
-		[[ $NVME ]] && smbWrite NVME
-		[[ $SATA ]] && smbWrite SATA
-		[[ $USB ]]  && smbWrite USB
+		for dir in SD NVME SATA USB; do
+			[[ ! ${!dir} ]] && continue
+			
+			sed -i '/path = .*'$dir'/ a\
+	read only = no
+' $smbconf
+			chmod 777 /mnt/MPD/$dir /mnt/MPD
+		done
 		serviceRestartEnable
 	else
 		systemctl disable --now smb
