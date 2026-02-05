@@ -104,17 +104,19 @@ data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
+[[ -e $dirshm/formatting ]] && storage=$( < $dirshm/system-storage ) || storage=$( $dirsettings/system-storage.sh )
 ##########
 data+='
 , "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
+, "formatting"     : "'$( getContent $dirshm/formatting )'"
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
-, "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
+, "list"           : { "storage": '$storage' }
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "rpi3plus"       : '$rpi3plus'

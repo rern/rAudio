@@ -17,7 +17,6 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		fi
 		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
 	else
-		[[ $source == $( getContent $dirshm/formatting ) ]] && icon+=' blink'
 		blkid $source | grep -q PTUUID && size=unpartitioned || size=unformatted
 	fi
 	list='

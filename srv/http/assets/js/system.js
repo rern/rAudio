@@ -826,6 +826,7 @@ var UTIL          = {
 				cls += ' rserver';
 			}
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
+			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
 			html      += ' <c>'+ source +'</c></li>';
@@ -1054,6 +1055,11 @@ $( '.addnas' ).on( 'click', function() {
 	UTIL.mount.mount();
 } );
 $( '#storage' ).on( 'click', 'li', function( e ) {
+	if ( S.formatting ) {
+		BANNER( 'format blink', 'Local Storage', 'Formatting ...', 6000 );
+		return
+	}
+	
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
@@ -1139,7 +1145,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var cmd = MENU.command( $( this ), e );
-	if ( ! cmd ) return
+	if ( ! cmd || S.formatting ) return
 	
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
