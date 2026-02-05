@@ -5,6 +5,15 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260212
+file=/etc/udev/rules.d/usbunformatted.rules
+if [[ ! $file ]]; then
+	echo 'KERNEL=="sd[a-z]" \
+ACTION=="add", \
+RUN+="/srv/http/bash/settings/system.sh usbconnect"' > $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
 file=/etc/modprobe.d/blacklist.conf
 if [[ ! -e $file ]]; then
 	echo "\
