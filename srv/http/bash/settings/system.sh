@@ -480,7 +480,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/ud
 					| cut -d' ' -f3- )
 		notify usbdrive "$name" Removed
 	fi
-	echo "$list" > $dirshm/lsblkusb
+	[[ $list ]] && echo "$list" > $dirshm/lsblkusb || rm -f $dirshm/lsblkusb
 	pushStorage
 	pushDirCounts usb
 	;;
