@@ -209,15 +209,15 @@ CMD ACTION PATHMPD"
 	pushStorage
 	;;
 format )
+	pushData storage '{ "formatting": "'$DEV'" }'
 	if [[ $UNPART ]]; then
 		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
-		blk=$( blkid | grep ^$DEV )
-		DEV=${blk/:*}
+		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||;p}' )
+	else
+		umount -l $DEV
 	fi
-	$dirsettings/system-storage.sh > $dirshm/system-storage
 	echo $DEV > $dirshm/formatting
-	pushData storage '{ "formatting": "'$DEV'" }'
-	umount -l $DEV
+	$dirsettings/system-storage.sh > $dirshm/system-storage
 	mkfs.ext4 -F $DEV -L "$LABEL"
 	rm -f $dirshm/{formatting,system-storage}
 	pushRefresh
