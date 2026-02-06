@@ -481,10 +481,10 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/ud
 					| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
 					| tail -1 )
 		name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
-		notify usbdrive "$name" Ready
+		notify usb "$name" Ready
 	else
 		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
-		notify usbdrive "$name" Removed
+		notify usb "$name" Removed
 	fi
 	echo "$list" > $dirshm/lsblkusb
 	pushStorage $CMD
