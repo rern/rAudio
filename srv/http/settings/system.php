@@ -70,10 +70,10 @@ $head        = [
 	, 'button' => 'add addnas'
 	, 'list'   => true
 	, 'help'   => <<< EOF
-$B->add Add network or local storage
+$B->add <a class="textdropdown">Add network or local storage</a>
+<pre class="hide">
+# backend commands
 
- · Commands used by $B->add Add network storage:
-<pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
@@ -84,19 +84,16 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
 </pre>
-Note:
-» <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
-Windows shares without password: <c>net user guest /active:yes</c>
-
-List:
-	Path: <c>/mnt/MPD/...</c>
-	<i class="btn">«</i> $L->shareddata
-	<i class="btn">»</i> $L->serverraudio
-	
+ · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+ · Windows shares without password: <c>net user guest /active:yes</c>
+ 
  · $B->usbdrive USB: Mounted automatically.
- · $B->nvme$B->sata NVMe, SATA: Must be mounted manually.
+ · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · Unformatted / Unpartitioned devices can be formated to <c>ext4</c> only.
-
+ · <i class="btn">«</i> $L->shareddata
+ · <i class="btn">»</i> $L->serverraudio
+ · Full path: <c>/mnt/MPD/...</c>
+	
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 EOF
 ];

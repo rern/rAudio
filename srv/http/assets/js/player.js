@@ -379,18 +379,5 @@ $( '#mixer' ).on( 'input', function() {
 	NOTIFY( 'volume', 'Mixer', 'Change ...' );
 	BASH( [ 'mixer', mixer, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
-$( '#ffmpegfiletype' ).on( 'click', function() {
-	var $pre = $( '#prefiletype' );
-	if ( $pre.is( ':empty' ) ) {
-		BASH( [ 'filetype' ], data => {
-			$pre
-				.html( data )
-				.toggleClass( 'hide' );
-		} );
-	} else {
-		$pre.toggleClass( 'hide' );
-	}
-	$( this ).toggleClass( 'active' );
-} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

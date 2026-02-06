@@ -335,6 +335,19 @@ $( '.setting' ).on( 'click', function() {
 		SETTING( id );
 	}
 } );
+$( '.textdropdown' ).on( 'click', function() {
+	var $pre = $( this ).next();
+	if ( $pre.is( ':empty' ) ) {
+		BASH( [ 'filetype' ], data => {
+			$pre
+				.html( data )
+				.toggleClass( 'hide' );
+		} );
+	} else {
+		$pre.toggleClass( 'hide' );
+	}
+	$( this ).toggleClass( 'active' );
+} );
 // kb shortcut
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return

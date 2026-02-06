@@ -202,8 +202,8 @@ EOF
 		, 'sub'      => 'decoder'
 		, 'disabled' => $L->dabradio.$isenabled
 		, 'help'     => <<< EOF
-<a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
-<pre id="prefiletype" class="hide"></pre>
+<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio <a class="textdropdown">filetypes</a>
+<pre class="hide"></pre>
 Note: Should be disabled for faster Library update if not used.
 EOF
 	]

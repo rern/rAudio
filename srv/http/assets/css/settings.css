@@ -236,11 +236,12 @@ heading.subhead {
 }
 heading.status .headtitle::after,
 .col-l.status gr::after,
-#ffmpegfiletype::after,
+.divaddon .revision::after,
 .listtitle.plugins::after,
-.divaddon .revision::after {
+.textdropdown::after {
 	display: inline-block;
-	width: 17px;
+	width: 13px;
+	text-align: right;
 	font-family: rern;
 	font-style: normal;
 	font-size: 14px;
@@ -254,7 +255,7 @@ heading.status .headtitle::after {
 }
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
-#ffmpegfiletype.active::after,
+.textdropdown.active::after,
 .listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
@@ -762,11 +763,11 @@ circle.on {
 	.tab .i-remove,
 	.tab li i,
 	.tablemapping i,
+	.textdropdown,
 	.undervoltage,
 	.wiring,
 	#backend,
 	#bar-bottom i,
-	#ffmpegfiletype,
 	#menu {
 		cursor: pointer
 	}
