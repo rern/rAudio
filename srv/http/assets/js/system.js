@@ -833,7 +833,7 @@ var UTIL          = {
 			html      += ' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
-		BANNER_HIDE();
+		if ( ! S.formatting ) BANNER_HIDE();
 	}
 	, restoreReset  : () => {
 		INFO( {
