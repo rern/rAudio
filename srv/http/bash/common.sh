@@ -348,7 +348,7 @@ killProcess() {
 	fi
 }
 lanDevice() {
-	ip -br link | awk '/^e/ {print $1; exit}'
+	ip -br link | awk '/^e/ {print $1}'
 }
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
