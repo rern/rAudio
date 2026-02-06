@@ -216,6 +216,7 @@ format )
 	fi
 	$dirsettings/system-storage.sh > $dirshm/system-storage
 	echo $DEV > $dirshm/formatting
+	pushData storage '{ "formatting": "'$DEV'" }'
 	umount -l $DEV
 	mkfs.ext4 -F $DEV -L "$LABEL"
 	rm -f $dirshm/{formatting,system-storage}

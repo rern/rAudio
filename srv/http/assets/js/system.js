@@ -4,10 +4,11 @@ W.reboot          = data => {
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		S.list.storage = data.storage;
+		if ( 'formatting' in data ) S.formatting = data.formatting;
+		if ( 'storage' in data ) S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
-	}, data.debounce );
+	}, data.debounce || 0 );
 }
 
 var CONFIG        = {
@@ -1171,7 +1172,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
 						NOTIFY( icon, title, 'Format ...' );
 						BASH( [ cmd, source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
-						$li.find( 'i' ).addClass( 'blink' );
 					} );
 				}
 			} );
