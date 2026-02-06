@@ -86,10 +86,7 @@ displayConfigClear() {
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 }
 pushStorage() {
-	pushData storage '{
-  "debounce" : '$( [[ $1 == usbconnect ]] && echo 2000 || echo 1000 )'
-, "storage"  : '$( $dirsettings/system-storage.sh )'
-}'
+	pushData storage '{ "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -482,12 +479,24 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/ud
 					| tail -1 )
 		name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 		notify usb "$name" Ready
+		# udev events: 
+		# partitioned   - detect  > mount
+		#               - unmount > unmount
+		# unpartitioned - detect
+		#               - disconnect
+		flag=$dirshm/partitioned
+		if [[ ! -e $flag && $( lsblk -n /dev/$sdx | wc -l ) -gt 1 ]]; then # suppress 'detect' if partitioned
+			touch $flag
+			exit
+# --------------------------------------------------------------------
+		fi
+		rm -f $flag
 	else
 		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
 		notify usb "$name" Removed
 	fi
 	echo "$list" > $dirshm/lsblkusb
-	pushStorage $CMD
+	pushStorage
 	pushDirCounts usb
 	;;
 vuled )

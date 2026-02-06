@@ -2,13 +2,21 @@ W.reboot          = data => {
 	BANNER( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
 W.storage         = data => {
+	if ( 'formatting' in data ) {
+		S.formatting = data.formatting;
+		$( '#storage li' )
+			.filter( '[ data-id="'+ S.formatting +'"]' )
+			.find( 'i' )
+			.addClass( 'blink' );
+		return
+	}
+	
 	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		if ( 'formatting' in data ) S.formatting = data.formatting;
+	V.debounce = setTimeout( () => { // suppress 2nd unmount event
 		if ( 'storage' in data ) S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
-	}, data.debounce || 0 );
+	}, 300 );
 }
 
 var CONFIG        = {
