@@ -448,9 +448,6 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushStorage() {
-	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
-}
 pushWebsocket() { # send to remote websocket.py (server)
 	local channel data ip
 	ip=$1

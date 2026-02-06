@@ -85,6 +85,12 @@ displayConfigClear() {
 	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 }
+pushStorage() {
+	pushData storage '{
+  "debounce" : '$( [[ $1 == usbconnect ]] && echo 2000 || echo 1000 )'
+, "storage"  : '$( $dirsettings/system-storage.sh )'
+}'
+}
 soundProfile() {
 	local lan mtu swappiness txqueuelen
 	if [[ $1 == reset ]]; then
@@ -200,7 +206,7 @@ update
 NAS
 CMD ACTION PATHMPD"
 	fi
-	pushRefresh
+	pushStorage
 	;;
 format )
 	if [[ $UNPART ]]; then
@@ -464,25 +470,23 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
+usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/{ntfs.rules,usbunpartitioned.rules}
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
-	list=$( lsblk -no path,vendor,model | grep -v ' $' )
+	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
 	if [[ $CMD == usbconnect ]]; then
 		sdx=$( dmesg \
 					| tail \
 					| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
 					| tail -1 )
-		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
+		name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
+		notify usbdrive "$name" Ready
 	else
-		name=$( diff $dirshm/lsblkusb <( echo "$list" ) \
-					| grep '^<'\
-					| tr -s ' ' \
-					| cut -d' ' -f3- )
+		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
 		notify usbdrive "$name" Removed
 	fi
-	[[ $list ]] && echo "$list" > $dirshm/lsblkusb || rm -f $dirshm/lsblkusb
-	pushStorage
+	echo "$list" > $dirshm/lsblkusb
+	pushStorage $CMD
 	pushDirCounts usb
 	;;
 vuled )

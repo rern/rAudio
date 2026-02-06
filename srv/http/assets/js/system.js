@@ -4,10 +4,10 @@ W.reboot          = data => {
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		S.list.storage = data.list;
+		S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
-	}, 1000 );
+	}, data.debounce );
 }
 
 var CONFIG        = {

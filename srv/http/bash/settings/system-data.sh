@@ -104,14 +104,21 @@ data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
-[[ -e $dirshm/formatting ]] && storage=$( < $dirshm/system-storage ) || storage=$( $dirsettings/system-storage.sh )
+if pgrep mkfs &> /dev/null; then
+	storage=$( getContent $dirshm/system-storage )
+	formatting=$( getContent $dirshm/formatting true )
+	[[ $formatting != true ]] && formatting='"'$formatting'"'
+else
+	rm -f $dirshm/{formatting,system-storage}
+fi
+[[ ! $storage ]] && storage=$( $dirsettings/system-storage.sh )
 ##########
 data+='
 , "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
-, "formatting"     : "'$( getContent $dirshm/formatting )'"
+, "formatting"     : '$formatting'
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
