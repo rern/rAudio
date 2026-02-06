@@ -72,7 +72,7 @@ $head        = [
 	, 'help'   => <<< EOF
 $B->add <a class="textdropdown">Add network or local storage</a>
 <pre class="hide">
-# backend commands
+<g># backend commands</g>
 
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
