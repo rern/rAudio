@@ -15,7 +15,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 			gib=$( lsblk -no SIZE $source )
 			[[ $gib ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B # xxG > xx > XXGB
 		fi
-		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
+		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>" # fstype
 	else
 		blkid $source | grep -q PTUUID && size=unpartitioned || size=unformatted
 	fi
@@ -48,11 +48,10 @@ if [[ ! -e /mnt/SD && -e $devmmc ]]; then
 	mount | grep -q -m1 ^$devmmc && list+=$( listItem microsd $sd $devmmc true )
 fi
 # usb
-[[ ! -e /mnt/USB ]] && usb=$( ls /dev/sd* 2> /dev/null )
-if [[ $usb ]]; then
+[[ ! -e /mnt/USB ]] && lines=$( ls /dev/sd* 2> /dev/null | grep [0-9]$ )
+if [[ $lines ]]; then
 	while read source; do
-		type=$( blkid -o value -s TYPE $source )
-		[[ ! $type ]] && continue
+		! blkid -o value -s TYPE $source &> /dev/null && continue # no fstype - unformatted
 		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
@@ -65,7 +64,7 @@ if [[ $usb ]]; then
 		
 		mountpointprev=$mountpoint
 		list+=$( listItem usb "$mountpoint" "$source" $mounted )
-	done <<< $usb
+	done <<< $lines
 fi
 # fstab - nas nvme sata
 lines=$( grep -v ^PARTUUID /etc/fstab )
@@ -84,7 +83,7 @@ blk=$( blkid | grep -v ' TYPE="' )
 if [[ $blk ]]; then
 	while read dev; do
 		[[ ${dev:5:2} == sd ]] && disk=${dev:5:-1} || disk=${dev:5:-2} # /dev/sda1 > sda ; /dev/nvme0n1p1 > nvme0n1
-		icon=$( lsblk -no NAME,TRAN | awk '/^'$disk'/ {print $NF}' )   # usb, sata       ; nvme
+		icon=$( lsblk -no TRAN $dev ) # nvme sata usb, sata
 		list+=$( listItem $icon '' $dev )
 	done <<< ${blk/:*}
 fi
