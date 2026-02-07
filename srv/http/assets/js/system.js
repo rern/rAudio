@@ -12,6 +12,7 @@ W.storage         = data => {
 		S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
+		if ( ! $( '#codestorage' ).hasClass( 'hide' ) ) STATUS( 'storage' );
 	}
 }
 

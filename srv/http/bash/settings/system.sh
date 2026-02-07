@@ -85,6 +85,12 @@ displayConfigClear() {
 	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 }
+dmesgDev() {
+	dmesg \
+		| tail \
+		| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
+		| tail -1
+}
 pushStorage() {
 	pushData storage '{ "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
@@ -475,10 +481,7 @@ timezone )
 	;;
 usbadd ) # /etc/udev/rules.d/usbstorage.rules
 	list=$( usbVendorModel )
-	sdx=$( dmesg \
-				| tail \
-				| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-				| tail -1 )
+	sdx=$( dmesgDev )
 	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 	notify usb "$name" Ready
 	dev=$( ls /dev/$sdx* )
@@ -493,9 +496,17 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 		pushStorage
 	fi
 	;;
-usbmount | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
+usbmount | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, ntfs.rules | usbstorage.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
+	sdx=$( dmesgDev )
+	ntfs=$dirshm/ntfs
+	if [[ ! -e $ntfs && $( blkid -o value -s TYPE /dev/${sdx}1 ) == ntfs ]]; then # debounce
+		touch $ntfs
+		exit
+# --------------------------------------------------------------------
+	fi
+	rm -f $ntfs
 	list=$( usbVendorModel )
 	usbvendormodel=$dirshm/usbvendormodel
 	if [[ $CMD == usbremove ]]; then
