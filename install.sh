@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260212
+file=/etc/conf.d/devmon
+if grep -q remove $file; then
+	sed -i "s|usbconnect.*usbremove|usbmount|" $file
+	systemctl restart devmon@http
+fi
+
 file=/etc/udev/rules.d/usbstorage.rules
 if [[ ! $file ]]; then
 	echo 'KERNEL=="sd[a-z]" \
