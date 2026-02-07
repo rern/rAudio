@@ -482,7 +482,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/ud
 		# events: udev   add     > devmon mount   (usbunpartitioned.rules - devmon not detect)
 		#         devmon unmount > devmon unmount
 		flag=$dirshm/udevadd
-		[[ ! -e $flag && $( lsblk -n /dev/$sdx | wc -l ) -gt 1 ]] && touch $flag && exit # debounce udev add
+		[[ ! -e $flag && $( ls /dev/$sdx* | wc -l ) -gt 1 ]] && touch $flag && exit # debounce udev add
 # --------------------------------------------------------------------
 		rm -f $flag
 	else
