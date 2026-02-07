@@ -479,17 +479,11 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/ud
 					| tail -1 )
 		name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 		notify usb "$name" Ready
-		# udev events: 
-		# partitioned   - detect  > mount
-		#               - unmount > unmount
-		# unpartitioned - detect
-		#               - disconnect
-		flag=$dirshm/partitioned
-		if [[ ! -e $flag && $( lsblk -n /dev/$sdx | wc -l ) -gt 1 ]]; then # suppress 'detect' if partitioned
-			touch $flag
-			exit
+		# events: udev   add     > devmon mount   (usbunpartitioned.rules - devmon not detect)
+		#         devmon unmount > devmon unmount
+		flag=$dirshm/udevadd
+		[[ ! -e $flag && $( lsblk -n /dev/$sdx | wc -l ) -gt 1 ]] && touch $flag && exit # debounce udev add
 # --------------------------------------------------------------------
-		fi
 		rm -f $flag
 	else
 		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
