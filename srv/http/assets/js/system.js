@@ -361,7 +361,7 @@ var UTIL          = {
 			}
 		} );
 	}
-	, i2smodule : {
+	, i2smodule     : {
 		  hide     : () => {
 			$( '#i2s' )
 				.removeClass( 'disabled' )
@@ -896,6 +896,9 @@ var UTIL          = {
 			} );
 		}
 	}
+	, warnFormat    : () => {
+		BANNER( 'format blink', 'Local Storage', 'Formatting ...', 6000 );
+	}
 	, wm5102        : () => {
 		SETTING( 'audio-wm5102', data => {
 			var icon   = 'i2s';
@@ -1057,12 +1060,17 @@ $( '.img' ).on( 'click', function() {
 } );
 $( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {
+	if ( S.formatting ) {
+		UTIL.warnFormat();
+		return
+	}
+	
 	SW = { icon: 'networks' }
 	UTIL.mount.mount();
 } );
 $( '#storage' ).on( 'click', 'li', function( e ) {
 	if ( S.formatting ) {
-		BANNER( 'format blink', 'Local Storage', 'Formatting ...', 6000 );
+		UTIL.warnFormat();
 		return
 	}
 	

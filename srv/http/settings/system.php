@@ -3,7 +3,7 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
+	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
@@ -89,12 +89,12 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
- · Unformatted / Unpartitioned devices can be formated to <c>ext4</c> only.
  · <i class="btn">«</i> $L->shareddata
  · <i class="btn">»</i> $L->serverraudio
  · Full path: <c>/mnt/MPD/...</c>
 	
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
+$B->format Format <c>ext4</c>: Unformatted / Unpartitioned devices
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
