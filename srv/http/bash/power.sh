@@ -47,7 +47,7 @@ else
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
-[[ -e /bin/ply-image ]] && ply-image /srv/http/assets/img/splash.png
+[[ -e /bin/ply-image ]] && ply-image /srv/http/assets/img/splash.png &> /dev/null
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
