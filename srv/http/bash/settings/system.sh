@@ -481,7 +481,14 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 				| tail -1 )
 	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 	notify usb "$name" Ready
-	if (( $( ls /dev/$sdx* | wc -l ) == 1 )); then # unpartitioned
+	dev=$( ls /dev/$sdx* )
+	if (( $( wc -l <<< $dev ) == 1 )); then
+		unpartitioned=1
+	else
+		sdx1=$( sed -n '$p' <<< $dev )
+		[[ ! $( blkid -o value -s TYPE $sdx1 ) ]] && unformatted=1 # no fs
+	fi
+	if [[ $unpartitioned || $unformatted ]]; then
 		echo "$list" > $dirshm/usbvendormodel
 		pushStorage
 	fi

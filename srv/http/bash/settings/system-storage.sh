@@ -51,7 +51,8 @@ fi
 [[ ! -e /mnt/USB ]] && lines=$( ls /dev/sd* 2> /dev/null | grep [0-9]$ )
 if [[ $lines ]]; then
 	while read source; do
-		grep -q ^$source /etc/fstab || ! blkid -o value -s TYPE $source &> /dev/null && continue # noy fstab || no fs - unformatted
+		grep -q ^$source /etc/fstab && continue # no fstab
+		[[ ! $( blkid -o value -s TYPE $source ) ]] && continue # no fs - unformatted
 		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
@@ -82,8 +83,8 @@ fi
 blk=$( blkid | grep -v ' TYPE="' )
 if [[ $blk ]]; then
 	while read dev; do
-		[[ ${dev:5:2} == sd ]] && disk=${dev:5:-1} || disk=${dev:5:-2} # /dev/sda1 > sda ; /dev/nvme0n1p1 > nvme0n1
-		icon=$( lsblk -no TRAN $dev ) # nvme sata usb, sata
+		[[ ${dev:5:2} == sd ]] && disk=${dev:0:-1} || disk=${dev:0:-2} # /dev/sda1 > /dev/sda ; /dev/nvme0n1p1 > /dev/nvme0n1
+		icon=$( lsblk -no TRAN $disk ) # nvme sata usb
 		list+=$( listItem $icon '' $dev )
 	done <<< ${blk/:*}
 fi

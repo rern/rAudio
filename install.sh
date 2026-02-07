@@ -13,6 +13,7 @@ fi
 
 file=/etc/udev/rules.d/usbstorage.rules
 if [[ ! $file ]]; then
+	sed -i 's/usbconnect/usbmount/' /etc/udev/rules.d/ntfs.rules
 	echo 'KERNEL=="sd[a-z]" \
 ACTION=="add", \
 RUN+="/srv/http/bash/settings/system.sh usbadd"
