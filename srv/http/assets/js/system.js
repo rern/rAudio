@@ -841,6 +841,7 @@ var UTIL          = {
 			html      += ' <c>'+ source +'</c></li>';
 		} );
 		LIST.render( 'storage', html );
+		BANNER_HIDE();
 	}
 	, restoreReset  : () => {
 		INFO( {
@@ -1165,6 +1166,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'forget':
 		case 'unmount':
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
+			delete V.bannerdelay; // allow hide
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'format':
@@ -1190,6 +1192,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break
 		case 'mount':
 			NOTIFY( icon, title, 'Mount ...' );
+			delete V.bannerdelay;
 			BASH( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':

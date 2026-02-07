@@ -85,13 +85,6 @@ displayConfigClear() {
 	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 }
-usbName() {
-	sdx=$( dmesg \
-				| tail \
-				| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-				| tail -1 )
-	sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $1
-}
 pushStorage() {
 	pushData storage '{ "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
@@ -112,6 +105,9 @@ soundProfile() {
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen
 	fi
+}
+usbVendorModel() {
+	lsblk -no path,vendor,model | grep -v '\s$'
 }
 
 case $CMD in
@@ -476,22 +472,28 @@ timezone )
 	pushRefresh
 	;;
 usbadd ) # /etc/udev/rules.d/usbstorage.rules
-	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
-	notify usb "$( usbName "$list" )" Ready
+	list=$( usbVendorModel )
+	sdx=$( dmesg \
+				| tail \
+				| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
+				| tail -1 )
+	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
+	notify usb "$name" Ready
 	if (( $( ls /dev/$sdx* | wc -l ) == 1 )); then # unpartitioned
-		echo "$list" > $dirshm/lsblkusb
+		echo "$list" > $dirshm/usbvendormodel
 		pushStorage
 	fi
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
-	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
+	list=$( usbVendorModel )
+	usbvendormodel=$dirshm/usbvendormodel
 	if [[ $CMD == usbremove ]]; then
-		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
+		name=$( diff $usbvendormodel <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
 		notify usb "$name" Removed # ready - by usbadd
 	fi
-	echo "$list" > $dirshm/lsblkusb
+	echo "$list" > $usbvendormodel
 	pushStorage
 	pushDirCounts usb
 	;;
