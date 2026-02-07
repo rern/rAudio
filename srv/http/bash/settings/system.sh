@@ -85,6 +85,13 @@ displayConfigClear() {
 	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 }
+usbName() {
+	sdx=$( dmesg \
+				| tail \
+				| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
+				| tail -1 )
+	sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $1
+}
 pushStorage() {
 	pushData storage '{ "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
@@ -468,26 +475,21 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/{ntfs.rules,usbunpartitioned.rules}
+usbadd ) # /etc/udev/rules.d/usbunpartitioned.rules
+	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
+	notify usb "$( usbName "$list" )" Ready
+	if (( $( ls /dev/$sdx* | wc -l ) == 1 )); then # unpartitioned
+		echo "$list" > $dirshm/lsblkusb
+		pushStorage
+	fi
+	;;
+usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
 	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
-	if [[ $CMD == usbconnect ]]; then
-		sdx=$( dmesg \
-					| tail \
-					| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-					| tail -1 )
-		name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
-		notify usb "$name" Ready
-		# events: udev   add     > devmon mount   (usbunpartitioned.rules - devmon not detect)
-		#         devmon unmount > devmon unmount
-		flag=$dirshm/udevadd
-		[[ ! -e $flag && $( ls /dev/$sdx* | wc -l ) -gt 1 ]] && touch $flag && exit # debounce udev add
-# --------------------------------------------------------------------
-		rm -f $flag
-	else
+	if [[ $CMD == usbremove ]]; then
 		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
-		notify usb "$name" Removed
+		notify usb "$name" Removed # ready - by usbadd
 	fi
 	echo "$list" > $dirshm/lsblkusb
 	pushStorage
