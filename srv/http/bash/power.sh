@@ -2,6 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+if pgrep mkfs &> /dev/null; then
+	name=$( getContent $dirshm/formatting 'Local Storage' )
+	echo "Currently formatting <wh>$name</wh>"
+	exit
+# --------------------------------------------------------------------
+fi
+
 args2var "$1"
 
 logoLcdOled
@@ -11,7 +18,7 @@ ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipaddress $filesharedip )
 	if [[ $ipclients ]]; then
-		[[ ! $CONFIRM ]] && echo -1 && exit
+		[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
 		if [[ $reboot ]]; then
 			msg=Reboot

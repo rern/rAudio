@@ -218,9 +218,11 @@ format )
 	fi
 	echo $DEV > $dirshm/formatting
 	$dirsettings/system-storage.sh > $dirshm/system-storage
-	mkfs.ext4 -F $DEV -L "$LABEL"
-	rm -f $dirshm/{formatting,system-storage}
-	pushRefresh
+	(
+		mkfs.ext4 -F $DEV -L "$LABEL"
+		rm -f $dirshm/{formatting,system-storage}
+		pushRefresh
+	)&
 	;;
 gpiotoggle )
 	gpioset -t0 -c0 $PIN
@@ -484,7 +486,7 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 		pushStorage
 	fi
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
+usbmount | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
 	list=$( usbVendorModel )

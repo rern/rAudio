@@ -8,15 +8,11 @@ W.storage         = data => {
 			.filter( '[ data-id="'+ S.formatting +'"]' )
 			.find( 'i' )
 			.addClass( 'blink' );
-		return
-	}
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => { // suppress 2nd unmount event
-		if ( 'storage' in data ) S.list.storage = data.storage;
+	} else {
+		S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
-	}, 300 );
+	}
 }
 
 var CONFIG        = {

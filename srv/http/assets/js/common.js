@@ -1532,10 +1532,12 @@ var COMMON    = {
 		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
 		COMMON.loader();
-		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], nfs => {
-			if ( nfs == -1 ) {
+		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
+			if ( ! std ) return
+			
+			$( '#loader' ).addClass( 'hide' );
+			if ( std === 'nfs' ) {
 				$( '#loader' ).addClass( 'hide' );
-				BANNER_Hide();
 				INFO( {
 					  icon    : 'power'
 					, title   : 'Power'
@@ -1547,6 +1549,8 @@ var COMMON    = {
 					, okcolor : action === 'off' ? V.red : V.orange
 					, ok      : () => COMMON.powerOk( action, true )
 				} );
+			} else {
+				_INFO.warning(  'power', 'Power', std );
 			}
 		} );
 	}
