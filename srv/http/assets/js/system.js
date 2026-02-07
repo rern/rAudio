@@ -1174,6 +1174,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 				  icon        : icon
 				, title       : title
 				, list        : [ 'Label', 'text' ]
+				, footer      : '(File system: <c>ext4</c>)'
 				, checkblank  : true
 				, checklength : { 0: [ 16, 'max' ] }
 				, ok          : () => {

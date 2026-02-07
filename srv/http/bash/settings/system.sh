@@ -475,7 +475,7 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbadd ) # /etc/udev/rules.d/usbunpartitioned.rules
+usbadd ) # /etc/udev/rules.d/usbstorage.rules
 	list=$( lsblk -no path,vendor,model | grep -v '\s$' )
 	notify usb "$( usbName "$list" )" Ready
 	if (( $( ls /dev/$sdx* | wc -l ) == 1 )); then # unpartitioned
