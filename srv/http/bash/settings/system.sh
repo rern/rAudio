@@ -92,7 +92,7 @@ dmesgDev() {
 		| tail -1
 }
 pushStorage() {
-	pushData storage '{ "storage"  : '$( $dirsettings/system-storage.sh )' }'
+	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -215,7 +215,7 @@ CMD ACTION PATHMPD"
 	pushStorage
 	;;
 format )
-	pushData storage '{ "formatting": "'$DEV'" }'
+	pushData storage '{ "page": "system", "formatting": "'$DEV'" }'
 	if [[ $UNPART ]]; then
 		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
 		partprobe $DEV

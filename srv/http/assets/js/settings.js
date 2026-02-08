@@ -153,8 +153,6 @@ var SWITCH = {
 	}
 }
 W.refresh  = data => { // except camilla
-	if ( data.page !== PAGE ) return
-	
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 	
 	clearTimeout( V.debounce );
