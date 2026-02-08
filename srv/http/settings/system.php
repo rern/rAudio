@@ -94,7 +94,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  · Full path: <c>/mnt/MPD/...</c>
 	
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
-$B->format Format <c>ext4</c>: Unformatted / Unpartitioned devices
+$B->format Format <c>ext4</c>: For unformatted / unpartitioned devices <g>(cannot be read on Windows)</g>
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
