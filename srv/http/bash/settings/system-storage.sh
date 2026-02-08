@@ -80,10 +80,10 @@ if [[ $lines ]]; then
 	done <<< $lines
 fi
 # unformatted / unpartitioned
-blk=$( blkid | grep -v ' TYPE="' )
+blk=$( blkid | grep -v ' TYPE="' ) # no fs
 if [[ $blk ]]; then
 	while read dev; do
-		[[ ${dev:5:2} == sd ]] && disk=${dev:0:-1} || disk=${dev:0:-2} # /dev/sda1 > /dev/sda ; /dev/nvme0n1p1 > /dev/nvme0n1
+		[[ ${dev:5:2} == sd ]] && disk=${dev:0:8} || disk=${dev:0:12} # /dev/sda1 > /dev/sda ; /dev/nvme0n1p1 > /dev/nvme0n1
 		icon=$( lsblk -no TRAN $disk ) # nvme sata usb
 		list+=$( listItem $icon '' $dev )
 	done <<< ${blk/:*}

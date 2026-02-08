@@ -113,7 +113,7 @@ soundProfile() {
 	fi
 }
 usbVendorModel() {
-	lsblk -no path,vendor,model | grep -v '\s$'
+	lsblk -no PATH,VENDOR,MODEL | grep -v '\s$'
 }
 
 case $CMD in
@@ -218,6 +218,7 @@ format )
 	pushData storage '{ "formatting": "'$DEV'" }'
 	if [[ $UNPART ]]; then
 		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
+		partprobe $DEV
 		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||;p}' )
 	else
 		umount -l $DEV
@@ -484,12 +485,10 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 	sdx=$( dmesgDev )
 	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 	notify usb "$name" Ready
-	dev=$( ls /dev/$sdx* )
-	if (( $( wc -l <<< $dev ) == 1 )); then
+	if [[ ! $( partprobe -ds /dev/$sdx ) ]]; then
 		unpartitioned=1
 	else
-		sdx1=$( sed -n '$p' <<< $dev )
-		[[ ! $( blkid -o value -s TYPE $sdx1 ) ]] && unformatted=1 # no fs
+		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && unformatted=1 # no fs
 	fi
 	if [[ $unpartitioned || $unformatted ]]; then
 		echo "$list" > $dirshm/usbvendormodel
@@ -499,14 +498,11 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 usbmount | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, ntfs.rules | usbstorage.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
-	sdx=$( dmesgDev )
-	ntfs=$dirshm/ntfs
-	if [[ ! -e $ntfs && $( blkid -o value -s TYPE /dev/${sdx}1 ) == ntfs ]]; then # debounce
-		touch $ntfs
-		exit
+	if [[ $CMD == usbmount ]]; then # debounce ntfs
+		sdx=$( dmesgDev )
+		[[ $( df -H --output=used /dev/${sdx}1 | grep -v Used | tr -d ' ' ) == 0 ]] && exit
 # --------------------------------------------------------------------
 	fi
-	rm -f $ntfs
 	list=$( usbVendorModel )
 	usbvendormodel=$dirshm/usbvendormodel
 	if [[ $CMD == usbremove ]]; then
