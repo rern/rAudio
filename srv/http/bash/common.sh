@@ -435,7 +435,6 @@ pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	updatedone=1
 	pushData counts '{ "'$dir'": '$( wc -l <<< $dirs )' }'
 }
 pushRefresh() {
@@ -603,7 +602,7 @@ statusColor() {
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
 statusUpdating() {
-	[[ ! -e $dirshm/updating_no && ( -e $dirmpd/listing || -e $dirmpd/updating ) ]] && echo true || echo false
+	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirmpd/updating ) ]] && echo true || echo false
 }
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
