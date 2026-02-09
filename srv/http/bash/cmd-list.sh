@@ -42,7 +42,7 @@ updateDone() {
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	rm -f $dirmpd/listing $dirshm/albumprev
-	pushData mpdupdate '{ '$counts', "done": true }'
+	pushData mpdupdate '{ '$counts' }'
 	$dirbash/status-push.sh
 }
 

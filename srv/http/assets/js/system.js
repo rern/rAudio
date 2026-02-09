@@ -1170,6 +1170,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
+			if ( S.updating_db ) {
+				BANNER( 'library blink', 'Library Database', 'Update ...' );
+				return
+			}
+			
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
 			delete V.bannerdelay; // allow hide
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );

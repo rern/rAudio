@@ -340,26 +340,6 @@ W             = {  // from websocket.py (server)
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;
 	}
-	, mpdupdate : data => {
-		S.updating_db = typeof data === 'boolean';
-		if ( ! S.updating_db ) {
-			if ( 'done' in data ) {
-				BANNER( 'refresh-library', 'Library Update', 'Done' );
-				if ( PAGE ) {
-					REFRESHDATA();
-				} else {
-					delete data.done;
-					C = data;
-					V.html = {}
-				}
-			}
-		}
-		if ( PAGE ) {
-			$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
-		} else {
-			PLAYBACK.button.updating();
-		}
-	}
 	, notify    : data => {
 		if ( V.relayssequense ) return
 		
@@ -1649,6 +1629,9 @@ var COMMON    = {
 				.addClass( 'hide' );
 			$( '.helphead' ).removeClass( 'hide' );
 		}
+	}
+	, updating      : () => {
+		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
 	}
 }
 var VOLUME    = {

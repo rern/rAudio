@@ -409,11 +409,7 @@ pushBookmark() {
 pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy
 	channel=$1
-	if [[ $2 ]]; then
-		data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
-	else
-		data=true
-	fi
+	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
 # --------------------------------------------------------------------
@@ -439,7 +435,7 @@ pushDirCounts() {
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
 	updatedone=1
-	pushData mpdupdate '{ "'$dir'": '$( wc -l <<< $dirs )' }'
+	pushData counts '{ "'$dir'": '$( wc -l <<< $dirs )' }'
 }
 pushRefresh() {
 	local page push

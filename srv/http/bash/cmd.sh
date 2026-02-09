@@ -124,7 +124,7 @@ pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
 		pushData playlists $( php /srv/http/playlist.php list )
 	else
-		pushData playlists -1
+		pushData playlists '{ "count": false }'
 	fi
 }
 radioStop() {
@@ -620,7 +620,7 @@ mpcskip )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate
+	pushData mpdupdate '{ "updating_db": false }'
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
@@ -632,12 +632,13 @@ LATEST=$LATEST" > $dirmpd/updating
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate $( < $dirmpd/counts )
+	notify 'refresh-library blink' 'Library Update' 'Cancel ...' -1
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
 		rm -f $dirmpd/{listing,updating}
 	fi
+	$dirbash/cmd-list.sh
 	;;
 mpdignore )
 	dir=$( basename "$DIR" )
@@ -645,7 +646,7 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate
+	pushData mpdupdate '{ "updating_db": false }'
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database

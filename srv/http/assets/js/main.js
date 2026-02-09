@@ -1,7 +1,7 @@
 C = {} // counts
 D = {} // display
 E = {} // equalizer
-O = {} // order
+O = { order: false } // order
 V = {  // global var
 	  ...V
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'

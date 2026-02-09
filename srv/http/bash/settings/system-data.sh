@@ -133,7 +133,8 @@ data+='
 , "system"         : "'$system'"
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
-, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
+, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
+, "updating_db"    : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )
 if [[ -e $dirshm/onboardwlan ]]; then
 	ifwlan0=
 ##########

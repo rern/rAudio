@@ -4,7 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-$MENU      = $( '#menu' );
+$MENU       = $( '#menu' );
 function CONTENT() {
 	var $select = $( '.container select' );
 	if ( $select.length ) {
@@ -117,7 +117,7 @@ function STATUS( id, arg, info ) {
 		delete V.statusclick;
 	} );
 }
-var SWITCH = {
+var SWITCH  = {
 	  cancel : () => {
 		$( '#'+ SW.id )
 			.prop( 'checked', S[ SW.id ] )
@@ -152,7 +152,14 @@ var SWITCH = {
 		} );
 	}
 }
-W.refresh  = data => { // except camilla
+W.mpdupdate = data => {
+	var updating_db = 'updating_db' in data;
+	if ( 'updating_db' in S ) S.updating_db = updating_db;
+	COMMON.updating();
+	var $update     = $( '.button-lib-update' );
+	if ( $update.length ) $update.toggleClass( 'blink', S.updating_db );
+}
+W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 	
 	clearTimeout( V.debounce );

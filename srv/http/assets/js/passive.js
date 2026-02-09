@@ -12,6 +12,10 @@ W = {
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
+	, counts    : data => {
+		C[ data.k ] = data.v;
+		DISPLAY.library();
+	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
 		if ( V.library ) return
@@ -120,7 +124,16 @@ W = {
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
-	//, mpdupdate in common.js
+	, mpdupdate : data => {
+		S.updating_db = 'updating_db' in data;
+		COMMON.updating();
+		if ( ! S.updating_db ) {
+			V.html = {}
+			$.each( data, ( k, v ) => { C[ k ] = v } );
+			PLAYBACK.button.updating();
+			DISPLAY.library();
+		}
+	}
 	, option    : data => {
 		if ( V.local ) return
 		
@@ -165,12 +178,12 @@ W = {
 		if ( V.sort ) return
 		
 		PLAYLIST.playlists.addClear();
-		if ( V.playlistlist && data == -1 ) {
+		var count   = data.count;
+		if ( V.playlistlist && ! count ) {
 			$( '#playlist' ).trigger( 'click' );
 			return
 		}
 		
-		var count   = data.count;
 		C.playlists = count;
 		if ( V.playlistlist ) {
 			PLAYLIST.playlists.home( data );
