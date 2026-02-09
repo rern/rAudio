@@ -13,7 +13,6 @@ fi
 
 file=/etc/udev/rules.d/usbstorage.rules
 if [[ ! $file ]]; then
-	sed -i '/ACTION=="remove"/,/usbmount/d' /etc/udev/rules.d/ntfs.rules
 	echo 'KERNEL=="sd[a-z]" \
 ACTION=="add", \
 RUN+="/srv/http/bash/settings/system.sh usbadd"
@@ -21,6 +20,9 @@ RUN+="/srv/http/bash/settings/system.sh usbadd"
 KERNEL=="sd[a-z]" \
 ACTION=="remove", \
 RUN+="/srv/http/bash/settings/system.sh usbremove"' > $file
+	sed -i -e 's/usbconnect/usbmount/
+' -e '/^ACTION=="remove"/,$ d
+' /etc/udev/rules.d/ntfs.rules
 	udevadm control --reload-rules
 	udevadm trigger
 fi

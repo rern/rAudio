@@ -71,9 +71,10 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add <a class="textdropdown">Add network or local storage</a>
+	· » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+	· Windows shares without password: <c>net user guest /active:yes</c>
 <pre class="hide">
 <g># backend commands</g>
-
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
@@ -84,9 +85,6 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
 </pre>
- · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
- · Windows shares without password: <c>net user guest /active:yes</c>
- 
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · <i class="btn">«</i> $L->shareddata
@@ -94,7 +92,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  · Full path: <c>/mnt/MPD/...</c>
 	
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
-$B->format Format <c>ext4</c>: For unformatted / unpartitioned devices <g>(cannot be read on Windows)</g>
+	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];

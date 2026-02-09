@@ -334,7 +334,7 @@ $( '.setting' ).on( 'click', function() {
 	}
 } );
 $( '.textdropdown' ).on( 'click', function() {
-	var $pre = $( this ).next();
+	var $pre = $( this ).nextAll( 'pre' ).first();
 	if ( $pre.is( ':empty' ) ) {
 		BASH( [ 'filetype' ], data => {
 			$pre

@@ -51,7 +51,7 @@ fi
 [[ ! -e /mnt/USB ]] && lines=$( ls /dev/sd* 2> /dev/null | grep [0-9]$ )
 if [[ $lines ]]; then
 	while read source; do
-		grep -q ^$source /etc/fstab && continue # no fstab
+		grep -q ^$source /etc/fstab && continue                 # not in fstab
 		[[ ! $( blkid -o value -s TYPE $source ) ]] && continue # no fs - unformatted
 		
 		mountpoint=$( df -l --output=target $source | tail -1 )
