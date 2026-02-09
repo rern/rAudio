@@ -38,7 +38,6 @@ else
 	else
 		. <( grep -E '^card|^mixer' $dirshm/output )
 	fi
-	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && updating_db=true || updating_db=false
 #-----------------------------------------------------------------------------------------
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
@@ -91,7 +90,7 @@ else
 , "shareddata"   : '$( exists $filesharedip )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
-, "updating_db"  : '$updating_db'
+, "updating_db"  : '$( statusUpdating )'
 , "volume"       : '$( volumeGet )'
 , "volumemax"    : '$( volumeMaxGet )'
 , "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'

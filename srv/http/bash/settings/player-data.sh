@@ -29,7 +29,7 @@ data+='
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( mpcState )'"
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
-, "updating_db" : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
+, "updating_db" : '$( statusUpdating )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumemax"   : '$( volumeMaxGet )
 

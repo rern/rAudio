@@ -42,6 +42,7 @@ updateDone() {
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	pushData mpdupdate '{ '$counts' }'
+	touch $dirshm/updating_no
 	$dirbash/status-push.sh
 	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }

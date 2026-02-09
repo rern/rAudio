@@ -1272,7 +1272,7 @@ var MENU      = {
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
-			$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
+			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating_db );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );

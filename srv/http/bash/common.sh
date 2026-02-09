@@ -602,6 +602,9 @@ statusColor() {
 										 s|(failed)|<red>\1</red>|ig}
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
+statusUpdating() {
+	[[ ! -e $dirshm/updating_no && ( -e $dirmpd/listing || -e $dirmpd/updating ) ]] && echo true || echo false
+}
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
 }

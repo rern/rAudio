@@ -619,6 +619,7 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcupdate )
+	rm -f $dirshm/updating_no
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	pushData mpdupdate '{ "updating_db": false }'
 	if [[ $ACTION ]]; then
