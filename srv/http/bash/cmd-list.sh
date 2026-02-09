@@ -41,9 +41,9 @@ updateDone() {
 	jq -S <<< "{ $counts }" > $dirmpd/counts
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	rm -f $dirmpd/listing $dirshm/albumprev
 	pushData mpdupdate '{ '$counts' }'
 	$dirbash/status-push.sh
+	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }
 
 touch $dirmpd/listing

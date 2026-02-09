@@ -2430,7 +2430,7 @@ var UTIL      = {
 	}
 	, statusUpdate    : status => {
 		if ( 'counts' in status ) {
-			C              = status.counts;
+			$.each( status.counts, ( k, v ) => { C[ k ] = v } );
 			delete status.counts;
 		}
 		if ( 'display' in status ) {
