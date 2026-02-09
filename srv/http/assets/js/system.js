@@ -822,6 +822,7 @@ var UTIL          = {
 		var html = '';
 		S.list.storage.forEach( list => {
 			var icon   = list.icon;
+			var fs     = list.fs;
 			var mp     = list.mountpoint;
 			var source = list.source;
 			var size   = list.size;
@@ -834,8 +835,11 @@ var UTIL          = {
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
-			html      += mp ? '<dot></dot>'+ mp.slice( 9 ) +' · '+ size : '<gr>('+ size +')</gr> ·';
-			html      += ' <c>'+ source +'</c></li>';
+			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
+			if ( size )   html += ' · '+ size;
+			if ( fs )     html += ' <c>'+ fs +'</c>';
+			if ( source ) html += ' <c>'+ source +'</c>';
+			html      += '</li>';
 		} );
 		LIST.render( 'storage', html );
 		BANNER_HIDE();

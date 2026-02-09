@@ -37,9 +37,19 @@ fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${op
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear
 	systemctl stop mpd
-	mv -f /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
+	mv -f /mnt/MPD/{SD,USB} /mnt &> /dev/null
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
+	nvme_sata=$( awk '/mnt.MPD.NVME|mnt.MPD.SATA/ {print $2}' /etc/fstab )
+	if [[ $nvme_sata ]]; then
+		fstab=$( < /etc/fstab )
+		for mp in $nvme_sata; do
+			umount -l $mp
+			mv $mp /mnt
+			fstab=$( sed "s|$mp|/mnt/${mp: -4}|" <<< $fstab )
+		done
+		fstabColumnReload "$fstab"
+	fi
 	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1

@@ -262,6 +262,7 @@ fifoToggle() { # mpdoled vuled vumeter
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
 	systemctl daemon-reload
+	mount -a
 }
 fstabSet() {
 	local fstab std

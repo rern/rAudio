@@ -8,6 +8,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mountpoint=$2
 	source=$3
 	mounted=$4
+	fs=$5
 	if [[ $mountpoint ]]; then
 		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
@@ -15,12 +16,13 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 			gib=$( lsblk -no SIZE $source )
 			[[ $gib ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B # xxG > xx > XXGB
 		fi
-		[[ $size ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>" # fstype
+		[[ ! $fs ]] && fs=$( blkid -o value -s TYPE $source )
 	else
 		blkid $source | grep -q PTUUID && size=unpartitioned || size=unformatted
 	fi
 	list='
   "icon"       : "'$icon'"
+, "fs"         : "'$fs'"
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "mounted"    : '$mounted'
 , "size"       : "'$size'"
@@ -70,13 +72,14 @@ fi
 # fstab - nas nvme sata
 lines=$( grep -v ^PARTUUID /etc/fstab )
 if [[ $lines ]]; then
-	lines=$( awk '{print $2"^"$1}' <<< $lines | sed 's/\\040/ /g' | sort -r )
+	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
-		mountpoint=${line/^*}
-		source=${line/*^}
+		source=${line/^*}
+		mountpoint=$( cut -d^ -f2 <<< $line )
+		fs=${line/*^}
 		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
-		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted )
+		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted $fs )
 	done <<< $lines
 fi
 # unformatted / unpartitioned
