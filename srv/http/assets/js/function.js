@@ -737,7 +737,7 @@ var DISPLAY   = {
 		}
 	}
 	, library    : () => {
-		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) )
+		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) );
 		LIBRARY.order();
 		DISPLAY.pageScroll( V.modescrolltop );
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
@@ -1054,7 +1054,8 @@ var LIBRARY   = {
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
-		$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
+		$( '#lib-home-title, #button-lib-search' ).removeClass( 'hide' );
+		$( '#button-lib-update' ).toggleClass( 'hide', D.bars );
 		$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 		$( '#lib-search-close' ).empty();
 		$( '#lib-search-input' ).val( '' );
