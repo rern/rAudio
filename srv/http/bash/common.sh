@@ -602,7 +602,7 @@ statusColor() {
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
 statusUpdating() {
-	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirmpd/updating ) ]] && echo true || echo false
+	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
 }
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"

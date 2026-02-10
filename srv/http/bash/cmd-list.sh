@@ -48,9 +48,9 @@ updateDone() {
 }
 
 touch $dirmpd/listing
-grep -qs LATEST=true $dirmpd/updating && latestappend=1
+grep -qs ^latest=true $dirsystem/mpcupdate.conf && latestappend=1
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/{updatestart,updating}
+rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='

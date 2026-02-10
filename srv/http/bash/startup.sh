@@ -160,7 +160,7 @@ if [[ -e $dirsystem/volumelimit ]]; then
 fi
 
 # after all sources connected ........................................................
-if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
+if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &

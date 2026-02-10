@@ -158,6 +158,7 @@ if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
 fi
 
 ### mpd restart ##########################################################################
+killProcess cmdlist
 systemctl restart mpd
 
 for pid in $( pgrep mpd ); do # set priority
@@ -165,8 +166,11 @@ for pid in $( pgrep mpd ); do # set priority
 	renice -n -19 -p $pid &> /dev/null
 done
 
-[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
-
+if [[ -e $dirsystem/mpcupdate.conf ]]; then
+	$dirbash/cmd.sh mpcupdate
+if [[ -e $dirmpd/listing ]]; then
+	$dirbash/cmd-list.sh
+fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
 pushStatus

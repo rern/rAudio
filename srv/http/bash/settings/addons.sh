@@ -63,8 +63,6 @@ installfinish() {
 $bar Done.
 <hr>
 "
-	[[ $alias == r1 ]] && rm -f $dirshm/system
-	[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 }
 uninstallstart() {
 	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"

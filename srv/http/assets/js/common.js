@@ -1419,10 +1419,12 @@ var COMMON    = {
 		}
 	}
 	, libraryUpdate : () => {
+		var icon    = 'refresh-library';
+		var title   = 'Library Database';
 		if ( S.updating_db ) {
 			INFO( {
-				  icon    : 'refresh-library'
-				, title   : 'Library Database'
+				  icon    : icon
+				, title   : title
 				, message : 'Currently updating ...'
 				, oklabel : ICON( 'flash' ) +'Stop'
 				, okcolor : V.orange
@@ -1442,8 +1444,8 @@ var COMMON    = {
 		var values  = {}
 		modes.forEach( k => { values[ k ] = true } );
 		INFO( {
-			  icon       : 'refresh-library'
-			, title      : 'Library Database'
+			  icon       : icon
+			, title      : title
 			, message    : message +'<hr>'
 			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
@@ -1466,7 +1468,7 @@ var COMMON    = {
 					} );
 					if ( path.length < 3 ) pathmpd = path.join( ' ' );
 				}
-				BASH( [ 'cmd.sh', 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
+				BASH( [ 'cmd.sh', 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CFG ACTION PATHMPD LATEST' ] );
 			}
 		} );
 	}
