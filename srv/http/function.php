@@ -1,14 +1,17 @@
 <?php // for library.php, playlist.php
 function countMnt() {
 	$lsmnt     = ( object ) [];
-	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
+	foreach( [ 'NAS', 'NVME', 'SATA', 'SD', 'USB' ] as $dir ) {
 		$list  = false;
 		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
 		if ( $lsdir ) {
+			$lsdir = array_map( 'basename', $lsdir );
 			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
 			if ( file_exists( $mpdignore ) ) {
+				$dirL   = count( $lsdir );
 				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
-				if ( count( $ignore ) < count( $lsdir ) ) $list = true;
+				foreach( $ignore as $d ) if ( in_array( $d, $lsdir ) ) $dirL--;
+				if ( $dirL ) $list = true;
 			} else {
 				$list   = true;
 			}

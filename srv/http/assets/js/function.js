@@ -12,37 +12,7 @@ function LIST( query, callback, json ) {
 	);
 }
 function REFRESHDATA() {
-	BASH( [ 'status.sh' ], list => {
-		if ( ! list ) return // empty on some startup with shared data
-		
-		if ( list == -1 ) {
-			COMMON.loaderHide();
-			INFO( {
-				  icon        : 'networks'
-				, title       : 'Shared Data'
-				, message     : V.i_warning +'<wh>Server offline</wh>'
-								+'<br><br>Disable and restore local data?'
-				, buttonlabel : ICON( 'refresh' ) +'Retry'
-				, button      : () => {
-					REFRESHDATA();
-					COMMON.loader();
-				}
-				, oklabel     : ICON( 'flash' ) +'Disable'
-				, okcolor     : V.orange
-				, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
-			} );
-			return
-		}
-		
-		try {
-			var status = JSON.parse( list );
-		} catch( e ) {
-			COMMON.dataError( e.message, list );
-			return false
-		}
-		
-		UTIL.statusUpdate( status );
-	} );
+	UTIL.refresh();
 }
 //-----------------------------------------------------------------------------------------------------------------
 var BIO       = {
@@ -1027,7 +997,7 @@ var LIBRARY   = {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
-			[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
+			$.each( data.lsmnt, ( k, v ) => { C[ k ] = v } );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
@@ -1526,6 +1496,39 @@ var PLAYBACK  = {
 				PROGRESS.set( 0 );
 			}
 		}, 1000 );
+	}
+	, get       : () => {
+		BASH( [ 'status.sh' ], list => {
+			if ( ! list ) return // empty on some startup with shared data
+			
+			if ( list == -1 ) {
+				COMMON.loaderHide();
+				INFO( {
+					  icon        : 'networks'
+					, title       : 'Shared Data'
+					, message     : V.i_warning +'<wh>Server offline</wh>'
+									+'<br><br>Disable and restore local data?'
+					, buttonlabel : ICON( 'refresh' ) +'Retry'
+					, button      : () => {
+						REFRESHDATA();
+						COMMON.loader();
+					}
+					, oklabel     : ICON( 'flash' ) +'Disable'
+					, okcolor     : V.orange
+					, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+				} );
+				return
+			}
+			
+			try {
+				var status = JSON.parse( list );
+			} catch( e ) {
+				COMMON.dataError( e.message, list );
+				return false
+			}
+			
+			UTIL.statusUpdate( status );
+		} );
 	}
 	, main      : () => {
 		if ( ! S.state ) return // suppress on reboot
@@ -2392,7 +2395,7 @@ var UTIL      = {
 			if ( V.search ) return
 			
 			if ( V.libraryhome ) {
-				$( '#library' ).trigger( 'click' );
+				LIBRARY.get();
 			} else if ( V.query.length === 1 ) {
 				$( '.mode.'+ V.mode ).trigger( 'click' );
 			} else {
@@ -2409,10 +2412,7 @@ var UTIL      = {
 				} );
 			}
 		} else if ( V.playback ) {
-			DISPLAY.bars();
-			DISPLAY.playback();
-			PLAYBACK.main();
-			BANNER_HIDE();
+			PLAYBACK.get();
 		} else {
 			if ( V.playlisthome ) {
 				PLAYLIST.get();
@@ -2450,7 +2450,12 @@ var UTIL      = {
 			} );
 		}
 		COMMON.statusToggle( 'refresh' );
-		if ( ! V.library ) UTIL.refresh();
+		if ( V.playback ) {
+			DISPLAY.bars();
+			DISPLAY.playback();
+			PLAYBACK.main();
+			BANNER_HIDE();
+		}
 		DISPLAY.controls();
 	}
 	, switchPage      : page => {

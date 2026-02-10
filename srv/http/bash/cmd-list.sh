@@ -41,6 +41,24 @@ updateDone() {
 	jq -S <<< "{ $counts }" > $dirmpd/counts
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
+	for dir in NAS NVME SATA SD USB; do
+		list=false
+		lsdirs=$( ls /mnt/MPD/$dir 2> /dev/null )
+		if [[ $lsdir ]]; then
+			mpdignore=/mnt/MPD/$dir/.mpdignore
+			if [[ -e $mpdignore ]]; then
+				dirL=$( wc -l <<< $lsdir )
+				while read d; do
+					grep -q "$d" <<< $lsdir && (( dirL-- ))
+				done <<< $mpdignore
+				(( $dirL > 0 )) && list=true
+			else
+				list=true
+			fi
+		fi
+		counts+='
+, "'$dir'" : '$list
+	done
 	pushData mpdupdate '{ '$counts' }'
 	touch $dirshm/updatedone
 	$dirbash/status-push.sh
