@@ -445,6 +445,7 @@ W             = {  // from websocket.py (server)
 	}
 }
 // info ----------------------------------------------------------------------
+// usage: https://github.com/rern/js/blob/master/info/README.md
 function INFO( json ) {
 	_INFO.clearTimeout( 'all' );
 	$( '.menu' ).addClass( 'hide' );
@@ -607,7 +608,7 @@ function INFO( json ) {
 		htmls.list     = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, kv, label, param, type;
+		var colspan, disabled, kv, label, param, type;
 		var i          = 0; // for radio name
 		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
@@ -617,15 +618,6 @@ function INFO( json ) {
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
-/*			param = {
-				  kv       : { k: V, ... }
-				, colspan  : N
-				, nosort   : T/F
-				, sameline : T/F
-				, suffix   : UNIT
-				, updn     : { step: N, min: N, max: N }
-				, width    : N
-			}*/
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
@@ -656,7 +648,8 @@ function INFO( json ) {
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
+					disabled = 'updn' in param && ! param.updn.enable ? ' disabled' : '';
+					htmls.list += '<input type="'+ type +'"'+ disabled +'>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
