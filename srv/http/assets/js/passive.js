@@ -27,7 +27,9 @@ W = {
 	, coverart  : data => { // change
 		BANNER_HIDE();
 		V.html = {}
-		if ( V.playback ) {
+		if ( ! V.playback ) {
+			REFRESHDATA();
+		} else {
 			if ( S.webradio && S.state === 'play' ) return
 			
 			var encoded  = data.coverart[ 0 ] === '%';
@@ -46,8 +48,6 @@ W = {
 				data.current = path0 === path1;
 			}
 			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
-		} else {
-			UTIL.refresh();
 		}
 	}
 	, display   : data => {
@@ -101,9 +101,7 @@ W = {
 				delete data.volume;
 			}
 			UTIL.statusUpdate( data );
-			if ( V.playback ) {
-				UTIL.refresh();
-			} else if ( V.library ) {
+			if ( ! V.playlist ) {
 				REFRESHDATA();
 			} else {
 				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
