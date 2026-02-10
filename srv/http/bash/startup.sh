@@ -164,6 +164,8 @@ if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
+else
+	touch $dirshm/updatedone
 fi
 
 touch $dirshm/startup
