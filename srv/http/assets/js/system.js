@@ -3,12 +3,13 @@ W.reboot          = data => {
 }
 W.storage         = data => {
 	if ( 'formatting' in data ) {
-		S.formatting = data.formatting;
+		S.formatting   = data.formatting;
 		$( '#storage li' )
 			.filter( '[ data-id="'+ S.formatting +'"]' )
 			.find( 'i' )
 			.addClass( 'blink' );
 	} else {
+		S.formatting   = false;
 		S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );

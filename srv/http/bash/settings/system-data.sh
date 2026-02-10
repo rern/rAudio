@@ -109,9 +109,8 @@ if pgrep mkfs &> /dev/null; then
 	formatting=$( getContent $dirshm/formatting true )
 	[[ $formatting != true ]] && formatting='"'$formatting'"'
 else
-	rm -f $dirshm/{formatting,system-storage}
+	storage=$( $dirsettings/system-storage.sh )
 fi
-[[ ! $storage ]] && storage=$( $dirsettings/system-storage.sh )
 ##########
 data+='
 , "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'

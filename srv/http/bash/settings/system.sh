@@ -228,7 +228,7 @@ format )
 	(
 		mkfs.ext4 -F $DEV -L "$LABEL"
 		rm -f $dirshm/{formatting,system-storage}
-		pushRefresh
+		pushStorage
 	)&
 	;;
 gpiotoggle )
