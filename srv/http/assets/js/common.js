@@ -445,7 +445,7 @@ W             = {  // from websocket.py (server)
 	}
 }
 // info ----------------------------------------------------------------------
-// usage: https://github.com/rern/js/blob/master/info/README.md
+// usage: long-press head icon
 function INFO( json ) {
 	_INFO.clearTimeout( 'all' );
 	$( '.menu' ).addClass( 'hide' );
