@@ -1444,19 +1444,16 @@ var COMMON    = {
 		if ( C.sata ) modes.push( 'sata' );
 		modes.forEach( k => {
 			label = modes.length < 4 ? k : '';
-			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
+			message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
 		} );
-		message    += '&ensp;<hr>';
 		var values  = {}
 		modes.forEach( k => { values[ k ] = true } );
 		INFO( {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'
-			, message    : message
-			, list       : [
-				  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
-				, [ 'Append Latest list', 'checkbox' ]
-			]
+			, message    : message +'<hr>'
+			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
+			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
