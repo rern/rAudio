@@ -180,7 +180,7 @@ countMnt() {
 			fi
 		fi
 		counts+='
-, "'$dir'" : '$list
+, "'${dir,,}'" : '$list
 	done
 	echo "$counts"
 }

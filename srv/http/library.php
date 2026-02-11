@@ -144,25 +144,8 @@ case 'home':
 </li>';
 		}
 	}
-	$lsmnt     = ( object ) [];
-	foreach( [ 'NAS', 'NVME', 'SATA', 'SD', 'USB' ] as $dir ) {
-		$list  = false;
-		$path  = '/mnt/MPD/'.$dir;
-		$lsdir = glob( $path.'/*' );
-		if ( $lsdir ) {
-			$mpdignore = "$path/.mpdignore";
-			if ( file_exists( $mpdignore ) ) {
-				$dirL   = count( $lsdir );
-				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
-				foreach( $ignore as $d ) if ( in_array( "$path/$d", $lsdir ) ) $dirL--;
-				if ( $dirL ) $list = true;
-			} else {
-				$list   = true;
-			}
-		}
-		$dir         = strtolower( $dir );
-		$lsmnt->$dir = $list;
-	}
+	$lsdir     = exec( '/srv/http/bash/cmd.sh countmnt' );
+	$lsmnt     = json_decode( $lsdir );
 	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
 		$order = file_get_contents( $fileorder );
