@@ -43,14 +43,15 @@ updateDone() {
 	echo $updatetime > $dirmpd/updatetime
 	for dir in NAS NVME SATA SD USB; do
 		list=false
-		lsdirs=$( ls /mnt/MPD/$dir 2> /dev/null )
+		path=/mnt/MPD/$dir
+		lsdir=$( ls -d $path/*/ 2> /dev/null ) # $path/d/
 		if [[ $lsdir ]]; then
-			mpdignore=/mnt/MPD/$dir/.mpdignore
+			mpdignore=$path/.mpdignore
 			if [[ -e $mpdignore ]]; then
 				dirL=$( wc -l <<< $lsdir )
 				while read d; do
-					grep -q "$d" <<< $lsdir && (( dirL-- ))
-				done <<< $mpdignore
+					grep -q "$path/$d/" <<< $lsdir && (( dirL-- ))
+				done < $mpdignore
 				(( $dirL > 0 )) && list=true
 			else
 				list=true

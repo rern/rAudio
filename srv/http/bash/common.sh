@@ -432,10 +432,8 @@ pushData() { # send to websocket.py (server)
 	done
 }
 pushDirCounts() {
-	dir=$1
-	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
-	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	pushData counts '{ "'$dir'": '$( wc -l <<< $dirs )' }'
+	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v /mnt/MPD/NAS/data/ ) ]] && tf=true || tf=false
+	pushData counts '{ "'$1'": '$tf' }'
 }
 pushRefresh() {
 	local page push

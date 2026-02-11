@@ -3,14 +3,14 @@ function countMnt() {
 	$lsmnt     = ( object ) [];
 	foreach( [ 'NAS', 'NVME', 'SATA', 'SD', 'USB' ] as $dir ) {
 		$list  = false;
-		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
+		$path  = '/mnt/MPD/'.$dir;
+		$lsdir = glob( $path.'/*', GLOB_ONLYDIR ); // //$path/d/
 		if ( $lsdir ) {
-			$lsdir = array_map( 'basename', $lsdir );
-			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
+			$mpdignore = "$path/.mpdignore";
 			if ( file_exists( $mpdignore ) ) {
 				$dirL   = count( $lsdir );
 				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
-				foreach( $ignore as $d ) if ( in_array( $d, $lsdir ) ) $dirL--;
+				foreach( $ignore as $d ) if ( in_array( "$path/$d", $lsdir ) ) $dirL--;
 				if ( $dirL ) $list = true;
 			} else {
 				$list   = true;
