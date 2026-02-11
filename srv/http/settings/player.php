@@ -261,7 +261,7 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Excluded From Library'
+	  'title'   => 'Excluded Directories and Files'
 	, 'id'      => 'mpdignore'
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
