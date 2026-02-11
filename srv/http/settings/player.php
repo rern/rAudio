@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
+	  'buttons' => [ 'album', 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
 		  'DAB Radio'      => 'dabradio'
 		, 'Device'         => ''
@@ -253,7 +253,7 @@ htmlHead( [
 	, 'id'      => 'albumignore'
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
-List of albums excluded from Library Album list.
+List of albums excluded from $T->library $B->album Album
 To restore:
  · Edit <c>/srv/http/data/mpd/albumignore</c>
  · Remove albums to restore
