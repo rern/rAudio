@@ -12,7 +12,7 @@ commonVariables( [
 		, 'Volume Control' => ''
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features', 'playback', 'system' ]
+	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head      = [
@@ -261,14 +261,16 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Excluded Directories'
+	  'title'   => 'Excluded From Library'
 	, 'id'      => 'mpdignore'
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
-List of <c>.mpdignore</c> files contain directories/folders excluded from database.
+List of <c>.mpdignore</c> files contain excluded list
+ · Name, without path, of directories/folders or files excluded from $T->library
+ · Each <c>.mpdignore</c> for each level of directory
 To restore:
- · Edit file <c>.../.mpdignore</c> in parent directory
- · Remove lines contain directory to restore
+ · Edit <c>.mpdignore</c> in each directory
+ · Remove lines contain directory name to restore
  · Update Library
 
 Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T->system$L->shareddata
