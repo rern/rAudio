@@ -827,7 +827,7 @@ var UTIL          = {
 			var mp     = list.mountpoint;
 			var source = list.source;
 			var size   = list.size;
-			var cls    = list.mounted ? 'current' : 'profile';
+			var cls    = list.mounted ? 'mounted' : 'profile';
 			if ( list.shareddata ) {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
@@ -1083,23 +1083,21 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	var mountpoint = $li.data( 'mountpoint' );
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted  = $li.hasClass( 'current' );
-		var networks = $li.hasClass( 'networks' );
-		var usb      = $li.hasClass( 'usb' );
-		var unformat = $li.hasClass( 'unformat' );
-		var shared   = $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' );
-		$( '#menu .info' ).toggleClass( 'hide', networks );
-		$( '#menu .forget' ).toggleClass( 'hide', usb || unformat );
-		$( '#menu .mount' ).toggleClass( 'hide', mounted || unformat );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted || unformat );
-		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', shared );
-		$( '#menu .sleep' ).toggleClass( 'hide', usb || unformat );
-		$( '#menu .format' ).toggleClass( 'hide', ! unformat );
+		var c = {};
+		[ 'mounted', 'networks', 'rserver', 'shareddata', 'unformat', 'usb' ].forEach( k => {
+			c[ k ] = $li.hasClass( k )
+		} );
+		$( '#menu .info' ).toggleClass( 'hide', c.networks );
+		$( '#menu .forget' ).toggleClass( 'hide', c.usb || c.unformat );
+		$( '#menu .mount' ).toggleClass( 'hide', c.mounted || c.unformat );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat );
+		$( '#menu .sleep' ).toggleClass( 'hide', c.usb || c.unformat );
+		$( '#menu .format' ).toggleClass( 'hide', ! c.unformat );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.rserver );
 	}
 	MENU.show( $li );
 } );
@@ -1133,16 +1131,12 @@ $( '#timezone' ).on( 'input', function( e ) {
 	BASH( [ 'timezone', timezone, 'CMD TIMEZONE' ] );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
+	var $target  = $( e.target );
 	var $this    = $( this );
 	var $list    = $this.next();
-	var $target  = $( e.target );
-	if ( $target.hasClass( 'i-refresh' ) ) return
-	
-	if ( ! $this.hasClass( 'backend' ) ) { // js
-		$this.toggleClass( 'active' );
-		$list.toggleClass( 'hide' )
-		if ( V.localhost ) $( '.list a' ).remove();
-	} else if ( $target.is( 'a' ) ) {      // package
+	if ( $this.hasClass( 'backend' ) ) {
+		if ( ! $target.is( 'a' ) ) return
+		
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 		if ( active ) {
@@ -1159,8 +1153,9 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			BANNER_HIDE();
 		} );
 	} else {
-		$list.addClass( 'hide' );
-		$( '.listtitle a' ).removeAttr( 'class' );
+		$this.toggleClass( 'active' );
+		$list.toggleClass( 'hide' )
+		if ( V.localhost ) $( '.list a' ).remove();
 	}
 } );
 $( '#menu a' ).on( 'click', function( e ) {

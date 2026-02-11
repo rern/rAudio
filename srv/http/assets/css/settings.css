@@ -2,7 +2,7 @@
 .menu { z-index: 11 }
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
-li.current dot::before,
+li.mounted dot::before,
 li.profile dot::before {
 	content: '• ';
 	color: #0f0;
