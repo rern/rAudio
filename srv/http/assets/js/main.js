@@ -238,10 +238,8 @@ $( '#playback' ).on( 'click', function() {
 	if ( V.playback ) {
 		if ( ( V.wH - COMMON.bottom( $COVERART ) ) < 30 ) $( '#stop' ).trigger( 'click' );
 	} else {
-		V.library  = V.playlist = false;
-		V.playback = true
-		REFRESHDATA();
 		UTIL.switchPage( 'playback' );
+		REFRESHDATA();
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
