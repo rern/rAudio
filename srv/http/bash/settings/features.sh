@@ -210,9 +210,7 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		mv -f /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
-		sed -i -E 's|(/mnt/MPD/)USB|\1NAS/USB|' /etc/udevil/udevil.conf
-		systemctl restart devmon@http
+		ignoreMntDirs
 		ip=$( ipAddress )
 		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 		systemctl enable --now nfs-server
@@ -243,13 +241,10 @@ CMD ACTION PATHMPD"
 			done <<< $files
 		fi
 	else
-		mv $dirnas/{NVME,SATA,SD,USB} /mnt/MPD
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
 		rm -f $dirnas/.mpdignore
-		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-		systemctl restart devmon@http
-		chmod -f 755 $dirnas $dirnas/{NVME,SATA,SD,USB}
+		ignoreMntDirs restore
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip

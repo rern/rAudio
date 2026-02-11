@@ -324,6 +324,20 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+ignoreMntDirs() {
+	local dir mpdignore
+	for dir in NVME SATA SD USB; do
+		mpdignore=/mnt/MPD/$dir/.mpdignore
+		if [[ $1 == restore ]]; then
+			for dir in NVME SATA SD USB; do
+				sed -i "\|$dir| d" $mpdignore
+				[[ ! -s $mpdignore ]] && rm $mpdignore
+			done
+		else
+			echo $dir >> $mpdignore
+		fi
+	done
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf

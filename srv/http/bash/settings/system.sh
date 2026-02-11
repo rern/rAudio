@@ -203,6 +203,7 @@ forget | mount | unmount )
 			fi
 		fi
 	fi
+	systemctl try-restart samba
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null
 		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
@@ -406,17 +407,7 @@ shareddatadisable )  # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
-	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	nvme_sata=$( awk '/mnt.NVME|mnt.SATA/ {print $2}' /etc/fstab )
-	if [[ $nvme_sata ]]; then
-		for mp in $nvme_sata; do
-			umount -l $mp
-			mv $mp /mnt
-			sed -i "s|$mp|/mnt/MPD/${mp: -4}|" /etc/fstab
-		done
-	fi
+	ignoreMntDirs restore
 	if ! grep -q "$dirnas " /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )

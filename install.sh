@@ -66,3 +66,11 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20260212
+if [[ -e /mnt/SD ]]; then
+	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
+	ignoreMntDirs
+	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+fi
