@@ -2248,25 +2248,15 @@ var PROGRESS  = {
 		}
 	}
 	, set     : elapsed => { // if defined - no animate
-		if ( ! D.time && ! D.cover ) return
+		if ( elapsed === undefined || ( ! D.time && ! D.cover ) ) return
 		
 		if ( S.state === 'stop' || ! S.elapsed ) {
 			elapsed = 0;
 			UTIL.intervalClear( 'elapsed' );
 		}
-		if ( elapsed === undefined ) {
-			var s = S.Time - S.elapsed; // seconds from current to full
-			var l = 1;                  // full circle
-			var w = 100;
-		} else {
-			var s = 0;
-			var l = 0;
-			var w = 0;
-			if ( elapsed ) {
-				l = S.Time ? elapsed / S.Time : 0;
-				w = l * 100;
-			}
-		}
+		var s = 0;
+		var l = S.Time ? elapsed / S.Time : 0;
+		var w = l * 100;
 		if ( V.localhost ) { // no animation - fix high cpu load
 			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
 			PROGRESS.arc( l );
