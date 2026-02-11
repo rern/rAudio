@@ -92,7 +92,7 @@ W = {
 		}
 	}
 	, mpdplayer : data => { // play/stop
-		if ( 'off' in V || 'reboot' in V ) return
+		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
@@ -100,10 +100,9 @@ W = {
 				delete data.control;
 				delete data.volume;
 			}
-			UTIL.statusUpdate( data );
-			if ( ! V.playlist ) {
-				REFRESHDATA();
-			} else {
+			if ( V.playback ) {
+				UTIL.statusUpdate( data );
+			} else if ( V.playlist ) {
 				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
 				PLAYLIST.render.scroll();
 			}
