@@ -294,6 +294,10 @@ s/(--ml$m *: ).*/\1$L%;/"
 	splashRotate
 	! grep -q "?v='.time()" /srv/http/common.php && cacheBust
 	;;
+countmnt )
+	counts=$( countMnt )
+	echo '{ '${counts/,}' }'
+	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
 $ARTIST

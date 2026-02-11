@@ -161,6 +161,29 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
+countMnt() {
+	local counts d dir dirL list lsdir mpdignore path
+	for dir in NAS NVME SATA SD USB; do
+		list=false
+		path=/mnt/MPD/$dir
+		lsdir=$( ls $path 2> /dev/null )
+		if [[ $lsdir ]]; then
+			mpdignore=$path/.mpdignore
+			if [[ -e $mpdignore ]]; then
+				dirL=$( wc -l <<< $lsdir )
+				while read d; do
+					grep -q "^$d$" <<< $lsdir && (( dirL-- ))
+				done < $mpdignore
+				(( $dirL > 0 )) && list=true
+			else
+				list=true
+			fi
+		fi
+		counts+='
+, "'$dir'" : '$list
+	done
+	echo "$counts"
+}
 countRadio() {
 	local counts type
 	for type in dabradio webradio; do
