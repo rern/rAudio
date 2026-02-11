@@ -235,13 +235,13 @@ $( '#library, #button-library' ).on( 'click', function() {
 	if ( S.updating_db ) BANNER( 'library blink', 'Library Database', 'Update ...' );
 } );
 $( '#playback' ).on( 'click', function() {
-	if ( V.playback && ( V.wH - COMMON.bottom( $COVERART ) ) < 30 ) {
-		$( '#stop' ).trigger( 'click' );
+	if ( V.playback ) {
+		if ( ( V.wH - COMMON.bottom( $COVERART ) ) < 30 ) $( '#stop' ).trigger( 'click' );
 	} else {
-		if ( ! V.playback ) {
-			REFRESHDATA();
-			UTIL.switchPage( 'playback' );
-		}
+		V.library  = V.playlist = false;
+		V.playback = true
+		REFRESHDATA();
+		UTIL.switchPage( 'playback' );
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
