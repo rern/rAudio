@@ -4,7 +4,7 @@ function countMnt() {
 	foreach( [ 'NAS', 'NVME', 'SATA', 'SD', 'USB' ] as $dir ) {
 		$list  = false;
 		$path  = '/mnt/MPD/'.$dir;
-		$lsdir = glob( $path.'/*', GLOB_ONLYDIR ); // //$path/d/
+		$lsdir = glob( $path.'/*' );
 		if ( $lsdir ) {
 			$mpdignore = "$path/.mpdignore";
 			if ( file_exists( $mpdignore ) ) {

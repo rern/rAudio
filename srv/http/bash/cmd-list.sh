@@ -44,13 +44,13 @@ updateDone() {
 	for dir in NAS NVME SATA SD USB; do
 		list=false
 		path=/mnt/MPD/$dir
-		lsdir=$( ls -d $path/*/ 2> /dev/null ) # $path/d/
+		lsdir=$( ls $path 2> /dev/null )
 		if [[ $lsdir ]]; then
 			mpdignore=$path/.mpdignore
 			if [[ -e $mpdignore ]]; then
 				dirL=$( wc -l <<< $lsdir )
 				while read d; do
-					grep -q "$path/$d/" <<< $lsdir && (( dirL-- ))
+					grep -q "^$d$" <<< $lsdir && (( dirL-- ))
 				done < $mpdignore
 				(( $dirL > 0 )) && list=true
 			else
