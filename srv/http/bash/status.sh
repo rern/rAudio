@@ -55,10 +55,6 @@ else
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
 	counts=$( grep -Ev '{|}' $dirmpd/counts )
-	for d in NVME SATA; do
-		counts+='
-, "'${d,,}'"     : '$( [[ -e /mnt/MPD/$d ]] || mpc ls $d &> /dev/null && echo true )
-	done
 	display=$( grep -Ev '{|}' <<< $displayjson )'
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
