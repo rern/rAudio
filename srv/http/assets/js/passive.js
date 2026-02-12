@@ -12,6 +12,10 @@ W = {
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
+	, counts    : data => {
+		C[ data.k ] = data.v;
+		DISPLAY.library();
+	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
 		if ( V.library ) return
@@ -23,7 +27,9 @@ W = {
 	, coverart  : data => { // change
 		BANNER_HIDE();
 		V.html = {}
-		if ( V.playback ) {
+		if ( ! V.playback ) {
+			REFRESHDATA();
+		} else {
 			if ( S.webradio && S.state === 'play' ) return
 			
 			var encoded  = data.coverart[ 0 ] === '%';
@@ -42,8 +48,6 @@ W = {
 				data.current = path0 === path1;
 			}
 			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
-		} else {
-			UTIL.refresh();
 		}
 	}
 	, display   : data => {
@@ -88,7 +92,7 @@ W = {
 		}
 	}
 	, mpdplayer : data => { // play/stop
-		if ( 'off' in V || 'reboot' in V ) return
+		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
@@ -96,12 +100,9 @@ W = {
 				delete data.control;
 				delete data.volume;
 			}
-			UTIL.statusUpdate( data );
 			if ( V.playback ) {
-				UTIL.refresh();
-			} else if ( V.library ) {
-				REFRESHDATA();
-			} else {
+				UTIL.statusUpdate( data );
+			} else if ( V.playlist ) {
 				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
 				PLAYLIST.render.scroll();
 			}
@@ -120,7 +121,16 @@ W = {
 		}
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
-	//, mpdupdate in common.js
+	, mpdupdate : data => {
+		S.updating_db = 'updating_db' in data;
+		COMMON.updating();
+		if ( ! S.updating_db ) {
+			V.html = {}
+			$.each( data, ( k, v ) => { C[ k ] = v } );
+			PLAYBACK.button.updating();
+			DISPLAY.library();
+		}
+	}
 	, option    : data => {
 		if ( V.local ) return
 		
@@ -165,12 +175,12 @@ W = {
 		if ( V.sort ) return
 		
 		PLAYLIST.playlists.addClear();
-		if ( V.playlistlist && data == -1 ) {
+		var count   = data.count;
+		if ( V.playlistlist && ! count ) {
 			$( '#playlist' ).trigger( 'click' );
 			return
 		}
 		
-		var count   = data.count;
 		C.playlists = count;
 		if ( V.playlistlist ) {
 			PLAYLIST.playlists.home( data );

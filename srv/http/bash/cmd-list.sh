@@ -41,15 +41,17 @@ updateDone() {
 	jq -S <<< "{ $counts }" > $dirmpd/counts
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	rm -f $dirmpd/listing $dirshm/albumprev
-	pushData mpdupdate '{ '$counts', "done": true }'
+	counts+=$( countMnt )
+	pushData mpdupdate '{ '$counts' }'
+	touch $dirshm/updatedone
 	$dirbash/status-push.sh
+	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }
 
 touch $dirmpd/listing
-grep -qs LATEST=true $dirmpd/updating && latestappend=1
+grep -qs ^latest=true $dirsystem/mpcupdate.conf && latestappend=1
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/{updatestart,updating}
+rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='

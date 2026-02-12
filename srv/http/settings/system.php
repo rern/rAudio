@@ -3,7 +3,7 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
+	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
@@ -70,13 +70,12 @@ $head        = [
 	, 'button' => 'add addnas'
 	, 'list'   => true
 	, 'help'   => <<< EOF
-$B->add Add network storage
-$B->microsd$B->usbdrive$B->networks Context menu
-
- · USB drives  Will be found and mounted automatically.
- · Commands used by $B->add:
-<pre class="gr">
-mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
+$B->add <a class="textdropdown">Add network or local storage</a>
+	· » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+	· Windows shares without password: <c>net user guest /active:yes</c>
+<pre class="hide">
+<g># backend commands</g>
+mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
@@ -86,14 +85,14 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
 </pre>
-Note:
-» <c>Name</c> - Reserved: <c>data</c> <c>SD</c> <c>USB</c>
-Windows shares without password: <c>net user guest /active:yes</c>
-
-List:
-	Path: <c>/mnt/MPD/...</c>
-	<i class="btn">«</i> $L->shareddata
-	<i class="btn">»</i> $L->serverraudio
+ · $B->usbdrive USB: Mounted automatically.
+ · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
+ · <i class="btn">«</i> $L->shareddata
+ · <i class="btn">»</i> $L->serverraudio
+ · Full path: <c>/mnt/MPD/...</c>
+	
+$B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
+	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
 EOF
 ];
 $body        = [ '<ul id="storage" class="entries"></ul>' ];
@@ -155,11 +154,13 @@ $body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'dtoverlay'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'i2smodule'
 		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'dtoverlay'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
@@ -257,6 +258,8 @@ $body        = [
 	[
 		  'id'       => 'hostname'
 		, 'label'    => 'Player Name'
+		, 'sub'      => 'hostnamectl'
+		, 'status'   => true
 		, 'input'    => '<input type="text" id="hostname" readonly>'
 		, 'help'     => <<< EOF
 For:
@@ -460,4 +463,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 </div>
 
 <?php
-htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount' ] );
+htmlMenu( [ 'info', 'forget', 'mount', 'sleep', 'unmount', 'format' ] );

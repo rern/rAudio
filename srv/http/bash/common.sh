@@ -37,7 +37,7 @@ fi
 #	k2=v2
 #	...
 alphaNumeric() {
-	tr -dc [:alnum:] <<< $@
+	tr -dc [:alnum:] <<< ${@,,}
 }
 appendSortUnique() {
 	local data file lines
@@ -45,7 +45,7 @@ appendSortUnique() {
 	shift
 	data=$@
 	[[ ! -e $file ]] && echo "$data" > $file && return
-	
+# --------------------------------------------------------------------
 	lines="\
 $( < $file )
 $data"
@@ -58,11 +58,11 @@ args2var() { # $2 $3 ... if any, still valid
 	argslast=${args[@]: -1}
 	CMD_CFG_OFF=${argslast:0:3}
 	[[ $CMD_CFG_OFF == OFF ]] && TF=false && return
-	
+# --------------------------------------------------------------------
 	ON=true
 	TF=true
 	[[ ! $CMD_CFG_OFF =~ ^(CMD|CFG)$ ]] && return
-	
+# --------------------------------------------------------------------
 	keys=( $argslast )
 	[[ $CMD_CFG_OFF == CFG ]] && CFG=1
 	kL=${#keys[@]}
@@ -122,11 +122,11 @@ conf2json() {
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
 	[[ ! -e $file ]] && echo false && return
-	
+# --------------------------------------------------------------------
 	# omit lines  blank, comment / group [xxx]
 	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
 	[[ ! $lines ]] && echo false && return
-	
+# --------------------------------------------------------------------
 	if [[ $2 ]]; then # $2 - specific keys
 		shift
 		keys=$@
@@ -134,7 +134,7 @@ conf2json() {
 		lines=$( grep -E "$only" <<< $lines )
 	fi
 	[[ ! $lines ]] && echo false && return
-	
+# --------------------------------------------------------------------
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
@@ -161,6 +161,29 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
+countMnt() {
+	local counts d dir dirL list lsdir mpdignore path
+	for dir in NAS NVME SATA SD USB; do
+		list=false
+		path=/mnt/MPD/$dir
+		lsdir=$( ls $path 2> /dev/null )
+		if [[ $lsdir ]]; then
+			mpdignore=$path/.mpdignore
+			if [[ -e $mpdignore ]]; then
+				dirL=$( wc -l <<< $lsdir )
+				while read d; do
+					grep -q "^$d$" <<< $lsdir && (( dirL-- ))
+				done < $mpdignore
+				(( $dirL > 0 )) && list=true
+			else
+				list=true
+			fi
+		fi
+		counts+='
+, "'${dir,,}'" : '$list
+	done
+	echo "$counts"
+}
 countRadio() {
 	local counts type
 	for type in dabradio webradio; do
@@ -175,9 +198,9 @@ coverFileGet() {
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ ! $coverfile ]] && return
-	
+# --------------------------------------------------------------------
 	[[ $2 ]] && echo $coverfile && return
-	
+# --------------------------------------------------------------------
 	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
 data2json() {
@@ -245,13 +268,13 @@ fifoToggle() { # mpdoled vuled vumeter
 			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
 		! grep -q 'state="*play' $dirshm/status && return
-		
+# --------------------------------------------------------------------
 		[[ $mpdoled ]] && systemctl restart mpd_oled
 		[[ $vuled || $vumeter ]] && systemctl restart cava
 	else
 		if [[ -e $filefifo ]]; then
 			[[ $mpdoled || $vuled || $vumeter ]] && return
-			
+# --------------------------------------------------------------------
 			rm $filefifo
 			systemctl restart mpd
 		fi
@@ -259,8 +282,13 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
+fstabColumnReload() {
+	column -t <<< $1 > /etc/fstab
+	systemctl daemon-reload
+	mount -a
+}
 fstabSet() {
-	local fstab stb
+	local fstab std
 	umount -ql "$1"
 	mkdir -p "$1"
 	chown mpd:audio "$1"
@@ -268,8 +296,7 @@ fstabSet() {
 	fstab="\
 $( < /etc/fstab )
 $2"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
+	fstabColumnReload "$fstab"
 	std=$( mount -a 2>&1 > /dev/null )
 	if [[ $std ]]; then
 		mv -f /tmp/fstab /etc
@@ -292,7 +319,7 @@ getContent() {
 }
 getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
-	
+# --------------------------------------------------------------------
 	case ${2: -4} in
 		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
 		.yml ) 
@@ -320,6 +347,20 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+ignoreMntDirs() {
+	local dir mpdignore
+	for dir in NVME SATA SD USB; do
+		mpdignore=/mnt/MPD/$dir/.mpdignore
+		if [[ $1 == restore ]]; then
+			for dir in NVME SATA SD USB; do
+				sed -i "\|$dir| d" $mpdignore
+				[[ ! -s $mpdignore ]] && rm $mpdignore
+			done
+		else
+			echo $dir >> $mpdignore
+		fi
+	done
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -345,7 +386,7 @@ killProcess() {
 	fi
 }
 lanDevice() {
-	ip -br link | awk '/^e/ {print $1; exit}'
+	ip -br link | awk '/^e/ {print $1}'
 }
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
@@ -406,22 +447,18 @@ pushBookmark() {
 pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy
 	channel=$1
-	if [[ $2 ]]; then
-		data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
-	else
-		data=true
-	fi
+	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
-	
+# --------------------------------------------------------------------
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	[[ ! $sharedip ]] && return # no other cilents
-	
+# --------------------------------------------------------------------
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
+# --------------------------------------------------------------------
 	fi
-	
 	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
@@ -432,11 +469,8 @@ pushData() { # send to websocket.py (server)
 	done
 }
 pushDirCounts() {
-	dir=$1
-	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
-	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	updatedone=1
-	pushData mpdupdate '{ "'$dir'": '$( wc -l <<< $dirs )' }'
+	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v /mnt/MPD/NAS/data/ ) ]] && tf=true || tf=false
+	pushData counts '{ "'$1'": '$tf' }'
 }
 pushRefresh() {
 	local page push
@@ -444,9 +478,6 @@ pushRefresh() {
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
-}
-pushStorage() {
-	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 }
 pushWebsocket() { # send to remote websocket.py (server)
 	local channel data ip
@@ -531,11 +562,14 @@ sharedDataLink() {
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	appendSortUnique $dirnas/.mpdignore data
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
-	
+# --------------------------------------------------------------------
 	readarray -t source <<< $( < $dirshareddata/source )
 	while read s; do
 		ip_share=${s/ *}
-		! grep -q "${ip_share//\\/\\\\}" /etc/fstab && fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
+		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then
+			
+			fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$src"
+		fi
 	done <<< $source
 }
 sharedDataReset() {
@@ -548,7 +582,7 @@ sharedDataReset() {
 }
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
-	
+# --------------------------------------------------------------------
 	local clientip connected data ip lines
 	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
@@ -572,7 +606,7 @@ snapclientIP() {
 }
 snapserverList() {
 	local name_ip
-	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/1704;$/&&!/^=;l/ {print $7" "$8}' )
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7" "$8}' )
 	if [[ $name_ip ]] ; then
 		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
 		echo '[ '${name_ip:1}' ]'
@@ -602,6 +636,9 @@ statusColor() {
 										 s|(failed)|<red>\1</red>|ig}
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
+statusUpdating() {
+	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
+}
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
 }
@@ -624,7 +661,7 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	fn_volume=$( < $dirshm/volumefunction )
+	[[ $CARD == bluealsa ]] && fn_volume=volumeBlueAlsa || fn_volume=$( < $dirshm/volumefunction ) # from player settings
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
@@ -653,7 +690,7 @@ volumeBlueAlsa() { # value control
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
-	
+# --------------------------------------------------------------------
 	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		val_db=$( amixer -MD bluealsa 2> /dev/null \
@@ -672,7 +709,7 @@ volumeGet() {
 			[[ $val_db ]] && break || sleep 1
 		done
 	fi
-	val_db=$( tr -dc '[:digit:]-. ' <<< $val_db )
+	[[ $val_db ]] && val_db=$( tr -dc '[:digit:]-. ' <<< $val_db ) || val_db='-1 -1'
 	val=${val_db/ *}
 	db=${val_db/* }
 	case $1 in
@@ -681,6 +718,7 @@ volumeGet() {
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
 		valdb ) echo $val $db;;
+		json )  echo '{ "val": '$val', "db": '$db' }';;
 		db )    echo $db;;
 		* )     echo $val;;
 	esac
@@ -708,4 +746,19 @@ volumeLimit() {
 		. $dirshm/output 
 	fi
 	$fn_volume $val% "$mixer" $card
+}
+wlanDevice() {
+	local wlandev
+	wlandev=$( ls /sys/class/net | grep ^w | tail -n 1 )
+	if [[ $wlandev ]]; then
+		echo $wlandev > $dirshm/wlan
+		( sleep 1 && iw $wlandev set power_save off ) &
+	else
+		rm -f $dirshm/wlan
+	fi
+}
+wlanOnboardDisable() {
+	local mod
+	lsmod | grep -q brcmfmac_cyw && mod=cyw || mod=wcc
+	rmmod brcmfmac_$mod brcmfmac &> /dev/null
 }

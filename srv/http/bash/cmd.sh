@@ -99,7 +99,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
+	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
 	mpc -q clear
@@ -124,7 +124,7 @@ pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
 		pushData playlists $( php /srv/http/playlist.php list )
 	else
-		pushData playlists -1
+		pushData playlists '{ "count": false }'
 	fi
 }
 radioStop() {
@@ -294,6 +294,10 @@ s/(--ml$m *: ).*/\1$L%;/"
 	splashRotate
 	! grep -q "?v='.time()" /srv/http/common.php && cacheBust
 	;;
+countmnt )
+	counts=$( countMnt )
+	echo '{ '${counts/,}' }'
+	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
 $ARTIST
@@ -327,8 +331,8 @@ dirdelete )
 	;;
 dirnew )
 	mkdir -p "$DIR"
-	chown -h http:http "$$DIR"
-	chmod 755 "$$DIR"
+	chown -h http:http "$DIR"
+	chmod 755 "$DIR"
 	pushRadioList
 	;;
 dirrename )
@@ -409,7 +413,7 @@ lyrics )
 		fi
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
-			curl -sL -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p"
+			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
 		}
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		[[ ${#artist} == 2 ]] && short=1 && artist+=band
@@ -619,25 +623,28 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcupdate )
+	rm -f $dirshm/updatedone
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate
-	if [[ $ACTION ]]; then
-		echo "\
-ACTION=$ACTION
-PATHMPD=\"$PATHMPD\"
-LATEST=$LATEST" > $dirmpd/updating
-	else
-		. <( $dirmpd/updating )
+	pushData mpdupdate '{ "updating_db": true }'
+	if [[ ! $ACTION ]]; then
+		if [[ -e $dirsystem/mpcupdate.conf ]]; then
+			. <( cat $dirsystem/mpcupdate.conf )
+			ACTION=$action
+			PATHMPD=$pathmpd
+		else
+			ACTION=rescan
+		fi
 	fi
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate $( < $dirmpd/counts )
+	notify 'refresh-library blink' 'Library Update' 'Cancel ...' -1
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
 		rm -f $dirmpd/{listing,updating}
 	fi
+	$dirbash/cmd-list.sh
 	;;
 mpdignore )
 	dir=$( basename "$DIR" )
@@ -645,8 +652,10 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate
-	echo "$mpdpath" > $dirmpd/updating
+	pushData mpdupdate '{ "updating_db": true }'
+	echo "\
+action=update
+mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;

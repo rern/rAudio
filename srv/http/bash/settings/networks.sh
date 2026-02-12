@@ -26,16 +26,6 @@ netctlSwitch() {
 		fi
 	fi
 }
-wlanDevice() {
-	local wlandev
-	if test -e /sys/class/net/w*; then
-		wlandev=$( ls /sys/class/net | grep ^w )
-		echo $wlandev | tee $dirshm/wlan
-		( sleep 1 && iw $wlandev set power_save off ) &
-	else
-		rm -f $dirshm/wlan
-	fi
-}
 
 case $CMD in
 
@@ -132,18 +122,20 @@ profileforget )
 	pushRefresh
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
+	[[ -e $dirshm/btonoff ]] && exit # suppress onboard
+# --------------------------------------------------------------------
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	sleep 3
-	pushRefresh features
-	pushRefresh
 	notify bluetooth 'USB Bluetooth' Ready
+	pushRefresh
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
+	[[ -e $dirshm/btonoff ]] && exit # suppress onboard
+# --------------------------------------------------------------------
 	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
 	notify bluetooth 'USB Bluetooth' Removed
-	pushRefresh features
 	pushRefresh
 	;;
 usbwifion )
@@ -157,9 +149,6 @@ usbwifioff )
 	wlanDevice
 	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
-	;;
-wlandevice )
-	wlanDevice
 	;;
 	
 esac

@@ -14,6 +14,7 @@ $body = [
 		  'id'       => 'ID'         // REQUIRED
 		, 'label'    => 'LABEL'
 		, 'sub'      => 'SUB'
+		, 'icon'     => true         // (Player page only) show icon 
 		, 'status'   => true         // include status icon and status box
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
 		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
@@ -31,16 +32,16 @@ function commonVariables( $list ) {
 		$$k = ( object ) [];
 	}
 	$list = ( object ) $list;
-	foreach( $list->buttons as $b ) $B->$b = icon(  $b.' btn' );
+	foreach( $list->buttons as $b ) $B->$b = icon( $b.' btn' );
 	foreach( $list->labels as $label => $icon ) {
-		$icon     = $icon ? icon(  $icon ) : ' &emsp;';
+		$icon     = $icon ? icon( $icon ) : ' &emsp;';
 		$name     = strtolower( preg_replace( '/[^\da-z]/i', '', $label ) );
 		$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
 	}
 	foreach( $list->menus as $name => $icon ) {
-		$M->$name = '<a class="helpmenu">'.icon(  $icon ).' '.ucfirst( $icon ).icon(  $name.' sub' ).'</a>';
+		$M->$name = '<a class="helpmenu">'.icon( $icon ).' '.ucfirst( $icon ).icon( $name.' sub' ).'</a>';
 	}
-	foreach( $list->tabs as $t ) $T->$t = '<a class="helpmenu tab">'.icon(  $t ).' '.ucfirst( $t ).'</a>';
+	foreach( $list->tabs as $t ) $T->$t = '<a class="helpmenu tab">'.icon( $t ).' '.ucfirst( $t ).'</a>';
 }
 
 function htmlHead( $data ) {
@@ -52,16 +53,16 @@ function htmlHead( $data ) {
 	$status  = $data->status ?? '';
 	$class   = $status ? ' class="status'.$list.'"' : '';
 	$dstatus = $status ? ' data-status="'.$status.'"' : '';
-	$iback   = isset( $data->back ) ? icon(  'back back' ) : '';
-	$ihelp   = $iback ? '' : icon(  'help help' );
+	$iback   = isset( $data->back ) ? icon( 'back back' ) : '';
+	$ihelp   = $iback ? '' : icon( 'help help' );
 	
 	$html    = '<heading '.$id.$class.'><span class="headtitle"'.$dstatus.'>'.$data->title.'</span>';
 	if ( isset( $data->button ) ) {
 		$button = $data->button;
 		if ( is_Array( $button ) ) {
-			foreach( $button as $icon ) $html.= icon(  $icon );
+			foreach( $button as $icon ) $html.= icon( $icon );
 		} else {
-			$html.= icon(  $button );
+			$html.= icon( $button );
 		}
 	}
 	$html   .= $ihelp.$iback.'</heading>';
@@ -71,7 +72,7 @@ function htmlHead( $data ) {
 }
 function htmlMenu( $menu ) {
 	$menuhtml = '';
-	foreach( $menu as $cmd ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'" tabindex="0">'.icon(  $cmd ).ucfirst( $cmd ).'</a>';
+	foreach( $menu as $cmd ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'" tabindex="0">'.icon( $cmd ).ucfirst( $cmd ).'</a>';
 	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
 }
 function htmlSection( $head, $body, $id = '', $class = '' ) {
@@ -111,13 +112,13 @@ function htmlSetting( $data ) {
 		return;
 	}
 	
-	global $iconlabel;
+	global $features, $system;
 	$label   = $data->label;
 	$status  = $data->status ?? false;
 	$label   = '<span class="label">'.$label.'</span>';
+	$icon    = $features || $system || $id === 'btreceiver' || $id === 'btsender' ? $id : '';
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;
-	$icon    = $iconlabel ? $id : '';
 	$dstatus = $status ? ' status" data-status="'.$id : '';
 	
 	$html    = '<div id="div'.$id.'" class="row">';
@@ -139,13 +140,13 @@ function htmlSetting( $data ) {
 			$html.= '<select id="'.$input.'"></select>';
 		}
 	}
-	$html   .= icon(  'gear setting', 'setting-'.$id );
+	$html   .= icon( 'gear setting', 'setting-'.$id );
 	// help
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
-	$html   .= '</div>
-					</div>';
+	$html   .= '</div>';
 	// status
 	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
+	$html   .= '</div>';
 	if ( isset( $data->returnhtml ) ) return $html;
 	
 	echo $html;

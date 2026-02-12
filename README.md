@@ -70,6 +70,7 @@ r A u d i o
 	- DAC
 	- Keyboard and mouse
 	- SDR (for DAB Radio)
+	- Storage
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio/blob/main/I2S_modules.md)
@@ -80,6 +81,7 @@ r A u d i o
 	- [Spectrum OLED](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (LEDs+Rs)
+	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
 ### Image files
 - Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)

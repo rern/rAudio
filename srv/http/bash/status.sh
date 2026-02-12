@@ -15,36 +15,51 @@ if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server 
 	systemctl start mpd
 fi
 
-ip=$( ipAddress )
-
 statusData() {
-	if [[ $snapclient ]]; then
-		status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$ip'\2|
-						  s|^(, "coverart" *: ")(.+")|\1http://'$ip'\2|' <<< ${status:1} )
-		data2jsonPatch "$status"
-	else
-		data2json "$status"
-	fi
+	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status"
 }
 
-if [[ -e $dirshm/nosound ]]; then
-	volumenone=true
+ip=$( ipAddress )
+displayjson=$( < $dirsystem/display.json )
+
+if [[ $1 == snapclient ]]; then
+	snapclient=1
+	player=mpd
+	icon=snapcast
+	status+='
+, "snapserverip" : "'$ip'"'
 else
-	. <( grep -E '^mixer|^mixertype' $dirshm/output )
-	if [[ $mixertype != none ]] \
-		|| [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] \
-		|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
-		volumenone=false
+	player=$( < $dirshm/player )
+	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
+	[[ $player != mpd ]] && icon=$player
+	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+		card='"bluealsa"'
+		mixer=$( < $dirshm/btmixer )
 	else
-		volumenone=true
+		. <( grep -E '^card|^mixer' $dirshm/output )
 	fi
-fi
-grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-display=$( grep -v } $dirsystem/display.json )
-[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
-[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
-[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-display+='
+#-----------------------------------------------------------------------------------------
+	if [[ -e $dirshm/nosound ]]; then
+		volumenone=true
+	else
+		. <( grep -E '^mixer|^mixertype' $dirshm/output )
+		if [[ $mixertype != none ]] \
+			|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
+			|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
+			volumenone=false
+		else
+			volumenone=true
+		fi
+	fi
+	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
+	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
+	counts=$( grep -Ev '{|}' $dirmpd/counts )
+	for d in NVME SATA; do
+		counts+='
+, "'${d,,}'"     : '$( [[ -e /mnt/MPD/$d ]] || mpc ls $d &> /dev/null && echo true )
+	done
+	display=$( grep -Ev '{|}' <<< $displayjson )'
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
@@ -57,43 +72,25 @@ display+='
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
-, "volumenone"   : '$volumenone'
-}'
-status+='
-, "display"      : '$display
-
-if [[ $1 == snapclient ]]; then
-	snapclient=1
-	player=mpd
-	icon=snapcast
-else
-	player=$( < $dirshm/player )
-	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
-	[[ $player != mpd ]] && icon=$player
-	if [[ -e $dirshm/btreceiver ]]; then
-		card='"btreceiver"'
-		mixer=$( < $dirshm/btmixer )
-	else
-		. <( grep -E '^card|^mixer' $dirshm/output )
-	fi
-	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && updating_db=true || updating_db=false
+, "volumenone"   : '$volumenone
+#-----------------------------------------------------------------------------------------
 ########
 	status+='
 , "player"       : "'$player'"
-, "btreceiver"   : '$( exists $dirshm/btreceiver )'
+, "btsender"     : '$( exists $dirshm/btmixer )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
-, "counts"       : '$( getContent $dirmpd/counts '{}' )'
+, "counts"       : { '$counts' }
+, "display"      : { '$display' }
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "shareddata"   : '$( exists $filesharedip )'
-, "snapclient"   : '$( exists $dirshm/snapserverip )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
-, "updating_db"  : '$updating_db'
+, "updating_db"  : '$( statusUpdating )'
 , "volume"       : '$( volumeGet )'
 , "volumemax"    : '$( volumeMaxGet )'
 , "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'
@@ -229,7 +226,7 @@ if [[ $pllength == 0 && ! $snapclient ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $displayjson ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
@@ -270,7 +267,6 @@ elif [[ $stream ]]; then
 , "Title"  : "'$Title'"'
 		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( alphaNumeric $Artist$Album )
-			covername=${covername,,}
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart="${onlinefile:9}"
 		fi
@@ -291,6 +287,7 @@ elif [[ $stream ]]; then
 		url=${file/\#charset*}
 		urlname=${url//\//|}
 		radiofile=$dirradio/$urlname
+		stationcover=${dirradio:9}/img/$urlname.jpg
 		[[ ! -e $radiofile  ]] && radiofile=$( find $dirradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
@@ -311,8 +308,6 @@ elif [[ $stream ]]; then
 				sampling=$radiosampling
 				if [[ ! -e $dirshm/radio ]]; then
 					state=play
-					stationcover=${dirradio:9}/img/$urlname.jpg
-					stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 					datastation='
   "coverart"     : "'$stationcover'"
 , "file"         : "'$file'"
@@ -341,7 +336,6 @@ elif [[ $stream ]]; then
 				fi
 				# fetched coverart
 				covername=$( alphaNumeric "$Artist${Title/ (*}" ) # remove '... (extra tag)'
-				covername=${covername,,}
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart="${coverfile:9}"
@@ -349,11 +343,6 @@ elif [[ $stream ]]; then
 					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
-		fi
-		if [[ $displaycover ]]; then
-			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
-			stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 		fi
 ########
 		status+='

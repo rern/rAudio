@@ -178,8 +178,10 @@ var CONTEXT  = {
 			, oklabel    : ICON( 'cursor' ) +'Target'
 			, ok         : () => {
 				if ( ! V.playlist ) PLAYLIST.get();
-				setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-				BANNER( 'cursor blink', V.pladd.title, 'Choose target playlist', -1 );
+				setTimeout( () => {
+					$( '#button-pl-playlists' ).trigger( 'click' );
+					NOTIFY( 'cursor', V.pladd.title, 'Choose target playlist' );
+				}, V.playlist ? 100 : 300 );
 				$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
 			}
 		} );
@@ -309,7 +311,7 @@ var CONTEXT  = {
 						if ( values[ k ] === v ) delete val[ k ];
 					} );
 					val.FILE = file;
-					BANNER( 'tag blink', 'Tag Editor', 'Change ...', -1 );
+					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
 					BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
 				}
 			} );

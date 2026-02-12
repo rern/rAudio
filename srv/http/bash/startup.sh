@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-wlandev=$( $dirsettings/networks.sh wlandevice )
+wlanDevice
 
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -40,8 +40,9 @@ if [[ -e /boot/nolocalbrowser ]]; then
 	localBrowserOff
 fi
 
-if [[ $wlandev ]]; then
+if [[ -e $dirshm/wlan ]]; then
 	if [[ -e /boot/wifi ]]; then
+		wlandev=$( < $dirshm/wlan )
 		ssid=$( getVar ESSID /boot/wifi )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
@@ -56,6 +57,9 @@ CMD ESSID"
 fi
 # pre-configure <<<-----------------------------------------------------------
 
+if [[ ! -e $dirsystem/btdisable ]]; then
+	modprobe -a bluetooth bnep btbcm hci_uart
+fi
 logoLcdOled
 
 if [[ -e $dirsystem/soundprofile ]]; then
@@ -115,7 +119,7 @@ auto
 CMD TIMEZONE'
 		fi
 	else
-		if [[ $wlandev && ! $ap ]]; then
+		if [[ -e $dirshm/wlan && ! $ap ]]; then
 			if [[ $netctllist ]]; then
 				if [[ ! -e $dirsystem/wlannoap ]]; then
 					ap=1
@@ -134,30 +138,34 @@ if [[ $ap ]]; then
 fi
 landevice=$( lanDevice )
 if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
-	$dirsettings/networks-bluetooth.sh connect $mac
+	$dirsettings/networks-bluetooth.sh "cmd
+connect
+$mac
+CMD ACTION MAC"
+	if [[ -e $dirsystem/camilladsp ]]; then
+		$dirsettings/camilla-bluetooth.sh btreceiver
+	fi
 fi
-
-if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla-bluetooth.sh btreceiver
-else # start mpd.service if not started by networks-bluetooth.sh
+if ! systemctl -q is-active mpd; then
 	$dirsettings/player-conf.sh
 fi
-
 if [[ -e $dirsystem/volumelimit ]]; then
 	volumeLimit startup
 fi
 
 # after all sources connected ........................................................
-if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
+if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
+else
+	touch $dirshm/updatedone
 fi
 
 touch $dirshm/startup

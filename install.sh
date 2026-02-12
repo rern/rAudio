@@ -4,7 +4,44 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260111
+# 20260212
+file=/etc/conf.d/devmon
+if grep -q remove $file; then
+	sed -i "s|usbconnect.*usbremove|usbmount|" $file
+	systemctl restart devmon@http
+fi
+
+file=/etc/udev/rules.d/usbstorage.rules
+if [[ ! $file ]]; then
+	echo 'KERNEL=="sd[a-z]" \
+ACTION=="add", \
+RUN+="/srv/http/bash/settings/system.sh usbadd"
+
+KERNEL=="sd[a-z]" \
+ACTION=="remove", \
+RUN+="/srv/http/bash/settings/system.sh usbremove"' > $file
+	sed -i -e 's/usbconnect/usbmount/
+' -e '/^ACTION=="remove"/,$ d
+' /etc/udev/rules.d/ntfs.rules
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
+file=/etc/modprobe.d/blacklist.conf
+if [[ ! -e $file ]]; then
+	echo "\
+blacklist bluetooth
+blacklist bnep
+blacklist btbcm
+blacklist hci_uart" > $file
+fi
+
+file=/boot/config.txt
+if grep -q -m1 disable-bt $file; then
+	sed -i '/disable-bt/ d' /boot/config.txt
+	touch $dirsystem/btdisable
+fi
+
 [[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
 
 if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
@@ -15,9 +52,6 @@ if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
 	echo ', "spotifyd": "Spotify"' >> $dirshm/reboot
 
 fi
-
-# 20251109
-rm -f $dirshm/system
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -32,3 +66,11 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20260212
+if [[ -e /mnt/SD ]]; then
+	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
+	ignoreMntDirs
+	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+fi

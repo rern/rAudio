@@ -37,9 +37,7 @@ fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${op
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear
 	systemctl stop mpd
-	mv /mnt/MPD/{SD,USB} /mnt
-	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
+	ignoreMntDirs
 	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1

@@ -4,7 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-$MENU      = $( '#menu' );
+$MENU       = $( '#menu' );
 function CONTENT() {
 	var $select = $( '.container select' );
 	if ( $select.length ) {
@@ -117,7 +117,7 @@ function STATUS( id, arg, info ) {
 		delete V.statusclick;
 	} );
 }
-var SWITCH = {
+var SWITCH  = {
 	  cancel : () => {
 		$( '#'+ SW.id )
 			.prop( 'checked', S[ SW.id ] )
@@ -152,17 +152,23 @@ var SWITCH = {
 		} );
 	}
 }
-W.refresh  = data => { // except camilla
-	if ( data.page !== PAGE ) return
-	
+W.mpdupdate = data => {
+	var updating_db = 'updating_db' in data;
+	if ( 'updating_db' in S ) S.updating_db = updating_db;
+	COMMON.updating();
+	var $update     = $( '.button-lib-update' );
+	if ( $update.length ) $update.toggleClass( 'blink', S.updating_db );
+}
+W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
-		
+	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		SWITCH.set();
 		renderPage();
 		$( '.col-r' ).css( 'pointer-events', '' );
+		COMMON.statusToggle( 'refresh' );
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
@@ -333,6 +339,19 @@ $( '.setting' ).on( 'click', function() {
 	} else {
 		SETTING( id );
 	}
+} );
+$( '.textdropdown' ).on( 'click', function() {
+	var $pre = $( this ).nextAll( 'pre' ).first();
+	if ( $pre.is( ':empty' ) ) {
+		BASH( [ 'filetype' ], data => {
+			$pre
+				.html( data )
+				.toggleClass( 'hide' );
+		} );
+	} else {
+		$pre.toggleClass( 'hide' );
+	}
+	$( this ).toggleClass( 'active' );
 } );
 // kb shortcut
 $( document ).on( 'keydown', function( e ) {

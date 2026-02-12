@@ -189,7 +189,7 @@ a {
 	background: var( --cga );
 }
 #settings i.on {
-	color: var( --cml ) !important;
+	color: var( --cml );
 }
 .menu a.active,
 .submenu.active {

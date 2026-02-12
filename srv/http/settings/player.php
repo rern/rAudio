@@ -1,17 +1,18 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
+	  'buttons' => [ 'album', 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
 		  'DAB Radio'      => 'dabradio'
 		, 'Device'         => ''
 		, 'DSP'            => 'camilla'
 		, 'Equalizer'      => 'equalizer'
+		, 'Mixer'          => 'mixer'
 		, 'Shared Data'    => 'networks'
 		, 'SoX Resampler'  => ''
 		, 'Volume Control' => ''
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head      = [
@@ -34,34 +35,49 @@ htmlSection( $head, $body, 'mpd' );
 $head      = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
-];
+	, 'help'   => <<< EOF
+$B->camilla$B->equalizer $T->features Signal Processors enabled
+EOF];
 $body      = [
 	[
-		  'id'       => 'bluealsa'
+		  'id'       => 'btreceiver'
 		, 'label'    => 'Bluetooth'
+		, 'sub'      => 'bluealsa'
+		, 'status'   => true
 		, 'input'    => 'btreceiver'
+	]
+	, [
+		  'id'       => 'btsender'
+		, 'label'    => 'Sender Mixer'
+		, 'sub'      => 'amixer'
+		, 'status'   => true
+		, 'input'    => 'btsender'
 		, 'help'     => <<< EOF
-$B->volume Mixer device - blueALSA volume control
- · Should be set at 0dB and use Bluetooth buttons to control volume
+$B->volume Sender volume level
+<i class="i-btsender"></i> rAudio as Bluetooth sender:
+	 · Should be set at 0dB
+	 · Use volume control on receiver devices to set level
 EOF
 	]
 	, [
 		  'id'       => 'device'
 		, 'label'    => 'Device'
-		, 'sub'      => 'hw_params'
+		, 'sub'      => 'aplay'
 		, 'status'   => true
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
-$B->camilla$B->equalizer $T->features Signal Processors enabled
-
 Note: HDMI may not be available unless connect before boot.
 EOF
 	]
 	, [
 		  'id'       => 'mixer'
-		, 'label'    => 'Mixer Device'
+		, 'label'    => 'Mixer'
+		, 'sub'      => 'amixer'
+		, 'status'   => true
 		, 'input'    => 'mixer'
-		, 'help'     => $B->volume.' Mixer device volume control'
+		, 'help'     => <<< EOF
+$B->volume DAC hardware volume level
+EOF
 	]
 	, [
 		  'id'       => 'mixertype'
@@ -69,8 +85,8 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · Mixer device: Good - DAC hardware via GUI knob (if available)
- · MPD software: Basic - GUI knob
+ · DAC hardware $L->mixer : Good (if available)
+ · MPD software: Basic
  
 Note: Should be disabled for best sound quality
  · GUI knob hidden
@@ -82,7 +98,8 @@ EOF
 		  'id'       => 'devicewithbt'
 		, 'label'    => 'Device + Bluetooth'
 		, 'help'     => <<< EOF
- · Keep Output $L->device enabled when Bluetooth connected.
+ · Also output to $L->device when Bluetooth connected.
+ · $T->playback volume - $L->mixer volume
  · Should be disabled if not used simultaneously
 EOF
 	]
@@ -94,6 +111,7 @@ $body      = [
 	[
 		  'id'       => 'novolume'
 		, 'label'    => 'No Volume'
+		, 'disabled' => 'To disable: Enable any volume related settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
@@ -184,8 +202,8 @@ EOF
 		, 'sub'      => 'decoder'
 		, 'disabled' => $L->dabradio.$isenabled
 		, 'help'     => <<< EOF
-<a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
-<pre id="prefiletype" class="hide"></pre>
+<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio <a class="textdropdown">filetypes</a>
+<pre class="hide"></pre>
 Note: Should be disabled for faster Library update if not used.
 EOF
 	]
@@ -235,7 +253,7 @@ htmlHead( [
 	, 'id'      => 'albumignore'
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
-List of albums excluded from Library Album list.
+List of albums excluded from $T->library $B->album Album
 To restore:
  · Edit <c>/srv/http/data/mpd/albumignore</c>
  · Remove albums to restore
@@ -243,14 +261,16 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Excluded Directories'
+	  'title'   => 'Excluded Directories and Files'
 	, 'id'      => 'mpdignore'
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
-List of <c>.mpdignore</c> files contain directories/folders excluded from database.
+List of <c>.mpdignore</c> files contain excluded list
+ · Name, without path, of directories/folders or files excluded from $T->library
+ · Each <c>.mpdignore</c> for each level of directory
 To restore:
- · Edit file <c>.../.mpdignore</c> in parent directory
- · Remove lines contain directory to restore
+ · Edit <c>.mpdignore</c> in each directory
+ · Remove lines contain directory name to restore
  · Update Library
 
 Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T->system$L->shareddata

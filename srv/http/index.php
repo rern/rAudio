@@ -210,9 +210,9 @@ foreach( $mapcover as $a ) $maptime[] = preg_replace( '/ .*/', '', $a );
 		<?php echo
 			 icon(  'library page-icon', 'button-library' )
 			.buttonSet( [
-				  [ 'search',          'search' ]
-				, [ 'back',            'back' ]
-				, [ 'refresh-library', 'update' ]
+				  [ 'search',               'search' ]
+				, [ 'back hide',            'back' ]
+				, [ 'refresh-library hide', 'update' ]
 			], '', 'button-lib-' )
 			.$htmlsearch;
 		?>

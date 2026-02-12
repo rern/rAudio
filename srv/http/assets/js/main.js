@@ -1,7 +1,7 @@
 C = {} // counts
 D = {} // display
 E = {} // equalizer
-O = {} // order
+O = { order: false } // order
 V = {  // global var
 	  ...V
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
@@ -145,19 +145,19 @@ $( '#settings' ).on( 'click', '.settings', function() {
 					}
 					
 					if ( data.length === 1 ) {
-						BASH( [ 'snapclient.sh', data[ 0 ].replace( /.* /, '' ) ] );
+						UTIL.snapcastConnect( data[ 0 ] );
 					} else {
 						INFO( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
 							, message : 'Select server:'
-							, list    : [ '', 'radio', { kv: data } ]
-							, ok      : () => BASH( [ 'snapclient.sh', _INFO.val().replace( /.* /, '' ) ] )
+							, list    : [ '', 'radio', { kv: data, sameline: false } ]
+							, ok      : UTIL.snapcastConnect( _INFO.val() )
 						} );
 					}
 				}, 'json' );
 			}
-			BANNER( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
+			NOTIFY( 'snapcast', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
@@ -174,7 +174,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			if ( 'sd' in C ) {
 				$( '#button-lib-update' ).trigger( 'click' );
 			} else {
-				$.post( 'cmd.php', { cmd: 'countmnt' }, counts => {
+				BASH( [ 'countmnt' ], counts => {
 					$.each( counts, ( k, v ) => { C[ k ] = v } );
 					$( '#button-lib-update' ).trigger( 'click' );
 				}, 'json' );
@@ -235,13 +235,11 @@ $( '#library, #button-library' ).on( 'click', function() {
 	if ( S.updating_db ) BANNER( 'library blink', 'Library Database', 'Update ...' );
 } );
 $( '#playback' ).on( 'click', function() {
-	if ( V.playback && ( V.wH - COMMON.bottom( $COVERART ) ) < 30 ) {
-		$( '#stop' ).trigger( 'click' );
+	if ( V.playback ) {
+		if ( ( V.wH - COMMON.bottom( $COVERART ) ) < 30 ) $( '#stop' ).trigger( 'click' );
 	} else {
-		if ( ! V.playback ) {
-			REFRESHDATA();
-			UTIL.switchPage( 'playback' );
-		}
+		UTIL.switchPage( 'playback' );
+		REFRESHDATA();
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
@@ -595,7 +593,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 					, spotify   : 'Spotify'
 					, upnp      : 'UPnP'
 				}
-				BANNER( S.player, icon_player[ S.player ], 'Stop ...' );
+				NOTIFY( S.player, icon_player[ S.player ], 'Stop ...' );
 				return
 			}
 			
@@ -819,7 +817,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	// ( coverart, bookmark by other functions )
 	if ( MODE.file() ) { // browse by directory
 		var query = {
-			  library : 'lsdir'
+			  library : V.mode === 'nvme' || V.mode === 'sata' ? 'ls' : 'lsdir'
 			, string  : path
 		}
 	} else if ( moderadio ) {
@@ -1043,7 +1041,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var l_mode      = $LI.data( 'mode' );
-	var l_modefile  = [ 'lsmode', 'nas', 'sd', 'usb' ].includes( l_mode );
+	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
@@ -1289,10 +1287,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, title      : 'Remove From Playlist'
 			, list       : [ '', 'radio', { 
 				  kv       : {
-					  '<i class="i-flash red"></i> All'        : 'all'
-					, '<i class="i-cursor"></i>    Select ...' : 'select'
-					, '<i class="i-track"></i>     Range ...'  : 'range'
-					, '<i class="i-crop yl"></i>   Crop'       : 'crop'
+					  '<i class="i-flash red"></i>All'     : 'all'
+					, '<i class="i-cursor"></i>Select ...' : 'select'
+					, '<i class="i-track"></i>Range ...'   : 'range'
+					, '<i class="i-crop yl"></i>Crop'      : 'crop'
 				}
 				, sameline : false
 			} ]

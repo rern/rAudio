@@ -31,12 +31,16 @@ audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
 	;;
 bluetooth )
-	if systemctl -q is-active bluetooth; then
-		bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
+	if [[ -e $dirsystem/btdiscoverable ]] \
+		|| ( systemctl -q is-active bluetooth && bluetoothctl show | grep -q -m1 'Discoverable: yes' ); then
+		discoverable=true
 	else
 		discoverable=false
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
+	;;
+btsender )
+	volumeGet json
 	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
@@ -106,6 +110,9 @@ localbrowser )
   "values"     : '$( conf2json localbrowser.conf )'
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
+	;;
+mixer )
+	volumeGet json
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then
@@ -245,9 +252,14 @@ serverntp )
 	;;
 smb )
 	file=/etc/samba/smb.conf
-	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
-	sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
-	echo '{ "SD": '$sd', "USB": '$usb' }'
+	dirs='SD USB'
+	grep -q '^\[NVME]' $file && dirs+=' NVME'
+	grep -q '^\[SATA]' $file && dirs+=' SATA'
+	for dir in $dirs; do
+		sed -n '/^\['$dir']/,/^\[/ p' $file | grep -q 'read only = no' && tf=true || tf=false
+		data+=', "'$dir'" : '$tf
+	done
+	echo '{ '${data:1}' }'
 	;;
 snapclient )
 	snapserverList

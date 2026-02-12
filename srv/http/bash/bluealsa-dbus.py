@@ -10,6 +10,7 @@
 import dbus
 import dbus.service
 import dbus.mainloop.glib
+import os
 from gi.repository import GLib
 from subprocess import Popen
 

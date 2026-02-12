@@ -15,6 +15,8 @@ pushStatus() {
 	status=$( $dirbash/status.sh )
 	pushData mpdplayer "$status"
 	pushRefresh player
+	[[ -e $dirshm/btonoff ]] && return
+# --------------------------------------------------------------------
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 }
@@ -68,7 +70,7 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 #---------------< bluetooth
 	AUDIOOUTPUTBT='
-	name        "'$( < $dirshm/btname )'"
+	name        "BlueALSA"
 	device      "'$hw'"
 	type        "alsa"'
 	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
@@ -156,6 +158,7 @@ if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
 fi
 
 ### mpd restart ##########################################################################
+killProcess cmdlist
 systemctl restart mpd
 
 for pid in $( pgrep mpd ); do # set priority
@@ -163,8 +166,11 @@ for pid in $( pgrep mpd ); do # set priority
 	renice -n -19 -p $pid &> /dev/null
 done
 
-[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
-
+if [[ -e $dirsystem/mpcupdate.conf ]]; then
+	$dirbash/cmd.sh mpcupdate
+if [[ -e $dirmpd/listing ]]; then
+	$dirbash/cmd-list.sh
+fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
 pushStatus
@@ -242,7 +248,7 @@ $user
 CMD VALUE USR"
 fi
 
-if [[ $BLUETOOTH ]]; then
+if [[ $BLUETOOTH && ! -e $dirsystem/devicewithbt ]]; then
 	function=volumeBlueAlsa
 elif [[ $mixertype == software ]]; then
 	function=volumeMpd 

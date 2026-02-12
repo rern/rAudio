@@ -2,12 +2,19 @@ W.reboot          = data => {
 	BANNER( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
 W.storage         = data => {
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		S.list.storage = data.list;
+	if ( 'formatting' in data ) {
+		S.formatting   = data.formatting;
+		$( '#storage li' )
+			.filter( '[ data-id="'+ S.formatting +'"]' )
+			.find( 'i' )
+			.addClass( 'blink' );
+	} else {
+		S.formatting   = false;
+		S.list.storage = data.storage;
 		UTIL.renderStorage();
 		COMMON.statusToggle( 'refresh' );
-	}, 1000 );
+		if ( ! $( '#codestorage' ).hasClass( 'hide' ) ) STATUS( 'storage' );
+	}
 }
 
 var CONFIG        = {
@@ -356,7 +363,7 @@ var UTIL          = {
 			}
 		} );
 	}
-	, i2smodule : {
+	, i2smodule     : {
 		  hide     : () => {
 			$( '#i2s' )
 				.removeClass( 'disabled' )
@@ -516,7 +523,7 @@ var UTIL          = {
 					var $input = $( '#infoList input' );
 					var $name  = $input.eq( 1 );
 					$input.eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
-					$input.slice( 4 ).prop( 'placeholder', '(optional)' );
+					$input.last().prop( 'placeholder', '(optional)' );
 					if ( shareddata ) {
 						$name
 							.val( 'data' )
@@ -531,7 +538,7 @@ var UTIL          = {
 				, cancel     : SWITCH.cancel
 				, ok         : () => {
 					var infoval = _INFO.val();
-					if ( ! shareddata && [ 'data', 'SD', 'USB' ].includes( infoval.NAME ) ) {
+					if ( ! shareddata && [ 'data', 'NVME', 'SATA', 'SD', 'USB' ].includes( infoval.NAME ) ) {
 						var type = infoval.NAME == 'data' ? LABEL_ICON( 'Shared Data', 'networks' ) : LABEL_ICON( 'Server rAudio', 'nfsserver' );
 						_INFO.warning( SW.icon, SW.title, 'Name <c>'+ infoval.NAME +'</c> reserved for '+ type, () => {
 							UTIL.mount[ 'PROTOCOL' in values ? 'mount' : 'rServer' ]( infoval );
@@ -815,18 +822,28 @@ var UTIL          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
-			var mountpoint = list.mountpoint;
-			var source     = list.source;
-			var cls        = list.size ? 'current' : 'profile';
+			var icon   = list.icon;
+			var fs     = list.fs;
+			var mp     = list.mountpoint;
+			var source = list.source;
+			var size   = list.size;
+			var cls    = list.mounted ? 'mounted' : 'profile';
 			if ( list.shareddata ) {
 				cls += ' shareddata';
 			} else if ( list.rserver ) {
 				cls += ' rserver';
 			}
-			html		  += '<li class="'+ cls +'" data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ICON( list.icon ) +'<dot></dot>'+ mountpoint.replace( /^.mnt.MPD./, '' ) +' · '+ list.size +' <c>'+ source +'</c></li>';
+			if ( size[ 0 ] === 'u' ) cls += ' unformat';
+			if ( source === S.formatting ) icon += ' blink';
+			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
+			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
+			if ( size )   html += ' · '+ size;
+			if ( fs )     html += ' <c>'+ fs +'</c>';
+			if ( source ) html += ' <c>'+ source +'</c>';
+			html      += '</li>';
 		} );
 		LIST.render( 'storage', html );
+		BANNER_HIDE();
 	}
 	, restoreReset  : () => {
 		INFO( {
@@ -884,6 +901,9 @@ var UTIL          = {
 				} );
 			} );
 		}
+	}
+	, warnFormat    : () => {
+		BANNER( 'format blink', 'Local Storage', 'Formatting ...', 6000 );
 	}
 	, wm5102        : () => {
 		SETTING( 'audio-wm5102', data => {
@@ -951,6 +971,9 @@ function renderPage() {
 		$( '#i2smodule' ).html( option + ( S.audiooutput || '(None / Auto detect)' ) +'</option>' );
 	}
 	UTIL.i2smodule[ S.i2smodule ? 'show' : 'hide' ]();
+	[ 'bluetooth', 'wlan' ].forEach( id => {
+		if ( ! S[ id ] && ! $( '#code'+ id ).hasClass( 'hide' ) ) $( '#code'+ id ).addClass( 'hide' );
+	} );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )
@@ -1043,25 +1066,38 @@ $( '.img' ).on( 'click', function() {
 } );
 $( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {
+	if ( S.formatting ) {
+		UTIL.warnFormat();
+		return
+	}
+	
 	SW = { icon: 'networks' }
 	UTIL.mount.mount();
 } );
 $( '#storage' ).on( 'click', 'li', function( e ) {
+	if ( S.formatting ) {
+		UTIL.warnFormat();
+		return
+	}
+	
 	var $li        = $( this );
 	if ( MENU.isActive( $li, e ) ) return
 	
-	var mountpoint = $li.data( 'mountpoint' );
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted    = $li.hasClass( 'current' );
-		var usb        = $li.find( '.i-usbdrive' ).length > 0;
-		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
-		$( '#menu .forget' ).toggleClass( 'hide', usb );
-		$( '#menu .mount' ).toggleClass( 'hide', mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
-		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', $li.hasClass( 'shareddata' ) || $li.hasClass( 'rserver' ) );
+		var c = {};
+		[ 'mounted', 'networks', 'rserver', 'shareddata', 'unformat', 'usb' ].forEach( k => {
+			c[ k ] = $li.hasClass( k )
+		} );
+		$( '#menu .info' ).toggleClass( 'hide', c.networks );
+		$( '#menu .forget' ).toggleClass( 'hide', c.usb || c.unformat );
+		$( '#menu .mount' ).toggleClass( 'hide', c.mounted || c.unformat );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat );
+		$( '#menu .sleep' ).toggleClass( 'hide', c.usb || c.unformat );
+		$( '#menu .format' ).toggleClass( 'hide', ! c.unformat );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.rserver );
 	}
 	MENU.show( $li );
 } );
@@ -1095,16 +1131,12 @@ $( '#timezone' ).on( 'input', function( e ) {
 	BASH( [ 'timezone', timezone, 'CMD TIMEZONE' ] );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
+	var $target  = $( e.target );
 	var $this    = $( this );
 	var $list    = $this.next();
-	var $target  = $( e.target );
-	if ( $target.hasClass( 'i-refresh' ) ) return
-	
-	if ( ! $this.hasClass( 'backend' ) ) { // js
-		$this.toggleClass( 'active' );
-		$list.toggleClass( 'hide' )
-		if ( V.localhost ) $( '.list a' ).remove();
-	} else if ( $target.is( 'a' ) ) {      // package
+	if ( $this.hasClass( 'backend' ) ) {
+		if ( ! $target.is( 'a' ) ) return
+		
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 		if ( active ) {
@@ -1121,35 +1153,56 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			BANNER_HIDE();
 		} );
 	} else {
-		$list.addClass( 'hide' );
-		$( '.listtitle a' ).removeAttr( 'class' );
+		$this.toggleClass( 'active' );
+		$list.toggleClass( 'hide' )
+		if ( V.localhost ) $( '.list a' ).remove();
 	}
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var cmd = MENU.command( $( this ), e );
-	if ( ! cmd ) return
+	if ( ! cmd || S.formatting ) return
 	
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
 	var source     = $li.data( 'id' );
-	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon  = 'networks';
-		var title = 'Network Mount';
-	} else {
-		var icon  = 'usbdrive';
-		var title = 'Local Mount';
-	}
+	var icon       = $li.find( 'i' ).prop( 'class' ).slice( 2 );
+	var title      = ( icon === 'nas' ? 'Network' : 'Local' ) +' Storage';
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
+			if ( S.updating_db ) {
+				BANNER( 'library blink', 'Library Database', 'Update ...' );
+				return
+			}
+			
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
+			delete V.bannerdelay; // allow hide
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
 			break
+		case 'format':
+			icon  = 'format';
+			title = 'Format Storage';
+			INFO( {
+				  icon        : icon
+				, title       : title
+				, list        : [ 'Label', 'text' ]
+				, footer      : '(File system: <c>ext4</c>)'
+				, checkblank  : true
+				, checklength : { 0: [ 16, 'max' ] }
+				, ok          : () => {
+					_INFO.warning( icon, title, 'All data in <c>'+ source +'</c> will be ERASED!', () => {
+						NOTIFY( icon, title, 'Format ...' );
+						BASH( [ cmd, source, _INFO.val(), mountpoint === 'unpartitioned', 'CMD DEV LABEL UNPART' ] );
+					} );
+				}
+			} );
+			break;
 		case 'info':
 			STATUS( 'storage', source, 'info' );
 			break
 		case 'mount':
 			NOTIFY( icon, title, 'Mount ...' );
+			delete V.bannerdelay;
 			BASH( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':

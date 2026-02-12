@@ -2,7 +2,7 @@
 .menu { z-index: 11 }
 
 #scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
-li.current dot::before,
+li.mounted dot::before,
 li.profile dot::before {
 	content: '• ';
 	color: #0f0;
@@ -236,18 +236,17 @@ heading.subhead {
 }
 heading.status .headtitle::after,
 .col-l.status gr::after,
-#ffmpegfiletype::after,
+.divaddon .revision::after,
 .listtitle.plugins::after,
-.divaddon .revision::after {
+.textdropdown::after {
 	display: inline-block;
-	width: 17px;
+	width: 13px;
+	text-align: right;
 	font-family: rern;
 	font-style: normal;
 	font-size: 14px;
 	content: '\F605';
-	text-align: center;
 	color: var( --cg60 );
-	letter-spacing: right;
 }
 heading.status .headtitle::after {
 	width: 40px;
@@ -256,7 +255,7 @@ heading.status .headtitle::after {
 }
 heading.status .headtitle.active::after,
 .col-l.status.active gr::after,
-#ffmpegfiletype.active::after,
+.textdropdown.active::after,
 .listtitle.plugins.active::after,
 .divaddon .revision.active::after {
 	content: '\F604' !important;
@@ -654,6 +653,18 @@ input.disabled + .switchlabel::after {
 .head .i-gear {
 	display: none;
 }
+#divoutput i:first-child {
+	margin-right: 5px;
+	color: var( --cw );
+}
+#setting-btsender::before,
+#setting-mixer::before {
+	content: '\F516';
+}
+#divbtsender {
+	margin-bottom: 10px;
+	border-bottom: 1px solid var( --cg );
+}
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
@@ -752,11 +763,11 @@ circle.on {
 	.tab .i-remove,
 	.tab li i,
 	.tablemapping i,
+	.textdropdown,
 	.undervoltage,
 	.wiring,
 	#backend,
 	#bar-bottom i,
-	#ffmpegfiletype,
 	#menu {
 		cursor: pointer
 	}

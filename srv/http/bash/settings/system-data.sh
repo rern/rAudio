@@ -104,17 +104,25 @@ data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
+if pgrep mkfs &> /dev/null; then
+	storage=$( getContent $dirshm/system-storage )
+	formatting=$( getContent $dirshm/formatting true )
+	[[ $formatting != true ]] && formatting='"'$formatting'"'
+else
+	storage=$( $dirsettings/system-storage.sh )
+fi
 ##########
 data+='
 , "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
+, "formatting"     : '$formatting'
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
-, "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
+, "list"           : { "storage": '$storage' }
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "rpi3plus"       : '$rpi3plus'
@@ -124,7 +132,8 @@ data+='
 , "system"         : "'$system'"
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
-, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
+, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
+, "updating_db"    : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
 	ifwlan0=
 ##########

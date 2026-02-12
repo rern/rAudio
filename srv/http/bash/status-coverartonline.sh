@@ -62,7 +62,7 @@ if [[ $DISCID ]]; then
 else
 	[[ $MODE ]] && prefix=$MODE || prefix=online
 	name=$( alphaNumeric $ARTIST$ALBUM )
-	cover=$dirshm/$prefix/${name,,}.$ext
+	cover=$dirshm/$prefix/$name.$ext
 fi
 curl -sfL $url -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}

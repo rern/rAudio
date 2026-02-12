@@ -12,37 +12,37 @@ function LIST( query, callback, json ) {
 	);
 }
 function REFRESHDATA() {
-	BASH( [ 'status.sh' ], list => {
-		if ( ! list ) return // empty on some startup with shared data
+	if ( V.library ) {
+		if ( V.search ) return
 		
-		if ( list == -1 ) {
-			COMMON.loaderHide();
-			INFO( {
-				  icon        : 'networks'
-				, title       : 'Shared Data'
-				, message     : V.i_warning +'<wh>Server offline</wh>'
-								+'<br><br>Disable and restore local data?'
-				, buttonlabel : ICON( 'refresh' ) +'Retry'
-				, button      : () => {
-					REFRESHDATA();
-					COMMON.loader();
+		if ( V.libraryhome ) {
+			LIBRARY.get();
+		} else if ( V.query.length === 1 ) {
+			$( '.mode.'+ V.mode ).trigger( 'click' );
+		} else {
+			var query = V.query[ V.query.length - 1 ];
+			LIST( query, function( html ) {
+				if ( html ) {
+					var data = {
+						  html      : html
+						, modetitle : query.modetitle
+						, path      : query.path || V.mode.toUpperCase()
+					}
+					LIBRARY.list( data );
 				}
-				, oklabel     : ICON( 'flash' ) +'Disable'
-				, okcolor     : V.orange
-				, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
 			} );
-			return
 		}
-		
-		try {
-			var status = JSON.parse( list );
-		} catch( e ) {
-			COMMON.dataError( e.message, list );
-			return false
+	} else if ( V.playback ) {
+		PLAYBACK.get();
+	} else {
+		if ( V.playlisthome ) {
+			PLAYLIST.get();
+		} else if ( V.playlistlist ) {
+			PLAYLIST.playlists.home();
+		} else {
+			PLAYLIST.playlists.list( $( '#pl-title .name' ).text() );
 		}
-		
-		UTIL.statusUpdate( status );
-	} );
+	}
 }
 //-----------------------------------------------------------------------------------------------------------------
 var BIO       = {
@@ -490,6 +490,7 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
@@ -736,7 +737,7 @@ var DISPLAY   = {
 		}
 	}
 	, library    : () => {
-		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) )
+		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) );
 		LIBRARY.order();
 		DISPLAY.pageScroll( V.modescrolltop );
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
@@ -744,9 +745,13 @@ var DISPLAY   = {
 			var $this = $( el );
 			var mode  = $this.data( 'mode' );
 			var count = C[ mode ];
-			$this
-				.toggleClass( 'hide', ! D[ mode ] )
-				.toggleClass( 'nodata', ! count );
+			if ( mode === 'nvme' || mode === 'sata' ) {
+				$this.toggleClass( 'hide', ! count );
+			} else {
+				$this
+					.toggleClass( 'hide', ! D[ mode ] )
+					.toggleClass( 'nodata', ! count );
+			}
 			var $gr   = $this.find( 'gr' );
 			if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 		} );
@@ -1022,7 +1027,7 @@ var LIBRARY   = {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
-			[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
+			$.each( data.lsmnt, ( k, v ) => { C[ k ] = v } );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
@@ -1049,7 +1054,8 @@ var LIBRARY   = {
 		} );
 		$( '#lib-home-title' ).html( title );
 		$( '#lib-path' ).empty()
-		$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
+		$( '#lib-home-title, #button-lib-search' ).removeClass( 'hide' );
+		$( '#button-lib-update' ).toggleClass( 'hide', D.bars );
 		$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 		$( '#lib-search-close' ).empty();
 		$( '#lib-search-input' ).val( '' );
@@ -1173,7 +1179,7 @@ var LIBRARY   = {
 }
 var LYRICS    = {
 	  fetch        : refresh => {
-		BANNER( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
+		NOTIFY( 'lyrics', 'Lyrics', 'Fetch ...' );
 		var artist = LYRICS.plain( V.lyricsartist );
 		var title  = LYRICS.plain( V.lyricstitle );
 		BASH( [ 'lyrics', artist, title, S.file, refresh || '', 'CMD ARTIST TITLE FILE ACTION' ], data => {
@@ -1262,11 +1268,11 @@ var MENU      = {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 		} else {
-			var album_file_radio = [ 'album', 'latest', 'nas', 'sd', 'usb', 'webradio', 'dabradio' ].includes( mode );
+			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
-			$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
+			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating_db );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );
@@ -1274,6 +1280,7 @@ var MENU      = {
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
+			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
@@ -1297,7 +1304,7 @@ var MENU      = {
 		var webradio  = $LI.hasClass( 'webradio' );
 		V.list        = {};
 		V.list.path   = $LI.find( '.lipath' ).text();
-		V.list.name   = $LI.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
+		V.list.name   = $LI.find( webradio ? '.li1 .name' : '.name' ).eq( 0 ).text();
 		V.list.index  = $LI.index();
 		var $menu = $( '#menu-plaction' );
 		var menushow  = ! $menu.hasClass( 'hide' );
@@ -1349,7 +1356,7 @@ var MODE      = {
 		return [ 'album', 'latest' ].includes( V.mode )
 	}
 	, file  : radio => {
-		var modes = [ 'sd', 'nas', 'usb' ];
+		var modes = [ 'nas', 'nvme', 'sata', 'sd', 'usb' ];
 		if ( radio ) modes.push( 'dabradio', 'webradio' );
 		return modes.includes( V.mode )
 	}
@@ -1394,7 +1401,7 @@ var PLAYBACK  = {
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 			var time = PROGRESS.visible();
 			var prefix = time ? 'ti' : 'mi';
-			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
+			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btsender );
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {
@@ -1519,6 +1526,39 @@ var PLAYBACK  = {
 				PROGRESS.set( 0 );
 			}
 		}, 1000 );
+	}
+	, get       : () => {
+		BASH( [ 'status.sh' ], list => {
+			if ( ! list ) return // empty on some startup with shared data
+			
+			if ( list == -1 ) {
+				COMMON.loaderHide();
+				INFO( {
+					  icon        : 'networks'
+					, title       : 'Shared Data'
+					, message     : V.i_warning +'<wh>Server offline</wh>'
+									+'<br><br>Disable and restore local data?'
+					, buttonlabel : ICON( 'refresh' ) +'Retry'
+					, button      : () => {
+						REFRESHDATA();
+						COMMON.loader();
+					}
+					, oklabel     : ICON( 'flash' ) +'Disable'
+					, okcolor     : V.orange
+					, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+				} );
+				return
+			}
+			
+			try {
+				var status = JSON.parse( list );
+			} catch( e ) {
+				COMMON.dataError( e.message, list );
+				return false
+			}
+			
+			UTIL.statusUpdate( status );
+		} );
 	}
 	, main      : () => {
 		if ( ! S.state ) return // suppress on reboot
@@ -1769,7 +1809,7 @@ var PLAYLIST  = {
 	, addSimilar  : () => {
 		var icon  = 'lastfm';
 		var title = 'Add Similar';
-		BANNER( icon +' blink', title, 'Get similar tracks ...', -1 );
+		NOTIFY( icon, title, 'Get similar tracks ...' );
 		BASH( [ 'mpcsimilar', V.list.path, 'CMD FILE' ], error => {
 			if ( error ) {
 				BANNER_HIDE();
@@ -1804,7 +1844,7 @@ var PLAYLIST  = {
 		}
 		
 		if ( $( '#pl-list' ).is( ':empty' ) ) {
-			if ( $( '#bar-top' ).hasClass( 'hide' ) ) BANNER( 'playlist blink', 'Playlist', 'Get ...', -1 )
+			if ( $( '#bar-top' ).hasClass( 'hide' ) ) NOTIFY( 'playlist', 'Playlist', 'Get ...' )
 		}
 		PLAYLIST.blink();
 		LIST( { playlist: 'current' }, data => {
@@ -1814,7 +1854,8 @@ var PLAYLIST  = {
 		}, 'json' );
 	}
 	, insert      : {
-		  position : pos => {
+		  banner   : () => NOTIFY( 'cursor', V.pladd.title, 'Select position to insert' )
+		, position : pos => {
 			var plname = $( '#pl-title .lipath' ).text();
 			BANNER( 'playlists', V.pladd.name, 'Add ...' );
 			BASH( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
@@ -1826,21 +1867,21 @@ var PLAYLIST  = {
 			} );
 		}
 		, select   : () => {
+			BANNER_HIDE();
 			INFO( {
 				  ...V.pladd
 				, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 				, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 				, beforeshow  : PLAYLIST.insert.set
-				, buttonlabel : ICON( 'undo' ) +'Select'
-				, buttoncolor : V.orange
+				, buttonlabel : ICON( 'cursor' ) +'Reselect'
+				, buttoncolor : 'var( --cg )'
 				, button      : () => {
 					_INFO.reset();
-					BANNER( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
+					PLAYLIST.insert.banner();
 				}
 				, cancel      : PLAYLIST.playlists.addClear
 				, ok          : () => PLAYLIST.insert.position( +_INFO.val() + V.pladd.index )
 			} );
-			BANNER_HIDE();
 		}
 		, set      : () => {
 			$( '.infomessage' ).addClass( 'tagmessage' );
@@ -1850,19 +1891,26 @@ var PLAYLIST  = {
 			V.pladd.title = 'Add to '+ V.pladd.name;
 			INFO( {
 				  ...V.pladd
-				, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
+				, list       : [ 'Position:', 'radio', {
+					kv       : {
+						  First                               : 1
+						, '<i class="i-cursor"></i>Select...' : 'select'
+						, Last                                : 'last'
+					}
+				} ]
 				, values     : 'last'
 				, beforeshow : () => {
+					BANNER_HIDE();
 					PLAYLIST.insert.set();
 					$( '#infoList label' ).eq( 1 ).on( 'click', function() {
-						$( '#infoX' ).trigger( 'click' );
-						BANNER( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
+						_INFO.reset();
+						$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
+						PLAYLIST.insert.banner();
 					} );
 				}
 				, cancel     : PLAYLIST.playlists.addClear
 				, ok         : () => PLAYLIST.insert.position( _INFO.val() )
 			} );
-			BANNER_HIDE();
 		}
 	}
 	, load        : ( name, play, replace ) => {
@@ -1991,7 +2039,7 @@ var PLAYLIST  = {
 					V.rangei  = $( this ).parent().index();
 					$( '#infoOverlay' ).addClass( 'hide' );
 					$disabled.addClass( 'disabled' );
-					BANNER( 'cursor blink', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...', -1 );
+					NOTIFY( 'cursor', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...' );
 				} );
 			}
 			, cancel     : clear
@@ -2200,25 +2248,15 @@ var PROGRESS  = {
 		}
 	}
 	, set     : elapsed => { // if defined - no animate
-		if ( ! D.time && ! D.cover ) return
+		if ( elapsed === undefined || ( ! D.time && ! D.cover ) ) return
 		
 		if ( S.state === 'stop' || ! S.elapsed ) {
 			elapsed = 0;
 			UTIL.intervalClear( 'elapsed' );
 		}
-		if ( elapsed === undefined ) {
-			var s = S.Time - S.elapsed; // seconds from current to full
-			var l = 1;                  // full circle
-			var w = 100;
-		} else {
-			var s = 0;
-			var l = 0;
-			var w = 0;
-			if ( elapsed ) {
-				l = S.Time ? elapsed / S.Time : 0;
-				w = l * 100;
-			}
-		}
+		var s = 0;
+		var l = S.Time ? elapsed / S.Time : 0;
+		var w = l * 100;
 		if ( V.localhost ) { // no animation - fix high cpu load
 			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
 			PROGRESS.arc( l );
@@ -2292,7 +2330,7 @@ var UTIL      = {
 				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 			}
 		} );
-		BANNER( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
+		BANNER( V.icoverart, I.title, 'Change ...', -1 );
 	}
 	, infoTitle       : () => {
 		var artist = S.Artist;
@@ -2372,45 +2410,14 @@ var UTIL      = {
 		}
 		if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 	}
-	, refresh         : () => {
-		if ( V.library ) {
-			if ( V.search ) return
-			
-			if ( V.libraryhome ) {
-				$( '#library' ).trigger( 'click' );
-			} else if ( V.query.length === 1 ) {
-				$( '.mode.'+ V.mode ).trigger( 'click' );
-			} else {
-				var query = V.query[ V.query.length - 1 ];
-				LIST( query, function( html ) {
-					if ( html ) {
-						var data = {
-							  html      : html
-							, modetitle : query.modetitle
-							, path      : query.path || V.mode.toUpperCase()
-						}
-						LIBRARY.list( data );
-					}
-				} );
-			}
-		} else if ( V.playback ) {
-			DISPLAY.bars();
-			DISPLAY.playback();
-			PLAYBACK.main();
-			BANNER_HIDE();
-		} else {
-			if ( V.playlisthome ) {
-				PLAYLIST.get();
-			} else if ( V.playlistlist ) {
-				PLAYLIST.playlists.home();
-			} else {
-				PLAYLIST.playlists.list( $( '#pl-title .name' ).text() );
-			}
-		}
+	, snapcastConnect : server => {
+		var ip = server.replace( /.* /, '' );
+		NOTIFY( 'snapcast', 'SnapClient', 'Connect '+ ip +' ...' );
+		BASH( [ 'snapclient.sh', ip ], () => BANNER_HIDE() );
 	}
 	, statusUpdate    : status => {
 		if ( 'counts' in status ) {
-			C              = status.counts;
+			$.each( status.counts, ( k, v ) => { C[ k ] = v } );
 			delete status.counts;
 		}
 		if ( 'display' in status ) {
@@ -2423,8 +2430,19 @@ var UTIL      = {
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
+		if ( S.player === 'snapcast' ) {
+			[ 'coverart', 'stationcover' ].forEach( k => {
+				if ( S[ k ] ) S[ k ] = 'http://'+ S.snapserverip + S[ k ];
+			} );
+		}
 		COMMON.statusToggle( 'refresh' );
-		if ( ! V.library ) UTIL.refresh();
+		if ( V.playback ) {
+			DISPLAY.bars();
+			DISPLAY.playback();
+			PLAYBACK.main();
+			BANNER_HIDE();
+		}
 		DISPLAY.controls();
 	}
 	, switchPage      : page => {
@@ -2638,7 +2656,7 @@ var WEBRADIO  = {
 			}
 			, ok         : () => {
 				var val = _INFO.val();
-				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) BANNER( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
+				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) NOTIFY( 'webradio', 'Web Radio', 'Get URL ...' );
 				BASH( COMMON.cmd_json2args( 'webradioadd', val ), error => {
 					BANNER_HIDE();
 					if ( error ) WEBRADIO.exists( error, val.NAME, val.URL, val.CHARSET );

@@ -8,13 +8,23 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mountpoint=$2
 	source=$3
 	mounted=$4
-	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
-		[[ ${source:0:4} == /dev ]] && size+=" <c>$( blkid -o value -s TYPE $source )</c>"
+	fs=$5
+	if [[ $mountpoint ]]; then
+		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
+		elif [[ $mountpoint ]]; then
+			gib=$( lsblk -no SIZE $source )
+			[[ $gib ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B # xxG > xx > XXGB
+		fi
+		[[ ! $fs ]] && fs=$( blkid -o value -s TYPE $source )
+	else
+		blkid $source | grep -q PTUUID && size=unpartitioned || size=unformatted
 	fi
 	list='
   "icon"       : "'$icon'"
+, "fs"         : "'$fs'"
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
+, "mounted"    : '$mounted'
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
 	if systemctl -q is-active nfs-server; then
@@ -40,11 +50,11 @@ if [[ ! -e /mnt/SD && -e $devmmc ]]; then
 	mount | grep -q -m1 ^$devmmc && list+=$( listItem microsd $sd $devmmc true )
 fi
 # usb
-[[ ! -e /mnt/USB ]] && usb=$( ls /dev/sd* 2> /dev/null )
-if [[ $usb ]]; then
+[[ ! -e /mnt/USB ]] && lines=$( ls /dev/sd* 2> /dev/null | grep [0-9]$ )
+if [[ $lines ]]; then
 	while read source; do
-		type=$( blkid -o value -s TYPE $source )
-		[[ ! $type ]] && continue
+		grep -q ^$source /etc/fstab && continue                 # not in fstab
+		[[ ! $( blkid -o value -s TYPE $source ) ]] && continue # no fs - unformatted
 		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
@@ -56,18 +66,29 @@ if [[ $usb ]]; then
 		[[ $mountpoint == $mountpointprev ]] && continue
 		
 		mountpointprev=$mountpoint
-		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
-	done <<< $usb
+		list+=$( listItem usb "$mountpoint" "$source" $mounted )
+	done <<< $lines
 fi
-# nas
-nas=$( grep -E /mnt/MPD/NAS /etc/fstab )
-if [[ $nas ]]; then
-	nas=$( awk '{print $2"^"$1}' <<< $nas | sed 's/\\040/ /g' | sort )
+# fstab - nas nvme sata
+lines=$( grep -v ^PARTUUID /etc/fstab )
+if [[ $lines ]]; then
+	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
-		mountpoint=${line/^*}
-		source=${line/*^}
+		source=${line/^*}
+		mountpoint=$( cut -d^ -f2 <<< $line )
+		fs=${line/*^}
+		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
-		list+=$( listItem networks "$mountpoint" "$source" $mounted )
-	done <<< $nas
+		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted $fs )
+	done <<< $lines
+fi
+# unformatted / unpartitioned
+blk=$( blkid | grep -v ' TYPE="' ) # no fs
+if [[ $blk ]]; then
+	while read dev; do
+		[[ ${dev:5:2} == sd ]] && disk=${dev:0:8} || disk=${dev:0:12} # /dev/sda1 > /dev/sda ; /dev/nvme0n1p1 > /dev/nvme0n1
+		icon=$( lsblk -no TRAN $disk ) # nvme sata usb
+		list+=$( listItem $icon '' $dev )
+	done <<< ${blk/:*}
 fi
 echo "[ ${list:1} ]"

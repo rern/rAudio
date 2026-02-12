@@ -133,7 +133,7 @@ $( jq -r .albumTitle <<< $track )"
 			curl -s $coverurl -o $coverfile
 		else
 			name=$( alphaNumeric $artist$album )
-			coverfile=$( ls -X $dirshm/webradio/${name,,}.{jpg,png} 2> /dev/null | head -1 )
+			coverfile=$( ls -X $dirshm/webradio/$name.{jpg,png} 2> /dev/null | head -1 )
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=

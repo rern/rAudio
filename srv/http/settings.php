@@ -20,7 +20,6 @@ if ( $addonsprogress ) {
 //----------------------------------------------------------------------------------
 }
 
-$iconlabel = $features || $system;
 $prefix    = '';
 $htmlbar   = '';
 $isenabled = ' is currently enabled.';

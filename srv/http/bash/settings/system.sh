@@ -8,6 +8,11 @@ file_module=/etc/modules-load.d/raspberrypi.conf
 
 args2var "$1"
 
+configReboot() {
+	pushData reboot '{ "id": "'$CMD'" }'
+	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
+}
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
 	local chip i2clcdchar i2cmpdoled module spimpdoled tft
 	tmp_cmdline=/tmp/cmdline.txt
@@ -67,9 +72,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot '{ "id": "'$CMD'" }'
-		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
-		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
+		configReboot
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
 		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
@@ -81,6 +84,15 @@ displayConfigClear() {
 	sed -i -E "s/ $fbcon| $video//g" $file_cmdline
 	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+}
+dmesgDev() {
+	dmesg \
+		| tail \
+		| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
+		| tail -1
+}
+pushStorage() {
+	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -100,6 +112,9 @@ soundProfile() {
 		ip link set $lan txqueuelen $txqueuelen
 	fi
 }
+usbVendorModel() {
+	lsblk -no PATH,VENDOR,MODEL | grep -v '\s$'
+}
 
 case $CMD in
 
@@ -114,61 +129,108 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
+	touch $dirshm/btonoff
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
-		config=$( grep -E -v 'disable-bt' $file_config )
+		rm -f $dirsystem/btdisable
+		btdiscoverable=$dirsystem/btdiscoverable
 		if [[ $DISCOVERABLE ]]; then
-			yesno=yes
-			touch $dirsystem/btdiscoverable
+			[[ ! -e $btdiscoverable ]] && discov=yes && touch $btdiscoverable
 		else
-			yesno=no
-			rm $dirsystem/btdiscoverable
+			[[ -e $btdiscoverable ]] && discov=no && rm -f $btdiscoverable
 		fi
-		if ls -l /sys/class/bluetooth 2> /dev/null | grep -q -m1 serial; then
+		if systemctl -q is-active bluetooth; then
+			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
+		else
+			[[ ! -e /boot/kernel8.img ]] && configReboot && exit # fix: not aarch64 - bluez not reinit hci0
+# --------------------------------------------------------------------
+			modprobe -a bluetooth bnep btbcm hci_uart
+			sleep 1
 			systemctl start bluetooth
-			bluetoothctl discoverable $yesno &> /dev/null
-			[[ ! $bluealsa ]] && $dirsettings/player-conf.sh
-			rfkill | grep -q -m1 bluetooth && pushData refresh '{ "page": "networks", "activebt": true }'
 		fi
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
-		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
-		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
+		if [[ $bluealsa ]]; then
+			btformat=$dirsystem/btformat
+			if [[ $FORMAT ]]; then
+				[[ ! -e $btformat ]] && touch $btformat && $dirsettings/player-conf.sh
+			else
+				[[ -e $btformat ]] && rm -f $btformat && $dirsettings/player-conf.sh
+			fi
+		fi
 	else
-		config="$( < $file_config )
-dtoverlay=disable-bt"
-		if rfkill | grep -q -m1 bluetooth; then
-			systemctl stop bluetooth
-			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			[[ $bluealsa ]] && $dirsettings/player-conf.sh
-		fi
+		touch $dirsystem/btdisable
+		systemctl stop bluetooth
+		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		[[ $bluealsa ]] && $dirsettings/player-conf.sh
 	fi
-	configTxt
+	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
+	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
+	rm $dirshm/btonoff
+	pushRefresh
 	;;
 bluetoothstart )
 	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
-	bluetoothctl discoverable $yesno &> /dev/null
+	[[ -e $dirsystem/btdiscoverable ]] && discov=yes || discov=no
+	bluetoothctl discoverable $discov &> /dev/null
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
+	dir=${MOUNTPOINT:9:3}
+	if [[ $CMD == mount ]]; then
+		if [[ $dir == USB ]]; then
+			udevil mount $SOURCE
+		elif [[ $dir == NAS ]]; then
+			mount "$MOUNTPOINT"
+		else # nvme / sata
+			fstabSet $MOUNTPOINT "$SOURCE  $MOUNTPOINT  ext4 defaults,noatime  0  0"
+			! grep -q "^$SOURCE" /etc/fstab && exit
+# --------------------------------------------------------------------
+			echo "\
+[$dir]
+	path = $MOUNTPOINT
+	dfree command = /srv/http/bash/smbdfree.sh" >> /etc/samba/smb.conf
+		fi
 	else
-		[[ $CMD == mount ]] && udevil mount $SOURCE || udevil umount -l "$MOUNTPOINT"
+		if [[ $dir == USB ]]; then
+			udevil umount -l "$MOUNTPOINT"
+		else
+			umount -l "$MOUNTPOINT"
+			if [[ $dir != NAS ]]; then # nvme / sata
+				rm -f $MOUNTPOINT
+				sed -i '/^\['$dir'/, /dfree command =/ d' /etc/samba/smb.conf
+			fi
+		fi
 	fi
+	systemctl try-restart samba
 	if [[ $CMD == forget ]]; then
 		rmdir "$MOUNTPOINT" &> /dev/null
 		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
-		column -t <<< $fstab > /etc/fstab
-		systemctl daemon-reload
+		fstabColumnReload "$fstab"
 		$dirbash/cmd.sh "mpcupdate
 update
 NAS
 CMD ACTION PATHMPD"
 	fi
-	pushRefresh
+	pushStorage
+	;;
+format )
+	pushData storage '{ "page": "system", "formatting": "'$DEV'" }'
+	if [[ $UNPART ]]; then
+		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
+		partprobe $DEV
+		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||;p}' )
+	else
+		umount -l $DEV
+	fi
+	echo $DEV > $dirshm/formatting
+	$dirsettings/system-storage.sh > $dirshm/system-storage
+	(
+		mkfs.ext4 -F $DEV -L "$LABEL"
+		rm -f $dirshm/{formatting,system-storage}
+		pushStorage
+	)&
 	;;
 gpiotoggle )
 	gpioset -t0 -c0 $PIN
@@ -345,9 +407,7 @@ shareddatadisable )  # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	mv /mnt/{SD,USB} /mnt/MPD
-	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
+	ignoreMntDirs restore
 	if ! grep -q "$dirnas " /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
@@ -359,12 +419,11 @@ shareddatadisable )  # server rAudio / other server
 		done <<< $source
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
-	else                                       # server rAudio
+	else                                     # server rAudio
 		umount -l $dirnas &> /dev/null
 		fstab=$( grep -v $dirnas /etc/fstab )
 	fi
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
+	fstabColumnReload "$fstab"
 	sharedDataReset
 	systemctl start mpd
 	pushRefresh
@@ -420,24 +479,36 @@ timezone )
 	fi
 	pushRefresh
 	;;
-usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, /etc/udev/rules.d/ntfs.rules
+usbadd ) # /etc/udev/rules.d/usbstorage.rules
+	list=$( usbVendorModel )
+	sdx=$( dmesgDev )
+	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
+	notify usb "$name" Ready
+	if [[ ! $( partprobe -ds /dev/$sdx ) ]]; then
+		unpartitioned=1
+	else
+		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && unformatted=1 # no fs
+	fi
+	if [[ $unpartitioned || $unformatted ]]; then
+		echo "$list" > $dirshm/usbvendormodel
+		pushStorage
+	fi
+	;;
+usbmount | usbremove ) # for /etc/conf.d/devmon - devmon@http.service, ntfs.rules | usbstorage.rules
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
-	list=$( lsblk -no path,vendor,model | grep -v ' $' )
-	if [[ $CMD == usbconnect ]]; then
-		sdx=$( dmesg \
-					| tail \
-					| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-					| tail -1 )
-		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
-	else
-		name=$( diff $dirshm/lsblkusb <( echo "$list" ) \
-					| grep '^<'\
-					| tr -s ' ' \
-					| cut -d' ' -f3- )
-		notify usbdrive "$name" Removed
+	if [[ $CMD == usbmount ]]; then # debounce ntfs
+		sdx=$( dmesgDev )
+		[[ $( df -H --output=used /dev/${sdx}1 | grep -v Used | tr -d ' ' ) == 0 ]] && exit
+# --------------------------------------------------------------------
 	fi
-	echo "$list" > $dirshm/lsblkusb
+	list=$( usbVendorModel )
+	usbvendormodel=$dirshm/usbvendormodel
+	if [[ $CMD == usbremove ]]; then
+		name=$( diff $usbvendormodel <( echo "$list" ) | sed -n '/^</ {s/^< [^ ]* *//;p}' )
+		notify usb "$name" Removed # ready - by usbadd
+	fi
+	echo "$list" > $usbvendormodel
 	pushStorage
 	pushDirCounts usb
 	;;
@@ -463,7 +534,7 @@ wlan )
 			iw reg set $REGDOM
 		fi
 	else
-		rmmod brcmfmac_wcc brcmfmac &> /dev/null
+		wlanOnboardDisable
 	fi
 	pushRefresh
 	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false

@@ -2,6 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+if pgrep mkfs &> /dev/null; then
+	name=$( getContent $dirshm/formatting 'Local Storage' )
+	echo "Currently formatting <wh>$name</wh>"
+	exit
+# --------------------------------------------------------------------
+fi
+
 args2var "$1"
 
 logoLcdOled
@@ -11,7 +18,7 @@ ipaddress=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipaddress $filesharedip )
 	if [[ $ipclients ]]; then
-		[[ ! $CONFIRM ]] && echo -1 && exit
+		[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
 		if [[ $reboot ]]; then
 			msg=Reboot
@@ -40,7 +47,7 @@ else
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
-[[ -e /bin/ply-image ]] && ply-image /srv/http/assets/img/splash.png
+[[ -e /bin/ply-image ]] && ply-image /srv/http/assets/img/splash.png &> /dev/null
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3

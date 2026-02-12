@@ -5,7 +5,7 @@
 # Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
 
-[[ -e /dev/shm/bluetooth_rules ]] && exit # debounce bluetooth.rules
+[[ -e /dev/shm/bluetooth_rules || -e $dirshm/btonoff ]] && exit # debounce bluetooth.rules
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
@@ -38,10 +38,10 @@ disconnectRemove() {
 	refreshPages
 }
 refreshPages() {
-	pushRefresh features
-	sleep 1
+	sleep 2
 	pushRefresh networks
 	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
+	pushRefresh system
 }
 ########################################################################################################
 # from bluetooth.rules: disconnect from paired device - no MAC
@@ -143,7 +143,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		$dirsettings/player-conf.sh
 		grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
 	fi
-	echo $MAC $type $name >> $dirshm/btconnected
+	appendSortUnique $dirshm/btconnected $MAC $type $name
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
 	refreshPages
@@ -156,6 +156,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 			bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && sleep 1 || break
 		done
 	else
+		bluetoothctl untrust $MAC &> /dev/null
 		bluetoothctl remove $MAC &> /dev/null
 		for i in {1..5}; do
 			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )

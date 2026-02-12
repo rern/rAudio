@@ -340,26 +340,6 @@ W             = {  // from websocket.py (server)
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;
 	}
-	, mpdupdate : data => {
-		S.updating_db = typeof data === 'boolean';
-		if ( ! S.updating_db ) {
-			if ( 'done' in data ) {
-				BANNER( 'refresh-library', 'Library Update', 'Done' );
-				if ( PAGE ) {
-					REFRESHDATA();
-				} else {
-					delete data.done;
-					C = data;
-					V.html = {}
-				}
-			}
-		}
-		if ( PAGE ) {
-			$( '.button-lib-update' ).toggleClass( 'blink', S.updating_db );
-		} else {
-			PLAYBACK.button.updating();
-		}
-	}
 	, notify    : data => {
 		if ( V.relayssequense ) return
 		
@@ -465,6 +445,7 @@ W             = {  // from websocket.py (server)
 	}
 }
 // info ----------------------------------------------------------------------
+// usage: long-press head icon
 function INFO( json ) {
 	_INFO.clearTimeout( 'all' );
 	$( '.menu' ).addClass( 'hide' );
@@ -627,7 +608,7 @@ function INFO( json ) {
 		htmls.list     = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, kv, label, param, type;
+		var colspan, disabled, kv, label, param, type;
 		var i          = 0; // for radio name
 		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
@@ -637,15 +618,6 @@ function INFO( json ) {
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
-/*			param = {
-				  kv       : { k: V, ... }
-				, colspan  : N
-				, nosort   : T/F
-				, sameline : T/F
-				, suffix   : UNIT
-				, updn     : { step: N, min: N, max: N }
-				, width    : N
-			}*/
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
@@ -676,7 +648,8 @@ function INFO( json ) {
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
+					disabled = 'updn' in param && ! param.updn.enable ? ' disabled' : '';
+					htmls.list += '<input type="'+ type +'"'+ disabled +'>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
@@ -1446,10 +1419,12 @@ var COMMON    = {
 		}
 	}
 	, libraryUpdate : () => {
+		var icon    = 'refresh-library';
+		var title   = 'Library Database';
 		if ( S.updating_db ) {
 			INFO( {
-				  icon    : 'refresh-library'
-				, title   : 'Library Database'
+				  icon    : icon
+				, title   : title
 				, message : 'Currently updating ...'
 				, oklabel : ICON( 'flash' ) +'Stop'
 				, okcolor : V.orange
@@ -1459,24 +1434,21 @@ var COMMON    = {
 		}
 		
 		var message = '';
-		var modes = [ 'NAS', 'SD', 'USB' ];
+		var modes   = [ 'nas', 'sd', 'usb' ];
+		if ( C.nvme ) modes.push( 'nvme' );
+		if ( C.sata ) modes.push( 'sata' );
 		modes.forEach( k => {
-			message += COMMON.sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+			label = modes.length < 4 ? k : '';
+			message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
 		} );
-		message  += '&ensp;<hr>';
-		if ( ! C.nas && ! C.sd && ! C.usb ) {
-			var values = { NAS: true, SD: true, USB: true }
-		} else {
-			var values = { NAS: C.nas, SD: C.sd, USB: C.usb }
-		}
+		var values  = {}
+		modes.forEach( k => { values[ k ] = true } );
 		INFO( {
-			  icon       : 'refresh-library'
-			, title      : 'Library Database'
-			, message    : message
-			, list       : [
-				  [ '',                   'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
-				, [ 'Append Latest list', 'checkbox' ]
-			]
+			  icon       : icon
+			, title      : title
+			, message    : message +'<hr>'
+			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
+			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
@@ -1488,13 +1460,15 @@ var COMMON    = {
 				var val     = _INFO.val();
 				var pathmpd = '';
 				if ( val.ACTION === 'update' ) {
+					var key;
 					var path = [];
 					modes.forEach( k => {
-						if ( val[ k ] ) path.push( k );
+						key = k.toUpperCase()
+						if ( val[ key ] ) path.push( key );
 					} );
 					if ( path.length < 3 ) pathmpd = path.join( ' ' );
 				}
-				BASH( [ 'cmd.sh', 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
+				BASH( [ 'cmd.sh', 'mpcupdate', val.ACTION, pathmpd, val.LATEST, 'CFG ACTION PATHMPD LATEST' ] );
 			}
 		} );
 	}
@@ -1530,10 +1504,12 @@ var COMMON    = {
 		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
 		COMMON.loader();
-		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], nfs => {
-			if ( nfs == -1 ) {
+		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
+			if ( ! std ) return
+			
+			$( '#loader' ).addClass( 'hide' );
+			if ( std === 'nfs' ) {
 				$( '#loader' ).addClass( 'hide' );
-				BANNER_Hide();
 				INFO( {
 					  icon    : 'power'
 					, title   : 'Power'
@@ -1545,6 +1521,8 @@ var COMMON    = {
 					, okcolor : action === 'off' ? V.red : V.orange
 					, ok      : () => COMMON.powerOk( action, true )
 				} );
+			} else {
+				_INFO.warning(  'power', 'Power', std );
 			}
 		} );
 	}
@@ -1644,6 +1622,9 @@ var COMMON    = {
 			$( '.helphead' ).removeClass( 'hide' );
 		}
 	}
+	, updating      : () => {
+		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
+	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
@@ -1713,6 +1694,8 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 				REFRESHDATA();                                                    // - refresh data
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
+				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
+				
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
