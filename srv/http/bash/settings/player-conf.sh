@@ -168,7 +168,7 @@ done
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	$dirbash/cmd.sh mpcupdate
-if [[ -e $dirmpd/listing ]]; then
+elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
