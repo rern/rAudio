@@ -54,11 +54,6 @@ else
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	counts=$( grep -Ev '{|}' $dirmpd/counts )
-	for d in NVME SATA; do
-		counts+='
-, "'${d,,}'"     : '$( [[ -e /mnt/MPD/$d ]] || mpc ls $d &> /dev/null && echo true )
-	done
 	display=$( grep -Ev '{|}' <<< $displayjson )'
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
@@ -80,7 +75,7 @@ else
 , "btsender"     : '$( exists $dirshm/btmixer )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
-, "counts"       : { '$counts' }
+, "counts"       : '$( < $dirmpd/counts )'
 , "display"      : { '$display' }
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
