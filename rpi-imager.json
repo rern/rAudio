@@ -1,38 +1,54 @@
 {
   "os_list": [
     {
-      "name": "rAudio 64bit",
-      "description": "Raspberry Pi audio player",
-      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.svg",
-      "website": "https://github.com/rern/rAudio",
-      "release_date": "2025-11-09",
-      "extract_size": 3593895936,
-      "extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
-      "image_download_size": 781799132,
-      "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
       "devices": [
         "pi5-64bit",
         "pi4-64bit",
         "pi3-64bit",
-		"pi2-64bit"
-      ]
-    },
-    {
-      "name": "rAudio RPi2",
+        "pi2-64bit"
+      ],
+      "name": "rAudio 64bit",
       "description": "Raspberry Pi audio player",
-      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.svg",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
       "website": "https://github.com/rern/rAudio",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
       "release_date": "2025-11-09",
       "extract_size": 3593895936,
       "extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
       "image_download_size": 781799132,
-      "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
+      "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6"
+    },
+    {
       "devices": [
         "pi3-32bit",
-		"pi2-32bit",
-      ]
+        "pi2-32bit"
+      ],
+      "name": "rAudio 32bit",
+      "description": "Raspberry Pi audio player",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi2-20251109.img.xz",
+      "release_date": "2025-11-09",
+      "extract_size": 3593895936,
+      "extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
+      "image_download_size": 781799132,
+      "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6"
+    },
+    {
+      "devices": [
+        "pi1-32bit",
+        "pi0-32bit"
+      ],
+      "name": "rAudio RPi 1, Zero",
+      "description": "Raspberry Pi audio player",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi0-1-20251109.img.xz",
+      "release_date": "2025-11-09",
+      "extract_size": 3593895936,
+      "extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
+      "image_download_size": 781799132,
+      "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6"
     }
   ]
 }
