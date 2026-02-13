@@ -21,7 +21,7 @@
     {
       "name": "rAudio RPi2",
       "description": "Raspberry Pi audio player",
-      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi2-20251109.img.xz",
       "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.svg",
       "website": "https://github.com/rern/rAudio",
       "release_date": "2025-11-09",
@@ -31,7 +31,7 @@
       "image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
       "devices": [
         "pi3-32bit",
-		"pi2-32bit",
+		"pi2-32bit"
       ]
     }
   ]
