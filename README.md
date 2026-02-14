@@ -99,13 +99,18 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
     		- `apt install rpi-imager`
     		- `pacman -Sy rpi-imager`
 			- [`make install`](https://github.com/raspberrypi/rpi-imager)
-	- Download an [image file](#image-files)
+	- Select in `Raspberry Pi Imager` or download an [image file](#image-files)
 	- **Raspberry Pi Imager:**
-		- Device - (No need)
-		- OS:
-    		- Select "Use custom" (bottom of the list)
-        	- Select the image file
-           	- `NEXT`
+ 		- Alternative 1: Select an image from Device list
+   			- `APP OPTIONS` > Select "Content Repository" > `EDIT`
+     		- Select "Use Custom URL" - `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json` > `APPLY & RESTART`
+			- Device: Select > `NEXT`
+			- OS: Select rAudio > `NEXT`
+   		- Alternative 2: Use already downloaded image file
+			- Device: (No need)
+			- OS:
+	    		- Select "Use custom" (bottom of the list)
+	        	- Select the image file > `NEXT`
 		- Storage:
 			- Select target SD card - normal
 			- Select target USB drive - boot from USB drive without SD card
@@ -115,10 +120,7 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 			- `NEXT`
     	- Writing:
         	- `... ERASE AND WRITE`
-    	- On Windows - To ensure filesystem set properly:
-       		- `CANCEL WRITE` when reach at least 2% on 1st write.
-           	- Continue with `NEXT` again and let the writing finish.
-		- Once writing done, verifying is not normally needed.
+    	- Once writing done, verifying is not normally necessary.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
