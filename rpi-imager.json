@@ -11,7 +11,7 @@
       "description": "For: RPi 5, 4, 3, 2 (BCM2837), Zero 2",
       "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
       "release_date": "2025-11-09",
-      "extract_size": 3657747660,
+      "extract_size": 3657747456,
       "extract_sha256": "2a2e33f50fc798307b401f888e4788835ce93a724cf18f692a40b1f37b056b9a",
       "image_download_size": 945766408,
       "image_download_sha256": "412edc84a4fb59740dcefe2e233a90bb0cc9f1dd1b4ef4b599b39c57196e457c",
