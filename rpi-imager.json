@@ -1,54 +1,54 @@
 {
   "os_list": [
-	{
-		"name": "rAudio 64bit",
-		"description": "Raspberry Pi audio player",
-		"url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
-		"icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
-		"website": "https://github.com/rern/rAudio",
-		"release_date": "2025-11-09",
-		"extract_size": 3593895936,
-		"extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
-		"image_download_size": 781799132,
-		"image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
-		"devices": [
-			"pi5-64bit",
-			"pi4-64bit",
-			"pi3-64bit",
-			"pi2-64bit"
-		]
-	},
-	{
-		"name": "rAudio RPi2",
-		"description": "Raspberry Pi audio player",
-		"url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi2-20251109.img.xz",
-		"icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
-		"website": "https://github.com/rern/rAudio",
-		"release_date": "2025-11-09",
-		"extract_size": 3593895936,
-		"extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
-		"image_download_size": 781799132,
-		"image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
-		"devices": [
-			"pi3-32bit",
-			"pi2-32bit"
-		]
-	},
-	{
-		"name": "rAudio RPi 1, Zero",
-		"description": "Raspberry Pi audio player",
-		"url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi0-1-20251109.img.xz",
-		"icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
-		"website": "https://github.com/rern/rAudio",
-		"release_date": "2025-11-09",
-		"extract_size": 3593895936,
-		"extract_sha256": "EFDC6B67442E9D4233B6310A2359A23238BB69BFCCBA1D62D9EFF72E9228E793",
-		"image_download_size": 781799132,
-		"image_download_sha256": "013B5EA5F4AFB830179393235E560BA63638A536B64C64B30B2A4FA7E92E49A6",
-		"devices": [
-			"pi1-32bit",
-			"pi0-32bit"
-		]
-	}
+    {
+      "devices": [
+        "pi5-64bit",
+        "pi4-64bit",
+        "pi3-64bit",
+        "pi2-64bit"
+      ],
+      "name": "rAudio 64bit",
+      "description": "For: RPi 5, 4, 3, 2 (BCM2837), Zero 2",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260212/rAudio-64bit-20260212.img.xz",
+      "release_date": "2026-21-12",
+      "extract_size": 3657747660,
+      "extract_sha256": "2a2e33f50fc798307b401f888e4788835ce93a724cf18f692a40b1f37b056b9a",
+      "image_download_size": 945766408,
+      "image_download_sha256": "412edc84a4fb59740dcefe2e233a90bb0cc9f1dd1b4ef4b599b39c57196e457c",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio"
+    },
+    {
+      "devices": [
+        "pi1-32bit",
+        "pi0-32bit"
+      ],
+      "name": "rAudio Legacy",
+      "description": "For: RPi 1, Zero",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260212/rAudio-RPi0-1-20260212.img.xz",
+      "release_date": "2026-21-12",
+      "extract_size": 2919235584,
+      "extract_sha256": "2aa59294bde24602123b6bacaffa6c6143b3bfec03f5cf10a51e114c9d5b1c6f",
+      "image_download_size": 690770980,
+      "image_download_sha256": "7ed5544702171c48718171b516312feb06d57cf8f734a6731c82653709f4057e",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio"
+    },
+    {
+      "devices": [
+        "pi3-32bit",
+        "pi2-32bit"
+      ],
+      "name": "rAudio 32bit",
+      "description": "For: RPi 3, 2",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260212/rAudio-RPi2-20260212.img.xz",
+      "release_date": "2026-21-12",
+      "extract_size": 3370123264,
+      "extract_sha256": "3c27e9009af3eea9d7024816dc2f8e0edc517e197b9fde092316c6f07fbe7a9d",
+      "image_download_size": 891174500,
+      "image_download_sha256": "f08699178399a6b7be89078f07211d7eb34ae7cf38f72ebbb516b67725ccdd83",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio"
+    }
   ]
 }
