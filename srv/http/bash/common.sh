@@ -354,8 +354,8 @@ ignoreMntDirs() {
 		if [[ $1 == restore ]]; then
 			for dir in NVME SATA SD USB; do
 				sed -i "\|$dir| d" $mpdignore
-				[[ ! -s $mpdignore ]] && rm $mpdignore
 			done
+			[[ ! -s $mpdignore ]] && rm $mpdignore
 		else
 			echo $dir >> $mpdignore
 		fi
