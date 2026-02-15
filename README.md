@@ -99,28 +99,28 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
     		- Debian: `apt install rpi-imager`
     		- Arch Linux: `pacman -Sy rpi-imager`
 	- **Raspberry Pi Imager:**
- 		- Alternative 1: In-app download
+ 		- Alternative 1: In-app download image file
    			- » `APP OPTIONS`
 			- Select » "Content Repository" » `EDIT`
      		- Select » "Use Custom URL"
        			- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
           		- » `APPLY & RESTART`
-			- Device: Select » `NEXT`
-			- OS: Select rAudio » `NEXT`
-   		- Alternative 2: Manually download
+			- [ Device ] : Select » `NEXT`
+			- [ OS ] : Select rAudio » `NEXT`
+   		- Alternative 2: Download image file manually
      		- Download an [image file](#image-files)
-			- Device: (No need)
-			- OS:
-	    		- Select » "Use custom" (bottom of the list)
-	        	- Select the downloaded image file » `NEXT`
-		- Storage:
-			- Select target SD card
-			- For booting from USB drive without SD card - Select target USB drive
+			- [ OS ] :
+	    		- Select » "Use custom"
+	        	- Select » *The downloaded image file* » `NEXT`
+ 		- Plugin SD card
+		- [ Storage ] :
+			- Select » *Target SD card*
+			- For booting from USB drive without SD card - Select » *Target USB drive*
 				- For Raspberry Pi 2B v1.2, 3, 4, 5
 				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 				- Should be used only when USB drive is faster than SD card.
 			- » `NEXT`
-    	- Writing:
+    	- [ Writing ] :
      		- » `WRITE`
         	- » `... ERASE AND WRITE`
     	- Once writing done, verifying is not normally necessary.
