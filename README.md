@@ -101,10 +101,10 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 	- **Raspberry Pi Imager:**
  		- Alternative 1: In-app download image file
    			- » `APP OPTIONS`
-			- "Content Repository" » `EDIT`
-     		- » `Use Custom URL`
-       			- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
-          		- » `APPLY & RESTART`
+				- "Content Repository" » `EDIT`
+	     		- » `Use Custom URL`
+	       			- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+	          		- » `APPLY & RESTART`
 			- [ Device ] : » *`target device`* » `NEXT`
 			- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
    		- Alternative 2: Download image file manually
@@ -115,10 +115,10 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
  		- Plugin SD card
 		- [ Storage ] :
 			- » *Target SD card*
-			- For booting from USB drive without SD card - Select » *Target USB drive*
-				- For Raspberry Pi 2B v1.2, 3, 4, 5
-				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
-				- Should be used only when USB drive is faster than SD card.
+				- » *Target USB drive* for USB drive instead of SD card
+					- For Raspberry Pi 2B v1.2, 3, 4, 5
+					- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
+					- Should be used only when USB drive is faster than SD card.
 			- » `NEXT`
     	- [ Writing ] :
      		- » `WRITE`
