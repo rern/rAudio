@@ -96,9 +96,8 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 	- Install:
 		- [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 		- Linux comand line:
-    		- `apt install rpi-imager`
-    		- `pacman -Sy rpi-imager`
-			- [`make install`](https://github.com/raspberrypi/rpi-imager)
+    		- Debian: `apt install rpi-imager`
+    		- Arch Linux: `pacman -Sy rpi-imager`
 	- **Raspberry Pi Imager:**
  		- Alternative 1: In-app download
    			- » `APP OPTIONS`
