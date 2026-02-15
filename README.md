@@ -103,7 +103,9 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
  		- Alternative 1: In-app download
    			- `APP OPTIONS`
 			- Select "Content Repository" » `EDIT`
-     		- Select "Use Custom URL" = `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json` » `APPLY & RESTART`
+     		- Select "Use Custom URL"
+       			- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+          		- `APPLY & RESTART`
 			- Device: Select » `NEXT`
 			- OS: Select rAudio » `NEXT`
    		- Alternative 2: Manually download
