@@ -99,7 +99,9 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
     		- Debian: `apt install rpi-imager`
     		- Arch Linux: `pacman -Sy rpi-imager`
 	- **Raspberry Pi Imager:**
- 		- Alternative 1: In-app download image file
+   		- Plugin SD card
+   		----------------------------------------------------------------
+ 		- **Method 1**: In-app download image file
    			- » `APP OPTIONS`
 				- "Content Repository" » `EDIT`
 	     		- » `Use Custom URL`
@@ -107,12 +109,12 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 	          		- » `APPLY & RESTART`
 			- [ Device ] : » *`target device`* » `NEXT`
 			- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
-   		- Alternative 2: Download image file manually
+   		- **Method 2**: Download image file manually
      		- Download an [image file](#image-files)
 			- » [ OS&emsp;&emsp;] :
 	    		- » [ Use custom ]
 	        	- » *`downloaded image file`* » `NEXT`
- 		- Plugin SD card
+		----------------------------------------------------------------
 		- [ Storage ] :
 			- » *Target SD card*
 				- » *Target USB drive* for USB drive instead of SD card
