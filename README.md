@@ -84,7 +84,7 @@ r A u d i o
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
 ### Image files
-- Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
+- Raspberry Pi - (see [How-to](#how-to))
 - DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
@@ -93,28 +93,19 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 
 ### How-to
 - Write an image file to a micro SD card (4GB or more):
-	- Install:
-		- [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 		- Linux comand line:
     		- Debian: `apt install rpi-imager`
     		- Arch Linux: `pacman -Sy rpi-imager`
 	- **Raspberry Pi Imager:**
    		- Plugin SD card
-   		----------------------------------------------------------------
- 		- **Method 1**: In-app download image file
-   			- » `APP OPTIONS`
-				- "Content Repository" » `EDIT`
-	     		- » `Use Custom URL`
-	       			- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
-	          		- » `APPLY & RESTART`
-			- [ Device ] : » *`target device`* » `NEXT`
-			- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
-   		- **Method 2**: Download image file manually
-     		- Download an [image file](#image-files)
-			- » [ OS&emsp;&emsp;] :
-	    		- » [ Use custom ]
-	        	- » *`downloaded image file`* » `NEXT`
-		----------------------------------------------------------------
+		- » `APP OPTIONS`
+			- "Content Repository" » `EDIT`
+			- » `Use Custom URL`
+				- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+				- » `APPLY & RESTART`
+		- [ Device ] : » *`target device`* » `NEXT`
+		- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
 		- [ Storage ] :
 			- » *Target SD card*
 				- » *Target USB drive* for USB drive instead of SD card
