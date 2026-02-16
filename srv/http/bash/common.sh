@@ -348,18 +348,14 @@ grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
 ignoreMntDirs() {
-	local dir mpdignore
-	for dir in NVME SATA SD USB; do
-		mpdignore=/mnt/MPD/$dir/.mpdignore
-		if [[ $1 == restore ]]; then
-			for dir in NVME SATA SD USB; do
-				sed -i "\|$dir| d" $mpdignore
-			done
-			[[ ! -s $mpdignore ]] && rm $mpdignore
-		else
-			echo $dir >> $mpdignore
-		fi
-	done
+	local mpdignore
+	mpdignore=/mnt/MPD/.mpdignore
+	if [[ $1 == restore ]]; then
+		ignore=$( grep -Ev '^data$|^NVME$|^SATA$|^SD$|^USB$' $mpdignore )
+		[[ $ignore ]] && echo "$ignore" || rm $mpdignore
+	else
+		echo -e 'NVME\nSATA\nSD\nUSB' >> $mpdignore
+	fi
 }
 inOutputConf() {
 	local file
@@ -578,6 +574,7 @@ sharedDataReset() {
 	mv -f $dirbackup/{display,order}.json $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
+	! grep -qv ^data$ $dirnas/.mpdignore && rm -r $dirnas/.mpdignore
 	dirPermissions
 }
 snapclientIP() {

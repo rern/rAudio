@@ -210,7 +210,6 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		ignoreMntDirs
 		for d in NVME SATA SD USB; do
 			[[ -e /mnt/MPD/$d ]] && ln -s /mnt/MPD/$d $dirnas
 		done
@@ -229,6 +228,7 @@ nfsserver )
 			cp -f $dirshared/* $dirmpd
 			rm -rf $dirshared
 		fi
+		ignoreMntDirs
 		systemctl start mpd
 		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
 rescan
@@ -247,11 +247,11 @@ CMD ACTION PATHMPD"
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
 		rm -f $dirnas/{NVME,SATA,SD,USB}
-		ignoreMntDirs restore
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
 		sharedDataReset
+		ignoreMntDirs restore
 		systemctl start mpd
 	fi
 	pushRefresh
