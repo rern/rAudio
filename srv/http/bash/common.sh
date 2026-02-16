@@ -347,16 +347,6 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
-ignoreMntDirs() {
-	local mpdignore
-	mpdignore=/mnt/MPD/.mpdignore
-	if [[ $1 == restore ]]; then
-		ignore=$( grep -Ev '^data$|^NVME$|^SATA$|^SD$|^USB$' $mpdignore )
-		[[ $ignore ]] && echo "$ignore" || rm $mpdignore
-	else
-		echo -e 'NVME\nSATA\nSD\nUSB' >> $mpdignore
-	fi
-}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -557,6 +547,7 @@ sharedDataLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	appendSortUnique $dirnas/.mpdignore data
+	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 # --------------------------------------------------------------------
 	readarray -t source <<< $( < $dirshareddata/source )
@@ -574,7 +565,9 @@ sharedDataReset() {
 	mv -f $dirbackup/{display,order}.json $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
-	! grep -qv ^data$ $dirnas/.mpdignore && rm -r $dirnas/.mpdignore
+	mpdignore=/mnt/MPD/.mpdignore
+	ignore=$( grep -Ev '^data$|^NVME$|^SATA$|^SD$|^USB$' $mpdignore )
+	[[ $ignore ]] && echo "$ignore" > $mpdignore || rm $mpdignore
 	dirPermissions
 }
 snapclientIP() {

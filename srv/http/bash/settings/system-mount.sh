@@ -37,7 +37,6 @@ fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${op
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear
 	systemctl stop mpd
-	ignoreMntDirs
 	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1

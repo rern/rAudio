@@ -228,7 +228,6 @@ nfsserver )
 			cp -f $dirshared/* $dirmpd
 			rm -rf $dirshared
 		fi
-		ignoreMntDirs
 		systemctl start mpd
 		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
 rescan
@@ -251,7 +250,6 @@ CMD ACTION PATHMPD"
 		> /etc/exports
 		rm $filesharedip
 		sharedDataReset
-		ignoreMntDirs restore
 		systemctl start mpd
 	fi
 	pushRefresh
