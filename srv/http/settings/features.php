@@ -285,11 +285,9 @@ EOF
 	· On enable:
 		· 1st time: Library will be rescanned to a new database.
 		· Previously enabled: Database from previous will be used.
+		· $B->microsd SD and $B->usbdrive USB moved to $B->networks NAS
 	· IP address - This rAudio must be set to static / fixed.
 	· Password - If changed, must be the same on all clients.
-	· In $T->library
-		· $B->microsd SD and $B->usbdrive USB will be hidden.
-		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
 	
  • <wh>Clients:</wh>
 	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>

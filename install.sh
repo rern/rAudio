@@ -67,10 +67,10 @@ $dirbash/cmd.sh cachebust
 
 installfinish
 
-# 20260212
+# 20260216
 if [[ -e /mnt/SD ]]; then
 	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
-	ignoreMntDirs
+	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 fi

@@ -374,7 +374,7 @@ Connect shared data as client for:
 			<gr>(<c>SOURCE</c> will be arranged accordingly.)</gr>
 			
 Note:
- · $B->microsd SD and $B->usbdrive USB : Hidden while enabled
+ · Enabled: $B->microsd SD and $B->usbdrive USB - Hidden
 
 EOF
 	]
