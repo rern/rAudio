@@ -1,14 +1,14 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
+basename $0 .sh > $dirshm/script
+
 bar='<a class="cbm">  </a>'
 padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'
 padgr='<a class="cbgr">  </a>'
 warn='<a class="cbr cw"> ! </a>'
-
-. /srv/http/bash/common.sh
-
-basename $0 .sh > $dirshm/script
 path=$( cat $dirshm/dir )
 [[ -e $dirshm/overwrite ]] && overwrite=1
 rm -f $dirshm/{path,overwrite}
@@ -28,22 +28,16 @@ warningWrite() {
 dir="/mnt/MPD/$path"
 [[ ! -w "$dir" ]] && warningWrite && exit
 # --------------------------------------------------------------------
-
 echo -e "\nDirectory: $( tagColor $dir )\n"
-
-SECONDS=0
-
-albumfile=/srv/http/data/mpd/album
-
 if [[ ! $path ]]; then
-	mpdpathlist=$( cut -d^ -f7 $albumfile )
+	mpdpathlist=$( cut -d^ -f7 $dirmpd/album )
 else
 	mpdpathlist=$( find "$dir" -type d | cut -c10- )
 fi
-unsharp=0x.5
-
 [[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
 # --------------------------------------------------------------------
+SECONDS=0
+unsharp=0x.5
 count=$( wc -l <<< $mpdpathlist )
 while read mpdpath; do
 	(( i++ ))
@@ -128,3 +122,4 @@ Duration: $( hhmmss $SECONDS )
 $bar Done.
 <hr>
 "
+rm -f $dirshm/script

@@ -10,6 +10,7 @@ if ! grep -q ^audioservice <<< $dabscan; then
 	echo '
 <a class="cbr cw"> ! </a> No stations found.
 '
+	rm -f $dirshm/script
 	exit
 # --------------------------------------------------------------------
 fi
@@ -55,3 +56,4 @@ chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
 pushData counts '{ "dabradio": '$dabradio' }'
+rm -f $dirshm/script

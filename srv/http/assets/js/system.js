@@ -1123,6 +1123,11 @@ $( '#i2smodule' ).on( 'input', function() {
 } );
 $( '#ledcalc' ).on( 'click', UTIL.ledcalc );
 $( '#hostname' ).on( 'click', UTIL.hostname );
+$( '#divtimezone' ).on( 'click', '.select', function() {
+	setTimeout( () => {
+		$( '#divtimezone li' ).eq( 0 ).toggleClass( 'disabled', ! S.online );
+	}, 300 );
+} );
 $( '#timezone' ).on( 'input', function( e ) {
 	var timezone = this.value;
 	if ( timezone === S.timezone ) return

@@ -7,26 +7,19 @@ wlanDevice
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	id0=$( < /etc/machine-id )
-	rm /etc/machine-id
+	rm /boot/expand /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
-	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	if [[ ${partition:0:7} == /dev/sd ]]; then
-		dev=${partition:0:-1}
-	else
-		dev=${partition:0:-2}
-	fi
+	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
-		localBrowserOff
-	fi
+	[[ ${revision: -3:2} == 12 ]] && localBrowserOff
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
@@ -57,14 +50,10 @@ CMD ESSID"
 fi
 # pre-configure <<<-----------------------------------------------------------
 
-if [[ ! -e $dirsystem/btdisable ]]; then
-	modprobe -a bluetooth bnep btbcm hci_uart
-fi
+[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
 logoLcdOled
 
-if [[ -e $dirsystem/soundprofile ]]; then
-	$dirsettings/system.sh soundprofileset
-fi
+[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
@@ -79,65 +68,35 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 echo mpd > $dirshm/player
 
-if lsmod | grep -q -m1 brcmfmac; then
-	touch $dirshm/onboardwlan # initial status
-fi
+lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 
 netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
 	ap=1
 else # if no connections, start accesspoint
-	if [[ $netctllist ]]; then
-		sec=30
-	else
-		sec=5
-	fi
+	[[ $netctllist ]] && sec=30 || sec=5
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
-		if [[ $ipaddress ]]; then
-			break
-		else
-			sleep 1
-		fi
+		[[ $ipaddress ]] && break || sleep 1
 	done
 	if [[ $ipaddress ]]; then
-		if grep -q /mnt/MPD/NAS /etc/fstab; then
-			mount -a &> /dev/null
-		fi
-		if systemctl -q is-active nfs-server; then
-			if [[ -s $filesharedip ]]; then
-				sharedip=$( < $filesharedip )
-				for ip in $sharedip; do
-					notify -ip $ip networks 'Server rAudio' Online
-				done
-			fi
-		fi
+		grep -q /mnt/MPD/NAS /etc/fstab && mount -a &> /dev/null
 		[[ -e $filesharedip ]] && appendSortUnique $filesharedip $ipaddress
-		if [[ $partition ]] && ipOnline 8.8.8.8; then
-			$dirsettings/system.sh 'timezone
-auto
-CMD TIMEZONE'
-		fi
 	else
-		if [[ -e $dirshm/wlan && ! $ap ]]; then
+		if [[ -e $dirshm/wlan ]]; then
 			if [[ $netctllist ]]; then
-				if [[ ! -e $dirsystem/wlannoap ]]; then
-					ap=1
-				fi
+				[[ ! -e $dirsystem/wlannoap ]] && ap=1
 			else
 				ap=1
 			fi
-			if [[ $ap ]]; then
-				touch $dirshm/apstartup
-			fi
+			[[ $ap ]] && touch $dirshm/apstartup
 		fi
 	fi
 fi
-if [[ $ap ]]; then
-	$dirsettings/features.sh iwctlap
-fi
+[[ $ap ]] && $dirsettings/features.sh iwctlap
 landevice=$( lanDevice )
-if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || usb wifi
+if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] \
+		|| (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
@@ -148,18 +107,12 @@ if [[ -e $dirsystem/btreceiver ]]; then
 connect
 $mac
 CMD ACTION MAC"
-	if [[ -e $dirsystem/camilladsp ]]; then
-		$dirsettings/camilla-bluetooth.sh btreceiver
-	fi
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
-if ! systemctl -q is-active mpd; then
-	$dirsettings/player-conf.sh
-fi
-if [[ -e $dirsystem/volumelimit ]]; then
-	volumeLimit startup
-fi
+! systemctl -q is-active mpd && $dirsettings/player-conf.sh
+[[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
-# after all sources connected ........................................................
+# after all sources connected -----------------------------------------------------
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
@@ -170,16 +123,13 @@ fi
 
 touch $dirshm/startup
 
-if grep -qs startup=true $dirsystem/autoplay.conf; then
-	mpcPlayback play
-fi
-if [[ -e /boot/startup.sh ]]; then
-	/boot/startup.sh
-fi
+grep -qs startup=true $dirsystem/autoplay.conf && mpcPlayback play
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
-if [[ ! -e $diraddons/update ]]; then
+if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
+	[[ $partition ]] && timezoneAuto # run once
 	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json

@@ -639,6 +639,14 @@ statusColor() {
 statusUpdating() {
 	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
 }
+timezoneAuto() {
+	local tz
+	tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )
+	[[ ! $tz ]] && tz=$( curl -s -m 2 http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
+	[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
+	[[ ! $tz ]] && tz=UTC
+	timedatectl set-timezone $tz
+}
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
 }
