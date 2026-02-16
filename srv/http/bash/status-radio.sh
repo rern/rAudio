@@ -84,7 +84,7 @@ metadataGet() {
 	
 	if [[ $radioparadise ]]; then
 		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
-		countdown=${metadata[4]} # countdown
+		countdown=${metadata[4]/.*} # remove decimals
 	else 
 		if [[ $hiphop ]]; then
 			song=$( jq -r '.data.live.song // empty' <<< $json )

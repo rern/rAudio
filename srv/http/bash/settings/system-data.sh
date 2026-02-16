@@ -125,6 +125,7 @@ data+='
 , "list"           : { "storage": '$storage' }
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
+, "online"         : '$( ipOnline 8.8.8.8 && echo true )'
 , "rpi3plus"       : '$rpi3plus'
 , "shareddata"     : '$( sharedDataEnabled )'
 , "status"         : "'$status'"

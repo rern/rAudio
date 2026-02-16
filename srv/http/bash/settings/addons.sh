@@ -3,9 +3,8 @@
 . /srv/http/bash/common.sh
 
 if [[ $1 == kill ]]; then
-	file=$dirshm/script
-	[[ -e $file ]] && pkill $( < $file ) && rm $file
-	exit
+	script=$( getContent $dirshm/script )
+	[[ $script ]] && pkill $script && exit
 # --------------------------------------------------------------------
 fi
 

@@ -6,7 +6,7 @@ evalData() {
 	local cmd
 	cmd=$( grep '"'$1'"' <<< $addondata | cut -d'"' -f4 )
 	if [[ $1 == version ]]; then
-		[[ $( < $diraddons/$addon ) < $cmd ]] && return 0
+		[[ $( < $diraddons/$addon ) < $cmd ]] && return 0 # compare number as string: [[ 20260101 < 20260101-1 ]] is true
 	else
 		[[ $cmd && $( eval $cmd ) ]] && return 0
 	fi
