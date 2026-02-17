@@ -9,10 +9,10 @@ r A u d i o
 	- CubieBoard2
 - [Features](#features)
 - [Supported devices](#supported-devices)
-- [Image files](#image-files)
 - [How-to](#how-to)
 - [Tips](#tips)
 - [Q&A](#qa)
+- [Image files / DIY](#image-files-/-diy)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
@@ -82,14 +82,6 @@ r A u d i o
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (LEDs+Rs)
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
-
-### Image files
-- Raspberry Pi - (see [How-to](#how-to))
-- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
-- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
-- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
-  
-Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
 
 ### How-to
 - Write an image file to a micro SD card (4GB or more):
@@ -238,3 +230,11 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 
 ### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
+
+### Image files / DIY
+- Raspberry Pi - (see [How-to](#how-to))
+- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
+- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
+- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
+  
+Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
