@@ -103,19 +103,15 @@ r A u d i o
 						```
 	- Plugin SD card
 	- Run **Raspberry Pi Imager**:
-		- [ Device ] : » *`target device`* » `NEXT`
-		- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
-		- [ Storage ] :
-			- » *Target SD card*
-				- » *Target USB drive* for USB drive instead of SD card
-					- For Raspberry Pi 2B v1.2, 3, 4, 5
-					- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
-					- Should be used only when USB drive is faster than SD card.
-			- » `NEXT`
-		- [ Writing ] :
-			- » `WRITE`
-			- » `... ERASE AND WRITE`
+		- ` Device  ` : *`target device`* » `NEXT`
+		- ` OS      ` : *`rAudio`* » `NEXT`
+		- ` Storage ` : *`target SD card`* » `NEXT`
+		- ` Writing ` : » `WRITE` » `... ERASE AND WRITE`
 		- Once writing done, verifying is not normally necessary.
+    	- For USB drive instead of SD card - ` Storage ` : » *`target USB drive`*
+			- Not for Raspberry Pi Zero, 1, 2
+			- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
+			- Should be used only when USB drive is faster than SD card.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
