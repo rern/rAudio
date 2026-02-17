@@ -95,15 +95,20 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 - Write an image file to a micro SD card (4GB or more):
 	- **Raspberry Pi Imager**
 		- Install
-			- Windows:
-				- [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
+			- Windows: [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
 				- If any, delete desktop shortcut "Raspberry Pi Imager"
 				- » Right-click Desktop » `New` » `Shortcut`
-				- "Type the location ..." » `"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
-				- "Type a name ..." » `Raspberry Pi Imager`
+				- "Type the location ..." »
+					```
+					"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
+					```
+				- "Type a name ..." » `Raspberry Pi Imager` (any name) 
 			- Linux: `rpi-imager`
 				- Create a desktop shortcut
-				- Edit `~/Desktop/Raspberry Pi Imager.desktop` » `Exec="/usr/bin/rpi-imager" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+				- Edit `~/Desktop/Raspberry Pi Imager.desktop`:
+					```
+					Exec="/usr/bin/rpi-imager" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+					```
 	- Plugin SD card
 	- Run **Raspberry Pi Imager**:
 		- [ Device ] : » *`target device`* » `NEXT`
