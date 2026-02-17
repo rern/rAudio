@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260223
+file=/etc/ssh/sshd_config
+if grep -q '^PermitEmptyPasswords *yes' $file; then
+	sed -i 's/\(PermitEmptyPasswords \).*/#\1no/' $file
+	systemctl restart sshd
+fi
+
 # 20260212
 file=/etc/conf.d/devmon
 if grep -q remove $file; then
