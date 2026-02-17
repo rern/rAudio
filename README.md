@@ -93,12 +93,12 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 
 ### How-to
 - Write an image file to a micro SD card (4GB or more):
-	- Raspberry Pi Imager
+	- **Raspberry Pi Imager**
 		- Install
 			- Windows:
 				- [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
 				- If any, delete desktop shortcut "Raspberry Pi Imager"
-				- » Right-click Desktop » New » Shortcut
+				- » Right-click Desktop » `New` » `Shortcut`
 				- "Type the location ..." » `"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
 				- "Type a name ..." » `Raspberry Pi Imager`
 			- Linux: `rpi-imager`
