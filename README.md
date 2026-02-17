@@ -84,7 +84,7 @@ r A u d i o
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
 ### How-to
-- [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2041)
+- [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2042)
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
