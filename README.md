@@ -104,11 +104,11 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 					```
 				- "Type a name ..." » `Raspberry Pi Imager` (any name) 
 			- Linux: `rpi-imager`
-				- Create a desktop shortcut
-				- Edit `~/Desktop/Raspberry Pi Imager.desktop`:
-					```
-					Exec="/usr/bin/rpi-imager" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
-					```
+   				- Edit `/usr/share/applications/com.raspberrypi.rpi-imager.desktop`
+       				- Append line `Exec-...` »
+						```
+						 --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
+						```
 	- Plugin SD card
 	- Run **Raspberry Pi Imager**:
 		- [ Device ] : » *`target device`* » `NEXT`
