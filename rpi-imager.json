@@ -1,4 +1,98 @@
 {
+  "imager": {
+    "latest_version": "2.0.6",
+    "url": "https://www.raspberrypi.com/software/",
+    "devices": [
+      {
+        "name": "Raspberry Pi 5",
+        "tags": [
+          "pi5-64bit",
+          "pi5-32bit"
+        ],
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_5.png",
+        "description": "Raspberry Pi 5, 500 / 500+",
+        "matching_type": "exclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi 4",
+        "tags": [
+          "pi4-64bit",
+          "pi4-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_4.png",
+        "description": "Raspberry Pi 4 B, 400",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi 3",
+        "tags": [
+          "pi3-64bit",
+          "pi3-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_3.png",
+        "description": "Raspberry Pi 3 A+ / B / B+",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi 2",
+        "tags": [
+          "pi2-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_2.png",
+        "description": "Raspberry Pi 2 B",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi 1",
+        "tags": [
+          "pi1-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_1B+.png",
+        "description": "Raspberry Pi 1 A / A+ / B / B+",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi Zero 2 W",
+        "tags": [
+          "pi3-64bit",
+          "pi3-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_Zero_2_W.png",
+        "description": "Raspberry Pi Zero 2 W",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "Raspberry Pi Zero",
+        "tags": [
+          "pi1-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_Zero.png",
+        "description": "Raspberry Pi Zero, Zero W, and Zero WH",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
+        "name": "No filtering",
+        "tags": [],
+        "default": false,
+        "description": "Show every possible image",
+        "matching_type": "inclusive",
+        "capabilities": []
+      }
+    ]
+  },
   "os_list": [
     {
       "devices": [
@@ -9,26 +103,11 @@
       ],
       "name": "rAudio 64bit",
       "description": "For: RPi 5, 4, 3, 2 (BCM2837), Zero 2",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-64bit-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 3712319488,
-      "image_download_size": 822502160,
-      "image_download_sha256": "c6d9ab510db55487dbf3f44d5d5224eda6b677106a62a7c5e4957a69c57db49b",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
-      "website": "https://github.com/rern/rAudio"
-    },
-    {
-      "devices": [
-        "pi3-32bit",
-        "pi2-32bit"
-      ],
-      "name": "rAudio 32bit",
-      "description": "For: RPi 3, 2",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-32bit-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 3389227008,
-      "image_download_size": 828451356,
-      "image_download_sha256": "5c5571f67989cbc5e4e19932025db68272b629dd0d1468583bd7f518333a2142",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-64bit-20251109.img.xz",
+      "release_date": "2025-11-09",
+      "extract_size": 3657747456,
+      "image_download_size": 945766408,
+      "image_download_sha256": "412edc84a4fb59740dcefe2e233a90bb0cc9f1dd1b4ef4b599b39c57196e457c",
       "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
       "website": "https://github.com/rern/rAudio"
     },
@@ -39,13 +118,29 @@
       ],
       "name": "rAudio Legacy",
       "description": "For: RPi 1, Zero",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-Legacy-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 2925772800,
-      "image_download_size": 693017692,
-      "image_download_sha256": "f31fb528240213b6cb1735fc73aa70a2c1939297f35eb2bff6d46fb1783dcb4b",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi0-1-20251109.img.xz",
+      "release_date": "2025-11-09",
+      "extract_size": 2919235584,
+      "image_download_size": 690770980,
+      "image_download_sha256": "7ed5544702171c48718171b516312feb06d57cf8f734a6731c82653709f4057e",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "website": "https://github.com/rern/rAudio"
+    },
+    {
+      "devices": [
+        "pi3-32bit",
+        "pi2-32bit"
+      ],
+      "name": "rAudio 32bit",
+      "description": "For: RPi 3, 2",
+      "url": "https://github.com/rern/rAudio/releases/download/i20251109/rAudio-RPi2-20251109.img.xz",
+      "release_date": "2025-11-09",
+      "extract_size": 3370123264,
+      "image_download_size": 891174500,
+      "image_download_sha256": "f08699178399a6b7be89078f07211d7eb34ae7cf38f72ebbb516b67725ccdd83",
       "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
       "website": "https://github.com/rern/rAudio"
     }
   ]
 }
+
