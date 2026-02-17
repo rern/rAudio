@@ -12,7 +12,7 @@ r A u d i o
 - [How-to](#how-to)
 - [Tips](#tips)
 - [Q&A](#qa)
-- [Image files / DIY](#image-files-/-diy)
+- [Image files / DIY](#image-files--diy)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
