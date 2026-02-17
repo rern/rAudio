@@ -105,7 +105,7 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 				- "Type a name ..." » `Raspberry Pi Imager` (any name) 
 			- Linux: `rpi-imager`
    				- Edit `/usr/share/applications/com.raspberrypi.rpi-imager.desktop`
-       				- Append line `Exec-...` »
+       				- Append line `Exec-...` » *(1 leading space)*
 						```
 						 --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
 						```
