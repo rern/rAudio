@@ -84,34 +84,7 @@ r A u d i o
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
 ### How-to
-- Write an image file to a micro SD card (4GB or more):
-	- **Raspberry Pi Imager**
-		- Install
-			- Windows: [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
-				- If any, delete desktop shortcut "Raspberry Pi Imager"
-				- » Right-click Desktop » `New` » `Shortcut`
-				- "Type the location ..." » *(click `icon` on the right to copy)*
-					```
-					"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
-					```
-				- "Type a name ..." » `Raspberry Pi Imager` (any name) 
-			- Linux: `rpi-imager`
-   				- Edit `/usr/share/applications/com.raspberrypi.rpi-imager.desktop`
-       				- Append line `Exec-...` » *(click `icon` on the right to copy)*
-						```
-						 --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
-						```
-	- Plugin SD card
-	- Run **Raspberry Pi Imager**:
-		- ` Device  ` : *`target device`* » `NEXT`
-		- ` OS      ` : *`rAudio`* » `NEXT`
-		- ` Storage ` : *`target SD card`* » `NEXT`
-		- ` Writing ` : » `WRITE` » `... ERASE AND WRITE`
-		- Once writing done, verifying is not normally necessary.
-    	- For USB drive instead of SD card - ` Storage ` : » *`target USB drive`*
-			- Not for Raspberry Pi Zero, 1, 2
-			- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
-			- Should be used only when USB drive is faster than SD card.
+- [Write an image file to a micro SD card](https://github.com/rern/rAudio/discussions/2041)
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
