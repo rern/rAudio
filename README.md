@@ -98,14 +98,14 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 			- Windows: [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
 				- If any, delete desktop shortcut "Raspberry Pi Imager"
 				- » Right-click Desktop » `New` » `Shortcut`
-				- "Type the location ..." »
+				- "Type the location ..." » *(click `icon` on the right to copy)*
 					```
 					"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
 					```
 				- "Type a name ..." » `Raspberry Pi Imager` (any name) 
 			- Linux: `rpi-imager`
    				- Edit `/usr/share/applications/com.raspberrypi.rpi-imager.desktop`
-       				- Append line `Exec-...` » *(1 leading space)*
+       				- Append line `Exec-...` » *(click `icon` on the right to copy)*
 						```
 						 --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json
 						```
