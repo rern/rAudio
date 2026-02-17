@@ -93,17 +93,19 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 
 ### How-to
 - Write an image file to a micro SD card (4GB or more):
-	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Linux comand line:
-    		- Debian: `apt install rpi-imager`
-    		- Arch Linux: `pacman -Sy rpi-imager`
-	- **Raspberry Pi Imager:**
-   		- Plugin SD card
-		- » `APP OPTIONS`
-			- "Content Repository" » `EDIT`
-			- » `Use Custom URL`
-				- Copy » Paste: `https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
-				- » `APPLY & RESTART`
+	- Raspberry Pi Imager
+		- Install
+			- Windows:
+				- [Raspberry Pi Imager](https://downloads.raspberrypi.com/imager/imager_latest.exe)
+				- If any, delete desktop shortcut "Raspberry Pi Imager"
+				- » Right-click Desktop » New » Shortcut
+				- "Type the location ..." » `"C:\Program Files\Raspberry Pi Ltd\Imager\rpi-imager.exe" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+				- "Type a name ..." » `Raspberry Pi Imager`
+			- Linux: `rpi-imager`
+				- Create a desktop shortcut
+				- Edit `~/Desktop/Raspberry Pi Imager.desktop` » `Exec="/usr/bin/rpi-imager" --repo https://github.com/rern/rAudio/raw/refs/heads/main/rpi-imager.json`
+	- Plugin SD card
+	- Run **Raspberry Pi Imager**:
 		- [ Device ] : » *`target device`* » `NEXT`
 		- [ OS&emsp;&emsp;] : » *`rAudio`* » `NEXT`
 		- [ Storage ] :
@@ -113,10 +115,10 @@ Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAu
 					- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 					- Should be used only when USB drive is faster than SD card.
 			- » `NEXT`
-    	- [ Writing ] :
-     		- » `WRITE`
-        	- » `... ERASE AND WRITE`
-    	- Once writing done, verifying is not normally necessary.
+		- [ Writing ] :
+			- » `WRITE`
+			- » `... ERASE AND WRITE`
+		- Once writing done, verifying is not normally necessary.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
