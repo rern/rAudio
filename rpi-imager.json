@@ -14,7 +14,7 @@
       "extract_size": 3712319488,
       "image_download_size": 822502160,
       "image_download_sha256": "c6d9ab510db55487dbf3f44d5d5224eda6b677106a62a7c5e4957a69c57db49b",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon64bit.png",
       "website": "https://github.com/rern/rAudio"
     },
     {
@@ -29,7 +29,7 @@
       "extract_size": 3389227008,
       "image_download_size": 828451356,
       "image_download_sha256": "5c5571f67989cbc5e4e19932025db68272b629dd0d1468583bd7f518333a2142",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon32bit.png",
       "website": "https://github.com/rern/rAudio"
     },
     {
@@ -44,7 +44,7 @@
       "extract_size": 2925772800,
       "image_download_size": 693017692,
       "image_download_sha256": "f31fb528240213b6cb1735fc73aa70a2c1939297f35eb2bff6d46fb1783dcb4b",
-      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/icon.png",
+      "icon": "https://github.com/rern/rAudio/raw/refs/heads/main/srv/http/assets/img/iconLegacy.png",
       "website": "https://github.com/rern/rAudio"
     }
   ],
