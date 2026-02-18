@@ -88,6 +88,18 @@
         "capabilities": []
       },
       {
+        "name": "Raspberry Pi 2 - 1.2 / 1.3",
+        "tags": [
+          "pi3-64bit",
+          "pi2-32bit"
+        ],
+        "default": false,
+        "icon": "https://downloads.raspberrypi.com/imager/icons/RPi_2.png",
+        "description": "Raspberry Pi 2 B revision 1.2 / 1.3",
+        "matching_type": "inclusive",
+        "capabilities": []
+      },
+      {
         "name": "Raspberry Pi 2",
         "tags": [
           "pi2-32bit"
