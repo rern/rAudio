@@ -8,7 +8,7 @@
         "pi2-64bit"
       ],
       "name": "rAudio 64bit",
-      "description": "For: RPi 5, 4, 3, 2 (BCM2837), Zero 2",
+      "description": "For: RPi 5, 4, 3, 2 1.2/1.3, Zero 2",
       "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-64bit-20260216.img.xz",
       "release_date": "2026-02-16",
       "extract_size": 3712319488,
