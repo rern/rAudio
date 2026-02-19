@@ -152,19 +152,18 @@ var BIO       = {
 	}
 }
 var COLOR     = {
-	  cssSet   : () => {
-		var css = { '--h': V.ctx.hsl.h, '--s': V.ctx.hsl.s +'%' };
-		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( V.ctx.hsl.l + v - 35 ) +'%' } );
+	  cssSet   : hsl => {
+		if ( ! hsl ) hsl = V.ctx.hsl;
+		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
+		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
 	, hide     : () => {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
 		if ( V.color.page !== 'library' ) $( '#'+ V.color.page ).trigger( 'click' );
-		setTimeout( () => {
-			delete V.color;
-			delete V.ctx;
-		}, 300 );
+		delete V.color;
+		delete V.ctx;
 	}
 	, liActive : () => $( '#lib-list li' ).eq( 0 ).addClass( 'active' )
 	, pick     : {
