@@ -161,8 +161,10 @@ var COLOR     = {
 		$( '#colorpicker' ).addClass( 'hide' );
 		$( 'body' ).css( 'overflow', '' );
 		if ( V.color.page !== 'library' ) $( '#'+ V.color.page ).trigger( 'click' );
-		delete V.color;
-		delete V.ctx;
+		setTimeout( () => {
+			delete V.color;
+			delete V.ctx;
+		}, 300 );
 	}
 	, liActive : () => $( '#lib-list li' ).eq( 0 ).addClass( 'active' )
 	, pick     : {
