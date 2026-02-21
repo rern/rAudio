@@ -54,6 +54,8 @@ echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
-sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
+sed -i -e '/dabradio/ d
+' -e '1 a\ "dabradio"  : '$dabradio',
+' $dirmpd/counts
 pushData counts '{ "dabradio": '$dabradio' }'
 rm -f $dirshm/script
