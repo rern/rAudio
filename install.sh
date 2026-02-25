@@ -7,7 +7,7 @@ alias=r1
 # 20260228
 file=/etc/ssh/sshd_config
 if grep -q '^PermitEmptyPasswords *yes' $file; then
-	sed -i 's/\(PermitEmptyPasswords \).*/#\1no/' $file
+	sed -i -E 's/.*(PermitEmptyPasswords ).*/\1no/' $file
 	systemctl restart sshd
 fi
 
