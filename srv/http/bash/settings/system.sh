@@ -403,13 +403,13 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
-shareddatadisable )  # server rAudio / other server
+shareddatadisable ) # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	if ! grep -q "$dirnas " /etc/fstab; then # other server
 		fstab=$( grep -v $dirshareddata /etc/fstab )
-		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
+		readarray -t source < <( awk '{print $2}' $dirshareddata/source )
 		while read s; do
 			mp=${s//\040/ }
 			umount -l "$mp"

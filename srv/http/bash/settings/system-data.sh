@@ -81,7 +81,7 @@ else
 		soc='Allwinner A20'
 	fi
 	# cpu
-	readarray -t lscpu <<< $( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
+	readarray -t lscpu < <( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
 	cores=${lscpu[0]}
 	cpus=${lscpu[@]:1:2}
 	(( $cores > 1 )) && cpus+=" x $cores"

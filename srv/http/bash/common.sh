@@ -473,7 +473,7 @@ pushWebsocket() { # send to remote websocket.py (server)
 	data=$@
 	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
 		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+		websocat -B 10485760 ws://$ip:8080 < <( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
 }
 quoteEscape() {
@@ -550,7 +550,7 @@ sharedDataLink() {
 	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 # --------------------------------------------------------------------
-	readarray -t source <<< $( < $dirshareddata/source )
+	readarray -t source < $dirshareddata/source
 	while read s; do
 		ip_share=${s/ *}
 		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then

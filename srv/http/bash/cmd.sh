@@ -573,7 +573,7 @@ mpcshuffle )
 	pushPlaylist
 	;;
 mpcsimilar )
-	readarray -t lines <<< $( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
+	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
 	artist=${lines[0]}
 	title=${lines[1]}
 	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )

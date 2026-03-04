@@ -85,7 +85,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; p}' <<< $data )
 			artist=${artist_album/ \/ *}
 			album=${artist_album/* \/ }
-			readarray -t titles <<< $( grep -v ^D <<< $data | cut -d= -f2 )
+			readarray -t titles < <( grep -v ^D <<< $data | cut -d= -f2 )
 			cdData
 		fi
 	fi
@@ -95,7 +95,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
 	if [[ ! $cdinfo ]]; then
 		notify audiocd 'Audio CD' 'CD data not found.'
 	else
-		readarray -t msf <<< $( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
+		readarray -t msf < <( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
 									| grep ^[0-9] \
 									| sed -E 's/:0/:/g; s/^0//; s/:/ /g' ) # mm:ss:fr
 # Disc mode is listed as: CD-DA
