@@ -117,49 +117,22 @@ camillaDSPstart() {
 	fi
 }
 conf2json() {
-	local file json k keys only l lines v
-	[[ $1 == '-nocap' ]] && nocap=1 && shift
-	file=$1
-	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
-	[[ ! -e $file ]] && echo false && return
-# --------------------------------------------------------------------
-	# omit lines  blank, comment / group [xxx]
-	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
-	[[ ! $lines ]] && echo false && return
-# --------------------------------------------------------------------
-	if [[ $2 ]]; then # $2 - specific keys
-		shift
-		keys=$@
-		only="^\s*${keys// /|^\\s*}"
-		lines=$( grep -E "$only" <<< $lines )
-	fi
-	[[ ! $lines ]] && echo false && return
-# --------------------------------------------------------------------
-	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
-	while read line; do
-		k=${line/=*}
-		v=${line/*=}
-		if [[ ${v/\"\"} ]]; then # omit v=""
-			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-						-e 's/^True$|^yes$/true/
-							s/^False$|^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
-		else
-			v=false
-		fi
-		[[ ! $nocap ]] && k=${k^^}
-		json+=', "'$k'": '$v
-	done <<< $lines
-	echo { ${json:1} }
-}
-confNotString() {
-	local array boolean number string var
-	var=$1
-	[[ $var =~ ^true$|^false$ ]]                          && boolean=1
-	[[ $var != 0 && ${var:0:1} == 0 && ${var:1:1} != . ]] && string=1  # not 0 and not 0.123
-	[[ $var =~ ^-*[0-9]*\.*[0-9]*$ ]]                     && number=1  # 0 / 123 / -123 / 0.123 / .123
-	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
-	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
+	jq -Rn '[ 
+			inputs
+				| split("=")
+				| select(length >= 2)
+				| { key: .[0], value: (
+						.[1:] | join("=")
+						| gsub("^[\u0027\"]|[\u0027\"]$"; "")
+						| if . == "true" or . == "false" then (. == "true")
+						  elif . == "" then false
+						  elif test("^-?[0-9]+$") then tonumber
+						  end
+					)
+				} 
+		]
+			| from_entries
+	' "$1"
 }
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
@@ -211,20 +184,23 @@ data2json() {
 {
   $page$1
 }"
-	json=$( data2jsonPatch "$json" ) # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	json=$( data2jsonPatch "$json" )
 	if [[ $2 ]]; then
 		pushData refresh "$json"
 	else
 		echo "$json"
 	fi
 }
-data2jsonPatch() { # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	sed 's/:\s*$/: false/
-		s/:\s*}$/: false }/
-		s/^,\s*$/, false/
-		s/\[\s*,/[ false,/g
-		s/,\s*,/, false,/g
-		s/,\s*]/, false ]/g' <<< $1
+data2jsonPatch() {
+	sed '
+		s/:\s*$/: false/;    # "k": \n    > "k": false
+		s/:\s*}$/: false }/; # "k": }\n   > "k": false }
+		s/{\s*,/{ /;         # { , ...    > { ...
+		s/^,\s*$/, false/;   # , \n       > , false
+		s/\[\s*,/[ false,/g; # [ ,        > [ false,
+		s/,\s*,/, false,/g;  # ..., , ... > , false,
+		s/,\s*]/, false ]/g  # ..., ]     > , false ]
+	' <<< $1
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
@@ -353,15 +329,15 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ifconfig | awk '/inet / {print $2}' | grep -v 127.0.0.1 | head -1
+	ip route get 1.1.1.1 | head -1 | awk '{print $7}'
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() {
-	local regex
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
-	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
+	local pattern
+	pattern='to_entries[] | "\(.key)=\(.value | @sh)"'
+	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
 }
 killProcess() {
 	local filepid
