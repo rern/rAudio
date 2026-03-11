@@ -89,8 +89,6 @@ r A u d i o
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
   
-Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
-
 ### How-to
 - Write an image file to a micro SD card (8GB or more):
 	- Install:
