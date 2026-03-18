@@ -12,10 +12,25 @@ if [[ -e /boot/expand ]]; then # run once
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	if [[ -e /boot/swap ]]; then
+		start_end=$( parted /dev/mmcblk0 unit GB print \
+					| awk '/^Disk \// {
+							size = $NF
+							sub( "GB", "", size )
+							print size - 5 "GB " size "GB"
+						}'
+		)
+		parted -s $dev mkpart primary linux-swap $start_end
+		part_swap=${partition/2/3}
+		mkswap $part_swap
+		swapon $part_swap
+		echo "$part_swap  none   swap  sw  0  0" >> /etc/fstab
+	fi
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+		parted -s $dev resizepart 2 100%
 		partprobe $dev
+		sleep 1
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
