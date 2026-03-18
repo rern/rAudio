@@ -329,7 +329,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip route get 1.1.1.1 | head -1 | awk '{print $7}'
+	ip route get 1.1.1.1 | grep -oP 'src \K\S+'
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
