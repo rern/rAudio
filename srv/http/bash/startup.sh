@@ -13,43 +13,10 @@ if [[ -e /boot/expand ]]; then # run once
 	mv /var/log/journal/{$id0,$id1}
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
-	if [[ -e /boot/swap ]]; then
-		gb_end=$( parted $dev unit GB print \
-					| awk '/^Disk \// {
-							size = $NF
-							sub( "GB", "", size )
-							print size - 5 "GB"
-						}'
-		)
-		parted -s $dev mkpart primary linux-swap $start_end
-			part_swap=${partition/2/3}
-			mkswap $part_swap
-			swapon $part_swap
-			echo "$part_swap  none   swap  sw  0  0" >> /etc/fstab
-	fi
-	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
-		if [[ -e /boot/swap ]]; then
-			swap=1
-			sector_last=$( parted $dev unit s print | awk '/^Disk \// {print $NF}' )
-			s_last=$(( ${sector_last:0:-1} / 2048 * 2048 )) # align to 2048 sector/MB
-			s_swap_start=$(( s_last - ( 4000 * 2048 ) ))    # 4GB from last
-			s_root_end=$(( s_swap_start - 1 ))s             # 
-			s_swap_start+=s
-		else
-			s_root_end=100%
-		fi
-		parted -s $dev resizepart 2 $s_root_end
+	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
+		parted -s $dev resizepart 2 100%
 		partprobe $dev
-		sleep 1
 		resize2fs $partition
-		if [[ $swap ]]; then
-			parted -s $dev mkpart primary linux-swap $s_swap_start -- -1s
-			partprobe $dev
-			part_swap=${partition/2/3}
-			mkswap $part_swap
-			swapon $part_swap
-			echo "$part_swap  none   swap  sw  0  0" >> /etc/fstab
-		fi
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
 	[[ ${revision: -3:2} == 12 ]] && localBrowserOff
@@ -61,8 +28,8 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-if [[ -e /boot/nolocalbrowser ]]; then
-	rm /boot/nolocalbrowser
+if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
+	rm /boot/*localbrowser*
 	localBrowserOff
 fi
 
