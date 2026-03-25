@@ -19,7 +19,10 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	[[ ${revision: -3:2} == 12 ]] && localBrowserOff
+	BB=${revision: -3:2}
+	[[ $BB == 12 ]] && localBrowserOff
+	[[ $BB != 03 || $BB = 04 ]] && sed -i '/max_usb_current/ d' /boot/config.txt
+	[[ $BB != 17 ]] && sed -i '/usb_max_current_enable/ d' /boot/config.txt
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
