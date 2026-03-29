@@ -34,13 +34,13 @@ getinstallzip() {
 	echo "$filelist"
 	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
 	if [[ $uninstallfile ]]; then
-		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
+		bsdtar xf $installfile --strip-components=1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
 	tmpdir=/tmp/install
 	rm -rf $tmpdir
 	mkdir -p $tmpdir
-	bsdtar xf $installfile --strip 1 -C $tmpdir
+	bsdtar xf $installfile --strip-components=1 -C $tmpdir
 	rm $installfile $tmpdir/{.*,*} &> /dev/null
 	cp -r $tmpdir/* /
 	rm -rf $tmpdir
