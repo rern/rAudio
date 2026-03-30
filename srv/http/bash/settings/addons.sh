@@ -41,7 +41,8 @@ getinstallzip() {
 	rm -rf $tmpdir
 	mkdir -p $tmpdir
 	bsdtar xf $installfile --strip-components=1 -C $tmpdir
-	rm $installfile $tmpdir/{.*,*} &> /dev/null
+	find $tmpdir -maxdepth 1 -type f -delete
+	rm $installfile
 	cp -r $tmpdir/* /
 	rm -rf $tmpdir
 }
