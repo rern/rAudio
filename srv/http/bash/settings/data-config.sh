@@ -308,7 +308,16 @@ templimit )
 	echo '{ "DEGREE": '$degree' }'
 	;;
 timezonelist )
-	cat /srv/http/assets/data/timezone.json
+	list=$( timedatectl list-timezones \
+			| perl -MPOSIX -lne '
+				$ENV{TZ} = $_;
+				$o = strftime("%z", localtime);
+				$display = $_;
+				$display =~ s/\// - /g;
+				$off = substr($o,0,3).":".substr($o,3,2);
+				print ",\"$display ($off)\": \"$_\""
+			' )
+	echo '{ "(Auto)": "auto"'$list' }'
 	;;
 vuled )
 	file=$dirsystem/vuled.conf
@@ -319,12 +328,25 @@ vuled )
 }'
 	;;
 wlan )
+	file=/tmp/regdom.json
+	if [[ -e $file ]]; then
+		list=$( < $file )
+	else
+		codes=$( curl -sL https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt \
+				| awk '/^country/ { printf "|" substr($2, 1, 2)}' )
+		country_code=$( jq '.["3166-1"]
+								| map({(.name): .alpha_2})
+								| add
+							' /usr/share/iso-codes/json/iso_3166-1.json \
+								| grep -E "${codes:1}" )
+		list=$( jq -S <<< '{ "00 (worldwide)": "00", '${country_code%,*}'}' | tee $file )
+	fi
 	echo '{
 	  "values" : {
-	  "REGDOM" : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
+	  "REGDOM" : "'$( iw reg get | awk '/^country/ {print substr($2, 1, 2)}' )'"
 	, "APAUTO" : '$( [[ ! -e $dirsystem/wlannoap ]] && echo true || echo false )'
 	}
-	, "list"   : '$( cat /srv/http/assets/data/regdomcodes.json )'
+	, "list"   : '$list'
 }'
 	;;
 wlanprofile )
