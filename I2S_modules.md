@@ -10,10 +10,10 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - Allo DigiOne
 - Allo DigiOne Signature
 - Allo Katana DAC
+- Allo Piano DAC
 - Allo Piano 2.0 DAC
 - Allo Piano 2.1 DAC
 - Allo Piano 2.1 DAC (with Kali Reclocker)
-- Allo Piano DAC
 - Aoide DAC II
 - Apple Pi DAC
 - Audioinjector Addons
@@ -23,13 +23,16 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - Audioinjector WM8731
 - Audioinjector Zero
 - Audiophonics Evo-Sabre DAC 2xES9038Q2M
-- Audiophonics I-Sabre DAC ES9023
 - Audiophonics I-Sabre AMP DAC ES9023
+- Audiophonics I-Sabre DAC ES9023
 - Audiophonics I-Sabre DAC ES9028Q2M
 - Audiophonics I-Sabre DAC ES9038Q2M
 - AudioSense-Pi
 - BerryNOS
+- Blokas Labs Pisound Micro
+- Blokas Labs Pisound
 - ChipDip DAC
+- DacBerry 400
 - DACBerry AMP2
 - DACBerry One+ - RCA
 - DACBerry One+ - Digital
@@ -38,10 +41,12 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - DACBerry RDY+ - RCA
 - DACBerry RDY+ - Digital
 - Digital Dreamtime Akkordion
+- Dion Audio Kiwi Streamer
 - Dion Audio Loco DAC-AMP
 - Dion Audio Loco V2 DAC-AMP
 - Fe-Pi Audio
 - Generic AKM AK4xxx (i2s-dac/rpi-dac)
+- Generic AKM AK4xxx (i2s-master-dac)
 - Generic AKM AK4xxx (hifiberry-dac)
 - Generic Burr-Brown PCM1794
 - Generic Burr-Brown PCM510x
@@ -49,30 +54,41 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - Generic Cirrus Logic WM5102
 - Generic ESS ES90xx
 - Generic RPi-DAC compatible
+- Google voiceHAT
+- HifiBerry ADC
+- HifiBerry ADC8X (only on Pi5)
 - HiFiBerry Amp
 - HiFiBerry Amp+
 - HiFiBerry Amp100
 - HiFiBerry Amp2
 - HiFiBerry Amp3
+- HifiBerry Amp4 Pro
 - HiFiBerry DAC
 - HiFiBerry DAC+
 - HiFiBerry DAC+ HD
 - HiFiBerry DAC+ Lite
 - HiFiBerry DAC+ Pro
+- HifiBerry DAC+ Pro (onboard clocks)
 - HiFiBerry DAC+ Pro XLR
 - HiFiBerry DAC+ RTC
+- HifiBerry DAC+ Standard (no onboard clocks)
 - HiFiBerry DAC+ Zero
 - HiFiBerry DAC+ADC
 - HiFiBerry DAC+ADC Pro
 - HiFiBerry DAC+DSP
 - HiFiBerry DAC2 Pro
+- HifiBerry DAC8X (only on Pi5)
 - HiFiBerry Digi
 - HiFiBerry Digi Pro
 - HiFiBerry Digi+
 - HiFiBerry Digi+ Pro
 - HiFiBerry Digi2 Pro
+- HifiBerry Studio DAC8x PRO
+- HifiBerry Studio DAC8x
 - HiFiBox DAC
 - InnoMaker HiFi DAC
+- Interlude Audio Analog
+- Interlude Audio Digital
 - IQaudIO Amp
 - IQaudIO Amp (with auto mute)
 - IQaudIO Amp (with unmute)
@@ -94,15 +110,19 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - JustBoom DAC HAT
 - JustBoom DAC Zero
 - JustBoom Digi
+- JustBoom Digi Zero
 - Mamboberry HD DAC+
 - Mamboberry Precision DAC+
 - Maxim MAX98357A
+- Mbed Audio Codec
 - MERUS Audio Amp
 - NanoSound HiFi DAC Pro
+- Orchard Audio ApplePi-DAC
 - PecanPi DAC
 - PI 2 Design 502DAC
 - PI 2 Design 502DAC Pro
 - PI 2 Design 503HTA Hybrid Tube Amp
+- PiBell
 - Picade HAT
 - PiFi DAC+
 - PiFi DAC HD
@@ -110,7 +130,7 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - PiFi Digi+
 - Pimoroni pHAT DAC
 - Pimoroni Audio DAC SHIM
-- Blokas Labs Pisound
+- Proto Audio Codec
 - Raspberry Pi Codec Zero
 - Raspberry Pi DAC+
 - Raspberry Pi DAC Pro
@@ -125,6 +145,7 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.j
 - SupTronics X400
 - SupTronics X4000K
 - Terra-Berry DAC 2
+- uGreen DABBoard
 - Waveshare WM8960
 - Wolfson Audio
 - X10 DAC
