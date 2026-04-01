@@ -9,10 +9,10 @@ r A u d i o
 	- CubieBoard2
 - [Features](#features)
 - [Supported devices](#supported-devices)
-- [Image files](#image-files)
 - [How-to](#how-to)
 - [Tips](#tips)
 - [Q&A](#qa)
+- [Image files / DIY](#image-files--diy)
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
@@ -90,33 +90,7 @@ r A u d i o
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
   
 ### How-to
-- Write an image file to a micro SD card (8GB or more):
-	- Install:
-		- [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Linux comand line:
-    		- `apt install rpi-imager`
-    		- `pacman -Sy rpi-imager`
-			- [`make install`](https://github.com/raspberrypi/rpi-imager)
-	- Download an [image file](#image-files)
-	- **Raspberry Pi Imager:**
-		- Device - (No need)
-		- OS:
-    		- Select "Use custom" (bottom of the list)
-        	- Select the image file
-           	- `NEXT`
-		- Storage:
-			- Select target SD card - normal
-			- Select target USB drive - boot from USB drive without SD card
-				- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
-				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
-				- Should be used only when USB drive is faster than SD card.
-			- `NEXT`
-    	- Writing:
-        	- `... ERASE AND WRITE`
-    	- On Windows - To ensure filesystem set properly:
-       		- `CANCEL WRITE` when reach at least 2% on 1st write.
-           	- Continue with `NEXT` again and let the writing finish.
-		- Once writing done, verifying is not normally needed.
+- [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2042)
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
@@ -231,3 +205,11 @@ r A u d i o
 
 ### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
+
+### Image files / DIY
+- Raspberry Pi - (see [How-to](#how-to))
+- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
+- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
+- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
+  
+Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
