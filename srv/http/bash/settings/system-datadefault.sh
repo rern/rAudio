@@ -13,7 +13,6 @@ dirs=$( ls $dirdata )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
-[[ $1 ]] && echo $1 > $diraddons/r1
 
 # camilladsp
 [[ ! -e /usr/bin/camilladsp ]] && rm -rf $dircamilladsp
@@ -53,19 +52,9 @@ sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
 # system
 hostnamectl set-hostname rAudio
 sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
-sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 rm -f /root/.bash_history
 
-# webradio
-curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
 dirPermissions
-if [[ $1 ]]; then
-	echo '{
-  "playlists" : 0
-, "webradio"  : 4
-}' > $dirmpd/counts
-elif systemctl -q is-active mpd; then
-	$dirbash/cmd-list.sh
-fi
+$dirbash/cmd-list.sh
