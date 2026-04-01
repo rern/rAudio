@@ -57,4 +57,4 @@ usermod -a -G root http # add user http to group root to allow /dev/gpiomem acce
 rm -f /root/.bash_history
 
 dirPermissions
-$dirbash/cmd-list.sh
+systemctl -q is-active mpd && $dirbash/cmd-list.sh
