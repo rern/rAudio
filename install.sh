@@ -5,8 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260401
-if ! grep -q '^#W' /etc/conf.d/wireless-regdom; then
-	curl -sLO https://github.com/rern/rAudio/raw/refs/heads/main/wireless-regdom --output-dir /etc/conf.d
+file=/etc/conf.d/wireless-regdom
+if ! grep -q '^#W' $file; then
+	current=$( < $file )
+	curl -sL https://github.com/rern/rAudio/raw/refs/heads/main/wireless-regdom -o $file
+	echo $current >> $file
 fi
 
 file=/etc/ssh/sshd_config
