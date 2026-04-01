@@ -1510,16 +1510,17 @@ var PLAYBACK  = {
 			}
 		}
 		
+		var progress = PROGRESS.visible();
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
-				if ( V.localhost ) {
-					PROGRESS.arc( S.elapsed / S.Time );
-					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
-				}
 				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
 				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
+				if ( V.localhost ) {
+					var l = S.elapsed / S.Time;
+					progress ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', ( l * 100 ) +'%' );
+				}
 			} else {
 				S.elapsed = 0;
 				UTIL.intervalClear();
@@ -2220,7 +2221,11 @@ var PLAYLIST  = {
 	}
 }
 var PROGRESS  = {
-	  arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
+	  animate : ( s, l ) => {
+		$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
+		PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', ( l * 100 ) +'%' );
+	}
+	, arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
 	, bar     : e => {
 		var ratio      = UTIL.xy.ratio( e, 'time' );
 		S.elapsed      = Math.round( ratio * S.Time );
@@ -2251,24 +2256,14 @@ var PROGRESS  = {
 	, set     : elapsed => { // if defined - no animate
 		if ( elapsed === undefined || ( ! D.time && ! D.cover ) ) return
 		
-		if ( S.state === 'stop' || ! S.elapsed ) {
-			elapsed = 0;
+		if ( S.state === 'stop' || ! S.elapsed || ! S.Time ) {
 			UTIL.intervalClear( 'elapsed' );
+			PROGRESS.animate( 0, 0 );
+			return
 		}
-		var s = 0;
-		var l = S.Time ? elapsed / S.Time : 0;
-		var w = l * 100;
-		if ( V.localhost ) { // no animation - fix high cpu load
-			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
-			PROGRESS.arc( l );
-			$( '#time-bar' ).css( 'width', w +'%' );
-		} else {
-			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
-			PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
-		}
-		if ( ! V.pageactive ) return
 		
-		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
+		PROGRESS.animate( 0, elapsed / S.Time );
+		if ( V.pageactive && S.state === 'play' && ! V.localhost ) PROGRESS.animate( S.Time - S.elapsed, 1 );
 	}
 	, visible : () => $( '#time-knob' ).css( 'display' ) !== 'none' // both .hide and css show/hide
 }

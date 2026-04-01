@@ -15,7 +15,7 @@ for dir in $dirs; do
 done
 
 # camilladsp
-[[ ! -e /usr/bin/camilladsp ]] && rm -rf $dircamilladsp
+[[ ! -e /bin/camilladsp ]] && rm -rf $dircamilladsp
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
@@ -33,7 +33,7 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
-if [[ -e /usr/bin/firefox ]]; then
+if [[ -e /bin/firefox ]]; then
 	timeout 1 firefox --headless &> /dev/null
 	echo "\
 rotate=0
@@ -47,7 +47,7 @@ fi
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
 
 # snapclient
-[[ -e /usr/bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
+[[ -e /bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
 
 # system
 hostnamectl set-hostname rAudio
