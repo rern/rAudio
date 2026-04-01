@@ -8,7 +8,7 @@ alias=r1
 file=/etc/conf.d/wireless-regdom
 if ! grep -q '^#W' $file; then
 	current=$( < $file )
-	curl -sL https://github.com/rern/rAudio/raw/refs/heads/main/wireless-regdom -o $file
+	curl -sL https://raw.githubusercontent.com/rern/rAudio/main/wireless-regdom -o $file
 	echo $current >> $file
 fi
 
