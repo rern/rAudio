@@ -12,14 +12,17 @@ if [[ -e /boot/expand ]]; then # run once
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
-	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
+		parted -s $dev resizepart 2 100%
 		partprobe $dev
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	[[ ${revision: -3:2} == 12 ]] && localBrowserOff
+	BB=${revision: -3:2}
+	[[ $BB == 12 ]] && localBrowserOff
+	[[ $BB != 03 || $BB = 04 ]] && sed -i '/max_usb_current/ d' /boot/config.txt
+	[[ $BB != 17 ]] && sed -i '/usb_max_current_enable/ d' /boot/config.txt
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
@@ -28,8 +31,8 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-if [[ -e /boot/nolocalbrowser ]]; then
-	rm /boot/nolocalbrowser
+if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
+	rm /boot/*localbrowser*
 	localBrowserOff
 fi
 

@@ -152,9 +152,10 @@ var BIO       = {
 	}
 }
 var COLOR     = {
-	  cssSet   : () => {
-		var css = { '--h': V.ctx.hsl.h, '--s': V.ctx.hsl.s +'%' };
-		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( V.ctx.hsl.l + v - 35 ) +'%' } );
+	  cssSet   : hsl => {
+		if ( ! hsl ) hsl = V.ctx.hsl;
+		var css = { '--h': hsl.h, '--s': hsl.s +'%' };
+		V.color.ml.forEach( v => { css[ '--ml'+ v ] = ( hsl.l + v - 35 ) +'%' } );
 		$( ':root' ).css( css );
 	}
 	, hide     : () => {

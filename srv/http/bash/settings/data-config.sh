@@ -308,7 +308,16 @@ templimit )
 	echo '{ "DEGREE": '$degree' }'
 	;;
 timezonelist )
-	cat /srv/http/assets/data/timezone.json
+	list=$( timedatectl list-timezones \
+			| perl -MPOSIX -lne '
+				$ENV{TZ} = $_;
+				$o = strftime("%z", localtime);
+				$display = $_;
+				$display =~ s/\// - /g;
+				$off = substr($o,0,3).":".substr($o,3,2);
+				print ",\"$display ($off)\": \"$_\""
+			' )
+	echo '{ "(Auto)": "auto"'$list' }'
 	;;
 vuled )
 	file=$dirsystem/vuled.conf
@@ -319,12 +328,24 @@ vuled )
 }'
 	;;
 wlan )
+	codes=$( curl -sL https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt \
+			| awk '/^country/ { printf "|" substr($2, 1, 2)}' ) # latest from source
+	[[ ! $codes ]] && codes=$( sed -nE '/^#W/ {s/.*="(.*)"/|\1/; p}' /etc/conf.d/wireless-regdom | tr -d '\n' )
+	country_code=$( jq '.["3166-1"]
+							| map({(.name): .alpha_2})
+							| add
+						' /usr/share/iso-codes/json/iso_3166-1.json \
+							| grep -E "${codes:1}" )
+	list=$( jq -S <<< '{ "00 (worldwide)": "00", '${country_code%,*}'}' )
+	current=$( iw reg get | grep -A1 '^phy#' | grep ^country ) # phy#0 (self-managed) \n country ...
+	[[ ! $current ]] && current=$( iw reg get | grep -m1 ^country )
+	current=${current:-00} # [[ ! $current ]] && current=00
 	echo '{
 	  "values" : {
-	  "REGDOM" : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
+	  "REGDOM" : "'$current'"
 	, "APAUTO" : '$( [[ ! -e $dirsystem/wlannoap ]] && echo true || echo false )'
 	}
-	, "list"   : '$( cat /srv/http/assets/data/regdomcodes.json )'
+	, "list"   : '$list'
 }'
 	;;
 wlanprofile )

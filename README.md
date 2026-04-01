@@ -83,6 +83,12 @@ r A u d i o
 	- VU LED (LEDs+Rs)
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
+### Image files
+- Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
+- DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
+- BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
+- CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
+  
 ### How-to
 - [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2042)
 - Existing users:
@@ -112,12 +118,12 @@ r A u d i o
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy rAudio backup file to `BOOT`
 			- Use only backup made from rAudio with the latest update
-		- Expand `root` partition:
-			- By default, `root` partition will be expanded on initial boot.
-			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-	- `/BOOT/nolocalbrowser` No display / monitor:
-		- Create a blank file `nolocalbrowser` in `BOOT`
-		- (or disable `Browser` in Settings > Features after boot)
+	- `/BOOT/expand` Expand `root` partition:
+		- By default, `root` partition will be expanded on initial boot.
+		- SD card backup with shrunken `root` partition:
+			- Create a blank file `expand` in `BOOT` before backup
+	- `/BOOT/localbrowseroff` No display / monitor or or disable `Browser`:
+		- Create a blank file `localbrowseroff` in `BOOT`
 	- Display / Monitor: (optional - Local browser enabled by default)
 		- Connect before boot to ensure proper detection
 		- HDMI display on RPi 4 and 5 - Use `HDMI0` port

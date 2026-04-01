@@ -231,7 +231,7 @@ if [[ $fileheader == cdda ]]; then
 	if [[ -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
-		readarray -t disciddata <<< $( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
+		readarray -t disciddata < <( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${disciddata[0]}
 		Album=${disciddata[1]}
 		Title=${disciddata[2]}
@@ -322,7 +322,7 @@ elif [[ $stream ]]; then
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title'
-					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
+					readarray -t radioname < <( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
 					! grep -q "$Title" /srv/http/assets/data/titles_with_paren && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )

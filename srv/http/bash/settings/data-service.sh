@@ -11,7 +11,7 @@ configText() {
 	local config l lines linesL next
 	config="\
 <code>$( pacman -Q $PKG )</code>"
-	readarray -t lines <<< $( grep -Ev '^#|=$|^$' $1 | awk NF )
+	readarray -t lines < <( grep -Ev '^#|=$|^$' $1 | awk NF )
 	[[ ! $lines ]] && echo $config && return
 	
 	config+="

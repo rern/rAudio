@@ -4,6 +4,20 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260401
+file=/etc/conf.d/wireless-regdom
+if ! grep -q '^#W' $file; then
+	current=$( < $file )
+	curl -sL https://raw.githubusercontent.com/rern/rAudio/main/wireless-regdom -o $file
+	echo $current >> $file
+fi
+
+file=/etc/ssh/sshd_config
+if grep -q '^PermitEmptyPasswords *yes' $file; then
+	sed -i -E 's/.*(PermitEmptyPasswords ).*/\1no/' $file
+	systemctl restart sshd
+fi
+
 # 20260212
 file=/etc/conf.d/devmon
 if grep -q remove $file; then

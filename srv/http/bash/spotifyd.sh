@@ -45,7 +45,7 @@ else
 	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
 # data
-readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
+readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
 							-H "Authorization: Bearer $token" \
 							| jq '.item.album.name,
 								.item.artists[0].name,

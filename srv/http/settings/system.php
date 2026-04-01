@@ -135,8 +135,9 @@ $B->gear
 Country of Wi-Fi regulatory domain:
 <c>00</c> Least common denominator settings
 	· Channels and transmit power permitted in all countries.
-	· The connected router may override it to a certain country.
 ■ Auto start Access Point - On failed connection or no router
+
+Not applicable: Devices which have it hardcoded into EEPROM.
 EOF
 	]
 ];
