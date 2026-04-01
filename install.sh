@@ -4,7 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260228
+# 20260401
+if ! grep -q '^#W' /etc/conf.d/wireless-regdom; then
+	curl -sLO https://github.com/rern/rAudio/raw/refs/heads/main/wireless-regdom --output-dir /etc/conf.d
+fi
+
 file=/etc/ssh/sshd_config
 if grep -q '^PermitEmptyPasswords *yes' $file; then
 	sed -i -E 's/.*(PermitEmptyPasswords ).*/\1no/' $file
