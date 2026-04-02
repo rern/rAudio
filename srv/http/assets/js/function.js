@@ -1513,10 +1513,8 @@ var PLAYBACK  = {
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
-				if ( V.localhost ) {
-					PROGRESS.arc( S.elapsed / S.Time );
-					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
-				}
+				PROGRESS.arc( S.elapsed / S.Time );
+				if ( V.localhost ) $( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
 				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
