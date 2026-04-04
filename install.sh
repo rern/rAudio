@@ -5,9 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260404
-file=/etc/systemd/system/nfs-server.service.d/override.conf
-if [[ -e /bin/nfsdctl && ! -e $file ]]; then
-	cat << EOF > $file
+dir=/etc/systemd/system/nfs-server.service.d
+if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
+	mkdir -p $dir
+	cat << EOF > $dir/override.conf
 [Service]
 ExecStart=
 ExecStopPost=
