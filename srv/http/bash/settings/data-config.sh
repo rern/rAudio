@@ -308,16 +308,7 @@ templimit )
 	echo '{ "DEGREE": '$degree' }'
 	;;
 timezonelist )
-	list=$( timedatectl list-timezones \
-			| perl -MPOSIX -lne '
-				$ENV{TZ} = $_;
-				$o = strftime("%z", localtime);
-				$display = $_;
-				$display =~ s/\// - /g;
-				$off = substr($o,0,3).":".substr($o,3,2);
-				print ",\"$display ($off)\": \"$_\""
-			' )
-	echo '{ "(Auto)": "auto"'$list' }'
+	cat /srv/http/assets/data/timezone.json
 	;;
 vuled )
 	file=$dirsystem/vuled.conf
@@ -389,5 +380,5 @@ wlanprofile )
 		esac
 	fi
 	;;
-	
+
 esac
