@@ -44,7 +44,7 @@ cursor=" > $dirsystem/localbrowser.conf
 fi
 
 # mirror
-sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
+curl -sL https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/pacman-mirrorlist/mirrorlist -o /etc/pacman.d/mirrorlist
 
 # snapclient
 [[ -e /bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
