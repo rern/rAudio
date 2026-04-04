@@ -24,7 +24,7 @@ data+='
 }
 , "mixers"      : '$( getContent $dirshm/mixers )'
 , "mixertype"   : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
-, "output"      : '$( conf2json -nocap $dirshm/output )'
+, "output"      : '$( conf2json $dirshm/output )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( mpcState )'"
