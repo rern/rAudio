@@ -1502,7 +1502,11 @@ var PLAYBACK  = {
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
-			 PROGRESS.set( S.elapsed );
+			 PROGRESS.set();
+			if ( ! V.localhost ) {
+				V.progress = { l: 1, s: S.Time - S.elapsed }
+				setTimeout( PROGRESS.animate, 300 );
+			}
 		} else { // elapsed only
 			if ( ! D.radioelapsed ) {
 				$elapsed.html( V.blinkdot );
@@ -1513,11 +1517,10 @@ var PLAYBACK  = {
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			if ( ! S.Time || S.elapsed < S.Time ) {
-				PROGRESS.arc( S.elapsed / S.Time );
-				if ( V.localhost ) $( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
 				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
+				if ( V.localhost ) PROGRESS.set(); // avoid high cpu load - firefox on rpi
 			} else {
 				S.elapsed = 0;
 				UTIL.intervalClear();
@@ -1612,7 +1615,7 @@ var PLAYBACK  = {
 		if ( S.state === 'pause' ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			PROGRESS.set( S.elapsed );
+			PROGRESS.set();
 		} else { //play
 			PLAYBACK.elapsed();
 		}
@@ -2218,7 +2221,14 @@ var PLAYLIST  = {
 	}
 }
 var PROGRESS  = {
-	  arc     : length => $TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( length * 654 ) +', 654' )
+	  animate : () => {
+		$( '#time path, #time-bar' ).css( 'transition-duration', V.progress.s +'s' );
+		if ( PROGRESS.visible() ) {
+			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( V.progress.l * 654 ) +', 654' )
+		} else {
+			$( '#time-bar' ).css( 'width', ( V.progress.l * 100 ) +'%' );
+		}
+	}
 	, bar     : e => {
 		var ratio      = UTIL.xy.ratio( e, 'time' );
 		S.elapsed      = Math.round( ratio * S.Time );
@@ -2235,7 +2245,7 @@ var PROGRESS  = {
 		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
 		S.elapsed = Math.round( S.Time * deg / 360 );
-		PROGRESS.set( S.elapsed );
+		PROGRESS.set();
 		$( '#elapsed, #total' ).removeClass( 'gr' );
 		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
 		$( '#elapsed' ).text( COMMON.second2HMS( S.elapsed ) );
@@ -2246,27 +2256,19 @@ var PROGRESS  = {
 			$( '#title' ).addClass( 'gr' );
 		}
 	}
-	, set     : elapsed => { // if defined - no animate
-		if ( elapsed === undefined || ( ! D.time && ! D.cover ) ) return
-		
-		if ( S.state === 'stop' || ! S.elapsed ) {
-			elapsed = 0;
-			UTIL.intervalClear( 'elapsed' );
-		}
-		var s = 0;
-		var l = S.Time ? elapsed / S.Time : 0;
-		var w = l * 100;
-		if ( V.localhost ) { // no animation - fix high cpu load
-			$( '#time path, #time-bar' ).css( 'transition-duration', '0s' );
-			PROGRESS.arc( l );
-			$( '#time-bar' ).css( 'width', w +'%' );
+	, set     : l => {
+		if ( l !== 0 ) l = S.elapsed / S.Time;
+		V.progress = { l: l, s: 0 }
+		PROGRESS.animate();
+	}
+	, stop    : () => {
+		if ( PROGRESS.visible() ) {
+			var l = parseFloat( $TIME_ARC.css( 'stroke-dasharray' ).split( ', ' )[ 2 ] ) / 654;
 		} else {
-			$( '#time path, #time-bar' ).css( 'transition-duration', s +'s' );
-			PROGRESS.visible() ? PROGRESS.arc( l ) : $( '#time-bar' ).css( 'width', w +'%' );
+			var l = parseFloat( $( '#time-bar' ).css( 'width' ) ) / 100;
 		}
-		if ( ! V.pageactive ) return
-		
-		if ( elapsed && S.state === 'play' ) setTimeout( () => PROGRESS.set(), 300 );
+		V.progress = { l: l, s: 0 }
+		PROGRESS.animate();
 	}
 	, visible : () => $( '#time-knob' ).css( 'display' ) !== 'none' // both .hide and css show/hide
 }

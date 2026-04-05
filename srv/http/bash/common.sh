@@ -3,19 +3,15 @@
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
-dirbackup=$dirdata/backup
-dirnas=/mnt/MPD/NAS
-dirsd=/mnt/MPD/SD
-dirusb=/mnt/MPD/USB
+for d in NAS SD USB; do
+	printf -v dir${d,,} '%s' /mnt/MPD/$d
+done
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
-if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
-	dirs=$( ls $dirdata | grep -v 'backup$' )
-	for dir in $dirs; do
-		printf -v dir$dir '%s' $dirdata/$dir
-	done
-	mpdconf=$dirmpdconf/mpd.conf
-fi
+dirs=$( ls $dirdata )
+for dir in $dirs; do
+	printf -v dir$dir '%s' $dirdata/$dir
+done
 
 # args2var "\
 #	command
@@ -117,7 +113,7 @@ camillaDSPstart() {
 	fi
 }
 conf2json() {
-	jq -Rn '[ 
+	jq -Rn '[
 			inputs
 				| split("=")
 				| select(length >= 2)
@@ -129,7 +125,7 @@ conf2json() {
 						  elif test("^-?[0-9]+$") then tonumber
 						  end
 					)
-				} 
+				}
 		]
 			| from_entries
 	' "$1"
@@ -298,7 +294,7 @@ getVar() { # var=value
 # --------------------------------------------------------------------
 	case ${2: -4} in
 		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
-		.yml ) 
+		.yml )
 			if [[ $1 != *.* ]]; then
 				sed -n '/^\s*'$1':/ {s/^.*: \+//; p}' "$2"                        # /var: value/ > value
 			else
@@ -493,7 +489,7 @@ settingsEnabled() {
 	local data dir file
 	for file in $@; do
 		[[ ${file:0:1} == / ]] && dir=$file && continue
-		
+
 		data+='
 , "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
 	done
@@ -530,7 +526,7 @@ sharedDataLink() {
 	while read s; do
 		ip_share=${s/ *}
 		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then
-			
+
 			fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$src"
 		fi
 	done <<< $source
@@ -559,7 +555,7 @@ snapclientIP() {
 			[[ ${l/*:} == true ]] && connected=1 || connected=
 		else
 			[[ ! $connected ]] && continue
-			
+
 			ip=${l/*:}
 			if [[ $data ]]; then
 				websocat ws://$ip:8080 <<< $data
@@ -717,7 +713,7 @@ volumeLimit() {
 	if [[ -e $dirshm/btreceiver ]]; then
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output 
+		. $dirshm/output
 	fi
 	$fn_volume $val% "$mixer" $card
 }

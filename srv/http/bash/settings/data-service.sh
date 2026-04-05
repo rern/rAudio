@@ -77,7 +77,7 @@ $( configText $dirsystem/localbrowser.conf )"
 	;;
 mpd )
 	conf="\
-$( grep -Ev '^i|^#' $mpdconf )"
+$( grep -Ev '^i|^#' $dirmpdconf/mpd.conf )"
 	for file in autoupdate buffer normalization outputbuffer pllength replaygain custom; do
 		fileconf=$dirmpdconf/$file.conf
 		[[ -e $fileconf ]] && conf+="
@@ -91,7 +91,7 @@ $( sort <<< $conf | sed 's/  *"/^"/' | column -t -s^ )"
 $( < $fileconf )"
 	done
 	conf="\
-<bll># $mpdconf</bll>
+<bll># $dirmpdconf/mpd.conf</bll>
 $conf"
 	skip+='|configuration file does not exist|wildmidi'
 	;;

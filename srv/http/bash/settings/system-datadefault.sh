@@ -1,21 +1,15 @@
 #!/bin/bash
 
-. /srv/http/bash/common.sh
-
 # data directories
+dirdata=/srv/http/data
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} \
-		 $dircamilladsp/{coeffs,configs,configs-bt,raw} \
 		 /mnt/MPD/{NAS,SD,USB}
+[[ -e /bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} || rmdir $dircamilladsp
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
-dirs=$( ls $dirdata )
-for dir in $dirs; do
-	printf -v dir$dir '%s' $dirdata/$dir
-done
 
-# camilladsp
-[[ ! -e /usr/bin/camilladsp ]] && rm -rf $dircamilladsp
+. /srv/http/bash/common.sh
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
@@ -33,7 +27,7 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
-if [[ -e /usr/bin/firefox ]]; then
+if [[ -e /bin/firefox ]]; then
 	timeout 1 firefox --headless &> /dev/null
 	echo "\
 rotate=0
@@ -44,10 +38,10 @@ cursor=" > $dirsystem/localbrowser.conf
 fi
 
 # mirror
-sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
+curl -sL https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/pacman-mirrorlist/mirrorlist -o /etc/pacman.d/mirrorlist
 
 # snapclient
-[[ -e /usr/bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
+[[ -e /bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
 
 # system
 hostnamectl set-hostname rAudio
@@ -57,4 +51,3 @@ usermod -a -G root http # add user http to group root to allow /dev/gpiomem acce
 rm -f /root/.bash_history
 
 dirPermissions
-systemctl -q is-active mpd && $dirbash/cmd-list.sh

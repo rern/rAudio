@@ -15,7 +15,7 @@ sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' /var/lib/iwd/ap/rAudio.ap
 
 # localbrowser
-[[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
+[[ -e /bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
 mpc -q clear
 mpc -q crossfade 0
@@ -91,5 +91,6 @@ $dirsettings/system-datadefault.sh
 
 mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
 [[ $KEEPLIBRARY ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
+$dirbash/cmd-list.sh
 
 $dirbash/power.sh reboot

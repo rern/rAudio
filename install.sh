@@ -4,6 +4,22 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260404
+dir=/etc/systemd/system/nfs-server.service.d
+if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
+	mkdir -p $dir
+	cat << EOF > $dir/override.conf
+[Service]
+ExecStart=
+ExecStopPost=
+
+ExecStart=/usr/bin/rpc.nfsd
+ExecStop=/usr/bin/rpc.nfsd 0
+EOF
+	systemctl daemon-reload
+	systemctl try-restart nfs-server
+fi
+
 # 20260401
 file=/etc/conf.d/wireless-regdom
 if ! grep -q '^#W' $file; then
@@ -27,13 +43,15 @@ fi
 
 file=/etc/udev/rules.d/usbstorage.rules
 if [[ ! $file ]]; then
-	echo 'KERNEL=="sd[a-z]" \
+	cat << EOF > $file
+KERNEL=="sd[a-z]" \
 ACTION=="add", \
 RUN+="/srv/http/bash/settings/system.sh usbadd"
 
 KERNEL=="sd[a-z]" \
 ACTION=="remove", \
-RUN+="/srv/http/bash/settings/system.sh usbremove"' > $file
+RUN+="/srv/http/bash/settings/system.sh usbremove"
+EOF
 	sed -i -e 's/usbconnect/usbmount/
 ' -e '/^ACTION=="remove"/,$ d
 ' /etc/udev/rules.d/ntfs.rules
@@ -42,13 +60,12 @@ RUN+="/srv/http/bash/settings/system.sh usbremove"' > $file
 fi
 
 file=/etc/modprobe.d/blacklist.conf
-if [[ ! -e $file ]]; then
-	echo "\
+[[ ! -e $file ]] && cat << EOF > $file
 blacklist bluetooth
 blacklist bnep
 blacklist btbcm
-blacklist hci_uart" > $file
-fi
+blacklist hci_uart
+EOF
 
 file=/boot/config.txt
 if grep -q -m1 disable-bt $file; then
