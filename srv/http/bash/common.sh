@@ -12,7 +12,7 @@ dirs=$( ls $dirdata )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
-
+https_addonslist=https://raw.githubusercontent.com/rern/rAudio-addons/main/addonslist.json
 # args2var "\
 #	command
 #	v1
