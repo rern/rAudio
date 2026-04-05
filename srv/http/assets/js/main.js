@@ -15,6 +15,7 @@ V = {  // global var
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
 	, page          : 'playback'
+	, progress      : {}
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 };
@@ -525,7 +526,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 			DISPLAY.bars();
 			DISPLAY.playback();
 			PLAYBACK.button.options();
-			if ( ! S.webradio ) PROGRESS.set( S.elapsed );
+			if ( ! S.webradio ) PROGRESS.set();
 			if ( 'coverTL' in V && ! D.cover ) $( '#map-time' ).removeClass( 'hide' );
 			break;
 		case 'settings':
