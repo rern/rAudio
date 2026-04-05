@@ -1,21 +1,15 @@
 #!/bin/bash
 
-. /srv/http/bash/common.sh
-
 # data directories
+dirdata=/srv/http/data
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} \
-		 $dircamilladsp/{coeffs,configs,configs-bt,raw} \
 		 /mnt/MPD/{NAS,SD,USB}
+[[ -e /bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} || rmdir $dircamilladsp
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
-dirs=$( ls $dirdata )
-for dir in $dirs; do
-	printf -v dir$dir '%s' $dirdata/$dir
-done
 
-# camilladsp
-[[ ! -e /bin/camilladsp ]] && rm -rf $dircamilladsp
+. /srv/http/bash/common.sh
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
