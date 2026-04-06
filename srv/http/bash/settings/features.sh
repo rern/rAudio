@@ -399,9 +399,13 @@ startx )
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
-	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 	dir_profile=$( find /root -type d -path '/root/*mozilla/*release' | grep -v /.cache/ )
-	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $dir_profile/user.js
+	if (( $zoom == 100 )); then
+		rm -f $dir_profile/user.js # -f - $dir_profile not yet exist on 1st startup
+	else
+		scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
+		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $dir_profile/user.js
+	fi
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
