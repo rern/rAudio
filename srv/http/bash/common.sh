@@ -199,19 +199,21 @@ data2jsonPatch() {
 	' <<< $1
 }
 dirPermissions() {
+	chown -R http:http /srv &> /dev/null
+	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
+	chmod -R u=rw,go=r,a+X /srv
+	chmod -R +x $dirbash
+	[[ $1 ]] && return
+	
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
-	if [[ ! -e /usr/bin/camilladsp ]]; then
+	if [[ ! -e /bin/camilladsp ]]; then
 		rm -f /srv/http/assets/css/camilla.css \
 			  /srv/http/assets/js/{camilla,pipelineplotter}.js \
 			  /srv/http/assets/js/plugin/{d3,plotly}*.min.js \
 			  /srv/http/settings/camilla.php \
 			  $dirsettings/camilla*
 	fi
-	[[ -e /usr/bin/firefox ]] && splashRotate
-	chown -R http:http /srv &> /dev/null
-	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
-	chmod -R u=rw,go=r,a+X /srv
-	chmod -R +x $dirbash
+	[[ -e /bin/firefox ]] && splashRotate
 	cacheBust
 }
 enableFlagSet() {
