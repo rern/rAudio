@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/python
 
 # RPi as renderer - bluealsa-dbus.service > this:
 #   - start: set Player dest file

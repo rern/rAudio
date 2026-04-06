@@ -50,7 +50,7 @@ function menuLi( $list ) {
 }
 $coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
 $thumbupdate = $coverart.icon(  'refresh-overlay' );
-$kid3        = file_exists( '/usr/bin/kid3-cli' );
+$kid3        = file_exists( '/bin/kid3-cli' );
 $menu        = '';
 $htmlcommon  = menuCommon( 'add', 'replace' );
 // file

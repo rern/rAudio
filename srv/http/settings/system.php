@@ -90,7 +90,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  · <i class="btn">«</i> $L->shareddata
  · <i class="btn">»</i> $L->serverraudio
  · Full path: <c>/mnt/MPD/...</c>
-	
+
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
 EOF
@@ -231,7 +231,7 @@ EOF
 		  'id'       => 'monitor'
 		, 'label'    => 'Monitor'
 		, 'sub'      => 'non-HDMI'
-		, 'exist'    => '/usr/bin/firefox'
+		, 'exist'    => '/bin/firefox'
 		, 'help'     => <<< EOF
 Only for:
  · <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen
@@ -349,7 +349,7 @@ Connect shared data as client for:
 	Server:  $T->features$L->serverraudio
 		· Permissions: <c>777</c>
 	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
-	
+
 • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create 2 shares: <gr>(any names)</gr>
 		· <c>SOURCE</c> for music files
@@ -373,7 +373,7 @@ Connect shared data as client for:
 		· Other clients:
 			$L->shareddata » <c>DATABASE</c>
 			<gr>(<c>SOURCE</c> will be arranged accordingly.)</gr>
-			
+
 Note:
  · Enabled: $B->microsd SD and $B->usbdrive USB - Hidden
 
@@ -441,19 +441,19 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 		<br>
 		<img src="/assets/img/qrgithub.png"><span id="logo-b">by rern</span>
 	</a>
-	
+
 	<heading class="subhead">Back End</heading>
 	<div class="list">
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a> · Arch Linux for ARM processors
 	</div>
 	<div class="listtitle backend">Packages: <?=$indexhtml?></div>
 	<div class="list"></div>
-	
+
 	<heading class="subhead">Front End</heading>
 	<div class="list"><?=hrefList( $listui )?></div>
 	<div class="listtitle plugins">Plugins:</div>
 	<div class="list hide"><?=hrefList( $listplugin )?></div>
-	
+
 	<heading class="subhead">Data</heading>
 	<div class="list">
 		<a href="https://www.last.fm">last.fm</a> · Coverarts and artist biographies<br>

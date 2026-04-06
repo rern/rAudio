@@ -29,7 +29,7 @@ function BANNER( icon, title, message, delay ) {
 }
 function BANNER_HIDE() {
 	if ( V.bannerdelay || V.relayssequense || V.reboot || V.off ) return
-	
+
 	$( '#banner' )
 		.addClass( 'hide' )
 		.empty();
@@ -42,7 +42,7 @@ BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
 	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
 
 - js > php/ws >> common.js - BASH()
-	- string : 
+	- string :
 		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
 		- multiline      : 'l1\\nl2\\nl3...'
 - php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
@@ -51,7 +51,7 @@ BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
 	- string : convert to array > assign values
 		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
 		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
-		- With 'CFG' : 
+		- With 'CFG' :
 			- the same as 'CMD'
 			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
 		- [ CMD, 'OFF' ] : disable
@@ -82,7 +82,7 @@ function BASH( args, callback, json ) {
 		COMMON.debugConsole( data );
 		return
 	}
-	
+
 	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function ICON( icon, id, tabindex ) {
@@ -136,7 +136,7 @@ $.fn.press    = function( args ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		if ( V.animate ) return
-		
+
 		V.timeoutpress = setTimeout( () => {
 			V.press = true;
 			action( e ); // e.currentTarget = ELEMENT
@@ -144,7 +144,7 @@ $.fn.press    = function( args ) {
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( V.timeoutpress );
 		if ( ! V.press ) return
-		
+
 		setTimeout( () => { // after last action timeout
 			if ( end ) end();
 			setTimeout( () => delete V.press, 300 );
@@ -175,13 +175,13 @@ var SORT      = {
 		} ).on( 'dragenter', 'li', function( e ) {
 			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.enter ) return
-			
+
 			V.sort.enter = true;
 			V.sort.over  = false;
 		} ).on( 'dragover', 'li', function( e ) {
 			e.preventDefault(); // not-allowed cursor
 			if ( ! V.sort || V.sort.over ) return
-			
+
 			V.sort.enter = false;
 			V.sort.over  = true;
 			SORT.insert( this );
@@ -202,7 +202,7 @@ var SORT      = {
 		var $ul = $( '#'+ el );
 		$ul.on( 'touchstart mousedown', function( e ) {
 			if ( ! $( e.target ).parents( '#'+ el ).length ) return
-			
+
 			V.timeoutsort = setTimeout( () => {
 				delete V.swipe;
 				var $from     = $( e.target ).closest( 'li' ).addClass( 'from' );
@@ -227,7 +227,7 @@ var SORT      = {
 			}, 400 );
 		} ).on( 'touchmove mousemove', function( e ) {
 			if ( ! V.sort ) return
-			
+
 			e.preventDefault(); // prevent scroll
 			if ( V.press || V.bkedit ) SORT.clearPress();
 			var xy  = SORT.xy( e );
@@ -247,7 +247,7 @@ var SORT      = {
 			$ul.find( 'li.ghost' ).remove();
 			$ul.find( 'li.from' ).removeClass( 'from' );
 			if ( ! V.sort ) return
-			
+
 			if ( 'to' in V.sort ) { // may be 0
 				setTimeout( () => SORT.callback( callback ), 0 ); // wait for V.sort.to
 			} else {
@@ -269,7 +269,7 @@ var SORT      = {
 }
 var SWIPE     = () => {
 	if ( ! V.touch ) return
-	
+
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
@@ -280,7 +280,7 @@ var SWIPE     = () => {
 	 // swipe ---------------------------------------------------------
 	document.addEventListener( 'touchstart', function( e ) {
 		if ( I.active || V.color ) return
-		
+
 		var $target = $( e.target );
 		if ( $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
@@ -288,7 +288,7 @@ var SWIPE     = () => {
 			|| ! $( '#bio' ).hasClass( 'hide' )
 			|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 		) return
-		
+
 		V.swipe     = COMMON.pageX( e );
 	} );
 	document.addEventListener( 'touchend', function( e ) {
@@ -298,7 +298,7 @@ var SWIPE     = () => {
 		var diff  = V.swipe - COMMON.pageX( e );
 		delete V.swipe;
 		if ( Math.abs( diff ) < 100 ) return
-		
+
 		var pages = [ 'library', 'playback',  'playlist' ];
 		var i     = pages.indexOf( V.page );
 		var ilast = pages.length - 1;
@@ -342,12 +342,12 @@ W             = {  // from websocket.py (server)
 	}
 	, notify    : data => {
 		if ( V.relayssequense ) return
-		
+
 		if ( data === false ) {
 			BANNER_HIDE();
 			return
 		}
-		
+
 		var icon    = data.icon;
 		var title   = data.title;
 		var message = data.message;
@@ -427,13 +427,13 @@ W             = {  // from websocket.py (server)
 	}
 	, volume    : data => {
 		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
-		
+
 		if ( ! PAGE && 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
 			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
-		
+
 		if ( data.type === 'mute' ) {
 			S.volume     = 0;
 			S.volumemute = data.val;
@@ -514,7 +514,7 @@ function INFO( json ) {
 	} );
 	$( '#infoOk' ).on( 'click', function() {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
-		
+
 		_INFO.buttonCommand( I.ok );
 	} ).press( () => {
 		V.debug = true;
@@ -535,7 +535,7 @@ function INFO( json ) {
 		} );
 		$( '#infoFileBox' ).on( 'change', function() {
 			if ( ! this.files.length ) return
-			
+
 			I.infofile    = this.files[ 0 ];
 			var filename  = I.infofile.name;
 			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
@@ -600,7 +600,7 @@ function INFO( json ) {
 		_INFO.toggle();
 		return
 	}
-	
+
 	[ 'range', 'updn' ].forEach( k => I[ k ] = [] );
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
@@ -713,7 +713,7 @@ function INFO( json ) {
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
-	
+
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
@@ -782,7 +782,7 @@ function INFO( json ) {
 			var rangeSet = up => {
 				var val = +$range.val();
 				if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
-				
+
 				up ? val++ : val--;
 				$range.val( val );
 				$rangeval.text( val );
@@ -919,7 +919,7 @@ var _INFO     = {
 	, buttonCommand : fn => {
 		if ( typeof fn === 'function' ) fn();
 		if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
-		
+
 		_INFO.reset();
 	}
 	, check         : {
@@ -950,7 +950,7 @@ var _INFO     = {
 		, set : () => {
 			var check = [ 'changed', 'blank', 'ip', 'length', 'unique' ].some( k => 'check'+ k in I );
 			if ( ! check ) return
-			
+
 			$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 				var infoval = _INFO.val( 'array' );
 				if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
@@ -967,7 +967,7 @@ var _INFO     = {
 	}
 	, clearTimeout  : all => { // ok for both timeout and interval
 		if ( ! ( 'timeout' in I ) ) return
-		
+
 		var timeout = all ? Object.keys( I.timeout ) : [ 'updni', 'updnt' ];
 		timeout.forEach( k => clearTimeout( I.timeout[ k ] ) );
 	}
@@ -1032,7 +1032,7 @@ var _INFO     = {
 			var padding   = 0;
 			$( '#infoOverlay' ).removeClass( 'hide' );
 			if ( I.buttonfit ) return
-			
+
 			var $buttonhide = $( '#infoButton a.hide' );
 			$buttonhide.removeClass( 'hide' );
 			var widest = 0;
@@ -1095,7 +1095,7 @@ var _INFO     = {
 			if ( type === 'text'
 				|| typeof val !== 'string'                  // boolean
 				|| val === ''                               // empty
-				|| isNaN( val )                             // Not a Number 
+				|| isNaN( val )                             // Not a Number
 				|| ( val[ 0 ] === '0' && val[ 1 ] !== '.' ) // '0123' not 0.123
 			) {
 				values.push( val );
@@ -1104,9 +1104,9 @@ var _INFO     = {
 			}
 		} );
 		if ( array ) return values                                      // array
-		
+
 		if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array or single value as string
-		
+
 		var v = {}
 		I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
 		return v                                                        // json
@@ -1262,10 +1262,10 @@ var COMMON    = {
 					var pageY = e.changedTouches[ 0 ].pageY;
 					var diff  = ystart - pageY;
 					if ( Math.abs( diff ) < incr ) return
-					
+
 					val      += Math.round( diff / incr );
 					if ( val === prevval ) return
-					
+
 					if ( val > max ) {
 						val = max;
 					} else if ( val < min ) {
@@ -1355,7 +1355,7 @@ var COMMON    = {
 			if ( PAGE ) $next.trigger( 'click' );
 		} else {
 			if ( $parent.is( '.content-top' ) ) return
-			
+
 			$next[ 0 ].scrollIntoView( { block: 'center' } );
 		}
 	}
@@ -1365,7 +1365,7 @@ var COMMON    = {
 		} );
 	}
 	, formSubmit    : input => {
-		if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
+		if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/bin/sudo /srv/http/bash/'+ input.installurl
 		var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 		$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
 		$( 'body' ).append( form +'</form>' );
@@ -1375,7 +1375,7 @@ var COMMON    = {
 			console.log( data );
 			return
 		}
-		
+
 		COMMON.loader();
 		$( '#formtemp' ).submit();
 	}
@@ -1408,7 +1408,7 @@ var COMMON    = {
 				COMMON.debugConsole( data );
 				return
 			}
-			
+
 			WS.send( data );
 		}
 		, sort : json => {
@@ -1432,7 +1432,7 @@ var COMMON    = {
 			} );
 			return
 		}
-		
+
 		var message = '';
 		var modes   = [ 'nas', 'sd', 'usb' ];
 		if ( C.nvme ) modes.push( 'nvme' );
@@ -1478,7 +1478,7 @@ var COMMON    = {
 	}
 	, loaderHide    : () => {
 		if ( 'off' in V || 'reboot' in V ) return
-		
+
 		$( '#loader' ).addClass( 'hide' );
 	}
 	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
@@ -1506,7 +1506,7 @@ var COMMON    = {
 		COMMON.loader();
 		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
 			if ( ! std ) return
-			
+
 			$( '#loader' ).addClass( 'hide' );
 			if ( std === 'nfs' ) {
 				$( '#loader' ).addClass( 'hide' );
@@ -1545,7 +1545,7 @@ var COMMON    = {
 		, removeTag : $li => $li.html( $li.html().replace( /<bll>|<\/bll>/g, '' ) )
 		, reset     : ( $input, $ul ) => {
 			if ( ! $input.val() ) return
-			
+
 			$input.val( '' );
 			$ul.find( 'li:not( .hide )' ).each( ( i, li ) => COMMON.search.removeTag( $( li ) ) );
 			$ul.find( 'li' ).removeClass( 'hide' );
@@ -1553,15 +1553,15 @@ var COMMON    = {
 	}
 	, second2HMS    : second => {
 		if ( ! second || second < 1 ) return ''
-		
+
 		var second = Math.round( second );
 		if ( second < 60 ) return second;
-		
+
 		var ss = second % 60;
 		var mm = Math.floor( ( second % 3600 ) / 60 );
 		if ( ss < 10 ) ss = '0'+ ss;
 		if ( second < 3600 ) return mm +':'+ ss;
-		
+
 		if ( mm < 10 ) mm = '0'+ mm;
 		var hh = Math.floor( second / 3600 );
 		return hh  +':'+ mm +':'+ ss;
@@ -1575,7 +1575,7 @@ var COMMON    = {
 			$.each( $el, ( i, select ) => {
 				var $select = $( select );
 				if ( $select.next().hasClass( 'select' ) ) return
-				
+
 				var single  = $select.find( 'option' ).length < 2 ? ' single' : '';
 				var label   = COMMON.select.label( $select.find( 'option:selected' ).text() );
 				$select
@@ -1604,7 +1604,7 @@ var COMMON    = {
 		var $data  = $( '#data' );
 		var hidden = $data.hasClass( 'hide' );
 		if ( action === 'refresh' && hidden ) return
-		
+
 		if ( action ) {
 			var show = action !== 'hide';
 		} else {
@@ -1634,7 +1634,7 @@ var VOLUME    = {
 		}
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
-		
+
 		if ( V.drag || V.press ) {
 			type = 'dragpress';
 			VOLUME.push();
@@ -1695,7 +1695,7 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
 				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
-				
+
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
@@ -1711,7 +1711,7 @@ window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 function pageActive() {
 	if ( V.pageactive || V.off ) return
-	
+
 	V.pageactive = true;
 	if ( WS && WS.readyState === 1 ) {                                            // on wakeup and ws still ready
 		WS.send( '"ping"' );                                                      // - send      'ping'
@@ -1722,14 +1722,14 @@ function pageActive() {
 }
 function pageInactive() {
 	if ( V.local || V.debug ) return
-	
+
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
 
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
-	
+
 	var key = e.key;
 	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
 	switch ( key ) {
@@ -1737,25 +1737,25 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'ArrowDown':
 		case 'Tab':
 			e.preventDefault();
-			
+
 			COMMON.focusNext( COMMON.focusNextTabs(), 'focus', key );
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
 			if ( ! $focus.length || ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn, i' ) ) return
-			
+
 			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
 			if ( $( 'textarea' ).is( ':focus' ) ) return
-			
+
 			if ( $( '.select.focus' ).length ) {
 				$( '.select.focus' ).trigger( 'click' );
 				return
 			}
-			
+
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( $target.length ) {
 				$target.trigger( 'click' );
@@ -1777,27 +1777,27 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 } );
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
-	
+
 	if ( V.debug ) {
 		COMMON.debug( 'disable' );
 		return
 	}
-	
+
 	COMMON.statusToggle();
 } ).press( () => {
 	if ( V.debug ) {
 		COMMON.debug( 'disable' );
 		return
 	}
-	
+
 	if ( ! $( '#data' ).hasClass( 'hide' ) ) return
-	
+
 	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
 			return
 		}
-		
+
 		INFO( {
 			  icon  : 'flash'
 			, title : 'Debug / Cache'
@@ -1829,7 +1829,7 @@ $( '.pagerefresh' ).press( () => location.reload() );
 $( 'body' ).on( 'click', function( e ) {
 	var $dropdown = $( '.dropdown:not( .hide' );
 	if ( ! $dropdown.length || $( e.target ).closest( '.select, .dropdown' ).length ) return
-	
+
 	$dropdown.prev().trigger( 'click' );
 } ).on( 'click', '.select:not( .single )', function() {
 	var $this      = $( this );
@@ -1846,9 +1846,9 @@ $( 'body' ).on( 'click', function( e ) {
 		if ( id === 'i2smodule' && ! S.i2smodule ) UTIL.i2smodule.hide();
 		return
 	}
-	
+
 	if ( [ 'i2smodule', 'timezone' ].includes( id ) && UTIL.option[ id ]() ) return // <option> not yet ready
-	
+
 	var index      = $origin.find( 'option:selected' ).index();
 	var $dropdown  = $this.next();
 	if ( ! $dropdown.hasClass( 'dropdown' ) ) {

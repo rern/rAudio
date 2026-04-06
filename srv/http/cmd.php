@@ -1,7 +1,7 @@
 <?php
 $post        = ( object ) $_POST;
 $CMD         = $post->cmd ?? $argv[ 1 ]; // $argv - sort : from cmd-list.sh
-$sudo        = '/usr/bin/sudo ';
+$sudo        = '/bin/sudo ';
 $dirbash     = $sudo.'/srv/http/bash/';
 $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
@@ -28,7 +28,7 @@ case 'datarestore': // formdata from system.js
 	break;
 case 'giftype': // formdata from common.js
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
-	$animated = exec( $sudo.'/usr/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
+	$animated = exec( $sudo.'/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
@@ -83,7 +83,7 @@ case 'sort': // from cmd-list.sh
 	foreach( $modes as $mode ) {
 		$file = '/srv/http/data/mpd/'.$mode;
 		if ( ! file_exists( $file ) ) continue;
-		
+
 		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		$data  = [];
 		foreach( $lines as $l ) $data[] = stripSort( $l ).'^x^'.$l;
@@ -95,11 +95,11 @@ case 'sort': // from cmd-list.sh
 		file_put_contents( $file, $list );
 	}
 	break;
-	
+
 }
 
 function escape( $string ) {
-	return preg_replace( '/(["`])/', '\\\\\1', $string ); // \1 inside function - $1 normal 
+	return preg_replace( '/(["`])/', '\\\\\1', $string ); // \1 inside function - $1 normal
 }
 function fileUploadSave( $filepath ) {
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );

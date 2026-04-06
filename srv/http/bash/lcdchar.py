@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/bin/python
 
 import sys
 import json
-   
+
 with open( '/srv/http/data/system/lcdchar.json' ) as f: CONF = json.load( f )
 locals().update( CONF ) # INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
 rows   = COLS < 20 and 2 or 4
@@ -135,7 +135,7 @@ def second2hhmmss( sec ):
     sst = str( ss )
     SS  = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
-    
+
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
     if k in STATUS:
@@ -195,4 +195,3 @@ while True:
     lcd.write_string( PLAY + elapsedhhmmss + hhmmss )
     elapsed       += 1
     time.sleep( sl )
-    

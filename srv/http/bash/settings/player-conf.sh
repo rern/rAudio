@@ -162,7 +162,7 @@ killProcess cmdlist
 systemctl restart mpd
 
 for pid in $( pgrep mpd ); do # set priority
-	ionice -c 0 -n 0 -p $pid &> /dev/null 
+	ionice -c 0 -n 0 -p $pid &> /dev/null
 	renice -n -19 -p $pid &> /dev/null
 done
 
@@ -179,7 +179,7 @@ pushStatus
 # renderers
 [[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
 
-if [[ -e /usr/bin/shairport-sync ]]; then
+if [[ -e /bin/shairport-sync ]]; then
 	fileconf=/etc/shairport-sync.conf
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
@@ -199,7 +199,7 @@ alsa = {
 	fi
 fi
 
-if [[ -e /usr/bin/snapclient ]]; then
+if [[ -e /bin/snapclient ]]; then
 	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
 	pcm0=$( cut -d= -f3 /etc/default/snapclient | tr -d '"' )
 	if [[ $pcm0 != $pcm ]]; then
@@ -208,7 +208,7 @@ if [[ -e /usr/bin/snapclient ]]; then
 	fi
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then
+if [[ -e /bin/spotifyd ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
 		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else
@@ -251,7 +251,7 @@ fi
 if [[ $BLUETOOTH && ! -e $dirsystem/devicewithbt ]]; then
 	function=volumeBlueAlsa
 elif [[ $mixertype == software ]]; then
-	function=volumeMpd 
+	function=volumeMpd
 else
 	function=volumeAmixer
 fi

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/python
 
 import struct
 import csv

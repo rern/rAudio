@@ -123,7 +123,7 @@ curl -sSfLO $installurl
 [[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
 
 chmod 755 $installfile
-/usr/bin/sudo ./$installfile "$options"
+/bin/sudo ./$installfile "$options"
 EOF;
 	$commandtxt = <<< EOF
 curl -sSfLO $installurl
