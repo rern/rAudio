@@ -151,15 +151,15 @@ localbrowser )
 				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 				if [[ $ROTATE == 0 ]]; then
 					rm -f $rotateconf
-				else 
+				else
 					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
-				splashrotate
+				splashRotate
 			fi
 		fi
 		profile=$( ls /root/.mozilla/firefox | grep release$ )
 		scale=$( cut -d'"' -f4 /root/.mozilla/firefox/$profile/user.js )
-		
+
 		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 		pushSubmenu screenoff $tf
 		if [[ $RESTART ]]; then
@@ -190,7 +190,7 @@ multiraudio )
 	iplist=$( jq -r .[] <<< $list | grep -v $ip )
 	while read ip; do
 		! ipOnline $ip && continue
-		
+
 		[[ $json ]] && websocat ws://$ip:8080 <<< $json
 		pushWebsocket $ip display $display
 		websocat ws://$ip:8080 <<< $flagset
@@ -311,7 +311,7 @@ smb )
 		sed -i '/read only = no/ d' $smbconf
 		for dir in NVME SATA SD USB; do
 			[[ ! ${!dir} ]] && continue
-			
+
 			sed -i '/path = .*'$dir'/ a\
 	read only = no
 ' $smbconf
@@ -400,18 +400,12 @@ startx )
 	fi
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
-	profile=$( ls /root/.mozilla/firefox | grep release$ )
-#	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
-	cat << EOF > /root/.mozilla/firefox/$profile/user.js
-user_pref("sidebar.revamp", false);
-user_pref("sidebar.verticalTabs", false);
-user_pref("layout.css.devPixelsPerPx", "$scale");
-EOF
+	dir_profile=$( find /root -path '*/mozilla/*release' | grep -v '/.cache/' )
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $dir_profile/user.js
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
-	cp -f /.Xauthority /root
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
@@ -431,5 +425,5 @@ volumelimit )
 	(( $( volumeGet ) > $MAX )) && volumeLimit max
 	pushRefresh
 	;;
-	
+
 esac
