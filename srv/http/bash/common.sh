@@ -203,7 +203,7 @@ dirPermissions() {
 	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
-	[[ $1 ]] && return # from create-ros.sh
+	[[ $RELEASE ]] && return # from create-ros.sh
 
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
 	if [[ ! -e /bin/camilladsp ]]; then
