@@ -12,7 +12,7 @@ dirs=$( ls $dirdata )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
-
+https_addonslist=https://raw.githubusercontent.com/rern/rAudio-addons/main/addonslist.json
 # args2var "\
 #	command
 #	v1
@@ -568,7 +568,7 @@ snapclientIP() {
 }
 snapserverList() {
 	local name_ip
-	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7" "$8}' )
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
 	if [[ $name_ip ]] ; then
 		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
 		echo '[ '${name_ip:1}' ]'
@@ -665,7 +665,7 @@ volumeGet() {
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		val_db=$( amixer -MD bluealsa 2> /dev/null \
 					| grep -m1 % \
-					| awk -F'[][]' '{print $2" "$4}' )
+					| awk -F'[][]' '{print $2, $4}' )
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then            # software
@@ -675,7 +675,7 @@ volumeGet() {
 		for i in {1..5}; do # some usb might not be ready
 			val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null \
 						| grep -m1 % \
-						| awk -F'[][]' '{print $2" "$4}' )
+						| awk -F'[][]' '{print $2, $4}' )
 			[[ $val_db ]] && break || sleep 1
 		done
 	fi

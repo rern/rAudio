@@ -133,7 +133,7 @@ udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
 if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
 	[[ $partition ]] && timezoneAuto # run once
-	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
+	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
 		rversion=$( sed -n '/"r1"/,/"version"/ {/version/!d; s/"//g; s/.*: //; p}' <<< $data )
