@@ -157,7 +157,7 @@ localbrowser )
 				splashRotate
 			fi
 		fi
-		dir_profile=$( find /root -type d -path '/root/.config/mozilla/*release' )
+		dir_profile=$( find /root -type d -path '/root/*mozilla/*release' | grep -v /.cache/ )
 		scale=$( cut -d'"' -f4 $dir_profile/user.js )
 
 		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
@@ -400,7 +400,7 @@ startx )
 	fi
 	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
 	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
-	dir_profile=$( find /root -type d -path '/root/.config/mozilla/*release' )
+	dir_profile=$( find /root -type d -path '/root/*mozilla/*release' | grep -v /.cache/ )
 	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $dir_profile/user.js
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
