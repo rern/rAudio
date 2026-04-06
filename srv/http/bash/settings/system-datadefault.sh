@@ -26,14 +26,4 @@ for i in $false; do
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
-# mirror
-curl -sL https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/core/pacman-mirrorlist/mirrorlist -o /etc/pacman.d/mirrorlist
-
-# system
-hostnamectl set-hostname rAudio
-sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
-timedatectl set-timezone UTC
-usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-rm -f /root/.bash_history
-
 dirPermissions
