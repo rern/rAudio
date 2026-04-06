@@ -26,4 +26,4 @@ for i in $false; do
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
-dirPermissions $RELEASE
+dirPermissions $RELEASE # from create-ros.sh
