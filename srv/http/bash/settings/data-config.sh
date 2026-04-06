@@ -107,7 +107,7 @@ lcdchar )
 	;;
 localbrowser )
 	echo '{
-  "values"     : '$( conf2json localbrowser.conf )'
+  "values"     : '$( conf2json $dirsystem/localbrowser.conf )'
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
 	;;

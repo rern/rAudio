@@ -13,8 +13,8 @@ if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
 ExecStart=
 ExecStopPost=
 
-ExecStart=/usr/bin/rpc.nfsd
-ExecStop=/usr/bin/rpc.nfsd 0
+ExecStart=/bin/rpc.nfsd
+ExecStop=/bin/rpc.nfsd 0
 EOF
 	systemctl daemon-reload
 	systemctl try-restart nfs-server
@@ -73,7 +73,7 @@ if grep -q -m1 disable-bt $file; then
 	touch $dirsystem/btdisable
 fi
 
-[[ ! -e /usr/bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
+[[ ! -e /bin/dtoverlay ]] && pacman -Sy --noconfirm raspberrypi-utils
 
 if [[ ! -e /boot/kernel.img && $( spotifyd -V ) < 'spotifyd 0.4.2' ]]; then
 	sed -i 's/ipv6.disable=1 //' /boot/cmdline.txt

@@ -14,7 +14,7 @@ $body = [
 		  'id'       => 'ID'         // REQUIRED
 		, 'label'    => 'LABEL'
 		, 'sub'      => 'SUB'
-		, 'icon'     => true         // (Player page only) show icon 
+		, 'icon'     => true         // (Player page only) show icon
 		, 'status'   => true         // include status icon and status box
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
 		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
@@ -47,7 +47,7 @@ function commonVariables( $list ) {
 function htmlHead( $data ) {
 	$data    = ( object ) $data;
 	if ( isset( $data->exist ) && ! $data->exist ) return;
-	
+
 	$id      = isset( $data->id ) ? ' id="'.$data->id.'"' : '';
 	$list    = isset( $data->list ) ? ' li' : '';
 	$status  = $data->status ?? '';
@@ -55,7 +55,7 @@ function htmlHead( $data ) {
 	$dstatus = $status ? ' data-status="'.$status.'"' : '';
 	$iback   = isset( $data->back ) ? icon( 'back back' ) : '';
 	$ihelp   = $iback ? '' : icon( 'help help' );
-	
+
 	$html    = '<heading '.$id.$class.'><span class="headtitle"'.$dstatus.'>'.$data->title.'</span>';
 	if ( isset( $data->button ) ) {
 		$button = $data->button;
@@ -103,15 +103,15 @@ function htmlSetting( $data ) {
 	$sub     = $data->sub ?? false;
 	$exist   = $data->exist ?? '';
 	if ( $exist ) {
-		if ( is_bool( $exist ) ) $exist = '/usr/bin/'.$sub;
+		if ( is_bool( $exist ) ) $exist = '/bin/'.$sub;
 		if ( ! file_exists( $exist ) ) return;
 	}
-	
+
 	if ( isset( $data->html ) ) {
 		echo str_replace( '|', '<g>|</g>', $data->html );
 		return;
 	}
-	
+
 	global $features, $system;
 	$label   = $data->label;
 	$status  = $data->status ?? false;
@@ -120,7 +120,7 @@ function htmlSetting( $data ) {
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;
 	$dstatus = $status ? ' status" data-status="'.$id : '';
-	
+
 	$html    = '<div id="div'.$id.'" class="row">';
 	// col-l
 	$html   .= '<div class="col-l'.( $sub ? '' : ' single' ).$dstatus.'">';
@@ -148,6 +148,6 @@ function htmlSetting( $data ) {
 	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	$html   .= '</div>';
 	if ( isset( $data->returnhtml ) ) return $html;
-	
+
 	echo $html;
 }

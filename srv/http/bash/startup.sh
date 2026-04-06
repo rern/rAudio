@@ -136,8 +136,7 @@ if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
 	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
-		rversion=$( sed -n '/"r1"/,/"version"/ {/version/!d; s/"//g; s/.*: //; p}' <<< $data )
-		if [[ $rversion != $( < $diraddons/r1 ) ]]; then
+		if [[ $( jq -r .r1.version <<< $data ) > $( < $diraddons/r1 ) ]]; then
 			touch $diraddons/update
 			pushData option '{ "addons": true }'
 		fi

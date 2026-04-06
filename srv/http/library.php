@@ -266,7 +266,7 @@ case 'search':
 		}
 		$c     = count( $lists );
 		if ( ! $c ) continue;
-		
+
 		$count+= $c;
 		$t[]   = $tag;
 		if ( $tag === 'title' ) {
@@ -349,7 +349,7 @@ case 'track': // for tag editor
 	for ( $i = 0; $i < $fL; $i++ ) $tag[ strtoupper( $f[ $i ] ) ] = $array[ $i ];
 	echo json_encode( $tag, JSON_NUMERIC_CHECK );
 	break;
-	
+
 }
 
 function esc( $string ) {
@@ -409,7 +409,7 @@ function htmlFind() { // non-file 'find' command
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
-		
+
 		$list = explode( '^^', $list ); // album^^artist
 		$each = ( object ) [];
 		for ( $i = 0; $i < $fL; $i++ ) {
@@ -427,7 +427,7 @@ function htmlFind() { // non-file 'find' command
 	foreach( $array as $each ) {
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
-		
+
 		$name      = '<a class="name">'.$val0.'</a>';
 		if ( ! $modeartist && $key1 ) {
 			$val1 = $each->$key1;
@@ -568,7 +568,7 @@ function htmlRadio() {
 		}
 	}
 	if ( $search ) return $html;
-	
+
 	$html.= '</ul>'.indexBar( $indexes );
 	echo $html;
 }
@@ -584,7 +584,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
-		
+
 		$list = explode( '^^', $list );
 		$each = ( object ) [];
 		for ( $i = 0; $i < $fL; $i++ ) $each->{$f[ $i ]} = $list[ $i ];
@@ -622,7 +622,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
 		$args          = escape( implode( "\n", [ 'cmd', $artist, $album, $mpdpath, 'CMD ARTIST ALBUM FILE' ] ) );
-		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
+		$coverart      = exec( '/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		if ( ! $coverart ) $coverart = '/assets/img/coverart.svg';
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
@@ -654,7 +654,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	$i    = 0;
 	foreach( $array as $each ) {
 		if ( ! $each->time ) continue;
-		
+
 		$path   = $each->file;
 		$album  = $each->album;
 		$artist = $each->artist;
@@ -683,6 +683,6 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 </li>';
 	}
 	if ( $search ) return $html;
-	
+
 	echo $html.'</ul>';
 }

@@ -23,7 +23,7 @@ plAddRandom() {
 	local ab cuefile dir dirlast len_pos mpcls plL range
 	len_pos=( $( mpc status '%length% %songpos%' ) )
 	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
-	
+
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album
@@ -63,7 +63,7 @@ playerStart() {
 	esac
 	if [[ $service ]]; then
 		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			ionice -c 0 -n 0 -p $pid &> /dev/null
 			renice -n -19 -p $pid &> /dev/null
 		done
 	fi
@@ -162,7 +162,7 @@ webradioM3uPlsVerify() {
 	url=$1
 	ext=${url/*.}
 	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
-	
+
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
@@ -325,7 +325,7 @@ dirdelete )
 	[[ $lsdir ]] && webradioCount
 	while read s; do
 		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
-		
+
 		rm -f "$dirwebradio/img/$s".*
 	done <<< $stations
 	;;
@@ -624,7 +624,7 @@ mpcskip )
 	;;
 mpcupdate )
 	rm -f $dirshm/updatedone
-	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
+	date +%s > $dirmpd/updatestart
 	pushData mpdupdate '{ "updating_db": true }'
 	if [[ ! $ACTION ]]; then
 		if [[ -e $dirsystem/mpcupdate.conf ]]; then
@@ -825,5 +825,5 @@ webradiotitle )
 		| grep -o "StreamTitle='[^'][^;]*'" \
 		| sed "s/StreamTitle=' *//; s/ *'$//"
 	;;
-	
+
 esac

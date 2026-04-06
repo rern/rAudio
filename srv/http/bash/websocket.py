@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/bin/python
 
 # websocket server
-# - receive from local + remote: 
+# - receive from local + remote:
 #    - WS.send (common.js)      : (channel, client, filesh, json, ping, status) + data
 #    - websocat (common.sh)     : channel + data
 # - send to local only:
@@ -44,7 +44,7 @@ async def cmd( websocket ):
             # refresh CLIENTS
             for IP in IP_CLIENT:
                 if IP == ip: continue
-                
+
                 if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
                     CLIENTS.discard( IP_CLIENT[ IP ] )
                     IP_CLIENT.pop( IP, None )
