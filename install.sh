@@ -5,6 +5,26 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260407
+file=/lib/firefox/distribution/policies.json
+if [[ -e /bin/firefox && ! -e $file ]]; then
+	cat << EOF > $file
+{
+	"policies": {
+		"DisableAppUpdate": true,
+		"DontCheckDefaultBrowser": true,
+		"OverrideFirstRunPage": "",
+		"SkipOnboarding": true,
+		"Preferences": {
+			"browser.startup.homepage_override.mstone": "ignore",
+			"browser.sessionstore.resume_from_crash": false,
+			"layout.css.prefers-color-scheme.content-override": 0,
+			"layout.css.devPixelsPerPx": "1.00"
+		}
+	}
+}
+EOF
+fi
+
 file=/etc/systemd/system/localbrowser.service
 ! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 
