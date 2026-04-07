@@ -124,6 +124,10 @@ localbrowser )
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
+		if [[ $Z_CHANGED ]]; then
+			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
+			sed -i -E 's/(devPixelsPerPx", ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
+		fi
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
@@ -157,9 +161,6 @@ localbrowser )
 				splashRotate
 			fi
 		fi
-		dir_profile=$( find /root -type d -path '/root/*mozilla/*release' | grep -v /.cache/ )
-		scale=$( cut -d'"' -f4 $dir_profile/user.js )
-
 		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 		pushSubmenu screenoff $tf
 		if [[ $RESTART ]]; then
@@ -398,19 +399,11 @@ startx )
 	if [[ $onwhileplay ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
-	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
-	dir_profile=$( find /root -type d -path '/root/*mozilla/*release' | grep -v /.cache/ )
-	if (( $zoom == 100 )); then
-		rm -f $dir_profile/user.js # -f - $dir_profile not yet exist on 1st startup
-	else
-		scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
-		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $dir_profile/user.js
-	fi
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
-	firefox -kiosk -private http://localhost
+	firefox --kiosk --private-window http://localhost
 	;;
 stoptimer )
 	enableFlagSet

@@ -20,9 +20,9 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
-	[[ -e /bin/firefox && $BB == 12 ]] && localBrowserOff
 	[[ $BB != 03 || $BB = 04 ]] && sed -i '/max_usb_current/ d' /boot/config.txt
-	[[ $BB != 17 ]] && sed -i '/usb_max_current_enable/ d' /boot/config.txt
+	[[ $BB != 17 ]] && sed -i '/usb_max_current/ d' /boot/config.txt
+	[[ -e /bin/firefox && $BB == 12 ]] && localBrowserOff
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )

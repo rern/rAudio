@@ -98,6 +98,7 @@ var CONFIG       = {
 				, [ 'Mouse pointer',             'checkbox', { colspan: 2 } ]
 				, [ '',                          'checkbox' ]
 				, [ '',                          'checkbox' ]
+				, [ '',                          'checkbox' ]
 			]
 			, footer       : _INFO.footerIcon( {
 				  Reload          : 'reload'
@@ -105,10 +106,10 @@ var CONFIG       = {
 				, Brightness      : 'brightness'
 			} )
 			, boxwidth     : 70
-			, values       : { ...data.values, R_CHANGED: false, RESTART: false }
+			, values       : { ...data.values, R_CHANGED: false, Z_CHANGED: false, RESTART: false }
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
-				$( '#infoList tr' ).last().addClass( 'hide' ).prev().addClass( 'hide' )
+				$( '#infoList tr' ).slice( -3 ).addClass( 'hide' );
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
 				$( '#infoList tr' ).eq( 2 ).on( 'click', '.updn', function() {
@@ -148,16 +149,14 @@ var CONFIG       = {
 			}
 			, cancel       : SWITCH.cancel
 			, ok           : () => {
-				var v          = _INFO.val();
-				var values     = data.values;
-				var $r_changed = $( '#infoList input' ).eq( 4 );
-				var $restart   = $( '#infoList input' ).eq( 5 );
-				if ( v.ROTATE !== values.ROTATE ) $r_changed.prop( 'checked', true );
-				if ( ! S.localbrowser || v.ROTATE !== values.ROTATE ) {
-					$restart.prop( 'checked', true );
-				} else {
-					if ( v.ZOOM !== values.ZOOM || v.CURSOR !== values.CURSOR ) $restart.prop( 'checked', true );
-				}
+				var v         = _INFO.val();
+				var values    = data.values;
+				var c_changed = v.CURSOR !== values.CURSOR;
+				var r_changed = v.ROTATE !== values.ROTATE;
+				var z_changed = v.ZOOM !== values.ZOOM;
+				$( '#infoList input' ).eq( 4 ).prop( 'checked', r_changed );
+				$( '#infoList input' ).eq( 5 ).prop( 'checked', z_changed );
+				$( '#infoList input' ).eq( 6 ).prop( 'checked', ! S.localbrowser || ( S.localbrowser && ( c_changed || r_changed || z_changed ) ) );
 				SWITCH.enable();
 			}
 			, fileconf     : true
@@ -269,7 +268,7 @@ var CONFIG       = {
 					}
 					return
 				}
-				
+
 				var val = {}
 				infoval.forEach( ( el, i ) => i % 2 ? val[ name ] = el : name = el );
 				keys = Object.keys( val ).sort();
@@ -349,7 +348,7 @@ var CONFIG       = {
 				$( '#spotifyd' ).prop( 'checked', false );
 				return
 			}
-			
+
 			INFO( {
 				  ...SW
 				, list        : [
@@ -398,7 +397,7 @@ var CONFIG       = {
 			, beforeshow   : () => {
 				var elapsed = data.elapsed;
 				if ( ! elapsed ) return
-				
+
 				$( '#infoTitle' ).html( SW.title +'&emsp;<gr>'+ COMMON.second2HMS( elapsed ) +'</gr>' );
 				V.intervaltimer = setInterval( () => {
 					elapsed++;
@@ -540,7 +539,7 @@ var UTIL        = {
 					, ok           : SWITCH.enable
 				} );
 			} );
-			
+
 		}
 		, redirect : 'https://rern.github.io/raudio/spotify'
 	}

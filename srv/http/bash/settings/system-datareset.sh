@@ -14,8 +14,6 @@ sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
 ' /var/lib/iwd/ap/rAudio.ap
 
-# localbrowser
-[[ -e /bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
 mpc -q clear
 mpc -q crossfade 0

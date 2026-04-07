@@ -57,7 +57,6 @@ if [[ $mountpoints ]]; then
 		chown mpd:audio "$mp"
 	done <<< $mountpoints
 fi
-
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
 
 $dirbash/power.sh reboot
