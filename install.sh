@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260407
-file=/etc/systemd/system/localbrowser
+file=/etc/systemd/system/localbrowser.service
 ! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 
 dir=/etc/systemd/system/nfs-server.service.d
