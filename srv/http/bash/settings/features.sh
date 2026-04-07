@@ -171,7 +171,7 @@ localbrowser )
 	else
 		localBrowserOff
 	fi
-	sed -i -E '/^r_changed|^restart/ d' $dirsystem/localbrowser.conf
+	sed -i -E '/^r_changed|^z_changed|^restart/ d' $dirsystem/localbrowser.conf
 	pushRefresh
 	;;
 login )

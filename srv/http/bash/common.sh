@@ -117,7 +117,7 @@ conf2json() {
 			inputs
 				| split("=")
 				| select(length >= 2)
-				| { key: .[0], value: (
+				| { key: (.[0] | ascii_upcase), value: (
 						.[1:] | join("=")
 						| gsub("^[\u0027\"]|[\u0027\"]$"; "")
 						| if . == "true" or . == "false" then (. == "true")
