@@ -126,7 +126,7 @@ localbrowser )
 		fi
 		if [[ $Z_CHANGED ]]; then
 			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
-			sed -i -E 's/(devPixelsPerPx", ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
+			sed -i -E 's/(devPixelsPerPx": ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
 		fi
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
