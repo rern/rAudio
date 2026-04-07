@@ -20,39 +20,17 @@ $1
 <hr>"
 }
 getinstallzip() {
-	echo "$bar Get files ..."
-	installfile=$branch.tar.gz
-	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
-	curl -sfLO $fileurl
-	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
-# --------------------------------------------------------------------
 	echo
 	echo "$bar Install new files ..."
-	filelist=$( bsdtar tf $installfile \
-					| grep /srv/ \
-					| sed -e '/\/$/ d' -e 's|^.*/srv/|/srv/|' ) # stdout as a block to avoid blank lines
-	echo "$filelist"
-	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
-	if [[ $uninstallfile ]]; then
-		bsdtar xf $installfile --strip-components=1 -C /usr/local/bin $uninstallfile
-		chmod 755 /usr/local/bin/$uninstallfile
-	fi
-	tmpdir=/tmp/install
-	rm -rf $tmpdir
-	mkdir -p $tmpdir
-	bsdtar xf $installfile --strip-components=1 -C $tmpdir
-	find $tmpdir -maxdepth 1 -type f -delete
-	rm $installfile
-	cp -r $tmpdir/* /
-	rm -rf $tmpdir
+	tarurl=$( jq -r .$alias.tarurl $addonsjson )
+	curl -sL ${tarurl/RELEASE/$branch} \
+		| bsdtar xvf - --strip-components=1 -C / 2>&1 \
+		| grep '/.*/'
+	find / -maxdepth 1 -type f -delete
 }
 installstart() { # $1-'u'=update
 	rm $0
-	readarray -t args <<< $1 # lines to array: alias label branch opt1 opt2 ...
-	alias=${args[0]}
-	label=${args[1]}
-	branch=${args[2]}
-	args=( "${args[@]:3}" ) # 'opt' for script start at ${args[0]}
+	read alias label branch < <( echo $1 )
 	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
 	[[ $label != Rank || $label != Import ]] && title "$bar $label $title ..." || title "$bar $title ..."
 }
