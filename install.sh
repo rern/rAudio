@@ -5,7 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260407
-
 file=/lib/firefox/distribution/policies.json
 if [[ -e /bin/firefox && ! -e $file ]]; then
 	cat << EOF > $file
