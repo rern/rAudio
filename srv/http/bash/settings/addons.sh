@@ -23,7 +23,7 @@ getinstallzip() {
 	echo
 	echo "$bar Install new files ..."
 	tarurl=$( jq -r .$alias.tarurl $addonsjson )
-	curl -sL ${tarurl/RELEASE/$branch} \
+	curl -sL ${tarurl/BRANCH/$branch} \
 		| bsdtar xvf - --strip-components=1 -C / 2>&1 \
 		| grep '/.*/'
 	find / -maxdepth 1 -type f -delete
