@@ -113,22 +113,49 @@ camillaDSPstart() {
 	fi
 }
 conf2json() {
-	jq -Rn '[
-			inputs
-				| split("=")
-				| select(length >= 2)
-				| { key: (.[0] | ascii_upcase), value: (
-						.[1:] | join("=")
-						| gsub("^[\u0027\"]|[\u0027\"]$"; "")
-						| if . == "true" or . == "false" then (. == "true")
-						  elif . == "" then false
-						  elif test("^-?[0-9]+$") then tonumber
-						  end
-					)
-				}
-		]
-			| from_entries
-	' "$1"
+	local file json k keys only l lines v
+	[[ $1 == '-nocap' ]] && nocap=1 && shift
+	file=$1
+	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
+	[[ ! -e $file ]] && echo false && return
+
+	# omit lines  blank, comment / group [xxx]
+	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
+	[[ ! $lines ]] && echo false && return
+
+	if [[ $2 ]]; then # $2 - specific keys
+		shift
+		keys=$@
+		only="^\s*${keys// /|^\\s*}"
+		lines=$( grep -E "$only" <<< $lines )
+	fi
+	[[ ! $lines ]] && echo false && return
+
+	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
+	while read line; do
+		k=${line/=*}
+		v=${line/*=}
+		if [[ ${v/\"\"} ]]; then # omit v=""
+			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
+						-e 's/^True$|^yes$/true/
+							s/^False$|^no$/false/' <<< $v )
+			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
+		else
+			v=false
+		fi
+		[[ ! $nocap ]] && k=${k^^}
+		json+=', "'$k'": '$v
+	done <<< $lines
+	echo { ${json:1} }
+}
+confNotString() {
+	local array boolean number string var
+	var=$1
+	[[ $var =~ ^true$|^false$ ]]                          && boolean=1
+	[[ $var != 0 && ${var:0:1} == 0 && ${var:1:1} != . ]] && string=1  # not 0 and not 0.123
+	[[ $var =~ ^-*[0-9]*\.*[0-9]*$ ]]                     && number=1  # 0 / 123 / -123 / 0.123 / .123
+	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
+	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
