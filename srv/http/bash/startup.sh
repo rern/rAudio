@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-wlanDevice
-
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	id0=$( < /etc/machine-id )
@@ -36,20 +34,18 @@ if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
 	localBrowserOff
 fi
 
-if [[ -e $dirshm/wlan ]]; then
-	if [[ -e /boot/wifi ]]; then
-		wlandev=$( < $dirshm/wlan )
-		ssid=$( getVar ESSID /boot/wifi )
-		sed -E -e '/^#|^\s*$/ d
+if [[ -e /boot/wifi ]]; then
+	wlandev=$( wlanDevice )
+	ssid=$( getVar ESSID /boot/wifi )
+	sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		rm -f /boot/{accesspoint,wifi} $dirsystem/ap
-		$dirsettings/networks.sh "profileconnect
+	rm -f /boot/{accesspoint,wifi} $dirsystem/ap
+	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD ESSID"
-	elif [[ -e /boot/accesspoint ]]; then
-		mv -f /boot/accesspoint $dirsystem/ap
-	fi
+elif [[ -e /boot/accesspoint ]]; then
+	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
 
@@ -97,12 +93,11 @@ else # if no connections, start accesspoint
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
-landevice=$( lanDevice )
-if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] \
-		|| (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
+if [[ $( ipByInterface e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
+[[ $( ipByInterface w ) ]] && iw $( wlanDevice )) set power_save off
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver

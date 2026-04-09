@@ -6,6 +6,7 @@ args2var "$1"
 
 netctlSwitch() {
 	currentssid=$( iwgetid -r )
+	wlandev=$( wlanDevice )
 	ip link set $wlandev down
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
 	for i in {0..20}; do
@@ -37,7 +38,6 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
-	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
@@ -52,7 +52,7 @@ connect )
 		currentssid=$( iwgetid -r )
 		[[ $currentssid == $ESSID ]] && backup=$( < "/etc/netctl/$currentssid" )
 	fi
-	data='Interface='$wlandev'
+	data='Interface='$( wlanDevice )'
 Connection=wireless
 IP='$iptype'
 ESSID="'$ESSID'"'
@@ -97,16 +97,15 @@ Gateway='$GATEWAY $file
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
 	for i in {0..9}; do
-		[[ $( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' ) ]] && break || sleep 1
+		[[ $( ipByInterface e ) ]] && break || sleep 1
 	done
 	pushRefresh
 	;;
 profileconnect )
-	wlandev=$( < $dirshm/wlan )
 	if [[ -e $dirsystem/ap ]]; then
 		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
-		ifconfig $wlandev 0.0.0.0
+		ip addr flush dev $( wlanDevice )
 		sleep 2
 	fi
 	netctlSwitch
@@ -139,16 +138,15 @@ usbbluetoothoff ) # from usbbluetooth.rules
 	pushRefresh
 	;;
 usbwifion )
-	wlanDevice
+	sleep 1 && iw $( wlanDevice ) set power_save off
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh
 	;;
 usbwifioff )
-	wlanDevice
 	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
 	;;
-	
+
 esac

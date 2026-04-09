@@ -329,6 +329,9 @@ inOutputConf() {
 ipAddress() {
 	ip route get 1.1.1.1 | grep -oP 'src \K\S+'
 }
+ipByInterface() {
+	ip -br addr | awk -F'[ /]+' '/^'$1'/ {print $3}'
+}
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
@@ -346,7 +349,7 @@ killProcess() {
 	fi
 }
 lanDevice() {
-	ip -br link | awk '/^e/ {print $1}'
+	basename $( ls -d /sys/class/net/e* | tail -1 )
 }
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
@@ -720,14 +723,7 @@ volumeLimit() {
 	$fn_volume $val% "$mixer" $card
 }
 wlanDevice() {
-	local wlandev
-	wlandev=$( ls /sys/class/net | grep ^w | tail -n 1 )
-	if [[ $wlandev ]]; then
-		echo $wlandev > $dirshm/wlan
-		( sleep 1 && iw $wlandev set power_save off ) &
-	else
-		rm -f $dirshm/wlan
-	fi
+	basename $( ls -d /sys/class/net/w* | tail -1 )
 }
 wlanOnboardDisable() {
 	local mod

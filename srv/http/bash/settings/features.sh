@@ -6,7 +6,7 @@ args2var "$1"
 
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
-	wlandev=$( < $dirshm/wlan )
+	wlandev=$( wlanDevice )
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
 	else
@@ -49,7 +49,6 @@ wlanDisable() {
 case $CMD in
 
 ap )
-	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=).*/\1'$IP'/
