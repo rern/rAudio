@@ -34,6 +34,25 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
+mountBindNfs() {
+	local d dir
+	for d in NVME SATA SD USB; do
+		dir=$dirnas/$d
+		if [[ ! $1 ]]; then
+			dir_src=/mnt/MPD/$d
+			[[ ! -d $dir_src ]] && continue
+			
+			mkdir -p $dir
+			mount --bind $dir_src $dir # fix: wondows not read symlink
+		else
+			[[ ! -d $dir ]] && continue
+			
+			umount -l $dir
+			rmdir $dir
+		fi
+		
+	done
+}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -210,9 +229,7 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		for d in NVME SATA SD USB; do
-			[[ -e /mnt/MPD/$d ]] && ln -s /mnt/MPD/$d $dirnas
-		done
+		mountBindNfs
 		ip=$( ipAddress )
 		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 		systemctl enable --now nfs-server
@@ -245,7 +262,7 @@ CMD ACTION PATHMPD"
 	else
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
-		rm -f $dirnas/{NVME,SATA,SD,USB}
+		mountBindNfs unmount
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip

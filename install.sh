@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260407
+# 20260409
 file=/lib/firefox/distribution/policies.json
 if [[ -e /bin/firefox && ! -e $file ]]; then
 	cat << EOF > $file
@@ -120,6 +120,13 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20260413
+if [[ -L $dirnas/SD ]]; then
+	rm $dirnas/{NVME,SATA,SD,USB} &> /dev/null
+	. $dirsettings/features.sh
+	mountBindNfs
+fi
 
 # 20260216
 if [[ -e /mnt/SD ]]; then
