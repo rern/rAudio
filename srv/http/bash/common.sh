@@ -114,15 +114,14 @@ camillaDSPstart() {
 }
 conf2json() {
 	local file json k keys only l lines v
-	[[ $1 == '-nocap' ]] && nocap=1 && shift
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
 	[[ ! -e $file ]] && echo false && return
-	
+
 	# omit lines  blank, comment / group [xxx]
 	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
 	[[ ! $lines ]] && echo false && return
-	
+
 	if [[ $2 ]]; then # $2 - specific keys
 		shift
 		keys=$@
@@ -130,32 +129,20 @@ conf2json() {
 		lines=$( grep -E "$only" <<< $lines )
 	fi
 	[[ ! $lines ]] && echo false && return
-	
+
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
-		if [[ ${v/\"\"} ]]; then # omit v=""
-			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-						-e 's/^True$|^yes$/true/
-							s/^False$|^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
-		else
-			v=false
+		v=$( sed -E -e "s/^[\"']|[\"']$//g" \
+					-e 's/^(True|yes)$/true/
+						s/^(False|no|"")$/false/' <<< $v )
+		if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
+			v='"'$( quoteEscape $v )'"' # quote and escape string
 		fi
-		[[ ! $nocap ]] && k=${k^^}
-		json+=', "'$k'": '$v
+		json+=', "'${k^^}'": '$v
 	done <<< $lines
 	echo { ${json:1} }
-}
-confNotString() {
-	local array boolean number string var
-	var=$1
-	[[ $var =~ ^true$|^false$ ]]                          && boolean=1
-	[[ $var != 0 && ${var:0:1} == 0 && ${var:1:1} != . ]] && string=1  # not 0 and not 0.123
-	[[ $var =~ ^-*[0-9]*\.*[0-9]*$ ]]                     && number=1  # 0 / 123 / -123 / 0.123 / .123
-	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
-	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
