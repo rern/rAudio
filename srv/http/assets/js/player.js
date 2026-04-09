@@ -334,7 +334,7 @@ function renderPage() {
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', devicehide );
 		$( '#device' )
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
-			.val( S.output.name );
+			.val( S.output.NAME );
 		if ( ! devicehide && S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
 			$( '#setting-mixer' ).toggleClass( 'hide', novolume );
