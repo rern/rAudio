@@ -116,7 +116,7 @@ getinstallzip
 
 . $dirbash/common.sh
 dirPermissions
-$dirbash/cmd.sh cachebust
+cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish

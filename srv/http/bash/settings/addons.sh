@@ -22,10 +22,14 @@ $1
 getinstallzip() {
 	echo
 	echo "$bar Install new files ..."
-	tarurl=$( jq -r .$alias.tarurl $addonsjson )
-	curl -sL ${tarurl/BRANCH/$branch} \
-		| bsdtar xvf - --strip-components=1 -C / 2>&1 \
-		| grep '/.*/'
+	installfile=$branch.tar.gz
+	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
+	curl -sfLO $fileurl | bsdtar xvf - --strip-components=1 -C /
+	$uninstallfile=$( ls /uninstall.sh 2> /dev/null )
+	if [[ $uninstallfile ]]; then
+		chmod +x $uninstallfile
+		mv $uninstallfile /usr/local/bin
+	fi
 	find / -maxdepth 1 -type f -delete
 }
 installstart() { # $1-'u'=update
