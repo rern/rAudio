@@ -222,7 +222,7 @@ nfsserver )
 			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
 		done < <( ls /mnt/MPD )
 		ip=$( ipAddress )
-		ip_opt=${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)
+		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
 		cat << EOF > /etc/exports
 /mnt/MPD/NAS  $ip_opt
 /NAS          $ip_opt
@@ -248,7 +248,7 @@ CMD ACTION PATHMPD"
 		# prepend path
 		while read file; do
 			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
-		done < <( ls $dirbookmarks $dirplaylists | grep -Ev '^/|^$' )
+		done < <( ls $dirbookmarks/* $dirplaylists/* )
 	else
 		mkdir -p $dirshared
 		cp -rL $dirmpd $dirshared
