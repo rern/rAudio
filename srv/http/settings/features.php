@@ -20,15 +20,6 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = <<< EOF
-Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
-	<btn>Map network drive...</btn>
-	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
-	» Check <btn>Connect using different credentials</btn>
-	<btn>Finish</btn>
-	» Username: <c>root</c>
-	» Password: <c>***</c>
-EOF;
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -229,7 +220,14 @@ EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP or ftp when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- · $fileexplorer
+ · Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
+	<btn>Map network drive...</btn>
+	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
+	» Check <btn>Connect using different credentials</btn>
+	<btn>Finish</btn>
+	» Username: <c>root</c>
+	» Password: <c>***</c>
+
  
 Note: $L->serverraudio should yield better performance.
 EOF
