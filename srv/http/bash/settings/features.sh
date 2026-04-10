@@ -34,25 +34,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-mountBindNfs() {
-	local d dir
-	for d in NVME SATA SD USB; do
-		dir=$dirnas/$d
-		if [[ ! $1 ]]; then
-			dir_src=/mnt/MPD/$d
-			[[ ! -d $dir_src ]] && continue
-			
-			mkdir -p $dir
-			mount --bind $dir_src $dir # fix: wondows not read symlink
-		else
-			[[ ! -d $dir ]] && continue
-			
-			umount -l $dir
-			rmdir $dir
-		fi
-		
-	done
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -229,9 +210,19 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		mountBindNfs
+		mkdir -p /NAS
+		mount --bind $dirnas /NAS
+		while read d; do
+			dir_mp=$dirnas/$d
+			mkdir -p $dir_mp
+			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
+		done < <( ls /mnt/MPD | grep -v NAS )
 		ip=$( ipAddress )
-		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
+		ip_opt=${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)
+		cat << EOF > /etc/exports
+/mnt/MPD/NAS  $ip_opt
+/rAudio       $ip_opt
+EOF
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
@@ -251,18 +242,20 @@ rescan
 
 CMD ACTION PATHMPD"
 		# prepend path
-		files=$( ls $dirbookmarks/* )
-		files+=$'\n'$( ls $dirplaylists/* )
-		files=$( awk NF <<< $files )
-		if [[ $files ]]; then
-			while read file; do
-				sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
-			done <<< $files
-		fi
+		while read file; do
+			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
+		done < <( ls $dirbookmarks $dirplaylists | grep -Ev '^/|^$' )
 	else
+		mkdir -p $dirshared
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
-		mountBindNfs unmount
+		while read d; do
+			dir_mp=$dirnas/$d
+			umount -l $dir_mp
+			rmdir $dir_mp
+		done < <( ls /NAS )
+		umount -l /NAS
+		rmdir /NAS
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
