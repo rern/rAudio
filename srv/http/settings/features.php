@@ -29,7 +29,6 @@ Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
 	» Username: <c>root</c>
 	» Password: <c>***</c>
 EOF;
-$fileexpl_nfs = str_replace( "\t", "\t\t", $fileexplorer );
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -295,8 +294,8 @@ EOF
 	
  • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
-	· $fileexpl_nfs
-
+	· Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
+		<btn>Map network drive...</btn> » Folder: <c>\\\\$ip\NAS</c>
 <i class="i-warning"></i> Permissions:
 Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
 EOF
