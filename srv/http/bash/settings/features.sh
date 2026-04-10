@@ -35,8 +35,10 @@ iwctlAP() {
 	fi
 }
 mkdir_mount() {
-	mkdir -p $2
-	mount --bind $1 $2
+	local dir_mp
+	[[ $1 == $dirnas ]] && dir_mp=/NAS || dir_mp=$2
+	mkdir -p $dir_mp
+	mount --bind $1 $dir_mp
 }
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
@@ -48,10 +50,6 @@ pushSubmenu() {
 }
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
-}
-umount_rmdir() {
-	umount -l $1
-	rmdir $1
 }
 
 case $CMD in
@@ -219,14 +217,15 @@ nfsserver )
 	systemctl stop mpd
 	if [[ $ON ]]; then
 		while read d; do
-			mkdir_mount $d ${d/MPD/MPD\/NAS} # mount --bind: wondows not read symlink
-		done < <( ls -d /mnt/MPD/* | grep -v NAS )
-		mkdir_mount $dirnas /NAS
+			[[ $d == NAS ]] && dir_mp=/NAS || dir_mp=$dirnas/$d
+			mkdir -p $dir_mp
+			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
+		done < <( ls /mnt/MPD )
 		ip=$( ipAddress )
 		ip_opt=${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)
 		cat << EOF > /etc/exports
 /mnt/MPD/NAS  $ip_opt
-/rAudio       $ip_opt
+/NAS          $ip_opt
 EOF
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
@@ -254,10 +253,10 @@ CMD ACTION PATHMPD"
 		mkdir -p $dirshared
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
-		umount_rmdir /NAS
 		while read d; do
-			umount_rmdir $d
-		done < <( ls -d $dirnas/* )
+			umount -l $d
+			rmdir $d
+		done < <( ls -d $dirnas/* | sed '$ a\/NAS' )
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
