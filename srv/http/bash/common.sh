@@ -461,8 +461,8 @@ pushWebsocket() { # send to remote websocket.py (server)
 	data=$@
 	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
 		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat -U -B 10485760 ws://$ip:8080 < <( tr -d '\n' <<< $data ) # -U: no \n ending; remove newlines - preserve spaces
-	fi
+		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	fi                           # NOT OK: < <( tr -d '\n' <<< $data )
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"
