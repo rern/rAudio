@@ -21,6 +21,11 @@ commonVariables( [
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
+$mapdrive     = <<< EOF
+· Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
+		<btn>Map network drive...</btn>
+			» Folder:
+EOF;
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
@@ -220,15 +225,8 @@ EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP or ftp when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- · Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
-	<btn>Map network drive...</btn>
-	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
-	» Check <btn>Connect using different credentials</btn>
-	<btn>Finish</btn>
-	» Username: <c>root</c>
-	» Password: <c>***</c>
+ $mapdrive <c>\\\\$ip\SD</c> or <c>USB</c> <c>NVME</c> <c>SATA</c>
 
- 
 Note: $L->serverraudio should yield better performance.
 EOF
 	]
@@ -292,8 +290,7 @@ EOF
 	
  • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
-	· Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
-		<btn>Map network drive...</btn> » Folder: <c>\\\\$ip\NAS</c>
+	$mapdrive <c>\\\\$ip\NAS</c>
 <i class="i-warning"></i> Permissions:
 Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
 EOF
