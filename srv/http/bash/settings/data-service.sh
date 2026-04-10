@@ -119,7 +119,7 @@ shairportsync )
 smb )
 	PKG=samba
 	conf="\
-$( configText /etc/samba/smb.conf )"
+$( configText /etc/samba/smb.conf | sed -e '/server/,/spool/ d' -e '/^\[global]/ a\	...' )"
 	;;
 snapclient )
 	PKG=snapcast
