@@ -731,14 +731,7 @@ volumeLimit() {
 	$fn_volume $val% "$mixer" $card
 }
 wlanDevice() {
-	local wlandev
-	wlandev=$( ls /sys/class/net | grep ^w | tail -n 1 )
-	if [[ $wlandev ]]; then
-		echo $wlandev > $dirshm/wlan
-		( sleep 1 && iw $wlandev set power_save off ) &
-	else
-		rm -f $dirshm/wlan
-	fi
+	ls /sys/class/net | grep ^w | tail -n 1
 }
 wlanOnboardDisable() {
 	local mod
