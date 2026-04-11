@@ -32,7 +32,7 @@ if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
 fi
 
 if [[ -e /boot/wifi ]]; then
-	wlandev=$( wlanDevice )
+	wlandev=$( netDevice w )
 	ssid=$( getVar ESSID /boot/wifi )
 	sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
@@ -94,7 +94,7 @@ if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
-[[ $( ipAddress w ) ]] && iw $( wlanDevice ) set power_save off
+[[ $( ipAddress w ) ]] && iw $( netDevice w ) set power_save off
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver

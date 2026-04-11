@@ -76,7 +76,7 @@ $data"
 	;;
 infowlan )
 	if [[ $2 ]]; then
-		wlandev=$( wlanDevice )
+		wlandev=$( netDevice w )
 		if ip addr show $wlandev | grep -q 'state DOWN'; then
 			down=1
 			ip link set $wlandev up
@@ -93,7 +93,7 @@ $data"
 	fi
 	;;
 lan )
-	lan=$( lanDevice )
+	lan=$( netDevice e )
 	statusCmd "ip -s link show dev $lan"
 	;;
 mixer )
@@ -196,7 +196,7 @@ $( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )"
 wl )
 	statusCmd 'iw dev'
 	echo
-	statusCmd "iwconfig $( wlanDevice )"
+	statusCmd "iwconfig $( netDevice w )"
 	;;
 wlan )
 	statusCmd 'rfkill | grep wlan'

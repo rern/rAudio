@@ -6,7 +6,7 @@ killProcess networksscan
 echo $$ > $dirshm/pidnetworksscan
 
 if [[ $1 == wlan ]]; then
-	wlandev=$( wlanDevice )
+	wlandev=$( netDevice w )
 	ip link set $wlandev up
 
 	# ESSID:"NAME"

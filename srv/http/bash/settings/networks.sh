@@ -6,7 +6,7 @@ args2var "$1"
 
 netctlSwitch() {
 	currentssid=$( iwgetid -r )
-	wlandev=$( wlanDevice )
+	wlandev=$( netDevice w )
 	ip link set $wlandev down
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
 	for i in {0..20}; do
@@ -52,7 +52,7 @@ connect )
 		currentssid=$( iwgetid -r )
 		[[ $currentssid == $ESSID ]] && backup=$( < "/etc/netctl/$currentssid" )
 	fi
-	data='Interface='$( wlanDevice )'
+	data='Interface='$( netDevice w )'
 Connection=wireless
 IP='$iptype'
 ESSID="'$ESSID'"'
@@ -105,7 +105,7 @@ profileconnect )
 	if [[ -e $dirsystem/ap ]]; then
 		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
-		ip addr flush dev $( wlanDevice )
+		ip addr flush dev $( netDevice w )
 		sleep 2
 	fi
 	netctlSwitch
@@ -138,7 +138,7 @@ usbbluetoothoff ) # from usbbluetooth.rules
 	pushRefresh
 	;;
 usbwifion )
-	sleep 1 && iw $( wlanDevice ) set power_save off
+	sleep 1 && iw $( netDevice w ) set power_save off
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	notify wifi 'USB Wi-Fi' Ready

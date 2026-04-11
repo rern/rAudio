@@ -6,7 +6,7 @@ args2var "$1"
 
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
-	wlandev=$( wlanDevice )
+	wlandev=$( netDevice w )
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
 	else

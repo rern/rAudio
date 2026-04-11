@@ -365,7 +365,7 @@ wlanprofile )
 			powerbutton )   grep -q 'poweroff,gpiopin=22' $file_config && echo true || echo '{ "ON":3, "SW": 3, "LED": 21 }';;
 			rotaryencoder ) echo '{ "PINA": 27, "PINB": 22, "PINS": 23, "STEP": 1 }';;
 			soundprofile )
-				dirlan=/sys/class/net/$( lanDevice )
+				dirlan=/sys/class/net/$( netDevice e )
 				echo '{
   "SWAPPINESS" : '$( sysctl vm.swappiness | cut -d' ' -f3 )'
 , "MTU"        : '$( cat $dirlan/mtu )'

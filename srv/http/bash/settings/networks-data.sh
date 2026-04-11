@@ -22,7 +22,7 @@ fi
 
 gateway=$( ip -j route | jq -r .[0].gateway )
 
-wlandev=$( wlanDevice )
+wlandev=$( netDevice w )
 profiles=$( ls -p /etc/netctl | grep -v /$ )
 current=$( iwgetid -r )
 if [[ $profiles ]]; then
@@ -72,7 +72,7 @@ ip=$( ipAddress )
 data='
 , "device"    : {
 	  "bluetooth" : '$devicebt'
-	, "lan"       : '$( [[ $( lanDevice ) ]] && echo true )'
+	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
 	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
 }
 , "ap"        : '$( exists $dirsystem/ap )'

@@ -360,9 +360,6 @@ killProcess() {
 		rm $filepid
 	fi
 }
-lanDevice() {
-	ip -br link | awk '/^e/ {print $1}'
-}
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
@@ -397,6 +394,9 @@ CMD ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
+}
+netDevice() {
+	ls /sys/class/net | grep ^$1 | tail -n 1
 }
 notify() { # icon title message delayms
 	local data delay icon ip json message title
@@ -729,9 +729,6 @@ volumeLimit() {
 		. $dirshm/output
 	fi
 	$fn_volume $val% "$mixer" $card
-}
-wlanDevice() {
-	ls /sys/class/net | grep ^w | tail -n 1
 }
 wlanOnboardDisable() {
 	local mod
