@@ -402,7 +402,7 @@ spotifytoken )
 startx )
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
+	off=$(( screenoff * 60 ))
 	sudo xset s off
 	sudo xset dpms $off $off $off
 	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
