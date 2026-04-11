@@ -46,12 +46,8 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 else
 	status=$( $dirbash/status.sh )
 	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( jq <<< $status )
-	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
-		filter+='|^  "'$k'"'
-	done
-	statuslines=$( grep -E "${filter:1}" <<< $status )
-	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
+	statuslines=$( jq '{ Artist,Album,Composer,Conductor,elapsed,file,player,station,state,Time,timestamp,Title,volume,webradio }' <<< $status )
+	statusnew=$( jq -r 'to_entries[] | "\(.key)=\(.value|@sh)"' <<< $statuslines | tee $dirshm/statusnew )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
@@ -86,7 +82,7 @@ fi
 [[ -e $dirshm/power ]] && exit
 # --------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
+	[[ $statuslines ]] && echo "$statuslines" > $dirshm/status.json
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
