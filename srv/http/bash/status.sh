@@ -5,7 +5,7 @@
 # changes:
 #    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
-! mpc status &> /dev/null && exit # suppress startup error
+! mpc status &> /dev/null && exit # suppress startup websocket
 
 . /srv/http/bash/common.sh
 

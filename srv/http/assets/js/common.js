@@ -1681,7 +1681,7 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 						REFRESHDATA();                                            // > refresh data / get data - start page
 						if ( V.reboot ) {
 							delete V.reboot;
-							COMMON.loaderHide()
+							COMMON.loaderHide();
 						}
 					}
 				}
