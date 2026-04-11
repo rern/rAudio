@@ -468,20 +468,6 @@ pushWebsocket() { # send to remote websocket.py (server)
 quoteEscape() {
 	echo "${@//\"/\\\"}"
 }
-radioStatusFile() {
-	local status
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^pllength|^state|^Title' $dirshm/status )
-	status+='
-Artist="'$artist'"
-Album="'$album'"
-coverart="'$coverart'"
-elapsed='$elapsed'
-pllength='$pllength'
-state="play"
-Title="'$title'"'
-	echo "$status" > $dirshm/status
-	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-}
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD

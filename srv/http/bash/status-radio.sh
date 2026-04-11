@@ -138,12 +138,10 @@ $( jq -r .albumTitle <<< $track )"
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
 	data='
-  "player"   : "mpd"
-, "Album"    : "'$album'"
+  "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "elapsed"  : '$( mpcElapsed webradio )'
 , "pllength" : '$( mpc status %length% )'
-, "state"    : "play"
 , "Title"    : "'$title'"'
 	if [[ $coverart ]]; then
 		data+='
@@ -155,16 +153,7 @@ $album
 webradio
 CMD ARTIST ALBUM MODE" &> /dev/null &
 	fi
-	pushData mpdradio "{ $data }"
-	if [[ -e $dirsystem/lcdchar ]]; then
-		data+='
-, "Time"      : false
-, "timestamp" : '$( date +%s%3N )'
-, "webradio"  : true'
-		echo "{ $data }" > $dirshm/status.json
-	fi
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
-	radioStatusFile
+	$dirbash/status-push.sh "$data" & # run in background for snapcast
 	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
 	# next fetch
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0
