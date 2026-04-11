@@ -97,7 +97,7 @@ Gateway='$GATEWAY $file
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
 	for i in {0..9}; do
-		[[ $( ipByInterface e ) ]] && break || sleep 1
+		[[ $( ipAddress e ) ]] && break || sleep 1
 	done
 	pushRefresh
 	;;

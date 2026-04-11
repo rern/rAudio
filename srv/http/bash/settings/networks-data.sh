@@ -30,7 +30,7 @@ if [[ $profiles ]]; then
 		ssid=$( quoteEscape $profile )
 		! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 		if [[ $current == $profile ]]; then
-			ip=$( ipByInterface w )
+			ip=$( ipAddress w )
 			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 			if [[ ! $dbm || $dbm -gt -60 ]]; then
 				icon=wifi
@@ -56,7 +56,7 @@ fi
 [[ $listwlan ]] && listwlan='[ '${listwlan:1}' ]'
 
 # lan
-ip=$( ipByInterface e )
+ip=$( ipAddress e )
 if [[ $ip ]]; then
 	listlan='{
   "ADDRESS" : "'$ip'"

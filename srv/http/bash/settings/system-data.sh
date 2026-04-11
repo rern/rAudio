@@ -140,7 +140,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( [[ $( ipByInterface w ) ]] && echo true )
+, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )
 ##########
 	data+='
 , "btconnected"    : '$( exists $dirshm/btconnected )
