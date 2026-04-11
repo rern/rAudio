@@ -104,7 +104,7 @@ $mac
 CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
-! systemctl -q is-active mpd && $dirsettings/player-conf.sh
+$dirsettings/player-conf.sh
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 # after all sources connected -----------------------------------------------------
@@ -118,7 +118,9 @@ fi
 
 touch $dirshm/startup
 
-grep -qs startup=true $dirsystem/autoplay.conf && mpcPlayback play
+if [[ -e $dirsystem/autoplay ]]; then
+	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
+fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 udevil clean
