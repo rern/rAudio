@@ -20,7 +20,6 @@ statusData() {
 }
 
 ip=$( ipAddress )
-displayjson=$( < $dirsystem/display.json )
 
 if [[ $1 == snapclient ]]; then
 	snapclient=1
@@ -54,7 +53,8 @@ else
 	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	display=$( grep -Ev '{|}' <<< $displayjson )'
+	display=$( head -n -1 $dirsystem/display.json )
+	display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
@@ -67,7 +67,8 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
-, "volumenone"   : '$volumenone
+, "volumenone"   : '$volumenone'
+}'
 #-----------------------------------------------------------------------------------------
 ########
 	status+='
@@ -76,7 +77,7 @@ else
 , "card"         : '$card'
 , "control"      : "'$mixer'"
 , "counts"       : '$( < $dirmpd/counts )'
-, "display"      : { '$display' }
+, "display"      : '$display'
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
@@ -221,7 +222,7 @@ if [[ $pllength == 0 && ! $snapclient ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $displayjson ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' <<< $display ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
