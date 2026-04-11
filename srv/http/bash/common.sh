@@ -347,9 +347,9 @@ ipAddress() {
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
-json2var() {
+json2var() { # single level only
 	local pattern
-	pattern='to_entries[] | "\(.key)=\(.value | @sh)"'
+	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
 	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
 }
 killProcess() {
