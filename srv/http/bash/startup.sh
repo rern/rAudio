@@ -94,7 +94,7 @@ if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
-[[ $( ipAddress w ) ]] && iw $( wlanDevice )) set power_save off
+[[ $( ipAddress w ) ]] && iw $( wlanDevice ) set power_save off
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
