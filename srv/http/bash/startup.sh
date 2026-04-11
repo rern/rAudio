@@ -16,11 +16,8 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
-	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	[[ $BB != 03 || $BB = 04 ]] && sed -i '/max_usb_current/ d' /boot/config.txt
-	[[ $BB != 17 ]] && sed -i '/usb_max_current/ d' /boot/config.txt
-	[[ -e /bin/firefox && $BB == 12 ]] && localBrowserOff
+	usbMaxCurrent
+	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )

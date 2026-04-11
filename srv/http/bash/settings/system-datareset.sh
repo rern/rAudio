@@ -28,30 +28,28 @@ sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf &> /dev/null
 # upmpdcli
 sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
 ' -e 's/(ownqueue = )./\10' /etc/upmpdcli.conf &> /dev/null
-
-# cmdline.txt
-cmdline=$( sed -E 's/^(.*repair=yes) .*/\1/' /boot/cmdline.txt )
-if systemctl -q is-enabled localbrowser; then
-	cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
-else
-	cmdline+=' console=tty1'
-fi
-echo $cmdline > /boot/cmdline.txt
 # config.txt
 config="\
-initramfs initramfs-linux.img followkernel
 disable_overscan=1
 disable_splash=1
-dtparam=audio=on"
+dtparam=audio=on
+dtparam=sd_poll_once=on
+hdmi_force_hotplug=1
+max_usb_current=1
+usb_max_current_enable=1"
 [[ -e /boot/kernel.img ]] && config+="
-gpu_mem=32
 force_turbo=1
 gpu_mem=32
 hdmi_drive=2
-max_usb_current=1
 over_voltage=2"
-
 echo "$config" > /boot/config.txt
+usbMaxCurrent
+# cmdline.txt
+if [[ -e /bin/firefox ]]; then
+	grep -q tty1 /boot/cmdline.txt && sed -i 's/tty1/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+else
+	config=$( sed '/hdmi_force_hotplug/ d' <<< $config )
+fi
 # css color
 if [[ -e $dirsystem/color ]]; then
 	rm $dirsystem/color

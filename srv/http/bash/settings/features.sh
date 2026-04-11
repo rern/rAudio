@@ -125,8 +125,8 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
-		if ! grep -q console=tty3 /boot/cmdline.txt; then
-			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+		if ! grep -q tty3 /boot/cmdline.txt; then
+			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
 		if [[ $Z_CHANGED ]]; then

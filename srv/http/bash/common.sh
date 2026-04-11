@@ -372,7 +372,7 @@ localBrowserOff() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
-	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 logoLcdOled() {
@@ -627,6 +627,16 @@ timezoneAuto() {
 }
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
+}
+usbMaxCurrent() {
+	local BB revision
+	revision=$( grep ^Revision /proc/cpuinfo )
+	BB=${revision: -3:2}
+	if [[ $BB != 17 ]]; then
+		sed -i '/usb_max_current/ d' /boot/config.txt
+	elif [[ $BB != 03 || $BB = 04 ]]; then
+		sed -i '/max_usb_current/ d' /boot/config.txt
+	fi
 }
 volume() {
 	local diff filevolumemute fn_volume type val values
