@@ -2443,6 +2443,9 @@ var UTIL      = {
 			DISPLAY.playback();
 			PLAYBACK.main();
 			BANNER_HIDE();
+		} else if ( V.playlist ) {
+			PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
+			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();
 	}

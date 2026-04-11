@@ -100,12 +100,7 @@ W = {
 				delete data.control;
 				delete data.volume;
 			}
-			if ( V.playback ) {
-				UTIL.statusUpdate( data );
-			} else if ( V.playlist ) {
-				PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
-				PLAYLIST.render.scroll();
-			}
+			UTIL.statusUpdate( data );
 			setTimeout( BANNER_HIDE, 3000 );
 		}, 300 );
 	}
