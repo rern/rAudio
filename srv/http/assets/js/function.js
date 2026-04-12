@@ -1732,36 +1732,6 @@ var PLAYBACK  = {
 			PLAYBACK.elapsed();
 		}
 	}
-	, password  : () => {
-		INFO( {
-			  icon       : 'networks'
-			, title      : 'Shared Data'
-			, message    : 'Set password for <c>root</c> :'
-			, list       : [
-				  [ 'Password', 'password' ]
-				, [ 'Confirm',  'password' ]
-			]
-			, footer     : '<br><br>'+ V.i_warning +'Passwords not the same'
-			, checkblank : true
-			, height     : 156
-			, beforeshow : () => $( '.infofooter' ).addClass( 'hide' )
-			, values     : [ 'ros', 'ros' ]
-			, ok      : () => {
-				if ( $( '.infofooter' ).hasClass( 'hide' ) ) {
-					var v = _INFO.val();
-					if ( v[ 0 ] !== v[ 1 ] ) {
-						$( '#infoList' ).children().toggleClass( 'hide' );
-					} else {
-						BASH( [ 'password', v[ 0 ], 'CMD PASSWORD' ], PLAYBACK.get );
-						_INFO.reset();
-					}
-				} else {
-					$( '#infoList' ).children().toggleClass( 'hide' );
-				}
-			}
-			, oknoreset  : true
-		} );
-	}
 	, stop      : () => {
 		PROGRESS.set( 0 );
 		$( '#elapsed, #total, #progress' ).empty();

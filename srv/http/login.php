@@ -1,9 +1,11 @@
 <style>
-#divlogin {
-	transform      : translateY( calc( 50vh - 100% ) );
+body {
+	display        : grid;
+	place-items    : center;
+	height         : 100vh;
 	text-align     : center;
 }
-#divlogin svg {
+#divlogin > svg {
 	width          : 50px;
 }
 #logintitle {
@@ -11,74 +13,133 @@
 	font-weight    : 300;
 	letter-spacing : 25px;
 }
-#pwd {
-	width          : 230px;
-	margin         : 30px 10px 10px 25px;
+#qr {
+	width: 230px;
+	height: 230px;
+	margin: 0 auto;
+	line-height: 22px;
+}
+#qr svg {
+	margin: 10px auto;
+}
+label {
+	display        : inline-block;
+	width          : 65px;
+	margin-left    : -30px;
+	text-align     : right;
+}
+#pwd, #pwd2 {
+	width          : 200px;
+	margin         : 5px 10px 10px;
 	border         : 1px solid var( --cg );
 }
-#pwd::-ms-reveal {
-	display: none;
-}
-#toggle {
+.i-eye {
 	font-size      : 20px;
 	vertical-align : -3px;
 }
 </style>
 </head>
 <body>
-
+<div id="divlogin">
+	<?=$logosvg?>
+	<div id="logintitle">rAudio</div>
+	<br>
+<?php
+$file   = glob( '/srv/http/assets/js/plugin/jquery*' );
+$script = '
+<script src="'.substr( $file[ 0 ], 9 ).'"></script>';
+if ( file_exists( '/boot/expand' ) ) {
+	$html.= '
+	<div id="qr" class="qr"></div>
+	Set password for <c>root</c> :<br>
+	<label>Password</label><input type="password" id="pwd" value="ros"><i class="i-eye"></i><br>
+	<label>Confirm</label><input type="password" id="pwd2" value="ros"><i class="i-eye"></i><br>';
+	$title  = 'Password';
+	$text   = 'Password not the same.';
+	$file   = glob( '/srv/http/assets/js/plugin/qr*' );
+	$script.= '
+<script src="'.substr( $file[ 0 ], 9 ).'"></script>';
+	$hostname = gethostname();
+	$ip       = gethostbyname( $hostname );
+} else {
+	$html.= '
+	<input type="password" id="pwd"><i class="i-eye"></i><br>';
+	$title = 'Login';
+	$text  = 'Wrong password.';
+	$script_qr = '';
+}
+echo $html;
+?>
+	<a id="set" class="infobtn infobtn-primary">OK</a>
+</div>
 <div id="infoOverlay" class="hide">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle">Login</a></div></div>
-		<div id="infoList"><div class="infomessage">Wrong password.</div></div>
+		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle"><?=$title?></a></div></div>
+		<div id="infoList"><div class="infomessage"><?=$text?></div></div>
 		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 
-<div id="divlogin">
-	<?=$logosvg?>
-	<div id="logintitle">rAudio</div>
-	<input type="password" id="pwd"><i id="toggle" class="i-eye"></i>
-	<br><a id="login" class="infobtn infobtn-primary">Login</a>
-</div>
+<?=$script?>
 
 <script>
-var E = {};
-[ 'infoOverlay', 'login', 'ok', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
+$( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-E.pwd.focus();
-document.body.addEventListener( 'keydown', e => {
-	if ( e.key === 'Enter' ) E.infoOverlay.classList.contains( 'hide' ) ? E.login.click() : E.infoOk.click();
-} );
-E.toggle.addEventListener( 'click', () => {
-	if ( E.pwd.type === 'text' ) {
-		E.pwd.type = 'password';
-		E.toggle.classList.remove( 'bl' );
-	} else {
-		E.pwd.type = 'text';
-		E.toggle.classList.add( 'bl' );
+$info = $( '#infoOverlay' );
+$ok   = $( '#ok' );
+$pwd  = $( '#pwd' );
+$qr   = $( '#qr' );
+$set  = $( '#set' );
+login = ! $qr.length;
+if ( ! login ) {
+	var ip          = '<?=$ip?>';
+	$qr.html( 'http://<wh>'+ ip +'</wh>'
+			+ '<br>http://<?=$hostname?>'
+			+ QRCode( 'http://'+ ip )
+	);
+}
+$pwd.focus();
+$( document ).on( 'keyup', e => {
+	if ( ! $pwd.val() ) {
+		$set.addClass( 'disabled' );
+		return
+	}
+	
+	$set.removeClass( 'disabled' );
+	if ( e.key === 'Enter' ) {
+		var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? $set : $ok;
+		$target.trigger( 'click' );
 	}
 } );
-E.login.addEventListener( 'click', () => {
-	if ( ! E.pwd.value ) return
-	
-	var formdata = new FormData();
-	formdata.append( 'cmd', 'login' );
-	formdata.append( 'pwd', pwd.value );
-	fetch( 'cmd.php', { method: 'POST', body: formdata } )
-		.then( ( response ) => response.text() ) // set response data as text > verified
-		.then( ( verified ) => {
-			if ( verified != -1 ) {
-				location.reload();
+$( '.i-eye' ).on( 'click', function() {
+	var $prev = $( this ).prev();
+	$prev.attr( 'type', $prev.attr( 'type' ) === 'text' ? 'password' : 'text' );
+	$( this ).toggleClass( 'bl' );
+} );
+$set.on( 'click', function() {
+	var pwd = $pwd.val();
+	if ( ! login ) {
+		if ( pwd !== $( '#pwd2' ).val() ) {
+			$info.removeClass( 'hide' );
+		} else {
+			var data = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
+			$.post( 'cmd.php', data, location.reload );
+		}
+	} else {
+		$.post( 'cmd.php', { cmd: 'login', pwd: pwd }, verified => {
+			if ( verified == -1 ) {
+				$info.removeClass( 'hide' );
 			} else {
-				E.infoOverlay.classList.remove( 'hide' );
-				E.pwd.style[ 'caret-color' ] = 'transparent'; // fix: hide blinking cursor on focus
+				location.reload();
 			}
 		} );
+	}
 } );
-E.ok.addEventListener( 'click', () => {
-	E.infoOverlay.classList.add( 'hide' );
-	E.pwd.style[ 'caret-color' ] = '';
+$ok.on( 'click', () => {
+	$info.addClass( 'hide' );
+	$pwd.css( 'caret-color', '' );
+} );
+
 } );
 </script>
 

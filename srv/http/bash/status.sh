@@ -5,8 +5,6 @@
 # changes:
 #    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
-[[ -e /boot/password ]] && echo 1 && exit
-# --------------------------------------------------------------------
 [[ ! $( mpc status %state% 2> /dev/null ) ]] && exit # omit: startup websocket / no state on start playing dsd from network (<rpi4)
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh

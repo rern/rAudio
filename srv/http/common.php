@@ -27,13 +27,11 @@ $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
 if ( file_exists( $filelogin ) && ! file_exists( $filelogin.'setting' ) ) {
 	session_start();
-	if ( ! isset( $_SESSION[ 'login' ] ) ) {
-		foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-		include 'login.php';
-		exit;
-//----------------------------------------------------------------------------------
-	}
+	if ( ! isset( $_SESSION[ 'login' ] ) ) pageLogin();
+} else if ( file_exists( '/boot/expand' ) ) {
+	pageLogin();
 }
+//------------------------------------------------------------------------------------------
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
@@ -115,4 +113,10 @@ function icon(  $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
+}
+function pageLogin() {
+	global $c, $css, $hash, $logosvg;
+	foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+	include 'login.php';
+	exit;
 }
