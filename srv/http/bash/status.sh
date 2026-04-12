@@ -53,10 +53,10 @@ else
 			volumenone=true
 		fi
 	fi
-	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
+	grep -qs ^screenoff=0 $dirsystem/localbrowser.conf || screenoff=true
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	display=$( head -n -1 $dirsystem/display.json )
+	display=$( sed '$ d' $dirsystem/display.json )
 	display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
