@@ -122,17 +122,24 @@ $set.on( 'click', function() {
 		if ( pwd !== $( '#pwd2' ).val() ) {
 			$info.removeClass( 'hide' );
 		} else {
-			var data = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
-			$.post( 'cmd.php', data, () => location.reload() );
+			$.post(
+				'cmd.php'
+				, { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
+				, () => location.reload()
+			);
 		}
 	} else {
-		$.post( 'cmd.php', { cmd: 'login', pwd: pwd }, verified => {
-			if ( verified == -1 ) {
-				$info.removeClass( 'hide' );
-			} else {
-				location.reload();
+		$.post(
+			'cmd.php'
+			, { cmd: 'login', pwd: pwd }
+			, verified => {
+				if ( verified == -1 ) {
+					$info.removeClass( 'hide' );
+				} else {
+					location.reload();
+				}
 			}
-		} );
+		);
 	}
 } );
 $ok.on( 'click', () => {
