@@ -84,7 +84,6 @@ else
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
-, "password"     : '$( exists /boot/password )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "shareddata"   : '$( exists $filesharedip )'
