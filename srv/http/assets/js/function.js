@@ -1745,6 +1745,7 @@ var PLAYBACK  = {
 			, checkblank : true
 			, height     : 156
 			, beforeshow : () => $( '.infofooter' ).addClass( 'hide' )
+			, values     : [ 'ros', 'ros' ]
 			, ok      : () => {
 				if ( $( '.infofooter' ).hasClass( 'hide' ) ) {
 					var v = _INFO.val();
