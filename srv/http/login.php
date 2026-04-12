@@ -123,7 +123,7 @@ $set.on( 'click', function() {
 			$info.removeClass( 'hide' );
 		} else {
 			var data = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
-			$.post( 'cmd.php', data, location.reload );
+			$.post( 'cmd.php', data, () => location.reload() );
 		}
 	} else {
 		$.post( 'cmd.php', { cmd: 'login', pwd: pwd }, verified => {
