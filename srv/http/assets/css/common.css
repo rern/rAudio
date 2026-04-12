@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1771072812' );
+	src         : url( '/assets/fonts/rern.woff2?v=1775875256' );
 }
 @font-face {
 	font-family : Lato;
@@ -1191,7 +1191,7 @@ input[ type=radio ]:disabled {
 	}
 	#infoOverlay td i:focus-visible {
 		border-radius: 50%;
-		outline-offset: -6px;
+/*		outline-offset: -6px;*/
 	}
 }
 
