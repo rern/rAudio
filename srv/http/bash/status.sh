@@ -5,8 +5,10 @@
 # changes:
 #    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
+[[ -e /boot/password ]] && echo 1 && exit
+# --------------------------------------------------------------------
 ! mpc status &> /dev/null && exit # suppress startup websocket
-
+# --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
 if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server offline or not mounted
@@ -82,6 +84,7 @@ else
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
+, "password"     : '$( exists /boot/password )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "shareddata"   : '$( exists $filesharedip )'

@@ -474,8 +474,8 @@ function INFO( json ) {
 </div>
 ` );
 	// title
-	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
-	if ( I.height ) $( '#infoList' ).css( 'height', I.height );
+	if ( I.width ) $( '#infoBox' ).css( 'width', I.width +'px' );
+	if ( I.height ) $( '#infoList' ).css( 'height', I.height +'px' );
 	if ( I.icon ) {
 		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
 	} else {
