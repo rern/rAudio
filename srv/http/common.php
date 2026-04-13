@@ -22,11 +22,17 @@ $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$login     = count( glob( '/srv/http/data/system/login*' ) );
-$password  = file_exists( '/boot/expand' );
-$log_pass  = $login || $password;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
+if ( file_exists( '/boot/expand' ) ) {
+	$passwd   = true;
+	$log_pass = true;
+} else if ( count( glob( '/srv/http/data/system/login*' ) ) == 1 ) {
+	session_start();
+	$log_pass = ! isset( $_SESSION[ 'login' ] );
+	if ( ! file_exists( '/srv/http/data/system/login' ) ) $log_pass = $log_pass && $page;
+	$passwd   = false;
+}
 //------------------------------------------------------------------------------------------
 
 // plugin: css / js filename with version
@@ -39,7 +45,7 @@ foreach( $jsfiles as $file ) {
 if ( $log_pass ) {
 	$css[] = 'login';
 	$js    = [ 'login' ];
-	if ( $password ) $jsp   = [ ...$jsp, 'qr' ];
+	if ( $passwd ) $jsp   = [ ...$jsp, 'qr' ];
 } else if ( ! $page ) { // main
 	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
 	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
