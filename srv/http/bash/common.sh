@@ -114,7 +114,6 @@ camillaDSPstart() {
 }
 conf2json() {
 	local file json k keys only l lines v
-	[[ $1 == '-nocap' ]] && nocap=1 && shift
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
 	[[ ! -e $file ]] && echo false && return
@@ -135,27 +134,15 @@ conf2json() {
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
-		if [[ ${v/\"\"} ]]; then # omit v=""
-			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-						-e 's/^True$|^yes$/true/
-							s/^False$|^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
-		else
-			v=false
+		v=$( sed -E -e "s/^[\"']|[\"']$//g" \
+					-e 's/^(True|yes)$/true/
+						s/^(False|no|"")$/false/' <<< $v )
+		if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
+			v='"'$( quoteEscape $v )'"' # quote and escape string
 		fi
-		[[ ! $nocap ]] && k=${k^^}
-		json+=', "'$k'": '$v
+		json+=', "'${k^^}'": '$v
 	done <<< $lines
 	echo { ${json:1} }
-}
-confNotString() {
-	local array boolean number string var
-	var=$1
-	[[ $var =~ ^true$|^false$ ]]                          && boolean=1
-	[[ $var != 0 && ${var:0:1} == 0 && ${var:1:1} != . ]] && string=1  # not 0 and not 0.123
-	[[ $var =~ ^-*[0-9]*\.*[0-9]*$ ]]                     && number=1  # 0 / 123 / -123 / 0.123 / .123
-	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
-	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
@@ -354,14 +341,15 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip route get 1.1.1.1 | grep -oP 'src \K\S+'
+	[[ $1 ]] && dev="dev $1.*"
+	ip route get 1.1.1.1 | grep -oP "$dev src \K\S+"
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
-json2var() {
+json2var() { # single level only
 	local pattern
-	pattern='to_entries[] | "\(.key)=\(.value | @sh)"'
+	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
 	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
 }
 killProcess() {
@@ -371,9 +359,6 @@ killProcess() {
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
 	fi
-}
-lanDevice() {
-	ip -br link | awk '/^e/ {print $1}'
 }
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
@@ -385,7 +370,7 @@ localBrowserOff() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
-	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 logoLcdOled() {
@@ -409,6 +394,9 @@ CMD ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
+}
+netDevice() {
+	ls /sys/class/net | grep ^$1 | tail -n 1
 }
 notify() { # icon title message delayms
 	local data delay icon ip json message title
@@ -474,25 +462,11 @@ pushWebsocket() { # send to remote websocket.py (server)
 	data=$@
 	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
 		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat -B 10485760 ws://$ip:8080 < <( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
-	fi
+		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	fi                           # NOT OK: < <( tr -d '\n' <<< $data )
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"
-}
-radioStatusFile() {
-	local status
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^pllength|^state|^Title' $dirshm/status )
-	status+='
-Artist="'$artist'"
-Album="'$album'"
-coverart="'$coverart'"
-elapsed='$elapsed'
-pllength='$pllength'
-state="play"
-Title="'$title'"'
-	echo "$status" > $dirshm/status
-	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 }
 serviceRestartEnable() {
 	systemctl restart $CMD
@@ -641,6 +615,16 @@ timezoneAuto() {
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
 }
+usbMaxCurrent() {
+	local BB revision
+	revision=$( grep ^Revision /proc/cpuinfo )
+	BB=${revision: -3:2}
+	if [[ $BB != 17 ]]; then
+		sed -i '/usb_max_current/ d' /boot/config.txt
+	elif [[ $BB != 03 || $BB = 04 ]]; then
+		sed -i '/max_usb_current/ d' /boot/config.txt
+	fi
+}
 volume() {
 	local diff filevolumemute fn_volume type val values
 	filevolumemute=$dirsystem/volumemute
@@ -745,16 +729,6 @@ volumeLimit() {
 		. $dirshm/output
 	fi
 	$fn_volume $val% "$mixer" $card
-}
-wlanDevice() {
-	local wlandev
-	wlandev=$( ls /sys/class/net | grep ^w | tail -n 1 )
-	if [[ $wlandev ]]; then
-		echo $wlandev > $dirshm/wlan
-		( sleep 1 && iw $wlandev set power_save off ) &
-	else
-		rm -f $dirshm/wlan
-	fi
 }
 wlanOnboardDisable() {
 	local mod

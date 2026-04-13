@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1771072812' );
+	src         : url( '/assets/fonts/rern.woff2?v=1775875256' );
 }
 @font-face {
 	font-family : Lato;
@@ -413,14 +413,15 @@ codered  {
 
 c,
 cc,
-cp,
-code {
+cp {
 	font-family: 'Inconsolata';
 	font-size: 15px;
-	color: var( --cg75 );
-	background-color: var( --cgd );
+	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: var( --radius-chk );
+}
+#infoList c {
+	background-color: var( --cgd );
 }
 
 /* banner() */
@@ -1191,7 +1192,7 @@ input[ type=radio ]:disabled {
 	}
 	#infoOverlay td i:focus-visible {
 		border-radius: 50%;
-		outline-offset: -6px;
+/*		outline-offset: -6px;*/
 	}
 }
 

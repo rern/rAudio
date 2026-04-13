@@ -1550,6 +1550,10 @@ var PLAYBACK  = {
 					, ok          : () => BASH( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
 				} );
 				return
+			} else if ( list == 1 ) {
+				COMMON.loaderHide();
+				PLAYBACK.password();
+				return
 			}
 			
 			try {
@@ -1561,64 +1565,6 @@ var PLAYBACK  = {
 			
 			UTIL.statusUpdate( status );
 		} );
-	}
-	, main      : () => {
-		if ( ! S.state ) return // suppress on reboot
-		
-		LOCAL();
-		if ( S.state === 'stop' ) PROGRESS.set( 0 );
-		VOLUME.set();
-		PLAYBACK.button.options();
-		$( '#qr' ).remove();
-		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
-			PLAYBACK.blank();
-			return
-		}
-		
-		PLAYBACK.info.set();
-		PLAYBACK.coverart();
-		V.timehms      = S.Time ? COMMON.second2HMS( S.Time ) : '';
-		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
-		$( '.emptyadd' ).addClass( 'hide' );
-		$( '#coverTR' ).removeClass( 'empty' );
-		if ( S.state === 'stop' ) {
-			PLAYBACK.stop();
-			return
-		}
-		
-		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
-		if ( S.elapsed ) {
-			htmlelapsed += ' / ';
-		} else {
-			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
-		}
-		htmlelapsed +=  V.timehms;
-		$( '#progress' ).html( htmlelapsed );
-		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-		$( '#total' ).text( V.timehms );
-		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
-			UTIL.intervalClear();
-			$( '#vuneedle' ).css( 'transform', '' );
-			$( '#elapsed, #total, #progress' ).empty();
-			if ( S.state === 'play' ) {
-				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
-				if ( D.radioelapsed ) {
-					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
-					PLAYBACK.elapsed();
-				} else {
-					PROGRESS.set( 0 );
-				}
-			}
-			return
-		}
-		
-		if ( S.state === 'pause' ) {
-			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
-			$( '#total' ).addClass( 'wh' );
-			PROGRESS.set();
-		} else { //play
-			PLAYBACK.elapsed();
-		}
 	}
 	, info      : {
 		  color  : () => {
@@ -1726,6 +1672,64 @@ var PLAYBACK  = {
 						.removeAttr( 'class' )
 						.addClass( 'hide' );
 			}
+		}
+	}
+	, main      : () => {
+		if ( ! S.state ) return // suppress on reboot
+		
+		LOCAL();
+		if ( S.state === 'stop' ) PROGRESS.set( 0 );
+		VOLUME.set();
+		PLAYBACK.button.options();
+		$( '#qr' ).remove();
+		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
+			PLAYBACK.blank();
+			return
+		}
+		
+		PLAYBACK.info.set();
+		PLAYBACK.coverart();
+		V.timehms      = S.Time ? COMMON.second2HMS( S.Time ) : '';
+		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
+		$( '.emptyadd' ).addClass( 'hide' );
+		$( '#coverTR' ).removeClass( 'empty' );
+		if ( S.state === 'stop' ) {
+			PLAYBACK.stop();
+			return
+		}
+		
+		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
+		if ( S.elapsed ) {
+			htmlelapsed += ' / ';
+		} else {
+			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
+		}
+		htmlelapsed +=  V.timehms;
+		$( '#progress' ).html( htmlelapsed );
+		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
+		$( '#total' ).text( V.timehms );
+		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+			UTIL.intervalClear();
+			$( '#vuneedle' ).css( 'transform', '' );
+			$( '#elapsed, #total, #progress' ).empty();
+			if ( S.state === 'play' ) {
+				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
+				if ( D.radioelapsed ) {
+					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
+					PLAYBACK.elapsed();
+				} else {
+					PROGRESS.set( 0 );
+				}
+			}
+			return
+		}
+		
+		if ( S.state === 'pause' ) {
+			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
+			$( '#total' ).addClass( 'wh' );
+			PROGRESS.set();
+		} else { //play
+			PLAYBACK.elapsed();
 		}
 	}
 	, stop      : () => {
@@ -2443,6 +2447,9 @@ var UTIL      = {
 			DISPLAY.playback();
 			PLAYBACK.main();
 			BANNER_HIDE();
+		} else if ( V.playlist ) {
+			PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
+			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();
 	}

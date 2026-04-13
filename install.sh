@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260407
+# 20260409
 find /root/.config/mozilla -name user.js -delete
 
 file=/lib/firefox/distribution/policies.json
@@ -118,10 +118,17 @@ getinstallzip
 
 . $dirbash/common.sh
 dirPermissions
-$dirbash/cmd.sh cachebust
+cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20260413
+if [[ -L $dirnas/SD ]]; then
+	rm $dirnas/{NVME,SATA,SD,USB} &> /dev/null
+	. $dirsettings/features.sh
+	mountBindNfs
+fi
 
 # 20260216
 if [[ -e /mnt/SD ]]; then

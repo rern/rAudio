@@ -26,7 +26,7 @@ while true; do
 , "Artist"   : "'$artist'"
 , "elapsed"  : '$elapsed'
 , "Title"    : "'$title'"'
-	pushData mpdradio "{ $data }"
+	$dirbash/status-push.sh "$data" & # run in background for snapcast
 	# coverart
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
@@ -39,6 +39,5 @@ while true; do
 		fi
 	fi
 	pushData cover '{ "cover": "'$cover'" }'
-	radioStatusFile
 	sleep 10
 done

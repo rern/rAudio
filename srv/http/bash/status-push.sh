@@ -39,19 +39,23 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
+if [[ $1 ]]; then # status-radio.sh, status-dab.sh
 	state=play
-	statusradio=1
-	onPlay
+	status='{
+'$1'
+, "player"    : "mpd"
+, "state"     : "play"
+, "Time"      : false
+, "timestamp" : '$( date +%s%3N )'
+, "webradio"  : true
+}' # timestamp - lcdchar.py
+	pushData mpdradio "$status"
+	jq -r 'to_entries[] | "\(.key)=\(.value|@sh)"' <<< $status > $dirshm/status
 else
 	status=$( $dirbash/status.sh )
-	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( jq <<< $status )
-	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
-		filter+='|^  "'$k'"'
-	done
-	statuslines=$( grep -E "${filter:1}" <<< $status )
-	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
+#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
+	status=$( jq '{ Artist,Album,Composer,Conductor,elapsed,file,player,station,state,Time,timestamp,Title,volume,webradio }' <<< $status )
+	statusnew=$( jq -r 'to_entries[] | "\(.key)=\(.value|@sh)"' <<< $status | tee $dirshm/statusnew )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
@@ -72,6 +76,16 @@ else
 	fi
 	mv -f $dirshm/status{new,}
 fi
+[[ $state == play ]] && start_stop=start || start_stop=stop
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
+[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
+[[ -e $dirshm/power ]] && exit
+# --------------------------------------------------------------------
+if [[ -e $dirsystem/lcdchar ]]; then
+	echo "$status" > $dirshm/status.json
+	systemctl restart lcdchar
+fi
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
 	status=$( $dirbash/status.sh snapclient )
@@ -80,16 +94,6 @@ if [[ $clientip ]]; then
 		pushWebsocket $ip mpdplayer $status
 	done
 fi
-[[ $state == play ]] && start_stop=start || start_stop=stop
-[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
-[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
-[[ -e $dirshm/power ]] && exit
-# --------------------------------------------------------------------
-if [[ -e $dirsystem/lcdchar ]]; then
-	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
-	systemctl restart lcdchar
-fi
-[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble ]] && exit
 # --------------------------------------------------------------------

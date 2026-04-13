@@ -76,10 +76,10 @@ $data"
 	;;
 infowlan )
 	if [[ $2 ]]; then
-		wlandev=$( < $dirshm/wlan )
+		wlandev=$( netDevice w )
 		if ip addr show $wlandev | grep -q 'state DOWN'; then
 			down=1
-			ifconfig $wlandev up
+			ip link set $wlandev up
 		fi
 		cmd="iw dev $wlandev scan ssid \"$2\""
 		data=$( eval $cmd )
@@ -87,14 +87,14 @@ infowlan )
 		echo "\
 <bll># $cmd</bll>
 $data"
-		[[ $down ]] && ifconfig $wlandev down
+		[[ $down ]] && ip link set $wlandev down
 	else
 		$dirsettings/data-service.sh ap nostatus
 	fi
 	;;
 lan )
-	lan=$( lanDevice )
-	statusCmd "ifconfig $lan"
+	lan=$( netDevice e )
+	statusCmd "ip -s link show dev $lan"
 	;;
 mixer )
 	cmd='amixer scontents'
@@ -194,10 +194,9 @@ $( grep -v ^# /etc/systemd/timesyncd.conf | awk NF )
 $( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )"
 	;;
 wl )
-	wlandev=$( < $dirshm/wlan )
 	statusCmd 'iw dev'
 	echo
-	statusCmd "iwconfig $wlandev"
+	statusCmd "iwconfig $( netDevice w )"
 	;;
 wlan )
 	statusCmd 'rfkill | grep wlan'

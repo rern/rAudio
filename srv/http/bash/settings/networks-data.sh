@@ -22,7 +22,7 @@ fi
 
 gateway=$( ip -j route | jq -r .[0].gateway )
 
-wlandev=$( < $dirshm/wlan )
+wlandev=$( netDevice w )
 profiles=$( ls -p /etc/netctl | grep -v /$ )
 current=$( iwgetid -r )
 if [[ $profiles ]]; then
@@ -30,7 +30,7 @@ if [[ $profiles ]]; then
 		ssid=$( quoteEscape $profile )
 		! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 		if [[ $current == $profile ]]; then
-			ip=$( ifconfig $wlandev | awk '/inet .* netmask/ {print $2}' )
+			ip=$( ipAddress w )
 			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 			if [[ ! $dbm || $dbm -gt -60 ]]; then
 				icon=wifi
@@ -56,7 +56,7 @@ fi
 [[ $listwlan ]] && listwlan='[ '${listwlan:1}' ]'
 
 # lan
-ip=$( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' )
+ip=$( ipAddress e )
 if [[ $ip ]]; then
 	listlan='{
   "ADDRESS" : "'$ip'"
@@ -72,7 +72,7 @@ ip=$( ipAddress )
 data='
 , "device"    : {
 	  "bluetooth" : '$devicebt'
-	, "lan"       : '$( ifconfig | grep -q ^e && echo true )'
+	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
 	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
 }
 , "ap"        : '$( exists $dirsystem/ap )'

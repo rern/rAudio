@@ -668,6 +668,10 @@ multiraudiolist )
 order )
 	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
 	;;
+password )
+	chpasswd <<< root:$PASSWORD
+	rm -f /boot/expand
+	;;
 pladdrandom )
 	plAddRandom
 	;;

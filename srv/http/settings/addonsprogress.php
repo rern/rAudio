@@ -119,14 +119,14 @@ if ( in_array( $alias, [ 'dabradio', 'thumbnail' ] ) ) {
 	$options     = $alias."\n".$label."\n".$branch;
 	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 	$command    = <<< EOF
-curl -sSfLO $installurl
+curl -sLO $installurl
 [[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
 
 chmod 755 $installfile
 /bin/sudo ./$installfile "$options"
 EOF;
 	$commandtxt = <<< EOF
-curl -sSfLO $installurl
+curl -sLO $installurl
 chmod 755 $installfile
 ./$installfile "$options"
 EOF;

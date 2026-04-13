@@ -8,7 +8,7 @@ if [[ $1 == kill ]]; then
 # --------------------------------------------------------------------
 fi
 
-addonsjson=$diraddons/addonslist.json
+file_addons=$diraddons/addonslist.json
 bar='<a class="cbm">  </a>'
 info='<a class="cby ck"> i </a>'
 warn='<a class="cbr cw"> ! </a>'
@@ -20,44 +20,21 @@ $1
 <hr>"
 }
 getinstallzip() {
-	echo "$bar Get files ..."
-	installfile=$branch.tar.gz
-	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
-	curl -sfLO $fileurl
-	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
-# --------------------------------------------------------------------
 	echo
 	echo "$bar Install new files ..."
-	filelist=$( bsdtar tf $installfile \
-					| grep /srv/ \
-					| sed -e '/\/$/ d' -e 's|^.*/srv/|/srv/|' ) # stdout as a block to avoid blank lines
-	echo "$filelist"
-	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
-	if [[ $uninstallfile ]]; then
-		bsdtar xf $installfile --strip-components=1 -C /usr/local/bin $uninstallfile
-		chmod 755 /usr/local/bin/$uninstallfile
-	fi
-	tmpdir=/tmp/install
-	rm -rf $tmpdir
-	mkdir -p $tmpdir
-	bsdtar xf $installfile --strip-components=1 -C $tmpdir
-	find $tmpdir -maxdepth 1 -type f -delete
-	rm $installfile
-	cp -r $tmpdir/* /
-	rm -rf $tmpdir
+	user_repo=$( jq -r .$alias.installurl $file_addons | cut -d/ -f4,5 )
+	curl -sL https://raw.githubusercontent.com/$user_repo/archive/$branch.tar.gz | bsdtar xvf - --strip-components=1 -C /
+	file_uninstall=$( ls /uninstall_*.sh 2> /dev/null ) && chmod +x $file_uninstall && mv $file_uninstall /usr/local/bin
+	find / -maxdepth 1 -type f -delete
 }
 installstart() { # $1-'u'=update
 	rm $0
-	readarray -t args <<< $1 # lines to array: alias label branch opt1 opt2 ...
-	alias=${args[0]}
-	label=${args[1]}
-	branch=${args[2]}
-	args=( "${args[@]:3}" ) # 'opt' for script start at ${args[0]}
-	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
+	read alias label branch < <( echo $1 )
+	title="<a class='cc'>$( jq -r .$alias.title $file_addons )</a>"
 	[[ $label != Rank || $label != Import ]] && title "$bar $label $title ..." || title "$bar $title ..."
 }
 installfinish() {
-	version=$( jq -r .$alias.version $addonsjson )
+	version=$( jq -r .$alias.version $file_addons )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	echo "
 $bar Done.
@@ -65,7 +42,7 @@ $bar Done.
 "
 }
 uninstallstart() {
-	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
+	title="<a class='cc'>$( jq -r .$alias.title $file_addons )</a>"
 	if [[ ! -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  echo $info $title not found.
 	  rm $diraddons/$alias &> /dev/null

@@ -196,8 +196,69 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
+if ( $MENU.length ) {
+	var LIST = {
+		  equal  : list => {
+			if ( ! V.list ) return false
+			
+			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
+		}
+		, render : ( id, html ) => {
+			var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
+			$list.html( html );
+			$list.find( 'pre.li' ).each( ( i, el ) => STATUS( id, $( el ).data( 'arg' ), 'info' ) );
+		}
+	}
+	var MENU = {
+		  command  : ( $this, e ) => {
+			if ( $this.hasClass( 'gr' ) ) {
+				e.stopPropagation();
+				return false
+			}
+			
+			return $this.data( 'cmd' )
+		}
+		, isActive : ( $li, e ) => {
+			if ( $( e.target ).is( 'pre' ) ) {
+				e.stopPropagation();
+				$MENU.addClass( 'hide' );
+				return true
+			}
+			
+			var active = ! $MENU.hasClass( 'hide' ) && $li.hasClass( 'active' );
+			$MENU.addClass( 'hide' );
+			$( '.entries li' ).removeClass( 'active' );
+			return active
+		}
+		, show     : $li => {
+			$li.addClass( 'active' );
+			$( '#menu .info' ).toggleClass( 'gr', $li.find( 'pre' ).length > 0 );
+			$MENU
+				.removeClass( 'hide' )
+				.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
+			COMMON.scrollToView( $MENU );
+		}
+	}
+}
 
 //---------------------------------------------------------------------------------------
+$( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+// context menu
+if ( $MENU.length ) {
+	$( '.container' ).on( 'click', function( e ) {
+		if ( $( e.target ).parents( '.entries' ).length ) return
+		
+		$MENU.addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+	} );
+	$( '.entries' ).on( 'click', '.infoclose', function() {
+		var $this = $( this );
+		$this.prev().remove();
+		$this.remove();
+	} );
+}
+
 document.title = PAGE === 'camilla' ? 'CamillaDSP' : COMMON.capitalize( PAGE );
 V.localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ PAGE ).addClass( 'active' );
@@ -464,59 +525,5 @@ $( document ).on( 'keydown', function( e ) {
 			break
 	}
 } );
-// context menu
-if ( $MENU.length ) {
-	var LIST = {
-		  equal  : list => {
-			if ( ! V.list ) return false
-			
-			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
-		}
-		, render : ( id, html ) => {
-			var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
-			$list.html( html );
-			$list.find( 'pre.li' ).each( ( i, el ) => STATUS( id, $( el ).data( 'arg' ), 'info' ) );
-		}
-	}
-	var MENU = {
-		  command  : ( $this, e ) => {
-			if ( $this.hasClass( 'gr' ) ) {
-				e.stopPropagation();
-				return false
-			}
-			
-			return $this.data( 'cmd' )
-		}
-		, isActive : ( $li, e ) => {
-			if ( $( e.target ).is( 'pre' ) ) {
-				e.stopPropagation();
-				$MENU.addClass( 'hide' );
-				return true
-			}
-			
-			var active = ! $MENU.hasClass( 'hide' ) && $li.hasClass( 'active' );
-			$MENU.addClass( 'hide' );
-			$( '.entries li' ).removeClass( 'active' );
-			return active
-		}
-		, show     : $li => {
-			$li.addClass( 'active' );
-			$( '#menu .info' ).toggleClass( 'gr', $li.find( 'pre' ).length > 0 );
-			$MENU
-				.removeClass( 'hide' )
-				.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
-			COMMON.scrollToView( $MENU );
-		}
-	}
-	$( '.container' ).on( 'click', function( e ) {
-		if ( $( e.target ).parents( '.entries' ).length ) return
-		
-		$MENU.addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	} );
-	$( '.entries' ).on( 'click', '.infoclose', function() {
-		var $this = $( this );
-		$this.prev().remove();
-		$this.remove();
-	} );
-}
+
+} ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

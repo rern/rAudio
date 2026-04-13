@@ -1,0 +1,40 @@
+body {
+	display        : grid;
+	place-items    : center;
+	height         : 100vh;
+	text-align     : center;
+}
+#divlogin > svg {
+	width          : 50px;
+}
+#logintitle {
+	margin         : 10px 0 30px 20px;
+	font-weight    : 300;
+	letter-spacing : 25px;
+}
+#qr {
+	width: 200px;
+	height: 200px;
+	margin: 0 auto;
+	line-height: 22px;
+}
+#qr svg {
+	margin: 10px auto;
+}
+label {
+	display        : inline-block;
+	width          : 65px;
+	margin-left    : -30px;
+	text-align     : right;
+}
+#pwd,
+#pwd2 {
+	width          : 180px;
+	margin         : 5px 10px 10px;
+	border         : 1px solid var( --cg );
+}
+.i-eye {
+	position       : absolute;
+	font-size      : 20px;
+	margin-top     : 14px;
+}

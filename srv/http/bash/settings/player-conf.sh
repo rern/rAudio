@@ -11,15 +11,6 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-pushStatus() {
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
-	pushRefresh player
-	[[ -e $dirshm/btonoff ]] && return
-# --------------------------------------------------------------------
-	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
-	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
-}
 pushVolumeNone() {
 	pushData display '{ "volumenone": '$1' }'
 	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
@@ -173,7 +164,13 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
-pushStatus
+status=$( $dirbash/status.sh )
+pushData mpdplayer "$status"
+pushRefresh player
+if [[ ! -e $dirshm/btonoff ]]; then
+	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
+	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
+fi
 [[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
 # renderers

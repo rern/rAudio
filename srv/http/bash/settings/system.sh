@@ -55,9 +55,9 @@ snd-soc-wm8960'
 		[[ $module ]] && sort -u <<< $module | awk NF > $file_module || rm -f $file_module
 	fi
 	if [[ $poweraudiophonic ]]; then
-		config+="
+		config+='
 dtoverlay=gpio-poweroff,gpiopin=22
-dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
 	else
 		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' <<< $config )
 	fi
@@ -106,7 +106,7 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	lan=$( lanDevice )
+	lan=$( netDevice e )
 	if [[ $lan ]]; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen

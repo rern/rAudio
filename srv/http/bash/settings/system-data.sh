@@ -121,7 +121,7 @@ data+='
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
-, "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
+, "lan"            : '$( [[ $( netDevice e ) ]] && echo true )'
 , "list"           : { "storage": '$storage' }
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
@@ -140,7 +140,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( [[ $( ifconfig wlan0 2> /dev/null | grep inet ) ]] && echo true )
+, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )
 ##########
 	data+='
 , "btconnected"    : '$( exists $dirshm/btconnected )

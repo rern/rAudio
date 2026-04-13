@@ -2,12 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-wlanDevice
-
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	id0=$( < /etc/machine-id )
-	rm /boot/expand /etc/machine-id
+	rm /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
@@ -18,11 +16,8 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
-	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	[[ $BB != 03 || $BB = 04 ]] && sed -i '/max_usb_current/ d' /boot/config.txt
-	[[ $BB != 17 ]] && sed -i '/usb_max_current/ d' /boot/config.txt
-	[[ -e /bin/firefox && $BB == 12 ]] && localBrowserOff
+	usbMaxCurrent
+	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
@@ -36,20 +31,18 @@ if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
 	localBrowserOff
 fi
 
-if [[ -e $dirshm/wlan ]]; then
-	if [[ -e /boot/wifi ]]; then
-		wlandev=$( < $dirshm/wlan )
-		ssid=$( getVar ESSID /boot/wifi )
-		sed -E -e '/^#|^\s*$/ d
+if [[ -e /boot/wifi ]]; then
+	wlandev=$( netDevice w )
+	ssid=$( getVar ESSID /boot/wifi )
+	sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		rm -f /boot/{accesspoint,wifi} $dirsystem/ap
-		$dirsettings/networks.sh "profileconnect
+	rm -f /boot/{accesspoint,wifi} $dirsystem/ap
+	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD ESSID"
-	elif [[ -e /boot/accesspoint ]]; then
-		mv -f /boot/accesspoint $dirsystem/ap
-	fi
+elif [[ -e /boot/accesspoint ]]; then
+	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
 
@@ -97,12 +90,11 @@ else # if no connections, start accesspoint
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
-landevice=$( lanDevice )
-if [[ $landevice && $( ifconfig $landevice | grep inet ) ]] \
-		|| (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
+if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
+[[ $( ipAddress w ) ]] && iw $( netDevice w ) set power_save off
 if [[ -e $dirsystem/btreceiver ]]; then
 	mac=$( < $dirsystem/btreceiver )
 	rm $dirsystem/btreceiver
@@ -112,7 +104,7 @@ $mac
 CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
-! systemctl -q is-active mpd && $dirsettings/player-conf.sh
+$dirsettings/player-conf.sh
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 # after all sources connected -----------------------------------------------------
@@ -126,7 +118,9 @@ fi
 
 touch $dirshm/startup
 
-grep -qs startup=true $dirsystem/autoplay.conf && mpcPlayback play
+if [[ -e $dirsystem/autoplay ]]; then
+	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
+fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 udevil clean

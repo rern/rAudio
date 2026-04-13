@@ -10,7 +10,7 @@ skip='register IPv6'
 configText() {
 	local config l lines linesL next
 	config="\
-<code>$( pacman -Q $PKG )</code>"
+<c>$( pacman -Q $PKG )</c>"
 	readarray -t lines < <( grep -Ev '^#|=$|^$' $1 | awk NF )
 	[[ ! $lines ]] && echo $config && return
 	
@@ -119,7 +119,7 @@ shairportsync )
 smb )
 	PKG=samba
 	conf="\
-$( configText /etc/samba/smb.conf )"
+$( configText /etc/samba/smb.conf | sed -e '/server/,/spool/ d' -e '/^\[global]/ a\	...' )"
 	;;
 snapclient )
 	PKG=snapcast

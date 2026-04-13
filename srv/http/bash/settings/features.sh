@@ -6,7 +6,7 @@ args2var "$1"
 
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
-	wlandev=$( < $dirshm/wlan )
+	wlandev=$( netDevice w )
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
 	else
@@ -34,6 +34,12 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
+mkdir_mount() {
+	local dir_mp
+	[[ $1 == $dirnas ]] && dir_mp=/NAS || dir_mp=$2
+	mkdir -p $dir_mp
+	mount --bind $1 $dir_mp
+}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -49,7 +55,6 @@ wlanDisable() {
 case $CMD in
 
 ap )
-	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=).*/\1'$IP'/
@@ -120,8 +125,8 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
-		if ! grep -q console=tty3 /boot/cmdline.txt; then
-			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+		if ! grep -q tty3 /boot/cmdline.txt; then
+			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
 		if [[ $Z_CHANGED ]]; then
@@ -211,11 +216,17 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		for d in NVME SATA SD USB; do
-			[[ -e /mnt/MPD/$d ]] && ln -s /mnt/MPD/$d $dirnas
-		done
+		while read d; do
+			[[ $d == NAS ]] && dir_mp=/NAS || dir_mp=$dirnas/$d
+			mkdir -p $dir_mp
+			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
+		done < <( ls /mnt/MPD )
 		ip=$( ipAddress )
-		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
+		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
+		cat << EOF > /etc/exports
+/mnt/MPD/NAS  $ip_opt
+/NAS          $ip_opt
+EOF
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
@@ -235,18 +246,17 @@ rescan
 
 CMD ACTION PATHMPD"
 		# prepend path
-		files=$( ls $dirbookmarks/* )
-		files+=$'\n'$( ls $dirplaylists/* )
-		files=$( awk NF <<< $files )
-		if [[ $files ]]; then
-			while read file; do
-				sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
-			done <<< $files
-		fi
+		while read file; do
+			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
+		done < <( ls $dirbookmarks/* $dirplaylists/* )
 	else
+		mkdir -p $dirshared
 		cp -rL $dirmpd $dirshared
 		rm -rf $dirnas/data
-		rm -f $dirnas/{NVME,SATA,SD,USB}
+		while read d; do
+			umount -l $d
+			rmdir $d
+		done < <( ls -d $dirnas/* | sed '$ a\/NAS' )
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
@@ -392,7 +402,7 @@ spotifytoken )
 startx )
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
+	off=$(( screenoff * 60 ))
 	sudo xset s off
 	sudo xset dpms $off $off $off
 	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
