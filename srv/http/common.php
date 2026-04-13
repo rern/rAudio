@@ -22,34 +22,34 @@ $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
+$login     = count( glob( '/srv/http/data/system/login*' ) );
+$password  = file_exists( '/boot/expand' );
+$log_pass  = $login || $password;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
-$filelogin = '/srv/http/data/system/login';
-if ( file_exists( $filelogin ) && ! file_exists( $filelogin.'setting' ) ) {
-	session_start();
-	if ( ! isset( $_SESSION[ 'login' ] ) ) pageLogin();
-} else if ( file_exists( '/boot/expand' ) ) {
-	pageLogin();
-}
 //------------------------------------------------------------------------------------------
-$equalizer = file_exists( '/srv/http/data/system/equalizer' );
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // plugin: css / js filename with version
 $jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jsp       = [ 'jquery' ];
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$jfiles[ $name ] = $file;
 }
-if ( ! $page ) { // main
+if ( $log_pass ) {
+	$css[] = 'login';
+	$js    = [ 'login' ];
+	if ( $password ) $jsp   = [ ...$jsp, 'qr' ];
+} else if ( ! $page ) { // main
+	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
+	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'pica', 'qr' ];
+	$jsp   = [ ...$jsp, 'pica', 'qr' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) $css[] = 'equalizer';
 	$title = 'STATUS';
 } else {         // settings
 	$css[] = 'settings';
-	$jsp   = [ 'jquery' ];
 	if ( $networks || $system ) $jsp[] = 'qr';
 	$js    = [ 'common', 'settings', $page ];
 	if ( $addons ) $css[] = 'addons';
@@ -84,7 +84,7 @@ echo $html.'
 ';
 //------------------------------------------------------------------------------------------
 $html_end  = '';
-if ( ! $add_guide )  {
+if ( ! $add_guide && ! $log_pass )  {
 	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html_end.= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
@@ -101,22 +101,22 @@ foreach( $js as $j )  $html_end.= $htmljs.$j.'.js'.$hash.'"></script>';
 
 function htmlEnd( $htmlbar ) {
 	global $html_end;
-	echo '
+	if ( $htmlbar ) $html_end.= '
 	<div id="bar-bottom">'.$htmlbar.'</div>
-'.$html_end.'
+';
+	echo $html_end.'
 </body>
 </html>
 ';
+}
+if ( $log_pass ) {
+	include 'login.php';
+	htmlEnd( '' );
+	exit;
 }
 //------------------------------------------------------------------------------------------
 function icon(  $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
-}
-function pageLogin() {
-	global $c, $css, $hash, $logosvg;
-	foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-	include 'login.php';
-	exit;
 }
