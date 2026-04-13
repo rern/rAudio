@@ -25,7 +25,10 @@ if [[ -e /bin/firefox ]]; then
 EOF
 	find /root/.config/mozilla -name user.js -delete
 	file=/etc/systemd/system/localbrowser.service
-	! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
+	if ! grep -q ^User $file; then
+		sed -i '/^Type/ a\User=root' $file
+		systemctl try-restart localbrowser
+	fi
 fi
 
 dir=/etc/systemd/system/nfs-server.service.d
