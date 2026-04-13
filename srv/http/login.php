@@ -1,7 +1,7 @@
 <div id="divlogin">
 	<?=$logosvg?>
 	<div id="logintitle">rAudio</div>
-<?php if ( $password ) {
+<?php if ( $passwd ) {
 	$title  = 'Password';
 	$text   = 'Passwords not the same.';
 	$hostname = gethostname();

@@ -45,10 +45,8 @@ E.set.on( 'click', function() {
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
-	$.post( 'cmd.php', args, verified => {
-		if ( verified != -1 ) location.reload();
-		
-		E.infoOverlay.removeClass( 'hide' );
+	$.post( 'cmd.php', args, std => {
+		std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
 	} );
 } );
 E.ok.on( 'click', () => {
