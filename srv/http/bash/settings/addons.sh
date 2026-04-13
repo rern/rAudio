@@ -22,9 +22,10 @@ $1
 getinstallzip() {
 	echo
 	echo "$bar Install new files ..."
-	user_repo=$( jq -r .$alias.installurl $file_addons | cut -d/ -f4,5 )
-	curl -sL https://github.com/$user_repo/archive/$branch.tar.gz | bsdtar xvf - --strip-components=1 -C /
-	file_uninstall=$( ls /uninstall_*.sh 2> /dev/null ) && chmod +x $file_uninstall && mv $file_uninstall /usr/local/bin
+	read user repo < <( jq -r .$alias.installurl $file_addons | awk -F'/' '{print $4, $5}' )
+	curl -sL https://github.com/$user/$repo/archive/$branch.tar.gz \
+		| bsdtar xvf - --strip-components=1 -C / 2>&1 \
+		| grep '/.*/'
 	find / -maxdepth 1 -type f -delete
 }
 installstart() { # $1-'u'=update
@@ -49,8 +50,9 @@ uninstallstart() {
 	  exit 1
 # --------------------------------------------------------------------
 	fi
-	rm $file_uninst
 	[[ $label != Update ]] && title "$bar Uninstall $title ..."
+	. $file_uninst
+	rm $file_uninst
 }
 uninstallfinish() {
 	rm $diraddons/$alias &> /dev/null
