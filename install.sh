@@ -5,9 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260409
-file=/lib/firefox/distribution/policies.json
-if [[ -e /bin/firefox && ! -e $file ]]; then
-	cat << EOF > $file
+if [[ -e /bin/firefox ]]; then
+	file=/lib/firefox/distribution/policies.json
+	[[ ! -e $file ]] && cat << EOF > $file
 {
 	"policies": {
 		"DisableAppUpdate": true,
@@ -24,10 +24,9 @@ if [[ -e /bin/firefox && ! -e $file ]]; then
 }
 EOF
 	find /root/.config/mozilla -name user.js -delete
+	file=/etc/systemd/system/localbrowser.service
+	! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 fi
-
-file=/etc/systemd/system/localbrowser.service
-! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 
 dir=/etc/systemd/system/nfs-server.service.d
 if [[ -e /bin/nfsdcld && ! -e $dir ]]; then
