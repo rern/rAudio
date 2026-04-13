@@ -5,9 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260409
-if [[ -e /bin/firefox ]]; then
-	file=/lib/firefox/distribution/policies.json
-	[[ ! -e $file ]] && cat << EOF > $file
+find /root/.config/mozilla -name user.js -delete
+
+file=/lib/firefox/distribution/policies.json
+if [[ -e /bin/firefox && ! -e $file ]]; then
+	cat << EOF > $file
 {
 	"policies": {
 		"DisableAppUpdate": true,
@@ -23,16 +25,13 @@ if [[ -e /bin/firefox ]]; then
 	}
 }
 EOF
-	find /root/.config/mozilla -name user.js -delete
-	file=/etc/systemd/system/localbrowser.service
-	if ! grep -q ^User $file; then
-		sed -i '/^Type/ a\User=root' $file
-		systemctl try-restart localbrowser
-	fi
 fi
 
+file=/etc/systemd/system/localbrowser.service
+! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
+
 dir=/etc/systemd/system/nfs-server.service.d
-if [[ -e /bin/nfsdcld && ! -e $dir ]]; then
+if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
 	mkdir -p $dir
 	cat << EOF > $dir/override.conf
 [Service]
@@ -113,7 +112,7 @@ fi
 #-------------------------------------------------------------------------------
 installstart "$1"
 
-rm -rf /srv/http/assets/{css,js} /srv/http/{bash,settings}
+#rm -rf /srv/http/assets/{css,js} /srv/http/{bash,settings}
 
 getinstallzip
 
