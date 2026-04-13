@@ -625,6 +625,11 @@ usbMaxCurrent() {
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
 }
+update() {
+	curl -L https://github.com/rern/rAudio/archive/$1.tar.gz | bsdtar xf - --strip-components=1 -C /
+	find / -maxdepth 1 -type f -delete
+	dirPermissions
+}
 volume() {
 	local diff filevolumemute fn_volume type val values
 	filevolumemute=$dirsystem/volumemute
