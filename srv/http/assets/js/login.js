@@ -5,6 +5,7 @@ var E = {
 	, passwd : $( '#qr' ).length
 };
 [ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => { E[ id ] = $( '#'+ id ) } );
+E.input.attr( 'spellcheck', 'false' );
 if ( E.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
