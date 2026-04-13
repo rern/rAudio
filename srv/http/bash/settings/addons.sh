@@ -25,7 +25,7 @@ getinstallzip() {
 	echo "$bar Install new files ..."
 	read user repo < <( jq -r .$alias.installurl $file_addons | awk -F'/' '{print $4, $5}' )
 	url=https://github.com/$user/$repo/archive/$branch.tar.gz
-	if [[ $( curl -sILo /dev/null -w %{http_code} $url ) != 200 ]]; then
+	if [[ $( curl -sfILo /dev/null -w %{http_code} $url ) != 200 ]]; then
 		echo "$bar Branch: $branch not found."
 		exit
 # --------------------------------------------------------------------
