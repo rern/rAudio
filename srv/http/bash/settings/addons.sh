@@ -20,7 +20,7 @@ $1
 <hr>"
 }
 getinstallzip() {
-	local url
+	local repo url user
 	echo
 	echo "$bar Install new files ..."
 	read user repo < <( jq -r .$alias.installurl $file_addons | awk -F'/' '{print $4, $5}' )
