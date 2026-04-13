@@ -31,7 +31,7 @@ file=/etc/systemd/system/localbrowser.service
 ! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 
 dir=/etc/systemd/system/nfs-server.service.d
-if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
+if [[ -e /bin/nfsdcld && ! -e $dir ]]; then
 	mkdir -p $dir
 	cat << EOF > $dir/override.conf
 [Service]
