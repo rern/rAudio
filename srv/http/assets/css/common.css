@@ -413,14 +413,15 @@ codered  {
 
 c,
 cc,
-cp,
-code {
+cp {
 	font-family: 'Inconsolata';
 	font-size: 15px;
-	color: var( --cg75 );
-	background-color: var( --cgd );
+	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: var( --radius-chk );
+}
+#infoList c {
+	background-color: var( --cgd ) !important;
 }
 
 /* banner() */
