@@ -46,7 +46,6 @@ pre hr.hrlight {
 	background  : var( --cgd );
 	overflow    : auto;
 	user-select : text;
-	-webkit-overflow-scrolling: touch;
 }
 .cbm  { background: var( --cml ); }
 .cbg  { background: #00ff00; }

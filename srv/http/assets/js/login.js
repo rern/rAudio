@@ -5,6 +5,7 @@ var E = {
 	, passwd : $( '#qr' ).length
 };
 [ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => { E[ id ] = $( '#'+ id ) } );
+E.input.attr( 'spellcheck', 'false' );
 if ( E.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
@@ -12,7 +13,7 @@ if ( E.passwd ) {
 	);
 	E.input.val( 'ros' );
 }
-E.pwd.select();
+E.pwd.focus();
 E.input.on( 'keyup cut paste', e => {
 	setTimeout( () => { // cut: wait for value update
 		var blank = ! E.pwd.val();
@@ -52,9 +53,8 @@ E.set.on( 'click', function() {
 } );
 E.ok.on( 'click', () => {
 	E.infoOverlay.addClass( 'hide' );
-	var el = E.pwd[ 0 ];
-	el.setSelectionRange( el.value.length, el.value.length ); // cursor at end
 	E.input.css( 'caret-color', '' );
+	E.pwd.focus();
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
