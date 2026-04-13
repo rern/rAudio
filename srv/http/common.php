@@ -27,7 +27,7 @@ $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 if ( file_exists( '/boot/expand' ) ) {
 	$passwd   = true;
 	$log_pass = true;
-} else if ( count( glob( '/srv/http/data/system/login*' ) ) == 1 ) {
+} else if ( count( glob( '/srv/http/data/system/login*' ) ) ) {
 	session_start();
 	$log_pass = ! isset( $_SESSION[ 'login' ] );
 	if ( ! file_exists( '/srv/http/data/system/login' ) ) $log_pass = $log_pass && $page;
