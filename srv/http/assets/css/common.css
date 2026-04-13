@@ -662,7 +662,6 @@ hr {
 	text-align: center;
 	overflow: hidden;
 	scrollbar-width: none;
-	-webkit-overflow-scrolling: touch;
 }
 #infoOverlay a {
 	height: 40px;
