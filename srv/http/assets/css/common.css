@@ -421,7 +421,7 @@ cp {
 	border-radius: var( --radius-chk );
 }
 #infoList c {
-	background-color: var( --cgd ) !important;
+	background-color: var( --cgd );
 }
 
 /* banner() */
