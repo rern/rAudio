@@ -29,7 +29,7 @@ if ( file_exists( '/boot/expand' ) ) {
 	$log_pass = true;
 } else if ( ! empty( glob( '/srv/http/data/system/login*' ) ) ) {
 	session_start();
-	$log_pass = ! isset( $_SESSION[ 'login' ] );
+	$log_pass = empty( $_SESSION[ 'login' ] );
 	if ( ! file_exists( '/srv/http/data/system/login' ) ) $log_pass = $log_pass && $page;
 	$passwd   = false;
 }

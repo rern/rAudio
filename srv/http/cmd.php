@@ -50,18 +50,19 @@ case 'login': // $.post from features.js
 	$pwd         = $post->pwd;
 	if ( file_exists( $filelogin ) ) {
 		$password = rtrim( file_get_contents( $filelogin ), "\n" );
-		if ( ! password_verify( $pwd, $password ) ) exit( '-1' );
+		if ( ! password_verify( $pwd, $password ) ) exit( '-1' ); // login failed
 //----------------------------------------------------------------------------------
 	}
 	$filesetting = $filelogin.'setting';
-	if ( isset( $post->disable ) ) {
+	if ( isset( $post->disable ) ) {                              // disable
 		unlink( $filelogin );
 		unlink( $filesetting );
 		exec( $dirsettings.'features.sh login' );
-	} else if ( ! isset( $post->loginsetting ) ) {
+	} else if ( ! isset( $post->loginsetting ) ) {                // login ok
 		session_start();
-		$_SESSION[ 'login' ] = 1;
-	} else {
+		$_SESSION[ 'login' ] = true;
+	} else {                                                      // enable / change
+		sessionStop();
 		$pwd  = $post->pwdnew ?: $pwd;
 		$hash = password_hash( $pwd, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		file_put_contents( $filelogin, $hash );
@@ -74,8 +75,7 @@ case 'login': // $.post from features.js
 	}
 	break;
 case 'logout': // $.post from main.js
-	session_start();
-	session_destroy();
+	sessionStop();
 	break;
 case 'sort': // from cmd-list.sh
 	include 'function.php';
@@ -105,4 +105,10 @@ function fileUploadSave( $filepath ) {
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $filepath );
+}
+function sessionStop() {
+	global $_SESSION;
+	session_start();
+	$_SESSION = [];
+	session_destroy();
 }

@@ -170,7 +170,7 @@ var CONFIG       = {
 				, [ 'New',                             S.login ? 'password' : 'hidden' ]
 				, [ 'Setting pages only',              'checkbox' ]
 			]
-			, footer     : S.login ? '(<wh>New</wh> = (blank) - No password change)' : ''
+			, footer     : S.login ? '(<wh>New</wh> = <c>blank</c> - No password change)' : ''
 			, checkblank : [ 0 ]
 			, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
 			, cancel     : SWITCH.cancel
