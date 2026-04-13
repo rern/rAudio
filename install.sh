@@ -5,8 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260409
-find /root/.config/mozilla -name user.js -delete
-
 file=/lib/firefox/distribution/policies.json
 if [[ -e /bin/firefox && ! -e $file ]]; then
 	cat << EOF > $file
@@ -25,6 +23,7 @@ if [[ -e /bin/firefox && ! -e $file ]]; then
 	}
 }
 EOF
+	find /root/.config/mozilla -name user.js -delete
 fi
 
 file=/etc/systemd/system/localbrowser.service
