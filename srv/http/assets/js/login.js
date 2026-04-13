@@ -45,6 +45,7 @@ E.set.on( 'click', function() {
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
+	E.input.css( 'caret-color', 'transparent' );
 	$.post( 'cmd.php', args, std => {
 		std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
 	} );
@@ -53,6 +54,7 @@ E.ok.on( 'click', () => {
 	E.infoOverlay.addClass( 'hide' );
 	var el = E.pwd[ 0 ];
 	el.setSelectionRange( el.value.length, el.value.length ); // cursor at end
+	E.input.css( 'caret-color', '' );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
