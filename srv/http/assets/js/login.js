@@ -14,7 +14,7 @@ if ( E.passwd ) {
 }
 E.pwd.select();
 E.input.on( 'keyup cut paste', e => {
-	setTimeout( () => {
+	setTimeout( () => { // cut: wait for value update
 		var blank = ! E.pwd.val();
 		if ( E.passwd ) blank = blank || ! E.pwd2.val();
 		if ( blank ) {
@@ -38,26 +38,18 @@ E.set.on( 'click', function() {
 	if ( E.passwd ) {
 		if ( pwd !== E.pwd2.val() ) {
 			E.infoOverlay.removeClass( 'hide' );
-		} else {
-			$.post(
-				'cmd.php'
-				, { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
-				, () => location.reload()
-			);
+			return
 		}
+		
+		var args = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
 	} else {
-		$.post(
-			'cmd.php'
-			, { cmd: 'login', pwd: pwd }
-			, verified => {
-				if ( verified == -1 ) {
-					E.infoOverlay.removeClass( 'hide' );
-				} else {
-					location.reload();
-				}
-			}
-		);
+		var args = { cmd: 'login', pwd: pwd }
 	}
+	$.post( 'cmd.php', args, verified => {
+		if ( verified != -1 ) location.reload();
+		
+		E.infoOverlay.removeClass( 'hide' );
+	} );
 } );
 E.ok.on( 'click', () => {
 	E.infoOverlay.addClass( 'hide' );
