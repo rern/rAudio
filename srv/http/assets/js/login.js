@@ -1,40 +1,36 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$info = $( '#infoOverlay' );
-$ok   = $( '#ok' );
-$pwd  = $( '#pwd' );
-$qr   = $( '#qr' );
-$set  = $( '#set' );
-login = ! $qr.length;
-if ( ! login ) {
-	$qr.html( 'http://<wh>'+ ip +'</wh>'
+var E = { input: $( 'input' ) };
+[ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => { E[ id ] = $( '#'+ id ) } );
+if ( E.qr.length ) {
+	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
 			+ QRCode( 'http://'+ ip )
 	);
+	E.input.val( 'ros' );
 }
-$pwd.focus();
+E.pwd.select();
 $( document ).on( 'keyup', e => {
 	if ( ! $pwd.val() ) {
-		$set.addClass( 'disabled' );
+		E.set.addClass( 'disabled' );
 		return
 	}
 	
-	$set.removeClass( 'disabled' );
+	E.set.removeClass( 'disabled' );
 	if ( e.key === 'Enter' ) {
-		var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? $set : $ok;
+		var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? E.set : E.ok;
 		$target.trigger( 'click' );
 	}
 } );
 $( '.i-eye' ).on( 'click', function() {
-	var $prev = $( this ).prev();
-	$prev.attr( 'type', $prev.attr( 'type' ) === 'text' ? 'password' : 'text' );
+	E.input.attr( 'type', E.input.attr( 'type' ) === 'text' ? 'password' : 'text' );
 	$( this ).toggleClass( 'bl' );
 } );
-$set.on( 'click', function() {
-	var pwd = $pwd.val();
-	if ( ! login ) {
-		if ( pwd !== $( '#pwd2' ).val() ) {
-			$info.removeClass( 'hide' );
+E.set.on( 'click', function() {
+	var pwd = E.pwd.val();
+	if ( E.qr.length ) {
+		if ( pwd !== E.pwd2.val() ) {
+			E.infoOverlay.removeClass( 'hide' );
 		} else {
 			$.post(
 				'cmd.php'
@@ -48,7 +44,7 @@ $set.on( 'click', function() {
 			, { cmd: 'login', pwd: pwd }
 			, verified => {
 				if ( verified == -1 ) {
-					$info.removeClass( 'hide' );
+					E.infoOverlay.removeClass( 'hide' );
 				} else {
 					location.reload();
 				}
@@ -56,9 +52,10 @@ $set.on( 'click', function() {
 		);
 	}
 } );
-$ok.on( 'click', () => {
-	$info.addClass( 'hide' );
-	$pwd.css( 'caret-color', '' );
+E.ok.on( 'click', () => {
+	E.infoOverlay.addClass( 'hide' );
+	var el = E.pwd[ 0 ];
+	el.setSelectionRange( el.value.length, el.value.length ); // cursor at end
 } );
 
 } );

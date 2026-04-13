@@ -27,12 +27,14 @@ label {
 	margin-left    : -30px;
 	text-align     : right;
 }
-#pwd, #pwd2 {
-	width          : 200px;
+#pwd,
+#pwd2 {
+	width          : 180px;
 	margin         : 5px 10px 10px;
 	border         : 1px solid var( --cg );
 }
 .i-eye {
+	position       : absolute;
 	font-size      : 20px;
-	vertical-align : -3px;
+	margin-top     : 14px;
 }
