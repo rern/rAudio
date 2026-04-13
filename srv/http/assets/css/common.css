@@ -415,7 +415,7 @@ c,
 cc,
 cp {
 	font-family: 'Inconsolata';
-	font-size: 16px;
+	font-size: 15px;
 	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: var( --radius-chk );
