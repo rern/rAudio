@@ -1,8 +1,11 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var E = { input: $( 'input' ) };
+var E = {
+	  input  : $( 'input' )
+	, passwd : $( '#qr' ).length
+};
 [ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => { E[ id ] = $( '#'+ id ) } );
-if ( E.qr.length ) {
+if ( E.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
 			+ QRCode( 'http://'+ ip )
@@ -10,17 +13,21 @@ if ( E.qr.length ) {
 	E.input.val( 'ros' );
 }
 E.pwd.select();
-$( document ).on( 'keyup', e => {
-	if ( ! $pwd.val() ) {
-		E.set.addClass( 'disabled' );
-		return
-	}
-	
-	E.set.removeClass( 'disabled' );
-	if ( e.key === 'Enter' ) {
-		var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? E.set : E.ok;
-		$target.trigger( 'click' );
-	}
+E.input.on( 'keyup cut paste', e => {
+	setTimeout( () => {
+		var blank = ! E.pwd.val();
+		if ( E.passwd ) blank = blank || ! E.pwd2.val();
+		if ( blank ) {
+			E.set.addClass( 'disabled' );
+			return
+		}
+		
+		E.set.removeClass( 'disabled' );
+		if ( e.key === 'Enter' ) {
+			var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? E.set : E.ok;
+			$target.trigger( 'click' );
+		}
+	}, 0 );
 } );
 $( '.i-eye' ).on( 'click', function() {
 	E.input.attr( 'type', E.input.attr( 'type' ) === 'text' ? 'password' : 'text' );
@@ -28,7 +35,7 @@ $( '.i-eye' ).on( 'click', function() {
 } );
 E.set.on( 'click', function() {
 	var pwd = E.pwd.val();
-	if ( E.qr.length ) {
+	if ( E.passwd ) {
 		if ( pwd !== E.pwd2.val() ) {
 			E.infoOverlay.removeClass( 'hide' );
 		} else {
