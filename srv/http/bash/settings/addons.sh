@@ -23,7 +23,7 @@ getinstallzip() {
 	echo
 	echo "$bar Install new files ..."
 	user_repo=$( jq -r .$alias.installurl $file_addons | cut -d/ -f4,5 )
-	curl -sL https://raw.githubusercontent.com/$user_repo/archive/$branch.tar.gz | bsdtar xvf - --strip-components=1 -C /
+	curl -sL https://github.com/$user_repo/archive/$branch.tar.gz | bsdtar xvf - --strip-components=1 -C /
 	file_uninstall=$( ls /uninstall_*.sh 2> /dev/null ) && chmod +x $file_uninstall && mv $file_uninstall /usr/local/bin
 	find / -maxdepth 1 -type f -delete
 }
