@@ -22,11 +22,14 @@ $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$login     = count( glob( '/srv/http/data/system/login*' ) );
-$password  = file_exists( '/boot/expand' );
-$log_pass  = $login || $password;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
+if ( count( glob( '/srv/http/data/system/login*' ) ) == 1 ) {
+	session_start();
+	$login = ! isset( $_SESSION[ 'login' ] );
+}
+$password  = file_exists( '/boot/expand' );
+$log_pass  = $login || $password;
 //------------------------------------------------------------------------------------------
 
 // plugin: css / js filename with version
