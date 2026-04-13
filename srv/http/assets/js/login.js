@@ -65,4 +65,4 @@ E.ok.on( 'click', () => {
 	el.setSelectionRange( el.value.length, el.value.length ); // cursor at end
 } );
 
-} );
+} ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
