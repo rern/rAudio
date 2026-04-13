@@ -1,6 +1,6 @@
 W.volume     = values => {
 	if ( ! ( 'db' in values ) || ! $( '#infoList .inforange' ).length ) return
-	
+
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
 	$( '.confirm' ).addClass( 'hide' );
@@ -102,7 +102,7 @@ audio_output {
 						BASH( [ 'custom', 'OFF' ] );
 						return
 					}
-					
+
 					NOTIFY_COMMON();
 					BASH( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], error => {
 						if ( error ) {
@@ -368,14 +368,14 @@ $( '.button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#device' ).on( 'input', function() {
 	var device = this.value;
 	if ( device === S.output.name ) return
-	
+
 	NOTIFY( 'volume', 'Output Device', 'Change ...' );
 	BASH( [ 'device', device, 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	var mixer = this.value;
 	if ( mixer === S.output.mixer ) return
-	
+
 	NOTIFY( 'volume', 'Mixer', 'Change ...' );
 	BASH( [ 'mixer', mixer, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
