@@ -671,6 +671,13 @@ order )
 password )
 	chpasswd <<< root:$PASSWORD
 	rm -f /boot/expand
+	[[ -e $dirshm/startup ]] && return
+
+	echo -2
+	while [[ ! -e $dirshm/startup ]]; do
+		sleep 1
+	done
+	$dirbash/status-push.sh
 	;;
 pladdrandom )
 	plAddRandom
