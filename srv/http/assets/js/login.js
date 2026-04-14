@@ -48,7 +48,13 @@ E.set.on( 'click', function() {
 	}
 	E.input.css( 'caret-color', 'transparent' );
 	$.post( 'cmd.php', args, std => {
-		std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
+		if ( std == -1 ) {
+			E.infoOverlay.removeClass( 'hide' );
+		} else if ( std == -2 ) {
+			$( '#loader' ).removeClass( 'hide' );
+		} else {
+			location.reload();
+		}
 	} );
 } );
 E.ok.on( 'click', () => {
