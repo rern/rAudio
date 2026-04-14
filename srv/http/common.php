@@ -3,7 +3,19 @@ $hash      = '?v='.time();
 $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
 $dirassets = '/srv/http/assets/';
 $dirsystem = '/srv/http/data/system/';
-$divlogo   = '<div id="loader">'.file_get_contents( $dirassets.'img/icon.svg' ).'</div>';
+$logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
+$divlogo   = '<div id="loader">'.$logosvg.'</div>';
+//..................................................................................
+$passwd    = file_exists( '/boot/expand' );
+$login     = file_exists( $dirsystem.'login' );
+$login_set = file_exists( $dirsystem.'loginsetting' );
+if ( $login || $login_set ) {
+	session_start();
+	$login = empty( $_SESSION[ 'login' ] );
+	if ( $login_set ) $login = $login && $page;
+}
+$log_pass = $passwd || $login;
+//..................................................................................
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,29 +38,7 @@ $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprog
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
 $css       = [ 'colors', 'common' ];
-//..................................................................................
-$passwd    = file_exists( '/boot/expand' );
-$login     = file_exists( $dirsystem.'login' );
-$login_set = file_exists( $dirsystem.'loginsetting' );
-if ( $passwd ) {
-	if ( ! file_exists( '/dev/shm/startup' ) ) {
-?>
-	<link rel="stylesheet" href="/assets/css/common.css<?=$hash?>">
-</head>
-<body><?=$divlogo?></body>
-</html>
-<?php
-		exit;
-	}
-	$log_pass = true;
-} else if ( $login || $login_set ) {
-	session_start();
-	$log_pass = empty( $_SESSION[ 'login' ] );
-	if ( $login_set ) $log_pass = $log_pass && $page;
-}
-//..................................................................................
-
-// plugin: css / js filename with version
+// plugin/*.js filename with version
 $jsfiles   = array_slice( scandir( $dirassets.'js/plugin' ), 2 );
 $jsp       = [ 'jquery' ];
 foreach( $jsfiles as $file ) {

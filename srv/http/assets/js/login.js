@@ -54,7 +54,19 @@ E.set.on( 'click', function() {
 	}
 	E.input.css( 'caret-color', 'transparent' );
 	$.post( 'cmd.php', args, std => {
-		std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
+		if ( std == -1 ) {
+			E.infoOverlay.removeClass( 'hide' );
+		} else if ( E.passwd ) {
+			if ( location.hostname !== 'localhost' ) $( '#login' ).addClass( 'blink' );
+			$( '#message, label, input, i, #set' ).remove();
+			setInterval( () => {
+				fetch( '/data/shm/startup' ).then( response => {
+					if ( response.ok ) location.reload();
+				} );
+			}, 1000 );
+		} else {
+			location.reload();
+		}
 	} );
 } );
 E.ok.on( 'click', () => {
