@@ -287,7 +287,7 @@ sp {
 }
 .blink::before,
 .blink::after,
-#login.blink > svg:first-child,
+#login.blink > svg:not(.qr),
 #loader svg {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
