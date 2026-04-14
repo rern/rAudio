@@ -59,4 +59,4 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 fi
 file=/boot/shutdown.sh
 [[ -e $file ]] && $file
-[[ $reboot ]] && reboot --no-wall || poweroff --no-wall
+[[ $reboot ]] && reboot || poweroff
