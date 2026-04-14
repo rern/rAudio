@@ -59,9 +59,4 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 fi
 file=/boot/shutdown.sh
 [[ -e $file ]] && $file
-dd if=/dev/zero of=/dev/fb0 &> /dev/null # clear splash in framebuffer
-if systemctl -q is-enabled localbrowser; then
-	quiet=--quiet
-	dmesg -n 1
-fi
-[[ $reboot ]] && reboot $quiet || poweroff $quiet
+[[ $reboot ]] && reboot --no-wall || poweroff --no-wall
