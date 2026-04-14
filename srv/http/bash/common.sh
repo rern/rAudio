@@ -449,8 +449,8 @@ pushDirCounts() {
 }
 pushRefresh() {
 	local page push
-	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
-	[[ $2 ]] && push=$2 || push=push
+	page=${1:-$( basename $0 .sh )}
+	push=${2:-push}
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
