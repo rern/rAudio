@@ -57,12 +57,18 @@ E.set.on( 'click', function() {
 		if ( std == -1 ) {
 			E.infoOverlay.removeClass( 'hide' );
 		} else if ( E.passwd ) {
-			if ( location.hostname !== 'localhost' ) $( '#login' ).addClass( 'blink' );
+			var localhost = location.hostname === 'localhost';
+			if ( localhost ) {
+				E.logo = $( 'svg' ).eq( 0 );
+			} else {
+				$( '#login' ).addClass( 'blink' );
+			}
 			$( '#message, label, input, i, #set' ).remove();
 			setInterval( () => {
 				fetch( '/data/shm/startup' ).then( response => {
 					if ( response.ok ) location.reload();
 				} );
+				if ( localhost ) E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 )
 			}, 1000 );
 		} else {
 			location.reload();
