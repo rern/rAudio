@@ -3,7 +3,7 @@ $hash      = '?v='.time();
 $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
 $dirassets = '/srv/http/assets/';
 $dirsystem = '/srv/http/data/system/';
-$logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
+$divlogo   = '<div id="loader">'.file_get_contents( $dirassets.'img/icon.svg' ).'</div>';
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,20 +21,6 @@ $logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 	<link rel="icon" <?=$hreficon?>>
 
 <?php
-//..................................................................................
-if ( ! file_exists( '/dev/shm/startup' ) ) {
-	echo '
-<link rel="stylesheet" href="/assets/css/common.css'.$hash.'">
-<html>
-<body>
-	<div id="loader">'.$logosvg.'</div>
-</body>
-</html>
-';
-	exit;
-}
-//..................................................................................
-
 $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
@@ -42,12 +28,23 @@ $$page     = true;
 $css       = [ 'colors', 'common' ];
 //..................................................................................
 $passwd    = file_exists( '/boot/expand' );
+$login     = file_exists( $dirsystem.'login' );
+$login_set = file_exists( $dirsystem.'loginsetting' );
 if ( $passwd ) {
+	if ( ! file_exists( '/dev/shm/startup' ) ) {
+?>
+	<link rel="stylesheet" href="/assets/css/common.css<?=$hash?>">
+</head>
+<body><?=$divlogo?></body>
+</html>
+<?php
+		exit;
+	}
 	$log_pass = true;
-} else if ( ! empty( glob( $dirsystem.'login*' ) ) ) {
+} else if ( $login || $login_set ) {
 	session_start();
 	$log_pass = empty( $_SESSION[ 'login' ] );
-	if ( ! file_exists( $dirsystem.'login' ) ) $log_pass = $log_pass && $page;
+	if ( $login_set ) $log_pass = $log_pass && $page;
 }
 //..................................................................................
 
@@ -113,7 +110,7 @@ if ( ! $add_guide && ! $log_pass )  {
 	'.( $keyboard ?? '' ).'
 	<pre id="data" class="hide"></pre>
 	<i id="debug" class="i-pause"></i>
-	<div id="loader">'.$logosvg.'</div>
+	'.$divlogo.'
 	<div id="banner" class="hide"></div>
 ';
 }
