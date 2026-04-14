@@ -1,6 +1,9 @@
 <?php
 $hash      = '?v='.time();
 $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
+$dirassets = '/srv/http/assets/';
+$dirsystem = '/srv/http/data/system/';
+$divlogo   = '<div id="loader">'.file_get_contents( $dirassets.'img/icon.svg' ).'</div>';
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,20 +26,30 @@ $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprog
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
 $css       = [ 'colors', 'common' ];
-$logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
-if ( file_exists( '/boot/expand' ) ) {
-	$passwd   = true;
+//..................................................................................
+$passwd    = file_exists( '/boot/expand' );
+$login     = file_exists( $dirsystem.'login' );
+$login_set = file_exists( $dirsystem.'loginsetting' );
+if ( $passwd ) {
+	if ( ! file_exists( '/dev/shm/startup' ) ) {
+?>
+	<link rel="stylesheet" href="/assets/css/common.css<?=$hash?>">
+</head>
+<body><?=$divlogo?></body>
+</html>
+<?php
+		exit;
+	}
 	$log_pass = true;
-} else if ( ! empty( glob( '/srv/http/data/system/login*' ) ) ) {
+} else if ( $login || $login_set ) {
 	session_start();
 	$log_pass = empty( $_SESSION[ 'login' ] );
-	if ( ! file_exists( '/srv/http/data/system/login' ) ) $log_pass = $log_pass && $page;
-	$passwd   = false;
+	if ( $login_set ) $log_pass = $log_pass && $page;
 }
-//------------------------------------------------------------------------------------------
+//..................................................................................
 
 // plugin: css / js filename with version
-$jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jsfiles   = array_slice( scandir( $dirassets.'js/plugin' ), 2 );
 $jsp       = [ 'jquery' ];
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
@@ -47,7 +60,7 @@ if ( $log_pass ) {
 	$js    = [ 'login' ];
 	if ( $passwd ) $jsp   = [ ...$jsp, 'qr' ];
 } else if ( ! $page ) { // main
-	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
+	$equalizer = file_exists( $dirsystem.'equalizer' );
 	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ ...$jsp, 'pica', 'qr' ];
@@ -97,7 +110,7 @@ if ( ! $add_guide && ! $log_pass )  {
 	'.( $keyboard ?? '' ).'
 	<pre id="data" class="hide"></pre>
 	<i id="debug" class="i-pause"></i>
-	<div id="loader">'.$logosvg.'</div>
+	'.$divlogo.'
 	<div id="banner" class="hide"></div>
 ';
 }

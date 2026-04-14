@@ -2,9 +2,11 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var E = {
 	  input  : $( 'input' )
-	, passwd : $( '#qr' ).length
+	, passwd : typeof ip !== 'undefined'
 };
-[ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => { E[ id ] = $( '#'+ id ) } );
+[ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
+	E[ id ] = $( '#'+ id );
+} );
 E.input.attr( 'spellcheck', 'false' );
 if ( E.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
@@ -12,6 +14,10 @@ if ( E.passwd ) {
 			+ QRCode( 'http://'+ ip )
 	);
 	E.input.val( 'ros' );
+} else {
+	$( '#qr, #message, label, #pwd2' ).remove();
+	E.input.attr( 'type', 'password' );
+	$( '.i-eye' ).removeClass( 'bl' );
 }
 E.pwd.focus();
 E.input.on( 'keyup cut paste', e => {
