@@ -1,6 +1,9 @@
 <?php
 $hash      = '?v='.time();
 $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
+$dirassets = '/srv/http/assets/';
+$dirsystem = '/srv/http/data/system/';
+$logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,25 +21,38 @@ $hreficon  = 'href="/assets/img/icon.png'.$hash.'"';
 	<link rel="icon" <?=$hreficon?>>
 
 <?php
+//..................................................................................
+if ( ! file_exists( '/dev/shm/startup' ) ) {
+	echo '
+<link rel="stylesheet" href="/assets/css/common.css'.$hash.'">
+<html>
+<body>
+	<div id="loader">'.$logosvg.'</div>
+</body>
+</html>
+';
+	exit;
+}
+//..................................................................................
+
 $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
 $css       = [ 'colors', 'common' ];
-$logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
-if ( file_exists( '/boot/expand' ) ) {
-	$passwd   = true;
+//..................................................................................
+$passwd    = file_exists( '/boot/expand' );
+if ( $passwd ) {
 	$log_pass = true;
-} else if ( ! empty( glob( '/srv/http/data/system/login*' ) ) ) {
+} else if ( ! empty( glob( $dirsystem.'login*' ) ) ) {
 	session_start();
 	$log_pass = empty( $_SESSION[ 'login' ] );
-	if ( ! file_exists( '/srv/http/data/system/login' ) ) $log_pass = $log_pass && $page;
-	$passwd   = false;
+	if ( ! file_exists( $dirsystem.'login' ) ) $log_pass = $log_pass && $page;
 }
-//------------------------------------------------------------------------------------------
+//..................................................................................
 
 // plugin: css / js filename with version
-$jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jsfiles   = array_slice( scandir( $dirassets.'js/plugin' ), 2 );
 $jsp       = [ 'jquery' ];
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
@@ -47,7 +63,7 @@ if ( $log_pass ) {
 	$js    = [ 'login' ];
 	if ( $passwd ) $jsp   = [ ...$jsp, 'qr' ];
 } else if ( ! $page ) { // main
-	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
+	$equalizer = file_exists( $dirsystem.'equalizer' );
 	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ ...$jsp, 'pica', 'qr' ];
