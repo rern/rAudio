@@ -9,11 +9,11 @@
       ],
       "name": "rAudio 64bit",
       "description": "For: RPi 5, 4, 3, 2 (1.2/1.3), Zero 2",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-64bit-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 3712319488,
-      "image_download_size": 822502160,
-      "image_download_sha256": "c6d9ab510db55487dbf3f44d5d5224eda6b677106a62a7c5e4957a69c57db49b",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260414/rAudio-64bit-20260414.img.xz",
+      "release_date": "2026-04-14",
+      "extract_size": 3233488896,
+      "image_download_size": 691526892,
+      "image_download_sha256": "962c9fdebaa9dc8b6bef9d9dc11eaeaef16ddaf8de2f45557397d1a5372c5c28",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/icon64bit.png",
       "website": "https://github.com/rern/rAudio"
     },
@@ -24,11 +24,11 @@
       ],
       "name": "rAudio 32bit",
       "description": "For: RPi 3, 2",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-32bit-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 3389227008,
-      "image_download_size": 828451356,
-      "image_download_sha256": "5c5571f67989cbc5e4e19932025db68272b629dd0d1468583bd7f518333a2142",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260414/rAudio-32bit-20260414.img.xz",
+      "release_date": "2026-04-14",
+      "extract_size": 2913308672,
+      "image_download_size": 721287296,
+      "image_download_sha256": "ba08afa47cc0dc645ada08b8d1d743382319eb1c76135b57ff863e9117dc6745",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/icon32bit.png",
       "website": "https://github.com/rern/rAudio"
     },
@@ -39,11 +39,11 @@
       ],
       "name": "rAudio Legacy",
       "description": "For: RPi 1, Zero",
-      "url": "https://github.com/rern/rAudio/releases/download/i20260216/rAudio-Legacy-20260216.img.xz",
-      "release_date": "2026-02-16",
-      "extract_size": 2925772800,
-      "image_download_size": 693017692,
-      "image_download_sha256": "f31fb528240213b6cb1735fc73aa70a2c1939297f35eb2bff6d46fb1783dcb4b",
+      "url": "https://github.com/rern/rAudio/releases/download/i20260414/rAudio-Legacy-20260414.img.xz",
+      "release_date": "2026-04-14",
+      "extract_size": 2813353984,
+      "image_download_size": 639030516,
+      "image_download_sha256": "9e708d3990fb581733f9661232ffb095d67461bf67c61e31dfb328f31a415a61",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/iconLegacy.png",
       "website": "https://github.com/rern/rAudio"
     }
@@ -155,4 +155,3 @@
     ]
   }
 }
-
