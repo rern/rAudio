@@ -6,7 +6,7 @@ alias=r1
 
 # 20260420
 file=/etc/udev/rules.d/mouse.rules
-if [[ ! -e $file ]]; then
+if [[ -e /bin/firefox && ! -e $file ]]; then
 	cat << EOF > $file
 ACTION=="add", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/mouse.sh"
 ACTION=="remove", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/mouse.sh remove"
