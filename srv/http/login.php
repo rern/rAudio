@@ -1,12 +1,3 @@
-<div id="divlogin">
-	<?=$logosvg?>
-	<div id="logintitle">rAudio</div>
-	<div id="qr" class="qr"></div>
-	<div id="message">Set <c>root</c> password:</div>
-	<label>Password</label><input type="text" id="pwd"><i class="i-eye bl"></i><br>
-	<label>Confirm</label><input type="text" id="pwd2"><br>
-	<a id="set" class="infobtn infobtn-primary">OK</a>
-</div>
 <?php
 if ( $passwd ) {
 	$title  = 'Password';
@@ -18,6 +9,15 @@ if ( $passwd ) {
 	$text  = 'Wrong password.';
 }
 ?>
+<div id="login">
+	<?=$logosvg?>
+	<div id="logintitle">rAudio</div>
+	<div id="qr" class="qr"></div>
+	<div id="message">Set <c>root</c> password:</div>
+	<label>Password</label><input type="text" id="pwd"><i class="i-eye bl"></i><br>
+	<label>Confirm</label><input type="text" id="pwd2"><br>
+	<a id="set" class="infobtn infobtn-primary">OK</a>
+</div>
 <div id="infoOverlay" class="hide">
 	<div id="infoBox">
 		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle"><?=$title?></a></div></div>
@@ -25,12 +25,9 @@ if ( $passwd ) {
 		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
-<?php 
-if ( $passwd ) { ?>
+<?php if ( $passwd ) { ?>
 <script>
-var ip       = '<?=$hostname?>';
-var hostname = '<?=$ip?>';
+var hostname = '<?=$hostname?>';
+var ip       = '<?=$ip?>';
 </script>
-<?php
-}
-?>
+<?php } ?>

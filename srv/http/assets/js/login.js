@@ -1,8 +1,10 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var E = {
-	  input  : $( 'input' )
-	, passwd : typeof ip !== 'undefined'
+	  eye    : $( '.i-eye' )
+	, input  : $( 'input' )
+	, logo   : $( 'svg' ).eq( 0 )
+	, passwd : $( '#qr' ).length
 };
 [ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
@@ -17,7 +19,7 @@ if ( E.passwd ) {
 } else {
 	$( '#qr, #message, label, #pwd2' ).remove();
 	E.input.attr( 'type', 'password' );
-	$( '.i-eye' ).removeClass( 'bl' );
+	E.eye.removeClass( 'bl' );
 }
 E.pwd.focus();
 E.input.on( 'keyup cut paste', e => {
@@ -36,7 +38,7 @@ E.input.on( 'keyup cut paste', e => {
 		}
 	}, 0 );
 } );
-$( '.i-eye' ).on( 'click', function() {
+E.eye.on( 'click', function() {
 	E.input.attr( 'type', E.input.attr( 'type' ) === 'text' ? 'password' : 'text' );
 	$( this ).toggleClass( 'bl' );
 } );
@@ -56,8 +58,16 @@ E.set.on( 'click', function() {
 	$.post( 'cmd.php', args, std => {
 		if ( std == -1 ) {
 			E.infoOverlay.removeClass( 'hide' );
-		} else if ( std == -2 ) {
-			$( '#loader' ).removeClass( 'hide' );
+		} else if ( E.passwd ) {
+			var localhost = location.hostname === 'localhost';
+			if ( ! localhost ) $( '#login' ).addClass( 'blink' );
+			$( '#login' ).children().slice( 3 ).remove();
+			setInterval( () => {
+				fetch( '/data/shm/startup' ).then( response => {
+					if ( response.ok ) location.reload();
+				} );
+				if ( localhost ) E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 )
+			}, 1000 );
 		} else {
 			location.reload();
 		}
