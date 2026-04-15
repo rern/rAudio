@@ -11,6 +11,7 @@ var E = {
 } );
 E.input.attr( 'spellcheck', 'false' );
 if ( E.passwd ) {
+	E.localhost = location.hostname === 'localhost';
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
 			+ QRCode( 'http://'+ ip )
@@ -50,7 +51,7 @@ E.set.on( 'click', function() {
 			return
 		}
 		
-		var args = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, 'CMD PASSWORD' ] }
+		var args = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, E.localhost, 'CMD PASSWORD LOCALHOST' ] }
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
@@ -59,14 +60,13 @@ E.set.on( 'click', function() {
 		if ( std == -1 ) {
 			E.infoOverlay.removeClass( 'hide' );
 		} else if ( E.passwd ) {
-			var localhost = location.hostname === 'localhost';
-			if ( ! localhost ) $( '#login' ).addClass( 'blink' );
+			if ( ! E.localhost ) $( '#login' ).addClass( 'blink' );
 			$( '#login' ).children().slice( 3 ).remove();
 			setInterval( () => {
 				fetch( '/data/shm/startup' ).then( response => {
 					if ( response.ok ) location.reload();
 				} );
-				if ( localhost ) E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 )
+				if ( E.localhost ) E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 )
 			}, 1000 );
 		} else {
 			location.reload();
