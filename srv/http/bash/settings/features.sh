@@ -409,7 +409,7 @@ startx )
 	if [[ $onwhileplay ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
-	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
+	grep -q "Handlers=.*mouse" /proc/bus/input/devices && cursor=yes
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
