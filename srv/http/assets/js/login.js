@@ -51,25 +51,26 @@ E.set.on( 'click', function() {
 			return
 		}
 		
+		if ( E.localhost ) {
+			setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
+		} else {
+			$( '#login' ).addClass( 'blink' );
+		}
+		$( '#login' ).children().slice( 3 ).remove();
 		var args = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, E.localhost, 'CMD PASSWORD LOCALHOST' ] }
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
 	E.input.css( 'caret-color', 'transparent' );
 	$.post( 'cmd.php', args, std => {
-		if ( std == -1 ) {
-			E.infoOverlay.removeClass( 'hide' );
-		} else if ( E.passwd ) {
-			if ( ! E.localhost ) $( '#login' ).addClass( 'blink' );
-			$( '#login' ).children().slice( 3 ).remove();
+		if ( E.passwd ) {
 			setInterval( () => {
 				fetch( '/data/shm/startup' ).then( response => {
 					if ( response.ok ) location.reload();
 				} );
-				if ( E.localhost ) E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 )
 			}, 1000 );
 		} else {
-			location.reload();
+			std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
 		}
 	} );
 } );
