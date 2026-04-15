@@ -134,11 +134,15 @@ conf2json() {
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
-		v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-					-e 's/^(True|yes)$/true/
-						s/^(False|no|"")$/false/' <<< $v )
-		if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
-			v='"'$( quoteEscape $v )'"' # quote and escape string
+		if [[ $v ]]; then
+			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
+						-e 's/^(True|yes)$/true/
+							s/^(False|no|"")$/false/' <<< $v )
+			if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
+				v='"'$( quoteEscape $v )'"' # quote and escape string
+			fi
+		else
+			v=false
 		fi
 		json+=', "'${k^^}'": '$v
 	done <<< $lines

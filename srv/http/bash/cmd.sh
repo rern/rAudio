@@ -672,7 +672,7 @@ password )
 	chpasswd <<< root:$PASSWORD
 	rm -f /boot/expand
 	[[ $LOCALHOST ]] && exit
-	
+# --------------------------------------------------------------------
 	while [[ ! -e $dirshm/startup ]]; do
 		sleep 1
 	done

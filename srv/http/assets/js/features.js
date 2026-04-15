@@ -96,9 +96,6 @@ var CONFIG       = {
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 				, [ 'On while play',             'checkbox', { colspan: 2 } ]
 				, [ 'Mouse pointer',             'checkbox', { colspan: 2 } ]
-				, [ '',                          'checkbox' ]
-				, [ '',                          'checkbox' ]
-				, [ '',                          'checkbox' ]
 			]
 			, footer       : _INFO.footerIcon( {
 				  Reload          : 'reload'
@@ -106,10 +103,9 @@ var CONFIG       = {
 				, Brightness      : 'brightness'
 			} )
 			, boxwidth     : 70
-			, values       : { ...data.values, R_CHANGED: false, Z_CHANGED: false, RESTART: false }
+			, values       : data.values
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
-				$( '#infoList tr' ).slice( -3 ).addClass( 'hide' );
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
 				$( '#infoList tr' ).eq( 2 ).on( 'click', '.updn', function() {
@@ -148,17 +144,7 @@ var CONFIG       = {
 				} );
 			}
 			, cancel       : SWITCH.cancel
-			, ok           : () => {
-				var v         = _INFO.val();
-				var values    = data.values;
-				var c_changed = v.CURSOR !== values.CURSOR;
-				var r_changed = v.ROTATE !== values.ROTATE;
-				var z_changed = v.ZOOM !== values.ZOOM;
-				$( '#infoList input' ).eq( 4 ).prop( 'checked', r_changed );
-				$( '#infoList input' ).eq( 5 ).prop( 'checked', z_changed );
-				$( '#infoList input' ).eq( 6 ).prop( 'checked', ! S.localbrowser || ( S.localbrowser && ( c_changed || r_changed || z_changed ) ) );
-				SWITCH.enable();
-			}
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
