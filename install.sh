@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 
+
 # 20260409
 if [[ -e /bin/firefox ]]; then
 	file=/lib/firefox/distribution/policies.json
@@ -25,7 +27,7 @@ if [[ -e /bin/firefox ]]; then
 EOF
 	file=/etc/systemd/system/localbrowser.service
 	! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
-	find /root/.config/mozilla -name user.js -delete
+	find /root/.config/mozilla -name user.js -delete &> /dev/null
 fi
 
 dir=/etc/systemd/system/nfs-server.service.d
