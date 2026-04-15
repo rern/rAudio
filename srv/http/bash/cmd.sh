@@ -673,7 +673,7 @@ password )
 	rm -f /boot/expand
 	[[ $LOCALHOST ]] && exit
 	
-	while [[ ! -e /dirshm/startup ]]; do
+	while [[ ! -e $dirshm/startup ]]; do
 		sleep 1
 	done
 	systemctl restart localbrowser
