@@ -671,7 +671,8 @@ order )
 password )
 	chpasswd <<< root:$PASSWORD
 	rm -f /boot/expand
-	[[ $LOCALHOST ]] && exit
+	[[ ! $LOCALBROWSER ]] && systemctl disable --now localbrowser
+	[[ ! $LOCALHOST || ! $LOCALBROWSER ]] && exit
 # --------------------------------------------------------------------
 	while [[ ! -e $dirshm/startup ]]; do
 		sleep 1
