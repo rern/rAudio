@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260420
+rm -f /root/.bashrc
+
 file=/etc/udev/rules.d/mouse.rules
 if [[ -e /bin/firefox && ! -e $file ]]; then
 	cat << EOF > $file
