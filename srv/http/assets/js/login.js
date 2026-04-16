@@ -57,7 +57,11 @@ E.set.on( 'click', function() {
 			$( '#login' ).addClass( 'blink' );
 		}
 		$( '#login' ).children().slice( 3 ).remove();
-		var args = { cmd: 'bash', filesh: 'cmd.sh', args: [ 'password', pwd, E.localhost, 'CMD PASSWORD LOCALHOST' ] }
+		var localbrowser = E.localbrowser.prop( 'checked' );
+		var args         = {
+			  cmd    : 'bash'
+			, filesh : 'cmd.sh'
+			, args   : [ 'password', pwd, localbrowser, E.localhost, 'CMD PASSWORD LOCALBROWSER LOCALHOST' ] }
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
