@@ -9,4 +9,4 @@ if [[ $remove && $cursor ]]; then # remove
 elif [[ $add && ! $cursor ]]; then # add
 	sed -i -E "$regex" $file
 fi
-systemctl try-restart bootsplash localbrowser
+systemctl is-enabled localbrowser && systemctl restart localbrowser
