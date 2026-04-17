@@ -125,20 +125,12 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
-		. /tmp/localbrowser.conf
 		if ! grep -q tty3 /boot/cmdline.txt; then
 			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ $SCREENOFF != $screenoff ]]; then
-			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
-			pushSubmenu screenoff $tf
-		fi
-		if [[ $ZOOM != $zoom ]]; then
-			restart=1
-			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
-			sed -i -E 's/(devPixelsPerPx": ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
-		fi
+		! systemctl -q is-active localbrowser && restart=1
+		. /tmp/localbrowser.conf
 		if [[ $ROTATE != $rotate ]]; then
 			restart=1
 			file_config=/boot/config.txt
@@ -170,7 +162,17 @@ localbrowser )
 				splashRotate
 			fi
 		fi
-		if [[ $restart || $CURSOR != $cursor ]]; then
+		if [[ $ZOOM != $zoom ]]; then
+			restart=1
+			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
+			sed -i -E 's/(devPixelsPerPx": ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
+		fi
+		if [[ $SCREENOFF != $screenoff ]]; then
+			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
+			pushSubmenu screenoff $tf
+		fi
+		[[ $CURSOR != $cursor ]] && restart=1
+		if [[ $restart ]]; then
 			systemctl restart bootsplash localbrowser &> /dev/null
 			systemctl enable bootsplash localbrowser
 			sleep 1
@@ -411,8 +413,8 @@ startx )
 	if [[ $onwhileplay ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
-	grep -q "Handlers=.*mouse" /proc/bus/input/devices && cursor=yes
-	matchbox-window-manager -use_cursor $cursor &
+	! grep -q "Handlers=.*mouse" /proc/bus/input/devices && cursor='-use_cursor no'
+	matchbox-window-manager $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
 	firefox --kiosk --private-window http://localhost

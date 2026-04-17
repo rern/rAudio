@@ -95,7 +95,6 @@ var CONFIG       = {
 				, [ 'Zoom <gr>(%)</gr>',         'number', { updn: { step: 5, min: 50, max: 300 } } ]
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 				, [ 'On while play',             'checkbox', { colspan: 2 } ]
-				, [ 'Mouse pointer',             'checkbox', { colspan: 2 } ]
 			]
 			, footer       : _INFO.footerIcon( {
 				  Reload          : 'reload'
