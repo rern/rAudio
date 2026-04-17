@@ -671,17 +671,6 @@ order )
 password )
 	chpasswd <<< root:$PASSWORD
 	rm -f /boot/expand
-	if ipOnline 8.8.8.8; then # update
-		current=$( curl -sL $https_addonslist | jq -r .r1.version )
-		if [[ $current != $( < $diraddons/r1 ) ]]; then
-			echo update
-			curl -sL https://github.com/rern/rAudio/archive/$current.tar.gz \
-				| bsdtar xvf - --strip-components=1 -C /
-			find / -maxdepth 1 -type f -delete
-			dirPermissions
-			echo $current > $diraddons/r1
-		fi
-	fi
 	if [[ $HEADLESS ]]; then
 		systemctl disable getty@tty1
 		systemctl disable --now bootsplash localbrowser

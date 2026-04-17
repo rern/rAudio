@@ -472,6 +472,13 @@ pushWebsocket() { # send to remote websocket.py (server)
 quoteEscape() {
 	echo "${@//\"/\\\"}"
 }
+rAudioUpdate() {
+	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \
+		| bsdtar xvf - --strip-components=1 -C /
+	find / -maxdepth 1 -type f -delete
+	dirPermissions
+	echo $1 > $diraddons/r1
+}
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD

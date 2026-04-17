@@ -126,13 +126,18 @@ fi
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
 if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
-	[[ $partition ]] && timezoneAuto # run once
+	[[ -e /boot/expand ]] && timezoneAuto
 	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
-		if [[ $( jq -r .r1.version <<< $data ) > $( < $diraddons/r1 ) ]]; then
-			touch $diraddons/update
-			pushData option '{ "addons": true }'
+		current=$( jq -r .r1.version <<< $data )
+		if [[ $current > $( < $diraddons/r1 ) ]]; then
+			if [[ -e /boot/expand || -e $dirsystem/autoupdate ]]; then
+				rAudioUpdate $current
+			else
+				touch $diraddons/update
+				pushData option '{ "addons": true }'
+			fi
 		fi
 	fi
 fi
