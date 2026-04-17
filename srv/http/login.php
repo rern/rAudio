@@ -7,7 +7,7 @@ if ( $passwd ) {
 	if ( file_exists( '/boot/kernel.img' ) ) {
 		$headless = '';
 	} else {
-		$headless = '<br><label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr><br><br>';
+		$headless = '<br><label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr><br>';
 	}
 } else {
 	$title    = 'Login';
@@ -21,7 +21,7 @@ if ( $passwd ) {
 	<div id="message">Set <c>root</c> password:</div>
 	<lbl>Password</lbl><input type="text" id="pwd"><i class="i-eye bl"></i><br>
 	<lbl>Confirm</lbl><input type="text" id="pwd2">
-	<?=$headless?>
+	<?=$headless?><br>
 	<a id="set" class="infobtn infobtn-primary">OK</a>
 </div>
 <div id="infoOverlay" class="hide">
