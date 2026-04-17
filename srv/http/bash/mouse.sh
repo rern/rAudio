@@ -15,4 +15,5 @@ if [[ $remove && $cursor ]]; then # remove
 elif [[ $add && ! $cursor ]]; then # add
 	sed -i -E "$regex" $file
 fi
+websocat ws://127.0.0.1:8080 <<< '{ "channel": "refresh", "data": { "page": "features" } }'
 systemctl is-enabled localbrowser && systemctl restart localbrowser
