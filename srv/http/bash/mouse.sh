@@ -1,17 +1,12 @@
 #!/bin/bash
 
-! systemctl -q is-active localbrowser && exit
-# --------------------------------------------------------------------
 [[ $1 ]] && remove=1 || add=1
 file=/srv/http/data/system/localbrowser.conf
 grep -q ^cursor=true $file && cursor=1
+regex='s/^(cursor=).*/\1true/'
 if [[ $remove && $cursor ]]; then # remove
-	true=
+	sed -i -E "${regex/true}" $file
 elif [[ $add && ! $cursor ]]; then # add
-	true=true
-else
-	exit
-# --------------------------------------------------------------------
+	sed -i -E "$regex" $file
 fi
-sed -i -E "s/^(cursor=).*/\1$true/" $file
-systemctl restart bootsplash localbrowser
+systemctl try-restart bootsplash localbrowser
