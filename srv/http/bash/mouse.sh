@@ -6,4 +6,4 @@ now=$( date +%s%3N )
 (( $(( now - last )) < 1000 )) && exit # 1s throttle udev.rules events
 # --------------------------------------------------------------------
 echo $now > $file_last
-systemctl is-enabled localbrowser && systemctl restart localbrowser
+systemctl is-enabled localbrowser && systemctl restart bootsplash localbrowser
