@@ -683,7 +683,8 @@ password )
 		fi
 	fi
 	if [[ $HEADLESS ]]; then
-		systemctl disable --now localbrowser
+		systemctl disable getty@tty1
+		systemctl disable --now bootsplash localbrowser
 	elif [[ $LOCALHOST ]]; then
 		while [[ ! -e $dirshm/startup ]]; do
 			sleep 1
