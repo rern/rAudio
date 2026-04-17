@@ -130,8 +130,10 @@ localbrowser )
 			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
-		pushSubmenu screenoff $tf
+		if [[ $SCREENOFF != $screenoff ]]; then
+			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
+			pushSubmenu screenoff $tf
+		fi
 		if [[ $ZOOM != $zoom ]]; then
 			restart=1
 			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
