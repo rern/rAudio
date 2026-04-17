@@ -13,11 +13,7 @@ V = {
 	E[ id ] = $( '#'+ id );
 } );
 E.input.attr( 'spellcheck', 'false' );
-if ( legacy ) {
-	$( '#divheadless' ).remove();
-} else {
-	E.headless.attr( 'checked', ! V.localhost );
-}
+E.headless.attr( 'checked', ! V.localhost );
 if ( V.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
