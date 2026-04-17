@@ -21,7 +21,7 @@ body {
 #qr svg {
 	margin: 10px auto;
 }
-label {
+lbl {
 	display        : inline-block;
 	width          : 65px;
 	margin-left    : -30px;

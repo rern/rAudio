@@ -1,17 +1,20 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var E = {
+E = {
 	  eye    : $( '.i-eye' )
-	, input  : $( 'input' )
+	, input  : $( 'input' ).not( '#headless' )
 	, logo   : $( 'svg' ).eq( 0 )
-	, passwd : $( '#qr' ).length
 };
-[ 'infoOverlay', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
+V = {
+	  localhost : location.hostname === 'localhost'
+	, passwd    : $( '#qr' ).length
+};
+[ 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
 E.input.attr( 'spellcheck', 'false' );
-if ( E.passwd ) {
-	E.localhost = location.hostname === 'localhost';
+E.headless.attr( 'checked', ! V.localhost );
+if ( V.passwd ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname
 			+ QRCode( 'http://'+ ip )
@@ -26,7 +29,7 @@ E.pwd.focus();
 E.input.on( 'keyup cut paste', e => {
 	setTimeout( () => { // cut: wait for value update
 		var blank = ! E.pwd.val();
-		if ( E.passwd ) blank = blank || ! E.pwd2.val();
+		if ( V.passwd ) blank = blank || ! E.pwd2.val();
 		if ( blank ) {
 			E.set.addClass( 'disabled' );
 			return
@@ -45,29 +48,30 @@ E.eye.on( 'click', function() {
 } );
 E.set.on( 'click', function() {
 	var pwd = E.pwd.val();
-	if ( E.passwd ) {
+	if ( V.passwd ) {
 		if ( pwd !== E.pwd2.val() ) {
 			E.infoOverlay.removeClass( 'hide' );
 			return
 		}
 		
-		if ( E.localhost ) {
+		if ( V.localhost ) {
 			setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
 		} else {
-			$( '#login' ).addClass( 'blink' );
+			E.login.addClass( 'blink' );
 		}
-		$( '#login' ).children().slice( 3 ).remove();
-		var localbrowser = E.localbrowser.prop( 'checked' );
+		E.login.children().slice( 3 ).remove();
+		var headless = E.headless.prop( 'checked' );
 		var args         = {
 			  cmd    : 'bash'
 			, filesh : 'cmd.sh'
-			, args   : [ 'password', pwd, localbrowser, E.localhost, 'CMD PASSWORD LOCALBROWSER LOCALHOST' ] }
+			, args   : [ 'password', pwd, headless, V.localhost, 'CMD PASSWORD HEADLESS LOCALHOST' ] }
 	} else {
 		var args = { cmd: 'login', pwd: pwd }
 	}
 	E.input.css( 'caret-color', 'transparent' );
 	$.post( 'cmd.php', args, std => {
-		if ( E.passwd ) {
+		if ( V.passwd ) {
+			if ( std == 'update' ) E.login.append( 'U p d a t e . . .' );
 			setInterval( () => {
 				fetch( '/data/shm/startup' ).then( response => {
 					if ( response.ok ) location.reload();

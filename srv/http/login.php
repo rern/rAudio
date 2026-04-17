@@ -14,8 +14,9 @@ if ( $passwd ) {
 	<div id="logintitle">rAudio</div>
 	<div id="qr" class="qr"></div>
 	<div id="message">Set <c>root</c> password:</div>
-	<label>Password</label><input type="text" id="pwd"><i class="i-eye bl"></i><br>
-	<label>Confirm</label><input type="text" id="pwd2"><br>
+	<lbl>Password</lbl><input type="text" id="pwd"><i class="i-eye bl"></i><br>
+	<lbl>Confirm</lbl><input type="text" id="pwd2"><br>
+	<label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr></label><br><br>
 	<a id="set" class="infobtn infobtn-primary">OK</a>
 </div>
 <div id="infoOverlay" class="hide">
