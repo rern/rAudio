@@ -187,6 +187,15 @@ login )
 	pushRefresh
 	pushSubmenu lock $( [[ -e $dirsystem/login ]] && echo true || echo false )
 	;;
+mouse )
+	file_last=$dirshm/mouse
+	now=$( date +%s%3N )
+	[[ -e $file_last ]] && last=$( < $file_last ) || last=0
+	if (( $(( now - last )) > 1000 )); then # 1s throttle udev.rules events
+		echo $now > $file_last
+		systemctl is-enabled localbrowser && systemctl restart bootsplash localbrowser
+	fi
+	;;
 multiraudio )
 	enableFlagSet
 	display='{ "submenu": "multiraudio", "value": '$TF' }'

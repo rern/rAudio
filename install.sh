@@ -5,6 +5,13 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260420
+file=/etc/udev/rules.d/mouse.rules
+if [[ -e /bin/firefox && ! -e $file ]]; then
+	echo 'ACTION=="add|remove", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/settings/features.sh mouse"' > $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
 file=$dirsystem/localbrowser.conf
 grep -q ^cursor $file && sed -i '/^cursor/ d' $file
 
@@ -76,14 +83,6 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20260420
-file=/etc/udev/rules.d/mouse.rules
-if [[ -e /bin/firefox && ! -e $file ]]; then
-	echo 'ACTION=="add|remove", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/mouse.sh"' > $file
-	udevadm control --reload-rules
-	udevadm trigger
-fi
 
 # 20260413
 if [[ -L $dirnas/SD ]]; then
