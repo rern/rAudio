@@ -36,9 +36,12 @@ if [[ -e /bin/firefox ]]; then
 	}
 }
 EOF
-	file=/etc/systemd/system/localbrowser.service
-	! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 	find /root/.config/mozilla -name user.js -delete &> /dev/null
+	file=/etc/systemd/system/localbrowser.service
+	if ! grep -q ^User $file; then
+		sed -i '/^Type/ a\User=root' $file
+		systemctl daemon-reload
+	fi
 fi
 
 dir=/etc/systemd/system/nfs-server.service.d
@@ -89,12 +92,4 @@ if [[ -L $dirnas/SD ]]; then
 	rm $dirnas/{NVME,SATA,SD,USB} &> /dev/null
 	. $dirsettings/features.sh
 	mountBindNfs
-fi
-
-# 20260216
-if [[ -e /mnt/SD ]]; then
-	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
-	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
-	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
 fi
