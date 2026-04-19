@@ -41,16 +41,11 @@
       "description": "For: RPi 1, Zero",
       "url": "https://github.com/rern/rAudio/releases/download/i20260415/rAudio-Legacy-20260415.img.xz",
       "release_date": "2026-04-15",
-      "extract_size": 3226435584,
-      "image_download_size": 763508868,
+      "extract_size": 2919292928,
+      "image_download_size": 689734724,
       "image_download_sha256": "0b049d599f2603a09532c8338fc9b0249c21b449a51c0fbc7927eda61b03d103",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/iconLegacy.png",
       "website": "https://github.com/rern/rAudio"
-    },
-    {
-      "extract_size": 2919292928,
-      "image_download_size": 689734724,
-      "image_download_sha256": "c3545296d1d2b0ec871f63bff87b35727ce1653022b82d856a73679268e1a470"
     }
   ],
   "imager": {
