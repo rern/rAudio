@@ -4,7 +4,7 @@ if ( $passwd ) {
 	$text     = 'Passwords not the same.';
 	$hostname = gethostname();
 	$ip       = gethostbyname( $hostname );
-	if ( file_exists( '/boot/kernel.img' ) ) {
+	if ( file_exists( '/boot/kernel.img' ) || file_exists( '/boot/localbrowseroff' ) ) {
 		$headless = '';
 	} else {
 		$headless = '<br><label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr><br>';
