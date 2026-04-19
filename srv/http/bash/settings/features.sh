@@ -126,7 +126,7 @@ lastfmkey )
 localbrowser )
 	if [[ $ON ]]; then
 		if ! grep -q tty3 /boot/cmdline.txt; then
-			sed -i 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
 		! systemctl -q is-active localbrowser && restart=1
