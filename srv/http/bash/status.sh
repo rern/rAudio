@@ -51,7 +51,9 @@ else
 			volumenone=true
 		fi
 	fi
-	grep -qs ^screenoff=0 $dirsystem/localbrowser.conf || screenoff=true
+	if [[ -e /bin/firefox ]]; then
+		grep -qs ^screenoff=0 $dirsystem/localbrowser.conf || screenoff=true
+	fi
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
 	display=$( sed '$ d' $dirsystem/display.json )
@@ -116,7 +118,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 			elapsedms=$(( timestamp - start ))
 			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 		fi
-		
+
 		if [[ -e $dirairplay/timestamp ]]; then
 			diff=$(( timestamp - $( < $dirairplay/timestamp ) ))
 			elapsed=$(( diff / 1000 + elapsed ))
@@ -156,7 +158,7 @@ $( < $dirshm/spotify/status )"
 , "elapsed"   : '$elapsed'
 , "timestamp" : '$( date +%s%3N )
 		;;
-		
+
 	esac
 # >>>>>>>>>> spotify
 	statusData

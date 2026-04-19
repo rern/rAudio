@@ -25,6 +25,8 @@ onPlay() {
 # --------------------------------------------------------------------
 		fi
 	fi
+	[[ ! -e /bin/firefox ]] && return
+
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf && systemctl -q is-active localbrowser; then
 		export DISPLAY=:0
 		if [[ $state == play ]]; then
