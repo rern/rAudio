@@ -11,8 +11,8 @@
       "description": "For: RPi 5, 4, 3, 2 (1.2/1.3), Zero 2",
       "url": "https://github.com/rern/rAudio/releases/download/i20260415/rAudio-64bit-20260415.img.xz",
       "release_date": "2026-04-15",
-      "extract_size": 3223990272,
-      "image_download_size": 723202484,
+      "extract_size": 3548381184,
+      "image_download_size": 748095044,
       "image_download_sha256": "d361ca165b3bbae42e59562dc28afe6de967be1962f9ae4d38457d02416e2626",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/icon64bit.png",
       "website": "https://github.com/rern/rAudio"
@@ -26,8 +26,8 @@
       "description": "For: RPi 3, 2",
       "url": "https://github.com/rern/rAudio/releases/download/i20260415/rAudio-32bit-20260415.img.xz",
       "release_date": "2026-04-15",
-      "extract_size": 3548381184,
-      "image_download_size": 748095044,
+      "extract_size": 3226435584,
+      "image_download_size": 763508868,
       "image_download_sha256": "e84e9ced8265ce4b2c670892ff59d3ea1de625c7e5c7b2d01cd23041e7de0ea0",
       "icon": "https://raw.githubusercontent.com/rern/_assets/refs/heads/master/rpi-imager/icon32bit.png",
       "website": "https://github.com/rern/rAudio"
