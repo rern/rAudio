@@ -672,9 +672,7 @@ password )
 	chpasswd <<< root:$PASSWORD
 	rm -f /boot/expand
 	if [[ $HEADLESS ]]; then
-		systemctl disable --now bootsplash localbrowser
-		systemctl enable --now getty@tty1
-		sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
+		localBrowserOff
 	elif [[ $LOCALHOST ]]; then
 		while [[ ! -e $dirshm/startup ]]; do
 			sleep 1

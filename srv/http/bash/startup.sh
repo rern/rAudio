@@ -26,8 +26,8 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-if [[ -e /boot/localbrowseroff || -e /boot/nolocalbrowser ]]; then
-	rm /boot/*localbrowser*
+if [[ -e /boot/localbrowseroff ]]; then
+	rm /boot/localbrowseroff
 	localBrowserOff
 fi
 
