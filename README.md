@@ -157,7 +157,7 @@ r A u d i o
 ### Not working?
 - Power off and wait a few seconds then power on
 - If not connected, temporarily connect wired LAN then remove after Wi-Fi setup successfully.
-- Still no - Download the image file and start over again
+- Still no - Start over writing image file again
 
 ### Tips
 - Best sound quality:
