@@ -34,7 +34,7 @@ E.input.on( 'keyup cut paste', e => {
 			E.set.addClass( 'disabled' );
 			return
 		}
-		
+
 		E.set.removeClass( 'disabled' );
 		if ( e.key === 'Enter' ) {
 			var $target = $( '#infoOverlay' ).hasClass( 'hide' ) ? E.set : E.ok;
@@ -53,14 +53,14 @@ E.set.on( 'click', function() {
 			E.infoOverlay.removeClass( 'hide' );
 			return
 		}
-		
+
 		if ( V.localhost ) {
 			setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
 		} else {
 			E.login.addClass( 'blink' );
 		}
 		E.login.children().slice( 3 ).remove();
-		var headless = E.headless.prop( 'checked' );
+		var headless = E.headless.length && E.headless.prop( 'checked' );
 		var args         = {
 			  cmd    : 'bash'
 			, filesh : 'cmd.sh'
