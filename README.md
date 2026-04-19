@@ -40,7 +40,7 @@ r A u d i o
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Local display (not on RPi Zero and 1) 
+	- Local display (not on RPi Zero and 1)
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
@@ -88,7 +88,7 @@ r A u d i o
 - DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
-  
+
 ### How-to
 - [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2042)
 - Existing users:
@@ -133,8 +133,14 @@ r A u d i o
 	- RPi3: 50+ seconds
 	- RPi1, Zero: 80+ seconds
 - After initial boot:
-	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
-	- Before setup anything: Settings > Addons > rAudio > Update (if available)
+	- If there's a connected display, IP address for connecting from remote devices will be displayed.
+	- On 1st screen: *(run once)*
+		- Set `root` password - Accept default or set new one
+		- Set `Raspberry Pi with no display (headless)`:
+			- Unchecke - There is a connected display
+			- Check - Connect from remote browser only
+				- Disable browser on Raspberry Pi
+				- Ligther, boot faster
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
 	- Build Library database:
@@ -211,5 +217,5 @@ r A u d i o
 - DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
-  
+
 Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
