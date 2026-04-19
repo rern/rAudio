@@ -122,19 +122,25 @@ r A u d i o
 		- By default, `root` partition will be expanded on initial boot.
 		- SD card backup with shrunken `root` partition:
 			- Create a blank file `expand` in `BOOT` before backup
-	- `/BOOT/localbrowseroff` No display / monitor or or disable `Browser`:
+	- `/BOOT/localbrowseroff` No connected display/monitor or disable `Browser`:
 		- Create a blank file `localbrowseroff` in `BOOT`
-	- Display / Monitor: (optional - Local browser enabled by default)
+	- Display / Monitor: (optional)
 		- Connect before boot to ensure proper detection
 		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
 		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
 - Boot duration
 	- RPi4: 20+ seconds
-	- RPi3: 50+ seconds
-	- RPi1, Zero: 80+ seconds
+	- RPi3: 30+ seconds
+	- RPi1, Zero: 50+ seconds
 - After initial boot:
-	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
-	- Before setup anything: Settings > Addons > rAudio > Update (if available)
+	- If there's a connected display, IP address for connecting from remote devices will be displayed.
+	- On 1st screen: *(run once)*
+		- Set `root` password - Accept default or set new one
+		- Set `Raspberry Pi with no display (headless)`:
+			- Unchecke - There is a connected display
+			- Check - Connect from remote browser only
+				- Disable browser on Raspberry Pi
+				- Ligther, boot faster
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
 	- Build Library database:
@@ -151,7 +157,7 @@ r A u d i o
 ### Not working?
 - Power off and wait a few seconds then power on
 - If not connected, temporarily connect wired LAN then remove after Wi-Fi setup successfully.
-- Still no - Download the image file and start over again
+- Still no - Start over writing image file again
 
 ### Tips
 - Best sound quality:
@@ -211,4 +217,5 @@ r A u d i o
 - DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
-  
+
+Default root password: `ros` (Do not change if enabled: SnapClient, Multiple rAudios or Shared Data)
