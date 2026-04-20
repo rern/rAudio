@@ -671,14 +671,8 @@ order )
 password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
-	if [[ $HEADLESS ]]; then
-		localBrowserOff
-	elif [[ $LOCALHOST ]]; then
-		until [[ -e $dirshm/startup ]]; do
-			sleep 1
-		done
-		systemctl restart localbrowser
-	fi
+	[[ $HEADLESS ]] && localBrowserOff
+	[[ -e $dirshm/startup ]] && pushData reload true
 	;;
 pladdrandom )
 	plAddRandom

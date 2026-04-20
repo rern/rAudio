@@ -117,6 +117,7 @@ else
 fi
 
 touch $dirshm/startup
+[[ $expand ]] && pushData reload true
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
@@ -130,10 +131,10 @@ if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
 	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
-		current=$( jq -r .r1.version <<< $data )
-		if [[ $current > $( < $diraddons/r1 ) ]]; then
+		latest=$( jq -r .r1.version <<< $data )
+		if [[ $latest > $( < $diraddons/r1 ) ]]; then
 			if [[ $expand || -e $dirsystem/autoupdate ]]; then
-				rAudioUpdate $current
+				rAudioUpdate $latest
 			else
 				touch $diraddons/update
 				pushData option '{ "addons": true }'

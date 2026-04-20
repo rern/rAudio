@@ -19,6 +19,11 @@ if ( password ) {
 	);
 	E.input.val( 'ros' );
 	E.headless.attr( 'checked', ! localhost );
+	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
+	WS.onopen    = () => WS.send( '{ "client": "add" }' );
+	WS.onmessage = message => {
+		if ( JSON.parse( message.data ).channel === 'reload' ) location.reload();
+	}
 } else {
 	E.input.attr( 'type', 'password' );
 	E.eye.removeClass( 'bl' );
@@ -52,33 +57,24 @@ E.set.on( 'click', function() {
 			return
 		}
 
+		E.login.children().slice( 3 ).remove();
 		if ( localhost ) {
 			setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
 		} else {
 			E.login.addClass( 'blink' );
 		}
-		E.login.children().slice( 3 ).remove();
 		var headless = E.headless.length && E.headless.prop( 'checked' );
-		var args         = {
+		$.post( 'cmd.php', {
 			  cmd    : 'bash'
 			, filesh : 'cmd.sh'
-			, args   : [ 'password', pwd, headless, localhost, 'CMD PASSWORD HEADLESS LOCALHOST' ] }
+			, args   : [ 'password', pwd, headless, localhost, 'CMD PASSWORD HEADLESS LOCALHOST' ]
+		} );
 	} else {
-		var args = { cmd: 'login', pwd: pwd }
+		$.post( 'cmd.php', { cmd: 'login', pwd: pwd }, std => {
+			if ( ! password ) std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
+		} );
 	}
 	E.input.css( 'caret-color', 'transparent' );
-	$.post( 'cmd.php', args, std => {
-		if ( password ) {
-			if ( std == 'update' ) E.login.append( 'U p d a t e . . .' );
-			setInterval( () => {
-				fetch( '/data/shm/startup' ).then( response => {
-					if ( response.ok ) location.reload();
-				} );
-			}, 1000 );
-		} else {
-			std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
-		}
-	} );
 } );
 E.ok.on( 'click', () => {
 	E.infoOverlay.addClass( 'hide' );

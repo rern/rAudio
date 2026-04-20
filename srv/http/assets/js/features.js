@@ -122,7 +122,7 @@ var CONFIG       = {
 				$span.on( 'click', function() {
 					var i = $( this ).index();
 					if ( i === 0 ) {
-						WS.send( '{ "channel": "reload", "data": { "reload" : true } }' );
+						WS.send( '{ "channel": "reload", "data": true }' );
 						BANNER( SW.icon, SW.title, 'Reloaded.' );
 					} else if ( i === 1 ) {
 						BASH( [ 'screentoggle' ], onoff => BANNER( SW.icon, SW.title, onoff ) );
