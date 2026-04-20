@@ -6,7 +6,7 @@ $dirsystem = '/srv/http/data/system/';
 $logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 $divlogo   = '<div id="loader">'.$logosvg.'</div>';
 //..................................................................................
-$passwd    = file_exists( '/boot/password' );
+$password    = file_exists( '/boot/password' );
 $login     = file_exists( $dirsystem.'login' );
 $login_set = file_exists( $dirsystem.'loginsetting' );
 if ( $login || $login_set ) {
@@ -14,7 +14,7 @@ if ( $login || $login_set ) {
 	$login = empty( $_SESSION[ 'login' ] );
 	if ( $login_set ) $login = $login && $page;
 }
-$log_pass = $passwd || $login;
+$log_pass = $password || $login;
 //..................................................................................
 ?>
 <!DOCTYPE html>
@@ -48,7 +48,7 @@ foreach( $jsfiles as $file ) {
 if ( $log_pass ) {
 	$css[] = 'login';
 	$js    = [ 'login' ];
-	if ( $passwd ) $jsp   = [ ...$jsp, 'qr' ];
+	if ( $password ) $jsp   = [ ...$jsp, 'qr' ];
 } else if ( ! $page ) { // main
 	$equalizer = file_exists( $dirsystem.'equalizer' );
 	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
