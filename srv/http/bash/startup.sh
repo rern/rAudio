@@ -12,7 +12,7 @@ if [[ -e /boot/expand ]]; then # run once
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
-		parted -s $dev resizepart 2 100%
+		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
 		resize2fs $partition
 	fi
