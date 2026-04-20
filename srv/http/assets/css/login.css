@@ -38,3 +38,6 @@ lbl {
 	font-size      : 20px;
 	margin-top     : 14px;
 }
+#chk {
+	display        : block;
+}

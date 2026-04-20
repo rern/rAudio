@@ -4,11 +4,7 @@ if ( $passwd ) {
 	$text     = 'Passwords not the same.';
 	$hostname = gethostname();
 	$ip       = gethostbyname( $hostname );
-	if ( file_exists( '/boot/kernel.img' ) || file_exists( '/boot/localbrowseroff' ) ) {
-		$headless = '';
-	} else {
-		$headless = '<br><label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr><br>';
-	}
+	$headless = file_exists( '/boot/kernel.img' ) || file_exists( '/boot/localbrowseroff' );
 } else {
 	$title    = 'Login';
 	$text     = 'Wrong password.';
@@ -21,7 +17,8 @@ if ( $passwd ) {
 	<div id="message">Set <c>root</c> password:</div>
 	<lbl>Password</lbl><input type="text" id="pwd"><i class="i-eye bl"></i><br>
 	<lbl>Confirm</lbl><input type="text" id="pwd2">
-	<?=$headless?><br>
+	<label id="chk"><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr></label>
+	<br>
 	<a id="set" class="infobtn infobtn-primary">OK</a>
 </div>
 <div id="infoOverlay" class="hide">
@@ -33,8 +30,8 @@ if ( $passwd ) {
 </div>
 <?php if ( $passwd ) { ?>
 <script>
+var headless = '<?=$headless?>';
 var hostname = '<?=$hostname?>';
 var ip       = '<?=$ip?>';
-var legacy   = '<?=$legacy?>';
 </script>
 <?php } ?>
