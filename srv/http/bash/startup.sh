@@ -15,7 +15,8 @@ if [[ -e /boot/expand ]]; then # run once
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
 		parted -s $dev resizepart 2 100%
 		partprobe $dev
-		resize2fs $partition
+		resize2fs $partition &> /dev/null
+		[[ $( df / | awk 'NR==2 {print $5}' ) == 100% ]] && resize=$partition
 	fi
 	usbMaxCurrent
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
@@ -118,6 +119,7 @@ else
 fi
 
 touch $dirshm/startup
+[[ $resize ]] && resize2fs $resize &> /dev/null
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
