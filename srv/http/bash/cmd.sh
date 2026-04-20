@@ -669,8 +669,8 @@ order )
 	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
 	;;
 password )
+	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
-	rm -f /boot/expand
 	if [[ $HEADLESS ]]; then
 		localBrowserOff
 	elif [[ $LOCALHOST ]]; then

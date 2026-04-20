@@ -6,7 +6,7 @@ $dirsystem = '/srv/http/data/system/';
 $logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 $divlogo   = '<div id="loader">'.$logosvg.'</div>';
 //..................................................................................
-$passwd    = file_exists( '/boot/expand' );
+$passwd    = file_exists( '/boot/password' );
 $login     = file_exists( $dirsystem.'login' );
 $login_set = file_exists( $dirsystem.'loginsetting' );
 if ( $login || $login_set ) {

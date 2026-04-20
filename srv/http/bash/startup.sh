@@ -4,15 +4,16 @@
 
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
+	expand=1
 	id0=$( < /etc/machine-id )
-	rm /etc/machine-id
+	rm /boot/expand /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+		parted -s $dev resizepart 2 100%
 		partprobe $dev
 		resize2fs $partition
 	fi
@@ -126,13 +127,13 @@ fi
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
 if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
-	[[ -e /boot/expand ]] && timezoneAuto
+	[[ $expand ]] && timezoneAuto
 	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
 		current=$( jq -r .r1.version <<< $data )
 		if [[ $current > $( < $diraddons/r1 ) ]]; then
-			if [[ -e /boot/expand || -e $dirsystem/autoupdate ]]; then
+			if [[ $expand || -e $dirsystem/autoupdate ]]; then
 				rAudioUpdate $current
 			else
 				touch $diraddons/update
