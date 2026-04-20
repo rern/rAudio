@@ -5,7 +5,7 @@
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	expand=1
-	partition=$( df --output=source / | tail -1 )
+	partition=$( lsblk -no path,mountpoint | awk '/\/$/ {print $1}' )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	parted -s $dev resizepart 2 100%
 	partprobe $dev

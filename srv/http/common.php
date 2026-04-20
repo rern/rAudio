@@ -5,6 +5,7 @@ $dirassets = '/srv/http/assets/';
 $dirsystem = '/srv/http/data/system/';
 $logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 $divlogo   = '<div id="loader">'.$logosvg.'</div>';
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 //..................................................................................
 $password    = file_exists( '/boot/password' );
 $login     = file_exists( $dirsystem.'login' );
@@ -51,7 +52,6 @@ if ( $log_pass ) {
 	if ( $password ) $jsp   = [ ...$jsp, 'qr' ];
 } else if ( ! $page ) { // main
 	$equalizer = file_exists( $dirsystem.'equalizer' );
-	$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ ...$jsp, 'pica', 'qr' ];
 	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
