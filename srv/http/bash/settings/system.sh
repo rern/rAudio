@@ -287,16 +287,6 @@ dtparam=audio=on"
 	fi
 	configTxt
 	;;
-lcdchar )
-	if [[ ! $ACTION ]]; then
-		enableFlagSet
-		i2cset=1
-		configTxt
-		ACTION=logo
-	fi
-	systemctl stop lcdchar
-	$dirbash/lcdchar.py $ACTION
-	;;
 mirror )
 	[[ $MIRROR ]] && MIRROR+=.
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist

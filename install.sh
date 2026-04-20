@@ -5,11 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260420
-if [[ ! -e /root/.config/cava.conf ]]; then
-	mkdir -p /root/.config
-	ln -s /etc/cava.conf /root/.config
-fi
-
 if [[ -e /bin/firefox ]]; then
 	file=/etc/udev/rules.d/mouse.rules
 	if [[ ! -e $file ]]; then
