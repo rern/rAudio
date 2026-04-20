@@ -118,8 +118,8 @@ else
 	touch $dirshm/updatedone
 fi
 
-touch $dirshm/startup
 [[ $resize ]] && resize2fs $resize &> /dev/null
+touch $dirshm/startup
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
