@@ -5,19 +5,17 @@
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	expand=1
+	partition=$( df --output=source / | tail -1 )
+	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
+	parted -s $dev resizepart 2 100%
+	partprobe $dev
+	resize2fs -f $partition &> /dev/null
+	rm /boot/expand
 	id0=$( < /etc/machine-id )
 	rm /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
-	partition=$( findmnt -nf -o SOURCE / )
-	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
-	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
-		parted -s $dev resizepart 2 100%
-		partprobe $dev
-		resize2fs $partition &> /dev/null
-	fi
-	rm /boot/expand
 	usbMaxCurrent
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi

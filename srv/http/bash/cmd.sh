@@ -670,9 +670,6 @@ order )
 	;;
 password )
 	rm -f /boot/password
-	while [[ -e /boot/expand ]]; do
-		sleep 1
-	done
 	chpasswd <<< root:$PASSWORD
 	if [[ $HEADLESS ]]; then
 		localBrowserOff
