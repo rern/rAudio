@@ -6,18 +6,18 @@
 if [[ -e /boot/expand ]]; then # run once
 	expand=1
 	id0=$( < /etc/machine-id )
-	rm /boot/expand /etc/machine-id
+	rm /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
 	mv /var/log/journal/{$id0,$id1}
-	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
+	partition=$( findmnt -nf -o SOURCE / )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $(NF-1)}' ) != 0 )); then
 		parted -s $dev resizepart 2 100%
 		partprobe $dev
 		resize2fs $partition &> /dev/null
-		[[ $( df / | awk 'NR==2 {print $5}' ) == 100% ]] && resize=$partition
 	fi
+	rm /boot/expand
 	usbMaxCurrent
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
@@ -118,7 +118,6 @@ else
 	touch $dirshm/updatedone
 fi
 
-[[ $resize ]] && resize2fs $resize &> /dev/null
 touch $dirshm/startup
 
 if [[ -e $dirsystem/autoplay ]]; then
