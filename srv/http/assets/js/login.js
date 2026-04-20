@@ -8,8 +8,8 @@ E = {
 [ 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
-var localhost = location.hostname === 'localhost'
-var password  = typeof hostname !== 'undefined'
+var localhost = location.hostname === 'localhost';
+var password  = typeof hostname !== 'undefined';
 
 E.input.attr( 'spellcheck', 'false' );
 if ( password ) {

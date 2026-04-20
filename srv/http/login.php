@@ -30,8 +30,8 @@ $html.= <<< EOF
 </div>
 <div id="infoOverlay" class="hide">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle"><?=$title?></a></div></div>
-		<div id="infoList"><div class="infomessage"><i class="i-warning yl"></i> <?=$text?></div></div>
+		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle">$title</a></div></div>
+		<div id="infoList"><div class="infomessage"><i class="i-warning yl"></i> $text</div></div>
 		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
