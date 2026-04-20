@@ -16,7 +16,8 @@ $html.= <<< EOF
 	$pwd
 	<lbl>Confirm</lbl><input type="text" id="pwd2"><br>
 EOF;
-	if ( file_exists( '/bin/firefox' ) && ! file_exists( '/boot/localbrowseroff' ) ) $html.= <<< EOF
+	if ( file_exists( '/bin/firefox' ) && ! file_exists( '/boot/localbrowseroff' ) )
+		$html.= <<< EOF
 	<label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr></label><br><br>
 EOF;
 } else {
@@ -24,8 +25,7 @@ EOF;
 	$text     = 'Wrong password.';
 	$html    .= $pwd;
 }
-echo $html;
-?>
+$html.= <<< EOF
 	<a id="set" class="infobtn infobtn-primary">OK</a>
 </div>
 <div id="infoOverlay" class="hide">
@@ -35,9 +35,12 @@ echo $html;
 		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
-<?php if ( $password ) { ?>
+EOF;
+if ( $password )
+	$html.= <<< EOF
 <script>
-var hostname = '<?=$hostname?>';
-var ip       = '<?=$ip?>';
+var hostname = '$hostname';
+var ip       = '$ip';
 </script>
-<?php } ?>
+EOF;
+echo $html;
