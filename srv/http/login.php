@@ -1,6 +1,6 @@
 <?php
 $html = <<< EOF
-<div id="login">
+<div>
 $logosvg
 <div id="logintitle">rAudio</div>
 EOF;

@@ -4,7 +4,7 @@ body {
 	height         : 100vh;
 	text-align     : center;
 }
-#login > svg {
+svg:first-child {
 	width          : 50px;
 }
 #logintitle {
