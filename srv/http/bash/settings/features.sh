@@ -272,7 +272,7 @@ CMD ACTION PATHMPD"
 		done < <( ls -d $dirnas/* | sed '$ a\/NAS' )
 		systemctl disable --now nfs-server
 		> /etc/exports
-		rm $filesharedip
+		rm -f $filesharedip
 		sharedDataReset
 		systemctl start mpd
 	fi

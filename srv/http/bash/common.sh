@@ -512,7 +512,9 @@ settingsEnabled() {
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
-	cp -f $dirsystem/{display,order}.json $dirshareddata &> /dev/null
+	file_order=$dirsystem/order.json
+	[[ ! -e $file_order ]] && file_order=
+	cp -f $dirsystem/display.json $file_order $dirshareddata
 	touch $dirshareddata/order.json # if not exist
 	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
 }
@@ -527,7 +529,9 @@ sharedDataLink() {
 	local ip_share s
 	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
-	mv -f $dirsystem/{display,order}.json $dirbackup
+	file_order=$dirsystem/order.json
+	[[ ! -e $file_order ]] && file_order=
+	mv -f $dirsystem/display.json $file_order $dirbackup
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
@@ -547,8 +551,9 @@ sharedDataLink() {
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
-	rm $dirsystem/{display,order}.json
-	mv -f $dirbackup/{display,order}.json $dirsystem
+	file_order=$dirbackup/order.json
+	[[ ! -s $file_order ]] && file_order=
+	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
 	mpdignore=/mnt/MPD/.mpdignore
