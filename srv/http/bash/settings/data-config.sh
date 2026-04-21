@@ -85,8 +85,8 @@ lcdchar )
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-	[[ $dev ]] && lines=$( i2cdetect -y $dev 2> /dev/null )
+	dev=$( ls /dev/i2c* 2> /dev/null )
+	[[ $dev ]] && lines=$( i2cdetect -y ${dev: -1} 2> /dev/null )
 	if [[ $lines ]]; then
 		hex=$( grep -v '^\s' <<< $lines \
 					| cut -d' ' -f2- \
