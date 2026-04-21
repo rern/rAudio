@@ -88,13 +88,9 @@ lcdchar )
 	dev=$( ls /dev/i2c* 2> /dev/null )
 	[[ $dev ]] && lines=$( i2cdetect -y ${dev: -1} 2> /dev/null )
 	if [[ $lines ]]; then
-		hex=$( grep -v '^\s' <<< $lines \
-					| cut -d' ' -f2- \
-					| tr -d ' \-' \
-					| grep -E -v '^\s*$|UU' \
-					| sort -u )
+		hex=$( sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' <<< $lines )
 		for h in $hex; do
-			[[ $address != *$h* ]] && address+=', "0x'$h'": '$(( 16#$h ))
+			address+=', "0x'$h'": '$(( 16#$h ))
 		done
 	else
 		address=', "0x27": 39, "0x3f": 63'
