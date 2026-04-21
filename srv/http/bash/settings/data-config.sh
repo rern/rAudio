@@ -85,7 +85,7 @@ lcdchar )
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( i2cdetect -l | awk '{print $1}' 2> /dev/null )
+	dev=$( i2cdetect -l | awk '{print $1}' )
 	if [[ $dev ]]; then
 		while read h; do
 			address+=', "0x'$h'": '$(( 16#$h ))
