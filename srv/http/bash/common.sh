@@ -551,6 +551,7 @@ sharedDataLink() {
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
+	rm -f $dirsystem/{display,order}.json
 	file_order=$dirbackup/order.json
 	[[ ! -s $file_order ]] && file_order=
 	mv -f $dirbackup/display.json $file_order $dirsystem
