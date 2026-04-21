@@ -14,7 +14,7 @@ var password  = typeof hostname !== 'undefined';
 E.input.attr( 'spellcheck', 'false' );
 if ( password ) {
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
-			+ '<br>http://'+ hostname
+			+ '<br>http://'+ hostname +'.local'
 			+ QRCode( 'http://'+ ip )
 	);
 	E.input.val( 'ros' );
