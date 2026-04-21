@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
+dirbackup=$dirdata/backup
 for d in NAS SD USB; do
 	printf -v dir${d,,} '%s' /mnt/MPD/$d
 done
