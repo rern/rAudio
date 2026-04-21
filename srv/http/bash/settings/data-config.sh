@@ -92,9 +92,8 @@ lcdchar )
 		done < <( i2cdetect -y ${dev: -1} \
 					| sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' \
 					| awk NF )
-	else
-		address=', "0x27": 39, "0x3f": 63'
 	fi
+	[[ ! $address ]] && address=', "0x27": 39, "0x3f": 63'
 	echo '{
   "values"  : '$values'
 , "current" : "'$current'"
