@@ -85,13 +85,13 @@ lcdchar )
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( ls /dev/i2c* 2> /dev/null )
-	[[ $dev ]] && lines=$( i2cdetect -y ${dev: -1} 2> /dev/null )
-	if [[ $lines ]]; then
-		hex=$( sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' <<< $lines )
-		for h in $hex; do
+	dev=$( i2cdetect -l | awk '{print $1}' 2> /dev/null )
+	if [[ $dev ]]; then
+		while read h; do
 			address+=', "0x'$h'": '$(( 16#$h ))
-		done
+		done < <( i2cdetect -y ${dev: -1} \
+					| sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' \
+					| awk NF )
 	else
 		address=', "0x27": 39, "0x3f": 63'
 	fi
