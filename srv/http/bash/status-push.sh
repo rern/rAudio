@@ -56,7 +56,8 @@ if [[ $1 ]]; then # status-radio.sh, status-dab.sh
 else
 	status=$( $dirbash/status.sh )
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( jq '{ Artist,Album,Composer,Conductor,elapsed,file,player,station,state,Time,timestamp,Title,volume,webradio }' <<< $status )
+	status=$( jq  '{ Artist, Album,   Composer,   Conductor, elapsed, file,   player
+					,song,   station, state,Time, timestamp, Title,   volume, webradio }' <<< $status )
 	statusnew=$( jq -r 'to_entries[] | "\(.key)=\(.value|@sh)"' <<< $status | tee $dirshm/statusnew )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
