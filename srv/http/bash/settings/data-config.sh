@@ -86,12 +86,11 @@ lcdchar )
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
 	dev=$( i2cdetect -l | awk '{print $1}' )
-	if [[ $dev ]]; then
-		while read h; do
+	[[ $dev ]] && hex=$( i2cdetect -y ${dev: -1} | sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' )
+	if [[ $hex ]]; then
+		for h in $hex; do
 			address+=', "0x'$h'": '$(( 16#$h ))
-		done < <( i2cdetect -y ${dev: -1} \
-					| sed -n -E -e '/^\s/! {s/^.*: |-- *//g; p}' \
-					| awk NF )
+		done
 	fi
 	[[ ! $address ]] && address=', "0x27": 39, "0x3f": 63'
 	echo '{
