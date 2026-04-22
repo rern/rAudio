@@ -118,9 +118,7 @@ r A u d i o
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy rAudio backup file to `BOOT`
 			- Use only backup made from rAudio with the latest update
-	- `/BOOT/localbrowseroff` No connected display/monitor or disable `Browser`:
-		- Create a blank file `localbrowseroff` in `BOOT`
-	- Display / Monitor: (optional)
+	- Display / Monitor: *(optional)*
 		- Connect before boot to ensure proper detection
 		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
 		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
@@ -130,6 +128,8 @@ r A u d i o
 	- RPi1, Zero: 50+ seconds
 - After initial boot:
 	- If there's a connected display, IP address for connecting from remote devices will be displayed.
+		- Continue on this display or from remote browser
+	- Open browser on remote device at `http://IP_address` or `http://rAudio.local`
 	- On 1st screen: *(run once)*
 		- Set `root` password - Accept default or set new one
 		- Set `Raspberry Pi with no display (headless)`:
