@@ -4,8 +4,6 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 
-
 # 20260409
 if [[ -e /bin/firefox ]]; then
 	file=/lib/firefox/distribution/policies.json
