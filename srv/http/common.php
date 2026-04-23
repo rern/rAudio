@@ -17,7 +17,7 @@ if ( $login || $login_set ) {
 	$login = empty( $_SESSION[ 'login' ] );
 	if ( $login_set ) $login = $login && $page;
 }
-$log_pass = $boot || $password || $login;
+$log_pass  = $boot || $password || $login;
 //..................................................................................
 ?>
 <!DOCTYPE html>
@@ -51,7 +51,7 @@ foreach( $jsfiles as $file ) {
 if ( $log_pass ) {
 	$css[] = 'login';
 	$js    = [ 'login' ];
-	if ( $password ) $jsp   = [ ...$jsp, 'qr' ];
+	if ( $password && $localhost ) $jsp[] = 'qr';
 } else if ( ! $page ) { // main
 	$equalizer = file_exists( $dirsystem.'equalizer' );
 	$css   = [ ...$css, 'main', 'hovercursor' ];

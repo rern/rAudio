@@ -11,7 +11,6 @@ if ( $password ) {
 	$hostname = gethostname();
 	$ip       = gethostbyname( $hostname );
 	$html    .= <<< EOF
-	<div id="qr" class="qr"></div>
 	<div id="message">Set <c>root</c> password:</div>
 	$pwd
 	<lbl>Confirm</lbl><input type="text" id="pwd2"><br>

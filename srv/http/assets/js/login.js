@@ -13,7 +13,7 @@ E = {
 	, input  : $( 'input' ).not( '#headless' )
 	, logo   : $( 'svg' ).eq( 0 )
 };
-[ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
+[ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
 var localhost = location.hostname === 'localhost';
@@ -34,12 +34,16 @@ if ( type === 'boot' ) { // boot
 }
 
 if ( password ) {
-	var hostname = $( '#data' ).data( 'hostname' );
-	var ip       = $( '#data' ).data( 'ip' );
-	E.qr.html( 'http://<wh>'+ ip +'</wh>'
-			+ '<br>http://'+ hostname +'.local'
-			+ QRCode( 'http://'+ ip )
-	);
+	if ( localhost ) {
+		var hostname = $( '#data' ).data( 'hostname' );
+		var ip       = $( '#data' ).data( 'ip' );
+		var html     = '<div id="qr" class="qr">'
+						+'http://<wh>'+ ip +'</wh>'
+						+'<br>http://'+ hostname +'.local'
+						+ QRCode( 'http://'+ ip )
+					  +'</div>';
+		$( '#logintitle' ).after( html );
+	}
 	E.input.val( 'ros' );
 	E.headless.attr( 'checked', ! localhost );
 } else if ( type === 'login' ) {
