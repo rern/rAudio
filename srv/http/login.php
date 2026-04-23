@@ -10,22 +10,27 @@ if ( $password ) {
 	$text     = 'Passwords not the same.';
 	$hostname = gethostname();
 	$ip       = gethostbyname( $hostname );
-$html.= <<< EOF
+	$html    .= <<< EOF
 	<div id="qr" class="qr"></div>
 	<div id="message">Set <c>root</c> password:</div>
 	$pwd
 	<lbl>Confirm</lbl><input type="text" id="pwd2"><br>
+	<div id="data" class="hide" data-hostname="$hostname" data-ip="$ip" data-type="password"></div>
 EOF;
 	if ( file_exists( '/bin/firefox' ) && ! file_exists( '/boot/localbrowseroff' ) )
 		$html.= <<< EOF
 	<label><input id="headless" type="checkbox">Raspberry Pi with no display <gr>(headless)</gr></label><br><br>
 EOF;
-} else {
+} else if ( $login ) {
 	$title    = 'Login';
 	$text     = 'Wrong password.';
-	$html    .= $pwd;
+	$html    .= <<< EOF
+$pwd
+<div id="data" class="hide" data-type="login"></div>
+EOF;
 }
-$html.= <<< EOF
+if ( ! $boot ) {
+	$html.= <<< EOF
 	<a id="set" class="infobtn infobtn-primary">OK</a>
 </div>
 <div id="infoOverlay" class="hide">
@@ -36,11 +41,6 @@ $html.= <<< EOF
 	</div>
 </div>
 EOF;
-if ( $password )
-	$html.= <<< EOF
-<script>
-var hostname = '$hostname';
-var ip       = '$ip';
-</script>
-EOF;
+}
+
 echo $html;

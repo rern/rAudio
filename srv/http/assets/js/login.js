@@ -1,30 +1,48 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+function blink() {
+	if ( localhost ) {
+		setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
+	} else {
+		E.login.addClass( 'blink' );
+	}
+}
+
 E = {
 	  eye    : $( '.i-eye' )
 	, input  : $( 'input' ).not( '#headless' )
 	, logo   : $( 'svg' ).eq( 0 )
 };
-[ 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
+[ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
 var localhost = location.hostname === 'localhost';
-var password  = typeof hostname !== 'undefined';
+var type      = E.data.length ? E.data.data( 'type' ) : 'boot';
+var password  = type === 'password';
 
 E.input.attr( 'spellcheck', 'false' );
+if ( type !== 'login' ) {
+	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
+	WS.onopen    = () => WS.send( '{ "client": "add" }' );
+	WS.onmessage = message => {
+		if ( JSON.parse( message.data ).channel === 'reload' ) location.reload();
+	}
+}
+if ( type === 'boot' ) { // boot
+	blink();
+	return
+}
+
 if ( password ) {
+	var hostname = $( '#data' ).data( 'hostname' );
+	var ip       = $( '#data' ).data( 'ip' );
 	E.qr.html( 'http://<wh>'+ ip +'</wh>'
 			+ '<br>http://'+ hostname +'.local'
 			+ QRCode( 'http://'+ ip )
 	);
 	E.input.val( 'ros' );
 	E.headless.attr( 'checked', ! localhost );
-	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
-	WS.onopen    = () => WS.send( '{ "client": "add" }' );
-	WS.onmessage = message => {
-		if ( JSON.parse( message.data ).channel === 'reload' ) location.reload();
-	}
-} else {
+} else if ( type === 'login' ) {
 	E.input.attr( 'type', 'password' );
 	E.eye.removeClass( 'bl' );
 }
@@ -58,11 +76,7 @@ E.set.on( 'click', function() {
 		}
 
 		E.login.children().slice( 3 ).remove();
-		if ( localhost ) {
-			setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
-		} else {
-			E.login.addClass( 'blink' );
-		}
+		blink();
 		var headless = E.headless.length && E.headless.prop( 'checked' );
 		$.post( 'cmd.php', {
 			  cmd    : 'bash'
