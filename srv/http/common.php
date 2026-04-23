@@ -8,8 +8,9 @@ $logosvg   = file_get_contents( $dirassets.'img/icon.svg' );
 $divlogo   = '<div id="loader">'.$logosvg.'</div>';
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 //..................................................................................
-$boot      = ! file_exists( $dirdata.'shm/startup' );
 $password  = file_exists( '/boot/password' );
+$startup   = file_exists( $dirdata.'shm/startup' );
+$boot      = ! $password && ! $startup;
 $login     = file_exists( $dirsystem.'login' );
 $login_set = file_exists( $dirsystem.'loginsetting' );
 if ( $login || $login_set ) {

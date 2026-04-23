@@ -2,7 +2,7 @@
 $html = <<< EOF
 <div id="login">
 $logosvg
-<div id="logintitle">rAudio</div>
+<div id="title">rAudio</div>
 EOF;
 $pwd = '<lbl>Password</lbl><input type="text" id="pwd"><i class="i-eye bl"></i><br>';
 if ( $password ) {

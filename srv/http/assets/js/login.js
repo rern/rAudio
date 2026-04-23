@@ -42,7 +42,7 @@ if ( password ) {
 						+'<br>http://'+ hostname +'.local'
 						+ QRCode( 'http://'+ ip )
 					  +'</div>';
-		$( '#logintitle' ).after( html );
+		$( '#title' ).after( html );
 	}
 	E.input.val( 'ros' );
 	E.headless.attr( 'checked', ! localhost );
@@ -78,8 +78,9 @@ E.set.on( 'click', function() {
 			E.infoOverlay.removeClass( 'hide' );
 			return
 		}
-
-		E.login.children().slice( 3 ).remove();
+		
+		
+		E.login.children().not( '#title, svg, #qr' ).remove();
 		blink();
 		var headless = E.headless.length && E.headless.prop( 'checked' );
 		$.post( 'cmd.php', {
