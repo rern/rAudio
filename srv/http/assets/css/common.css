@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1776164302' );
+	src         : url( '/assets/fonts/rern.woff2?v=1777005011' );
 }
 @font-face {
 	font-family : Lato;
@@ -287,7 +287,7 @@ sp {
 }
 .blink::before,
 .blink::after,
-#login.blink > svg:not(.qr),
+svg.blink,
 #loader svg {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;

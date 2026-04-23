@@ -10,11 +10,18 @@ if ( $password ) {
 	$text     = 'Passwords not the same.';
 	$hostname = gethostname();
 	$ip       = gethostbyname( $hostname );
+	$data     = ' data-type="password"';
+	if ( $localhost ) {
+		$qr   = '<div id="qr" class="qr"></div>';
+		$data.= ' data-hostname="'.$hostname.'" data-ip="'.$ip.'"';
+	} else {
+		$qr   = '';
+	}
 	$html    .= <<< EOF
+	$qr
 	<div id="message">Set <c>root</c> password:</div>
 	$pwd
 	<lbl>Confirm</lbl><input type="text" id="pwd2"><br>
-	<div id="data" class="hide" data-hostname="$hostname" data-ip="$ip" data-type="password"></div>
 EOF;
 	if ( file_exists( '/bin/firefox' ) && ! file_exists( '/boot/localbrowseroff' ) )
 		$html.= <<< EOF
@@ -23,10 +30,8 @@ EOF;
 } else if ( $login ) {
 	$title    = 'Login';
 	$text     = 'Wrong password.';
-	$html    .= <<< EOF
-$pwd
-<div id="data" class="hide" data-type="login"></div>
-EOF;
+	$data     = 'data-type="login"';
+	$html    .= $pwd;
 }
 if ( ! $boot ) {
 	$html.= <<< EOF
@@ -39,6 +44,7 @@ if ( ! $boot ) {
 		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
+<div id="data" class="hide" $data></div>
 EOF;
 }
 

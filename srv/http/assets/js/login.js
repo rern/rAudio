@@ -4,7 +4,7 @@ function blink() {
 	if ( localhost ) {
 		setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
 	} else {
-		E.login.addClass( 'blink' );
+		E.logo.addClass( 'blink' );
 	}
 }
 
@@ -13,13 +13,14 @@ E = {
 	, input  : $( 'input' ).not( '#headless' )
 	, logo   : $( 'svg' ).eq( 0 )
 };
-[ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'set' ].forEach( id => {
+[ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
 var localhost = location.hostname === 'localhost';
 var type      = E.data.length ? E.data.data( 'type' ) : 'boot';
 var password  = type === 'password';
 
+if ( ! password ) $( '#message' ).remove();
 E.input.attr( 'spellcheck', 'false' );
 if ( type !== 'login' ) {
 	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
@@ -34,15 +35,13 @@ if ( type === 'boot' ) { // boot
 }
 
 if ( password ) {
-	if ( localhost ) {
+	if ( E.qr.length ) {
 		var hostname = $( '#data' ).data( 'hostname' );
 		var ip       = $( '#data' ).data( 'ip' );
-		var html     = '<div id="qr" class="qr">'
-						+'http://<wh>'+ ip +'</wh>'
-						+'<br>http://'+ hostname +'.local'
-						+ QRCode( 'http://'+ ip )
-					  +'</div>';
-		$( '#title' ).after( html );
+		var html     = 'http://<wh>'+ ip +'</wh>'
+					  +'<br>http://'+ hostname +'.local'
+					  + QRCode( 'http://'+ ip );
+		E.qr.html( html );
 	}
 	E.input.val( 'ros' );
 	E.headless.attr( 'checked', ! localhost );
