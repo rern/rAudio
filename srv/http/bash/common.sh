@@ -346,8 +346,11 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	[[ $1 ]] && dev="dev $1.*"
-	ip route get 1.1.1.1 | grep -oP "$dev src \K\S+"
+	if [[ $1 ]]; then
+		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}'
+	else
+		ip route get 1.1.1.1 | awk '/src/ {print $7}'
+	fi
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
