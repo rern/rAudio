@@ -86,6 +86,7 @@ getinstallzip
 dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+rm -f $dirshm/system
 
 installfinish
 
