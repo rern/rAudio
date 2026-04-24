@@ -133,7 +133,8 @@ r A u d i o
 	- RPi3: 30+ seconds
 	- RPi1, Zero: 60+ seconds
 - After initial boot:
-	- If there's a connected display, IP address for connecting from remote devices will be displayed.
+	- If there's a connected display:
+    - IP address for connecting from remote devices will be displayed.
 		- Continue on this display or from remote browser
 	- Open browser on remote device at `http://IP_address` or `http://rAudio.local`
 	- On 1st screen: *(run once)*

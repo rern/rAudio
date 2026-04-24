@@ -46,7 +46,9 @@ echo "$config" > /boot/config.txt
 usbMaxCurrent
 # cmdline.txt
 if [[ -e /bin/firefox ]]; then
-	grep -q tty1 /boot/cmdline.txt && sed -i 's/tty1/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+	sed -i 's/tty1/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+	systemctl disable getty@tty1
+	systemctl enable bootsplash localbrowser
 else
 	config=$( sed '/hdmi_force_hotplug/ d' <<< $config )
 fi

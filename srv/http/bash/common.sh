@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
+dirbackup=$dirdata/backup
 for d in NAS SD USB; do
 	printf -v dir${d,,} '%s' /mnt/MPD/$d
 done
@@ -134,11 +135,15 @@ conf2json() {
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
-		v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-					-e 's/^(True|yes)$/true/
-						s/^(False|no|"")$/false/' <<< $v )
-		if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
-			v='"'$( quoteEscape $v )'"' # quote and escape string
+		if [[ $v ]]; then
+			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
+						-e 's/^(True|yes)$/true/
+							s/^(False|no|"")$/false/' <<< $v )
+			if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
+				v='"'$( quoteEscape $v )'"' # quote and escape string
+			fi
+		else
+			v=false
 		fi
 		json+=', "'${k^^}'": '$v
 	done <<< $lines
@@ -370,7 +375,6 @@ line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
 localBrowserOff() {
-	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
@@ -471,6 +475,13 @@ pushWebsocket() { # send to remote websocket.py (server)
 quoteEscape() {
 	echo "${@//\"/\\\"}"
 }
+rAudioUpdate() {
+	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \
+		| bsdtar xvf - --strip-components=1 -C /
+	find / -maxdepth 1 -type f -delete
+	dirPermissions
+	[[ $1 =~ ^[0-9]+$ ]] && echo $1 > $diraddons/r1
+}
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
@@ -504,7 +515,9 @@ settingsEnabled() {
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
-	cp -f $dirsystem/{display,order}.json $dirshareddata &> /dev/null
+	file_order=$dirsystem/order.json
+	[[ ! -e $file_order ]] && file_order=
+	cp -f $dirsystem/display.json $file_order $dirshareddata
 	touch $dirshareddata/order.json # if not exist
 	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
 }
@@ -519,7 +532,9 @@ sharedDataLink() {
 	local ip_share s
 	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
-	mv -f $dirsystem/{display,order}.json $dirbackup
+	file_order=$dirsystem/order.json
+	[[ ! -e $file_order ]] && file_order=
+	mv -f $dirsystem/display.json $file_order $dirbackup
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
@@ -539,8 +554,10 @@ sharedDataLink() {
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
-	rm $dirsystem/{display,order}.json
-	mv -f $dirbackup/{display,order}.json $dirsystem
+	rm -f $dirsystem/{display,order}.json
+	file_order=$dirbackup/order.json
+	[[ ! -s $file_order ]] && file_order=
+	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
 	mpdignore=/mnt/MPD/.mpdignore

@@ -1382,7 +1382,7 @@ var PLAYBACK  = {
 						 + QRCode( D.apconf.qr );
 			}
 			htmlqr   += 'http://<wh>'+ ip +'</wh>'
-					  + '<br>http://'+ S.hostname
+					  + '<br>http://'+ S.hostname +'.local'
 					  + QRCode( 'http://'+ ip );
 			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
 			$( '#qr' ).html( htmlqr );

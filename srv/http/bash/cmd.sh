@@ -608,7 +608,6 @@ mpcsimilar )
 	;;
 mpcskip )
 	radioStop
-	touch $dirshm/skip
 	state=$( mpcState )
 	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
@@ -619,7 +618,6 @@ mpcskip )
 	[[ $ACTION != play ]] && mpc -q $ACTION
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos
-	rm -f $dirshm/skip
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcupdate )
@@ -669,14 +667,10 @@ order )
 	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
 	;;
 password )
+	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
-	rm -f /boot/expand
-	[[ $LOCALHOST ]] && exit
-	
-	while [[ ! -e $dirshm/startup ]]; do
-		sleep 1
-	done
-	systemctl restart localbrowser
+	[[ $HEADLESS ]] && localBrowserOff
+	[[ -e $dirshm/startup ]] && pushData reload true
 	;;
 pladdrandom )
 	plAddRandom

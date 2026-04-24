@@ -208,6 +208,7 @@ EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - User interface on rAudio connected display.
  · Rotate - TFT 3.5" LCD needs reboot.
  · Screen off: $M->screenoff (Backlight still on - no energy saved)
+ · Mouse pointer: Plug and play
 
 Note:
  · Connect display to rAudio before boot. Otherwise reboot required.

@@ -85,20 +85,16 @@ lcdchar )
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-	[[ $dev ]] && lines=$( i2cdetect -y $dev 2> /dev/null )
-	if [[ $lines ]]; then
-		hex=$( grep -v '^\s' <<< $lines \
-					| cut -d' ' -f2- \
-					| tr -d ' \-' \
-					| grep -E -v '^\s*$|UU' \
-					| sort -u )
-		for h in $hex; do
-			[[ $address != *$h* ]] && address+=', "0x'$h'": '$(( 16#$h ))
+	dev=$( ls /dev/i2c* 2> /dev/null )
+	if [[ $dev ]]; then
+		for d in $dev; do
+			hex+=$( i2cdetect -y ${dev: -1} | sed -E 's/^\s.*|^.*: |(--|UU) *//g' )
 		done
-	else
-		address=', "0x27": 39, "0x3f": 63'
+		for h in $hex; do
+			address+=', "0x'$h'": '$(( 16#$h ))
+		done
 	fi
+	[[ ! $address ]] && address=', "0x27": 39, "0x3f": 63'
 	echo '{
   "values"  : '$values'
 , "current" : "'$current'"
@@ -110,6 +106,7 @@ localbrowser )
   "values"     : '$( conf2json $dirsystem/localbrowser.conf )'
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
+	cp $dirsystem/localbrowser.conf /tmp
 	;;
 mixer )
 	volumeGet json

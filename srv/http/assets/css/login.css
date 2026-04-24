@@ -7,7 +7,7 @@ body {
 #login > svg {
 	width          : 50px;
 }
-#logintitle {
+#title {
 	margin         : 10px 0 30px 20px;
 	font-weight    : 300;
 	letter-spacing : 25px;
@@ -21,7 +21,7 @@ body {
 #qr svg {
 	margin: 10px auto;
 }
-label {
+lbl {
 	display        : inline-block;
 	width          : 65px;
 	margin-left    : -30px;
