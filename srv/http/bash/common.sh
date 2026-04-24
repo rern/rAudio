@@ -477,7 +477,7 @@ rAudioUpdate() {
 		| bsdtar xvf - --strip-components=1 -C /
 	find / -maxdepth 1 -type f -delete
 	dirPermissions
-	echo $1 > $diraddons/r1
+	[[ $1 =~ ^[0-9]+$ ]] && echo $1 > $diraddons/r1
 }
 serviceRestartEnable() {
 	systemctl restart $CMD
