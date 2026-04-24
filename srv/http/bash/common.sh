@@ -101,6 +101,7 @@ cacheBust() {
 	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
 	[[ $TIME ]] && hash="'.time()"
 	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
+	rm -f $dirshm/system
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
