@@ -91,49 +91,52 @@ r A u d i o
 
 ### How-to
 - [Write rAudio to SD card](https://github.com/rern/rAudio/discussions/2042)
+- Before power on:
+	- Display / Monitor: *(optional)*
+		- Reccommend for 1st time user
+		- Connect and power on before boot
+		- HDMI on RPi 4 and 5 - Use `HDMI0` port
+		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
+	- Network
+		- Wires LAN - No setup required *(Recommend)*
+		- Wireless LAN / Wi-Fi `/BOOT/wifi`
+			- `BOOT` - SD card drive (1st partition)
+			- Edit template file:
+				- Rename `wifi0` to `wifi`
+				- Edit ESSID and Key.
+		- Wi-Fi access point mode `/BOOT/accesspoint`
+			- Auto start: No IP address assigned from connected wired/wireless network
+			- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
+			- On client devices, select `rAudio` from Wi-Fi network list to connect with password `raudioap`.
+			- On browser, open web user interface with URL `raudio.local`
+			- Settings > Networks > Wi-Fi - search
+			- Select access point to connect
+			- Reboot
+			- Browser refreshes when ready. (Manually refresh if it's too long.)
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
 	- Use only backup made from rAudio with the latest update
-- Before power on: (Wired LAN connection is recommended)
-	- `/BOOT/wifi` Wi-Fi pre-configure: (any of)
-		- `BOOT` - SD card drive (1st partition)
+	- Restore database and settings *(optional)*
+		- Copy rAudio `backup_file.gz` to `BOOT`
+		- Wi-Fi connection included
+		- Use only backup made from rAudio with the latest update
+	- Wireless LAN / Wi-Fi `/BOOT/wifi` - Any of:
 		- Edit template file:
 			- Rename `wifi0` in `BOOT` to `wifi`
 			- Edit ESSID and Key.
-		- From rAudio backup
 		- From existing
 			- Copy an existing profile file from `/etc/netctl`
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
-	- `/BOOT/accesspoint` Wi-Fi access point mode
-		- Auto start: No IP address assigned from connected wired/wireless network
-		- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
-		- On client devices, select `rAudio` from Wi-Fi network list to connect with password `raudioap`.
-		- On browser, open web user interface with URL `raudio.local`
-		- Settings > Networks > Wi-Fi - search
-		- Select access point to connect
-		- Reboot
-		- Browser refreshes when ready. (Manually refresh if it's too long.)
-	- `/BOOT/backup_file.gz` System pre-configure: (Run once)
-		- Restore database and settings (Wi-Fi connection included.)
-			- Copy rAudio backup file to `BOOT`
-			- Use only backup made from rAudio with the latest update
-	- `/BOOT/expand` Expand `root` partition:
-		- By default, `root` partition will be expanded on initial boot.
-		- SD card backup with shrunken `root` partition:
-			- Create a blank file `expand` in `BOOT` before backup
-	- `/BOOT/localbrowseroff` No display / monitor or or disable `Browser`:
-		- Create a blank file `localbrowseroff` in `BOOT`
-	- Display / Monitor: (optional - Local browser enabled by default)
-		- Connect before boot to ensure proper detection
-		- HDMI display on RPi 4 and 5 - Use `HDMI0` port
-		- Raspberry Pi Touch Display 2: [Settings](https://github.com/rern/rAudio/discussions/2013#discussioncomment-15404823)
 - Boot duration
 	- RPi4: 20+ seconds
-	- RPi3: 50+ seconds
-	- RPi1, Zero: 80+ seconds
+	- RPi3: 30+ seconds
+	- RPi1, Zero: 60+ seconds
 - After initial boot:
-	- If there's a connected display, IP address for connecting from remote devices will be displayed.
+	- If there's a connected display:
+    - IP address for connecting from remote devices will be displayed.
+		- Continue on this display or from remote browser
+	- Open browser on remote device at `http://IP_address` or `http://rAudio.local`
 	- On 1st screen: *(run once)*
 		- Set `root` password - Accept default or set new one
 		- Set `Raspberry Pi with no display (headless)`:
