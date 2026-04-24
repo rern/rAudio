@@ -4,6 +4,21 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260424
+if [[ -e /bin/firefox ]]; then
+	file=/etc/udev/rules.d/mouse.rules
+	if [[ ! -e $file ]]; then
+		echo 'ACTION=="add|remove", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/settings/features.sh mouse"' > $file
+		udevadm control --reload-rules
+		udevadm trigger
+	fi
+
+	file=$dirsystem/localbrowser.conf
+	grep -q ^cursor $file && sed -i '/^cursor/ d' $file
+fi
+
+rm -f /root/.bashrc
+
 # 20260409
 if [[ -e /bin/firefox ]]; then
 	file=/lib/firefox/distribution/policies.json
@@ -23,9 +38,12 @@ if [[ -e /bin/firefox ]]; then
 	}
 }
 EOF
-	file=/etc/systemd/system/localbrowser.service
-	! grep -q ^User $file && sed -i '/^Type/ a\User=root' $file
 	find /root/.config/mozilla -name user.js -delete &> /dev/null
+	file=/etc/systemd/system/localbrowser.service
+	if ! grep -q ^User $file; then
+		sed -i '/^Type/ a\User=root' $file
+		systemctl daemon-reload
+	fi
 fi
 
 dir=/etc/systemd/system/nfs-server.service.d
@@ -68,6 +86,7 @@ getinstallzip
 dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+rm -f $dirshm/system
 
 installfinish
 
@@ -76,12 +95,4 @@ if [[ -L $dirnas/SD ]]; then
 	rm $dirnas/{NVME,SATA,SD,USB} &> /dev/null
 	. $dirsettings/features.sh
 	mountBindNfs
-fi
-
-# 20260216
-if [[ -e /mnt/SD ]]; then
-	mv -f /mnt/{SD,USB} /mnt/MPD &> /dev/null
-	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
-	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
 fi
