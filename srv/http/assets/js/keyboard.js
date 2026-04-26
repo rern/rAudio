@@ -19,7 +19,7 @@ $( '#keyboard .backspace' ).on( 'click', function( e ) {
 } );
 $( '#keyboard .enter' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
-	$( '#infoOk' ).trigger( 'click' );
+	$( '#infoOk, #set' ).trigger( 'click' );
 	$( '#keyboard' ).addClass( 'hide' );
 	$( 'input, textarea' ).removeClass( 'active' );
 } );
