@@ -15,33 +15,36 @@ SUBFORMAT_FLOAT = (3, 0, 16, 128, 0, 0, 170, 0, 56, 155, 113)
 SUBFORMAT_INT = (1, 0, 16, 128, 0, 0, 170, 0, 56, 155, 113)
 
 TYPES_DIRECT = {
-    "FLOAT64LE": "<d",
-    "FLOAT32LE": "<f",
-    "S16LE": "<h",
-    "S32LE": "<i",
+    "F64_LE": "<d",
+    "F32_LE": "<f",
+    "S16_LE": "<h",
+    "S32_LE": "<i",
 }
 
 TYPES_INDIRECT = {
-    "S24LE": {"pattern": "sssx", "endian": "little"},
-    "S24LE3": {"pattern": "sss", "endian": "little"},
+    "S24_4_RJ_LE": {"pattern": "sssx", "endian": "little"},
+    "S24_4_LJ_LE": {"pattern": "xsss", "endian": "little"},
+    "S24_3_LE": {"pattern": "sss", "endian": "little"},
 }
 
 SCALEFACTOR = {
-    "FLOAT64LE": 1.0,
-    "FLOAT32LE": 1.0,
-    "S16LE": (2**15),
-    "S24LE": (2**23),
-    "S24LE3": (2**23),
-    "S32LE": (2**31),
+    "F64_LE": 1.0,
+    "F32_LE": 1.0,
+    "S16_LE": (2**15),
+    "S24_4_RJ_LE": (2**23),
+    "S24_4_LJ_LE": (2**23),
+    "S24_3_LE": (2**23),
+    "S32_LE": (2**31),
 }
 
 BYTESPERSAMPLE = {
-    "FLOAT64LE": 8,
-    "FLOAT32LE": 4,
-    "S16LE": 2,
-    "S24LE": 4,
-    "S24LE3": 3,
-    "S32LE": 4,
+    "F64_LE": 8,
+    "F32_LE": 4,
+    "S16_LE": 2,
+    "S24_4_RJ_LE": 4,
+    "S24_4_LJ_LE": 4,
+    "S24_3_LE": 3,
+    "S32_LE": 4,
 }
 
 
@@ -180,18 +183,18 @@ def analyze_wav_chunk(type, start, length, file, wav_info):
 
         if wav_info["sampleformat"] == "int":
             if wav_info["bitspersample"] == 16:
-                sfmt = "S16LE"
+                sfmt = "S16_LE"
             elif wav_info["bitspersample"] == 24 and bytes_per_sample == 3:
-                sfmt = "S24LE3"
+                sfmt = "S24_3_LE"
             elif wav_info["bitspersample"] == 24 and bytes_per_sample == 4:
-                sfmt = "S24LE"
+                sfmt = "S24_4_LJ_LE"
             elif wav_info["bitspersample"] == 32:
-                sfmt = "S32LE"
+                sfmt = "S32_LE"
         elif wav_info["sampleformat"] == "float":
             if wav_info["bitspersample"] == 32:
-                sfmt = "FLOAT32LE"
+                sfmt = "F32_LE"
             elif wav_info["bitspersample"] == 64:
-                sfmt = "FLOAT64LE"
+                sfmt = "F64_LE"
         else:
             sfmt = "unknown"
         wav_info["sampleformat"] = sfmt

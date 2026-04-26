@@ -140,8 +140,7 @@ var F         = {
 		, Raw    : [
 			  ...F0.conv
 			, [ 'File',             'select' ]
-			, [ 'Format',           'select', [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ] ]
-//			, [ 'Format',           'select', [ 'S16_LE', 'S24_3_LE', 'S24_4_LJ_LE', 'S24_4_RJ_LE', 'S32_LE', 'F32_LE', 'F64_LE', 'TEXT' ] ]
+			, [ 'Format',           'select', [ 'S16_LE', 'S24_3_LE', 'S24_4_LJ_LE', 'S24_4_RJ_LE', 'S32_LE', 'F32_LE', 'F64_LE', 'TEXT' ] ]
 			, [ 'Skip bytes lines', 'number' ]
 			, [ 'Read bytes lines', 'number' ]
 		]
