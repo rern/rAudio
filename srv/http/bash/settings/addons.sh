@@ -36,6 +36,7 @@ getinstallzip() {
 	find / -maxdepth 1 -type f -delete
 }
 installstart() { # $1-'u'=update
+	rm $0
 	read alias label branch < <( echo $1 )
 	title="<a class='cc'>$( jq -r .$alias.title $file_addons )</a>"
 	[[ $label != Rank || $label != Import ]] && title "$bar $label $title ..." || title "$bar $title ..."
