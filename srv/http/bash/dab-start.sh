@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-device=$( tty2std 'timeout 0.1 rtl_test -t' )
+device=$( dabDevice )
 if [[ $device == 'No supported devices '* ]]; then
 	notify dabradio 'DAB Radio' 'No supported devices.'
 	exit

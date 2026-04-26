@@ -35,11 +35,9 @@ btsender )
 	statusCmd 'amixer -MD bluealsa'
 	;;
 device )
-	card=$( getVar card $dirshm/output )
-	cmd="aplay -D hw:$card /dev/zero --dump-hw-params"
-	data=$( tty2std "timeout 0.1 $cmd" \
-				| sed '1,/^---/ d; /^---/,$ d' \
-				| column -t -l2 -o ' ' )
+	c=$( getVar card $dirshm/output )
+	cmd="aplay -D hw:$c /dev/zero --dump-hw-params"
+	data=$( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )
 	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
 	echo "\
 <bll># $cmd</bll>

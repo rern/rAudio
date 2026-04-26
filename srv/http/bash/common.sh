@@ -192,6 +192,9 @@ coverFileGet() {
 # --------------------------------------------------------------------
 	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
+dabDevice() {
+	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
+}
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
@@ -632,9 +635,6 @@ timezoneAuto() {
 	[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
 	[[ ! $tz ]] && tz=UTC
 	timedatectl set-timezone $tz
-}
-tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
-	script /dev/null -qc "$1"
 }
 usbMaxCurrent() {
 	local BB revision

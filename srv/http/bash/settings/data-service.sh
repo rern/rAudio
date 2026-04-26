@@ -67,7 +67,7 @@ dabradio )
 	SERVICE=$PKG
 	conf="\
 <bll># rtl_test -t</bll>
-$( tty2std 'timeout 0.1 rtl_test -t' )"
+$( dabDevice )"
 	;;
 localbrowser )
 	PKG=firefox
