@@ -85,7 +85,7 @@ if ( $log_pass ) {
 }
 $add_guide = $addonsprogress || $guide;
 //------------------------------------------------------------------------------------------
-if ( ! $localhost && ! $add_guide && ! $boot ) include 'keyboard.php';
+if ( $localhost && ! $add_guide && ! $boot ) include 'keyboard.php';
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';

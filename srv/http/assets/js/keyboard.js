@@ -21,7 +21,7 @@ $( '#keyboard .enter' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
 	$( '#infoOk' ).trigger( 'click' );
 	$( '#keyboard' ).addClass( 'hide' );
-	$( inputs ).removeClass( 'active' );
+	$( 'input, textarea' ).removeClass( 'active' );
 } );
 $( '#keyboard a' ).on( 'click', function() {
 	var cap      = $( '#ka' ).hasClass( 'hide' );
