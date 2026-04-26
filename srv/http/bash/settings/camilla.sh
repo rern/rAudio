@@ -4,6 +4,7 @@
 
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
+[[ $BT == true ]] && dirconfig+=-bt
 
 saveConfig() {
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
@@ -17,30 +18,21 @@ case $CMD in
 
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped
-	pushRefresh
 	;;
 coefdelete )
 	rm -f $dircoeffs/"$NAME"
-	pushRefresh
 	;;
 coefrename )
 	mv -f $dircoeffs/{"$NAME","$NEWNAME"}
-	pushRefresh
 	;;
 confcopy )
-	[[ $BT == true ]] && dirconfig+=-bt
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
-	pushRefresh
 	;;
 confdelete )
-	[[ $BT == true ]] && dirconfig+=-bt
 	rm -f $dirconfigs/"$NAME"
-	pushRefresh
 	;;
 confrename )
-	[[ $BT == true ]] && dirconfig+=-bt
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
-	pushRefresh
 	;;
 confswitch )
 	saveConfig
@@ -57,4 +49,4 @@ volume )
 	;;
 	
 esac
-
+[[ ${CMD:0:1} == c ]] && pushRefresh
