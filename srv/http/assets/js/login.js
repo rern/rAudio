@@ -1,7 +1,9 @@
+V = { localhost : location.hostname === 'localhost' }
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function blink() {
-	if ( localhost ) {
+	if ( V.localhost ) {
 		setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
 	} else {
 		E.logo.addClass( 'blink' );
@@ -16,25 +18,24 @@ E = {
 [ 'data', 'infoOverlay', 'headless', 'login', 'ok', 'pwd', 'pwd2', 'qr', 'set' ].forEach( id => {
 	E[ id ] = $( '#'+ id );
 } );
-var localhost = location.hostname === 'localhost';
-var type      = E.data.length ? E.data.data( 'type' ) : 'boot';
-var password  = type === 'password';
+V.type      = E.data.length ? E.data.data( 'type' ) : 'boot';
+V.password  = V.type === 'password';
 
-if ( ! password ) $( '#message' ).remove();
+if ( ! V.password ) $( '#message' ).remove();
 E.input.attr( 'spellcheck', 'false' );
-if ( type !== 'login' ) {
+if ( V.type !== 'login' ) {
 	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
 	WS.onopen    = () => WS.send( '{ "client": "add" }' );
 	WS.onmessage = message => {
 		if ( JSON.parse( message.data ).channel === 'reload' ) location.reload();
 	}
 }
-if ( type === 'boot' ) { // boot
+if ( V.type === 'boot' ) { // boot
 	blink();
 	return
 }
 
-if ( password ) {
+if ( V.password ) {
 	if ( E.qr.length ) {
 		var hostname = $( '#data' ).data( 'hostname' );
 		var ip       = $( '#data' ).data( 'ip' );
@@ -44,8 +45,8 @@ if ( password ) {
 		E.qr.html( html );
 	}
 	E.input.val( 'ros' );
-	E.headless.attr( 'checked', ! localhost );
-} else if ( type === 'login' ) {
+	E.headless.attr( 'checked', ! V.localhost );
+} else if ( V.type === 'login' ) {
 	E.input.attr( 'type', 'password' );
 	E.eye.removeClass( 'bl' );
 }
@@ -53,7 +54,7 @@ E.pwd.focus();
 E.input.on( 'keyup cut paste', e => {
 	setTimeout( () => { // cut: wait for value update
 		var blank = ! E.pwd.val();
-		if ( password ) blank = blank || ! E.pwd2.val();
+		if ( V.password ) blank = blank || ! E.pwd2.val();
 		if ( blank ) {
 			E.set.addClass( 'disabled' );
 			return
@@ -72,7 +73,7 @@ E.eye.on( 'click', function() {
 } );
 E.set.on( 'click', function() {
 	var pwd = E.pwd.val();
-	if ( password ) {
+	if ( V.password ) {
 		if ( pwd !== E.pwd2.val() ) {
 			E.infoOverlay.removeClass( 'hide' );
 			return
@@ -85,11 +86,11 @@ E.set.on( 'click', function() {
 		$.post( 'cmd.php', {
 			  cmd    : 'bash'
 			, filesh : 'cmd.sh'
-			, args   : [ 'password', pwd, headless, localhost, 'CMD PASSWORD HEADLESS LOCALHOST' ]
+			, args   : [ 'password', pwd, headless, V.localhost, 'CMD PASSWORD HEADLESS LOCALHOST' ]
 		} );
 	} else {
 		$.post( 'cmd.php', { cmd: 'login', pwd: pwd }, std => {
-			if ( ! password ) std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
+			if ( ! V.password ) std == -1 ? E.infoOverlay.removeClass( 'hide' ) : location.reload();
 		} );
 	}
 	E.input.css( 'caret-color', 'transparent' );

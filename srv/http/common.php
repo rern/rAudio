@@ -85,7 +85,7 @@ if ( $log_pass ) {
 }
 $add_guide = $addonsprogress || $guide;
 //------------------------------------------------------------------------------------------
-if ( $localhost && ! $add_guide ) include 'keyboard.php';
+if ( ! $localhost && ! $add_guide && ! $boot ) include 'keyboard.php';
 //------------------------------------------------------------------------------------------
 $html      = '';
 $htmlcss   = '<link rel="stylesheet" href="/assets/css/';
@@ -95,12 +95,11 @@ echo $html.'
 <body>
 ';
 //------------------------------------------------------------------------------------------
-$html_end  = '';
+$pageicon = $page ? icon(  $page.' page-icon' ) : '';
+$html_end  =  $keyboard ?? '';
 if ( ! $add_guide && ! $log_pass )  {
-	$pageicon = $page ? icon(  $page.' page-icon' ) : '';
 	$html_end.= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
-	'.( $keyboard ?? '' ).'
 	<pre id="data" class="hide"></pre>
 	<i id="debug" class="i-pause"></i>
 	'.$divlogo.'

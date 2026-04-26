@@ -28,14 +28,17 @@ $( '#keyboard a' ).on( 'click', function() {
 	var capslock = $( '#keyboard .shift' ).hasClass( 'bll' );
 	if ( ( cap && ! capslock ) || ( ! cap && capslock ) ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
-} ).press( {
-	  action : e => V.intervalkey = setInterval( () => keyboardSet( $( e.currentTarget ).text() ), 100 )
-	, end    : () => {
-		clearInterval( V.intervalkey );
-		delete V.intervalkey;
-	}
 } );
-$( '#infoOverlay' ).on( 'click', 'input, textarea', function() {
+if ( ! $( '#login' ).length ) {
+	$( '#keyboard a' ).press( {
+		  action : e => V.intervalkey = setInterval( () => keyboardSet( $( e.currentTarget ).text() ), 100 )
+		, end    : () => {
+			clearInterval( V.intervalkey );
+			delete V.intervalkey;
+		}
+	} );
+}
+$( '#infoOverlay, #login' ).on( 'click', 'input, textarea', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
 	$( 'input, textarea' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
