@@ -16,16 +16,23 @@ else
 	DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
 fi
 for c in Loopback $CARD; do
-	lines=$( tty2std "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
-	CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
-	formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
+	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
+	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
+	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 	listformat=
-	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
+	for f in formats; do
+		[[ ${f:0:1} != [FS]* ]] && continue
+		
+		case f in
+			FLOAT64_LE ) f=F64_LE;;
+			FLOAT_LE )   f=F32_LE;;
+			S24_3LE )    f=S24_3_LE;;
+		esac
 		grep -q $f <<< $formats && listformat+=', "'$f'"'
 	done
 	FORMATS+=( "[ ${listformat:1} ]" )
 	if [[ $c != Loopback ]]; then
-		ratemax=$( sed -n -E '/^RATE/ {s/.* (.*)].*/\1/; p}' <<< $lines )
+		ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
 		for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
 			(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
 		done

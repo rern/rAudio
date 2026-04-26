@@ -50,6 +50,7 @@ bl,  .bl  { color : var( --cm ) !important }
 bll, .bll { color : var( --cm60 ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
+pre gr    { color : var( --cg70 ) !important }
 .grd      { color : var( --cg ) !important }
 grn, .grn { color : #0f0 !important }
 ora, .ora { color : #f80 !important }
