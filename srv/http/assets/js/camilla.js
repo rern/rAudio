@@ -295,12 +295,13 @@ var P         = {
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var D0        = {
-	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
+	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout'
+				   , 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ]
 	, listsample : {} // on GetSupportedDeviceTypes
 	, samplerate : [] // ^
 }
 D0.list       = {
-	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	  type               : [ 'Type',               'select', { 'Asynchronous Sinc': 'AsyncSinc', 'Asynchronous Polynomial': 'AsyncPoly', 'Synchronous': 'Synchronous' } ]
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',               'select', {} ] // ^
@@ -319,7 +320,9 @@ D0.list       = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC ];
+D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC
+				, [ 'Link volume control', 'checkbox' ], [ 'Link mute control', 'checkbox' ], [ 'Stop on inactive', 'checkbox' ]
+				];
 D0.AlsaP      = [ D0.list.typeP,         D0.list.deviceP,    D0.list.formatP, D0.list.channelsP ];
 D0.extra      = [ D0.list.extra_samples, D0.list.skip_bytes, D0.list.read_bytes ];
 var D         = {
@@ -329,6 +332,10 @@ var D         = {
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
 		, [ 'Silence Timeout',   'number' ]
+		, [ 'Volume ramp time',  'number' ]
+		, [ 'Volume limit',      'number' ]
+		, [ 'Worker threads',    'number' ]
+		, [ 'Multi-threaded',    'checkbox' ]
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
@@ -350,7 +357,7 @@ var D         = {
 		, File      : [ D0.list.typeP, D0.list.filename,  D0.list.formatP, D0.list.channelsP ]
 	}
 	, values    : {
-		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
+		  Alsa      : { type: '', device: '',   format: '', channels: 2, link_volume_control: false, link_mute_control: false, stop_on_inactive: false }
 		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
 		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
 		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
@@ -1896,7 +1903,7 @@ var SETTING   = {
 				$input.css( 'width', '70px' );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					var files   = false;
+					var file    = false;
 					if ( type === 'capture' ) {
 						if ( typenew === 'RawFile' ) {
 							file = S.ls.raw;
@@ -1960,7 +1967,7 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : current
 			, beforeshow   : () => {
-				$( '#infoList td:first-child' ).css( 'min-width', '100px' );
+				$( '#infoList .select' ).css( 'width', '220px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					SETTING.resampler( $( this ).val() );
 				} );
@@ -2277,6 +2284,10 @@ var UTIL      = {
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
+					var v    = [ 50, 400, 1, false ];
+					[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
+						if ( S.config.devices[ k ] === null ) S.config.devices[ k ] = v[ i ];
+					} );
 					CONFIG.valuesAssign();
 					RENDER.status();
 					RENDER.tab();
