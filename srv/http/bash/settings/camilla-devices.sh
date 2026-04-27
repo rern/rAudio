@@ -20,15 +20,15 @@ for c in Loopback $CARD; do
 	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 	listformat=
-	for f in formats; do
-		[[ ${f:0:1} != [FS]* ]] && continue
+	for f in $formats; do
+		[[ ${f:0:1} != [FS]* || ${f: -2} == BE ]] && continue
 		
-		case f in
+		case $f in
 			FLOAT64_LE ) f=F64_LE;;
 			FLOAT_LE )   f=F32_LE;;
 			S24_3LE )    f=S24_3_LE;;
 		esac
-		grep -q $f <<< $formats && listformat+=', "'$f'"'
+		listformat+=', "'$f'"'
 	done
 	FORMATS+=( "[ ${listformat:1} ]" )
 	if [[ $c != Loopback ]]; then
