@@ -15,7 +15,7 @@ rm -f $dirshm/{path,overwrite}
 
 hhmmss() {
 	local fmt
-	(( $total < 3600 )) && fmt='+%M:%S' || fmt='+%H:%M:%S'
+	(( $1 < 3600 )) && fmt='+%M:%S' || fmt='+%H:%M:%S'
 	date -d@$1 -u $fmt
 }
 tagColor() {
@@ -51,13 +51,13 @@ while read mpdpath; do
 	fi
 	echo $percent'% <a class="gr">'$( hhmmss $sec )/$( hhmmss $total )'</a>'
 	echo $i/$count $( tagColor $mpdpath )
-	
+
 	dir="/mnt/MPD/$mpdpath"
 	if [[ ! $overwrite ]] && ls "$dir/coverart".* &> /dev/null; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
-	
+
 	for name in cover folder front album; do # file
 		for ext in jpg png gif; do
 			coverfile="$dir/$name.$ext"
