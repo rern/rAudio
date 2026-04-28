@@ -286,59 +286,59 @@ var P0        = {
 		, threshold        : -25
 	}
 	, values_ch : {
-		  m_ch0 : true
-		, m_ch1 : true
-		, p_ch0 : true
-		, p_ch1 : true
+		  monitor_channels : [ 0, 1 ]
+		, process_channels : [ 0, 1 ]
 	}
 }
 var P         = {
 	  Compressor : [
 		  ...P0.a
 		, ...P0.b
-		, [ 'Factor',           'number' ]
-		, [ 'Makeup gain',      'number' ]
-		, [ 'Clip limit',       'number' ]
-		, [ 'Soft clip',        'checkbox' ]
+		, [ 'Factor',      'number' ]
+		, [ 'Makeup gain', 'number' ]
+		, [ 'Clip limit',  'number' ]
+		, [ 'Soft clip',   'checkbox' ]
 		, ...P0.c
 	]
 	, NoiseGate  : [
 		  ...P0.a
 		, ...P0.b
-		, [ 'Attenuation',      'number' ]
+		, [ 'Attenuation', 'number' ]
 		, ...P0.c
 	]
 	, RACE       : [
 		  ...P0.a
-		, [ 'Delay unit',       'select', [ 'ms', 'us', 'mm', 'samples' ] ]
-		, [ 'Subsample delay',  'checkbox' ]
-		, [ 'Attenuation',      'number' ]
-		, [ 'Channel A',        'radio', [ 0, 1 ] ]
-		, [ 'Channel B',        'radio', [ 0, 1 ] ]
+		, [ 'Delay',           'number' ]
+		, [ 'Delay unit',      'select', [ 'ms', 'us', 'mm', 'samples' ] ]
+		, [ 'Subsample delay', 'checkbox' ]
+		, [ 'Attenuation',     'number' ]
+		, [ 'Channel A',       'radio', [ 0, 1 ] ]
+		, [ 'Channel B',       'radio', [ 0, 1 ] ]
 	]
 	, values     : {
 		  Compressor : {
 			  ...P0.values
-			, factor           : 5.0
-			, makeup_gain      : 0
-			, clip_limit       : 0
-			, soft_clip        : false
+			, factor      : 5.0
+			, makeup_gain : 0
+			, clip_limit  : 0
+			, soft_clip   : false
 			, ...P0.values_ch
 		}
 		, NoiseGate  : {
 			  ...P0.values
-			, attenuation       : 20
+			, attenuation : 20
 			, ...P0.values_ch
 		}
 		, RACE       : {
-			  name             : ''
-			, type             : ''
-			, channels         : 2
-			, delay_unit       : 'us'
-			, subsample_delay  : false
-			, attenuation      : 3
-			, channel_a        : 0
-			, channel_b        : 1
+			  name            : ''
+			, type            : ''
+			, channels        : 2
+			, delay           : 80
+			, delay_unit      : 'us'
+			, subsample_delay : false
+			, attenuation     : 3
+			, channel_a       : 0
+			, channel_b       : 1
 		}
 	}
 }
@@ -1811,16 +1811,19 @@ var SETTING   = {
 			var values = {}
 			var param  = PRO[ name ].parameters;
 			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
-			[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
-				var key = k[ 0 ] +'_ch';
-				values[ k ].forEach( ( ch, i ) => {
-					values[ key + i ] = ch;
+			values.name = name;
+			if ( type !== 'RACE' ) {
+				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
+					var key = k[ 0 ] +'_ch';
+					var val = values[ k ];
+					val.forEach( ( ch, i ) => {
+						values[ key + i ] = val.includes( i );
+					} );
+					delete values[ k ];
 				} );
-				delete values[ k ];
-			} );
+			}
 		} else {
 			var values = P.values[ type ];
-			if ( name ) values.name = name;
 		}
 		values.type    = type;
 		var title      = edit ? 'Processor' : 'Add Processor'
@@ -2720,9 +2723,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'processors':
 			var title = 'Processors';
 			var name  = $li.data( 'name' );
+			var type  = PRO[ name ].type;
 			switch ( cmd ) {
 				case 'edit':
-					SETTING.processor( name, 'edit' );
+					SETTING.processor( type, name, 'edit' );
 					break;
 				case 'delete':
 					INFO( {
