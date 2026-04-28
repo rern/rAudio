@@ -1069,11 +1069,7 @@ var _INFO     = {
 					break;
 				case 'radio': // radio has only single checked - skip unchecked inputs
 					val = $( '#infoList input:radio[name='+ el.name +']:checked' ).val();
-					if ( val === 'true' ) {
-						val = true;
-					} else if ( val === 'false' ) {
-						val = false;
-					}
+					val = _INFO.val2type( val );
 					break;
 				case 'text':
 					if ( $this.hasClass( 'array' ) ) { // array literal > array
@@ -1090,8 +1086,7 @@ var _INFO     = {
 					val = $this.val().trim().replace( /\n/g, '\\n' );
 					break;
 				default: // hidden, select
-					val = $this.val();
-					if ( val === 'null' ) val = null;
+					val = _INFO.val2type( $this.val() );
 			}
 			if ( type === 'text'
 				|| typeof val !== 'string'                  // boolean
@@ -1111,6 +1106,19 @@ var _INFO     = {
 		var v = {}
 		I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
 		return v                                                        // json
+	}
+	, val2type      : val => {
+		if ( val === 'true' ) {
+			return true
+		} else if ( val === 'false' ) {
+			return false
+		} else if ( val === 'null' ) {
+			return null
+		} else if ( /^[0-9.]+$/.test( val ) ) {
+			return +val
+		} else {
+			return val
+		}
 	}
 	, warning       : ( icon, title, message, callback ) => {
 		BANNER_HIDE();

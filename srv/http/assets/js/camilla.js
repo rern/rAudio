@@ -1813,19 +1813,19 @@ var SETTING   = {
 			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
 			values.name = name;
 			if ( type !== 'RACE' ) {
-				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
+				[ 'monitor', 'process' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
 					var key = k[ 0 ] +'_ch';
-					var val = values[ k ];
+					var val = values[ k +'_channels' ];
 					for ( i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
-					delete values[ k ];
+					delete values[ k +'_channels' ];
 				} );
 			}
 		} else {
 			var values = P.values[ type ];
 		}
+		var monitor_ch = type !== 'RACE';
 		values.type    = type;
 		var title      = edit ? 'Processor' : 'Add Processor'
-		var monitor_ch = type !== 'RACE';
 		INFO( {
 			  icon         : V.tab
 			, title        : title
@@ -1845,14 +1845,15 @@ var SETTING   = {
 				var val        = _INFO.val();
 				var typenew    = val.type;
 				var namenew    = val.name;
-				[ 'monitor', 'process' ].forEach( k => val[ k +'_channels' ] = [] );
 				if ( monitor_ch ) { // m_ch0, m_ch1, p_ch0, p_ch1 >>
+					[ 'monitor', 'process' ].forEach( k => val[ k +'_channels' ] = [] );
 					[ 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1' ].forEach( k => {
 						var key = k[ 0 ] === 'm' ? 'monitor' : 'process';
-						if ( val[ k ] ) val[ key +'_channels' ].push( +k.slice( -1 ) );
+						if ( val[ k ] !== false ) val[ key +'_channels' ].push( +k.slice( -1 ) );
+						delete val[ k ];
 					} );
 				}
-				[ 'name', 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1', 'type' ].forEach( k => delete val[ k ] );
+				[ 'name', 'type' ].forEach( k => delete val[ k ] );
 				PRO[ namenew ] = { type: typenew, parameters: val }
 				if ( edit && name !== namenew ) delete PRO[ name ];
 				SETTING.save( title, edit ? 'Change ...' : 'Save ...' );
