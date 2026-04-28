@@ -1822,8 +1822,9 @@ var SETTING   = {
 			var values = P.values[ type ];
 			if ( name ) values.name = name;
 		}
-		var title   = edit ? 'Processor' : 'Add Processor'
-		values.type = type;
+		values.type    = type;
+		var title      = edit ? 'Processor' : 'Add Processor'
+		var monitor_ch = type !== 'RACE';
 		INFO( {
 			  icon         : V.tab
 			, title        : title
@@ -1833,7 +1834,6 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : edit
 			, beforeshow   : () => {
-				var monitor_ch = type !== 'RACE';
 				if ( monitor_ch ) $( '#infoList input[type=radio]' ).attr( 'type', 'checkbox' );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = _INFO.val();
@@ -1844,9 +1844,12 @@ var SETTING   = {
 				var val        = _INFO.val();
 				var typenew    = val.type;
 				var namenew    = val.name;
+				[ 'monitor', 'process' ].forEach( k => val[ k +'_channels' ] = [] );
 				if ( monitor_ch ) { // m_ch0, m_ch1, p_ch0, p_ch1 >>
-					val.monitor_channels = [ val.m_ch0, val.m_ch1 ];
-					val.process_channels = [ val.p_ch0, val.p_ch1 ];
+					[ 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1' ].forEach( k => {
+						var key = k[ 0 ] === 'm' ? 'monitor' : 'process';
+						if ( val[ k ] ) val[ key +'_channels' ].push( +k.slice( -1 ) );
+					} );
 				}
 				[ 'name', 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1', 'type' ].forEach( k => delete val[ k ] );
 				PRO[ namenew ] = { type: typenew, parameters: val }
@@ -2164,6 +2167,7 @@ var SETTING   = {
 	}
 	, saveError     : ( title, error ) => {
 		clearTimeout( V.debounce );
+		console.log( title, error, S.config );
 		_INFO.warning( V.tab, 'Error', title +': <br><br>'+ error );
 		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
 	}
