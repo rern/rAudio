@@ -19,7 +19,7 @@ for c in Loopback $CARD; do
 	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
 	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
-	listformat=
+	listformat='"Auto"'
 	for f in $formats; do
 		[[ ${f:0:1} != [FS]* || ${f: -2} == BE ]] && continue
 		
@@ -31,7 +31,7 @@ for c in Loopback $CARD; do
 		esac
 		listformat+=', "'$f'"'
 	done
-	FORMATS+=( "[ ${listformat:1} ]" )
+	FORMATS+=( "[ $listformat ]" )
 	if [[ $c != Loopback ]]; then
 		ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
 		for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do

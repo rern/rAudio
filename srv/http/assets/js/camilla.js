@@ -1079,7 +1079,6 @@ var CONFIG    = {
 		[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
 			if ( DEV[ k ] === null ) DEV[ k ] = v[ i ];
 		} );
-
 	}
 }
 var RENDER    = {
@@ -1349,6 +1348,7 @@ var RENDER    = {
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
 			var data = COMMON.json.clone( dev );
+			if ( ! data.format ) data.format += '(auto)';
 			var device = dev.device;
 			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
@@ -1891,6 +1891,7 @@ var SETTING   = {
 		values.type     = type;
 		values.channels = DEV[ dev ].channels;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
+		if( ! values.format ) values.format = 'Auto';
 		var title       = UTIL.key2label( dev );
 		INFO( {
 			  icon         : V.tab
@@ -2080,6 +2081,9 @@ var SETTING   = {
 	, save          : ( titlle, msg ) => {
 		clearTimeout( V.debounce );
 		setTimeout( () => {
+			[ 'capture', 'playback' ].forEach( k => {
+				if ( DEV[ k ].format === 'Auto' ) DEV[ k ].format = null;
+			} );
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
 			V.debounce = setTimeout( () => {
