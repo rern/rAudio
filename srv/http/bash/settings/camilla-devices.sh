@@ -27,6 +27,7 @@ for c in Loopback $CARD; do
 			FLOAT64_LE ) f=F64_LE;;
 			FLOAT_LE )   f=F32_LE;;
 			S24_3LE )    f=S24_3_LE;;
+			S24_LE )     f=S24_4_LE;;
 		esac
 		listformat+=', "'$f'"'
 	done
