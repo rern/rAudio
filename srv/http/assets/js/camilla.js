@@ -1816,9 +1816,7 @@ var SETTING   = {
 				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
 					var key = k[ 0 ] +'_ch';
 					var val = values[ k ];
-					val.forEach( ( ch, i ) => {
-						values[ key + i ] = val.includes( i );
-					} );
+					for ( i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
 					delete values[ k ];
 				} );
 			}
