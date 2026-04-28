@@ -261,35 +261,77 @@ var F         = {
 	} );
 } );
 // processor //////////////////////////////////////////////////////////////////////////////
-var P         = {
-	  Compressor : [
+var P0        = {
+	  a : [
 		  [ 'Name',             'text' ]
-		, [ 'Type',             'select', [ 'Compressor' ] ]
+		, [ 'Type',             'select', [ 'Compressor', 'NoiseGate', 'RACE' ] ]
 		, [ 'Channels',         'number' ]
-		, [ 'Attack',           'number' ]
+	]
+	, b : [
+		  [ 'Attack',           'number' ]
 		, [ 'Release',          'number' ]
 		, [ 'Threshold',        'number' ]
+	]
+	, c : [
+		  [ 'Monitor channels', 'text' ]
+		, [ 'Process channels', 'text' ]
+	]
+	, values : {
+		  name             : ''
+		, type             : ''
+		, channels         : 2
+		, attack           : 0.025
+		, release          : 1.0
+		, threshold        : -25
+	}
+}
+var P         = {
+	  Compressor : [
+		  ...P0.a
+		, ...P0.b
 		, [ 'Factor',           'number' ]
 		, [ 'Makeup gain',      'number' ]
 		, [ 'Clip limit',       'number' ]
 		, [ 'Soft clip',        'checkbox' ]
-		, [ 'Monitor channels', 'text' ]
-		, [ 'Process channels', 'text' ]
+		, ...P0.c
+	]
+	, NoiseGate  : [
+		  ...P0.a
+		, ...P0.b
+		, [ 'Attenuation',      'number' ]
+		, ...P0.c
+	]
+	, RACE       : [
+		  ...P0.a
+		, [ 'Delay unit',       'select', [ 'ms', 'us', 'mm', 'samples' ] ]
+		, [ 'Subsample delay',  'checkbox' ]
+		, [ 'Attenuation',      'number' ]
+		, [ 'Channel A',        'text' ]
+		, [ 'Channel B',        'text' ]
 	]
 	, values     : {
-		Compressor : {
-			  name             : ''
-			, type             : ''
-			, channels         : 2
-			, attack           : 0.025
-			, release          : 1.0
-			, threshold        : -25
+		  Compressor : {
+			  ...P0.values
 			, factor           : 5.0
 			, makeup_gain      : 0
 			, clip_limit       : 0
 			, soft_clip        : false
 			, monitor_channels : '0, 1'
 			, process_channels : '0, 1'
+		}
+		, NoiseGate  : {
+			  ...P0.values
+			, attenuation       : 20
+		}
+		, RACE       : {
+			  name             : ''
+			, type             : ''
+			, channels         : 2
+			, delay_unit       : 'us'
+			, subsample_delay  : false
+			, attenuation      : 3
+			, channel_a        : 0
+			, channel_b        : 1
 		}
 	}
 }
@@ -1756,24 +1798,32 @@ var SETTING   = {
 			.prop( 'checked', false )
 			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
-	, processor     : ( name, edit ) => {
+	, processor     : ( type, name, edit ) => {
+		if ( ! type ) type = 'Compressor';
 		if ( edit ) {
 			var values = {}
 			var param  = PRO[ name ].parameters;
-			$.each( P.values.Compressor, ( k, v ) => { values[ k ] = param[ k ] } );
+			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
 		} else {
-			var values = P.values.Compressor;
+			var values = P.values[ type ];
 			if ( name ) values.name = name;
 		}
-		var title = edit ? 'Processor' : 'Add Processor'
+		var title   = edit ? 'Processor' : 'Add Processor'
+		values.type = type;
 		INFO( {
 			  icon         : V.tab
 			, title        : title
-			, list         : edit ? P[ PRO[ name ].type ] : P.Compressor
+			, list         : edit ? P[ PRO[ name ].type ] : P[ type ]
 			, boxwidth     : 150
 			, values       : values
 			, checkblank   : true
 			, checkchanged : edit
+			, beforeshow   : () => {
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+					var val = _INFO.val();
+					SETTING.processor( val.type, val.name, edit )
+				} );
+			}
 			, ok           : () => {
 				var val        = _INFO.val();
 				var typenew    = val.type;
