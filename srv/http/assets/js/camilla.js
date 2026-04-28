@@ -261,6 +261,7 @@ var F         = {
 	} );
 } );
 // processor //////////////////////////////////////////////////////////////////////////////
+var ch        = '<input type="checkbox"> 0 &emsp;<input type="checkbox"> 1';
 var P0        = {
 	  a : [
 		  [ 'Name',             'text' ]
@@ -273,8 +274,8 @@ var P0        = {
 		, [ 'Threshold',        'number' ]
 	]
 	, c : [
-		  [ 'Monitor channels', 'text' ]
-		, [ 'Process channels', 'text' ]
+		  [ 'Monitor channels', ch ]
+		, [ 'Process channels', ch ]
 	]
 	, values : {
 		  name             : ''
@@ -283,6 +284,12 @@ var P0        = {
 		, attack           : 0.025
 		, release          : 1.0
 		, threshold        : -25
+	}
+	, values_ch : {
+		  m_ch0 : true
+		, m_ch1 : true
+		, p_ch0 : true
+		, p_ch1 : true
 	}
 }
 var P         = {
@@ -306,8 +313,8 @@ var P         = {
 		, [ 'Delay unit',       'select', [ 'ms', 'us', 'mm', 'samples' ] ]
 		, [ 'Subsample delay',  'checkbox' ]
 		, [ 'Attenuation',      'number' ]
-		, [ 'Channel A',        'text' ]
-		, [ 'Channel B',        'text' ]
+		, [ 'Channel A',        'radio', [ 0, 1 ] ]
+		, [ 'Channel B',        'radio', [ 0, 1 ] ]
 	]
 	, values     : {
 		  Compressor : {
@@ -316,12 +323,12 @@ var P         = {
 			, makeup_gain      : 0
 			, clip_limit       : 0
 			, soft_clip        : false
-			, monitor_channels : '0, 1'
-			, process_channels : '0, 1'
+			, ...P0.values_ch
 		}
 		, NoiseGate  : {
 			  ...P0.values
 			, attenuation       : 20
+			, ...P0.values_ch
 		}
 		, RACE       : {
 			  name             : ''
@@ -1804,6 +1811,13 @@ var SETTING   = {
 			var values = {}
 			var param  = PRO[ name ].parameters;
 			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
+			[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
+				var key = k[ 0 ] +'_ch';
+				values[ k ].forEach( ( ch, i ) => {
+					values[ key + i ] = ch;
+				} );
+				delete values[ k ];
+			} );
 		} else {
 			var values = P.values[ type ];
 			if ( name ) values.name = name;
@@ -1819,6 +1833,8 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : edit
 			, beforeshow   : () => {
+				var monitor_ch = type !== 'RACE';
+				if ( monitor_ch ) $( '#infoList input[type=radio]' ).attr( 'type', 'checkbox' );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = _INFO.val();
 					SETTING.processor( val.type, val.name, edit )
@@ -1828,7 +1844,11 @@ var SETTING   = {
 				var val        = _INFO.val();
 				var typenew    = val.type;
 				var namenew    = val.name;
-				[ 'name', 'type' ].forEach( k => delete val[ k ] );
+				if ( monitor_ch ) { // m_ch0, m_ch1, p_ch0, p_ch1 >>
+					val.monitor_channels = [ val.m_ch0, val.m_ch1 ];
+					val.process_channels = [ val.p_ch0, val.p_ch1 ];
+				}
+				[ 'name', 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1', 'type' ].forEach( k => delete val[ k ] );
 				PRO[ namenew ] = { type: typenew, parameters: val }
 				if ( edit && name !== namenew ) delete PRO[ name ];
 				SETTING.save( title, edit ? 'Change ...' : 'Save ...' );
