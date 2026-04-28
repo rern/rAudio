@@ -19,9 +19,10 @@ for c in Loopback $CARD; do
 	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
 	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
-	listformat='"Auto"'
+	list_f=
+	list_s=
 	for f in $formats; do
-		[[ ${f:0:1} != [FS]* || ${f: -2} == BE ]] && continue
+		[[ $f != [FS]*LE ]] && continue
 		
 		case $f in
 			FLOAT64_LE ) f=F64_LE;;
@@ -29,9 +30,16 @@ for c in Loopback $CARD; do
 			S24_3LE )    f=S24_3_LE;;
 			S24_LE )     f=S24_4_LE;;
 		esac
-		listformat+=', "'$f'"'
+		lbl="$f: ${f:1:2}bit "
+		[[ $f == F* ]] && lbl+='float' || lbl+='integer'
+		case ${f:4:1} in
+			3 ) lbl+='-packed';;
+			4 ) lbl+='-padded';;
+		esac
+		list=$'\n, "'$lbl'": "'$f'"'
+		[[ $f == F* ]] && list_f+=$list || list_s+=$list
 	done
-	FORMATS+=( "[ $listformat ]" )
+	FORMATS+=( "{ \"Auto\": null $( sort -d <<< $list_s ) $( sort -d <<< $list_f ) }" )
 	if [[ $c != Loopback ]]; then
 		ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
 		for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do

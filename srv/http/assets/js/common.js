@@ -1091,6 +1091,7 @@ var _INFO     = {
 					break;
 				default: // hidden, select
 					val = $this.val();
+					if ( val === 'null' ) val = null;
 			}
 			if ( type === 'text'
 				|| typeof val !== 'string'                  // boolean
