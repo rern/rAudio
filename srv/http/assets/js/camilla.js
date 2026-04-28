@@ -1412,8 +1412,12 @@ var RENDER    = {
 		var values = '';
 		D0.main.forEach( k => {
 			if ( k in DEV ) {
+				var v = DEV[ k ];
+				if ( k === 'worker_threads' && v === 1 ) return
+				if ( k === 'multithreaded' && ! v ) return
+				
+				values += v.toLocaleString() +'<br>';
 				labels += UTIL.key2label( k ) +'<br>';
-				values += DEV[ k ].toLocaleString() +'<br>';
 			}
 		} );
 		var keys = [];
