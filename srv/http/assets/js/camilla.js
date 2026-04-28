@@ -296,12 +296,12 @@ var P         = {
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout'
-				   , 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ]
+				   , 'volume_limit', 'volume_ramp_time', 'worker_threads', 'multithreaded' ]
 	, listsample : {} // on GetSupportedDeviceTypes
 	, samplerate : [] // ^
 }
 D0.list       = {
-	  type               : [ 'Type',               'select', { 'Asynchronous Sinc': 'AsyncSinc', 'Asynchronous Polynomial': 'AsyncPoly', 'Synchronous': 'Synchronous' } ]
+	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',               'select', {} ] // ^
@@ -332,8 +332,8 @@ var D         = {
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
 		, [ 'Silence Timeout',   'number' ]
-		, [ 'Volume ramp time',  'number' ]
 		, [ 'Volume limit',      'number' ]
+		, [ 'Volume ramp time',  'number' ]
 		, [ 'Worker threads',    'number' ]
 		, [ 'Multi-threaded',    'checkbox' ]
 	]
@@ -1967,7 +1967,6 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : current
 			, beforeshow   : () => {
-				$( '#infoList .select' ).css( 'width', '220px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					SETTING.resampler( $( this ).val() );
 				} );
