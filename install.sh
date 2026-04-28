@@ -8,6 +8,7 @@ alias=r1
 if [[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]]; then
 	systemctl -q is-active camilladsp && active=1
 	[[ $active ]] && systemctl stop camilladsp
+	rm -f $dirshm/hwparams
 	pacman -Sy --noconfirm camilladsp
 	while read f; do
 		sed -i -E -e 's/FLOAT/F/; s/S24LE3/S24_3_LE/' -e 's/([246])LE/\1_LE/' $f

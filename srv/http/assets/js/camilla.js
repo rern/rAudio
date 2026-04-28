@@ -320,9 +320,7 @@ D0.list       = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC
-				, [ 'Link volume control', 'checkbox' ], [ 'Link mute control', 'checkbox' ], [ 'Stop on inactive', 'checkbox' ]
-				];
+D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC, [ 'Stop on inactive', 'checkbox' ] ];
 D0.AlsaP      = [ D0.list.typeP,         D0.list.deviceP,    D0.list.formatP, D0.list.channelsP ];
 D0.extra      = [ D0.list.extra_samples, D0.list.skip_bytes, D0.list.read_bytes ];
 var D         = {
@@ -357,7 +355,7 @@ var D         = {
 		, File      : [ D0.list.typeP, D0.list.filename,  D0.list.formatP, D0.list.channelsP ]
 	}
 	, values    : {
-		  Alsa      : { type: '', device: '',   format: '', channels: 2, link_volume_control: false, link_mute_control: false, stop_on_inactive: false }
+		  Alsa      : { type: '', device: '',   format: '', channels: 2, stop_on_inactive: false }
 		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
 		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
 		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
@@ -1060,7 +1058,7 @@ var CONFIG    = {
 		} );
 	}
 	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
-		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+		[ 'devices', 'filters', 'mixers', 'pipeline', 'processors' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
 		var dev                            = S.devices;
@@ -1077,6 +1075,11 @@ var CONFIG    = {
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
+		var v    = [ 400, 50, 1, false ];
+		[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
+			if ( DEV[ k ] === null ) DEV[ k ] = v[ i ];
+		} );
+
 	}
 }
 var RENDER    = {
@@ -2079,15 +2082,20 @@ var SETTING   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
-			GRAPH.refresh();
 			V.debounce = setTimeout( () => {
 				LOCAL();
+				GRAPH.refresh();
 				SETTING.statusPush();
 				BASH( [ 'saveconfig' ] );
+				if ( titlle ) BANNER( V.tab, titlle, msg );
+				if ( V.tab === 'devices' ) RENDER.devices();
 			}, 1000 );
 		}, WSCAMILLA ? 0 : 300 );
-		if ( titlle ) BANNER( V.tab, titlle, msg );
-		if ( V.tab === 'devices' ) RENDER.devices();
+	}
+	, saveError     : ( title, error ) => {
+		clearTimeout( V.debounce );
+		_INFO.warning( V.tab, 'Error', title +': <br><br>'+ error );
+		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
 	}
 	, statusPush    : () => {
 		var status = { 
@@ -2125,7 +2133,7 @@ var SETTING   = {
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( message => {
-						if ( message ) _INFO.warning(  V.tab,  title, message );
+						if ( message ) _INFO.warning( V.tab, title, message );
 					} );
 			}
 		} );
@@ -2283,10 +2291,6 @@ var UTIL      = {
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
-					var v    = [ 50, 400, 1, false ];
-					[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
-						if ( S.config.devices[ k ] === null ) S.config.devices[ k ] = v[ i ];
-					} );
 					CONFIG.valuesAssign();
 					RENDER.status();
 					RENDER.tab();
@@ -2310,12 +2314,15 @@ var UTIL      = {
 					D0.list.typeC[ 2 ] = type.capture;
 					D0.list.typeP[ 2 ] = type.playback;
 					break;
+				case 'SetConfigJson':
+					v = data.SetConfigJson.result
+					if ( v !== 'Ok' ) {
+						var k = Object.keys( v );
+						SETTING.saveError( k, v[ k ] );
+					}
+					break;
 				case 'Invalid':
-					INFO( {
-						  icon    : 'warning'
-						, title   : 'Error'
-						, message : data.Invalid.error
-					} );
+					SETTING.saveError( 'Invalid', data.Invalid.error );
 					break;
 			}
 		}
