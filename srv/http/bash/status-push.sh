@@ -88,7 +88,10 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	echo "$status" > $dirshm/status.json
 	systemctl restart lcdchar
 fi
-[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+if [[ -e $dirsystem/mpdoled ]]; then
+	systemctl $start_stop mpd_oled
+	[[ $start_stop == stop ]] && pkill -9 cava
+fi
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
 	status=$( $dirbash/status.sh snapclient )
