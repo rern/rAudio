@@ -44,16 +44,14 @@ echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
-	statusradio=1
 	onPlay
 else
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
 	status=$( $dirbash/status.sh \
 				| jq '{ Artist, Album,   Composer, Conductor, coverart,  elapsed, file,   player
 					  , song   ,station, state,    Time,      timestamp, Title,   volume, webradio }' )
-	statusnew=$( json2var "$status" | tee $dirshm/statusnew )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
-	. <( echo "$statusnew" )
+	. <( json2var "$status" | tee $dirshm/status )
 	isChanged Artist Title Album && trackchanged=1
 	onPlay
 	if [[ $webradio == true ]]; then
@@ -65,9 +63,7 @@ else
 # --------------------------------------------------------------------
 	fi
 ########
-	pushData mpdplayer "$status"
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
-	mv -f $dirshm/status{new,}
+	pushStatus mpdplayer "$status"
 fi
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
@@ -82,10 +78,7 @@ fi
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 [[ -e $dirshm/power ]] && exit
 # --------------------------------------------------------------------
-if [[ -e $dirsystem/lcdchar ]]; then
-	[[ ! $statusradio ]] && echo "$status" > $dirshm/status.json
-	systemctl restart lcdchar
-fi
+[[ -e $dirsystem/lcdchar ]] && systemctl restart lcdchar
 if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $start_stop == stop ]] && pkill -9 cava
 	systemctl $start_stop mpd_oled
