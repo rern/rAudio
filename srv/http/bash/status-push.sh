@@ -66,10 +66,7 @@ else
 	fi
 ########
 	pushData mpdplayer "$status"
-	if [[ -e $dirsystem/scrobble ]]; then
-		cp -f $dirshm/status{,prev}
-		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
-	fi
+	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
 	mv -f $dirshm/status{new,}
 fi
 clientip=$( snapclientIP )
@@ -105,6 +102,7 @@ if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # --------------------------------------------------------------------
 	if [[ $state =~ ^(play|pause)$ ]]; then # renderers prev/next
+		timestampnew=$( getVar timestamp $dirshm/status )
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
 	fi

@@ -361,8 +361,8 @@ ipOnline() {
 }
 json2var() { # single level only
 	local pattern
-	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
-	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
 	local filepid
