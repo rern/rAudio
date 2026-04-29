@@ -89,8 +89,8 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl restart lcdchar
 fi
 if [[ -e $dirsystem/mpdoled ]]; then
-	systemctl $start_stop mpd_oled
 	[[ $start_stop == stop ]] && pkill -9 cava
+	systemctl $start_stop mpd_oled
 fi
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
