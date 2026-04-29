@@ -479,6 +479,34 @@ pushWebsocket() { # send to remote websocket.py (server)
 quoteEscape() {
 	echo "${@//\"/\\\"}"
 }
+radioStatusFile() {
+	local status
+	[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "cmd
+$artist
+$album
+webradio
+CMD ARTIST ALBUM MODE" &> /dev/null &
+	elapsed=$( mpcElapsed webradio )
+	pllength=$( mpc status %length% )
+	status='{
+  "Album"     : "'$album'"
+, "Artist"    : "'$artist'"
+, "coverart"  : "'$coverart'"
+, "elapsed"   : '$elapsed'
+, "pllength"  : '$pllength'
+, "state"     : "play"
+, "Time"      : false
+, "timestamp" : '$( date +%s%3N )'
+, "Title"     : "'$title'"
+, "webradio"  : true
+}'
+	pushData mpdradio "$status"
+	[[ -e $dirsystem/lcdchar ]] && echo "$status" > $dirshm/status.json
+	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
+	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	json2var "$status" > $dirshm/status
+	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
+}
 rAudioUpdate() {
 	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \
 		| bsdtar xvf - --strip-components=1 -C /

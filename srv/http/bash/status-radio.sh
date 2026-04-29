@@ -83,7 +83,7 @@ metadataGet() {
 	fi
 	
 	if [[ $radioparadise ]]; then
-		readarray -t metadata < <( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
+		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
 		countdown=${metadata[4]/.*} # remove decimals
 	else 
 		if [[ $hiphop ]]; then
@@ -106,7 +106,7 @@ $( jq -r .albumTitle <<< $track )"
 			position=$( jq .position <<< $levels )
 			item=$( jq .items[$position] <<< $levels )
 			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata < <( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' )
+			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' )
 			end=$( jq -r .end <<< $step )
 		fi
 		now=$( date +%s )
@@ -137,24 +137,7 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	data='
-  "Album"    : "'$album'"
-, "Artist"   : "'$artist'"
-, "elapsed"  : '$( mpcElapsed webradio )'
-, "pllength" : '$( mpc status %length% )'
-, "Title"    : "'$title'"'
-	if [[ $coverart ]]; then
-		data+='
-, "coverart" : "'$coverart'"'
-	else
-		$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-webradio
-CMD ARTIST ALBUM MODE" &> /dev/null &
-	fi
-	$dirbash/status-push.sh "$data" & # run in background for snapcast
-	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
+	radioStatusFile
 	# next fetch
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0
 	sleep $(( countdown + 5 )) # add 5s delay

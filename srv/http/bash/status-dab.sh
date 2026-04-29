@@ -20,14 +20,6 @@ while true; do
 	
 	cp -f $filelabel $filetitle
 	title=$( < $filetitle )
-	elapsed=$( mpcElapsed )
-	data='
-  "Album"    : "'$album'"
-, "Artist"   : "'$artist'"
-, "elapsed"  : '$elapsed'
-, "Title"    : "'$title'"'
-	$dirbash/status-push.sh "$data" & # run in background for snapcast
-	# coverart
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
 		name=$( alphaNumeric $title )
@@ -38,6 +30,6 @@ while true; do
 			sed -i -E "s/^(coverart=).*/\1$cover/" $dirshm/status
 		fi
 	fi
-	pushData cover '{ "cover": "'$cover'" }'
+	radioStatusFile
 	sleep 10
 done
