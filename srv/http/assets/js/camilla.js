@@ -261,7 +261,8 @@ var F         = {
 	} );
 } );
 // processor //////////////////////////////////////////////////////////////////////////////
-var chk       = '<input type="checkbox">';
+var chk       = '<input type="checkbox" value="CH"> CH';
+chk           = chk.replace( /CH/g, 0 ) +' &emsp;'+ chk.replace( /CH/g, 1 );
 var P0        = {
 	  a : [
 		  [ 'Name',     'text' ]
@@ -274,8 +275,8 @@ var P0        = {
 		, [ 'Threshold', 'number' ]
 	]
 	, c : [
-		  [ 'Monitor channels', chk +' 0 &emsp;'+ chk +' 1' ]
-		, [ 'Process channels', chk +' 0 &emsp;'+ chk +' 1' ]
+		  [ 'Monitor channels', chk ]
+		, [ 'Process channels', chk ]
 	]
 	, values : {
 		  name      : ''
@@ -807,8 +808,8 @@ var GRAPH     = {
 			$( '#pipeline' ).prepend( '<canvas></canvas>' );
 			var $canvas         = $( '#pipeline canvas' );
 			$canvas // fix - blur elements
-				.attr( 'width', canvasW * X.dpxr )
-				.attr( 'height', canvasH * X.dpxr )
+				.prop( 'width', canvasW * X.dpxr )
+				.prop( 'height', canvasH * X.dpxr )
 				.css( {
 					  width  : canvasW +'px'
 					, height : canvasH +'px'
@@ -1829,11 +1830,11 @@ var SETTING   = {
 			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
 			values.name = name;
 			if ( type !== 'RACE' ) {
-				[ 'monitor', 'process' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
+				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
 					var key = k[ 0 ] +'_ch';
-					var val = values[ k +'_channels' ];
+					var val = values[ k ];
 					for ( i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
-					delete values[ k +'_channels' ];
+					delete values[ k ];
 				} );
 			}
 		} else {
@@ -1851,24 +1852,26 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : edit
 			, beforeshow   : () => {
-				if ( monitor_ch ) $( '#infoList input[type=radio]' ).attr( 'type', 'checkbox' );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = _INFO.val();
 					SETTING.processor( val.type, val.name, edit )
 				} );
 			}
 			, ok           : () => {
-				var val        = _INFO.val();
-				var typenew    = val.type;
-				var namenew    = val.name;
+				var val     = _INFO.val();
 				if ( monitor_ch ) { // m_ch0, m_ch1, p_ch0, p_ch1 >>
-					[ 'monitor', 'process' ].forEach( k => val[ k +'_channels' ] = [] );
+					var ch = { m: [], p: [] };
 					[ 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1' ].forEach( k => {
-						var key = k[ 0 ] === 'm' ? 'monitor' : 'process';
-						if ( val[ k ] !== false ) val[ key +'_channels' ].push( +k.slice( -1 ) );
+						var v   = val[ k ];
+						if ( v !== false ) ch[ k[ 0 ] ].push( v );
 						delete val[ k ];
 					} );
+					[ 'monitor_channels', 'process_channels' ].forEach( k => {
+						val[ k ] = ch[ k[ 0 ] ];
+					} );
 				}
+				var typenew = val.type;
+				var namenew = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
 				PRO[ namenew ] = { type: typenew, parameters: val }
 				if ( edit && name !== namenew ) delete PRO[ name ];
@@ -2184,12 +2187,15 @@ var SETTING   = {
 			}, 1000 );
 		}, WSCAMILLA ? 0 : 300 );
 	}
-	, saveError     : ( title, error ) => {
+	, saveError     : result => {
 		clearTimeout( V.debounce );
-		console.log( title, error, S.config );
-		_INFO.warning( V.tab, 'Error', title +': <br><br>'+ error );
 		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
 		$( '.switch' ).removeClass( 'disabled' );
+		console.log( result );
+		console.log( S.config );
+		var title = Object.keys( result )[ 0 ];
+		var error = result[ title ];
+		BANNER( 'warning yl', title, error, -1 );
 	}
 	, statusPush    : () => {
 		var status = { 
@@ -2410,10 +2416,7 @@ var UTIL      = {
 					break;
 				case 'SetConfigJson':
 					v = data.SetConfigJson.result
-					if ( v !== 'Ok' ) {
-						var k = Object.keys( v );
-						SETTING.saveError( k, v[ k ] );
-					}
+					if ( v !== 'Ok' ) SETTING.saveError( v );
 					break;
 				case 'Invalid':
 					SETTING.saveError( 'Invalid', data.Invalid.error );

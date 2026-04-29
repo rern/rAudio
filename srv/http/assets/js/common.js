@@ -1058,7 +1058,7 @@ var _INFO     = {
 			switch ( type ) {
 				case 'checkbox':
 					val = $this.prop( 'checked' );
-					if ( val && $this.attr( 'value' ) !== undefined ) val = $this.val(); // if value defined
+					if ( val && $this.attr( 'value' ) !== undefined ) val = COMMON.string2val( $this.val() ); // if value defined
 					break;
 				case 'number':
 				case 'range':
@@ -1069,7 +1069,7 @@ var _INFO     = {
 					break;
 				case 'radio': // radio has only single checked - skip unchecked inputs
 					val = $( '#infoList input:radio[name='+ el.name +']:checked' ).val();
-					val = _INFO.val2type( val );
+					val = COMMON.string2val( val );
 					break;
 				case 'text':
 					if ( $this.hasClass( 'array' ) ) { // array literal > array
@@ -1086,7 +1086,7 @@ var _INFO     = {
 					val = $this.val().trim().replace( /\n/g, '\\n' );
 					break;
 				default: // hidden, select
-					val = _INFO.val2type( $this.val() );
+					val = COMMON.string2val( $this.val() );
 			}
 			if ( type === 'text'
 				|| typeof val !== 'string'                  // boolean
@@ -1106,19 +1106,6 @@ var _INFO     = {
 		var v = {}
 		I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
 		return v                                                        // json
-	}
-	, val2type      : val => {
-		if ( val === 'true' ) {
-			return true
-		} else if ( val === 'false' ) {
-			return false
-		} else if ( val === 'null' ) {
-			return null
-		} else if ( /^[0-9.]+$/.test( val ) ) {
-			return +val
-		} else {
-			return val
-		}
 	}
 	, warning       : ( icon, title, message, callback ) => {
 		BANNER_HIDE();
@@ -1630,6 +1617,13 @@ var COMMON    = {
 				.addClass( 'hide' );
 			$( '.helphead' ).removeClass( 'hide' );
 		}
+	}
+	, string2val    : val => {
+		if ( val === 'true' )  return true
+		if ( val === 'false' ) return false
+		if ( val === 'null' )  return null
+		if ( val !== '' && ! isNaN( val - 0 ) ) return +val;
+		return val
 	}
 	, updating      : () => {
 		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
