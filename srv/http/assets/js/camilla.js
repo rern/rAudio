@@ -261,29 +261,29 @@ var F         = {
 	} );
 } );
 // processor //////////////////////////////////////////////////////////////////////////////
-var ch        = '<input type="checkbox"> 0 &emsp;<input type="checkbox"> 1';
+var chk       = '<input type="checkbox">';
 var P0        = {
 	  a : [
-		  [ 'Name',             'text' ]
-		, [ 'Type',             'select', [ 'Compressor', 'NoiseGate', 'RACE' ] ]
-		, [ 'Channels',         'number' ]
+		  [ 'Name',     'text' ]
+		, [ 'Type',     'select', [ 'Compressor', 'NoiseGate', 'RACE' ] ]
+		, [ 'Channels', 'number' ]
 	]
 	, b : [
-		  [ 'Attack',           'number' ]
-		, [ 'Release',          'number' ]
-		, [ 'Threshold',        'number' ]
+		  [ 'Attack',    'number' ]
+		, [ 'Release',   'number' ]
+		, [ 'Threshold', 'number' ]
 	]
 	, c : [
-		  [ 'Monitor channels', ch ]
-		, [ 'Process channels', ch ]
+		  [ 'Monitor channels', chk +' 0 &emsp;'+ chk +' 1' ]
+		, [ 'Process channels', chk +' 0 &emsp;'+ chk +' 1' ]
 	]
 	, values : {
-		  name             : ''
-		, type             : ''
-		, channels         : 2
-		, attack           : 0.025
-		, release          : 1.0
-		, threshold        : -25
+		  name      : ''
+		, type      : ''
+		, channels  : 2
+		, attack    : 0.025
+		, release   : 1.0
+		, threshold : -25
 	}
 	, values_ch : {
 		  monitor_channels : [ 0, 1 ]
@@ -345,7 +345,7 @@ var P         = {
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout'
-				   , 'volume_limit', 'volume_ramp_time', 'worker_threads', 'multithreaded' ]
+				   , 'volume_limit', 'volume_ramp_time' ]
 	, listsample : {} // on GetSupportedDeviceTypes
 	, samplerate : [] // ^
 }
@@ -381,8 +381,6 @@ var D         = {
 		, [ 'Silence Timeout',   'number' ]
 		, [ 'Volume limit',      'number' ]
 		, [ 'Volume ramp time',  'number' ]
-		, [ 'Worker threads',    'number' ]
-		, [ 'Multi-threaded',    'checkbox' ]
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
@@ -402,18 +400,6 @@ var D         = {
 		, Jack      : [ D0.list.typeP, D0.list.channelsP ]
 		, Stdout    : [ D0.list.typeP, D0.list.formatP,   D0.list.channelsP ]
 		, File      : [ D0.list.typeP, D0.list.filename,  D0.list.formatP, D0.list.channelsP ]
-	}
-	, values    : {
-		  Alsa      : { type: '', device: '',   format: '', channels: 2, stop_on_inactive: false }
-		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
-		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
-		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
-		, Jack      : { type: '',                           channels: 2 }
-		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, Stdout    : { type: '',               format: '', channels: 2 }
-		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 	, resampler : {
 		  AsyncSinc    : [
@@ -442,6 +428,18 @@ var D         = {
 			, AsyncPoly   : { type: 'AsyncPoly', interpolation: 'Cubic' }
 			, Synchronous : { type: 'Synchronous' }
 		}
+	}
+	, values    : {
+		  Alsa      : { type: '', device: '',   format: '', channels: 2, stop_on_inactive: false }
+		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
+		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
+		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
+		, Jack      : { type: '',                           channels: 2 }
+		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, Stdout    : { type: '',               format: '', channels: 2 }
+		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
@@ -1089,6 +1087,21 @@ var CONFIG    = {
 			}
 		} );
 	}
+	, multithreaded       : () => {
+		var enabled = DEV.multithreaded;
+		INFO( {
+			  ...SW
+			, list         : [ 'Worker threads', 'number' ]
+			, values       : DEV.worker_threads || 1
+			, checkchanged : enabled
+			, cancel       : SWITCH.cancel
+			, ok           : () => {
+				DEV.multithreaded  = true;
+				DEV.worker_threads = _INFO.val();
+				SETTING.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
 	, resampler           : () => SETTING.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
 	, stop_on_rate_change : () => {
 		var enabled = DEV.stop_on_rate_change;
@@ -1412,11 +1425,7 @@ var RENDER    = {
 		var values = '';
 		D0.main.forEach( k => {
 			if ( k in DEV ) {
-				var v = DEV[ k ];
-				if ( k === 'worker_threads' && v === 1 ) return
-				if ( k === 'multithreaded' && ! v ) return
-				
-				values += v.toLocaleString() +'<br>';
+				values += DEV[ k ].toLocaleString() +'<br>';
 				labels += UTIL.key2label( k ) +'<br>';
 			}
 		} );
@@ -1424,6 +1433,7 @@ var RENDER    = {
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.capture_samplerate ) keys.push( 'capture_samplerate' );
 		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( DEV.multithreaded ) keys.push( 'worker_threads' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -1447,8 +1457,10 @@ var RENDER    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', DEV.resampler !== null && DEV.resampler.type === 'Synchronous' );
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( id => {
-			$( '#'+ id ).prop( 'checked', ! ( DEV[ id ] === null || DEV[ id ] === false ) );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'multithreaded', 'resampler', 'stop_on_rate_change' ].forEach( id => {
+			var enabled = DEV[ id ] === true;
+			$( '#'+ id ).prop( 'checked', enabled );
+			$( '#setting-'+ id ).toggleClass( 'hide', ! enabled );
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
@@ -2161,13 +2173,14 @@ var SETTING   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
+			if ( titlle ) BANNER( V.tab, titlle, msg );
 			V.debounce = setTimeout( () => {
 				LOCAL();
 				GRAPH.refresh();
 				SETTING.statusPush();
 				BASH( [ 'saveconfig' ] );
-				if ( titlle ) BANNER( V.tab, titlle, msg );
 				if ( V.tab === 'devices' ) RENDER.devices();
+				$( '.switch' ).removeClass( 'disabled' );
 			}, 1000 );
 		}, WSCAMILLA ? 0 : 300 );
 	}
@@ -2176,6 +2189,7 @@ var SETTING   = {
 		console.log( title, error, S.config );
 		_INFO.warning( V.tab, 'Error', title +': <br><br>'+ error );
 		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
+		$( '.switch' ).removeClass( 'disabled' );
 	}
 	, statusPush    : () => {
 		var status = { 

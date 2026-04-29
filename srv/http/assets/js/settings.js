@@ -138,6 +138,8 @@ var SWITCH  = {
 		delete SW;
 	}
 	, set    : () => {
+		if ( PAGE === 'camilla' ) return
+		
 		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 		BANNER_HIDE();
 		var $switch = $( '.switch' );
@@ -379,11 +381,10 @@ $( '.switch' ).on( 'click', function() {
 			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
 	} else {
-		$( '#setting-'+ id ).addClass( 'hide' );
+		$setting.addClass( 'hide' );
 		if ( PAGE === 'camilla' ) {
 			DEV[ id ] = null;
-			setting.save( SW.title, 'Disable ...' );
-			$setting.addClass( 'hide' );
+			SETTING.save( SW.title, 'Disable ...' );
 		} else if ( id in CONFIG._disable ) {
 			CONFIG._disable[ id ]();
 		} else {
