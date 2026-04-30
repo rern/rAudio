@@ -351,9 +351,9 @@ inOutputConf() {
 }
 ipAddress() {
 	if [[ $1 ]]; then
-		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}'
+		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7; exit}'
 	else
-		ip route get 1.1.1.1 | awk '/src/ {print $7}'
+		ip route get 1.1.1.1 | awk '/src/ {print $7; exit}'
 	fi
 }
 ipOnline() {
