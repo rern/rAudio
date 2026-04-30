@@ -44,11 +44,6 @@ echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
-	[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-webradio
-CMD ARTIST ALBUM MODE" &> /dev/null &
 	elapsed=$( mpcElapsed webradio )
 	pllength=$( mpc status %length% )
 	timestamp=$( date +%s%3N )
@@ -65,6 +60,11 @@ CMD ARTIST ALBUM MODE" &> /dev/null &
 , "webradio"  : true
 }'
 	pushData mpdradio "$status"
+	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
+$ARTIST
+$ALBUM
+webradio
+CMD ARTIST ALBUM MODE" &> /dev/null &
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
