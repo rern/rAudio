@@ -137,9 +137,13 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	radioStatusFile
-	# next fetch
-	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0
+	$dirbash/status-push.sh "cmd
+$album
+$artist
+$coverart
+$title
+CMD ALBUM ARTIST COVERART TITLE"
+	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet
 }

@@ -465,15 +465,6 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushStatus() {
-	pushData $1 "$2"
-	[[ -e $dirsystem/lcdchar ]] && echo "$2" > $dirshm/status.json
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
-	if [[ $1 == mpdradio ]]; then
-		$dirbash/status-push.sh statusradio & # for snapcast ssh, mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-		json2var "$2" > $dirshm/status
-	fi
-}
 pushWebsocket() { # send to remote websocket.py (server)
 	local channel data ip
 	ip=$1
@@ -487,31 +478,6 @@ pushWebsocket() { # send to remote websocket.py (server)
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"
-}
-radioStatusFile() {
-	local elapsed pllength status timestamp
-	[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-webradio
-CMD ARTIST ALBUM MODE" &> /dev/null &
-	elapsed=$( mpcElapsed webradio )
-	pllength=$( mpc status %length% )
-	timestamp=$( date +%s%3N )
-	status='{
-  "Album"     : "'$album'"
-, "Artist"    : "'$artist'"
-, "coverart"  : "'$coverart'"
-, "elapsed"   : '$elapsed'
-, "pllength"  : '$pllength'
-, "state"     : "play"
-, "Time"      : false
-, "timestamp" : '$timestamp'
-, "Title"     : "'$title'"
-, "webradio"  : true
-}'
-	pushStatus mpdradio "$status"
-	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
 }
 rAudioUpdate() {
 	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \

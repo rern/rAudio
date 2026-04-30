@@ -42,8 +42,32 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
+if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
+	args2var "$1"
+	[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "cmd
+$ARTIST
+$ALBUM
+webradio
+CMD ARTIST ALBUM MODE" &> /dev/null &
+	elapsed=$( mpcElapsed webradio )
+	pllength=$( mpc status %length% )
+	timestamp=$( date +%s%3N )
+	status='{
+  "Album"     : "'$ALBUM'"
+, "Artist"    : "'$ARTIST'"
+, "coverart"  : "'$COVERART'"
+, "elapsed"   : '$elapsed'
+, "pllength"  : '$pllength'
+, "state"     : "play"
+, "Time"      : false
+, "timestamp" : '$timestamp'
+, "Title"     : "'$TITLE'"
+, "webradio"  : true
+}'
+	pushData mpdradio "$status"
+	json2var "$status" > $dirshm/status
 	state=play
+	webradio=true
 	onPlay
 else
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
@@ -63,7 +87,7 @@ else
 # --------------------------------------------------------------------
 	fi
 ########
-	pushStatus mpdplayer "$status"
+	pushData mpdplayer "$status"
 fi
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
@@ -78,7 +102,10 @@ fi
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 [[ -e $dirshm/power ]] && exit
 # --------------------------------------------------------------------
-[[ -e $dirsystem/lcdchar ]] && systemctl restart lcdchar
+if [[ -e $dirsystem/lcdchar ]]; then
+	echo "$status" > $dirshm/status.json
+	systemctl restart lcdchar
+fi
 if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $start_stop == stop ]] && pkill -9 cava
 	systemctl $start_stop mpd_oled
@@ -88,7 +115,7 @@ fi
 # --------------------------------------------------------------------
 [[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
-. $dirshm/statusprev
+. <( echo $statusprev )
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # --------------------------------------------------------------------
 if [[ $player != mpd ]]; then
