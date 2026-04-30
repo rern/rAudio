@@ -107,8 +107,11 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl restart lcdchar
 fi
 if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $start_stop == stop ]] && pkill -9 cava
 	systemctl $start_stop mpd_oled
+	if [[ $start_stop == stop ]]; then
+		pkill -9 cava
+		( sleep 1; rm -f /tmp/cava* ) &
+	fi
 fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble ]] && exit
