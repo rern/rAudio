@@ -67,3 +67,4 @@ fi
 curl -sfL $url -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
 pushData cover '{ "cover": "'$cover'" }'
+[[ $MODE == webradio ]] && $dirbash/cmd.sh coverfileslimit
