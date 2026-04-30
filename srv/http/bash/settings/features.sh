@@ -67,7 +67,7 @@ ap )
 	pushRefresh
 	pushRefresh networks
 	;;
-autoplay | lyrics | scrobble )
+audiocd | autoplay | lyrics | scrobble )
 	enableFlagSet
 	pushRefresh
 	;;

@@ -44,6 +44,14 @@ Note:
 EOF
 	]
 	, [
+		  'id'       => 'audiocd'
+		, 'label'    => 'Audio CD Data'
+		, 'exist'    => 'hide(none)'
+		, 'help'     => <<< EOF
+<a href="https://gnudb.org">Gnudb</a> - Required user's email for CD database access
+EOF
+	]
+	, [
 		  'id'       => 'dabradio'
 		, 'label'    => 'DAB Radio'
 		, 'sub'      => 'mediamtx'

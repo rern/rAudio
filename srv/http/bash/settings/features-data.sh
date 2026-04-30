@@ -11,7 +11,7 @@
 data+=$( settingsActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
+			$dirsystem ap audiocd autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
 if systemctl -q is-enabled localbrowser; then
 	systemctl -q is-active localbrowser && localbrowser=true || localbrowser=-1

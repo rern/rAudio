@@ -64,6 +64,17 @@ var CONFIG       = {
 			}
 		} );
 	}
+	, audiocd      : values => {
+		INFO( {
+			  ...SW
+			, list         : [ 'Email', 'text' ]
+			, values       : values || { EMAIL: '' }
+			, checkchanged : S.audiocd
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
+			, fileconf     : true
+		} );
+	}
 	, autoplay     : values => {
 		INFO( {
 			  ...SW
