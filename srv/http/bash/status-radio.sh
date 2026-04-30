@@ -106,7 +106,7 @@ $( jq -r .albumTitle <<< $track )"
 			position=$( jq .position <<< $levels )
 			item=$( jq .items[$position] <<< $levels )
 			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' )
+			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' ) # titreAlbum[sic]
 			end=$( jq -r .end <<< $step )
 		fi
 		now=$( date +%s )
