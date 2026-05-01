@@ -249,13 +249,15 @@ EOF
 		chmod -R 777 $dirnas
 		sharedDataLink rserver
 		if [[ -e $dirshared ]]; then
-			backup=1
+			action=update
 			cp -f $dirshared/* $dirmpd
 			rm -rf $dirshared
+		else
+			action=rescan
 		fi
 		systemctl start mpd
-		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
-rescan
+		$dirbash/cmd.sh "mpcupdate
+$action
 
 CMD ACTION PATHMPD"
 		# prepend path
@@ -264,7 +266,7 @@ CMD ACTION PATHMPD"
 		done < <( ls $dirbookmarks/* $dirplaylists/* )
 	else
 		mkdir -p $dirshared
-		cp -rL $dirmpd $dirshared
+		cp $dirmpd/* $dirshared
 		rm -rf $dirnas/data
 		while read d; do
 			umount -l $d
