@@ -232,7 +232,8 @@ nfsserver )
 		while read d; do
 			[[ $d == NAS ]] && dir_mp=/NAS || dir_mp=$dirnas/$d
 			mkdir -p $dir_mp
-			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
+			mv /mnt/MPD/$d /mnt
+			mount --bind /mnt/$d $dir_mp # mount --bind: wondows not read symlink
 		done < <( ls /mnt/MPD )
 		ip=$( ipAddress )
 		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
@@ -260,9 +261,8 @@ EOF
 $action
 
 CMD ACTION PATHMPD"
-		# prepend path
 		while read file; do
-			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
+			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file" # prepend path
 		done < <( ls $dirbookmarks/* $dirplaylists/* )
 	else
 		mkdir -p $dirshared
@@ -271,6 +271,7 @@ CMD ACTION PATHMPD"
 		while read d; do
 			umount -l $d
 			rmdir $d
+			mv /mnt/$d /mnt/MPD
 		done < <( ls -d $dirnas/* | sed '$ a\/NAS' )
 		systemctl disable --now nfs-server
 		> /etc/exports

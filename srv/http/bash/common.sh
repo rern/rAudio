@@ -359,9 +359,9 @@ ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() { # single level only
-	local pattern
-	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
-	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
+	local regex
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
 	local filepid
@@ -542,8 +542,7 @@ sharedDataLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	appendSortUnique $dirnas/.mpdignore data
-	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
+	echo data > $dirnas/.mpdignore
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 # --------------------------------------------------------------------
 	readarray -t source < $dirshareddata/source
@@ -557,15 +556,12 @@ sharedDataLink() {
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
-	rm -f $dirsystem/{display,order}.json
+	rm -f $dirsystem/{display,order}.json $dirnas/.mpdignore
 	file_order=$dirbackup/order.json
 	[[ ! -s $file_order ]] && file_order=
 	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
-	mpdignore=/mnt/MPD/.mpdignore
-	ignore=$( grep -Ev '^data$|^NVME$|^SATA$|^SD$|^USB$' $mpdignore )
-	[[ $ignore ]] && echo "$ignore" > $mpdignore || rm $mpdignore
 	dirPermissions
 }
 snapclientIP() {
