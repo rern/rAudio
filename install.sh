@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260501
-if [[ $( pacman -Q camilladsp ) != 'camilladsp 4.1.3-1' ]]; then
+if [[ $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]]; then
 	systemctl -q is-active camilladsp && active=1
 	[[ $active ]] && systemctl stop camilladsp
 	rm -f $dirshm/hwparams
