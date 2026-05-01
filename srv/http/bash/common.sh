@@ -386,8 +386,8 @@ localBrowserOff() {
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
-		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
-		mpd_oled -o $chip -x logo
+		. /etc/default/mpd_oled
+		mpd_oled $OPTS -x logo
 	fi
 }
 mpcElapsed() {
