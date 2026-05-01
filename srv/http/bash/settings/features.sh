@@ -227,14 +227,15 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
+		fstab=$( < /etc/fstab )
 		mountBind $dirnas /NAS # /NAS - for windows as \\192.168.1.n\NAS
-		fstab="\
+		fstab+="
 $dirnas  /NAS  none  bind  0  0"
 		for d in NVME SATA SD USB; do
 			[[ ! -d /mnt/MPD/$d ]] && continue
 			
 			mv /mnt/MPD/$d /mnt
-			fstab+="\
+			fstab+="
 /mnt/$d  $dirnas/$d  none  bind  0  0" # mount --bind: wondows not read symlink
 		done
 		fstabColumnReload "$fstab"
