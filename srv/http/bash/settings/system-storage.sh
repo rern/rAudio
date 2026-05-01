@@ -77,6 +77,7 @@ if [[ $lines ]]; then
 		source=${line/^*}
 		mountpoint=$( cut -d^ -f2 <<< $line )
 		fs=${line/*^}
+		[[ $fs == none ]] && fs=bind
 		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted $fs )
