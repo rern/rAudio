@@ -70,7 +70,7 @@ if [[ $lines ]]; then
 	done <<< $lines
 fi
 # fstab - nas nvme sata
-lines=$( grep -Ev '^PARTUUID|^/mnt/MPD/NAS' /etc/fstab )
+lines=$( grep -v ^PARTUUID /etc/fstab )
 if [[ $lines ]]; then
 	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
