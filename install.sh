@@ -5,6 +5,17 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260501
+if systemctl -q is-active nfs-server; then
+	rserver=1
+	$dirsettings/features.sh 'nfsserver
+OFF'
+fi
+file=/mnt/MPD/.mpdignore
+if [[ -e $file ]]; then
+	rm $file
+	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
+fi
+
 if [[ $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]]; then
 	systemctl -q is-active camilladsp && active=1
 	[[ $active ]] && systemctl stop camilladsp
@@ -102,9 +113,5 @@ rm -f $dirshm/system
 
 installfinish
 
-# 20260413
-if [[ -L $dirnas/SD ]]; then
-	rm $dirnas/{NVME,SATA,SD,USB} &> /dev/null
-	. $dirsettings/features.sh
-	mountBindNfs
-fi
+# 20260501
+[[ $rserver ]] && $dirsettings/features.sh nfsserver
