@@ -28,7 +28,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
 	if systemctl -q is-active nfs-server; then
-		[[ $mountpoint == "$dirnas/"* ]] && list+='
+		[[ $fs == none ]] && list+='
 , "rserver"    : true'
 	elif [[ $icon == networks && -L $dirmpd ]]; then
 		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
@@ -70,7 +70,7 @@ if [[ $lines ]]; then
 	done <<< $lines
 fi
 # fstab - nas nvme sata
-lines=$( grep -v ^PARTUUID /etc/fstab )
+lines=$( grep -Ev '^PARTUUID|^/mnt/MPD/NAS' /etc/fstab )
 if [[ $lines ]]; then
 	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
