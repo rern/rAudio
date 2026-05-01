@@ -237,11 +237,7 @@ $dirnas  /NAS  none  rbind  0  0" # rbind - contains binded subdirs
 		fstabColumnReload "$fstab"
 		mount -a
 		ip=$( ipAddress )
-		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
-		cat << EOF > /etc/exports
-/mnt/MPD/NAS  $ip_opt
-/NAS          $ip_opt
-EOF
+		echo "/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"  > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
