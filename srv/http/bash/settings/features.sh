@@ -224,16 +224,16 @@ nfsserver )
 	systemctl stop mpd
 	if [[ $ON ]]; then
 		fstab=$( < /etc/fstab )
-		mountBind $dirnas /NAS # /NAS - for windows as \\192.168.1.n\NAS
-		fstab+="
-$dirnas  /NAS  none  bind  0  0"
 		for d in NVME SATA SD USB; do
 			[[ ! -d /mnt/MPD/$d ]] && continue
 			
+			mkdir $dirnas/$d
 			mv /mnt/MPD/$d /mnt
 			fstab+="
 /mnt/$d  $dirnas/$d  none  bind  0  0" # mount --bind: wondows not read symlink
 		done
+		fstab+="
+$dirnas  /NAS  none  rbind  0  0" # rbind - contains binded subdirs
 		fstabColumnReload "$fstab"
 		mount -a
 		ip=$( ipAddress )
@@ -271,6 +271,7 @@ CMD ACTION PATHMPD"
 		rm -rf $dirnas/data
 		while read d; do
 			umount -l $dirnas/$d
+			rmdir $dirnas/$d
 			mv /mnt/$d /mnt/MPD
 		done < <( ls /mnt | grep -v MPD )
 		umount -l /NAS
