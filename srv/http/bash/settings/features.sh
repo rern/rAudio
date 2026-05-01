@@ -42,10 +42,6 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
-unMount() {
-	umount -l /mnt/$1
-	rmdir $dirnas/$1
-}
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
 }
@@ -273,12 +269,13 @@ CMD ACTION PATHMPD"
 		mkdir -p $dirshared
 		cp $dirmpd/* $dirshared
 		rm -rf $dirnas/data
-		unMount /NAS
 		while read d; do
-			unMount /mnt/$d $dirnas/$d
+			umount -l $dirnas/$d
 			mv /mnt/$d /mnt/MPD
 		done < <( ls /mnt | grep -v MPD )
-		fstab=$( grep -Ev '^/NAS|^/mnt/(NVME|SATA|SD|USB)' /etc/fstab )
+		umount -l /NAS
+		rmdir /NAS
+		fstab=$( grep -Ev '^/mnt/MPD/NAS |^/mnt/(NVME|SATA|SD|USB)' /etc/fstab )
 		fstabColumnReload "$fstab"
 		systemctl disable --now nfs-server
 		> /etc/exports
