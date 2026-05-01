@@ -533,6 +533,7 @@ sharedDataEnabled() {
 }
 sharedDataLink() {
 	local ip_share s
+	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
 	file_order=$dirsystem/order.json

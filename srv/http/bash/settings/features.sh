@@ -34,10 +34,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-mountBind() {
-	mkdir -p $2
-	mount --bind $1 $2
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -47,8 +43,8 @@ pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
 unMount() {
-	umount -l $1
-	rmdir $1
+	umount -l /mnt/$1
+	rmdir $dirnas/$1
 }
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
@@ -232,10 +228,17 @@ nfsserver )
 	systemctl stop mpd
 	if [[ $ON ]]; then
 		mountBind $dirnas /NAS # /NAS - for windows as \\192.168.1.n\NAS
-		while read d; do
+		fstab="\
+$dirnas  /NAS  none  bind  0  0"
+		for d in NVME SATA SD USB; do
+			[[ ! -d /mnt/MPD/$d ]] && continue
+			
 			mv /mnt/MPD/$d /mnt
-			mountBind /mnt/$d $dirnas/$d # mount --bind: wondows not read symlink
-		done < <( ls /mnt/MPD | grep -v NAS )
+			fstab+="\
+/mnt/$d  $dirnas/$d  none  bind  0  0" # mount --bind: wondows not read symlink
+		done
+		fstabColumnReload "$fstab"
+		mount -a
 		ip=$( ipAddress )
 		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
 		cat << EOF > /etc/exports
@@ -263,7 +266,7 @@ $action
 
 CMD ACTION PATHMPD"
 		while read file; do
-			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file" # prepend path
+			sed -E -i '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
 		done < <( ls $dirbookmarks/* $dirplaylists/* )
 	else
 		mkdir -p $dirshared
@@ -271,9 +274,11 @@ CMD ACTION PATHMPD"
 		rm -rf $dirnas/data
 		unMount /NAS
 		while read d; do
-			unMount $dirnas/$d
+			unMount /mnt/$d $dirnas/$d
 			mv /mnt/$d /mnt/MPD
 		done < <( ls /mnt | grep -v MPD )
+		fstab=$( grep -Ev '^/NAS|^/mnt/(NVME|SATA|SD|USB)' /etc/fstab )
+		fstabColumnReload "$fstab"
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm -f $filesharedip
