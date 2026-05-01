@@ -836,7 +836,7 @@ var UTIL          = {
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
-			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
+			if ( mp )     html +='<dot></dot>'+ mp.slice( mp.length < 5 ? 1 : 9 );
 			if ( size )   html += ' · '+ size;
 			if ( fs )     html += ' <c>'+ fs +'</c>';
 			if ( source ) html += ' <c>'+ source +'</c>';
