@@ -282,7 +282,6 @@ fifoToggle() { # mpdoled vuled vumeter
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
 	systemctl daemon-reload
-	mount -a
 }
 fstabSet() {
 	local fstab std
@@ -294,17 +293,17 @@ fstabSet() {
 $( < /etc/fstab )
 $2"
 	fstabColumnReload "$fstab"
-	std=$( mount -a 2>&1 > /dev/null )
-	if [[ $std ]]; then
-		mv -f /tmp/fstab /etc
-		rmdir "$1"
-		systemctl daemon-reload
-		sed 's/$/<br>/' <<< $std
-	else
+	mount -a &> /dev/null
+	if [[ $? == 0 ]]; then
 		for i in {1..10}; do
 			sleep 1
 			mountpoint -q "$1" && break
 		done
+	else
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed 's/$/<br>/' <<< $std
 	fi
 }
 getContent() {
@@ -351,9 +350,9 @@ inOutputConf() {
 }
 ipAddress() {
 	if [[ $1 ]]; then
-		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7; exit}'
+		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}'
 	else
-		ip route get 1.1.1.1 | awk '/src/ {print $7; exit}'
+		ip route get 1.1.1.1 | awk '/src/ {print $7}'
 	fi
 }
 ipOnline() {
@@ -361,8 +360,8 @@ ipOnline() {
 }
 json2var() { # single level only
 	local pattern
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
-	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
+	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
+	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
 }
 killProcess() {
 	local filepid

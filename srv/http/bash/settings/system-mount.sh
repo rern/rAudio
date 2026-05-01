@@ -14,10 +14,16 @@ if [[ $PROTOCOL ]]; then
 # --------------------------------------------------------------------
 	fi
 else # server rAudio client
-	path=$( timeout --signal KILL 3s showmount --no-headers -e $IP )
-	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	for i in {0..5}; do
+		path=$( timeout 1 showmount --no-headers -e $IP )
+		if [[ $path ]]; then
+			grep -q ^$dirnas <<< $path && rserver=rserver
+			break
+		fi
+		sleep 1
+	done
+	[[ ! $rserver ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	rserver=rserver
 	mountpoint=$dirnas
 	PROTOCOL=nfs
 	SHARE=$dirnas
