@@ -17,7 +17,7 @@ else # server rAudio client
 	for i in {0..5}; do
 		path=$( timeout 1 showmount --no-headers -e $IP )
 		if [[ $path ]]; then
-			grep -q ^$dirnas <<< $path && rserver=rserver
+			grep -q ^/NAS <<< $path && rserver=rserver
 			break
 		fi
 		sleep 1
@@ -26,7 +26,7 @@ else # server rAudio client
 # --------------------------------------------------------------------
 	mountpoint=$dirnas
 	PROTOCOL=nfs
-	SHARE=$dirnas
+	SHARE=/NAS
 fi
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
