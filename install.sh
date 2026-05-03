@@ -4,7 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260501
+# 20260503
+if [[ $( pacman -Q mpd_oled ) < mpd_oled 0.02.2-1 ]]; then
+	pacman -Sy --noconfirm mpd_oled
+fi
+
 if systemctl -q is-active nfs-server; then
 	rserver=1
 	$dirsettings/features.sh 'nfsserver
