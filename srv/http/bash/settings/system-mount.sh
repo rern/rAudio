@@ -15,18 +15,24 @@ if [[ $PROTOCOL ]]; then
 	fi
 else # server rAudio client
 	for i in {0..5}; do
-		path=$( timeout 1 showmount --no-headers -e $IP )
-		if [[ $path ]]; then
-			grep -q ^/NAS <<< $path && rserver=rserver
+		shares=$( timeout 1 showmount --no-headers -e $IP | awk '{print $1}' )
+		if [[ $shares ]]; then
+			grep -q ^/mnt/MPD/ <<< $shares && rserver=rserver
 			break
 		fi
 		sleep 1
 	done
 	[[ ! $rserver ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	mountpoint=$dirnas
-	PROTOCOL=nfs
-	SHARE=/NAS
+	fstab=$( < /etc/fstab )
+	while read share; do
+		[[ ${share: -4} == data ]] && mountpoint=$share || mountpoint=${share/MPD/MPD\/NAS}
+		mkdir -p $mountpoint
+		fstab+="
+$IP:$share  $mountpoint  nfs  defaults,bg,soft,timeo=5  0  0"
+	done <<< $shares
+	fstabColumnReload "$fstab"
+	mount -a &> /dev/null
 fi
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
@@ -38,7 +44,7 @@ else
 	options=defaults,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
-fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
+[[ ! $fstab ]] && fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear

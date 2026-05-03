@@ -27,10 +27,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mounted"    : '$mounted'
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
-	if systemctl -q is-active nfs-server; then
-		[[ $fs == none ]] && list+='
-, "rserver"    : true'
-	elif [[ $icon == networks && -L $dirmpd ]]; then
+	if [[ $icon == networks && -L $dirmpd ]]; then
 		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
 			shareddata=1
 		elif [[ -e $dirnas/data/source ]]; then

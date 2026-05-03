@@ -299,7 +299,7 @@ EOF
 	
  • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
-	$mapdrive <c>\\\\$ip\NAS</c>
+	$mapdrive <c>\\\\$ip\USB</c> (SD, SATA, NVME)
 <i class="i-warning"></i> Permissions:
 Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
 EOF

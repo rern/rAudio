@@ -533,7 +533,6 @@ sharedDataEnabled() {
 }
 sharedDataLink() {
 	local ip_share s
-	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	mkdir -p $dirbackup
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
 	file_order=$dirsystem/order.json
@@ -563,7 +562,6 @@ sharedDataReset() {
 	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
-	mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 	dirPermissions
 }
 snapclientIP() {

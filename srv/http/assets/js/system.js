@@ -828,11 +828,7 @@ var UTIL          = {
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( list.shareddata ) {
-				cls += ' shareddata';
-			} else if ( list.rserver ) {
-				cls += ' rserver';
-			}
+			if ( list.shareddata ) cls += ' shareddata';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );

@@ -223,28 +223,26 @@ nfsserver )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	if [[ $ON ]]; then
-		fstab=$( < /etc/fstab )
-		for d in NVME SATA SD USB; do
-			[[ ! -d /mnt/MPD/$d ]] && continue
-			
-			mkdir $dirnas/$d
-			mv /mnt/MPD/$d /mnt
-			fstab+="
-/mnt/$d  $dirnas/$d  none  bind  0  0" # mount --bind: wondows not read symlink
-		done
-		fstab+="
-$dirnas  /NAS  none  rbind  0  0" # rbind - contains binded subdirs
-		fstabColumnReload "$fstab"
-		mount -a
 		ip=$( ipAddress )
-		echo "/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"  > /etc/exports
+		opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
+		exports="\
+$dirshareddata  $opt"
+		for d in NVME SATA SD USB; do
+			dir=/mnt/MPD/$d
+			! [[ -d $dir ]] && continue
+			
+			exports+="
+$dir  $opt"
+			ln -s $dir /mnt/MPD/NAS
+		done
+		echo "$exports" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
 		sharedDataCopy rserver
 		chown -R http:http $dirshareddata
 		chown -R mpd:audio $dirshareddata/{mpd,playlists}
-		chmod -R 777 $dirnas
+		chmod -R 777 /mnt/MPD/NAS
 		sharedDataLink rserver
 		if [[ -e $dirshared ]]; then
 			action=update
@@ -264,18 +262,13 @@ CMD ACTION PATHMPD"
 	else
 		mkdir -p $dirshared
 		cp $dirmpd/* $dirshared
-		rm -rf $dirnas/data
-		while read d; do
-			umount -l $dirnas/$d
-			rmdir $dirnas/$d
-			mv /mnt/$d /mnt/MPD
-		done < <( ls /mnt | grep -v MPD )
-		umount -l /NAS
-		rmdir /NAS
-		fstab=$( grep -Ev '^/mnt/MPD/NAS |^/mnt/(NVME|SATA|SD|USB)' /etc/fstab )
-		fstabColumnReload "$fstab"
+		rm -rf /mnt/MPD/NAS/data
 		systemctl disable --now nfs-server
 		> /etc/exports
+		for d in NVME SATA SD USB; do
+			dir=/mnt/MPD/NAS/$d
+			[[ -L $dir ]] && rm -f $dir
+		done
 		rm -f $filesharedip
 		sharedDataReset
 		systemctl start mpd
