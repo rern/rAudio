@@ -5,7 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260505
-[[ -e /boot/kernel.img ]] && sed -i '/^\[core]/,$ d' /etc/pacman.conf
+if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf
+	sed -i '/^\[core]/,$ d' /etc/pacman.conf
+fi
 
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.02.3-1' ]]; then
 	pacman -Sy --noconfirm mpd_oled
