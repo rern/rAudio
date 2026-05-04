@@ -5,8 +5,14 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260503
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.02.2-1' ]]; then
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.02.3-1' ]]; then
 	pacman -Sy --noconfirm mpd_oled
+	file=/etc/default/mpd_oled
+	if grep ' -X' $file; then
+		sed -i 's/ -X//' $file
+	else
+		sed -i 's/fifo"/fifo -X"/' $file
+	fi
 fi
 
 if systemctl -q is-active nfs-server; then
