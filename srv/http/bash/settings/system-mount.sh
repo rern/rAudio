@@ -17,35 +17,43 @@ else # server rAudio client
 	for i in {0..5}; do
 		shares=$( timeout 1 showmount --no-headers -e $IP | awk '{print $1}' )
 		if [[ $shares ]]; then
-			grep -q ^/mnt/MPD/ <<< $shares && rserver=rserver
+			grep -q ^$dirnas <<< $shares && rserver=rserver
 			break
 		fi
-		sleep 1
 	done
 	[[ ! $rserver ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	fstab=$( < /etc/fstab )
-	while read share; do
-		[[ ${share: -4} == data ]] && mountpoint=$share || mountpoint=${share/MPD/MPD\/NAS}
+	mkdir -p /mnt/NAS
+	fstab="\
+$( < /etc/fstab )
+$IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=5  0  0"
+	fstabColumnReload "$fstab"
+	for d in data NVME SATA SD USB; do
+		dir=/mnt/MPD/$d
+		[[ -d $dir ]] && mv $dir /mnt
+		dir_rserver=/mnt/NAS/$d
+		[[ ! -d $dir_rserver ]] && continue
+		
+		mountpoint=$dirnas/$d
 		mkdir -p $mountpoint
 		fstab+="
-$IP:$share  $mountpoint  nfs  defaults,bg,soft,timeo=5  0  0"
-	done <<< $shares
+$dir_rserver  $mountpoint  none  bind  0  0"
+	done
 	fstabColumnReload "$fstab"
-	mount -a &> /dev/null
 fi
-share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
-if [[ $PROTOCOL == cifs ]]; then
-	[[ ! $USR ]] && USR=quest
-	source="//$IP/$share"
-	options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
-else
-	source="$IP:/$share"
-	options=defaults,bg,soft,timeo=5
+if [[ ! $rserver ]]; then
+	share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
+	if [[ $PROTOCOL == cifs ]]; then
+		[[ ! $USR ]] && USR=quest
+		source="//$IP/$share"
+		options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
+	else
+		source="$IP:/$share"
+		options=defaults,bg,soft,timeo=5
+	fi
+	[[ $OPTIONS ]] && options+=,$OPTIONS
+	fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 fi
-[[ $OPTIONS ]] && options+=,$OPTIONS
-[[ ! $fstab ]] && fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
-
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear
 	systemctl stop mpd

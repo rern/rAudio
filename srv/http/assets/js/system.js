@@ -822,17 +822,23 @@ var UTIL          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
+			if ( list.mountpoint == '/mnt/NAS' ) return
+			
+			var mp     = list.mountpoint;
 			var icon   = list.icon;
 			var fs     = list.fs;
-			var mp     = list.mountpoint;
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( list.shareddata ) cls += ' shareddata';
+			if ( mp === '/mnt/MPD/NAS/data' ) cls+= ' shareddata';
+			if ( fs === 'none' ) {
+				cls+= ' shareddata rserver';
+				fs  = 'bind';
+			}
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
-			if ( mp )     html +='<dot></dot>'+ mp.slice( mp.length < 5 ? 1 : 9 );
+			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
 			if ( size )   html += ' · '+ size;
 			if ( fs )     html += ' <c>'+ fs +'</c>';
 			if ( source ) html += ' <c>'+ source +'</c>';

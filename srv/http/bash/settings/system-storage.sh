@@ -27,15 +27,6 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mounted"    : '$mounted'
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
-	if [[ $icon == networks && -L $dirmpd ]]; then
-		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
-			shareddata=1
-		elif [[ -e $dirnas/data/source ]]; then
-			[[ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' ) == $mountpoint ]] && shareddata=1
-		fi
-		[[ $shareddata ]] && list+='
-, "shareddata" : true'
-	fi
 	echo ", {
 $list
 }"
@@ -67,7 +58,7 @@ if [[ $lines ]]; then
 	done <<< $lines
 fi
 # fstab - nas nvme sata
-lines=$( grep -Ev '^PARTUUID|^/mnt/(NVME|SATA|SD|USB)' /etc/fstab )
+lines=$( grep -Ev ^PARTUUID /etc/fstab )
 if [[ $lines ]]; then
 	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do

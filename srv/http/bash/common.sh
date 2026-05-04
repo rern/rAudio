@@ -282,6 +282,7 @@ fifoToggle() { # mpdoled vuled vumeter
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
 	systemctl daemon-reload
+	mount -a &> /dev/null && return 0
 }
 fstabSet() {
 	local fstab std
@@ -293,7 +294,6 @@ fstabSet() {
 $( < /etc/fstab )
 $2"
 	fstabColumnReload "$fstab"
-	mount -a &> /dev/null
 	if [[ $? == 0 ]]; then
 		for i in {1..10}; do
 			sleep 1
