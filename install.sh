@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260503
+# 20260505
+[[ -e /boot/kernel.img ]] && sed -i '/^\[core]/,$ d' /etc/pacman.conf
+
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.02.3-1' ]]; then
 	pacman -Sy --noconfirm mpd_oled
 	file=/etc/default/mpd_oled
@@ -26,7 +28,7 @@ if [[ -e $file ]]; then
 	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 fi
 
-if [[ $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]]; then
+if [[ -e /bin/camilladsp && $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]]; then
 	systemctl -q is-active camilladsp && active=1
 	[[ $active ]] && systemctl stop camilladsp
 	rm -f $dirshm/hwparams
