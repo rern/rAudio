@@ -1428,17 +1428,21 @@ var COMMON    = {
 			} );
 			return
 		}
-
-		var message = '';
-		var modes   = [ 'nas', 'sd', 'usb' ];
-		if ( C.nvme ) modes.push( 'nvme' );
-		if ( C.sata ) modes.push( 'sata' );
-		modes.forEach( k => {
-			label = modes.length < 4 ? k : '';
-			message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
-		} );
+		
 		var values  = {}
-		modes.forEach( k => { values[ k ] = true } );
+		if ( S.shareddata ) {
+			var message = ICON( 'networks' ) +' Shared Data';
+		} else {
+			var message = '';
+			var modes   = [ 'nas', 'sd', 'usb' ];
+			if ( C.nvme ) modes.push( 'nvme' );
+			if ( C.sata ) modes.push( 'sata' );
+			modes.forEach( k => {
+				label = modes.length < 4 ? k.toUpperCase() : '';
+				message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
+			} );
+			modes.forEach( k => { values[ k ] = true } );
+		}
 		INFO( {
 			  icon       : icon
 			, title      : title
@@ -1447,7 +1451,10 @@ var COMMON    = {
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
+				$( '.infomessage' ).css( 'width', '100%' );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+				if ( S.shareddata ) return
+				
 				$( '#infoList input:radio' ).on( 'input', function() {
 					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
 				} );
