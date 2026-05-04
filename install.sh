@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260505
-if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf
+if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
 fi
 
