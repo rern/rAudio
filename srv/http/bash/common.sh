@@ -385,7 +385,10 @@ localBrowserOff() {
 }
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-	[[ -e $dirsystem/mpdoled ]] && mpd_oled -x
+	if [[ -e $dirsystem/mpdoled ]]; then
+		o=$( cut -d' ' -f2 /etc/default/mpd_oled )
+		mpd_oled -o $o -x
+	fi
 }
 mpcElapsed() {
 	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
