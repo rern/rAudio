@@ -106,14 +106,16 @@ nfsserver )
 	[[ ! $sharedip ]] && sharedip='(none)'
 	conf="\
 $( configText /etc/exports )"
-	systemctl -q is-active nfs-server && conf+="
+	if systemctl -q is-active nfs-server; then
+		ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
+		conf+="
 
-<bll># stat -c '%n %A' $dirnas/*</bll>
-$( stat -c '%n %A' $dirnas/* | column -t )
+<bll># Permissions:</bll>
+$( stat -c '%n %A' $dirnas/* | sed -e '/data/ d' -e 's|.*MPD/||' | column -t )
 
-<bll># Active clients:</bll>
+<bll># Active clients: (supported NFS: $ver)</bll>
 $sharedip"
-	skip+='|Protocol not supported'
+	fi
 	;;
 shairportsync )
 	PKG=shairport-sync
