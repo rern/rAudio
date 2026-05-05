@@ -392,7 +392,7 @@ lyrics )
 		fi
 	fi
 	name="$ARTIST - $TITLE"
-	name=${name//\/}
+	name=${name##*/}
 	lyricsfile="$dirlyrics/${name,,}.txt"
 	if [[ $ACTION == save ]]; then
 		echo -e "$DATA" > "$lyricsfile"
@@ -404,7 +404,7 @@ lyrics )
 		. $dirsystem/lyrics.conf
 		if [[ $embedded ]] && playerActive mpd; then
 			file=$( getVar file $dirshm/status )
-			if [[ ${file/\/*} =~ ^(USB|NAS|SD)$ ]]; then
+			if [[ ${file%/*} =~ ^(USB|NAS|SD)$ ]]; then
 				file="/mnt/MPD/$file"
 				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
 				[[ $lyrics ]] && echo "$lyrics" && exit

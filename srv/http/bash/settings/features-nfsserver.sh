@@ -27,7 +27,7 @@ writePermission() {
 	local dir name p path
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
 	while read dir; do
-		name=${dir/*\/}
+		name=${dir##*/}
 		[[ ${!name} == true ]] && p=777 || p=755
 		[[ $( stat -c %a $dir ) != $p ]] && chmod -R $p $dir
 	done < <( ls -d $path/* | grep -v /data$ )

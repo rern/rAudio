@@ -129,11 +129,11 @@ mpdoled )
 	;;
 nfsserver )
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
-	while read d; do
-		[[ $( stat -c %a $d ) == 777 ]] && tf=true || tf=false
-		values+=', "'${d/*\/}'": '$tf
+	while read dir; do
+		[[ $( stat -c %a $dir ) == 777 ]] && tf=true || tf=false
+		data+=', "'${dir##*/}'": '$tf
 	done < <( ls -d $path/* | grep -vE '(data|NAS)$' )
-	echo "{ ${values:1} }"
+	echo "{ ${data:1} }"
 	;;
 packagelist )
 	filepackages=/tmp/packages
@@ -256,14 +256,11 @@ serverntp )
 }'
 	;;
 smb )
-	file=/etc/samba/smb.conf
-	dirs='SD USB'
-	grep -q '^\[NVME]' $file && dirs+=' NVME'
-	grep -q '^\[SATA]' $file && dirs+=' SATA'
-	for dir in $dirs; do
-		sed -n '/^\['$dir']/,/^\[/ p' $file | grep -q 'read only = no' && tf=true || tf=false
-		data+=', "'$dir'" : '$tf
-	done
+	while read dir; do
+		name=${dir##*/}
+		sed -n '/^\['$name']/,/^\[/ p' /etc/samba/smb.conf | grep -q 'read only = no' && tf=true || tf=false
+		data+=', "'$name'" : '$tf
+	done < <( ls -d /mnt/MPD/* | grep -v NAS$ )
 	echo '{ '${data:1}' }'
 	;;
 snapclient )

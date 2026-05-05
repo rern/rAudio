@@ -234,7 +234,7 @@ if [[ $fileheader == cdda ]]; then
 	audiocd=1
 	if [[ -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
-		track=${file/*\/}
+		track=${file##*/}
 		readarray -t disciddata < <( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${disciddata[0]}
 		Album=${disciddata[1]}
@@ -382,8 +382,8 @@ else
 	# missing id3tags
 	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ ! $Artist ]] && Artist=$AlbumArtist
-	[[ ! $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
-	[[ ! $Title ]] && filename=${file/*\/} && Title=${filename%.*}
+	[[ ! $Artist ]] && dirname=${file%/*} && Artist=${dirname##*/}
+	[[ ! $Title ]] && filename=${file##*/} && Title=${filename%.*}
 ########
 	status+='
 , "Album"     : "'$Album'"
