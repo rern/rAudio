@@ -825,12 +825,11 @@ var UTIL          = {
 			if ( list.mountpoint == '/mnt/NAS' ) return
 			
 			var mp     = list.mountpoint;
-			var icon   = list.icon;
+			var icon   = S.nfsserver ? 'nfsserver' : list.icon;
 			var fs     = list.fs;
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( [ '/mnt/MPD/NAS/data', '/mnt/MPD/NAS' ].includes( mp ) ) cls+= ' shareddata';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
