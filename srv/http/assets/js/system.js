@@ -830,11 +830,7 @@ var UTIL          = {
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( mp === '/mnt/MPD/NAS/data' ) {
-				cls+= ' shareddata';
-			} else if ( mp === '/mnt/MPD/NAS' ) {
-				cls+= ' shareddata rserver';
-			}
+			if ( [ '/mnt/MPD/NAS/data', '/mnt/MPD/NAS' ].includes( mp ) ) cls+= ' shareddata';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
@@ -1083,7 +1079,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var $li        = $( this );
-	if ( MENU.isActive( $li, e ) ) return
+	if ( MENU.isActive( $li, e ) || $li.hasClass( 'nfsserver' ) ) return
 	
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );

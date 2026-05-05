@@ -3,14 +3,12 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
+	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'nfsserver', 'sata', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
-		, 'RPi Touch Display 2' => ''
-		, 'Server rAudio' => 'rserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
@@ -87,8 +85,8 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre>
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
+ · $B->nfsserver Client of Server rAudio - All local storage moved to <c>/mnt</c>
  · <i class="btn">«</i> $L->shareddata
- · <i class="btn bll">«</i> $L->rserver Server rAudio - All local storage moved to <c>/mnt</c>
  · Full path: <c>/mnt/MPD/...</c>
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
