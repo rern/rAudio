@@ -17,7 +17,7 @@ usbRemount() {
 		udevil umount -l "$d"
 	done
 	find $dir_source -maxdepth 1 -type d -exec mv {} $dir_target \; # 2/3 move mountpoints
-	sed -i "s|^(allowed_media_dirs = ).*|\1$dir_media|" /etc/udevil/udevil.conf
+	sed -i -E "s|^(allowed_media_dirs = ).*|\1$dir_media|" /etc/udevil/udevil.conf
 	for p in $part_usb; do # 3/3 remount
 		udevil mount $d
 	done
