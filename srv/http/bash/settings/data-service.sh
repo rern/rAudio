@@ -108,6 +108,9 @@ nfsserver )
 $( configText /etc/exports )"
 	systemctl -q is-active nfs-server && conf+="
 
+<bll># stat -c '%n %A' $dirnas/*</bll>
+$( stat -c '%n %A' $dirnas/* | column -t )
+
 <bll># Active clients:</bll>
 $sharedip"
 	skip+='|Protocol not supported'
