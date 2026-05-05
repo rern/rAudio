@@ -6,6 +6,8 @@ args2var "$1"
 
 ! ipOnline $IP && echo "<c>$IP</c> not reachable." && exit
 # --------------------------------------------------------------------
+opt_common='_netdev,nofail'
+opt_nfs="defaults,bg,soft,timeo=10,$opt_common"
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 	if grep -q "^${mountpoint// /\\\\040}$" < <( awk '{print $2}' /etc/fstab ); then
@@ -26,7 +28,7 @@ else # server rAudio client
 	mkdir -p /mnt/NAS
 	fstab="\
 $( < /etc/fstab )
-$IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=10,_netdev,nofail  0  0"
+$IP:$dirnas  /mnt/NAS  nfs  $opt_nfs  0  0"
 	fstabColumnReload "$fstab"
 	for d in data NVME SATA SD USB; do
 		dir=/mnt/MPD/$d
@@ -37,7 +39,7 @@ $IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=10,_netdev,nofail  0  0"
 		mountpoint=$dirnas/$d
 		mkdir -p $mountpoint
 		fstab+="
-$dir_rserver  $mountpoint  none  bind,nofail,x-systemd.requires=/mnt/NAS  0  0"
+$dir_rserver  $mountpoint  none  bind,x-systemd.requires=/mnt/NAS,$opt_common  0  0"
 	done
 	fstabColumnReload "$fstab"
 	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( ipAddress )"
@@ -47,10 +49,10 @@ if [[ ! $rserver ]]; then
 	if [[ $PROTOCOL == cifs ]]; then
 		[[ ! $USR ]] && USR=quest
 		source="//$IP/$share"
-		options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
+		options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),$opt_common"
 	else
 		source="$IP:/$share"
-		options=defaults,bg,soft,timeo=5
+		options=$opt_nfs
 	fi
 	[[ $OPTIONS ]] && options+=,$OPTIONS
 	fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
