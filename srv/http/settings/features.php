@@ -300,8 +300,9 @@ EOF
  • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
 	$mapdrive <c>\\\\$ip\mnt\\MPD\\NAS</c>
-<i class="i-warning"></i> Permissions:
-Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
+	
+<i class="i-warning"></i> Permissions - Full control
+Everyone can read and write <c>/mnt/MPD/NAS</c>
 EOF
 	]
 	, [
