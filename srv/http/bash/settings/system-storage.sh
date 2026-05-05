@@ -49,7 +49,7 @@ if [[ $lines ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( lsblk -no label $source )"
+			mountpoint="$dirusb/$( lsblk -no LABEL $source )"
 		fi
 		[[ $mountpoint == $mountpointprev ]] && continue
 		

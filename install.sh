@@ -9,7 +9,7 @@ if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
 fi
 
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.02.3-1' ]]; then
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
 	pacman -Sy --noconfirm mpd_oled
 	file=/etc/default/mpd_oled
 	if grep ' -X' $file; then
