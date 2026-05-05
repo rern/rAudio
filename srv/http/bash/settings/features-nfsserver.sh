@@ -49,13 +49,13 @@ if [[ $ON ]]; then
 		action=rescan
 	fi
 	systemctl start mpd
-	$dirbash/cmd.sh "mpcupdate
-$action
-
-CMD ACTION PATHMPD"
 	while read file; do
 		sed -E -i '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
 	done < <( ls $dirbookmarks/* $dirplaylists/* )
+	$dirbash/cmd.sh "mpcupdate
+$action
+
+CMD ACTION PATHMPD" &> /dev/null &
 else
 	mkdir -p $dirshared
 	cp $dirmpd/* $dirshared
