@@ -77,7 +77,14 @@ else # if no connections, start accesspoint
 	done
 	if [[ $ipaddress ]]; then
 		grep -q /mnt/MPD/NAS /etc/fstab && mount -a &> /dev/null
-		[[ -e $filesharedip ]] && appendSortUnique $filesharedip $ipaddress
+		if [[ -e $filesharedip ]]; then
+			if systemctl -q is-active nfs-server; then
+				while read ip; do
+					pushWebsocket $ip nfsserver '{ "online": true }'
+				done < <( cat $filesharedip )
+			fi
+			appendSortUnique $filesharedip $ipaddress
+		fi
 	else
 		if [[ -e $dirshm/wlan ]]; then
 			if [[ $netctllist ]]; then

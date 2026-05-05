@@ -691,6 +691,9 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
+remount )
+	mount -a
+	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
 	savedPlCount
