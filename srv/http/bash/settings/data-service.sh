@@ -104,16 +104,14 @@ nfsserver )
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	[[ ! $sharedip ]] && sharedip='(none)'
 	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
-	conf="\
+	conf="
 <c>$( nfsdctl -V )</c> supports NFS: $ver"
 	if systemctl -q is-active nfs-server; then
 		conf+="
 <bll># cat /etc/exports</bll>
 $( < /etc/exports )
-
 <bll># Permissions:</bll>
 $( stat -c '%n %A' $dirnas/* | sed -e '/data/ d' -e 's|.*MPD/||' | column -t )
-
 <bll># Active clients:</bll>
 $sharedip"
 	fi
