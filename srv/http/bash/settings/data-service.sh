@@ -110,8 +110,6 @@ nfsserver )
 		conf+="
 <bll># cat /etc/exports</bll>
 $( < /etc/exports )
-<bll># Permissions:</bll>
-$( stat -c '%n %A' $dirnas/* | sed -e '/data/ d' -e 's|.*MPD/||' | column -t )
 <bll># Active clients:</bll>
 $sharedip"
 	fi
