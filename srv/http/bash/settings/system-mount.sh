@@ -26,7 +26,7 @@ else # server rAudio client
 	mkdir -p /mnt/NAS
 	fstab="\
 $( < /etc/fstab )
-$IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=5,_netdev  0  0"
+$IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=10,_netdev,nofail  0  0"
 	fstabColumnReload "$fstab"
 	for d in data NVME SATA SD USB; do
 		dir=/mnt/MPD/$d
