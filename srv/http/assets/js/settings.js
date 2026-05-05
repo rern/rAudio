@@ -340,7 +340,7 @@ $( '.switch, .setting' ).on( 'click', function() {
 		  id       : id
 		, icon     : icon
 		, title    : $( '#div'+ id +' .col-l .label' ).text()
-		, disabled : $( this ).hasClass( 'disabled' )
+		, disabled : $( '#'+ id ).hasClass( 'disabled' )
 	}
 } );
 $( '.switch' ).on( 'click', function() {
