@@ -40,6 +40,7 @@ $IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=5  0  0"
 $dir_rserver  $mountpoint  none  bind  0  0"
 	done
 	fstabColumnReload "$fstab"
+	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( ipAddress )"
 fi
 if [[ ! $rserver ]]; then
 	share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
