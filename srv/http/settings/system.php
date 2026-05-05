@@ -9,6 +9,7 @@ commonVariables( [
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
+		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
