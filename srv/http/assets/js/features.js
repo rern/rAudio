@@ -276,6 +276,19 @@ var CONFIG       = {
 			}
 		} );
 	}
+	, nfsserver    : values => {
+		var list = [];
+		Object.keys( values ).forEach( k => list.push( [ '<gr>NAS/</gr>'+ k,   'checkbox' ] ) );
+		INFO( {
+			  ...SW
+			, message      : '<wh>Write</wh> permission:'
+			, list         : list
+			, values       : values
+			, checkchanged : S.nfsserver
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
+		} );
+	}
 	, scrobble     : data => {
 		data.key ? UTIL.scrobble.player( data.values ) : UTIL.scrobble.key();
 	}

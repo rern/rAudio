@@ -127,6 +127,14 @@ mpdoled )
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;
+nfsserver )
+	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
+	dirs=$( ls -d $path/* | grep -v /data$ )
+	while read d; do
+		values+=', "'${d/*\/}'": '$( [[ $( stat -c %a $d ) == 777 ]] && echo true || echo false )
+	done <<< $dirs
+	echo "{ ${values:1} }"
+	;;
 packagelist )
 	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then

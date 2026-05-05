@@ -23,6 +23,15 @@ usbRemount() { # udevil - devmon@http.service - /mnt/MPD/USB <> /mnt/MPD/NAS/USB
 		udevil mount $d
 	done
 }
+writePermission() {
+	local dir name p path
+	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
+	while read dir; do
+		name=${dir/*\/}
+		[[ ${!name} == true ]] && p=777 || p=755
+		[[ $( stat -c %a $dir ) != $p ]] && chmod -R $p $dir
+	done < <( ls -d $path/* | grep -v /data$ )
+}
 
 dirshared=$dirdata/mpdshared
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
@@ -30,6 +39,12 @@ rm -f $dirmpd/{listing,updating}
 $dirbash/cmd.sh mpcremove
 systemctl stop mpd
 if [[ $ON ]]; then
+	if systemctl -q is-active nfs-server; then
+		writePermission &> /dev/null &
+		pushRefresh
+		exit
+# --------------------------------------------------------------------
+	fi
 	usbRemount rserver
 	ip=$( ipAddress )
 	echo "$dirnas  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
@@ -39,7 +54,9 @@ if [[ $ON ]]; then
 	sharedDataCopy rserver
 	chown -R http:http $dirshareddata
 	chown -R mpd:audio $dirshareddata/{mpd,playlists}
-	chmod -R 777 /mnt/MPD/NAS
+	chmod -R 777 $dirshareddata
+	chmod 755 /mnt/MPD/NAS
+	writePermission &> /dev/null &
 	sharedDataLink rserver
 	if [[ -e $dirshared ]]; then
 		action=update
