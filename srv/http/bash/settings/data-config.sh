@@ -129,7 +129,7 @@ mpdoled )
 	;;
 nfsserver )
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
-	dirs=$( ls -d $path/* | grep -v /data$ )
+	dirs=$( ls -d $path/* | grep -vE '(data|NAS)$' )
 	while read d; do
 		values+=', "'${d/*\/}'": '$( [[ $( stat -c %a $d ) == 777 ]] && echo true || echo false )
 	done <<< $dirs
