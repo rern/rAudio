@@ -37,7 +37,7 @@ $IP:$dirnas  /mnt/NAS  nfs  defaults,bg,soft,timeo=5  0  0"
 		mountpoint=$dirnas/$d
 		mkdir -p $mountpoint
 		fstab+="
-$dir_rserver  $mountpoint  none  bind  0  0"
+$dir_rserver  $mountpoint  none  bind,nofail,x-systemd.requires=/mnt/NAS  0  0"
 	done
 	fstabColumnReload "$fstab"
 	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( ipAddress )"
