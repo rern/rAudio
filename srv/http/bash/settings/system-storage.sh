@@ -65,7 +65,13 @@ if [[ $lines ]]; then
 		source=${line/^*}
 		mountpoint=$( cut -d^ -f2 <<< $line )
 		fs=${line/*^}
-		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
+		if [[ $mountpoint == $dirnas ]]; then
+			icon=nfsserver
+		elif [[ ${source:0:4} == /dev ]]; then
+			icon=${mountpoint:9:4}
+		else
+			icon=networks
+		fi
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted $fs )
 	done <<< $lines
