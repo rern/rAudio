@@ -6,7 +6,8 @@ args2var "$1"
 
 ! ipOnline $IP && echo "<c>$IP</c> not reachable." && exit
 # --------------------------------------------------------------------
-opt_nfs="defaults,bg,soft,timeo=10,_netdev,nofail"
+opt_common='_netdev,nofail,noatime'
+opt_nfs="defaults,bg,soft,timeo=10,$opt_common"
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 	if grep -q "^${mountpoint// /\\\\040}$" < <( awk '{print $2}' /etc/fstab ); then
@@ -37,7 +38,7 @@ if [[ ! $rserver ]]; then
 		[[ ! $USR ]] && USR=quest
 		source="//$IP/$share"
 		options="username=$USR,password=$PASSWORD"
-		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),_netdev,nofail"
+		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),$opt_common"
 	else
 		source="$IP:/$share"
 		options=$opt_nfs
