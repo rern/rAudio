@@ -100,20 +100,21 @@ mpdoled )
 	SERVICE=mpd_oled
 	;;
 nfsserver )
-	PKG=nfs-utils
 	SERVICE=nfs-server
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	[[ ! $sharedip ]] && sharedip='(none)'
+	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
 	conf="\
-$( configText /etc/exports )"
+<c>$( nfsdctl -V )</c> supports NFS: $ver"
 	if systemctl -q is-active nfs-server; then
-		ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
 		conf+="
+<bll># cat /etc/exports</bll>
+$( < /etc/exports )
 
 <bll># Permissions:</bll>
 $( stat -c '%n %A' $dirnas/* | sed -e '/data/ d' -e 's|.*MPD/||' | column -t )
 
-<bll># Active clients: (supported NFS: $ver)</bll>
+<bll># Active clients:</bll>
 $sharedip"
 	fi
 	;;
