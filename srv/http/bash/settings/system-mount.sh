@@ -24,23 +24,10 @@ else # server rAudio client
 	done
 	[[ ! $rserver ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	mkdir -p /mnt/NAS
+	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	fstab="\
 $( < /etc/fstab )
-$IP:$dirnas  /mnt/NAS  nfs  $opt_nfs  0  0"
-	fstabColumnReload "$fstab"
-	sleep 1
-	for d in data NVME SATA SD USB; do
-		dir=/mnt/MPD/$d
-		[[ -d $dir ]] && mv $dir /mnt
-		dir_rserver=/mnt/NAS/$d
-		[[ ! -d $dir_rserver ]] && continue
-		
-		mountpoint=$dirnas/$d
-		mkdir -p $mountpoint
-		fstab+="
-$dir_rserver  $mountpoint  none  bind,x-systemd.requires=/mnt/NAS,,nofail  0  0"
-	done
+$IP:$dirnas  $dirnas  nfs  $opt_nfs  0  0"
 	fstabColumnReload "$fstab"
 	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( ipAddress )"
 fi
@@ -49,13 +36,14 @@ if [[ ! $rserver ]]; then
 	if [[ $PROTOCOL == cifs ]]; then
 		[[ ! $USR ]] && USR=quest
 		source="//$IP/$share"
-		options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),_netdev,nofail"
+		options="username=$USR,password=$PASSWORD"
+		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),_netdev,nofail"
 	else
 		source="$IP:/$share"
 		options=$opt_nfs
 	fi
 	[[ $OPTIONS ]] && options+=,$OPTIONS
-	fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
+	fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL $options 0 0"
 fi
 if [[ $SHAREDDATA ]]; then
 	mpc -q clear

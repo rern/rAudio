@@ -830,10 +830,10 @@ var UTIL          = {
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( mp === '/mnt/MPD/NAS/data' ) cls+= ' shareddata';
-			if ( fs === 'none' ) {
+			if ( mp === '/mnt/MPD/NAS/data' ) {
+				cls+= ' shareddata';
+			} else if ( mp === '/mnt/MPD/NAS' ) {
 				cls+= ' shareddata rserver';
-				fs  = 'bind';
 			}
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( source === S.formatting ) icon += ' blink';

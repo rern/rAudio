@@ -16,7 +16,7 @@ usbRemount() { # udevil - devmon@http.service - /mnt/MPD/USB <> /mnt/MPD/NAS/USB
 	for p in $part_usb; do # 1/3 unmount
 		udevil umount -l "$d"
 	done
-	find $dir_source -maxdepth 1 -type d -exec mv {} $dir_target \; # 2/3 move mountpoints
+	mv $dir_source/{NVME,SATA,SD,USB} $dir_target &> /dev/null # 2/3 move mountpoints
 	sed -i -E "s|^(allowed_media_dirs = ).*|\1$dir_media|" /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 	for p in $part_usb; do # 3/3 remount

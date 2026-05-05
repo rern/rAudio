@@ -396,14 +396,10 @@ shareddatadisable ) # server rAudio / other server
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	if grep -q -m1 ' /mnt/NAS ' /etc/fstab; then # server rAudio
-		while read mp; do
-			umount -fl $mp
-			rmdir $mp
-		done < <( grep '^/mnt/NAS/.* bind ' /etc/fstab | awk '{print $2} END {print "/mnt/NAS"}' )
+	if grep -q " $dirnas " /etc/fstab; then # server rAudio
+		umount -l $dirnas
 		mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
-		rm -f $dirnas/.mpdignore
-		fstab=$( grep -vE " /mnt/NAS |^/mnt/NAS/.* bind" /etc/fstab )
+		fstab=$( grep -v " $dirnas " /etc/fstab )
 	else
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		readarray -t source < <( awk '{print $2}' $dirshareddata/source )
