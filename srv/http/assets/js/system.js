@@ -825,12 +825,13 @@ var UTIL          = {
 			if ( list.mountpoint == '/mnt/NAS' ) return
 			
 			var mp     = list.mountpoint;
-			var icon   = S.nfsserver ? 'nfsserver' : list.icon;
+			var icon   = list.icon;
 			var fs     = list.fs;
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
+			if ( S.nfsserver ) cls += ' nfsserver';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
@@ -1078,7 +1079,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var $li        = $( this );
-	if ( MENU.isActive( $li, e ) || $li.hasClass( 'nfsserver' ) ) return
+	if ( MENU.isActive( $li, e ) || $li.find( '.i-nfsserver' ) ) return
 	
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
