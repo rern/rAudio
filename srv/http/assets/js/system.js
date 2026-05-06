@@ -1078,8 +1078,13 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	var $li        = $( this );
-	if ( MENU.isActive( $li, e ) || $li.find( '.i-nfsserver' ) ) return
+	var $li = $( this );
+	if ( $li.hasClass( 'server' ) || $li.find( '.i-nfsserver' ) ) {
+		BANNER( 'nfsserver', 'Server rAudio', $li.hasClass( 'server' ) ? 'Server' : 'Client' );
+		return
+	}
+	
+	if ( MENU.isActive( $li, e ) ) return
 	
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
