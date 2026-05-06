@@ -429,6 +429,12 @@ pushBookmark() {
 	data=$( php /srv/http/library.php home )
 	pushData bookmark "$data"
 }
+pushNfsServer() {
+	local ip
+	while read ip; do
+		pushWebsocket $ip nfsserver '{ "online": '$1' }'
+	done <<< $2
+}
 pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy
 	channel=$1

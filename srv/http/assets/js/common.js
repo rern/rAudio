@@ -426,8 +426,18 @@ W             = {  // from websocket.py (server)
 		}
 	}
 	, nfsserver : data => {
-		BANNER( 'nfsserver', 'Server rAudio', 'Online.', 9000 );
-		BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
+		var online = data.online;
+		if ( online ) {
+			COMMON.loaderHide();
+			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
+		} else {
+			COMMON.loader();
+		}
+		BANNER( 'nfsserver'+ ( online ? '' : ' blink' )
+			  , 'Server rAudio'
+			  , online ? 'Online' : 'Offline'
+			  , online ? 9000 : -1
+		);
 	}
 	, volume    : data => {
 		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
