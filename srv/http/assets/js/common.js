@@ -425,7 +425,7 @@ W             = {  // from websocket.py (server)
 			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 		}
 	}
-	, rServer   : data => {
+	, nfsserver : data => {
 		BANNER( 'nfsserver', 'Server rAudio', 'Online.', 9000 );
 		BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
 	}
