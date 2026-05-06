@@ -831,7 +831,7 @@ var UTIL          = {
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
-			if ( S.nfsserver ) cls += ' nfsserver';
+			if ( S.nfsserver ) cls += ' server';
 			if ( source === S.formatting ) icon += ' blink';
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
