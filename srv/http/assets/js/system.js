@@ -1080,7 +1080,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	
 	var $li = $( this );
 	if ( $li.hasClass( 'server' ) || $li.find( '.i-nfsserver' ) ) {
-		BANNER( 'nfsserver', 'Server rAudio', $li.hasClass( 'server' ) ? 'Server' : 'Client' );
+		BANNER( 'nfsserver', 'Server rAudio', $li.hasClass( 'server' ) ? 'Server' : 'Shared Data client' );
 		return
 	}
 	
