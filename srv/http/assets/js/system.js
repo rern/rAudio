@@ -825,7 +825,7 @@ var UTIL          = {
 			if ( list.mountpoint == '/mnt/NAS' ) return
 			
 			var mp     = list.mountpoint;
-			var icon   = S.nfsserver ? 'nfsserver' : list.icon;
+			var icon   = list.icon;
 			var fs     = list.fs;
 			var source = list.source;
 			var size   = list.size;
@@ -1086,8 +1086,8 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var $li = $( this );
-	if ( $li.find( '.i-nfsserver' ).length ) {
-		BANNER( 'nfsserver', 'Server rAudio', $li.hasClass( 'server' ) ? 'Server' : 'Client' );
+	if ( $li.hasClass( 'client' ) ) {
+		BANNER( 'nfsserver', 'Server rAudio', 'Client' );
 		return
 	}
 	
@@ -1098,16 +1098,16 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var c = {};
-		[ 'mounted', 'networks', 'rserver', 'shareddata', 'unformat', 'usb' ].forEach( k => {
+		[ 'mounted', 'networks', 'server', 'shareddata', 'unformat', 'usb' ].forEach( k => {
 			c[ k ] = $li.hasClass( k )
 		} );
 		$( '#menu .info' ).toggleClass( 'hide', c.networks );
 		$( '#menu .forget' ).toggleClass( 'hide', c.usb || c.unformat );
 		$( '#menu .mount' ).toggleClass( 'hide', c.mounted || c.unformat );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat || c.server );
 		$( '#menu .sleep' ).toggleClass( 'hide', c.usb || c.unformat );
 		$( '#menu .format' ).toggleClass( 'hide', ! c.unformat );
-		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.rserver );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.server );
 	}
 	MENU.show( $li );
 } );

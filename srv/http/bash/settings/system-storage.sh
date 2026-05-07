@@ -10,7 +10,9 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mounted=$4
 	fs=$5
 	if [[ $mountpoint ]]; then
-		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+		if [[ $icon == nfsserver ]]; then
+			size=
+		elif [[ $mounted == true ]]; then # timeout: limit if network shares offline
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		elif [[ $mountpoint ]]; then
 			gib=$( lsblk -no SIZE $source )
