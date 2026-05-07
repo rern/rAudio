@@ -29,7 +29,7 @@ writePermission() {
 	while read dir; do
 		name=${dir##*/}
 		[[ ${!name} == true ]] && p=777 || p=755
-		[[ $( stat -c %a $dir ) != $p ]] && chmod -R $p $dir
+		chmod -R $p $dir
 	done < <( ls -d $path/* | grep -v /data$ )
 }
 
@@ -40,8 +40,8 @@ $dirbash/cmd.sh mpcremove
 systemctl stop mpd
 if [[ $ON ]]; then
 	if systemctl -q is-active nfs-server; then
-		writePermission &> /dev/null &
-		pushRefresh
+		writePermission
+		pushData refresh '{ "page": "features" }'
 		exit
 # --------------------------------------------------------------------
 	fi
@@ -56,7 +56,7 @@ if [[ $ON ]]; then
 	chown -R mpd:audio $dirshareddata/{mpd,playlists}
 	chmod -R 777 $dirshareddata
 	chmod 755 /mnt/MPD/NAS
-	writePermission &> /dev/null &
+	writePermission
 	sharedDataLink rserver
 	if [[ -e $dirshared ]]; then
 		action=update
