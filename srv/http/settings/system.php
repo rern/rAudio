@@ -9,8 +9,10 @@ commonVariables( [
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
+		, 'Power Button'  => 'power'
 		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
+		, 'Spectrum OLED' => 'mpdoled'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
 		, 'TFT 3.5" LCD'  => 'tft'
@@ -168,6 +170,7 @@ $body        = [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
 		, 'sub'      => 'libgpiod'
+		, 'disabled' => $L->spectrumoled.$isenabled
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 $B->gear
@@ -244,6 +247,7 @@ EOF
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
 		, 'status'   => true
+		, 'disabled' => $L->powerbutton.$isenabled
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 
