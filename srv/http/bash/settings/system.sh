@@ -36,9 +36,9 @@ bluetooth )
 		if systemctl -q is-active bluetooth; then
 			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
 		else
-			[[ ! -e /boot/kernel8.img ]] && configReboot && exit # fix: not aarch64 - bluez not reinit hci0
-# --------------------------------------------------------------------
 			modprobe -a bluetooth bnep btbcm hci_uart
+			lsmod | grep -q -m1 ^hci_uart && configReboot && exit # fix: bluez not reinit hci0
+# --------------------------------------------------------------------
 			sleep 1
 			systemctl start bluetooth
 		fi
