@@ -1,28 +1,5 @@
 #!/bin/bash
 
-usbRemount() { # udevil - devmon@http.service - /mnt/MPD/USB <> /mnt/MPD/NAS/USB
-	local dir_media dir_source dir_target p part_usb
-	if [[ $1 == rserver ]]; then
-		dir_source=/mnt/MPD
-		dir_target=$dirnas
-		dir_media=$dirnas/USB
-	else
-		rm -rf $dirnas/data
-		dir_source=$dirnas
-		dir_target=/mnt/MPD
-		dir_media=$dirusb
-	fi
-	part_usb=$( lsblk -no PATH | grep ^/dev/sd.[0-9] )
-	for p in $part_usb; do # 1/3 unmount
-		udevil umount -l "$d"
-	done
-	mv $dir_source/{NVME,SATA,SD,USB} $dir_target &> /dev/null # 2/3 move mountpoints
-	sed -i -E "s|^(allowed_media_dirs = ).*|\1$dir_media|" /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	for p in $part_usb; do # 3/3 remount
-		udevil mount $d
-	done
-}
 writePermission() {
 	local dir name p path
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
@@ -45,7 +22,7 @@ if [[ $ON ]]; then
 		exit
 # --------------------------------------------------------------------
 	fi
-	usbRemount rserver
+	mv /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
 	ip=$( ipAddress )
 	echo "$dirnas  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 	systemctl enable --now nfs-server
@@ -78,8 +55,9 @@ else
 	cp $dirmpd/* $dirshared
 	systemctl disable --now nfs-server
 	> /etc/exports
-	usbRemount
-	rm -f $filesharedip /mnt/MPD/.mpdignore
+	rm -rf $dirnas/data
+	rm -f /mnt/MPD/.mpdignore
+	mv $dirnas/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 	sharedDataReset
 	systemctl start mpd
 fi

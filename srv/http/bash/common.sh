@@ -223,7 +223,7 @@ data2jsonPatch() {
 }
 dirPermissions() {
 	find /srv \
-		-path '/srv/http/mnt' -prune -o \
+		-path /srv/http/mnt -prune -o \
 		-exec chown http:http {} + \
 		-exec chmod u=rw,go=r,a+X {} +
 	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null

@@ -19,9 +19,11 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
 	fi
 fi
 
-if systemctl -q is-active nfs-server; then
-	$dirsettings/features.sh 'nfsserver
-OFF'
+file=/etc/udevil/udevil.conf
+if ! grep -q $dirnas/USB $file; then
+	sed -i "/allowed_media_dirs/ s|$|,$dirnas/USB|" $file
+	systemctl restart devmon@http
+	systemctl -q is-active nfs-server && $dirsettings/features.sh nfsserver
 fi
 file=/mnt/MPD/.mpdignore
 if [[ -e $file ]]; then
