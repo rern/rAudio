@@ -13,7 +13,7 @@ args2var "$1"
 
 if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
-	if systemctl -q is-active nfs-server; then # server rAudio
+	if nfsServerActive; then # server rAudio
 		ipclients=$( grep -v $ipaddress $filesharedip )
 		if [[ $ipclients ]]; then
 			[[ ! $CONFIRM ]] && echo nfs && exit

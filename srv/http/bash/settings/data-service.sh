@@ -106,7 +106,7 @@ nfsserver )
 	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
 	conf="
 <c>$( nfsdctl -V )</c> supports NFS: $ver"
-	if systemctl -q is-active nfs-server; then
+	if nfsServerActive; then
 		conf+="
 <bll># cat /etc/exports</bll>
 $( < /etc/exports )

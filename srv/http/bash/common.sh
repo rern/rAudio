@@ -408,6 +408,9 @@ mpcState() {
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
 }
+nfsServerActive() {
+	systemctl -q is-active nfs-server && return 0
+}
 notify() { # icon title message delayms
 	local data delay icon ip json message title
 	[[ $1 == '-ip' ]] && ip=$2 && shift 2

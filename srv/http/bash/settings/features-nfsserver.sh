@@ -39,7 +39,7 @@ rm -f $dirmpd/{listing,updating}
 $dirbash/cmd.sh mpcremove
 systemctl stop mpd
 if [[ $ON ]]; then
-	if systemctl -q is-active nfs-server; then
+	if nfsServerActive; then
 		writePermission
 		pushData refresh '{ "page": "features" }'
 		exit
