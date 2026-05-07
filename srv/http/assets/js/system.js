@@ -832,7 +832,11 @@ var UTIL          = {
 			var cls    = list.mounted ? 'mounted' : 'profile';
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
 			if ( S.nfsserver ) cls += ' server';
-			if ( source === S.formatting ) icon += ' blink';
+			if ( source.replace( /.*:/, '' ) === '/mnt/MPD/NAS' ) {
+				cls += ' client';
+			} else if ( source === S.formatting ) {
+				icon += ' blink';
+			}
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
 			if ( size )   html += ' · '+ size;
