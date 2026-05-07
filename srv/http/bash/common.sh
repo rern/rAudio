@@ -533,7 +533,7 @@ sharedDataCopy() {
 	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
 }
 sharedDataEnabled() {
-	if [[ -L $dirmpd ]] && ! systemctl -q is-enabled nfs-server; then
+	if [[ -L $dirmpd ]] && ! systemctl -q is-active nfs-server; then
 		echo true
 	else
 		echo false
