@@ -11,9 +11,6 @@ fi
 
 args2var "$1"
 
-logoLcdOled
-touch $dirshm/power # maintain lcdchar/oled logo
-[[ $CMD == reboot ]] && reboot=1
 if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	if systemctl -q is-active nfs-server; then # server rAudio
@@ -26,6 +23,9 @@ if [[ -e $filesharedip ]]; then
 	fi
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
+logoLcdOled
+touch $dirshm/power # maintain lcdchar/oled logo
+[[ $CMD == reboot ]] && reboot=1
 $dirbash/cmd.sh playerstop
 snapclientIP playerstop
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
