@@ -175,6 +175,7 @@ gpio=25=op,dh"
 			[[ $APLAYNAME == wm8960-soundcard ]] && i2cset=1
 		fi
 	else
+		ON= # for pushData reboot
 		config+="
 dtparam=audio=on"
 		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf

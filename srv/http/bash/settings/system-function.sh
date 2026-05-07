@@ -1,7 +1,7 @@
 #!/bin/bash
 
 configReboot() {
-	pushData reboot '{ "id": "'$CMD'" }'
+	[[ $ON ]] && pushData reboot '{ "id": "'$CMD'" }'
 	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
 	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
