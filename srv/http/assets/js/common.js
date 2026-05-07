@@ -1530,9 +1530,8 @@ var COMMON    = {
 				INFO( {
 					  icon    : 'power'
 					, title   : 'Power'
-					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
-								+'<br><wh>Shared Data</wh> on clients will stop.'
-								+'<br>(Resume when server online again)'
+					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently connected.'
+								+'<br><wh>Shared Data</wh> clients - Unreachable until reboot'
 								+'<br><br>Continue?'
 					, oklabel : ICON( action ) + COMMON.capitalize( action )
 					, okcolor : action === 'off' ? V.red : V.orange
