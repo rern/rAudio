@@ -825,7 +825,7 @@ var UTIL          = {
 			if ( list.mountpoint == '/mnt/NAS' ) return
 			
 			var mp     = list.mountpoint;
-			var icon   = list.icon;
+			var icon   = S.nfsserver ? 'nfsserver' : list.icon;
 			var fs     = list.fs;
 			var source = list.source;
 			var size   = list.size;

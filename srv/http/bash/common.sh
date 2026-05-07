@@ -239,7 +239,6 @@ dirPermissions() {
 			  $dirsettings/camilla*
 	fi
 	[[ -e /bin/firefox ]] && splashRotate
-	cacheBust
 }
 enableFlagSet() {
 	local file
