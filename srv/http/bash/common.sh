@@ -343,6 +343,20 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+i2cAddress() {
+	n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+	if [[ $n ]]; then
+		for d in $n; do
+			hex+=$( timeout 0.1 i2cdetect -y $n | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
+		done
+		[[ $1 ]] && echo $hex && return
+		
+		for h in $hex; do
+			address+=', "0x'$h'": '$(( 16#$h ))
+		done
+		[[ $address ]] && echo "{ ${address:1} }" || echo '{ "0x27": 39, "0x3f": 63 }'
+	fi
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf

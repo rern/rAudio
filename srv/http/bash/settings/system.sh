@@ -227,7 +227,11 @@ mpdoled )
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. <( cat /etc/default/mpd_oled )
 		[[ $OPTS != opt ]] && echo 'OPTS="'$opt'"' > /etc/default/mpd_oled
+		x_z=-x
+	else
+		x_z=-z
 	fi
+	compgen -G /dev/i2c* &> /dev/null && timeout 1 mpd_oled $opts $x_z
 	fifoToggle
 	i2cset=1
 	configTxt

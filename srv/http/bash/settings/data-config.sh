@@ -80,25 +80,15 @@ lcdchar )
 	if [[ $2 == gpio ]]; then
 		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
 	else
-		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": 39, "CHIP": "PCF8574"'
+		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": "", "CHIP": "PCF8574"'
 	fi
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( ls /dev/i2c* 2> /dev/null )
-	if [[ $dev ]]; then
-		for d in $dev; do
-			hex+=$( timeout 0.1 i2cdetect -y ${dev: -1} | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
-		done
-		for h in $hex; do
-			address+=', "0x'$h'": '$(( 16#$h ))
-		done
-	fi
-	[[ ! $address ]] && address=', "0x27": 39, "0x3f": 63'
 	echo '{
   "values"  : '$values'
 , "current" : "'$current'"
-, "address" : { '${address:1}' }
+, "address" : '$( i2cAddress )'
 }'
 	;;
 localbrowser )

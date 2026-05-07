@@ -174,15 +174,10 @@ $ignorepkg"
 	if [[ $module ]]; then
 		echo "
 <bll># cat $filemodule</bll>
-$module"
-		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		if [[ $dev ]]; then
-			cmd="i2cdetect -y ${dev: -1}"
-			hex=$( eval "timeout 0.1 $cmd" )
-			echo "
-<bll># $cmd</bll>
-$hex"
-		fi
+$module
+
+<bll># i2cdetect -y N</bll>
+$( i2cAddress list )"
 	fi
 	;;
 timezone )

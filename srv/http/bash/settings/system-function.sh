@@ -38,7 +38,7 @@ i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
 			module+='
 i2c-dev'
-			! ls /dev/i2c* &> /dev/null && reboot=1
+			! compgen -G /dev/i2c* &> /dev/null && reboot=1
 		elif grep -q wm8960-soundcard <<< $config; then
 			module+='
 i2c-dev
