@@ -387,7 +387,7 @@ logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
 		. <( cat /etc/default/mpd_oled )
-		mpd_oled $OPTS -x
+		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
 	fi
 }
 mpcElapsed() {

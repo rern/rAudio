@@ -88,7 +88,7 @@ lcdchar )
 	dev=$( ls /dev/i2c* 2> /dev/null )
 	if [[ $dev ]]; then
 		for d in $dev; do
-			hex+=$( i2cdetect -y ${dev: -1} | sed -E 's/^\s.*|^.*: |(--|UU) *//g' )
+			hex+=$( timeout 0.1 i2cdetect -y ${dev: -1} | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
 		done
 		for h in $hex; do
 			address+=', "0x'$h'": '$(( 16#$h ))
@@ -121,8 +121,8 @@ monitor )
 	;;
 mpdoled )
 	opt=$( < /etc/default/mpd_oled )
-	chip=$( cut -d' ' -f2 <<< $opt )
-	spectrum=$( grep -q '\-X' <<< $opt && echo true || echo false )
+	[[ $opt == *-x* ]] && chip=$( sed -E 's/.*-x (.).*/\1/' <<< $opt ) || chip=6
+	[[ $opt == *-X* ]] && spectrum=false || spectrum=true
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'

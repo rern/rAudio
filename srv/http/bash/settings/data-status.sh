@@ -175,10 +175,13 @@ $ignorepkg"
 		echo "
 <bll># cat $filemodule</bll>
 $module"
-		devi2c=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		if [[ $devi2c ]]; then
-			echo
-			statusCmd "i2cdetect -y $devi2c"
+		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+		if [[ $dev ]]; then
+			cmd="i2cdetect -y ${dev: -1}"
+			hex=$( eval "timeout 0.1 $cmd" )
+			echo "
+<bll># $cmd</bll>
+$hex"
 		fi
 	fi
 	;;
