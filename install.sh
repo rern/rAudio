@@ -20,7 +20,6 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
 fi
 
 if systemctl -q is-active nfs-server; then
-	rserver=1
 	$dirsettings/features.sh 'nfsserver
 OFF'
 fi
@@ -126,6 +125,3 @@ cacheBust
 rm -f $dirshm/system
 
 installfinish
-
-# 20260501
-[[ $rserver ]] && $dirsettings/features.sh nfsserver
