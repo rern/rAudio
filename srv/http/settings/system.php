@@ -89,7 +89,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>
- · <i class="btn">»</i> <i class="btn">«</i> Server / Client
+ · <i class="i-server"></i> <i class="i-client"></i> Server / Client
  · Full path: <c>/mnt/MPD/...</c>
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
