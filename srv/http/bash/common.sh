@@ -222,9 +222,11 @@ data2jsonPatch() {
 	' <<< $1
 }
 dirPermissions() {
-	chown -R http:http /srv &> /dev/null
+	find /srv \
+		-path '/srv/http/mnt' -prune -o \
+		-exec chown http:http {} + \
+		-exec chmod u=rw,go=r,a+X {} +
 	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
-	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 	[[ $RELEASE ]] && return # from create-ros.sh
 
