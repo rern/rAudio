@@ -24,7 +24,7 @@ li.profile dot::before          { color: var( --cg60 ) }
 .i-client::after,
 .i-server::after {
 	font-family: lato;
-	font-size: 26px;
+	font-size: 24px;
 }
 
 .menu {
