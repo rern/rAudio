@@ -10,8 +10,14 @@ li.profile dot::before {
 }
 li.profile dot::before          { color: var( --cg60 ) }
 #storage li.profile dot::before { color: #f00 }
-#storage li.client::after    { content: ' «' }
-#storage li.server::after    { content: ' »' }
+#storage li.client::after,
+#storage li.server::after {
+	font-size: 28px;
+	line-height: 20px;
+	vertical-align: -2px;
+}
+#storage li.client::after { content: ' «' }
+#storage li.server::after { content: ' »' }
 .menu {
 	position: absolute;
 	margin-left: 40px;
