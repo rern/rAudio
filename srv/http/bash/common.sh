@@ -430,10 +430,12 @@ pushBookmark() {
 	pushData bookmark "$data"
 }
 pushNfsServer() {
-	local ip
+	local ip name
+	name=$( hostname )
+	[[ -e $dirshm/startup ]] && status=Offline || status=Online
 	while read ip; do
-		pushWebsocket $ip nfsserver '{ "online": '$1' }'
-	done <<< $2
+		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
+	done < <( grep -v $( ipAddress ) $filesharedip )
 }
 pushData() { # send to websocket.py (server)
 	local channel data ip json path sharedip webradiocopy

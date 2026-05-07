@@ -18,7 +18,7 @@ if [[ -e $filesharedip ]]; then
 		if [[ $ipclients ]]; then
 			[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
-			pushNfsServer false "$ipclients"
+			pushNfsServer
 		fi
 	fi
 	sed -i "/$ipaddress/ d" $filesharedip

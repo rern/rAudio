@@ -426,7 +426,7 @@ W             = {  // from websocket.py (server)
 		}
 	}
 	, nfsserver : data => {
-		var online = data.online;
+		var online = data.status === 'Online';
 		if ( online ) {
 			COMMON.loaderHide();
 			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
@@ -435,7 +435,7 @@ W             = {  // from websocket.py (server)
 		}
 		BANNER( 'nfsserver'+ ( online ? '' : ' blink' )
 			  , 'Server rAudio'
-			  , online ? 'Online' : 'Offline'
+			  , data.name +' - '+ data.status
 			  , online ? 9000 : -1
 		);
 	}
