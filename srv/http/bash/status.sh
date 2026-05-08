@@ -171,9 +171,11 @@ pos=$( mpc status %songpos% )
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file playlistlength state Time Title'
 [[ ! $snapclient ]] && filter+=' consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-lines=$( printf "status\nplaylistinfo $song\nclose\n" \
-			| websocat --text - tcp:127.0.0.1:6600 \
-			| grep -E $filter )
+lines=$( echo "\
+status
+playlistinfo $song" \
+	| websocat --text - tcp:127.0.0.1:6600 \
+	| grep -E $filter )
 while read line; do
 	key=${line/:*}
 	val=${line#*: }
