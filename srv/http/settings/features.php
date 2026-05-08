@@ -291,7 +291,7 @@ EOF
 		· Previously enabled: Database from previous will be used.
 		· $B->microsd SD and $B->usbdrive USB moved to $B->networks NAS
 	· IP address - This rAudio must be set to static / fixed.
-	· Password - If changed, must be the same on all clients.
+	· File system - <c>ext4</c> or <c>ntfs</c> only (no <c>*fat</c>)
 	
  • <wh>Clients:</wh>
 	· $T->system$L->shareddata <tab><i class="i-nfsserver"></i> rAudio</tab>
