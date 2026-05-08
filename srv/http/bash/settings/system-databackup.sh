@@ -56,8 +56,7 @@ if [[ $xinitrcfiles ]]; then
 	mkdir -p $dirconfig/etc/X11/xinit
 	cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 fi
-dirnasdata=/mnt/MPD/NAS/data
-[[ -e $dirnasdata && ! -L $dirnasdata/mpd ]] && cp -rL $dirnasdata $dirconfig
+[[ -e $dirshareddata && ! -L $dirshareddata/mpd ]] && cp -rL $dirshareddata $dirconfig
 
 services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 for service in $services; do

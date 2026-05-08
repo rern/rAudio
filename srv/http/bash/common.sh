@@ -480,7 +480,7 @@ pushData() { # send to websocket.py (server)
 	done
 }
 pushDirCounts() {
-	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v /mnt/MPD/NAS/data/ ) ]] && tf=true || tf=false
+	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
 }
 pushRefresh() {
@@ -548,7 +548,6 @@ sharedDataCopy() {
 	[[ ! -e $file_order ]] && file_order=
 	cp -f $dirsystem/display.json $file_order $dirshareddata
 	touch $dirshareddata/order.json # if not exist
-	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
 }
 sharedDataEnabled() {
 	if [[ -L $dirmpd ]] && ! nfsServerActive; then
@@ -569,16 +568,6 @@ sharedDataLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	echo data > $dirnas/.mpdignore
-	[[ $1 == rserver && -e $dirshareddata/source ]] && return
-# --------------------------------------------------------------------
-	readarray -t source < $dirshareddata/source
-	while read s; do
-		ip_share=${s/ *}
-		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then
-
-			fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$src"
-		fi
-	done <<< $source
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}

@@ -291,7 +291,7 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
-shareddatadisable ) # server rAudio / other server
+shareddatadisable )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
@@ -300,16 +300,15 @@ shareddatadisable ) # server rAudio / other server
 		mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 		fstab=$( grep -v " $dirnas " /etc/fstab )
 	else
-		fstab=$( grep -v $dirshareddata /etc/fstab )
-		readarray -t source < <( awk '{print $2}' $dirshareddata/source )
-		while read s; do
-			mp=${s//\040/ }
-			umount -l "$mp"
-			rmdir "$mp" &> /dev/null
-			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
-		done <<< $source
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
+		mp=$( < $dirshareddata/source )
+		umount -l "$mp"
+		rmdir "$mp" &> /dev/null
+		fstab=$( awk \
+					-v mp="${mp// /\\\\040}" \
+					-v data=$dirshareddata \
+					'$2 != mp && $2 != data' /etc/fstab )
 	fi
 	fstabColumnReload "$fstab"
 	sharedDataReset

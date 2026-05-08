@@ -1,6 +1,7 @@
 #!/bin/bash
 
 writePermission() {
+	notify nfsserver 'Server rAudio' 'Set permissions ...' -1
 	local dir name p path
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
 	while read dir; do
@@ -29,13 +30,13 @@ if [[ $ON ]]; then
 	systemctl enable --now nfs-server
 	mkdir -p $dirbackup $dirshareddata
 	ipAddress > $filesharedip
-	sharedDataCopy rserver
+	sharedDataCopy
 	chown -R http:http $dirshareddata
 	chown -R mpd:audio $dirshareddata/{mpd,playlists}
 	chmod -R 777 $dirshareddata
 	chmod 755 /mnt/MPD/NAS
 	writePermission
-	sharedDataLink rserver
+	sharedDataLink
 	if [[ -e $dirshared ]]; then
 		action=update
 		cp -f $dirshared/* $dirmpd
@@ -50,7 +51,7 @@ if [[ $ON ]]; then
 	$dirbash/cmd.sh "mpcupdate
 $action
 
-CMD ACTION PATHMPD" &> /dev/null &
+CMD ACTION PATHMPD"
 else
 	mkdir -p $dirshared
 	cp $dirmpd/* $dirshared

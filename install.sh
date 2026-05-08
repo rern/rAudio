@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260508
+file=$dirshareddata/source
+if [[ -e $file && $( awk '{print $6}' $file ) ]]; then
+	mp=$( awk '{print $2}' $file | sed 's/\\040/ /g' )
+	echo "$mp" > $file
+fi
+
 if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
 fi

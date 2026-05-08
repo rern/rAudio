@@ -1,10 +1,10 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'rserver', 'usbdrive', 'warning' ]
+	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  'Equalizer'     => 'equalizer'
 		, 'DSP'           => 'camilladsp'
-		, 'Server rAudio' => 'rserver'
+		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
 		, 'Wi-Fi'         => 'wifi'
 	]
@@ -294,7 +294,7 @@ EOF
 	· Password - If changed, must be the same on all clients.
 	
  • <wh>Clients:</wh>
-	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
+	· $T->system$L->shareddata <tab><i class="i-nfsserver"></i> rAudio</tab>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh> (if needed)

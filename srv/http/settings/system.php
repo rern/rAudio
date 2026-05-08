@@ -351,7 +351,7 @@ Connect shared data as client for:
 • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
 		· Permissions: <c>777</c>
-	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
+	Clients: $L->shareddata <tab><i class="i-nfsserver"></i> rAudio</tab>
 
 • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create 2 shares: <gr>(any names)</gr>
