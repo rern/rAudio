@@ -579,7 +579,7 @@ var UTIL          = {
 				}
 			} );
 		}
-		, tab     : [ 'CIFS', 'NFS', ICON( 'rserver' ) +' rAudio' ]
+		, tab     : [ 'CIFS', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
 	}
 	, option        : {
 		  i2smodule : () => {
