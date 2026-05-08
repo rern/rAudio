@@ -24,5 +24,7 @@ for i in $false; do
 , "'$i'": false'
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
-
-dirPermissions
+chown -R http:http /srv &> /dev/null
+chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
+chmod -R u=rw,go=r,a+X /srv
+chmod -R +x $dirbash

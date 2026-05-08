@@ -129,8 +129,14 @@ rm -rf /srv/http/assets/{css,js}
 getinstallzip
 
 . $dirbash/common.sh
-dirPermissions
 cacheBust
+chmod -R +x $dirbash
+[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
+if [[ ! -e /bin/camilladsp ]]; then
+	rm -rf $dircamilladsp
+	find /srv/http -type f -name camilla* -delete
+fi
+[[ -e /bin/firefox ]] && splashRotate
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 

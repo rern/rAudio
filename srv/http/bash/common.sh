@@ -221,25 +221,6 @@ data2jsonPatch() {
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
 }
-dirPermissions() {
-	find /srv \
-		-path /srv/http/mnt -prune -o \
-		-exec chown http:http {} + \
-		-exec chmod u=rw,go=r,a+X {} +
-	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
-	chmod -R +x $dirbash
-	[[ $RELEASE ]] && return # from create-ros.sh
-
-	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
-	if [[ ! -e /bin/camilladsp ]]; then
-		rm -f /srv/http/assets/css/camilla.css \
-			  /srv/http/assets/js/{camilla,pipelineplotter}.js \
-			  /srv/http/assets/js/plugin/{d3,plotly}*.min.js \
-			  /srv/http/settings/camilla.php \
-			  $dirsettings/camilla*
-	fi
-	[[ -e /bin/firefox ]] && splashRotate
-}
 enableFlagSet() {
 	local file
 	file=$dirsystem/$CMD
@@ -508,7 +489,6 @@ rAudioUpdate() {
 	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \
 		| bsdtar xvf - --strip-components=1 -C /
 	find / -maxdepth 1 -type f -delete
-	dirPermissions
 	[[ $1 =~ ^[0-9]+$ ]] && echo $1 > $diraddons/r1
 }
 serviceRestartEnable() {
@@ -577,7 +557,6 @@ sharedDataReset() {
 	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
-	dirPermissions
 }
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
