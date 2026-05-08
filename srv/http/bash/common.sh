@@ -441,7 +441,7 @@ pushData() { # send to websocket.py (server)
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
-	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
+	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
 # --------------------------------------------------------------------
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	[[ ! $sharedip ]] && return # no other cilents
