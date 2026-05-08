@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260505
+# 20260508
 if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
 fi
@@ -20,8 +20,10 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
 fi
 
 file=/etc/udevil/udevil.conf
-if ! grep -q $dirnas/USB $file; then
-	sed -i "/allowed_media_dirs/ s|$|,$dirnas/USB|" $file
+if ! grep -q /mnt/MPD/NAS/USB $file; then
+	sed -i -e 's/, utf8//
+' -e '/allowed_media_dirs/ s|$|,/mnt/MPD/NAS/USB|
+' $file
 	systemctl restart devmon@http
 	systemctl -q is-active nfs-server && $dirsettings/features.sh nfsserver
 fi
