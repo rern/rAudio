@@ -1,7 +1,7 @@
 #!/bin/bash
 
 writePermission() {
-	notify nfsserver 'Server rAudio' 'Set permissions ...' -1
+	notify 'nfsserver blink' 'Server rAudio' 'Set permissions ...' -1
 	local dir name p path
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
 	while read dir; do
