@@ -1476,7 +1476,7 @@ var COMMON    = {
 			, ok         : () => {
 				var val     = _INFO.val();
 				var pathmpd = '';
-				if ( val.ACTION === 'update' ) {
+				if ( ! S.shareddata && val.ACTION === 'update' ) {
 					var key;
 					var path = [];
 					modes.forEach( k => {

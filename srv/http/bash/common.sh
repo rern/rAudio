@@ -470,7 +470,7 @@ pushData() { # send to websocket.py (server)
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 # --------------------------------------------------------------------
 	fi
-	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
+	if [[ $channel == mpdupdate && $data == *'"song"'* ]]; then
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data='{ "channel": "'$channel'", "data": '$data' }'
