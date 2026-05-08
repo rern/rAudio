@@ -10,18 +10,19 @@ writePermission() {
 	done < <( ls -d $path/* | grep -v /data$ )
 }
 
+if [[ $ON ]] && nfsServerActive; then
+	writePermission
+	pushData refresh '{ "page": "features" }'
+	exit
+# --------------------------------------------------------------------
+fi
+
 dirshared=$dirdata/mpdshared
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 rm -f $dirmpd/{listing,updating}
 $dirbash/cmd.sh mpcremove
 systemctl stop mpd
 if [[ $ON ]]; then
-	if nfsServerActive; then
-		writePermission
-		pushData refresh '{ "page": "features" }'
-		exit
-# --------------------------------------------------------------------
-	fi
 	mv /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
 	ip=$( ipAddress )
 	echo "$dirnas  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
