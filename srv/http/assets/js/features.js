@@ -277,6 +277,18 @@ var CONFIG       = {
 		} );
 	}
 	, nfsserver    : values => {
+		if ( 'fat' in values ) {
+			INFO( {
+				  ...SW
+				, message      : 'File system not <c>ext4</c> or <c>NTFS</c>:'
+								+'<br><br>'+ values.fat
+				, messagealign : 'left'
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.cancel
+			} );
+			return
+		}
+		
 		var list = [];
 		Object.keys( values ).forEach( k => list.push( [ '<gr>NAS/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {

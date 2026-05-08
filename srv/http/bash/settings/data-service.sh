@@ -104,7 +104,7 @@ nfsserver )
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	[[ ! $sharedip ]] && sharedip='(none)'
 	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
-	conf="
+	conf="\
 <c>$( nfsdctl -V )</c> supports NFS: $ver"
 	if nfsServerActive; then
 		conf+="

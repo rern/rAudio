@@ -118,6 +118,13 @@ mpdoled )
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;
 nfsserver )
+	fat=$( lsblk -no mountpoint,fstype | grep ^$dirusb.*fat )
+	if [[ $fat ]]; then
+		fat=$( sed -E 's|/mnt/MPD/(.*) (.*)$|\1 <c>\2</c>|' <<< $fat | sed -z 's/\n/<br>/' )
+		echo '{ "fat": "'$fat'" }'
+		exit
+# --------------------------------------------------------------------
+	fi
 	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
 	while read dir; do
 		[[ $( stat -c %a $dir ) == 777 ]] && tf=true || tf=false

@@ -1241,7 +1241,7 @@ var COMMON    = {
 		console.log( '%cDebug:', 'color:red' );
 		if ( typeof data === 'string' ) {
 			console.log( JSON.parse( data ) );
-			console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
+			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
 		} else {
 			var bashcmd = data.filesh.split( '/' ).pop();
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
@@ -1530,7 +1530,7 @@ var COMMON    = {
 				INFO( {
 					  icon    : 'power'
 					, title   : 'Power'
-					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently connected.'
+					, message : 'This <wh>Server rAudio '+ ICON( 'nfsserver' ) +'</wh> is currently connected.'
 								+'<br><wh>Shared Data</wh> - Offline until reboot'
 								+'<br><br>Continue?'
 					, oklabel : ICON( action ) + COMMON.capitalize( action )

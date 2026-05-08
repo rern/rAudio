@@ -57,7 +57,7 @@ if [[ $SHAREDDATA ]]; then
 	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
-CMD ACTION PATHMPD" &> /dev/null &
+CMD ACTION PATHMPD"
 	pushData refresh '{ "page": "features", "shareddata": true }'
 fi
 pushRefresh system

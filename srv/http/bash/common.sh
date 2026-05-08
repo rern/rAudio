@@ -476,7 +476,7 @@ pushData() { # send to websocket.py (server)
 		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
 	for ip in $sharedip; do
-		websocat ws://$ip:8080 <<< $data # send to remote websocket.py
+		websocat --text ws://$ip:8080 <<< $data # send to remote websocket.py
 	done
 }
 pushDirCounts() {
@@ -498,7 +498,7 @@ pushWebsocket() { # send to remote websocket.py (server)
 	data=$@
 	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
 		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+		websocat --text -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi                           # NOT OK: < <( tr -d '\n' <<< $data )
 }
 quoteEscape() {
@@ -595,7 +595,7 @@ snapclientIP() {
 
 			ip=${l/*:}
 			if [[ $data ]]; then
-				websocat ws://$ip:8080 <<< $data
+				websocat --text ws://$ip:8080 <<< $data
 			else
 				clientip+=" $ip"
 			fi
@@ -636,6 +636,8 @@ statusColor() {
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
 statusUpdating() {
+	mpc | grep -q ^Updating && echo true && return
+	
 	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
 }
 timezoneAuto() {

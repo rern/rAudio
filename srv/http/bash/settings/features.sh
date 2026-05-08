@@ -147,9 +147,9 @@ multiraudio )
 	while read ip; do
 		! ipOnline $ip && continue
 
-		[[ $json ]] && websocat ws://$ip:8080 <<< $json
+		[[ $json ]] && websocat --text ws://$ip:8080 <<< $json
 		pushWebsocket $ip display $display
-		websocat ws://$ip:8080 <<< $flagset
+		websocat --text ws://$ip:8080 <<< $flagset
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF

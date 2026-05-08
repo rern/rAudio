@@ -143,7 +143,7 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/snapserverip )
-		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
+		serverstatus=$( websocat --text ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
 		status+="
 $( echo -e "$serverstatus" )"
@@ -171,9 +171,9 @@ pos=$( mpc status %songpos% )
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file playlistlength state Time Title'
 [[ ! $snapclient ]] && filter+=' consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-lines=$( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep -E $filter )
+lines=$( printf "status\nplaylistinfo $song\nclose\n" \
+			| websocat --text - tcp:127.0.0.1:6600 \
+			| grep -E $filter )
 while read line; do
 	key=${line/:*}
 	val=${line#*: }

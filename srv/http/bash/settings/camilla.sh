@@ -8,7 +8,7 @@ dirconfigs=$dircamilladsp/configs
 
 saveConfig() {
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
-	config=$( echo '"GetConfig"' | websocat ws://127.0.0.1:1234 )
+	config=$( echo '"GetConfig"' | websocat --text ws://127.0.0.1:1234 )
 	echo -e "$config " | sed '1 s/.*/---/; $d; s/\\"/"/g' > "$configfile"
 }
 
