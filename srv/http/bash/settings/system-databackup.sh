@@ -56,8 +56,9 @@ if [[ $xinitrcfiles ]]; then
 	mkdir -p $dirconfig/etc/X11/xinit
 	cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 fi
-[[ -e $dirshareddata && ! -L $dirshareddata/mpd ]] && cp -rL $dirshareddata $dirconfig
-
+if [[ -e $dirshareddata ]]; then
+	nfsServerActive && cp -rL $dirshareddata $dirconfig
+fi
 services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 for service in $services; do
 	systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
