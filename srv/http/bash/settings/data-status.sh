@@ -153,7 +153,8 @@ $( eval $cmd1 | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	;;
 storage )
 	statusCmd 'cat /etc/fstab'
-	cmd='mount | grep /mnt/MPD/USB'
+	[[ ! -e $dirusb ]] && nas=/NAS
+	cmd="mount | grep /mnt/MPD$nas/USB"
 	mntusb=$( eval "$cmd" )
 	[[ $mntusb ]] && echo "
 <bll># $cmd</bll>
