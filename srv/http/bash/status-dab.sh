@@ -20,24 +20,20 @@ while true; do
 	
 	cp -f $filelabel $filetitle
 	title=$( < $filetitle )
-	elapsed=$( mpcElapsed )
-	data='
-  "Album"    : "'$album'"
-, "Artist"   : "'$artist'"
-, "elapsed"  : '$elapsed'
-, "Title"    : "'$title'"'
-	$dirbash/status-push.sh "$data" & # run in background for snapcast
-	# coverart
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
 		name=$( alphaNumeric $title )
 		coverfile=/srv/http/data/shm/webradio/$name.jpg
 		if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 			cp -f $filecover $coverfile
-			cover="${coverfile:9}"
-			sed -i -E "s/^(coverart=).*/\1$cover/" $dirshm/status
+			coverart="${coverfile:9}"
 		fi
 	fi
-	pushData cover '{ "cover": "'$cover'" }'
+	$dirbash/status-push.sh "cmd
+$album
+$artist
+$coverart
+$title
+CMD ALBUM ARTIST COVERART TITLE"
 	sleep 10
 done

@@ -6,43 +6,52 @@ args2var "$1"
 
 ! ipOnline $IP && echo "<c>$IP</c> not reachable." && exit
 # --------------------------------------------------------------------
+opt_common='_netdev,nofail,noatime'
+opt_nfs="defaults,bg,soft,timeo=10,$opt_common"
 if [[ $PROTOCOL ]]; then
-	mountpoint="$dirnas/$NAME"
-	if grep -q "^${mountpoint// /\\\\040}$" < <( awk '{print $2}' /etc/fstab ); then
-		echo "Name <c>$NAME</c> already exists"
-		exit
+	if findmnt --fstab "$dirnas/$NAME" &> /dev/null; then
+		echo "Name <c>$NAME</c> already exists" && exit
 # --------------------------------------------------------------------
 	fi
+	share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
+	if [[ $PROTOCOL == cifs ]]; then
+		[[ ! $USR ]] && USR=quest
+		source="//$IP/$share"
+		options="username=$USR,password=$PASSWORD"
+		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),$opt_common"
+	else
+		source="$IP:/$share"
+		options=$opt_nfs
+	fi
+	[[ $OPTIONS ]] && options+=,$OPTIONS
+	mountpoint="$dirnas/$NAME"
+	fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL $options 0 0"
 else # server rAudio client
-	path=$( timeout --signal KILL 3s showmount --no-headers -e $IP )
-	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	for i in {0..5}; do
+		shares=$( timeout 1 showmount --no-headers -e $IP | awk '{print $1}' )
+		if [[ $shares ]]; then
+			grep -q ^$dirnas <<< $shares && nfsserver=1
+			break
+		fi
+	done
+	if [[ ! $nfsserver ]]; then
+		echo '<i class="i-nfsserver"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	rserver=rserver
-	mountpoint=$dirnas
-	PROTOCOL=nfs
-	SHARE=$dirnas
+	fi
+	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
+	fstabSet $dirnas "$IP:$dirnas  $dirnas  nfs  $opt_nfs  0  0"
+	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( hostname ) @$( ipAddress )"
 fi
-share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
-if [[ $PROTOCOL == cifs ]]; then
-	[[ ! $USR ]] && USR=quest
-	source="//$IP/$share"
-	options="username=$USR,password=$PASSWORD,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8"
-else
-	source="$IP:/$share"
-	options=defaults,bg,soft,timeo=5
-fi
-[[ $OPTIONS ]] && options+=,$OPTIONS
-fstabSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
-
 if [[ $SHAREDDATA ]]; then
+	[[ ! $nfsserver ]] && echo "$mountpoint" > $dirshareddata/source
 	mpc -q clear
 	systemctl stop mpd
 	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1
-		sharedDataCopy $rserver
+		sharedDataCopy
 	fi
-	sharedDataLink $rserver
+	sharedDataLink
 	appendSortUnique $filesharedip $( ipAddress )
 	systemctl start mpd
 	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate

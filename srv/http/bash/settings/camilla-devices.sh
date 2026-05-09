@@ -16,16 +16,32 @@ else
 	DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
 fi
 for c in Loopback $CARD; do
-	lines=$( tty2std "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
-	CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
-	formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
-	listformat=
-	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-		grep -q $f <<< $formats && listformat+=', "'$f'"'
+	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
+	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
+	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
+	list_f=
+	list_s=
+	for f in $formats; do
+		[[ $f != [FS]*LE ]] && continue
+		
+		case $f in
+			FLOAT64_LE ) f=F64_LE;;
+			FLOAT_LE )   f=F32_LE;;
+			S24_3LE )    f=S24_3_LE;;
+			S24_LE )     f=S24_4_LE;;
+		esac
+		lbl="$f: ${f:1:2}bit "
+		[[ $f == F* ]] && lbl+='float' || lbl+='integer'
+		case ${f:4:1} in
+			3 ) lbl+='-packed';;
+			4 ) lbl+='-padded';;
+		esac
+		list=$'\n, "'$lbl'": "'$f'"'
+		[[ $f == F* ]] && list_f+=$list || list_s+=$list
 	done
-	FORMATS+=( "[ ${listformat:1} ]" )
+	FORMATS+=( "{ \"Auto\": null $( sort -d <<< $list_s ) $( sort -d <<< $list_f ) }" )
 	if [[ $c != Loopback ]]; then
-		ratemax=$( sed -n -E '/^RATE/ {s/.* (.*)].*/\1/; p}' <<< $lines )
+		ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
 		for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
 			(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
 		done

@@ -80,25 +80,15 @@ lcdchar )
 	if [[ $2 == gpio ]]; then
 		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
 	else
-		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": 39, "CHIP": "PCF8574"'
+		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": "", "CHIP": "PCF8574"'
 	fi
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
 	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-	dev=$( ls /dev/i2c* 2> /dev/null )
-	if [[ $dev ]]; then
-		for d in $dev; do
-			hex+=$( i2cdetect -y ${dev: -1} | sed -E 's/^\s.*|^.*: |(--|UU) *//g' )
-		done
-		for h in $hex; do
-			address+=', "0x'$h'": '$(( 16#$h ))
-		done
-	fi
-	[[ ! $address ]] && address=', "0x27": 39, "0x3f": 63'
 	echo '{
   "values"  : '$values'
 , "current" : "'$current'"
-, "address" : { '${address:1}' }
+, "address" : '$( i2cAddress )'
 }'
 	;;
 localbrowser )
@@ -121,11 +111,26 @@ monitor )
 	;;
 mpdoled )
 	opt=$( < /etc/default/mpd_oled )
-	chip=$( cut -d' ' -f2 <<< $opt )
-	spectrum=$( grep -q '\-X' <<< $opt && echo true || echo false )
+	[[ $opt == *-x* ]] && chip=$( sed -E 's/.*-x (.).*/\1/' <<< $opt ) || chip=6
+	[[ $opt == *-X* ]] && spectrum=false || spectrum=true
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
+	;;
+nfsserver )
+	fat=$( lsblk -no mountpoint,fstype | grep ^$dirusb.*fat )
+	if [[ $fat ]]; then
+		fat=$( sed -E 's|/mnt/MPD/(.*) (.*)$|\1 <c>\2</c>|' <<< $fat | sed -z 's/\n/<br>/' )
+		echo '{ "fat": "'$fat'" }'
+		exit
+# --------------------------------------------------------------------
+	fi
+	[[ -e $dirsd ]] && path=/mnt/MPD || path=$dirnas
+	while read dir; do
+		[[ $( stat -c %a $dir ) == 777 ]] && tf=true || tf=false
+		data+=', "'${dir##*/}'": '$tf
+	done < <( ls -d $path/* | grep -vE '(data|NAS)$' )
+	echo "{ ${data:1} }"
 	;;
 packagelist )
 	filepackages=/tmp/packages
@@ -248,14 +253,11 @@ serverntp )
 }'
 	;;
 smb )
-	file=/etc/samba/smb.conf
-	dirs='SD USB'
-	grep -q '^\[NVME]' $file && dirs+=' NVME'
-	grep -q '^\[SATA]' $file && dirs+=' SATA'
-	for dir in $dirs; do
-		sed -n '/^\['$dir']/,/^\[/ p' $file | grep -q 'read only = no' && tf=true || tf=false
-		data+=', "'$dir'" : '$tf
-	done
+	while read dir; do
+		name=${dir##*/}
+		sed -n '/^\['$name']/,/^\[/ p' /etc/samba/smb.conf | grep -q 'read only = no' && tf=true || tf=false
+		data+=', "'$name'" : '$tf
+	done < <( ls -d /mnt/MPD/* | grep -v NAS$ )
 	echo '{ '${data:1}' }'
 	;;
 snapclient )

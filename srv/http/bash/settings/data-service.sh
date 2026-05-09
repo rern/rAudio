@@ -67,7 +67,7 @@ dabradio )
 	SERVICE=$PKG
 	conf="\
 <bll># rtl_test -t</bll>
-$( tty2std 'timeout 0.1 rtl_test -t' )"
+$( dabDevice )"
 	;;
 localbrowser )
 	PKG=firefox
@@ -100,17 +100,19 @@ mpdoled )
 	SERVICE=mpd_oled
 	;;
 nfsserver )
-	PKG=nfs-utils
 	SERVICE=nfs-server
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
-	[[ ! $sharedip ]] && sharedip='(none)'
+	ip_client=$( ipSharedData )
+	[[ ! $ip_client ]] && ip_client='(none)'
+	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
 	conf="\
-$( configText /etc/exports )"
-	systemctl -q is-active nfs-server && conf+="
-
+<c>$( nfsdctl -V )</c> supports NFS: $ver"
+	if nfsServerActive; then
+		conf+="
+<bll># cat /etc/exports</bll>
+$( < /etc/exports )
 <bll># Active clients:</bll>
-$sharedip"
-	skip+='|Protocol not supported'
+$ip_client"
+	fi
 	;;
 shairportsync )
 	PKG=shairport-sync

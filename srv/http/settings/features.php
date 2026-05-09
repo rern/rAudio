@@ -1,10 +1,10 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'rserver', 'usbdrive', 'warning' ]
+	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  'Equalizer'     => 'equalizer'
 		, 'DSP'           => 'camilladsp'
-		, 'Server rAudio' => 'rserver'
+		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
 		, 'Wi-Fi'         => 'wifi'
 	]
@@ -41,6 +41,14 @@ Note:
  · No sound: Increase volume on sender device (too low)
  · If $L->dsp is enabled, stop current track before start playing.
  · Playing files directly on rAudio yields better quality.
+EOF
+	]
+	, [
+		  'id'       => 'audiocd'
+		, 'label'    => 'Audio CD Data'
+		, 'exist'    => 'hide(none)'
+		, 'help'     => <<< EOF
+<a href="https://gnudb.org">Gnudb</a> - Required user's email for CD database access
 EOF
 	]
 	, [
@@ -283,17 +291,15 @@ EOF
 		· Previously enabled: Database from previous will be used.
 		· $B->microsd SD and $B->usbdrive USB moved to $B->networks NAS
 	· IP address - This rAudio must be set to static / fixed.
-	· Password - If changed, must be the same on all clients.
+	· File system - <c>ext4</c> or <c>ntfs</c> only (no <c>*fat</c>)
 	
  • <wh>Clients:</wh>
-	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
+	· $T->system$L->shareddata <tab><i class="i-nfsserver"></i> rAudio</tab>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh> (if needed)
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
-	$mapdrive <c>\\\\$ip\NAS</c>
-<i class="i-warning"></i> Permissions:
-Everyone can read and write <c>/mnt/MPD/NAS</c> - Full control
+	$mapdrive <c>\\\\$ip\mnt\\MPD\\NAS</c>
 EOF
 	]
 	, [

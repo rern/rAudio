@@ -92,6 +92,11 @@ $options  = [
 		, 'label'      => 'Resampler'
 		, 'returnhtml' => true
 	]
+	, [
+		  'id'         => 'multithreaded'
+		, 'label'      => 'Multi-threaded'
+		, 'returnhtml' => true
+	]
 ];
 $htmlopt  = '';
 foreach( $options as $opt ) $htmlopt.= htmlSetting( $opt );

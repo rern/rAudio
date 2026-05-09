@@ -183,9 +183,9 @@ var CONFIG        = {
 			  ...SW
 			, message      : UTIL.gpiosvg
 			, list         : [
-				  [ 'CLK',  'select', UTIL.board2bcm ]
-				, [ 'DT',   'select', UTIL.board2bcm ]
-				, [ 'SW',   'select', UTIL.board2bcm ]
+				  [ 'CLK',  ...select_pins ]
+				, [ 'DT',   ...select_pins ]
+				, [ 'SW',   ...select_pins ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
 			]
 			, boxwidth     : 70
@@ -229,7 +229,7 @@ var CONFIG        = {
 	, vuled         : data => {
 		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
 		var prefix = '<gr>#</gr> ';
-		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), 'select', UTIL.board2bcm ] ) );
+		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
 		INFO( {
 			  ...SW
 			, message      : UTIL.gpiosvg
@@ -274,8 +274,8 @@ var CONFIG        = {
 }
 var UTIL          = {
 	  board2bcm     : {
-		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
-		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+		   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9,  22:25
+		, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
 	, monitor       : {
 		  json        : {
@@ -579,7 +579,7 @@ var UTIL          = {
 				}
 			} );
 		}
-		, tab     : [ 'CIFS', 'NFS', ICON( 'rserver' ) +' rAudio' ]
+		, tab     : [ 'CIFS', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
 	}
 	, option        : {
 		  i2smodule : () => {
@@ -618,9 +618,9 @@ var UTIL          = {
 				, tab          : [ '', UTIL.powerbutton.ap ]
 				, message      : UTIL.gpiosvg
 				, list         : [ 
-					  [ 'On',       'select', { 5: 3 } ]
-					, [ 'Off',      'select', UTIL.board2bcm ]
-					, [ 'LED',      'select', UTIL.board2bcm ]
+					  [ 'On',  'select', { 5: 3 } ]
+					, [ 'Off', ...select_pins ]
+					, [ 'LED', ...select_pins ]
 				]
 				, boxwidth     : 70
 				, values       : values
@@ -822,19 +822,21 @@ var UTIL          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
+			if ( list.mountpoint == '/mnt/NAS' ) return
+			
+			var mp     = list.mountpoint;
 			var icon   = list.icon;
 			var fs     = list.fs;
-			var mp     = list.mountpoint;
 			var source = list.source;
 			var size   = list.size;
 			var cls    = list.mounted ? 'mounted' : 'profile';
-			if ( list.shareddata ) {
-				cls += ' shareddata';
-			} else if ( list.rserver ) {
-				cls += ' rserver';
-			}
 			if ( size[ 0 ] === 'u' ) cls += ' unformat';
-			if ( source === S.formatting ) icon += ' blink';
+			if ( S.nfsserver ) cls += ' server';
+			if ( source.replace( /.*:/, '' ) === '/mnt/MPD/NAS' ) {
+				cls += ' client';
+			} else if ( source === S.formatting ) {
+				icon += ' blink';
+			}
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
 			if ( size )   html += ' · '+ size;
@@ -929,6 +931,7 @@ var UTIL          = {
 		} );
 	}
 }
+var select_pins   = [ 'select', UTIL.board2bcm ];
 
 function onPageInactive() {
 	clearInterval( V.intstatus );
@@ -974,6 +977,8 @@ function renderPage() {
 	[ 'bluetooth', 'wlan' ].forEach( id => {
 		if ( ! S[ id ] && ! $( '#code'+ id ).hasClass( 'hide' ) ) $( '#code'+ id ).addClass( 'hide' );
 	} );
+	$( '#powerbutton' ).toggleClass( 'disabled', S.mpdoled );
+	$( '#mpdoled' ).toggleClass( 'disabled', S.powerbutton );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
 		.val( S.hostname )
@@ -1004,7 +1009,6 @@ $( '.img' ).on( 'click', function() {
 	}
 	var name    = $( this ).data( 'name' );
 	var vcc1    = htmlLegend( 'ora', 'VCC', 1 );
-	var i2c     = '<br><wh>I²C:</wh>';
 	var scasdl  = htmlLegend( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
 	var gnd     = '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ';
 	var title   = {
@@ -1017,19 +1021,20 @@ $( '.img' ).on( 'click', function() {
 		, vuled         : [ 'VU LED',         'vuled' ]
 	}
 	var txt     = {
-		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlLegend( [ 
+		  lcdchar       : gnd 
+						+'<br>GPIO : '+ htmlLegend( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
-						+ i2c + vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
-						+'</p><br>'+ ICON( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						+ '<br>I²C'+ COMMON.sp( 21 ) +': '+ vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
+						+'</p><br>'+ ICON( 'warning yl' ) +' I²C VCC - 5V to 3.3V modification'
 						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
 		, mpdoled       : gnd + vcc1
-						+ i2c + scasdl
-						+ '<br><wh>SPI:</wh>'+ htmlLegend( [
+						+ '<br>I²C:'+ scasdl
+						+ '<br>SPI:'+ htmlLegend( [
 								  [ 'grn', 'CLK', 23 ]
 								, [ 'grn', 'MOS', 19 ]
 								, [ 'grn', 'RES', 22 ]
@@ -1080,7 +1085,12 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	var $li        = $( this );
+	var $li = $( this );
+	if ( $li.hasClass( 'client' ) ) {
+		BANNER( 'networks', 'Shared Data', 'Server rAudio client' );
+		return
+	}
+	
 	if ( MENU.isActive( $li, e ) ) return
 	
 	if ( $li.find( '.i-microsd' ).length ) {
@@ -1088,16 +1098,16 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var c = {};
-		[ 'mounted', 'networks', 'rserver', 'shareddata', 'unformat', 'usb' ].forEach( k => {
+		[ 'mounted', 'networks', 'server', 'shareddata', 'unformat', 'usb' ].forEach( k => {
 			c[ k ] = $li.hasClass( k )
 		} );
 		$( '#menu .info' ).toggleClass( 'hide', c.networks );
 		$( '#menu .forget' ).toggleClass( 'hide', c.usb || c.unformat );
 		$( '#menu .mount' ).toggleClass( 'hide', c.mounted || c.unformat );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! c.mounted || c.unformat || c.server );
 		$( '#menu .sleep' ).toggleClass( 'hide', c.usb || c.unformat );
 		$( '#menu .format' ).toggleClass( 'hide', ! c.unformat );
-		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.rserver );
+		$( '#menu' ).find(  '.forget, .unmount' ).toggleClass( 'disabled', c.shareddata || c.server );
 	}
 	MENU.show( $li );
 } );

@@ -34,12 +34,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-mkdir_mount() {
-	local dir_mp
-	[[ $1 == $dirnas ]] && dir_mp=/NAS || dir_mp=$2
-	mkdir -p $dir_mp
-	mount --bind $1 $dir_mp
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -67,7 +61,7 @@ ap )
 	pushRefresh
 	pushRefresh networks
 	;;
-autoplay | lyrics | scrobble )
+audiocd | autoplay | lyrics | scrobble )
 	enableFlagSet
 	pushRefresh
 	;;
@@ -123,65 +117,8 @@ iwctlap )
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
-localbrowser )
-	if [[ $ON ]]; then
-		if ! grep -q tty3 /boot/cmdline.txt; then
-			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
-			systemctl disable --now getty@tty1
-		fi
-		! systemctl -q is-active localbrowser && restart=1
-		. /tmp/localbrowser.conf
-		if [[ $ROTATE != $rotate ]]; then
-			restart=1
-			file_config=/boot/config.txt
-			if grep -E -q 'waveshare|tft35a' $file_config; then # tft
-				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' $file_config
-				cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-				appendSortUnique $dirshm/reboot ', "localbrowser": "Browser"'
-				notify localbrowser Browser 'Reboot required.' 5000
-				exit
-# --------------------------------------------------------------------
-			elif grep -q ili9881-5inch $file_config; then
-				ROTATE=$(( ROTATE + 180 ))
-				$(( $ROTATE >= 360 )) && ROTATE=$(( ROTATE - 360 ))
-				sed -i -E "s/(rotate=).*/\1$ROTATE/" $file_cmdline
-			else # hdmi
-				case $ROTATE in
-					0 )   rotate=NORMAL;;
-					270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
-					90 )  rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
-					180 ) rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
-				esac
-				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-				if [[ $ROTATE == 0 ]]; then
-					rm -f $rotateconf
-				else
-					sed "s/ROTATION_SETTING/$rotate/
-						 s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
-				fi
-				splashRotate
-			fi
-		fi
-		if [[ $ZOOM != $zoom ]]; then
-			restart=1
-			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
-			sed -i -E 's/(devPixelsPerPx": ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
-		fi
-		if [[ $SCREENOFF != $screenoff ]]; then
-			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
-			pushSubmenu screenoff $tf
-		fi
-		[[ $CURSOR != $cursor ]] && restart=1
-		if [[ $restart ]]; then
-			systemctl restart bootsplash localbrowser &> /dev/null
-			systemctl enable bootsplash localbrowser
-			sleep 1
-		fi
-	else
-		localBrowserOff
-	fi
-	rm -f /tmp/localbrowser.conf
-	pushRefresh
+localbrowser | nfsserver )
+	. $dirsettings/features-$CMD.sh
 	;;
 login )
 	pushRefresh
@@ -210,9 +147,9 @@ multiraudio )
 	while read ip; do
 		! ipOnline $ip && continue
 
-		[[ $json ]] && websocat ws://$ip:8080 <<< $json
+		[[ $json ]] && websocat --text ws://$ip:8080 <<< $json
 		pushWebsocket $ip display $display
-		websocat ws://$ip:8080 <<< $flagset
+		websocat --text ws://$ip:8080 <<< $flagset
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF
@@ -221,64 +158,6 @@ multiraudioreset )
 	rm -f $dirsystem/multiraudio*
 	pushRefresh
 	pushSubmenu multiraudio false
-	;;
-nfsserver )
-	dirshared=$dirdata/mpdshared
-	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
-	rm -f $dirmpd/{listing,updating}
-	$dirbash/cmd.sh mpcremove
-	systemctl stop mpd
-	if [[ $ON ]]; then
-		while read d; do
-			[[ $d == NAS ]] && dir_mp=/NAS || dir_mp=$dirnas/$d
-			mkdir -p $dir_mp
-			mount --bind /mnt/MPD/$d $dir_mp # mount --bind: wondows not read symlink
-		done < <( ls /mnt/MPD )
-		ip=$( ipAddress )
-		ip_opt="${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)"
-		cat << EOF > /etc/exports
-/mnt/MPD/NAS  $ip_opt
-/NAS          $ip_opt
-EOF
-		systemctl enable --now nfs-server
-		mkdir -p $dirbackup $dirshareddata
-		ipAddress > $filesharedip
-		sharedDataCopy rserver
-		chown -R http:http $dirshareddata
-		chown -R mpd:audio $dirshareddata/{mpd,playlists}
-		chmod -R 777 $dirnas
-		sharedDataLink rserver
-		if [[ -e $dirshared ]]; then
-			backup=1
-			cp -f $dirshared/* $dirmpd
-			rm -rf $dirshared
-		fi
-		systemctl start mpd
-		[[ ! $backup ]] && $dirbash/cmd.sh "mpcupdate
-rescan
-
-CMD ACTION PATHMPD"
-		# prepend path
-		while read file; do
-			sed -E -i '/^NVME|^SATA|^SD|^USB/ s|^|NAS/|' "$file"
-		done < <( ls $dirbookmarks/* $dirplaylists/* )
-	else
-		mkdir -p $dirshared
-		cp -rL $dirmpd $dirshared
-		rm -rf $dirnas/data
-		while read d; do
-			umount -l $d
-			rmdir $d
-		done < <( ls -d $dirnas/* | sed '$ a\/NAS' )
-		systemctl disable --now nfs-server
-		> /etc/exports
-		rm -f $filesharedip
-		sharedDataReset
-		systemctl start mpd
-	fi
-	pushRefresh
-	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
-	pushDirCounts nas
 	;;
 screentoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

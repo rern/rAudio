@@ -3,15 +3,16 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'rserver', 'sata', 'usbdrive' ]
+	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'nfsserver', 'sata', 'usbdrive' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
-		, 'RPi Touch Display 2' => ''
-		, 'Server rAudio' => 'rserver'
+		, 'Power Button'  => 'power'
+		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
+		, 'Spectrum OLED' => 'mpdoled'
 		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
 		, 'TFT 3.5" LCD'  => 'tft'
@@ -87,8 +88,8 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre>
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
- · <i class="btn">«</i> $L->shareddata
- · <i class="btn">»</i> $L->serverraudio
+ · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>
+ · <i class="i-server"></i> <i class="i-client"></i> Server / Client
  · Full path: <c>/mnt/MPD/...</c>
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
@@ -169,6 +170,7 @@ $body        = [
 		  'id'       => 'powerbutton'
 		, 'label'    => 'Power Button'
 		, 'sub'      => 'libgpiod'
+		, 'disabled' => $L->spectrumoled.$isenabled
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 $B->gear
@@ -245,6 +247,7 @@ EOF
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
 		, 'status'   => true
+		, 'disabled' => $L->powerbutton.$isenabled
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 
@@ -348,7 +351,7 @@ Connect shared data as client for:
 • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
 		· Permissions: <c>777</c>
-	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
+	Clients: $L->shareddata <tab><i class="i-nfsserver"></i> rAudio</tab>
 
 • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create 2 shares: <gr>(any names)</gr>

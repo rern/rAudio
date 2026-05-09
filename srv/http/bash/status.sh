@@ -9,9 +9,9 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd ]] && ! timeout 0.5 test -e $dirmpd; then # shared data server offline or not mounted
+if [[ -L $dirmpd ]] && ! stat $dirmpd &> /dev/null; then # shared data server offline or not mounted
 	timeout 1 mount -a &> /dev/null
-	! timeout 0.5 test -e $dirmpd && echo -1 && exit
+	! stat $dirmpd &> /dev/null && echo -1 && exit
 # --------------------------------------------------------------------
 	systemctl start mpd
 fi
@@ -143,7 +143,7 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/snapserverip )
-		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
+		serverstatus=$( websocat --text ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
 		status+="
 $( echo -e "$serverstatus" )"
@@ -171,9 +171,11 @@ pos=$( mpc status %songpos% )
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file playlistlength state Time Title'
 [[ ! $snapclient ]] && filter+=' consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-lines=$( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep -E $filter )
+lines=$( echo "\
+status
+playlistinfo $song" \
+	| websocat --text - tcp:127.0.0.1:6600 \
+	| grep -E $filter )
 while read line; do
 	key=${line/:*}
 	val=${line#*: }
@@ -234,7 +236,7 @@ if [[ $fileheader == cdda ]]; then
 	audiocd=1
 	if [[ -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
-		track=${file/*\/}
+		track=${file##*/}
 		readarray -t disciddata < <( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${disciddata[0]}
 		Album=${disciddata[1]}
@@ -382,8 +384,8 @@ else
 	# missing id3tags
 	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ ! $Artist ]] && Artist=$AlbumArtist
-	[[ ! $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
-	[[ ! $Title ]] && filename=${file/*\/} && Title=${filename%.*}
+	[[ ! $Artist ]] && dirname=${file%/*} && Artist=${dirname##*/}
+	[[ ! $Title ]] && filename=${file##*/} && Title=${filename%.*}
 ########
 	status+='
 , "Album"     : "'$Album'"

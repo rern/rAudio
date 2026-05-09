@@ -42,11 +42,11 @@ appendSortUnique() {
 	shift
 	data=$@
 	[[ ! -e $file ]] && echo "$data" > $file && return
-# --------------------------------------------------------------------
+#...............................................................................
 	lines="\
 $( < $file )
 $data"
-	awk NF <<< $lines | sort -u <<< $lines > $file
+	sort -u <<< $lines > $file
 }
 args2var() { # $2 $3 ... if any, still valid
 	local argslast CFG CMD_CFG_OFF conf i k keys kL v
@@ -55,11 +55,11 @@ args2var() { # $2 $3 ... if any, still valid
 	argslast=${args[@]: -1}
 	CMD_CFG_OFF=${argslast:0:3}
 	[[ $CMD_CFG_OFF == OFF ]] && TF=false && return
-# --------------------------------------------------------------------
+#...............................................................................
 	ON=true
 	TF=true
 	[[ ! $CMD_CFG_OFF =~ ^(CMD|CFG)$ ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	keys=( $argslast )
 	[[ $CMD_CFG_OFF == CFG ]] && CFG=1
 	kL=${#keys[@]}
@@ -94,13 +94,14 @@ cacheBust() {
 	if [[ $TYPE ]]; then
 		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 		return
-# --------------------------------------------------------------------
+#...............................................................................
 	fi
 	local hash
 	hash=$( date +%s )"'"
 	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
 	[[ $TIME ]] && hash="'.time()"
 	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
+	rm -f $dirshm/system
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -118,11 +119,11 @@ conf2json() {
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
 	[[ ! -e $file ]] && echo false && return
-
+#...............................................................................
 	# omit lines  blank, comment / group [xxx]
 	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
 	[[ ! $lines ]] && echo false && return
-
+#...............................................................................
 	if [[ $2 ]]; then # $2 - specific keys
 		shift
 		keys=$@
@@ -130,7 +131,7 @@ conf2json() {
 		lines=$( grep -E "$only" <<< $lines )
 	fi
 	[[ ! $lines ]] && echo false && return
-
+#...............................................................................
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
@@ -186,10 +187,13 @@ coverFileGet() {
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ ! $coverfile ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	[[ $2 ]] && echo $coverfile && return
-# --------------------------------------------------------------------
+#...............................................................................
 	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
+}
+dabDevice() {
+	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
 }
 data2json() {
 	local json page
@@ -217,24 +221,6 @@ data2jsonPatch() {
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
 }
-dirPermissions() {
-	chown -R http:http /srv &> /dev/null
-	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
-	chmod -R u=rw,go=r,a+X /srv
-	chmod -R +x $dirbash
-	[[ $RELEASE ]] && return # from create-ros.sh
-
-	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
-	if [[ ! -e /bin/camilladsp ]]; then
-		rm -f /srv/http/assets/css/camilla.css \
-			  /srv/http/assets/js/{camilla,pipelineplotter}.js \
-			  /srv/http/assets/js/plugin/{d3,plotly}*.min.js \
-			  /srv/http/settings/camilla.php \
-			  $dirsettings/camilla*
-	fi
-	[[ -e /bin/firefox ]] && splashRotate
-	cacheBust
-}
 enableFlagSet() {
 	local file
 	file=$dirsystem/$CMD
@@ -261,13 +247,13 @@ fifoToggle() { # mpdoled vuled vumeter
 			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
 		! grep -q 'state="*play' $dirshm/status && return
-# --------------------------------------------------------------------
+#...............................................................................
 		[[ $mpdoled ]] && systemctl restart mpd_oled
 		[[ $vuled || $vumeter ]] && systemctl restart cava
 	else
 		if [[ -e $filefifo ]]; then
 			[[ $mpdoled || $vuled || $vumeter ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 			rm $filefifo
 			systemctl restart mpd
 		fi
@@ -278,7 +264,7 @@ fifoToggle() { # mpdoled vuled vumeter
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
 	systemctl daemon-reload
-	mount -a
+	mount -a &> /dev/null && return 0
 }
 fstabSet() {
 	local fstab std
@@ -290,17 +276,16 @@ fstabSet() {
 $( < /etc/fstab )
 $2"
 	fstabColumnReload "$fstab"
-	std=$( mount -a 2>&1 > /dev/null )
-	if [[ $std ]]; then
-		mv -f /tmp/fstab /etc
-		rmdir "$1"
-		systemctl daemon-reload
-		sed 's/$/<br>/' <<< $std
-	else
+	if [[ $? == 0 ]]; then
 		for i in {1..10}; do
 			sleep 1
 			mountpoint -q "$1" && break
 		done
+	else
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed 's/$/<br>/' <<< $std
 	fi
 }
 getContent() {
@@ -312,7 +297,7 @@ getContent() {
 }
 getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
-# --------------------------------------------------------------------
+#...............................................................................
 	case ${2: -4} in
 		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
 		.yml )
@@ -340,6 +325,20 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+i2cAddress() {
+	n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+	if [[ $n ]]; then
+		for d in $n; do
+			hex+=$( timeout 0.1 i2cdetect -y $n | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
+		done
+		[[ $1 ]] && echo $hex && return
+#...............................................................................
+		for h in $hex; do
+			address+=', "0x'$h'": '$(( 16#$h ))
+		done
+		[[ $address ]] && echo "{ ${address:1} }" || echo '{ "0x27": 39, "0x3f": 63 }'
+	fi
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -355,10 +354,15 @@ ipAddress() {
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
+ipSharedData() {
+	local self
+	self=$( ipAddress )
+	grep -v $self $filesharedip
+}
 json2var() { # single level only
-	local pattern
-	pattern='to_entries[] | "\(.key)=\(.value|@sh)"'
-	[[ -f $1 ]] && . <( jq -r "$pattern" < $1 ) || . <( jq -r "$pattern" <<< $1 )
+	local regex
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
 	local filepid
@@ -383,12 +387,12 @@ localBrowserOff() {
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
-		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
-		mpd_oled -o $chip -x logo
+		. <( cat /etc/default/mpd_oled )
+		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
 	fi
 }
 mpcElapsed() {
-	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
+	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
 		echo false
 	else
 		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
@@ -404,6 +408,9 @@ mpcState() {
 }
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
+}
+nfsServerActive() {
+	systemctl -q is-active nfs-server && return 0
 }
 notify() { # icon title message delayms
 	local data delay icon ip json message title
@@ -427,32 +434,46 @@ pushBookmark() {
 	pushData bookmark "$data"
 }
 pushData() { # send to websocket.py (server)
-	local channel data ip json path sharedip webradiocopy
+	local channel data dir ip ip_client json
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
-	[[ ! -e $filesharedip || 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
-# --------------------------------------------------------------------
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
-	[[ ! $sharedip ]] && return # no other cilents
-# --------------------------------------------------------------------
+	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
+#...............................................................................
+	ip_client=$( ipSharedData ) # other shared data hosts
+	[[ ! $ip_client ]] && return
+#...............................................................................
 	if [[ $channel == coverart ]]; then
-		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
-		[[ 'MPD bookmark webradio' != *$path* ]] && return
-# --------------------------------------------------------------------
-	fi
-	if [[ $channel == mpdupdate && $data == *'"done"'* ]]; then
+		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
+		[[ ' MPD bookmark webradio ' != *" $dir "* ]] && return
+#...............................................................................
+	elif [[ $channel == mpdupdate && $data != '{ "updating_db": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
-		data='{ "channel": "'$channel'", "data": '$data' }'
+		data=$( tr -d '\n' <<< $data )
+		data=$( pushDataSet $channel "$data" )
 	fi
-	for ip in $sharedip; do
-		websocat ws://$ip:8080 <<< $data # send to remote websocket.py
+	for ip in $ip_client; do
+		ipOnline $ip && websocat --text ws://$ip:8080 <<< $data
 	done
 }
+pushDataSet() {
+	cat << EOF
+{ "channel": "$1", "data": $2 }
+EOF
+}
 pushDirCounts() {
-	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v /mnt/MPD/NAS/data/ ) ]] && tf=true || tf=false
+	local tf
+	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
+}
+pushNfsServer() {
+	local ip name status
+	name=$( hostname )
+	[[ -e $dirshm/startup ]] && status=Offline || status=Online
+	while read ip; do
+		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
+	done < <( ipSharedData )
 }
 pushRefresh() {
 	local page push
@@ -461,16 +482,13 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushWebsocket() { # send to remote websocket.py (server)
-	local channel data ip
-	ip=$1
-	channel=$2
-	shift 2
-	data=$@
-	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
-		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
-	fi                           # NOT OK: < <( tr -d '\n' <<< $data )
+pushWebsocket() {
+	local data
+	data=$( tr -d '\n' <<< ${@:3} ) # remove newlines (<<< preserve spaces)
+	data=$( pushDataSet $2 "$data" )
+	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
+		websocat --text ws://$1:8080 <<< $data
+	fi
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"
@@ -479,7 +497,6 @@ rAudioUpdate() {
 	curl -sL https://github.com/rern/rAudio/archive/$1.tar.gz \
 		| bsdtar xvf - --strip-components=1 -C /
 	find / -maxdepth 1 -type f -delete
-	dirPermissions
 	[[ $1 =~ ^[0-9]+$ ]] && echo $1 > $diraddons/r1
 }
 serviceRestartEnable() {
@@ -512,6 +529,11 @@ settingsEnabled() {
 	done
 	echo "$data"
 }
+sharedData() {
+	[[ ! -e $filesharedip ]] && echo false && return
+#...............................................................................
+	nfsServerActive && echo false || echo true
+}
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
@@ -519,14 +541,6 @@ sharedDataCopy() {
 	[[ ! -e $file_order ]] && file_order=
 	cp -f $dirsystem/display.json $file_order $dirshareddata
 	touch $dirshareddata/order.json # if not exist
-	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
-}
-sharedDataEnabled() {
-	if [[ -L $dirmpd ]] && ! systemctl -q is-enabled nfs-server; then
-		echo true
-	else
-		echo false
-	fi
 }
 sharedDataLink() {
 	local ip_share s
@@ -539,35 +553,20 @@ sharedDataLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	appendSortUnique $dirnas/.mpdignore data
-	echo -e 'NVME\nSATA\nSD\nUSB' >> /mnt/MPD/.mpdignore
-	[[ $1 == rserver && -e $dirshareddata/source ]] && return
-# --------------------------------------------------------------------
-	readarray -t source < $dirshareddata/source
-	while read s; do
-		ip_share=${s/ *}
-		if ! grep -q "${ip_share//\\/\\\\}" /etc/fstab; then
-
-			fstabSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$src"
-		fi
-	done <<< $source
+	echo data > $dirnas/.mpdignore
 }
 sharedDataReset() {
 	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
-	rm -f $dirsystem/{display,order}.json
+	rm -f $dirsystem/{display,order}.json $dirnas/.mpdignore
 	file_order=$dirbackup/order.json
 	[[ ! -s $file_order ]] && file_order=
 	mv -f $dirbackup/display.json $file_order $dirsystem
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
-	mpdignore=/mnt/MPD/.mpdignore
-	ignore=$( grep -Ev '^data$|^NVME$|^SATA$|^SD$|^USB$' $mpdignore )
-	[[ $ignore ]] && echo "$ignore" > $mpdignore || rm $mpdignore
-	dirPermissions
 }
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	local clientip connected data ip lines
 	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
@@ -581,7 +580,7 @@ snapclientIP() {
 
 			ip=${l/*:}
 			if [[ $data ]]; then
-				websocat ws://$ip:8080 <<< $data
+				websocat --text ws://$ip:8080 <<< $data
 			else
 				clientip+=" $ip"
 			fi
@@ -622,6 +621,8 @@ statusColor() {
 					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
 }
 statusUpdating() {
+	mpc | grep -q ^Updating && echo true && return
+#...............................................................................
 	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
 }
 timezoneAuto() {
@@ -631,9 +632,6 @@ timezoneAuto() {
 	[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
 	[[ ! $tz ]] && tz=UTC
 	timedatectl set-timezone $tz
-}
-tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
-	script /dev/null -qc "$1"
 }
 usbMaxCurrent() {
 	local BB revision
@@ -693,7 +691,7 @@ volumeBlueAlsa() { # value control
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
-# --------------------------------------------------------------------
+#...............................................................................
 	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		val_db=$( amixer -MD bluealsa 2> /dev/null \

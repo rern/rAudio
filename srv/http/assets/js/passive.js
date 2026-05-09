@@ -119,10 +119,10 @@ W = {
 	, mpdupdate : data => {
 		S.updating_db = 'updating_db' in data;
 		COMMON.updating();
+		PLAYBACK.button.updating();
 		if ( ! S.updating_db ) {
 			V.html = {}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
-			PLAYBACK.button.updating();
 			DISPLAY.library();
 		}
 	}

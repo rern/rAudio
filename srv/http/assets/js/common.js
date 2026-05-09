@@ -425,6 +425,20 @@ W             = {  // from websocket.py (server)
 			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 		}
 	}
+	, nfsserver : data => {
+		var online = data.status === 'Online';
+		if ( online ) {
+			COMMON.loaderHide();
+			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
+		} else {
+			COMMON.loader();
+		}
+		BANNER( 'nfsserver'+ ( online ? '' : ' blink' )
+			  , 'Server rAudio'
+			  , data.name +' - '+ data.status
+			  , online ? 9000 : -1
+		);
+	}
 	, volume    : data => {
 		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
 
@@ -1058,7 +1072,7 @@ var _INFO     = {
 			switch ( type ) {
 				case 'checkbox':
 					val = $this.prop( 'checked' );
-					if ( val && $this.attr( 'value' ) !== undefined ) val = $this.val(); // if value defined
+					if ( val && $this.attr( 'value' ) !== undefined ) val = COMMON.string2val( $this.val() ); // if value defined
 					break;
 				case 'number':
 				case 'range':
@@ -1069,11 +1083,7 @@ var _INFO     = {
 					break;
 				case 'radio': // radio has only single checked - skip unchecked inputs
 					val = $( '#infoList input:radio[name='+ el.name +']:checked' ).val();
-					if ( val === 'true' ) {
-						val = true;
-					} else if ( val === 'false' ) {
-						val = false;
-					}
+					val = COMMON.string2val( val );
 					break;
 				case 'text':
 					if ( $this.hasClass( 'array' ) ) { // array literal > array
@@ -1090,7 +1100,7 @@ var _INFO     = {
 					val = $this.val().trim().replace( /\n/g, '\\n' );
 					break;
 				default: // hidden, select
-					val = $this.val();
+					val = COMMON.string2val( $this.val() );
 			}
 			if ( type === 'text'
 				|| typeof val !== 'string'                  // boolean
@@ -1231,7 +1241,7 @@ var COMMON    = {
 		console.log( '%cDebug:', 'color:red' );
 		if ( typeof data === 'string' ) {
 			console.log( JSON.parse( data ) );
-			console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
+			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
 		} else {
 			var bashcmd = data.filesh.split( '/' ).pop();
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
@@ -1432,17 +1442,21 @@ var COMMON    = {
 			} );
 			return
 		}
-
-		var message = '';
-		var modes   = [ 'nas', 'sd', 'usb' ];
-		if ( C.nvme ) modes.push( 'nvme' );
-		if ( C.sata ) modes.push( 'sata' );
-		modes.forEach( k => {
-			label = modes.length < 4 ? k : '';
-			message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
-		} );
+		
 		var values  = {}
-		modes.forEach( k => { values[ k ] = true } );
+		if ( S.shareddata ) {
+			var message = ICON( 'networks' ) +' Shared Data';
+		} else {
+			var message = '';
+			var modes   = [ 'nas', 'sd', 'usb' ];
+			if ( C.nvme ) modes.push( 'nvme' );
+			if ( C.sata ) modes.push( 'sata' );
+			modes.forEach( k => {
+				label = modes.length < 4 ? k.toUpperCase() : '';
+				message += '&ensp;&ensp;<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ label +'</label>';
+			} );
+			modes.forEach( k => { values[ k ] = true } );
+		}
 		INFO( {
 			  icon       : icon
 			, title      : title
@@ -1451,7 +1465,10 @@ var COMMON    = {
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
+				$( '.infomessage' ).css( 'width', '100%' );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+				if ( S.shareddata ) return
+				
 				$( '#infoList input:radio' ).on( 'input', function() {
 					$( '.infomessage' ).toggleClass( 'hide', _INFO.val().ACTION === 'rescan' );
 				} );
@@ -1459,7 +1476,7 @@ var COMMON    = {
 			, ok         : () => {
 				var val     = _INFO.val();
 				var pathmpd = '';
-				if ( val.ACTION === 'update' ) {
+				if ( ! S.shareddata && val.ACTION === 'update' ) {
 					var key;
 					var path = [];
 					modes.forEach( k => {
@@ -1513,9 +1530,8 @@ var COMMON    = {
 				INFO( {
 					  icon    : 'power'
 					, title   : 'Power'
-					, message : 'This <wh>Server rAudio '+ ICON( 'rserver' ) +'</wh> is currently active.'
-								+'<br><wh>Shared Data</wh> on clients will stop.'
-								+'<br>(Resume when server online again)'
+					, message : 'This <wh>Server rAudio '+ ICON( 'nfsserver' ) +'</wh> is currently connected.'
+								+'<br><wh>Shared Data</wh> - Offline until reboot'
 								+'<br><br>Continue?'
 					, oklabel : ICON( action ) + COMMON.capitalize( action )
 					, okcolor : action === 'off' ? V.red : V.orange
@@ -1621,6 +1637,13 @@ var COMMON    = {
 				.addClass( 'hide' );
 			$( '.helphead' ).removeClass( 'hide' );
 		}
+	}
+	, string2val    : val => {
+		if ( val === 'true' )  return true
+		if ( val === 'false' ) return false
+		if ( val === 'null' )  return null
+		if ( val !== '' && ! isNaN( val - 0 ) ) return +val;
+		return val
 	}
 	, updating      : () => {
 		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );

@@ -10,7 +10,9 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	mounted=$4
 	fs=$5
 	if [[ $mountpoint ]]; then
-		if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+		if [[ $icon == nfsserver ]]; then
+			size=
+		elif [[ $mounted == true ]]; then # timeout: limit if network shares offline
 			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
 		elif [[ $mountpoint ]]; then
 			gib=$( lsblk -no SIZE $source )
@@ -27,18 +29,6 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 , "mounted"    : '$mounted'
 , "size"       : "'$size'"
 , "source"     : "'$source'"'
-	if systemctl -q is-active nfs-server; then
-		[[ $mountpoint == "$dirnas/"* ]] && list+='
-, "rserver"    : true'
-	elif [[ $icon == networks && -L $dirmpd ]]; then
-		if [[ $mountpoint == $dirnas || $mountpoint == $dirnas/data ]]; then
-			shareddata=1
-		elif [[ -e $dirnas/data/source ]]; then
-			[[ $( awk '{print $2}' $dirnas/data/source | sed 's/\\040/ /g' ) == $mountpoint ]] && shareddata=1
-		fi
-		[[ $shareddata ]] && list+='
-, "shareddata" : true'
-	fi
 	echo ", {
 $list
 }"
@@ -61,7 +51,7 @@ if [[ $lines ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( lsblk -no label $source )"
+			mountpoint="$dirusb/$( lsblk -no LABEL $source )"
 		fi
 		[[ $mountpoint == $mountpointprev ]] && continue
 		
@@ -70,14 +60,20 @@ if [[ $lines ]]; then
 	done <<< $lines
 fi
 # fstab - nas nvme sata
-lines=$( grep -v ^PARTUUID /etc/fstab )
+lines=$( grep -Ev ^PARTUUID /etc/fstab )
 if [[ $lines ]]; then
 	lines=$( awk '{print $1"^"$2"^"$3}' <<< $lines | sed 's/\\040/ /g' | sort -r )
 	while read line; do
 		source=${line/^*}
 		mountpoint=$( cut -d^ -f2 <<< $line )
 		fs=${line/*^}
-		[[ ${source:0:4} == /dev ]] && icon=${mountpoint:9:4} || icon=networks
+		if [[ $mountpoint == $dirnas ]]; then
+			icon=nfsserver
+		elif [[ ${source:0:4} == /dev ]]; then
+			icon=${mountpoint:9:4}
+		else
+			icon=networks
+		fi
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
 		list+=$( listItem ${icon,,} "$mountpoint" "$source" $mounted $fs )
 	done <<< $lines

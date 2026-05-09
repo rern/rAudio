@@ -140,8 +140,7 @@ var F         = {
 		, Raw    : [
 			  ...F0.conv
 			, [ 'File',             'select' ]
-			, [ 'Format',           'select', [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ] ]
-//			, [ 'Format',           'select', [ 'S16_LE', 'S24_3_LE', 'S24_4_LJ_LE', 'S24_4_RJ_LE', 'S32_LE', 'F32_LE', 'F64_LE', 'TEXT' ] ]
+			, [ 'Format',           'select', [ 'S16_LE', 'S24_3_LE', 'S24_4_LJ_LE', 'S24_4_RJ_LE', 'S32_LE', 'F32_LE', 'F64_LE', 'TEXT' ] ]
 			, [ 'Skip bytes lines', 'number' ]
 			, [ 'Read bytes lines', 'number' ]
 		]
@@ -262,41 +261,92 @@ var F         = {
 	} );
 } );
 // processor //////////////////////////////////////////////////////////////////////////////
+var chk       = '<input type="checkbox" value="CH"> CH';
+chk           = chk.replace( /CH/g, 0 ) +' &emsp;'+ chk.replace( /CH/g, 1 );
+var P0        = {
+	  a : [
+		  [ 'Name',     'text' ]
+		, [ 'Type',     'select', [ 'Compressor', 'NoiseGate', 'RACE' ] ]
+		, [ 'Channels', 'number' ]
+	]
+	, b : [
+		  [ 'Attack',    'number' ]
+		, [ 'Release',   'number' ]
+		, [ 'Threshold', 'number' ]
+	]
+	, c : [
+		  [ 'Monitor channels', chk ]
+		, [ 'Process channels', chk ]
+	]
+	, values : {
+		  name      : ''
+		, type      : ''
+		, channels  : 2
+		, attack    : 0.025
+		, release   : 1.0
+		, threshold : -25
+	}
+	, values_ch : {
+		  monitor_channels : [ 0, 1 ]
+		, process_channels : [ 0, 1 ]
+	}
+}
 var P         = {
 	  Compressor : [
-		  [ 'Name',             'text' ]
-		, [ 'Type',             'select', [ 'Compressor' ] ]
-		, [ 'Channels',         'number' ]
-		, [ 'Attack',           'number' ]
-		, [ 'Release',          'number' ]
-		, [ 'Threshold',        'number' ]
-		, [ 'Factor',           'number' ]
-		, [ 'Makeup gain',      'number' ]
-		, [ 'Clip limit',       'number' ]
-		, [ 'Soft clip',        'checkbox' ]
-		, [ 'Monitor channels', 'text' ]
-		, [ 'Process channels', 'text' ]
+		  ...P0.a
+		, ...P0.b
+		, [ 'Factor',      'number' ]
+		, [ 'Makeup gain', 'number' ]
+		, [ 'Clip limit',  'number' ]
+		, [ 'Soft clip',   'checkbox' ]
+		, ...P0.c
+	]
+	, NoiseGate  : [
+		  ...P0.a
+		, ...P0.b
+		, [ 'Attenuation', 'number' ]
+		, ...P0.c
+	]
+	, RACE       : [
+		  ...P0.a
+		, [ 'Delay',           'number' ]
+		, [ 'Delay unit',      'select', [ 'ms', 'us', 'mm', 'samples' ] ]
+		, [ 'Subsample delay', 'checkbox' ]
+		, [ 'Attenuation',     'number' ]
+		, [ 'Channel A',       'radio', [ 0, 1 ] ]
+		, [ 'Channel B',       'radio', [ 0, 1 ] ]
 	]
 	, values     : {
-		Compressor : {
-			  name             : ''
-			, type             : ''
-			, channels         : 2
-			, attack           : 0.025
-			, release          : 1.0
-			, threshold        : -25
-			, factor           : 5.0
-			, makeup_gain      : 0
-			, clip_limit       : 0
-			, soft_clip        : false
-			, monitor_channels : '0, 1'
-			, process_channels : '0, 1'
+		  Compressor : {
+			  ...P0.values
+			, factor      : 5.0
+			, makeup_gain : 0
+			, clip_limit  : 0
+			, soft_clip   : false
+			, ...P0.values_ch
+		}
+		, NoiseGate  : {
+			  ...P0.values
+			, attenuation : 20
+			, ...P0.values_ch
+		}
+		, RACE       : {
+			  name            : ''
+			, type            : ''
+			, channels        : 2
+			, delay           : 80
+			, delay_unit      : 'us'
+			, subsample_delay : false
+			, attenuation     : 3
+			, channel_a       : 0
+			, channel_b       : 1
 		}
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var D0        = {
-	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
+	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout'
+				   , 'volume_limit', 'volume_ramp_time' ]
 	, listsample : {} // on GetSupportedDeviceTypes
 	, samplerate : [] // ^
 }
@@ -320,7 +370,7 @@ D0.list       = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC ];
+D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC, [ 'Stop on inactive', 'checkbox' ] ];
 D0.AlsaP      = [ D0.list.typeP,         D0.list.deviceP,    D0.list.formatP, D0.list.channelsP ];
 D0.extra      = [ D0.list.extra_samples, D0.list.skip_bytes, D0.list.read_bytes ];
 var D         = {
@@ -330,6 +380,8 @@ var D         = {
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
 		, [ 'Silence Timeout',   'number' ]
+		, [ 'Volume limit',      'number' ]
+		, [ 'Volume ramp time',  'number' ]
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
@@ -349,18 +401,6 @@ var D         = {
 		, Jack      : [ D0.list.typeP, D0.list.channelsP ]
 		, Stdout    : [ D0.list.typeP, D0.list.formatP,   D0.list.channelsP ]
 		, File      : [ D0.list.typeP, D0.list.filename,  D0.list.formatP, D0.list.channelsP ]
-	}
-	, values    : {
-		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
-		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
-		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
-		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
-		, Jack      : { type: '',                           channels: 2 }
-		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, Stdout    : { type: '',               format: '', channels: 2 }
-		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 	, resampler : {
 		  AsyncSinc    : [
@@ -389,6 +429,18 @@ var D         = {
 			, AsyncPoly   : { type: 'AsyncPoly', interpolation: 'Cubic' }
 			, Synchronous : { type: 'Synchronous' }
 		}
+	}
+	, values    : {
+		  Alsa      : { type: '', device: '',   format: '', channels: 2, stop_on_inactive: false }
+		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
+		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
+		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
+		, Jack      : { type: '',                           channels: 2 }
+		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, Stdout    : { type: '',               format: '', channels: 2 }
+		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
@@ -756,8 +808,8 @@ var GRAPH     = {
 			$( '#pipeline' ).prepend( '<canvas></canvas>' );
 			var $canvas         = $( '#pipeline canvas' );
 			$canvas // fix - blur elements
-				.attr( 'width', canvasW * X.dpxr )
-				.attr( 'height', canvasH * X.dpxr )
+				.prop( 'width', canvasW * X.dpxr )
+				.prop( 'height', canvasH * X.dpxr )
 				.css( {
 					  width  : canvasW +'px'
 					, height : canvasH +'px'
@@ -1036,6 +1088,21 @@ var CONFIG    = {
 			}
 		} );
 	}
+	, multithreaded       : () => {
+		var enabled = DEV.multithreaded;
+		INFO( {
+			  ...SW
+			, list         : [ 'Worker threads', 'number' ]
+			, values       : DEV.worker_threads || 1
+			, checkchanged : enabled
+			, cancel       : SWITCH.cancel
+			, ok           : () => {
+				DEV.multithreaded  = true;
+				DEV.worker_threads = _INFO.val();
+				SETTING.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
 	, resampler           : () => SETTING.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
 	, stop_on_rate_change : () => {
 		var enabled = DEV.stop_on_rate_change;
@@ -1054,7 +1121,7 @@ var CONFIG    = {
 		} );
 	}
 	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
-		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+		[ 'devices', 'filters', 'mixers', 'pipeline', 'processors' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
 		var dev                            = S.devices;
@@ -1071,6 +1138,10 @@ var CONFIG    = {
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
+		var v    = [ 400, 50, 1, false ];
+		[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
+			if ( DEV[ k ] === null ) DEV[ k ] = v[ i ];
+		} );
 	}
 }
 var RENDER    = {
@@ -1342,7 +1413,8 @@ var RENDER    = {
 			var data = COMMON.json.clone( dev );
 			var device = dev.device;
 			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
-			[ 'device', 'type' ].forEach( k => delete data[ k ] );
+			if ( data.format === null ) data.format = '(auto)';
+			[ 'device', 'labels', 'link_mute_control', 'link_volume_control', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ICON( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ UTIL.key2label( d ) +' <gr>·</gr> '+ RENDER.typeReplace( dev.type )
 				 + ( 'device' in dev ? ' <gr>·</gr> '+ device +'</div>' : '' )
@@ -1354,14 +1426,15 @@ var RENDER    = {
 		var values = '';
 		D0.main.forEach( k => {
 			if ( k in DEV ) {
-				labels += UTIL.key2label( k ) +'<br>';
 				values += DEV[ k ].toLocaleString() +'<br>';
+				labels += UTIL.key2label( k ) +'<br>';
 			}
 		} );
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.capture_samplerate ) keys.push( 'capture_samplerate' );
 		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( DEV.multithreaded ) keys.push( 'worker_threads' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -1385,8 +1458,10 @@ var RENDER    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', DEV.resampler !== null && DEV.resampler.type === 'Synchronous' );
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( id => {
-			$( '#'+ id ).prop( 'checked', ! ( DEV[ id ] === null || DEV[ id ] === false ) );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'multithreaded', 'resampler', 'stop_on_rate_change' ].forEach( id => {
+			var enabled = DEV[ id ] === true;
+			$( '#'+ id ).prop( 'checked', enabled );
+			$( '#setting-'+ id ).toggleClass( 'hide', ! enabled );
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
@@ -1747,28 +1822,56 @@ var SETTING   = {
 			.prop( 'checked', false )
 			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
-	, processor     : ( name, edit ) => {
+	, processor     : ( type, name, edit ) => {
+		if ( ! type ) type = 'Compressor';
 		if ( edit ) {
 			var values = {}
 			var param  = PRO[ name ].parameters;
-			$.each( P.values.Compressor, ( k, v ) => { values[ k ] = param[ k ] } );
+			$.each( P.values[ type ], ( k, v ) => { values[ k ] = param[ k ] } );
+			values.name = name;
+			if ( type !== 'RACE' ) {
+				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
+					var key = k[ 0 ] +'_ch';
+					var val = values[ k ];
+					for ( i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
+					delete values[ k ];
+				} );
+			}
 		} else {
-			var values = P.values.Compressor;
-			if ( name ) values.name = name;
+			var values = P.values[ type ];
 		}
-		var title = edit ? 'Processor' : 'Add Processor'
+		var monitor_ch = type !== 'RACE';
+		values.type    = type;
+		var title      = edit ? 'Processor' : 'Add Processor'
 		INFO( {
 			  icon         : V.tab
 			, title        : title
-			, list         : edit ? P[ PRO[ name ].type ] : P.Compressor
+			, list         : edit ? P[ PRO[ name ].type ] : P[ type ]
 			, boxwidth     : 150
 			, values       : values
 			, checkblank   : true
 			, checkchanged : edit
+			, beforeshow   : () => {
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+					var val = _INFO.val();
+					SETTING.processor( val.type, val.name, edit )
+				} );
+			}
 			, ok           : () => {
-				var val        = _INFO.val();
-				var typenew    = val.type;
-				var namenew    = val.name;
+				var val     = _INFO.val();
+				if ( monitor_ch ) { // m_ch0, m_ch1, p_ch0, p_ch1 >>
+					var ch = { m: [], p: [] };
+					[ 'm_ch0', 'm_ch1', 'p_ch0', 'p_ch1' ].forEach( k => {
+						var v   = val[ k ];
+						if ( v !== false ) ch[ k[ 0 ] ].push( v );
+						delete val[ k ];
+					} );
+					[ 'monitor_channels', 'process_channels' ].forEach( k => {
+						val[ k ] = ch[ k[ 0 ] ];
+					} );
+				}
+				var typenew = val.type;
+				var namenew = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
 				PRO[ namenew ] = { type: typenew, parameters: val }
 				if ( edit && name !== namenew ) delete PRO[ name ];
@@ -1897,7 +2000,7 @@ var SETTING   = {
 				$input.css( 'width', '70px' );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					var files   = false;
+					var file    = false;
 					if ( type === 'capture' ) {
 						if ( typenew === 'RawFile' ) {
 							file = S.ls.raw;
@@ -1961,7 +2064,6 @@ var SETTING   = {
 			, checkblank   : true
 			, checkchanged : current
 			, beforeshow   : () => {
-				$( '#infoList td:first-child' ).css( 'min-width', '100px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					SETTING.resampler( $( this ).val() );
 				} );
@@ -2074,15 +2176,26 @@ var SETTING   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
-			GRAPH.refresh();
+			if ( titlle ) BANNER( V.tab, titlle, msg );
 			V.debounce = setTimeout( () => {
 				LOCAL();
+				GRAPH.refresh();
 				SETTING.statusPush();
 				BASH( [ 'saveconfig' ] );
+				if ( V.tab === 'devices' ) RENDER.devices();
+				$( '.switch' ).removeClass( 'disabled' );
 			}, 1000 );
 		}, WSCAMILLA ? 0 : 300 );
-		if ( titlle ) BANNER( V.tab, titlle, msg );
-		if ( V.tab === 'devices' ) RENDER.devices();
+	}
+	, saveError     : result => {
+		clearTimeout( V.debounce );
+		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
+		$( '.switch' ).removeClass( 'disabled' );
+		console.log( result );
+		console.log( S.config );
+		var title = Object.keys( result )[ 0 ];
+		var error = result[ title ];
+		BANNER( 'warning yl', title, error, -1 );
 	}
 	, statusPush    : () => {
 		var status = { 
@@ -2120,7 +2233,7 @@ var SETTING   = {
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( message => {
-						if ( message ) _INFO.warning(  V.tab,  title, message );
+						if ( message ) _INFO.warning( V.tab, title, message );
 					} );
 			}
 		} );
@@ -2301,12 +2414,12 @@ var UTIL      = {
 					D0.list.typeC[ 2 ] = type.capture;
 					D0.list.typeP[ 2 ] = type.playback;
 					break;
+				case 'SetConfigJson':
+					v = data.SetConfigJson.result
+					if ( v !== 'Ok' ) SETTING.saveError( v );
+					break;
 				case 'Invalid':
-					INFO( {
-						  icon    : 'warning'
-						, title   : 'Error'
-						, message : data.Invalid.error
-					} );
+					SETTING.saveError( 'Invalid', data.Invalid.error );
 					break;
 			}
 		}
@@ -2630,9 +2743,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'processors':
 			var title = 'Processors';
 			var name  = $li.data( 'name' );
+			var type  = PRO[ name ].type;
 			switch ( cmd ) {
 				case 'edit':
-					SETTING.processor( name, 'edit' );
+					SETTING.processor( type, name, 'edit' );
 					break;
 				case 'delete':
 					INFO( {

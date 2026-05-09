@@ -19,23 +19,26 @@ $( '#keyboard .backspace' ).on( 'click', function( e ) {
 } );
 $( '#keyboard .enter' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
-	$( '#infoOk' ).trigger( 'click' );
+	$( '#infoOk, #set' ).trigger( 'click' );
 	$( '#keyboard' ).addClass( 'hide' );
-	$( inputs ).removeClass( 'active' );
+	$( 'input, textarea' ).removeClass( 'active' );
 } );
 $( '#keyboard a' ).on( 'click', function() {
 	var cap      = $( '#ka' ).hasClass( 'hide' );
 	var capslock = $( '#keyboard .shift' ).hasClass( 'bll' );
 	if ( ( cap && ! capslock ) || ( ! cap && capslock ) ) $( '#ka, #kA' ).toggleClass( 'hide' );
 	keyboardSet( $( this ).text() );
-} ).press( {
-	  action : e => V.intervalkey = setInterval( () => keyboardSet( $( e.currentTarget ).text() ), 100 )
-	, end    : () => {
-		clearInterval( V.intervalkey );
-		delete V.intervalkey;
-	}
 } );
-$( '#infoOverlay' ).on( 'click', 'input, textarea', function() {
+if ( ! $( '#login' ).length ) {
+	$( '#keyboard a' ).press( {
+		  action : e => V.intervalkey = setInterval( () => keyboardSet( $( e.currentTarget ).text() ), 100 )
+		, end    : () => {
+			clearInterval( V.intervalkey );
+			delete V.intervalkey;
+		}
+	} );
+}
+$( '#infoOverlay, #login' ).on( 'click', 'input, textarea', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
 	$( 'input, textarea' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );

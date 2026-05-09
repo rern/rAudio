@@ -8,113 +8,7 @@ file_module=/etc/modules-load.d/raspberrypi.conf
 
 args2var "$1"
 
-configReboot() {
-	pushData reboot '{ "id": "'$CMD'" }'
-	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
-	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
-}
-configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip i2clcdchar i2cmpdoled module spimpdoled tft
-	tmp_cmdline=/tmp/cmdline.txt
-	tmp_config=/tmp/config.txt
-	tmp_module=/tmp/raspberrypi.conf
-	if [[ ! -e $tmp_config ]]; then # files at boot for comparison
-		for f in $file_cmdline $file_config $file_module; do
-			[[ -s $f ]] && grep -Ev '^#|^\s*$' $f | sort -u > /tmp/$( basename $f )
-		done
-	fi
-	[[ ! $config ]] && config=$( < $file_config )
-	config=$( grep -Ev '^#|^\s*$' <<< $config )
-	if [[ $i2cset ]]; then
-		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
-		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
-		if [[ -e $dirsystem/mpdoled ]]; then
-			chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
-		fi
-		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
-		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
-dtparam=i2c_arm=on'
-		[[ $i2cmpdoled ]] && config+="
-dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
-		[[ $tft || $spimpdoled ]] && config+='
-dtparam=spi=on'
-		
-		module=$( grep -Evs 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $file_module )
-		[[ $tft || $i2clcdchar ]] && module+='
-i2c-bcm2708'
-		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
-			module+='
-i2c-dev'
-			! ls /dev/i2c* &> /dev/null && reboot=1
-		elif grep -q wm8960-soundcard <<< $config; then
-			module+='
-i2c-dev
-snd-soc-wm8960'
-		fi
-		[[ $module ]] && sort -u <<< $module | awk NF > $file_module || rm -f $file_module
-	fi
-	if [[ $poweraudiophonic ]]; then
-		config+='
-dtoverlay=gpio-poweroff,gpiopin=22
-dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
-	else
-		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' <<< $config )
-	fi
-	awk NF <<< $config | sort -u > $file_config
-	pushRefresh
-	if [[ ! $reboot ]]; then
-		if ! cmp -s $tmp_config $file_config || ! cmp -s $tmp_cmdline $file_cmdline; then
-			reboot=1
-		else
-			count=$( ls $tmp_module $file_module | wc -l )
-			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
-		fi
-	fi
-	if [[ $reboot ]]; then
-		configReboot
-	elif [[ -e $dirshm/reboot ]]; then
-		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
-		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
-	fi
-}
-displayConfigClear() {
-	fbcon='fbcon=map:10 fbcon=font:ProFont6x11'
-	video='vt.global_cursor_default=0 video=DSI-1:720x1280@60,rotate=180'
-	sed -i -E "s/ $fbcon| $video//g" $file_cmdline
-	sed -i -E '/hdmi_.*_hotplug|:rotate=|display_auto_detect|dtoverlay=vc4-kms.*/ d' $file_config
-	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-}
-dmesgDev() {
-	dmesg \
-		| tail \
-		| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-		| tail -1
-}
-pushStorage() {
-	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'
-}
-soundProfile() {
-	local lan mtu swappiness txqueuelen
-	if [[ $1 == reset ]]; then
-		swappiness=60
-		mtu=1500
-		txqueuelen=1000
-		rm -f $dirsystem/soundprofile
-	else
-		. $dirsystem/soundprofile.conf
-		touch $dirsystem/soundprofile
-	fi
-	sysctl vm.swappiness=$swappiness
-	lan=$( netDevice e )
-	if [[ $lan ]]; then
-		ip link set $lan mtu $mtu
-		ip link set $lan txqueuelen $txqueuelen
-	fi
-}
-usbVendorModel() {
-	lsblk -no PATH,VENDOR,MODEL | grep -v '\s$'
-}
+. $dirsettings/system-function.sh
 
 case $CMD in
 
@@ -142,9 +36,9 @@ bluetooth )
 		if systemctl -q is-active bluetooth; then
 			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
 		else
-			[[ ! -e /boot/kernel8.img ]] && configReboot && exit # fix: not aarch64 - bluez not reinit hci0
-# --------------------------------------------------------------------
 			modprobe -a bluetooth bnep btbcm hci_uart
+			lsmod | grep -q -m1 ^hci_uart && configReboot && exit # fix: bluez not reinit hci0
+# --------------------------------------------------------------------
 			sleep 1
 			systemctl start bluetooth
 		fi
@@ -281,6 +175,7 @@ gpio=25=op,dh"
 			[[ $APLAYNAME == wm8960-soundcard ]] && i2cset=1
 		fi
 	else
+		ON= # for pushData reboot
 		config+="
 dtparam=audio=on"
 		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf
@@ -326,14 +221,17 @@ dtoverlay=$MODEL:rotate=$rotate" >> $file_config
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
-		opt=$( sed 's/ -X//' /etc/default/mpd_oled )
-		chip=$( cut -d' ' -f2 <<< $opt )
 		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
-		[[ $chip != $CHIP ]] && opt=$( sed 's/-o ./-o '$CHIP'/' <<< $opt )
-		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
 		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
-		echo "$opt" > /etc/default/mpd_oled
+		[[ $CHIP != 6 ]] && opts+="-o $CHiP"
+		[[ ! $SPECTRUM ]] && opts+=" -X"
+		. <( cat /etc/default/mpd_oled )
+		[[ $OPTS != opt ]] && echo 'OPTS="'$opt'"' > /etc/default/mpd_oled
+		x_z=-x
+	else
+		x_z=-z
 	fi
+	compgen -G /dev/i2c* &> /dev/null && timeout 1 mpd_oled $opts $x_z
 	fifoToggle
 	i2cset=1
 	configTxt
@@ -393,24 +291,24 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
-shareddatadisable ) # server rAudio / other server
+shareddatadisable )
 	$dirbash/cmd.sh mpcremove
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	if ! grep -q "$dirnas " /etc/fstab; then # other server
-		fstab=$( grep -v $dirshareddata /etc/fstab )
-		readarray -t source < <( awk '{print $2}' $dirshareddata/source )
-		while read s; do
-			mp=${s//\040/ }
-			umount -l "$mp"
-			rmdir "$mp" &> /dev/null
-			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
-		done <<< $source
+	if grep -q " $dirnas " /etc/fstab; then # server rAudio
+		umount -l $dirnas
+		mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
+		fstab=$( grep -v " $dirnas " /etc/fstab )
+	else
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
-	else                                     # server rAudio
-		umount -l $dirnas &> /dev/null
-		fstab=$( grep -v $dirnas /etc/fstab )
+		mp=$( < $dirshareddata/source )
+		umount -l "$mp"
+		rmdir "$mp" &> /dev/null
+		fstab=$( awk \
+					-v mp="${mp// /\\\\040}" \
+					-v data=$dirshareddata \
+					'$2 != mp && $2 != data' /etc/fstab )
 	fi
 	fstabColumnReload "$fstab"
 	sharedDataReset

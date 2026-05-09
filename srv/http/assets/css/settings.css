@@ -10,8 +10,23 @@ li.profile dot::before {
 }
 li.profile dot::before          { color: var( --cg60 ) }
 #storage li.profile dot::before { color: #f00 }
-#storage li.rserver::after      { content: ' »' }
-#storage li.shareddata::after   { content: ' «' }
+#storage li.client::after,
+#storage li.server::after {
+	margin-left: 5px;
+	font-size: 28px;
+	line-height: 20px;
+	vertical-align: -2px;
+}
+.i-client::after,
+#storage li.client::after { content: '«' }
+.i-server::after,
+#storage li.server::after { content: '»' }
+.i-client::after,
+.i-server::after {
+	font-family: lato;
+	font-size: 24px;
+}
+
 .menu {
 	position: absolute;
 	margin-left: 40px;

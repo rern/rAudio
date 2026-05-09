@@ -11,27 +11,20 @@ fi
 
 args2var "$1"
 
+if [[ -e $filesharedip ]]; then
+	if nfsServerActive; then # server rAudio
+		if [[ $( ipSharedData ) ]]; then
+			[[ ! $CONFIRM ]] && echo nfs && exit
+# --------------------------------------------------------------------
+			pushNfsServer
+		fi
+	fi
+	ipaddress=$( ipAddress )
+	sed -i "/$ipaddress/ d" $filesharedip
+fi
 logoLcdOled
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
-ipaddress=$( ipAddress )
-if systemctl -q is-active nfs-server; then # server rAudio
-	ipclients=$( grep -v $ipaddress $filesharedip )
-	if [[ $ipclients ]]; then
-		[[ ! $CONFIRM ]] && echo nfs && exit
-# --------------------------------------------------------------------
-		if [[ $reboot ]]; then
-			msg=Reboot
-		else
-			msg='Power off'
-			blink=' blink'
-		fi
-		for ip in $ipclients; do
-			notify -ip $ip "nfsserver$blink" 'Server rAudio' "$msg ..." -1
-		done
-	fi
-fi
-[[ -e $filesharedip ]] && sed -i "/$ipaddress/ d" $filesharedip
 $dirbash/cmd.sh playerstop
 snapclientIP playerstop
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
