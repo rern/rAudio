@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    $nfsserver                            = server rAudio
-#    [[ -L $dirmpd && ! $nfsserver ]]      = clients
-#    grep -q -m1 :/mnt/MPD/NAS /etc/fstab  = clients with server rAudio
-#    [[ -e $dirdata/sharedip ]]            = server + clients
+#    [[ -e $filesharedip ]]                   = server + clients
+#    nfsServerActive                          = Server rAudio
+#    grep -m1 "$dirnas \+$dirnas" /etc/fstab  = client - Server rAudio
+#    [[ -e $dirshareddata/source ]]           = client - other
 
 . /srv/http/bash/common.sh
 
@@ -22,7 +22,7 @@ data+='
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$localbrowser'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"   : '$( sharedDataEnabled )'
+, "shareddata"   : '$( exists $filesharedip )'
 , "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
 , "stoptimer"    : '$( [[ -e $dirsystem/stoptimer || -e $dirshm/pidstoptimer ]] && echo true )'

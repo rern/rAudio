@@ -537,13 +537,6 @@ sharedDataCopy() {
 	cp -f $dirsystem/display.json $file_order $dirshareddata
 	touch $dirshareddata/order.json # if not exist
 }
-sharedDataEnabled() {
-	if [[ -L $dirmpd ]] && ! nfsServerActive; then
-		echo true
-	else
-		echo false
-	fi
-}
 sharedDataLink() {
 	local ip_share s
 	mkdir -p $dirbackup
