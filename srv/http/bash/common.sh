@@ -458,11 +458,17 @@ pushData() { # send to websocket.py (server)
 	elif [[ $channel == mpdupdate && $data != '{ "updating_db": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
-		data='{ "channel": "'$channel'", "data": '$data' }'
+		data=$( tr -d '\n' <<< $data )
+		data=$( pushDataSet $channel "$data" )
 	fi
 	for ip in $ip_client; do
-		websocat --text ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+		ipOnline $ip && websocat --text ws://$ip:8080 <<< $data
 	done
+}
+pushDataSet() {
+	cat << EOF
+{ "channel": "$1", "data": $2 }
+EOF
 }
 pushDirCounts() {
 	local tf
@@ -477,19 +483,12 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushWebsocket() {
-	local b buffer channel data ip
-	ip=$1
-	[[ $ip != 127.0.0.1 ]] && ! ipOnline $ip && return
-#...............................................................................
-	channel=$2
-	shift 2
-	data=$@
-	if [[ $channel == playlist ]]; then
-		b=$( printf '%s' "$data" | wc -c )
-		buffer="-B $(( b + 100 ))"
+	local data
+	data=$( tr -d '\n' <<< ${@:3} ) # remove newlines (<<< preserve spaces)
+	data=$( pushDataSet $2 "$data" )
+	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
+		websocat --text ws://$1:8080 <<< $data
 	fi
-	data='{ "channel": "'$channel'", "data": '$data' }'
-	websocat --text $buffer ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"

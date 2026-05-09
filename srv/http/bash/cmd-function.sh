@@ -104,13 +104,21 @@ plClear() {
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
+	local b buffer data
 	[[ -e $dirshm/pushplaylist ]] && exit
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist*
-	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
-	pushData playlist $data
+	if [[ $( mpc status %length% ) == 0 ]]; then
+		pushData playlist '{ "blank": true } }'
+	else
+		data=$( php /srv/http/playlist.php current | tr -d '\n' )
+		data=$( pushDataSet playlist "$data" )
+		b=$( printf '%s' "$data" | wc -c )
+		buffer=$(( b + 100 ))
+		websocat --text -B $buffer ws://127.0.0.1:8080 <<< $data
+	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRadioList() {
