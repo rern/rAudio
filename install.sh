@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260508
+# 20260509
 file=$dirshareddata/source
 if [[ -e $file && $( awk '{print $6}' $file ) ]]; then
 	mp=$( awk '{print $2}' $file | sed 's/\\040/ /g' )
@@ -50,7 +50,6 @@ if [[ -e /bin/camilladsp && $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]];
 	[[ $active ]] && systemctl start camilladsp
 fi
 
-# 20260424
 if [[ -e /bin/firefox ]]; then
 	file=/etc/udev/rules.d/mouse.rules
 	if [[ ! -e $file ]]; then
