@@ -22,7 +22,7 @@ data+='
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$localbrowser'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"   : '$( exists $filesharedip )'
+, "shareddata"   : '$( sharedData )'
 , "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
 , "stoptimer"    : '$( [[ -e $dirsystem/stoptimer || -e $dirshm/pidstoptimer ]] && echo true )'

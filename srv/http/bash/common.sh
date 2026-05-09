@@ -529,6 +529,11 @@ settingsEnabled() {
 	done
 	echo "$data"
 }
+sharedData() {
+	[[ ! -e $filesharedip ]] && echo false && return
+	
+	nfsServerActive && echo false || echo true
+}
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
