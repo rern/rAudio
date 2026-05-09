@@ -101,8 +101,8 @@ mpdoled )
 	;;
 nfsserver )
 	SERVICE=nfs-server
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
-	[[ ! $sharedip ]] && sharedip='(none)'
+	ip_client=$( ipSharedData )
+	[[ ! $ip_client ]] && ip_client='(none)'
 	ver=$( sed -E 's/-[0-9.]* |\+//g; s/ /, /g' /proc/fs/nfsd/versions )
 	conf="\
 <c>$( nfsdctl -V )</c> supports NFS: $ver"
@@ -111,7 +111,7 @@ nfsserver )
 <bll># cat /etc/exports</bll>
 $( < /etc/exports )
 <bll># Active clients:</bll>
-$sharedip"
+$ip_client"
 	fi
 	;;
 shairportsync )

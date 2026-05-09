@@ -354,6 +354,11 @@ ipAddress() {
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
+ipSharedData() {
+	local self
+	self=$( ipAddress )
+	grep -v $self $filesharedip
+}
 json2var() { # single level only
 	local regex
 	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
@@ -387,7 +392,7 @@ logoLcdOled() {
 	fi
 }
 mpcElapsed() {
-	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
+	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
 		echo false
 	else
 		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
@@ -429,38 +434,39 @@ pushBookmark() {
 	pushData bookmark "$data"
 }
 pushNfsServer() {
-	local ip name
+	local ip name status
 	name=$( hostname )
 	[[ -e $dirshm/startup ]] && status=Offline || status=Online
 	while read ip; do
 		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
-	done < <( grep -v $( ipAddress ) $filesharedip )
+	done < <( ipSharedData )
 }
 pushData() { # send to websocket.py (server)
-	local channel data ip json path sharedip webradiocopy
+	local channel data ip ip_client json path webradiocopy
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
 # --------------------------------------------------------------------
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
-	[[ ! $sharedip ]] && return # no other cilents
+	ip_client=$( ipSharedData )
+	[[ ! $ip_client ]] && return # no other cilents
 # --------------------------------------------------------------------
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
-		[[ 'MPD bookmark webradio' != *$path* ]] && return
+		[[ ' MPD bookmark webradio ' != *" $path "* ]] && return
 # --------------------------------------------------------------------
 	fi
-	if [[ $channel == mpdupdate && $data == *'"song"'* ]]; then
+	if [[ $channel == mpdupdate && $data == *'"song"'* ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
-	for ip in $sharedip; do
+	for ip in $ip_client; do
 		websocat --text ws://$ip:8080 <<< $data # send to remote websocket.py
 	done
 }
 pushDirCounts() {
+	local tf
 	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
 }
@@ -471,16 +477,20 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushWebsocket() { # send to remote websocket.py (server)
-	local channel data ip
+pushWebsocket() {
+	local b buffer channel data ip
 	ip=$1
 	channel=$2
 	shift 2
 	data=$@
-	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
-		data='{ "channel": "'$channel'", "data": '$data' }'
-		websocat --text -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
-	fi                                  # NOT OK: < <( tr -d '\n' <<< $data )
+	if [[ $channel == playlist ]]; then
+		b=$( printf '%s' "$data" | wc -c )
+		buffer="-B $(( b + 100 ))"
+	fi
+	[[ $ip != 127.0.0.1 ]] && ! ipOnline $ip && return
+	
+	data='{ "channel": "'$channel'", "data": '$data' }'
+	websocat --text $buffer ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"

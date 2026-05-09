@@ -12,15 +12,14 @@ fi
 args2var "$1"
 
 if [[ -e $filesharedip ]]; then
-	ipaddress=$( ipAddress )
 	if nfsServerActive; then # server rAudio
-		ipclients=$( grep -v $ipaddress $filesharedip )
-		if [[ $ipclients ]]; then
+		if [[ $( ipSharedData ) ]]; then
 			[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
 			pushNfsServer
 		fi
 	fi
+	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
 logoLcdOled
