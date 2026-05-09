@@ -433,14 +433,6 @@ pushBookmark() {
 	data=$( php /srv/http/library.php home )
 	pushData bookmark "$data"
 }
-pushNfsServer() {
-	local ip name status
-	name=$( hostname )
-	[[ -e $dirshm/startup ]] && status=Offline || status=Online
-	while read ip; do
-		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
-	done < <( ipSharedData )
-}
 pushData() { # send to websocket.py (server)
 	local channel data dir ip ip_client json
 	channel=$1
@@ -474,6 +466,14 @@ pushDirCounts() {
 	local tf
 	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
+}
+pushNfsServer() {
+	local ip name status
+	name=$( hostname )
+	[[ -e $dirshm/startup ]] && status=Offline || status=Online
+	while read ip; do
+		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
+	done < <( ipSharedData )
 }
 pushRefresh() {
 	local page push
