@@ -448,20 +448,20 @@ pushData() { # send to websocket.py (server)
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
 #...............................................................................
-	ip_client=$( ipSharedData )
-	[[ ! $ip_client ]] && return # no other cilents
+	ip_client=$( ipSharedData ) # other shared data hosts
+	[[ ! $ip_client ]] && return
 #...............................................................................
 	if [[ $channel == coverart ]]; then
 		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
 		[[ ' MPD bookmark webradio ' != *" $dir "* ]] && return
 #...............................................................................
-	elif [[ $channel == mpdupdate && $data == *'"song"'* ]]; then # update done
+	elif [[ $channel == mpdupdate && $data != '{ "updating_db": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data='{ "channel": "'$channel'", "data": '$data' }'
 	fi
 	for ip in $ip_client; do
-		websocat --text ws://$ip:8080 <<< $data # send to remote websocket.py
+		websocat --text ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
 pushDirCounts() {
