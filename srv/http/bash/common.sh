@@ -42,7 +42,7 @@ appendSortUnique() {
 	shift
 	data=$@
 	[[ ! -e $file ]] && echo "$data" > $file && return
-# --------------------------------------------------------------------
+#...............................................................................
 	lines="\
 $( < $file )
 $data"
@@ -55,11 +55,11 @@ args2var() { # $2 $3 ... if any, still valid
 	argslast=${args[@]: -1}
 	CMD_CFG_OFF=${argslast:0:3}
 	[[ $CMD_CFG_OFF == OFF ]] && TF=false && return
-# --------------------------------------------------------------------
+#...............................................................................
 	ON=true
 	TF=true
 	[[ ! $CMD_CFG_OFF =~ ^(CMD|CFG)$ ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	keys=( $argslast )
 	[[ $CMD_CFG_OFF == CFG ]] && CFG=1
 	kL=${#keys[@]}
@@ -94,7 +94,7 @@ cacheBust() {
 	if [[ $TYPE ]]; then
 		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 		return
-# --------------------------------------------------------------------
+#...............................................................................
 	fi
 	local hash
 	hash=$( date +%s )"'"
@@ -187,9 +187,9 @@ coverFileGet() {
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ ! $coverfile ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	[[ $2 ]] && echo $coverfile && return
-# --------------------------------------------------------------------
+#...............................................................................
 	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
 dabDevice() {
@@ -247,13 +247,13 @@ fifoToggle() { # mpdoled vuled vumeter
 			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
 		! grep -q 'state="*play' $dirshm/status && return
-# --------------------------------------------------------------------
+#...............................................................................
 		[[ $mpdoled ]] && systemctl restart mpd_oled
 		[[ $vuled || $vumeter ]] && systemctl restart cava
 	else
 		if [[ -e $filefifo ]]; then
 			[[ $mpdoled || $vuled || $vumeter ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 			rm $filefifo
 			systemctl restart mpd
 		fi
@@ -297,7 +297,7 @@ getContent() {
 }
 getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
-# --------------------------------------------------------------------
+#...............................................................................
 	case ${2: -4} in
 		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
 		.yml )
@@ -442,21 +442,20 @@ pushNfsServer() {
 	done < <( ipSharedData )
 }
 pushData() { # send to websocket.py (server)
-	local channel data ip ip_client json path webradiocopy
+	local channel data dir ip ip_client json
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	ip_client=$( ipSharedData )
 	[[ ! $ip_client ]] && return # no other cilents
-# --------------------------------------------------------------------
+#...............................................................................
 	if [[ $channel == coverart ]]; then
-		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
-		[[ ' MPD bookmark webradio ' != *" $path "* ]] && return
-# --------------------------------------------------------------------
-	fi
-	if [[ $channel == mpdupdate && $data == *'"song"'* ]]; then # update done
+		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
+		[[ ' MPD bookmark webradio ' != *" $dir "* ]] && return
+#...............................................................................
+	elif [[ $channel == mpdupdate && $data == *'"song"'* ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data='{ "channel": "'$channel'", "data": '$data' }'
@@ -480,6 +479,8 @@ pushRefresh() {
 pushWebsocket() {
 	local b buffer channel data ip
 	ip=$1
+	[[ $ip != 127.0.0.1 ]] && ! ipOnline $ip && return
+#...............................................................................
 	channel=$2
 	shift 2
 	data=$@
@@ -487,8 +488,6 @@ pushWebsocket() {
 		b=$( printf '%s' "$data" | wc -c )
 		buffer="-B $(( b + 100 ))"
 	fi
-	[[ $ip != 127.0.0.1 ]] && ! ipOnline $ip && return
-	
 	data='{ "channel": "'$channel'", "data": '$data' }'
 	websocat --text $buffer ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 }
@@ -570,7 +569,7 @@ sharedDataReset() {
 }
 snapclientIP() {
 	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
-# --------------------------------------------------------------------
+#...............................................................................
 	local clientip connected data ip lines
 	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
 	lines=$( jq .Groups < /var/lib/snapserver/server.json \
@@ -695,7 +694,7 @@ volumeBlueAlsa() { # value control
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
-# --------------------------------------------------------------------
+#...............................................................................
 	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		val_db=$( amixer -MD bluealsa 2> /dev/null \
