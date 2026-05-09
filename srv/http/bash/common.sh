@@ -119,11 +119,11 @@ conf2json() {
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
 	[[ ! -e $file ]] && echo false && return
-
+#...............................................................................
 	# omit lines  blank, comment / group [xxx]
 	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
 	[[ ! $lines ]] && echo false && return
-
+#...............................................................................
 	if [[ $2 ]]; then # $2 - specific keys
 		shift
 		keys=$@
@@ -131,7 +131,7 @@ conf2json() {
 		lines=$( grep -E "$only" <<< $lines )
 	fi
 	[[ ! $lines ]] && echo false && return
-
+#...............................................................................
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
@@ -332,7 +332,7 @@ i2cAddress() {
 			hex+=$( timeout 0.1 i2cdetect -y $n | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
 		done
 		[[ $1 ]] && echo $hex && return
-		
+#...............................................................................
 		for h in $hex; do
 			address+=', "0x'$h'": '$(( 16#$h ))
 		done
@@ -531,7 +531,7 @@ settingsEnabled() {
 }
 sharedData() {
 	[[ ! -e $filesharedip ]] && echo false && return
-	
+#...............................................................................
 	nfsServerActive && echo false || echo true
 }
 sharedDataCopy() {
@@ -622,7 +622,7 @@ statusColor() {
 }
 statusUpdating() {
 	mpc | grep -q ^Updating && echo true && return
-	
+#...............................................................................
 	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
 }
 timezoneAuto() {
