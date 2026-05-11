@@ -240,16 +240,22 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
+	fileconf=/etc/spotifyd.conf
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 		mv -f $dirsystem/snapclient{,server} &> /dev/null
 		serviceRestartEnable
+		cp -f $fileconf{,.bak}
+		sed -i -E  's|^(backend = ).*|\1"pipe"|
+					s|^(device = ).*|\1"/tmp/snapfifo"|' $fileconf
 	else
 		snapclientIP playerstop
 		rm -f $dirmpdconf/snapserver.conf
 		mv -f $dirsystem/snapclient{server,} &> /dev/null
 		systemctl disable --now snapserver
+		mv -f $fileconf{.bak,}
 	fi
+	systemctl try-restart spotifyd
 	$dirsettings/player-conf.sh
 	pushRefresh
 	;;

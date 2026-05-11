@@ -38,7 +38,7 @@ else # server rAudio client
 		echo '<i class="i-nfsserver"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	fi
-	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
+	mv -f /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	fstabSet $dirnas "$IP:$dirnas  $dirnas  nfs  $opt_nfs  0  0"
 	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( hostname ) @$( ipAddress )"
 fi

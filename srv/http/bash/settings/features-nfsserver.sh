@@ -24,7 +24,7 @@ rm -f $dirmpd/{listing,updating}
 $dirbash/cmd.sh mpcremove
 systemctl stop mpd
 if [[ $ON ]]; then
-	mv /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
+	mv -f /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
 	ip=$( ipAddress )
 	echo "$dirnas  ${ip%.*}.0/24(rw,sync,no_subtree_check,crossmnt)" > /etc/exports
 	systemctl enable --now nfs-server
@@ -59,7 +59,7 @@ else
 	> /etc/exports
 	rm -rf $dirnas/data
 	rm -f /mnt/MPD/.mpdignore
-	mv $dirnas/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
+	mv -f $dirnas/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 	sharedDataReset
 	systemctl start mpd
 fi

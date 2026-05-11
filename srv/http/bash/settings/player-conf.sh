@@ -205,7 +205,7 @@ if [[ -e /bin/snapclient ]]; then
 	fi
 fi
 
-if [[ -e /bin/spotifyd ]]; then
+if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
 		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else
@@ -215,7 +215,15 @@ if [[ -e /bin/spotifyd ]]; then
 	hw0=$( getVar device $fileconf )
 	if [[ $hw0 != $hwspotifyd ]]; then
 #--------------->
-		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
+		CONF=$( cat << EOF
+[global]
+bitrate = 320
+onevent = "/srv/http/bash/spotifyd.sh"
+use_mpris = false
+backend = "alsa"
+volume_controller = "alsa"
+EOF
+)
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"

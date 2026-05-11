@@ -70,8 +70,8 @@ fi
 sed -i '3,$ d' /etc/fstab
 
 systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
-mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
-[[ $KEEPLIBRARY ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
+mv -f $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
+[[ $KEEPLIBRARY ]] && mv -f $dirdata/{mpd,playlists,webradio} /tmp
 rm -rf $dirdata $dirshareddata \
 		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
@@ -87,7 +87,7 @@ fi
 
 $dirsettings/system-datadefault.sh
 
-mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
+mv -f /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
 [[ $KEEPLIBRARY ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
 $dirbash/cmd-list.sh
 

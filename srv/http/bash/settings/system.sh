@@ -140,7 +140,7 @@ hostname )
 	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	nameprev=$( ls /var/lib/iwd/ap | head -1 )
-	mv /var/lib/iwd/ap/{$nameprev,$NAME.ap}
+	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
 	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
@@ -297,7 +297,7 @@ shareddatadisable )
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	if grep -q " $dirnas " /etc/fstab; then # server rAudio
 		umount -l $dirnas
-		mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
+		mv -f /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 		fstab=$( grep -v " $dirnas " /etc/fstab )
 	else
 		umount -l $dirshareddata &> /dev/null

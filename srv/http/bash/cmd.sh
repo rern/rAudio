@@ -47,7 +47,7 @@ bookmarkremove )
 	pushBookmark
 	;;
 bookmarkrename )
-	mv $dirbookmarks/{"$NAME","$NEWNAME"}
+	mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
 	pushBookmark
 	;;
 cachebust )
