@@ -168,9 +168,9 @@ webradioM3uPlsVerify() {
 	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
 
 	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
+		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
+		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
 # --------------------------------------------------------------------
@@ -179,7 +179,7 @@ webRadioSampling() {
 	local bitrate data file kb rate sample samplerate url
 	url=$1
 	file=$2
-	timeout 3 curl -sL $url -o /tmp/webradio
+	timeout 3 curl -sL "$url" -o /tmp/webradio
 	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
 # --------------------------------------------------------------------
 	data=( $( ffprobe -v quiet -select_streams a:0 \
