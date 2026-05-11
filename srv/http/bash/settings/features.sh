@@ -240,21 +240,37 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
-	fileconf=/etc/spotifyd.conf
+	conf_shairport=/etc/shairport-sync.conf
+	conf_spotify=/etc/spotifyd.conf
+	flag_client_server=$dirsystem/snapclientserver
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
-		mv -f $dirsystem/snapclient{,server} &> /dev/null
+		if [[ -e $dirsystem/snapclient ]]; then
+			touch $flag_client_server
+		else
+			for s in shairport-sync spotifyd; do
+				systemctl -q is-enabled $s && touch $flag_client_server && break
+			done
+		fi
 		serviceRestartEnable
-		cp -f $fileconf{,.bak}
+		for f in $conf_shairport $conf_spotify; do
+			cp -f $f{,.bak}
+		done
+		sed -i -e '/^alsa/,$ d
+			 ' -e '/name = / a\	output_backend = "pipe";
+			 ' -e '/^sessioncontrol/ i\pipe = {\n\tname = "/tmp/snapfifo";\n};' $conf_shairport
 		sed -i -E  's|^(backend = ).*|\1"pipe"|
-					s|^(device = ).*|\1"/tmp/snapfifo"|' $fileconf
+					s|^(device = ).*|\1"/tmp/snapfifo"|' $conf_spotify
 	else
 		snapclientIP playerstop
 		rm -f $dirmpdconf/snapserver.conf
-		mv -f $dirsystem/snapclient{server,} &> /dev/null
+		rm -f $flag_client_server
 		systemctl disable --now snapserver
-		mv -f $fileconf{.bak,}
+		for f in $conf_shairport $conf_spotify; do
+			cp -f $f{.bak,}
+		done
 	fi
+	systemctl try-restart shairport-sync
 	systemctl try-restart spotifyd
 	$dirsettings/player-conf.sh
 	pushRefresh

@@ -176,7 +176,7 @@ fi
 # renderers
 [[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
 
-if [[ -e /bin/shairport-sync ]]; then
+if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
@@ -215,15 +215,7 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	hw0=$( getVar device $fileconf )
 	if [[ $hw0 != $hwspotifyd ]]; then
 #--------------->
-		CONF=$( cat << EOF
-[global]
-bitrate = 320
-onevent = "/srv/http/bash/spotifyd.sh"
-use_mpris = false
-backend = "alsa"
-volume_controller = "alsa"
-EOF
-)
+		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
