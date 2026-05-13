@@ -336,7 +336,9 @@ i2cAddress() {
 		for h in $hex; do
 			address+=', "0x'$h'": '$(( 16#$h ))
 		done
-		[[ $address ]] && echo "{ ${address:1} }" || echo '{ "0x27": 39, "0x3f": 63 }'
+		echo "{ ${address:1} }"
+	else
+		echo '{ "0x27": 39, "0x3f": 63 }'
 	fi
 }
 inOutputConf() {
