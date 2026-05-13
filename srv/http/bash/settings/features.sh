@@ -42,6 +42,13 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
+snapclientEnable() {
+	local card pcm
+	card=$( getVar card $dirshm/output )
+	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
+	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
+	[[ -e $dirmpdconf/snapserver.conf ]] && touch $dirsystem/snapclientserver
+}
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
 }
@@ -196,6 +203,7 @@ shairportsync | spotifyd | upmpdcli )
 	[[ $CMD == shairportsync ]] && CMD=shairport-sync
 	if [[ $ON ]]; then
 		serviceRestartEnable
+		[[ -e $dirmpdconf/snapserver.conf ]] && snapclientEnable
 	else
 		case $CMD in
 			shairport-sync ) player=airplay;;
@@ -229,10 +237,7 @@ smb )
 snapclient )
 	enableFlagSet
 	if [[ $ON ]]; then
-		card=$( getVar card $dirshm/output )
-		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
-		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
-		systemctl -q is-active snapserver && mv $dirsystem/snapclient{,server}
+		snapclientEnable
 	else
 		$dirbash/snapclient.sh stop
 		rm -f $dirsystem/snapclient*
@@ -240,34 +245,33 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
-	conf_shairport=/etc/shairport-sync.conf
-	conf_spotify=/etc/spotifyd.conf
-	flag_client_server=$dirsystem/snapclientserver
+	file_flag=$dirsystem/snapclientserver
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
-		if [[ -e $dirsystem/snapclient ]]; then
-			touch $flag_client_server
-		else
-			for s in shairport-sync spotifyd; do
-				systemctl -q is-enabled $s && touch $flag_client_server && break
-			done
-		fi
 		serviceRestartEnable
-		for f in $conf_shairport $conf_spotify; do
-			cp -f $f{,.bak}
+		[[ -e $dirsystem/snapclient ]] && touch $file_flag
+		for s in shairport-sync spotifyd; do
+			cp -f /etc/$s.conf{,.bak}
+			[[ -e $file_flag ]] && continue
+			
+			systemctl -q is-enabled $s && touch $file_flag
 		done
 		sed -i -e '/^alsa/,$ d
-			 ' -e '/name = / a\	output_backend = "pipe";
-			 ' -e '/^sessioncontrol/ i\pipe = {\n\tname = "/tmp/snapfifo";\n};' $conf_shairport
+' -e '/name = / a\
+	 output_backend = "pipe";
+' -e '/^sessioncontrol/ i\
+pipe = {\
+	name = "/tmp/snapfifo";\
+};
+' /etc/shairport-sync.conf
 		sed -i -E  's|^(backend = ).*|\1"pipe"|
-					s|^(device = ).*|\1"/tmp/snapfifo"|' $conf_spotify
+					s|^(device = ).*|\1"/tmp/snapfifo"|' /etc/spotifyd.conf
 	else
 		snapclientIP playerstop
-		rm -f $dirmpdconf/snapserver.conf
-		rm -f $flag_client_server
+		rm -f $dirmpdconf/snapserver.conf $file_flag
 		systemctl disable --now snapserver
-		for f in $conf_shairport $conf_spotify; do
-			cp -f $f{.bak,}
+		for s in shairport-sync spotifyd; do
+			cp -f /etc/$s.conf{.bak,}
 		done
 	fi
 	systemctl try-restart shairport-sync
