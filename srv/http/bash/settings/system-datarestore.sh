@@ -32,8 +32,6 @@ cp -rf $dirconfig/* /
 grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 name=$( < $dirsystem/hostname )
 hostnamectl set-hostname $name
-sed -i -E 's/(name = ").*/\1'$name'"/' /etc/shairport-sync.conf
-sed -i -E 's/^(friendlyname = ).*/\1'$name'/' /etc/upmpdcli.conf
 if [[ -e $dirsystem/netctlprofile ]]; then
 	profile=$( < $dirsystem/netctlprofile )
 	[[ $( netctl is-enabled "$profile" ) != enabled ]] && netctl enable "$profile"

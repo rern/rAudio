@@ -22,9 +22,12 @@ echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
 echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
 echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
 # shairport-sync
-sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf &> /dev/null
+mv -f /etc/shairport-sync.conf{.default,}
+sed -i -E '/^general/ {n;s/(name = ).*/\1"rAudio";/}' /etc/shairport-sync.conf*
 # smb
 sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf &> /dev/null
+# spotifyd
+mv -f /etc/spotifyd.conf{.default,}
 # upmpdcli
 sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
 ' -e 's/(ownqueue = )./\10' /etc/upmpdcli.conf &> /dev/null
