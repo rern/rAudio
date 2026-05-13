@@ -257,7 +257,7 @@ snapserver )
 		serviceRestartEnable
 		[[ -e $dirsystem/snapclient ]] && touch $file_clientserver
 		for s in shairport-sync spotifyd; do
-			cp -f /etc/$s.conf{,.bak}
+			cp -f /etc/$s.conf{,.default}
 			[[ -e $file_clientserver ]] && continue
 			
 			systemctl -q is-enabled $s && touch $file_clientserver
@@ -280,7 +280,7 @@ device = "/tmp/snapfifo"
 		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
 		for s in shairport-sync spotifyd; do
-			cp -f /etc/$s.conf{.bak,}
+			cp -f /etc/$s.conf{.default,}
 		done
 	fi
 	systemctl try-restart shairport-sync

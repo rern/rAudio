@@ -13,6 +13,10 @@ files=(
 	/boot/startup.sh
 	/etc/exports
 	/etc/fstab
+	/etc/shairport-sync.conf
+	/etc/shairport-sync.conf.default
+	/etc/spotifyd.conf
+	/etc/spotifyd.conf.default
 	/etc/upmpdcli.conf
 	/etc/conf.d/wireless-regdom
 	/etc/default/snapclient
