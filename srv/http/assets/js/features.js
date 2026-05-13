@@ -545,6 +545,7 @@ var UTIL        = {
 				} );
 				return
 			}
+			
 			SETTING( 'spotifyoutput', data => {
 				INFO( {
 					  ...SW
@@ -592,6 +593,7 @@ function renderPage() {
 		nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
 	}
 	DISABLE( 'nfsserver', nfsdisabled );
+	$( '#setting-spotifyd' ).toggleClass( 'disabled', S.snapserver );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {
