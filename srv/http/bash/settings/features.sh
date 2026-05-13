@@ -212,6 +212,12 @@ shairportsync | spotifyd | upmpdcli )
 		esac
 		playerActive $player && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
+		if [[ ${CMD:0:1} == s && -e $dirsystem/snapclientserver ]]; then
+			for s in shairport-sync spotifyd; do
+				systemctl -q is-enabled $s && enabled=1 && break
+			done
+			[[ ! $enabled ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
+		fi
 	fi
 	pushRefresh
 	;;
@@ -245,30 +251,33 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
-	file_flag=$dirsystem/snapclientserver
+	file_clientserver=$dirsystem/snapclientserver
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 		serviceRestartEnable
-		[[ -e $dirsystem/snapclient ]] && touch $file_flag
+		[[ -e $dirsystem/snapclient ]] && touch $file_clientserver
 		for s in shairport-sync spotifyd; do
 			cp -f /etc/$s.conf{,.bak}
-			[[ -e $file_flag ]] && continue
+			[[ -e $file_clientserver ]] && continue
 			
-			systemctl -q is-enabled $s && touch $file_flag
+			systemctl -q is-enabled $s && touch $file_clientserver
 		done
 		sed -i -e '/^alsa/,$ d
 ' -e '/name = / a\
-	 output_backend = "pipe";
+	output_backend = "pipe";
 ' -e '/^sessioncontrol/ i\
 pipe = {\
 	name = "/tmp/snapfifo";\
 };
 ' /etc/shairport-sync.conf
-		sed -i -E  's|^(backend = ).*|\1"pipe"|
-					s|^(device = ).*|\1"/tmp/snapfifo"|' /etc/spotifyd.conf
+		sed -i -E -e '/^backend/,$ d
+' -e '/^use_mpris/ a\
+backend = "pipe"\
+device = "/tmp/snapfifo"
+' /etc/spotifyd.conf
 	else
 		snapclientIP playerstop
-		rm -f $dirmpdconf/snapserver.conf $file_flag
+		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
 		for s in shairport-sync spotifyd; do
 			cp -f /etc/$s.conf{.bak,}

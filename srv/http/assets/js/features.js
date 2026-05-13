@@ -567,6 +567,15 @@ var UTIL        = {
 }
 function renderPage() {
 	var currently   = ' Currently enabled.';
+	if ( S.snapclientserver ) {
+		var snapclientdisabled  = '';
+		if ( S.shairportsync ) {
+			snapclientdisabled = LABEL_ICON( 'AirPlay', 'shairportsync' ) + currently;
+		} else if ( S.spotifyd ) {
+			snapclientdisabled = LABEL_ICON( 'Spotiy', 'spotify' ) + currently;
+		}
+		if ( snapclientdisabled ) DISABLE( 'snapclient', smbdisabled );
+	}
 	var smbdisabled = '';
 	if ( S.nfsserver ) {
 		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) + currently;

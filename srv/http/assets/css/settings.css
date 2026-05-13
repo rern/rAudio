@@ -90,7 +90,7 @@ ul {
 }
 .section pre,
 pre.status {
-	margin: 2px 0 5px;
+	margin: 2px 0 10px;
 	padding: 5px 5px 25px 5px;
 	width: 100%;
 	max-height: 50vh;
