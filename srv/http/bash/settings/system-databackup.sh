@@ -4,20 +4,19 @@
 
 file_backup=$dirshm/backup.gz
 dir_config=$dirdata/config
-name_host=$( hostname | tee $dirsystem/hostname )
+hostname > $dirsystem/hostname
 alsactl store
-files="\
+files=$( cat << EOF
 /boot/cmdline.txt
 /boot/config.txt
 /boot/shutdown.sh
 /boot/startup.sh
 /etc/exports
 /etc/fstab
-/etc/shairport-sync.conf
-/etc/shairport-sync.conf.default
+/etc/netctl/*
+/etc/shairport-sync.conf*
 /etc/snapserver.conf
-/etc/spotifyd.conf
-/etc/spotifyd.conf.default
+/etc/spotifyd.conf*
 /etc/upmpdcli.conf
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
@@ -25,49 +24,34 @@ files="\
 /etc/modules-load.d/loopback.conf
 /etc/pacman.d/mirrorlist
 /etc/samba/smb.conf
-/etc/systemd/network/en.network
-/etc/systemd/network/eth.network
+/etc/systemd/network/*
 /etc/systemd/timesyncd.conf
-/etc/X11/xorg.conf.d/99-calibration.conf
-/etc/X11/xorg.conf.d/99-raspi-rotate.conf
+/etc/X11/xorg.conf.d/*
 /var/lib/alsa/asound.state
-/var/lib/iwd/ap/$name_host.ap
-/var/lib/snapserver/server.json"
+/var/lib/bluetooth/*
+/var/lib/iwd/ap/*
+/var/lib/snapserver/server.json
+/etc/X11/xinit/xinitrc.d/*
+EOF
+)
 while read file; do
-	if [[ -e $file ]]; then
-		mkdir -p $dir_config/$( dirname $file )
-		cp {,$dir_config}$file
-	fi
+	[[ ! -e $file && ! -e ${file/\*} ]] && continue
+	
+	dir_target=$dir_config/$( dirname $file | head -1 )
+	mkdir -p $dir_target
+	cp $file $dir_target &> /dev/null # suppress not include dirs
 done  <<< $files
-crossfade=$( mpc crossfade | cut -d' ' -f2 )
-[[ $crossfade ]] && echo $crossfade > $dirsystem/crossfade
+[[ -e /etc/modprobe.d/cirrus.conf ]] && touch $dir_config/boot/cirrus
+mpc crossfade | cut -d' ' -f2 > $dirsystem/crossfade
+netctl list | sed '/^\*/ s/^\* //' > $dirsystem/netctlprofile
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
-file_profile=$( ls -p /etc/netctl | grep -v / )
-if [[ $file_profile ]]; then
-	cp -r /etc/netctl $dir_config/etc
-	while read profile; do
-		if [[ $( netctl is-enabled "$profile" ) == enabled ]]; then
-			echo $profile > $dirsystem/netctlprofile
-			break
-		fi
-	done <<< $file_profile
-fi
-mkdir -p $dir_config/var/lib
-cp -r /var/lib/bluetooth $dir_config/var/lib &> /dev/null
-file_xinitrc=$( ls /etc/X11/xinit/xinitrc.d | grep -v 50-systemd-user.sh )
-if [[ $file_xinitrc ]]; then
-	mkdir -p $dir_config/etc/X11/xinit
-	cp -r /etc/X11/xinit/xinitrc.d $dir_config/etc/X11/xinit
-fi
-if [[ -e $dirshareddata ]]; then
-	nfsServerActive && cp -rL $dirshareddata $dir_config
-fi
+nfsServerActive && cp -r $dirshareddata $dir_config
 services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapserver spotifyd upmpdcli'
 for service in $services; do
 	systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 done
-[[ $enable ]] && echo $enable > $dirsystem/enable
-[[ $disable ]] && echo $disable > $dirsystem/disable
+echo $enable > $dirsystem/enable
+echo $disable > $dirsystem/disable
 
 bsdtar \
 	--exclude './addons' \

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec > /dev/null 2>&1 # suppress stdout stderr
+
 . /srv/http/bash/common.sh
 
 [[ $1 == true ]] && libraryonly=1
@@ -27,32 +29,22 @@ for file in boot/cmdline.txt etc/fstab; do
 	sed -i "s/PARTUUID=.*-/$partuuid-/" $dir_config/$file
 done
 cp -rf $dir_config/* /
-[[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable ) &> /dev/null
-[[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable ) &> /dev/null
-grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 hostnamectl set-hostname $( < $dirsystem/hostname )
 timedatectl set-timezone $( < $dirsystem/timezone )
-if [[ -e $dirsystem/netctlprofile ]]; then
-	profile=$( < $dirsystem/netctlprofile )
-	[[ $( netctl is-enabled "$profile" ) != enabled ]] && netctl enable "$profile"
-fi
-[[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
+mpc -q crossfade $( getContent $dirsystem/crossfade )
+while read dir; do
+	umount -l "$dir"
+	rmdir "$dir"
+done < <( ls -d $dirnas/*/ 2> /dev/null )
+while read mountpoint; do
+	mp=${mountpoint//\040/ }
+	mkdir -p "$mp"
+done < <( grep $dirnas /etc/fstab | awk '{print $2}' )
+profile=$( getContent $dirsystem/netctlprofile )
+[[ $profile ]] && netctl enable "$profile"
+[[ -s $dirsystem/enable ]] && systemctl enable $( < $dirsystem/enable )
+[[ -s $dirsystem/disable ]] && systemctl disable $( < $dirsystem/disable )
+grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 rm -rf $dir_config $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-dirs=$( ls -d $dirnas/*/ 2> /dev/null )
-if [[ $dirs ]]; then
-	while read dir; do
-		umount -l "$dir" &> /dev/null
-		rmdir "$dir" &> /dev/null
-	done <<< $dirs
-fi
-mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' )
-if [[ $mountpoints ]]; then
-	while read mountpoint; do
-		mp=${mountpoint//\040/ }
-		mkdir -p "$mp"
-		chown mpd:audio "$mp"
-	done <<< $mountpoints
-fi
-[[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
 
 $dirbash/power.sh reboot
