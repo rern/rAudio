@@ -571,7 +571,7 @@ function renderPage() {
 	if ( S.snapclientserver ) {
 		var snapclientdisabled  = '';
 		if ( S.shairportsync ) snapclientdisabled = LABEL_ICON( 'AirPlay', 'shairportsync' );
-		if ( S.spotifyd ) snapclientdisabled += ' '+ LABEL_ICON( 'Spotiy', 'spotify' );
+		if ( S.spotifyd ) snapclientdisabled += '&ensp;'+ LABEL_ICON( 'Spotiy', 'spotify' );
 		if ( snapclientdisabled ) {
 			snapclientdisabled += '<br>on'
 								 +'<br>'+ LABEL_ICON( 'SnapServer', 'snapcast' ) + currently;
