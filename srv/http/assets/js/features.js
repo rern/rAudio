@@ -567,15 +567,16 @@ var UTIL        = {
 	}
 }
 function renderPage() {
-	var currently   = ' Currently enabled.';
+	var currently   = ' is currently enabled.';
 	if ( S.snapclientserver ) {
 		var snapclientdisabled  = '';
-		if ( S.shairportsync ) {
-			snapclientdisabled = LABEL_ICON( 'AirPlay', 'shairportsync' ) + currently;
-		} else if ( S.spotifyd ) {
-			snapclientdisabled = LABEL_ICON( 'Spotiy', 'spotify' ) + currently;
+		if ( S.shairportsync ) snapclientdisabled = LABEL_ICON( 'AirPlay', 'shairportsync' );
+		if ( S.spotifyd ) snapclientdisabled += ' '+ LABEL_ICON( 'Spotiy', 'spotify' );
+		if ( snapclientdisabled ) {
+			snapclientdisabled += '<br>on'
+								 +'<br>'+ LABEL_ICON( 'SnapServer', 'snapcast' ) + currently;
+			DISABLE( 'snapclient', snapclientdisabled );
 		}
-		if ( snapclientdisabled ) DISABLE( 'snapclient', smbdisabled );
 	}
 	var smbdisabled = '';
 	if ( S.nfsserver ) {
