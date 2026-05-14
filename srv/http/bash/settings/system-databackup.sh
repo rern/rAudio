@@ -62,7 +62,7 @@ fi
 if [[ -e $dirshareddata ]]; then
 	nfsServerActive && cp -rL $dirshareddata $dir_config
 fi
-services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
+services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapserver spotifyd upmpdcli'
 for service in $services; do
 	systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 done
