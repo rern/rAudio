@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec > /dev/null 2>&1 # suppress stdout stderr
+exec &> /dev/null # suppress stdout stderr
 
 . /srv/http/bash/common.sh
 
