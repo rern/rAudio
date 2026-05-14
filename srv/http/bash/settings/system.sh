@@ -137,7 +137,8 @@ hddapm )
 hostname )
 	hostnamectl hostname $NAME
 	sed -i -E '/^general/ {n;s/(name = ).*/\1"'$NAME'";/}' /etc/shairport-sync.conf*
-	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
+	sed -i -E "/^source/ s/(name=).*/\1$NAME/" /etc/snapserver.conf
+	sed -i -E "s/^(friendlyname = ).*/\1$NAME/" /etc/upmpdcli.conf
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	nameprev=$( ls /var/lib/iwd/ap | head -1 )
 	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
