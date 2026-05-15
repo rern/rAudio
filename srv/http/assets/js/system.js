@@ -839,8 +839,8 @@ var UTIL          = {
 			}
 			html      += '<li class="'+ cls +' '+ icon +'" data-id="'+ source +'" data-mountpoint="'+ ( mp || size ) +'">'+ ICON( icon );
 			if ( mp )     html +='<dot></dot>'+ mp.slice( 9 );
-			if ( size )   html += ' · '+ size;
 			if ( fs )     html += ' <c>'+ fs +'</c>';
+			if ( size )   html += ' '+ size;
 			if ( source ) html += ' <c>'+ source +'</c>';
 			html      += '</li>';
 		} );
