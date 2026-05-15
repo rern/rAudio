@@ -21,6 +21,7 @@ fi
 type=btreceiver
 
 disconnectRemove() {
+	local file_config file_default line type name
 	line=$( grep ^$MAC $dirshm/btconnected )
 	type=$( cut -d' ' -f2 <<< $line )
 	name=$( cut -d' ' -f3- <<< $line )
@@ -28,10 +29,10 @@ disconnectRemove() {
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
 	rm -f $dirshm/$type
 	[[ $type == btreceiver ]] && rm -f $dirshm/{btmixer,btname}
-	filedefault=/etc/default/camilladsp
-	getVar CONFIG $filedefault > $dircamilladsp/$MAC
-	fileconfig=$( < $dircamilladsp/fileconfig )
-	sed -i "s|^CONFIG.*|CONFIG=$fileconfig|" $filedefault
+	file_default=/etc/default/camilladsp
+	getVar CONFIG $file_default > $dircamilladsp/$MAC
+	file_config=$( < $dircamilladsp/file_config )
+	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
 	notify "$type blink" "$name" "${ACTION^} ..."
 	$dirbash/cmd.sh playerstop
 	$dirsettings/player-conf.sh
