@@ -4,7 +4,6 @@
 
 file_backup=$dirshm/backup.gz
 dir_config=$dirdata/config
-hostname > $dirsystem/hostname
 alsactl store
 files=$( cat << EOF
 /boot/cmdline.txt
@@ -43,6 +42,7 @@ while read file; do
 done  <<< $files
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch $dir_config/boot/cirrus
 mpc crossfade | cut -d' ' -f2 > $dirsystem/crossfade
+hostname > $dirsystem/hostname
 netctl list | sed '/^\*/ s/^\* //' > $dirsystem/netctlprofile
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 nfsServerActive && cp -r $dirshareddata $dir_config
