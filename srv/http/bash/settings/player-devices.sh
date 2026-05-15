@@ -69,10 +69,10 @@ elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
 	fi
 fi
 ######## >
-echo -n "\
+cat << EOF > /etc/asound.conf
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
-" > /etc/asound.conf
+EOF
 
 amixer=$( amixer -c $CARD scontents )
 if [[ $amixer ]]; then
@@ -109,10 +109,11 @@ fi
 mixertypefile="$dirsystem/mixertype-$NAME"
 [[ -e $mixertypefile ]] && MIXERTYPE=$( < "$mixertypefile" )
 ######## >
-echo '
-card='$CARD'
-name="'$NAME'"
-mixer="'$MIXER'"
-mixertype='$MIXERTYPE > $dirshm/output
+cat << EOF > $dirshm/output
+card=$CARD
+name="$NAME"
+mixer="$MIXER"
+mixertype=$MIXERTYPE
+EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
