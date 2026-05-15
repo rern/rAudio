@@ -8,28 +8,36 @@ echo $$ > $dirshm/pidnetworksscan
 if [[ $1 == wlan ]]; then
 	wlandev=$( netDevice w )
 	ip link set $wlandev up
-
-	# ESSID:"NAME"
-	# Encryption key:on
-	# Quality=37/70  Signal level=-73 dBm || Quality=0/100  Signal level=25/100
-	# IE: IEEE 802.11i/WPA2 Version 1
-	# IE: WPA Version 1
 	scan=$( iwlist $wlandev scan )
 	[[ ! $scan ]] && exit
 # --------------------------------------------------------------------
-	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
-				| sed -E -n '/^ESSID|^Encryption|^IE.*WPA|^Quality/ {
-						s/\\x00//g
-						s/^Quality.*level.(.*) dBm/,{,"signal":\1/
-						s/^Encryption key:(.*)/,"encrypt":"\1"/
-						s/^ESSID:/,"ssid":/
-						s/^IE.*WPA.*/,"wpa":true/
-						p
-					}' \
-				| tr -d '\n' \
-				| sed 's/{,/{/g; s/,{/\n&/g' \
-				| grep -E -v '^$|"ssid":""' \
-				| sed 's/"signal":,/"signal":-67,/; s/wpa.*wpa/wpa/; s/$/}/' ) # ,{...} > [ {...} ]
+# Cell N - Address: 9E:A3:A9:B0:66:99
+#	ESSID:"NAME"
+#	Encryption key:on
+#	Quality=37/70  Signal level=-73 dBm (might be - Quality=0/100  Signal level=25/100)
+#	IE: IEEE 802.11i/WPA2 Version 1
+#	IE: WPA Version 1
+	scan=$( echo "$scan" \
+		| awk '
+			/Cell / {
+				signal = -67; encrypt = "off"; ssid = ""; wpa = "false"
+			}
+			/Signal level=/ {
+				match( $0, /level=([-0-9]+)/, arr )
+				signal = arr[1]
+			}
+			/Encryption key:on/ {
+				encrypt = "on"
+			}
+			/ESSID:/ {
+				split( $0, a, "\"" )
+				ssid = a[2]
+			}
+			/IE: .*WPA/ {
+				wpa = "true"
+				if ( ssid != "" ) printf ", { \"signal\": %d, \"encrypt\": \"%s\", \"ssid\": \"%s\", \"wpa\": %s }\n", signal, encrypt, ssid, wpa
+			}
+		' )
 	echo '{
   "scan"     : [ '${scan:1}' ]
 , "current"  : "'$( iwgetid -r )'"
@@ -38,6 +46,7 @@ if [[ $1 == wlan ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
+
 bluetoothctl --timeout=10 scan on &> /dev/null
 devices=$( bluetoothctl devices \
 			| grep -v ' ..-..-..-..-..-..$' \
