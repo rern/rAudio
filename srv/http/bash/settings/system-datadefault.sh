@@ -9,7 +9,6 @@ mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,
 [[ -e /bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} || rmdir $dircamilladsp
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
-chown -h http:http $dirshm /srv/http/mnt
 # display
 for d in album albumartist artist bars           buttons   composer conductor count cover date fixedcover genre \
 		 label latest      nas    playbackswitch playlists plclear  plsimilar sd    time  usb  volume     webradio
