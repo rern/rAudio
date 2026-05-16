@@ -111,7 +111,7 @@ pushPlaylist() {
 	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist*
 	if [[ $( mpc status %length% ) == 0 ]]; then
-		pushData playlist '{ "blank": true } }'
+		pushData playlist '{ "blank": true }'
 	else
 		data=$( php /srv/http/playlist.php current | tr -d '\n' )
 		data=$( pushDataSet playlist "$data" )
