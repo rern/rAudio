@@ -19,9 +19,6 @@ for c in Loopback $CARD; do
 	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
 	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
-	if grep -q -m1 S24_LE <<< $formats; then
-		[[ -d /proc/asound/card$CARD/usbmixer ]] && s24_4=S24_4_RJ_LE || s24_4=S24_4_LJ_LE
-	fi
 	list_f=
 	list_s=
 	for f in $formats; do
@@ -31,7 +28,7 @@ for c in Loopback $CARD; do
 			FLOAT64_LE ) f=F64_LE;;
 			FLOAT_LE )   f=F32_LE;;
 			S24_3LE )    f=S24_3_LE;;
-			S24_LE )     f=$s24_4;;
+			S24_LE ) [[ -d /proc/asound/card$CARD/usbmixer ]] && f=S24_4_RJ_LE || f=S24_4_LJ_LE;;
 		esac
 		lbl="$f: ${f:1:2}bit "
 		[[ $f == F* ]] && lbl+='float' || lbl+='integer'
