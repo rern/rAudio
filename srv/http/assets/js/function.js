@@ -487,6 +487,7 @@ var DISPLAY   = {
 		var noprevnext = S.pllength < 2 || ! mpd_upnp;
 		$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
+		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', S.webradio );
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
@@ -1678,7 +1679,7 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 		
 		LOCAL();
-		$( '#play, #pause, #stop' ).removeClass( 'active' );
+		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.set();
