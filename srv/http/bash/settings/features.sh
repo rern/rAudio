@@ -336,7 +336,10 @@ startx )
 	if [[ $onwhileplay ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
-	! grep -q "Handlers=.*mouse" /proc/bus/input/devices && cursor='-use_cursor no'
+	file=/proc/bus/input/devices
+	if grep -q PROP=2 $file || ! grep -q "Handlers=.*mouse" $file; then # PROP=2 - touchscreen
+		cursor='-use_cursor no'
+	fi
 	matchbox-window-manager $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
