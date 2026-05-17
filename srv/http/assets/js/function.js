@@ -1678,6 +1678,8 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 		
 		LOCAL();
+		$( '#play, #pause, #stop' ).removeClass( 'active' );
+		$( '#'+ S.state ).addClass( 'active' );
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
@@ -2256,7 +2258,6 @@ var PROGRESS  = {
 		$( '#total' ).text( COMMON.second2HMS( S.Time ) );
 		if ( S.state === 'stop' && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
-			$( '#pause' ).addClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
 	}
