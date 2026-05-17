@@ -485,7 +485,7 @@ var DISPLAY   = {
 	, controls   : () => {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
 		var noprevnext = S.pllength < 2 || ! mpd_upnp;
-		$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
+		$( '#playback-controls' ).toggleClass( 'hide', mpd_upnp && S.pllength === 0 );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', S.webradio );
