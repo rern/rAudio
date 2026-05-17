@@ -69,7 +69,6 @@ playerStop() {
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
-	$dirbash/status-push.sh
 	case $player in
 		airplay )
 			shairportStop
@@ -92,9 +91,9 @@ playerStop() {
 		upnp )
 			systemctl restart upmpdcli
 			mpc -q clear
-			$dirbash/status-push.sh
 			;;
 	esac
+	[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
@@ -136,7 +135,6 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
 	fi
 }
 savedPlCount() {
@@ -148,7 +146,6 @@ savedPlCount() {
 shairportStop() {
 	systemctl stop shairport
 	systemctl restart shairport-sync
-	$dirbash/status-push.sh
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
