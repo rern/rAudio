@@ -144,8 +144,8 @@ savedPlCount() {
 	pushSavedPlaylist
 }
 shairportStop() {
-	systemctl stop shairport
-	systemctl restart shairport-sync
+	systemctl stop shairport shairport-sync
+	( sleep 3; systemctl start shairport-sync ) &
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
