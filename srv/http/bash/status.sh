@@ -117,10 +117,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 			start=$( getContent $dirairplay/start 0 )
 			elapsedms=$(( timestamp - start ))
 			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
-		fi
-
-		if [[ -e $dirairplay/timestamp ]]; then
-			diff=$(( timestamp - $( < $dirairplay/timestamp ) ))
+			diff=$(( timestamp - $( getContent $dirairplay/timestamp ) ))
 			elapsed=$(( diff / 1000 + elapsed ))
 		fi
 ########
