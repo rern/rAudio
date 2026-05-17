@@ -337,7 +337,9 @@ startx )
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
 	file=/proc/bus/input/devices
-	if grep -q PROP=2 $file || ! grep -q "Handlers=.*mouse" $file; then # PROP=2 - touchscreen
+	if ! grep -q "Handlers=.*mouse" $file \
+		|| grep -q -m1 'Name=.*[Tt]ouch' $file \
+		|| grep -q -m1 'ABS=' $file; then
 		cursor='-use_cursor no'
 	fi
 	matchbox-window-manager $cursor &
