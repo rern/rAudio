@@ -19,6 +19,11 @@ play() {
 	$dirbash/status-push.sh
 }
 
+# ...
+# <item><type>636f7265</type><code>6173616c</code><length>18</length> # hex
+# <data encoding="base64">
+# U29uZ3Mgb2YgSW5ub2NlbmNl</data></item>                              # base64
+#...
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line == *'>0</length>' || ( $line != '<item'* && $line != *'item>' ) ]] && continue
 	
@@ -35,21 +40,22 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	[[ ! $code ]] && continue # no line with selected code found yet > next line
 	
-	base64=$( tr -d '\000' <<< ${line/<*} ) # remove tags and null bytes
+	base64=$( tr -d '\0' <<< ${line/<*} ) # remove tags and null bytes
 	# null or not base64 string - reset code= > next line
 	if [[ ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=
 		continue
 	fi
 	
-	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
-	elif [[ $code == state ]]; then
+	if [[ $code == state ]]; then
 		case $base64 in
 			AQ== ) play;;
 			Ag== ) pause;;
+			AA== ) echo stop > $dirairplay/state;;
 		esac
+	elif [[ $code == coverart ]]; then
+		base64 -d <<< $base64 > $dirairplay/coverart.jpg
+		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then                            # start/current/end @44100/s
