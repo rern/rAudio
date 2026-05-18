@@ -6,23 +6,27 @@
 . /srv/http/bash/common.sh
 
 dirairplay=$dirshm/airplay
-rm -f $dirairplay/{elapsed,pause,start}
+rm -f $dirairplay/{elapsed,pause,play,state}
 echo stop > $dirairplay/state
 
 pause() {
 	echo pause > $dirairplay/state
 	touch $dirairplay/pause
-	elapsed=$( < $dirairplay/elapsed )
-	pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
+	if [[ -e $dirairplay/elapsed ]]; then
+		elapsed=$( < $dirairplay/elapsed )
+		pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
+	else
+		pushData airplay '{ "state": "stop", "elapsed": false }'
+	fi
 }
 play() {
-	[[ -e $dirairplay/pause ]] && rm $dirairplay/{elapsed,pause}
+	rm -f $dirairplay/{elapsed,pause}
 	echo play > $dirairplay/state
 	$dirbash/status-push.sh
 }
 
 cat /tmp/shairport-sync-metadata | while read line; do
-	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
+	[[ $line == *'>0</length>' || ( $line != '<item'* && $line != *'item>' ) ]] && continue
 	
 	##### code - hex matched
 	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
@@ -49,7 +53,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	
 	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $dirairplay/coverart.jpg
+		base64 -d <<< $base64 > $dirairplay/coverart.jpg &> /dev/null || continue
+		
 		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
 	elif [[ $code == state ]]; then
 		case $base64 in
@@ -59,21 +64,12 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
-			play
-			read elapsed starttime Time timestamp < <( awk -v timestamp=$( date +%s%3N ) -F'/' '{
-															start = $1; current = $2; end = $3
-															elapsedms = ( current - start ) / 44.1
-															elapsed   = ( elapsedms + 500 ) / 1000
-															Time      = ( end - start + 22050 ) / 44100
-															starttime = timestamp - elapsedms
-															printf "%d %d %d %d", elapsed, starttime, Time, timestamp
-														}' <<< $data )
+		read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $data )
 			pushData airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			echo $elapsed > $dirairplay/elapsed
-			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
-			echo $timestamp > $dirairplay/timestamp
-			$dirbash/status-push.sh
+			date +%s%3N > $dirairplay/timestamp
+			play
 		else
 			echo $data > $dirairplay/$code
 			pushData airplay '{ "'$code'": "'$( quoteEscape $data )'" }'
