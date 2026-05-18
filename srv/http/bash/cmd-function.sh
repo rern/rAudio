@@ -68,7 +68,6 @@ playerStop() {
 	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
-	[[ $player != mpd ]] && rm -f $dirshm/status
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
 	case $player in
 		airplay )
