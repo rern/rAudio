@@ -103,8 +103,8 @@ cacheBust() {
 	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 	rm -f $dirshm/system
 }
-calc() { # $1 - decimal precision, $2 - math without spaces
-	awk 'BEGIN { printf "%.'$1'f", '$2' }'
+calc() { # $1 - decimal precision, $2 - math
+	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'
 }
 camillaDSPstart() {
 	systemctl start camilladsp
