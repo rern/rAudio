@@ -72,8 +72,8 @@ CMD ARTIST ALBUM MODE" &> /dev/null &
 else
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
 	status=$( $dirbash/status.sh \
-				| jq '{ Artist, Album,   Composer, Conductor, coverart,  elapsed, file,   player
-					  , song   ,station, state,    Time,      timestamp, Title,   volume, webradio }' )
+				| jq '{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   player
+					  , song  ,station, state,    Time,      timestamp, Title,   volume, webradio }' )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( json2var "$status" | tee $dirshm/status )
 	isChanged Artist Title Album && trackchanged=1
