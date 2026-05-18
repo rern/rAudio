@@ -95,7 +95,10 @@ playerStop() {
 			mpc -q clear
 			;;
 	esac
-	[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
+	if [[ ! -e $dirshm/skip ]]; then
+		status=$( $dirbash/status.sh )
+		pushData mpdplayer "$status"
+	fi
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {

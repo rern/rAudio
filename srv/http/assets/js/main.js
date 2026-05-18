@@ -586,7 +586,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 				$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 			}
 			if ( S.player !== 'mpd' ) {
-				S.icon = '';
 				BASH( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				var icon_player = {
 					  airplay   : 'AirPlay'
