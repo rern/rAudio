@@ -6,21 +6,15 @@
 . /srv/http/bash/common.sh
 
 dirairplay=$dirshm/airplay
-rm -f $dirairplay/{elapsed,pause,play,state}
+rm -f $dirairplay/{elapsed,pause}
 echo stop > $dirairplay/state
 
 pause() {
 	echo pause > $dirairplay/state
-	touch $dirairplay/pause
-	if [[ -e $dirairplay/elapsed ]]; then
-		elapsed=$( < $dirairplay/elapsed )
-		pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
-	else
-		pushData airplay '{ "state": "stop", "elapsed": false }'
-	fi
+	elapsed=$( < $dirairplay/elapsed )
+	pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
 }
 play() {
-	rm -f $dirairplay/{elapsed,pause}
 	echo play > $dirairplay/state
 	$dirbash/status-push.sh
 }
@@ -30,8 +24,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	##### code - hex matched
 	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
-	if [[ ${#hex} == 8 ]]; then # found code > [next line]
-		case $hex in                                          # xxd -r -p <<< $hex
+	if [[ ${#hex} == 8 ]]; then 
+		case $hex in # found code > [next line]
 			61736172 | 61736161 ) code=Artist   && continue;; # asar | asaa
 			6d696e6d )            code=Title    && continue;; # minm
 			6173616c )            code=Album    && continue;; # asal
@@ -46,15 +40,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	##### value - base64 decode
 	base64=$( tr -d '\000' <<< ${line/<*} ) # remove tags and null bytes
-	# null or not base64 string - reset code= > [next line]
+	# null or not base64 string - reset code= > next line
 	if [[ ! $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=
 		continue
 	fi
 	
 	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $dirairplay/coverart.jpg &> /dev/null || continue
-		
+		base64 -d <<< $base64 > $dirairplay/coverart.jpg
 		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
 	elif [[ $code == state ]]; then
 		case $base64 in
@@ -63,19 +56,17 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		esac
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
-		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
-		read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $data )
+		if [[ $code == progress ]]; then                            # start/current/end @44100/s
+			read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $data )
 			pushData airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			echo $elapsed > $dirairplay/elapsed
-			echo $Time > $dirairplay/Time
-			date +%s%3N > $dirairplay/timestamp
+			echo $Time >    $dirairplay/Time
+			date +%s%3N >   $dirairplay/timestamp
 			play
 		else
 			echo $data > $dirairplay/$code
 			pushData airplay '{ "'$code'": "'$( quoteEscape $data )'" }'
 		fi
 	fi
-	code= # reset after $code + $data were set
+	code=
 done
-
-[[ ! -e $dirairplay/pause ]] && pause # fix - if no state emits (script always exits)

@@ -72,6 +72,7 @@ playerStop() {
 	case $player in
 		airplay )
 			shairportStop
+			systemctl stop shairport # metadata
 			;;
 		bluetooth )
 			rm -f $dirshm/{bluetoothdest,bluetoothsink}
@@ -144,8 +145,7 @@ savedPlCount() {
 	pushSavedPlaylist
 }
 shairportStop() {
-	systemctl stop shairport shairport-sync
-	systemctl start shairport-sync
+	systemctl restart shairport-sync
 	rm -f $dirdata/airplay/{elapsed,pause,play,state}
 }
 urldecode() { # for webradio url to filename
