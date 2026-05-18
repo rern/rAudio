@@ -68,6 +68,7 @@ playerStop() {
 	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
+	[[ $player != mpd ]] && rm -f $dirshm/status
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
 	case $player in
 		airplay )
@@ -146,7 +147,7 @@ savedPlCount() {
 }
 shairportStop() {
 	systemctl restart shairport-sync
-	rm -f $dirdata/airplay/{elapsed,pause,play,state} $dirshm/status
+	rm -f $dirdata/airplay/{elapsed,pause,play,state}
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"

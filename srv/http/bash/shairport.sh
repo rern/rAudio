@@ -22,26 +22,22 @@ play() {
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line == *'>0</length>' || ( $line != '<item'* && $line != *'item>' ) ]] && continue
 	
-	##### code - hex matched
-	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
-	if [[ ${#hex} == 8 ]]; then 
-		case $hex in # selected code > next line
-			61736172 | 61736161 ) code=Artist   && continue;; # asar | asaa
-			6d696e6d )            code=Title    && continue;; # minm
-			6173616c )            code=Album    && continue;; # asal
-			50494354 )            code=coverart && continue;; # PICT
-			70726772 )            code=progress && continue;; # prgr
-			63617073 )            code=state    && continue;; # caps
+	if [[ $line == '<item'* ]]; then 
+		case $( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line ) in
+			61736172 | 61736161 ) code=Artist;;   # asar | asaa
+			6d696e6d )            code=Title;;    # minm
+			6173616c )            code=Album;;    # asal
+			50494354 )            code=coverart;; # PICT
+			70726772 )            code=progress;; # prgr
+			63617073 )            code=state;;    # caps
 		esac
+		continue
 	fi
+	[[ ! $code ]] && continue # no line with selected code found yet > next line
 	
-	# no line with code found yet > [next line]
-	[[ ! $code ]] && continue
-	
-	##### value - base64 decode
 	base64=$( tr -d '\000' <<< ${line/<*} ) # remove tags and null bytes
 	# null or not base64 string - reset code= > next line
-	if [[ ! $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
+	if [[ ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=
 		continue
 	fi
