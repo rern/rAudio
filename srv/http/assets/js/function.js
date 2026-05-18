@@ -1407,6 +1407,7 @@ var PLAYBACK  = {
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {
+				$( '#random, #repeat, #single' ).removeClass( 'disabled' );
 				if ( $( '#button-time' ).is( ':visible' ) ) {
 					$( '#random' ).toggleClass( 'active', S.random );
 					$( '#repeat' ).toggleClass( 'active', S.repeat );
@@ -1427,6 +1428,8 @@ var PLAYBACK  = {
 					}
 					$( '#button-pl-'+ option ).toggleClass( 'bl', S[ option ] );
 				} );
+			} else {
+				$( '#random, #repeat, #single' ).addClass( 'disabled' );
 			}
 			PLAYBACK.button.update();
 			PLAYBACK.button.updating();
