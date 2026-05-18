@@ -25,7 +25,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	##### code - hex matched
 	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
 	if [[ ${#hex} == 8 ]]; then 
-		case $hex in # found code > [next line]
+		case $hex in # selected code > next line
 			61736172 | 61736161 ) code=Artist   && continue;; # asar | asaa
 			6d696e6d )            code=Title    && continue;; # minm
 			6173616c )            code=Album    && continue;; # asal

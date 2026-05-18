@@ -550,7 +550,6 @@ screenoff )
 shairport )
 	! playerActive airplay && echo airplay > $dirshm/player && playerStart
 	systemctl start shairport
-	$dirbash/status-push.sh
 	;;
 shairportstop )
 	shairportStop
