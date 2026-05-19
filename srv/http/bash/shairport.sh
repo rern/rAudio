@@ -61,7 +61,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		progress ) # start/current/end @44100/s
 			read elapsed Time < <( base64 -d <<< $B64 2> /dev/null \
 										| awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' )
-			(( $elapsed == 0 || $elapsed > $Time )) && elapse=false
+			(( $elapsed == 0 || $elapsed >= $Time )) && elapsed=false
 			echo $elapsed > $dirairplay/elapsed
 			echo $Time >    $dirairplay/Time
 			date +%s%3N >   $dirairplay/timestamp
