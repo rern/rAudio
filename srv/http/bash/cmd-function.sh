@@ -148,7 +148,7 @@ savedPlCount() {
 }
 shairportStop() {
 	systemctl restart shairport-sync
-	rm -f $dirdata/airplay/{elapsed,pause,play,state}
+	rm -f $dirshm/airplay/{elapsed,pause,play,state}
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
