@@ -552,7 +552,7 @@ shairport )
 	systemctl start shairport
 	;;
 shairportstop )
-	shairportStop
+	systemctl stop shairport
 	;;
 shareddataupdate )
 	systemctl restart mpd

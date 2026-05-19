@@ -5,19 +5,13 @@
 
 . /srv/http/bash/common.sh
 
-dirairplay=$dirshm/airplay
-rm -f $dirairplay/{elapsed,pause}
-echo stop > $dirairplay/state
+stateSet() {
+	[[ $elapsed == false ]] && state=stop || state=$1
+	echo $state > $dirairplay/state
+}
 
-pause() {
-	echo pause > $dirairplay/state
-	elapsed=$( < $dirairplay/elapsed )
-	pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
-}
-play() {
-	echo play > $dirairplay/state
-	$dirbash/status-push.sh
-}
+dirairplay=$dirshm/airplay
+elapsed=$( getContent $dirairplay/elapsed false )
 
 # ...
 # <item><type>636f7265</type><code>6173616c</code><length>18</length> # hex
@@ -50,9 +44,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	case $CODE in
 		state )
 			case $B64 in
-				AQ== ) play;;
-				Ag== ) pause;;
-				AA== ) echo stop > $dirairplay/state;;
+				AQ== )
+					stateSet play
+					$dirbash/status-push.sh
+					;;
+				Ag== )
+					stateSet pause
+					pushData airplay '{ "state": "'$state'", "elapsed": '$elapsed' }'
+					;;
 			esac
 			;;
 		coverart )
@@ -61,15 +60,16 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			;;
 		progress ) # start/current/end @44100/s
 			read elapsed Time < <( base64 -d <<< $B64 2> /dev/null \
-										| awk -F'/' \
-											 '{ printf "%0.f %0.f" \
-													, ( $2 - $1 ) / 44100 \
-													, ( $3 - $1 ) / 44100 }' )
-			pushData airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
+										| awk -F'/' '{
+												Time    = $3 - $1
+												elapsed = $2 - $1
+												if ( elapsed == 0 || elapsed > Time ) elapsed = false
+												printf "%0.f %0.f", elapsed / 44100, Time / 44100
+											}' )
 			echo $elapsed > $dirairplay/elapsed
 			echo $Time >    $dirairplay/Time
 			date +%s%3N >   $dirairplay/timestamp
-			play
+			$dirbash/status-push.sh
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )

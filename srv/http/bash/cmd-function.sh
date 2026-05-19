@@ -71,8 +71,9 @@ playerStop() {
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
 	case $player in
 		airplay )
-			shairportStop
-			systemctl stop shairport # metadata
+			systemctl stop shairport-sync shairport # metadata
+			sleep 1
+			systemctl start shairport-sync
 			;;
 		bluetooth )
 			rm -f $dirshm/{bluetoothdest,bluetoothsink}
@@ -145,10 +146,6 @@ savedPlCount() {
 	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
 	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
 	pushSavedPlaylist
-}
-shairportStop() {
-	systemctl restart shairport-sync
-	rm -f $dirshm/airplay/{elapsed,pause,play,state}
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
