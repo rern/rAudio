@@ -19,6 +19,12 @@ elapsed=$( getContent $dirairplay/elapsed false )
 # U29uZ3Mgb2YgSW5ub2NlbmNl</data></item>                              # base64
 #...
 cat /tmp/shairport-sync-metadata | while read line; do
+#	if [[ $line == *'<code>61656e64'* ]]; then # aend
+#		echo mpd > $dirshm/player
+#		$dirbash/status-push.sh playerstop
+#		systemctl stop shairport
+#		break
+#	fi
 	[[ $line == *'>0</length>' || ( $line != '<item'* && $line != *'item>' ) ]] && continue
 #...............................................................................
 	if [[ $line == '<item'* ]]; then 
