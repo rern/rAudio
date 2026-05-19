@@ -43,7 +43,7 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-filter='{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   player
+filter='{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   icon, player
 		, song,  station, state,    Time,      timestamp, Title,   volume, webradio }'
 if [[ $1 == playerstop ]]; then
 	status=$( $dirbash/status.sh )
