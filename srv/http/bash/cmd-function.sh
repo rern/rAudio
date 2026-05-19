@@ -19,7 +19,7 @@ plAddRandom() {
 	local ab cuefile dir dirlast len_pos mpcls plL range
 	len_pos=( $( mpc status '%length% %songpos%' ) )
 	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
-
+#...............................................................................
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album
@@ -81,6 +81,8 @@ playerStop() {
 		mpd )
 			radioStop
 			mpc -q stop
+			[[ -e $dirshm/skip ]] && return
+#...............................................................................
 			;;
 		snapcast )
 			$dirbash/snapclient.sh stop
@@ -94,10 +96,7 @@ playerStop() {
 			mpc -q clear
 			;;
 	esac
-	if [[ ! -e $dirshm/skip ]]; then
-		status=$( $dirbash/status.sh )
-		pushData mpdplayer "$status"
-	fi
+	$dirbash/status-push.sh $( [[ $player != mpd ]] && echo playerstop )
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
@@ -167,7 +166,7 @@ webradioM3uPlsVerify() {
 	url=$1
 	ext=${url/*.}
 	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
-
+#...............................................................................
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
