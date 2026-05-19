@@ -548,7 +548,11 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	! playerActive airplay && echo airplay > $dirshm/player && playerStart
+	if ! playerActive airplay; then
+		echo airplay > $dirshm/player
+		$dirbash/status-push.sh
+		playerStart
+	fi
 	systemctl start shairport
 	;;
 shairportstop )

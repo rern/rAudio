@@ -108,14 +108,19 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		dirairplay=$dirshm/airplay
+		Time=$( getContent $dirairplay/Time )
+		timestamp=$( date +%s%3N )
 		if [[ -e $dirairplay/elapsed ]]; then
 			elapsed=$( < $dirairplay/elapsed )
-			state=$( getContent $dirairplay/state )
+			if (( $elapsed < $Time )); then
+				state=$( getContent $dirairplay/state )
+			else
+				elapsed=false
+				state=stop
+			fi
 		else
 			state=stop
 		fi
-		Time=$( getContent $dirairplay/Time )
-		timestamp=$( date +%s%3N )
 		if [[ $state == play ]]; then
 			if [[ -e $dirairplay/timestamp ]]; then
 				diff=$(( timestamp - $( getContent $dirairplay/timestamp ) ))

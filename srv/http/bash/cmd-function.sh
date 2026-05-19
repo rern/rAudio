@@ -71,9 +71,8 @@ playerStop() {
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
 	case $player in
 		airplay )
-			systemctl stop shairport-sync shairport # metadata
-			sleep 1
-			systemctl start shairport-sync
+			systemctl stop shairport # metadata
+			systemctl restart shairport-sync
 			;;
 		bluetooth )
 			rm -f $dirshm/{bluetoothdest,bluetoothsink}

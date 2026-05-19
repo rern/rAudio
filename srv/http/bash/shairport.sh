@@ -50,22 +50,18 @@ cat /tmp/shairport-sync-metadata | while read line; do
 					;;
 				Ag== )
 					stateSet pause
-					pushData airplay '{ "state": "'$state'", "elapsed": '$elapsed' }'
+					pushData mpdplayer '{ "state": "'$state'", "elapsed": '$elapsed' }'
 					;;
 			esac
 			;;
 		coverart )
 			base64 -d <<< $B64 > $dirairplay/coverart.jpg
-			pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
+			pushData cover '{ "cover": "/data/shm/airplay/coverart.jpg" }'
 			;;
 		progress ) # start/current/end @44100/s
 			read elapsed Time < <( base64 -d <<< $B64 2> /dev/null \
-										| awk -F'/' '{
-												Time    = $3 - $1
-												elapsed = $2 - $1
-												if ( elapsed == 0 || elapsed > Time ) elapsed = false
-												printf "%0.f %0.f", elapsed / 44100, Time / 44100
-											}' )
+										| awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' )
+			(( $elapsed == 0 || $elapsed > $Time )) && elapse=false
 			echo $elapsed > $dirairplay/elapsed
 			echo $Time >    $dirairplay/Time
 			date +%s%3N >   $dirairplay/timestamp
@@ -74,7 +70,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )
 			echo $value > $dirairplay/$CODE
-			pushData airplay '{ "'$CODE'": "'$( quoteEscape $value )'" }'
+			pushData mpdplayer '{ "'$CODE'": "'$( quoteEscape $value )'" }'
 			;;
 	esac
 	CODE=
