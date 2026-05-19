@@ -555,9 +555,6 @@ shairport )
 	fi
 	systemctl start shairport
 	;;
-shairportstop )
-	systemctl stop shairport
-	;;
 shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
