@@ -124,7 +124,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ $state == play ]]; then
 			if [[ -e $dirairplay/timestamp ]]; then
 				diff=$(( timestamp - $( getContent $dirairplay/timestamp ) ))
-				elapsed=$(( elapsed + ( diff / 1000 ) + 3 ))
+				elapsed=$(( elapsed + ( diff / 1000 ) ))
 			fi
 		fi
 ########
