@@ -14,22 +14,26 @@ elapsed=$( getContent $dirairplay/elapsed false )
 # U29uZ3Mgb2YgSW5ub2NlbmNl</data></item>                              # base64
 #...
 cat /tmp/shairport-sync-metadata | while read line; do
-	case $line in
-		'<data '* )                         continue;;
-		*'<code>6173616c'* ) CODE=Album;    continue;; # asal
-		*'<code>61736172'* ) CODE=Artist;   continue;; # asar
-		*'<code>61736161'* ) CODE=Artist;   continue;; # asaa
-		*'<code>50494354'* ) CODE=coverart; continue;; # PICT
-		*'<code>70726772'* ) CODE=progress; continue;; # prgr
-		*'<code>63617073'* ) CODE=state;    continue;; # caps
-		*'<code>6d696e6d'* ) CODE=Title;    continue;; # minm
-		*'<code>'* )                        continue;;
-#		*'<code>61656e64'* )                           # aend - airplay end
-#			echo mpd > $dirshm/player
-#			$dirbash/status-push.sh playerstop
-#			systemctl stop shairport
-#			break
-	esac
+	[[ $line == '<data '* ]] && continue
+#...............................................................................
+	if [[ $line == *'type><code'* ]]; then
+		case $line in
+			*6173616c* ) CODE=Album;;    # asal
+			*61736172* ) CODE=Artist;;   # asar
+			*61736161* ) CODE=Artist;;   # asaa
+			*50494354* ) CODE=coverart;; # PICT
+			*70726772* ) CODE=progress;; # prgr
+			*63617073* ) CODE=state;;    # caps
+			*6d696e6d* ) CODE=Title;;    # minm
+	#		*61656e64* )                 # aend - airplay end
+	#			echo mpd > $dirshm/player
+	#			$dirbash/status-push.sh playerstop
+	#			systemctl stop shairport
+	#			break
+		esac
+		continue
+#...............................................................................
+	fi
 	[[ ! $CODE ]] && continue # skip following lines if CODE not set
 #...............................................................................
 	B64=${line/<*}

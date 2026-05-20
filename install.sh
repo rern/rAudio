@@ -5,11 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260525
-file=/etc/shairport-sync.conf
-if grep -q run_this_after_play_ends $file; then
-	sed -i '/run_this_after_play_ends/ d' $file
-	systemctl try-restart shairport-sync
-fi
 
 # 20260509
 file=$dirshareddata/source
