@@ -227,7 +227,7 @@ mpdoled )
 		[[ $CHIP != 6 ]] && opts+="-o $CHiP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. <( cat /etc/default/mpd_oled )
-		[[ $OPTS != opt ]] && echo 'OPTS="'$opt'"' > /etc/default/mpd_oled
+		[[ $OPTS != $opts ]] && echo 'OPTS="'$opts'"' > /etc/default/mpd_oled
 		x_z=-x
 	else
 		x_z=-z
