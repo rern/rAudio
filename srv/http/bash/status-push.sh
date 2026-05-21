@@ -111,11 +111,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl restart lcdchar
 fi
 if [[ -e $dirsystem/mpdoled ]]; then
-	if [[ $start_stop == stop ]]; then
-		pkill -9 cava
-		( sleep 1; rm -f /tmp/cava* ) &
-	fi
-	systemctl $start_stop mpd_oled
+	[[ $start_stop == start ]] && systemctl start mpd_oled || mpd_oledStop
 fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ( ! $trackchanged && ! -e $dirshm/elapsed ) ]] && exit # track changed || prev/next/stop

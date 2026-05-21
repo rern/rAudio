@@ -408,6 +408,11 @@ CMD ACTION"
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
 }
+mpd_oledStop() {
+	pkill -9 cava
+	( sleep 1; rm -f /tmp/cava* ) &
+	systemctl stop mpd_oled
+}
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
 }

@@ -138,8 +138,8 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		pushStatus
 	fi
+	[[ -e $dirsystem/mpdoled ]] && mpd_oledStop
 }
 savedPlCount() {
 	playlists=$( ls $dirplaylists | wc -l )
