@@ -244,12 +244,11 @@ fifoToggle() { # mpdoled vuled vumeter
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
-			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
-		! grep -q 'state="*play' $dirshm/status && return
-#...............................................................................
-		[[ $mpdoled ]] && systemctl restart mpd_oled
-		[[ $vuled || $vumeter ]] && systemctl restart cava
+		if grep -q '^state=.*play' $dirshm/status; then
+			[[ $mpdoled ]] && systemctl start mpd_oled
+			[[ $vuled || $vumeter ]] && systemctl start cava
+		fi
 	else
 		if [[ -e $filefifo ]]; then
 			[[ $mpdoled || $vuled || $vumeter ]] && return
