@@ -256,7 +256,7 @@ fifoToggle() { # mpdoled vuled vumeter
 			rm $filefifo
 			systemctl restart mpd
 		fi
-		[[ ! $mpdoled ]] && systemctl stop mpd_oled
+		[[ ! $mpdoled ]] && mpd_oledStop
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
