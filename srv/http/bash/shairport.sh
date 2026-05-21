@@ -44,24 +44,26 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		state )
 			[[ $B64 == AQ== ]] && state=play || state=pause
 			[[ $elapsed == false ]] && state=stop
-			echo $state > $dirairplay/state
-			$dirbash/status-push.sh
+			if [[ $prev_state != $state ]]; then
+				echo $state > $dirairplay/state
+				$dirbash/status-push.sh
+				prev_state=$state
+			fi
 			;;
 		coverart )
 			base64 -d <<< $B64 > $dirairplay/coverart.jpg
 			pushData cover '{ "cover": "/data/shm/airplay/coverart.jpg" }'
 			;;
-		progress ) # start/current/end @44100/s
-			value=$( base64 -d <<< $B64 2> /dev/null )
-			[[ $value != */* ]] && CODE= && continue # skip single field
+		progress ) # begin/current/end @44100/s (play current slips after pause - reset in a few seconds)
+			frame=$( base64 -d <<< $B64 2> /dev/null )
+			[[ $frame != */* ]] && CODE= && continue # skip single field
 #...............................................................................
-			read elapsed Time < <( base64 -d <<< $B64 2> /dev/null \
-										| awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' )
+			read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $frame )
 			if (( $elapsed <= 0 || $elapsed >= $Time )); then
 				elapsed=false
 				state=stop
 			else
-				start=$(( start - elapsed )) # elapsed reference while play
+				start=$(( start - elapsed )) # epoch for elapsed calc while play
 				state=play
 			fi
 			for k in elapsed start state Time; do
@@ -71,8 +73,11 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )
-			echo $value > $dirairplay/$CODE
-			pushData mpdplayer '{ "'$CODE'": "'$( quoteEscape $value )'" }'
+			if [[ ${!CODE} != $value ]]; then
+				echo $value > $dirairplay/$CODE
+				pushData mpdplayer '{ "'$CODE'": "'$( quoteEscape $value )'" }'
+				printf -v $CODE '%s' "$value"
+			fi
 			;;
 	esac
 	CODE=
