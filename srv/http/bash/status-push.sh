@@ -20,7 +20,7 @@ onPlay() {
 				rm $dirsystem/stoptimer
 				pushData refresh '{ "page": "features", "stoptimer": false }'
 			fi
-			$dirbash/status-push.sh
+			pushStatus
 			exit
 # --------------------------------------------------------------------
 		fi

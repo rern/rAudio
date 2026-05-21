@@ -484,6 +484,9 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
+pushStatus() {
+	$dirbash/status-push.sh
+}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:3} ) # remove newlines (<<< preserve spaces)

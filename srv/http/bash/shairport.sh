@@ -46,7 +46,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			[[ $elapsed == false ]] && state=stop
 			if [[ $prev_state != $state ]]; then
 				echo $state > $dirairplay/state
-				$dirbash/status-push.sh
+				pushStatus
 				prev_state=$state
 			fi
 			;;
@@ -69,7 +69,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			for k in elapsed start state Time; do
 				echo ${!k} > $dirairplay/$k
 			done
-			$dirbash/status-push.sh
+			pushStatus
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )

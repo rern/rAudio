@@ -25,7 +25,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/cmd.sh playlistpush
-	$dirbash/status-push.sh
+	pushStatus
 	exit
 # --------------------------------------------------------------------
 fi

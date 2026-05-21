@@ -3,7 +3,7 @@
 # file mode
 # initial page load / refresh > status.sh
 # changes:
-#    - mpdidle.sh > status-push.sh
+#    - mpdidle.sh > pushStatus
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 [[ ! $( mpc status %state% 2> /dev/null ) ]] && exit # omit: startup websocket / no state on start playing dsd from network (<rpi4)
 # --------------------------------------------------------------------
@@ -292,7 +292,7 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: status-push.sh
+			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: pushStatus
 				if [[ $icon == dabradio ]]; then
 					radio_dab=dab
 					radiosampling="48 kHz 160 kbit/s"

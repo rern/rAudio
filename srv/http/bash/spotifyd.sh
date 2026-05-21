@@ -78,4 +78,4 @@ state=$state
 Time=$Time
 EOF
 
-$dirbash/status-push.sh
+pushStatus

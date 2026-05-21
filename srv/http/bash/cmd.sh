@@ -291,7 +291,7 @@ mpccrop )
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
-	$dirbash/status-push.sh
+	pushStatus
 	pushPlaylist
 	;;
 mpclibrandom )
@@ -332,7 +332,7 @@ mpcplayback )
 				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
 			done
 			rm -f $dirshm/cdstart
-			$dirbash/status-push.sh
+			pushStatus
 		fi
 		if [[ -e $dirshm/relayson ]]; then
 			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
@@ -550,7 +550,7 @@ screenoff )
 shairport )
 	if ! playerActive airplay; then
 		echo airplay > $dirshm/player
-		$dirbash/status-push.sh
+		pushStatus
 		playerStart
 	fi
 	systemctl start shairport
