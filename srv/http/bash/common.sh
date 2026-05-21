@@ -245,7 +245,7 @@ fifoToggle() { # mpdoled vuled vumeter
 			systemctl restart mpd
 		fi
 		if grep -q '^state=.*play' $dirshm/status; then
-			[[ $mpdoled ]] && systemctl start mpd_oled
+			[[ $mpdoled ]] && systemctl restart mpd_oled
 			[[ $vuled || $vumeter ]] && systemctl start cava
 		fi
 	else
