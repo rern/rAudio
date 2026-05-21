@@ -229,17 +229,16 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+mpdoled_vuled_vumeter() {
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
+	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
+	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
+}
 fifoToggle() { # mpdoled vuled vumeter
 	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
-	[[ -e $dirsystem/vuled ]] && vuled=1
-	if grep -q -m1 vumeter.*true $dirsystem/display.json; then
-		vumeter=1
-		touch $dirsystem/vumeter
-	else
-		rm -f $dirsystem/vumeter
-	fi
+	mpdoled_vuled_vumeter
+	[[ $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
 	if [[ $mpdoled || $vuled || $vumeter ]]; then
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
@@ -411,6 +410,8 @@ mpd_oledStop() {
 	pkill -9 cava
 	( sleep 1; rm -f /tmp/cava* ) &
 	systemctl stop mpd_oled
+	mpdoled_vuled_vumeter
+	[[ $vuled || $vumeter ]] && systemctl start cava
 }
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
