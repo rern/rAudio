@@ -67,7 +67,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			for k in elapsed start state Time; do
 				echo ${!k} > $dirairplay/$k
 			done
-			date +%s%3N >   $dirairplay/timestamp
 			$dirbash/status-push.sh
 			;;
 		* )

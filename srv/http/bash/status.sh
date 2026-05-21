@@ -109,7 +109,6 @@ if [[ $player != mpd && $player != upnp ]]; then
 	airplay )
 		dirairplay=$dirshm/airplay
 		Time=$( getContent $dirairplay/Time )
-		timestamp=$( date +%s%3N )
 		state=$( getContent $dirairplay/state stop )
 		if [[ $state == play ]]; then
 			start=$( < $dirairplay/start )
@@ -127,7 +126,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
 , "Time"      : '$Time'
-, "timestamp" : '$timestamp'
+, "timestamp" : '$( date +%s%3N )'
 , "Title"     : "'$( getContent $dirairplay/Title )'"'
 		;;
 	bluetooth )
