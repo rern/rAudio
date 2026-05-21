@@ -255,7 +255,7 @@ fifoToggle() { # mpdoled vuled vumeter
 			rm $filefifo
 			systemctl restart mpd
 		fi
-		[[ ! $mpdoled ]] && mpd_oledStop
+		[[ ! $mpdoled ]] && systemctl stop mpd_oled
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
@@ -405,13 +405,6 @@ CMD ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
-}
-mpd_oledStop() {
-	pkill -9 cava
-	( sleep 1; rm -f /tmp/cava* ) &
-	systemctl stop mpd_oled
-	mpdoled_vuled_vumeter
-	[[ $vuled || $vumeter ]] && systemctl start cava
 }
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1

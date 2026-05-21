@@ -5,6 +5,15 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260525
+file=/lib/systemd/system/mpd_oled.service
+if ! grep -q ^KillMode $file; then
+	sed -i "/^ExecStart/ a\
+KillMode=control-group\
+KillSignal=SIGTERM
+ExecStopPost=/bin/sh -c '/usr/bin/rm -f /tmp/cava*'
+" $file
+	systemctl daemon-reload
+fi
 
 # 20260509
 file=$dirshareddata/source

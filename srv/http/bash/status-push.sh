@@ -110,9 +110,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	echo "$status" > $dirshm/status.json
 	systemctl restart lcdchar
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $start_stop == start ]] && systemctl start mpd_oled || mpd_oledStop
-fi
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ( ! $trackchanged && ! -e $dirshm/elapsed ) ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
