@@ -134,12 +134,12 @@ pushSavedPlaylist() {
 	fi
 }
 radioStop() {
-	if [[ -e $dirshm/radio ]]; then
-		mpc -q stop
-		systemctl stop radio dab &> /dev/null
-		rm -f $dirshm/radio
-		pushStatus
-	fi
+	[[ ! -e $dirshm/radio ]] && return
+#...............................................................................
+	mpc -q stop
+	systemctl stop radio dab &> /dev/null
+	rm -f $dirshm/radio
+	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && mpd_oledStop
 }
 savedPlCount() {
