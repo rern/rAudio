@@ -5,14 +5,16 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260525
-file=/lib/systemd/system/mpd_oled.service
-if ! grep -q ^KillMode $file; then
-	sed -i "/^ExecStart/ a\
-ExecStartPost=/bin/sh -c 'sleep 1; pgrep -n -x cava > /tmp/cava.pid'
-ExecStop=/bin/sh -c 'kill -9 $( cat /tmp/cava.pid )'
-ExecStopPost=/bin/sh -c 'rm -f /tmp/cava*'" $file
-	systemctl daemon-reload
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
+	pacman -Sy --noconfirm mpd_oled
+	file=/etc/default/mpd_oled
+	if grep ' -X' $file; then
+		sed -i 's/ -X//' $file
+	else
+		sed -i 's/fifo"/fifo -X"/' $file
+	fi
 fi
+
 
 # 20260509
 file=$dirshareddata/source
@@ -23,16 +25,6 @@ fi
 
 if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
-fi
-
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
-	pacman -Sy --noconfirm mpd_oled
-	file=/etc/default/mpd_oled
-	if grep ' -X' $file; then
-		sed -i 's/ -X//' $file
-	else
-		sed -i 's/fifo"/fifo -X"/' $file
-	fi
 fi
 
 file=/etc/udevil/udevil.conf
