@@ -8,10 +8,9 @@ alias=r1
 file=/lib/systemd/system/mpd_oled.service
 if ! grep -q ^KillMode $file; then
 	sed -i "/^ExecStart/ a\
-KillMode=control-group\
-KillSignal=SIGTERM
-ExecStopPost=/bin/sh -c '/usr/bin/rm -f /tmp/cava*'
-" $file
+ExecStartPost=/bin/sh -c 'sleep 1; pgrep -n -x cava > /tmp/cava.pid'
+ExecStop=/bin/sh -c 'kill -9 $( cat /tmp/cava.pid )'
+ExecStopPost=/bin/sh -c 'rm -f /tmp/cava*'" $file
 	systemctl daemon-reload
 fi
 
