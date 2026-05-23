@@ -227,8 +227,8 @@ if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
 	audiocd=1
+	discid=$( < $dirshm/audiocd )
 	if [[ -e $diraudiocd/$discid ]]; then
-		discid=$( < $dirshm/audiocd )
 		track=${file##*/}
 		readarray -t disciddata < <( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${disciddata[0]}
