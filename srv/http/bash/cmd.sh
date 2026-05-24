@@ -308,10 +308,13 @@ mpcoption )
 	[[ ! $TF ]] && TF=false
 	mpc -q $OPTION $TF
 	pushData option '{ "'$OPTION'": '$TF' }'
+	[[ $OPTION != random || $TF != true || $( mpcState ) == play ]] && exit
+# --------------------------------------------------------------------
+	mpc -q play # fix - no current track data
+	mpc -q stop
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
-# --------------------------------------------------------------------
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
