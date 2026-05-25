@@ -4,8 +4,6 @@ plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
 		mpc -q play $1
-	elif [[ $1 == 1 ]]; then
-		play_stop # fix - no current track data
 	fi
 	pushPlaylist
 }
@@ -42,10 +40,6 @@ plAddRandom() {
 		fi
 	fi
 	plAddRandom
-}
-play_stop() { # fix - no current track data
-	mpc -q play
-	mpc -q stop
 }
 playerStart() {
 	local player service
