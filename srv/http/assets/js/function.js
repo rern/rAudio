@@ -32,6 +32,11 @@ function REFRESHDATA() {
 				}
 			} );
 		}
+		if ( D.playbackswitch ) {
+			$( '#playback' ).trigger( 'click' );
+		} else {
+			PLAYBACK.get();
+		}
 	} else if ( V.playback ) {
 		PLAYBACK.get();
 	} else {
