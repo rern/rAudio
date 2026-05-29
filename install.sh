@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260525
+# 20260529
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
 	pacman -Sy --noconfirm mpd_oled
 	file=/etc/default/mpd_oled
