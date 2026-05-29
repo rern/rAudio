@@ -28,7 +28,7 @@ for c in Loopback $CARD; do
 			FLOAT64_LE ) f=F64_LE;;
 			FLOAT_LE )   f=F32_LE;;
 			S24_3LE )    f=S24_3_LE;;
-			S24_LE )     f=S24_4_LE;;
+			S24_LE ) [[ -d /proc/asound/card$CARD/usbmixer ]] && f=S24_4_RJ_LE || f=S24_4_LJ_LE;;
 		esac
 		lbl="$f: ${f:1:2}bit "
 		[[ $f == F* ]] && lbl+='float' || lbl+='integer'

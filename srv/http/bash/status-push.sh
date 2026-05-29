@@ -20,29 +20,36 @@ onPlay() {
 				rm $dirsystem/stoptimer
 				pushData refresh '{ "page": "features", "stoptimer": false }'
 			fi
-			$dirbash/status-push.sh
+			pushStatus
 			exit
 # --------------------------------------------------------------------
 		fi
 	fi
-	[[ ! -e /bin/firefox ]] && return
-	! systemctl -q is-active localbrowser && return
-
-	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-		export DISPLAY=:0
-		if [[ $state == play ]]; then
-			sudo xset dpms force on
-			sudo xset -dpms
-		else
-			sudo xset +dpms
-		fi
+	if [[ ! -e /bin/firefox ]] \
+			|| ! systemctl -q is-active localbrowser \
+			|| ! grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+		return
+#...............................................................................
+	fi
+	export DISPLAY=:0
+	if [[ $state == play ]]; then
+		sudo xset dpms force on
+		sudo xset -dpms
+	else
+		sudo xset +dpms
 	fi
 }
 
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
+filter='{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   icon, player
+		, song,  station, state,    Time,      timestamp, Title,   volume, webradio }'
+if [[ $1 == playerstop ]]; then
+	status=$( $dirbash/status.sh )
+	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
+	state=stop
+elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
 	elapsed=$( mpcElapsed webradio )
 	pllength=$( mpc status %length% )
@@ -59,7 +66,6 @@ if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 , "Title"     : "'$TITLE'"
 , "webradio"  : true
 }'
-	pushData mpdradio "$status"
 	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
 $ARTIST
 $ALBUM
@@ -71,9 +77,7 @@ CMD ARTIST ALBUM MODE" &> /dev/null &
 	onPlay
 else
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( $dirbash/status.sh \
-				| jq '{ Artist, Album,   Composer, Conductor, coverart,  elapsed, file,   player
-					  , song   ,station, state,    Time,      timestamp, Title,   volume, webradio }' )
+	status=$( $dirbash/status.sh | jq "$filter" )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( json2var "$status" | tee $dirshm/status )
 	isChanged Artist Title Album && trackchanged=1
@@ -86,9 +90,9 @@ else
 		[[ ! $trackchanged && ! $statuschanged ]] && exit
 # --------------------------------------------------------------------
 	fi
-########
-	pushData mpdplayer "$status"
 fi
+########
+pushData mpdplayer "$status"
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
 	status=$( $dirbash/status.sh snapclient )
@@ -106,25 +110,17 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	echo "$status" > $dirshm/status.json
 	systemctl restart lcdchar
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	if [[ $start_stop == stop ]]; then
-		pkill -9 cava
-		( sleep 1; rm -f /tmp/cava* ) &
-	fi
-	systemctl $start_stop mpd_oled
-fi
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
-[[ ! -e $dirsystem/scrobble ]] && exit
-# --------------------------------------------------------------------
-[[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
+[[ ! -e $dirsystem/scrobble || ( ! $trackchanged && ! -e $dirshm/elapsed ) ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
 . <( echo $statusprev )
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # --------------------------------------------------------------------
-if [[ $player != mpd ]]; then
+if [[ $( < $dirshm/player ) != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # --------------------------------------------------------------------
-	if [[ $state =~ ^(play|pause)$ ]]; then # renderers prev/next
+	if [[ $state == play || $state == pause ]]; then # renderers prev/next
 		timestampnew=$( getVar timestamp $dirshm/status )
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed

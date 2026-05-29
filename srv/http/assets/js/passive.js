@@ -1,9 +1,5 @@
 W = {
 	  ...W // from common.js
-	, airplay   : data => {
-		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( V.playback ) PLAYBACK.main();
-	}
 	, bookmark  : data => {
 		if ( ! V.library || ! V.libraryhome ) return
 		

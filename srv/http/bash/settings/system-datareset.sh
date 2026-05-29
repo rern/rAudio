@@ -1,33 +1,12 @@
 #!/bin/bash
 
+exec &> /dev/null # suppress stdout stderr
+
 . /srv/http/bash/common.sh
 
 args2var "$1"
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
-# hostname
-$dirsettings/system.sh 'hostname
-rAudio
-CMD NAME'
-# accesspoint
-sed -i -E -e 's/(Passphrase=).*/\1raudioap/
-' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
-' /var/lib/iwd/ap/rAudio.ap
-
-# mpd
-mpc -q clear
-mpc -q crossfade 0
-find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
-echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
-echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
-echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
-# shairport-sync
-sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf &> /dev/null
-# smb
-sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf &> /dev/null
-# upmpdcli
-sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
-' -e 's/(ownqueue = )./\10' /etc/upmpdcli.conf &> /dev/null
 # config.txt
 config="\
 disable_overscan=1
@@ -52,29 +31,49 @@ if [[ -e /bin/firefox ]]; then
 else
 	config=$( sed '/hdmi_force_hotplug/ d' <<< $config )
 fi
+# accesspoint
+sed -i -E -e 's/(Passphrase=).*/\1raudioap/
+' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
+' /var/lib/iwd/ap/rAudio.ap
 # css color
 if [[ -e $dirsystem/color ]]; then
 	rm $dirsystem/color
 	$dirbash/cmd.sh color
 fi
-# lcd
-sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
 # nas
 dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 if [[ $dirs ]]; then
 	while read dir; do
-		umount -l "$dir" &> /dev/null
-		rmdir "$dir" &> /dev/null
+		umount -l "$dir"
+		rmdir "$dir"
 	done <<< $dirs
 fi
 sed -i '3,$ d' /etc/fstab
-
-systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
-mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
-[[ $KEEPLIBRARY ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
+# mpd
+mpc -q clear
+mpc -q crossfade 0
+find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
+echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
+echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
+echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
+# smb
+sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf
+# shairport-sync
+mv -f /etc/shairport-sync.conf{.default,}
+# spotifyd
+mv -f /etc/spotifyd.conf{.default,}
+# tft lcd
+sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+# hostname
+$dirsettings/system.sh 'hostname
+rAudio
+CMD NAME'
+systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli
+mv -f $dirdata/{addons,camilladsp,mpdconf} /tmp
+[[ $KEEPLIBRARY ]] && mv -f $dirdata/{mpd,playlists,webradio} /tmp
 rm -rf $dirdata $dirshareddata \
-		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
-		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
+	/mnt/MPD/.mpdignore $dirnas/.mpdignore \
+	/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 if [[ ! $KEEPNETWORK ]]; then
 	profiles=$( ls -p /etc/netctl | grep -v / )
 	if [[ $profiles ]]; then
@@ -87,7 +86,7 @@ fi
 
 $dirsettings/system-datadefault.sh
 
-mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
+mv -f /tmp/{addons,camilladsp,mpdconf} $dirdata
 [[ $KEEPLIBRARY ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
 $dirbash/cmd-list.sh
 

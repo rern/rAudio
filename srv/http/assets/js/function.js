@@ -32,6 +32,11 @@ function REFRESHDATA() {
 				}
 			} );
 		}
+		if ( D.playbackswitch ) {
+			$( '#playback' ).trigger( 'click' );
+		} else {
+			PLAYBACK.get();
+		}
 	} else if ( V.playback ) {
 		PLAYBACK.get();
 	} else {
@@ -485,8 +490,9 @@ var DISPLAY   = {
 	, controls   : () => {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
 		var noprevnext = S.pllength < 2 || ! mpd_upnp;
-		$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
+		$( '#playback-controls' ).toggleClass( 'hide', mpd_upnp && S.pllength === 0 );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
+		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', S.webradio );
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
@@ -1406,6 +1412,7 @@ var PLAYBACK  = {
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {
+				$( '#random, #repeat, #single' ).removeClass( 'disabled' );
 				if ( $( '#button-time' ).is( ':visible' ) ) {
 					$( '#random' ).toggleClass( 'active', S.random );
 					$( '#repeat' ).toggleClass( 'active', S.repeat );
@@ -1426,6 +1433,8 @@ var PLAYBACK  = {
 					}
 					$( '#button-pl-'+ option ).toggleClass( 'bl', S[ option ] );
 				} );
+			} else {
+				$( '#random, #repeat, #single' ).addClass( 'disabled' );
 			}
 			PLAYBACK.button.update();
 			PLAYBACK.button.updating();
@@ -1678,6 +1687,8 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 		
 		LOCAL();
+		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
+		$( '#'+ S.state ).addClass( 'active' );
 		if ( S.state === 'stop' ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
@@ -2256,7 +2267,6 @@ var PROGRESS  = {
 		$( '#total' ).text( COMMON.second2HMS( S.Time ) );
 		if ( S.state === 'stop' && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
-			$( '#pause' ).addClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
 	}

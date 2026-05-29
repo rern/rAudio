@@ -44,7 +44,7 @@ updateDone() {
 	counts+=$( countMnt )
 	pushData mpdupdate '{ '$counts' }'
 	touch $dirshm/updatedone
-	$dirbash/status-push.sh
+	pushStatus
 	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }
 

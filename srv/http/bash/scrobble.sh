@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# track end       - status-push.sh
+# track end       - pushStatus
 # stop / prevnext - cmd.sh mpcplayback / mpcskip
 # webradio        - cmd.sh scrobble
 

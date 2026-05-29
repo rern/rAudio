@@ -136,11 +136,12 @@ hddapm )
 	;;
 hostname )
 	hostnamectl hostname $NAME
-	sed -i -E 's/(name = ").*/\1'$NAME'"/' /etc/shairport-sync.conf
-	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
+	sed -i -E '/^general/ {n;s/(name = ).*/\1"'$NAME'";/}' /etc/shairport-sync.conf*
+	sed -i -E "/^source/ s/(name=).*/\1$NAME/" /etc/snapserver.conf
+	sed -i -E "s/^(friendlyname = ).*/\1$NAME/" /etc/upmpdcli.conf
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	nameprev=$( ls /var/lib/iwd/ap | head -1 )
-	mv /var/lib/iwd/ap/{$nameprev,$NAME.ap}
+	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
 	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
@@ -181,6 +182,12 @@ dtparam=audio=on"
 		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf
 	fi
 	configTxt
+	;;
+lcdchar )
+	enableFlagSet
+	i2cset=1
+	configTxt
+	systemctl stop lcdchar
 	;;
 mirror )
 	[[ $MIRROR ]] && MIRROR+=.
@@ -226,7 +233,7 @@ mpdoled )
 		[[ $CHIP != 6 ]] && opts+="-o $CHiP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. <( cat /etc/default/mpd_oled )
-		[[ $OPTS != opt ]] && echo 'OPTS="'$opt'"' > /etc/default/mpd_oled
+		[[ $OPTS != $opts ]] && echo 'OPTS="'$opts'"' > /etc/default/mpd_oled
 		x_z=-x
 	else
 		x_z=-z
@@ -297,7 +304,7 @@ shareddatadisable )
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	if grep -q " $dirnas " /etc/fstab; then # server rAudio
 		umount -l $dirnas
-		mv /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
+		mv -f /mnt/{NVME,SATA,SD,USB} /mnt/MPD &> /dev/null
 		fstab=$( grep -v " $dirnas " /etc/fstab )
 	else
 		umount -l $dirshareddata &> /dev/null

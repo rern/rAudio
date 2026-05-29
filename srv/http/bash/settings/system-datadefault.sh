@@ -9,21 +9,18 @@ mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,
 [[ -e /bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} || rmdir $dircamilladsp
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
-chown -h http:http $dirshm /srv/http/mnt
 # display
-true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
-	  label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
-false='albumbyartist albumyear audiocdplclear backonleft barsalways composername conductorname covervu
-	   hidecover progress radioelapsed tapaddplay tapreplaceplay vumeter'
-for i in $true; do
-	lines+='
-, "'$i'": true'
+for d in album albumartist artist bars           buttons   composer conductor count cover date fixedcover genre \
+		 label latest      nas    playbackswitch playlists plclear  plsimilar sd    time  usb  volume     webradio
+do
+	display+=', "'$d'": true'
 done
-for i in $false; do
-	lines+='
-, "'$i'": false'
+for d in albumbyartist albumyear audiocdplclear backonleft   barsalways  composername   conductorname \
+		 covervu       hidecover progress       radioelapsed tapaddplay  tapreplaceplay vumeter
+do
+	display+=', "'$d'": false'
 done
-jq -S <<< {${lines:2}} > $dirsystem/display.json
+jq -S <<< "{ ${display:1} }" > $dirsystem/display.json
 chown -R http:http /srv &> /dev/null
 chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
 chmod -R u=rw,go=r,a+X /srv

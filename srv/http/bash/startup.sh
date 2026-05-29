@@ -15,14 +15,14 @@ if [[ -e /boot/expand ]]; then # run once
 	rm /etc/machine-id
 	systemd-machine-id-setup
 	id1=$( < /etc/machine-id )
-	mv /var/log/journal/{$id0,$id1}
+	mv -f /var/log/journal/{$id0,$id1}
 	usbMaxCurrent
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 if [[ -e $backupfile ]]; then
-	mv "$backupfile" $dirshm/backup.gz
+	mv -f "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
 fi
 

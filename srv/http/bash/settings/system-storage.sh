@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm hdapm icon info list mounted mountpoint size usf
+	local apm hdapm icon info list mounted mountpoint size
 	icon=$1
 	mountpoint=$2
 	source=$3
@@ -13,10 +13,10 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		if [[ $icon == nfsserver ]]; then
 			size=
 		elif [[ $mounted == true ]]; then # timeout: limit if network shares offline
-			size=$( timeout 1 df -H --output=used,size "$mountpoint" | awk '!/Used/ {print $1"B/"$2"B"}' )
+			size=$( timeout 1 df -h --output=used,size "$mountpoint" | awk '!/Used/ {print $1"iB / "$2"iB"}' )
 		elif [[ $mountpoint ]]; then
-			gib=$( lsblk -no SIZE $source )
-			[[ $gib ]] && size=$( calc 0 ${gib:0:-1}*1.07374182 )${gib: -1}B # xxG > xx > XXGB
+			size=$( lsblk -no SIZE $source )
+			[[ $size ]] && size+=iB
 		fi
 		[[ ! $fs ]] && fs=$( blkid -o value -s TYPE $source )
 	else

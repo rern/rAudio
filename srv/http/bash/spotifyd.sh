@@ -67,10 +67,10 @@ cat << EOF > $filestatus
 , "Title"    : ${status[5]}
 EOF
 progress=${status[6]}
-timestamp=${status[7]}
-diff=$(( $( date +%s%3N ) - timestamp ))
 elapsed=$(( ( progress + 500 ) / 1000 ))
-start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
+timestamp=${status[7]}
+diff=$(( timestamp + ( $( date +%s%3N ) - timestamp ) ))
+start=$(( ( diff - progress + 500 ) / 1000 )) # epoch for elapsed calc while play
 cat << EOF > $filestate
 elapsed=$elapsed
 start=$start
@@ -78,4 +78,4 @@ state=$state
 Time=$Time
 EOF
 
-$dirbash/status-push.sh
+pushStatus

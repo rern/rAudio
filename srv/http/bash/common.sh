@@ -103,8 +103,8 @@ cacheBust() {
 	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 	rm -f $dirshm/system
 }
-calc() { # $1 - decimal precision, $2 - math without spaces
-	awk 'BEGIN { printf "%.'$1'f", '$2' }'
+calc() { # $1 - decimal precision, $2 - math
+	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'
 }
 camillaDSPstart() {
 	systemctl start camilladsp
@@ -229,27 +229,25 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+mpdoled_vuled_vumeter() {
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
+	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
+	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
+}
 fifoToggle() { # mpdoled vuled vumeter
 	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
-	[[ -e $dirsystem/vuled ]] && vuled=1
-	if grep -q -m1 vumeter.*true $dirsystem/display.json; then
-		vumeter=1
-		touch $dirsystem/vumeter
-	else
-		rm -f $dirsystem/vumeter
-	fi
+	mpdoled_vuled_vumeter
+	[[ $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
 	if [[ $mpdoled || $vuled || $vumeter ]]; then
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
-			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
-		! grep -q 'state="*play' $dirshm/status && return
-#...............................................................................
-		[[ $mpdoled ]] && systemctl restart mpd_oled
-		[[ $vuled || $vumeter ]] && systemctl restart cava
+		if grep -q '^state=.*play' $dirshm/status; then
+			[[ $mpdoled ]] && systemctl restart mpd_oled
+			[[ $vuled || $vumeter ]] && systemctl start cava
+		fi
 	else
 		if [[ -e $filefifo ]]; then
 			[[ $mpdoled || $vuled || $vumeter ]] && return
@@ -336,7 +334,9 @@ i2cAddress() {
 		for h in $hex; do
 			address+=', "0x'$h'": '$(( 16#$h ))
 		done
-		[[ $address ]] && echo "{ ${address:1} }" || echo '{ "0x27": 39, "0x3f": 63 }'
+		echo "{ ${address:1} }"
+	else
+		echo '{ "0x27": 39, "0x3f": 63 }'
 	fi
 }
 inOutputConf() {
@@ -346,9 +346,9 @@ inOutputConf() {
 }
 ipAddress() {
 	if [[ $1 ]]; then
-		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}'
+		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}' | head -1
 	else
-		ip route get 1.1.1.1 | awk '/src/ {print $7}'
+		ip route get 1.1.1.1 | awk '/src/ {print $7}' | head -1
 	fi
 }
 ipOnline() {
@@ -481,6 +481,9 @@ pushRefresh() {
 	push=${2:-push}
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
+}
+pushStatus() {
+	$dirbash/status-push.sh
 }
 pushWebsocket() {
 	local data

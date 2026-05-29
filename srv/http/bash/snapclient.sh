@@ -21,4 +21,3 @@ else
 	echo snapcast > $dirshm/player
 	systemctl start snapclient
 fi
-$dirbash/status-push.sh

@@ -176,7 +176,7 @@ fi
 # renderers
 [[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
 
-if [[ -e /bin/shairport-sync ]]; then
+if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
@@ -205,7 +205,7 @@ if [[ -e /bin/snapclient ]]; then
 	fi
 fi
 
-if [[ -e /bin/spotifyd ]]; then
+if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
 		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else

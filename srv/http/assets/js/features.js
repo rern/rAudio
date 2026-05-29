@@ -545,6 +545,7 @@ var UTIL        = {
 				} );
 				return
 			}
+			
 			SETTING( 'spotifyoutput', data => {
 				INFO( {
 					  ...SW
@@ -566,7 +567,17 @@ var UTIL        = {
 	}
 }
 function renderPage() {
-	var currently   = ' Currently enabled.';
+	var currently   = ' is currently enabled.';
+	if ( S.snapclientserver ) {
+		var snapclientdisabled  = '';
+		if ( S.shairportsync ) snapclientdisabled = LABEL_ICON( 'AirPlay', 'shairportsync' );
+		if ( S.spotifyd ) snapclientdisabled += '&ensp;'+ LABEL_ICON( 'Spotiy', 'spotify' );
+		if ( snapclientdisabled ) {
+			snapclientdisabled += '<br>on'
+								 +'<br>'+ LABEL_ICON( 'SnapServer', 'snapcast' ) + currently;
+			DISABLE( 'snapclient', snapclientdisabled );
+		}
+	}
 	var smbdisabled = '';
 	if ( S.nfsserver ) {
 		smbdisabled = LABEL_ICON( 'Server rAudio', 'nfsserver' ) + currently;
@@ -583,6 +594,7 @@ function renderPage() {
 		nfsdisabled = LABEL_ICON( 'Shared Data', 'networks' ) + currently;
 	}
 	DISABLE( 'nfsserver', nfsdisabled );
+	$( '#setting-spotifyd' ).toggleClass( 'disabled', S.snapserver );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

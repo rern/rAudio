@@ -42,6 +42,13 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
+snapclientEnable() {
+	local card pcm
+	card=$( getVar card $dirshm/output )
+	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
+	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
+	[[ -e $dirmpdconf/snapserver.conf ]] && touch $dirsystem/snapclientserver
+}
 wlanDisable() {
 	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
 }
@@ -196,6 +203,7 @@ shairportsync | spotifyd | upmpdcli )
 	[[ $CMD == shairportsync ]] && CMD=shairport-sync
 	if [[ $ON ]]; then
 		serviceRestartEnable
+		[[ -e $dirmpdconf/snapserver.conf ]] && snapclientEnable
 	else
 		case $CMD in
 			shairport-sync ) player=airplay;;
@@ -204,6 +212,12 @@ shairportsync | spotifyd | upmpdcli )
 		esac
 		playerActive $player && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
+		if [[ ${CMD:0:1} == s && -e $dirsystem/snapclientserver ]]; then
+			for s in shairport-sync spotifyd; do
+				systemctl -q is-enabled $s && enabled=1 && break
+			done
+			[[ ! $enabled ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
+		fi
 	fi
 	pushRefresh
 	;;
@@ -229,10 +243,7 @@ smb )
 snapclient )
 	enableFlagSet
 	if [[ $ON ]]; then
-		card=$( getVar card $dirshm/output )
-		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
-		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
-		systemctl -q is-active snapserver && mv $dirsystem/snapclient{,server}
+		snapclientEnable
 	else
 		$dirbash/snapclient.sh stop
 		rm -f $dirsystem/snapclient*
@@ -240,16 +251,40 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
+	file_clientserver=$dirsystem/snapclientserver
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
-		mv -f $dirsystem/snapclient{,server} &> /dev/null
 		serviceRestartEnable
+		[[ -e $dirsystem/snapclient ]] && touch $file_clientserver
+		for s in shairport-sync spotifyd; do
+			cp -f /etc/$s.conf{,.default}
+			[[ -e $file_clientserver ]] && continue
+			
+			systemctl -q is-enabled $s && touch $file_clientserver
+		done
+		sed -i -e '/^alsa/,$ d
+' -e '/name = / a\
+	output_backend = "pipe";
+' -e '/^sessioncontrol/ i\
+pipe = {\
+	name = "/tmp/snapfifo";\
+};
+' /etc/shairport-sync.conf
+		sed -i -E -e '/^backend/,$ d
+' -e '/^use_mpris/ a\
+backend = "pipe"\
+device = "/tmp/snapfifo"
+' /etc/spotifyd.conf
 	else
 		snapclientIP playerstop
-		rm -f $dirmpdconf/snapserver.conf
-		mv -f $dirsystem/snapclient{server,} &> /dev/null
+		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
+		for s in shairport-sync spotifyd; do
+			cp -f /etc/$s.conf{.default,}
+		done
 	fi
+	systemctl try-restart shairport-sync
+	systemctl try-restart spotifyd
 	$dirsettings/player-conf.sh
 	pushRefresh
 	;;
@@ -301,7 +336,12 @@ startx )
 	if [[ $onwhileplay ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
-	! grep -q "Handlers=.*mouse" /proc/bus/input/devices && cursor='-use_cursor no'
+	file=/proc/bus/input/devices
+	if ! grep -q "Handlers=.*mouse" $file \
+		|| grep -q -m1 'Name=.*[Tt]ouch' $file \
+		|| grep -q -m1 'ABS=' $file; then
+		cursor='-use_cursor no'
+	fi
 	matchbox-window-manager $cursor &
 	export $( dbus-launch )
 	export MOZ_USE_XINPUT2=1
@@ -311,7 +351,7 @@ stoptimer )
 	enableFlagSet
 	killProcess stoptimer
 	if [[ $ON ]]; then
-		$dirbash/status-push.sh
+		pushStatus
 	else
 		if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 			$dirbash/relays-timer.sh &> /dev/null &

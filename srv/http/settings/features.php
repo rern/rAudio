@@ -68,6 +68,7 @@ EOF
 		, 'sub'      => 'snapclient'
 		, 'status'   => true
 		, 'exist'    => true
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.

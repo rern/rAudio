@@ -3,7 +3,7 @@
 # file mode
 # initial page load / refresh > status.sh
 # changes:
-#    - mpdidle.sh > status-push.sh
+#    - mpdidle.sh > pushStatus
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 [[ ! $( mpc status %state% 2> /dev/null ) ]] && exit # omit: startup websocket / no state on start playing dsd from network (<rpi4)
 # --------------------------------------------------------------------
@@ -108,20 +108,13 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		dirairplay=$dirshm/airplay
-		state=$( getContent $dirairplay/state stop )
 		Time=$( getContent $dirairplay/Time )
-		timestamp=$( date +%s%3N )
-		if [[ $state == pause ]]; then
-			elapsed=$( < $dirairplay/elapsed )
+		state=$( getContent $dirairplay/state stop )
+		if [[ $state == play ]]; then
+			start=$( < $dirairplay/start )
+			elapsed=$(( $( date +%s ) - start + 1 ))
 		else
-			start=$( getContent $dirairplay/start 0 )
-			elapsedms=$(( timestamp - start ))
-			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
-		fi
-
-		if [[ -e $dirairplay/timestamp ]]; then
-			diff=$(( timestamp - $( < $dirairplay/timestamp ) ))
-			elapsed=$(( diff / 1000 + elapsed ))
+			elapsed=$( < $dirairplay/elapsed )
 		fi
 ########
 		status+='
@@ -133,7 +126,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
 , "Time"      : '$Time'
-, "timestamp" : '$timestamp'
+, "timestamp" : '$( date +%s%3N )'
 , "Title"     : "'$( getContent $dirairplay/Title )'"'
 		;;
 	bluetooth )
@@ -234,8 +227,8 @@ if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
 	audiocd=1
+	discid=$( < $dirshm/audiocd )
 	if [[ -e $diraudiocd/$discid ]]; then
-		discid=$( < $dirshm/audiocd )
 		track=${file##*/}
 		readarray -t disciddata < <( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${disciddata[0]}
@@ -299,7 +292,7 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: status-push.sh
+			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: pushStatus
 				if [[ $icon == dabradio ]]; then
 					radio_dab=dab
 					radiosampling="48 kHz 160 kbit/s"

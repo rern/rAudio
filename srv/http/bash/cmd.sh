@@ -47,7 +47,7 @@ bookmarkremove )
 	pushBookmark
 	;;
 bookmarkrename )
-	mv $dirbookmarks/{"$NAME","$NEWNAME"}
+	mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
 	pushBookmark
 	;;
 cachebust )
@@ -291,7 +291,7 @@ mpccrop )
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
-	$dirbash/status-push.sh
+	pushStatus
 	pushPlaylist
 	;;
 mpclibrandom )
@@ -311,7 +311,6 @@ mpcoption )
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
-# --------------------------------------------------------------------
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
@@ -332,7 +331,7 @@ mpcplayback )
 				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
 			done
 			rm -f $dirshm/cdstart
-			$dirbash/status-push.sh
+			pushStatus
 		fi
 		if [[ -e $dirshm/relayson ]]; then
 			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
@@ -548,12 +547,12 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	! playerActive airplay && echo airplay > $dirshm/player && playerStart
+	if ! playerActive airplay; then
+		echo airplay > $dirshm/player
+		pushStatus
+		playerStart
+	fi
 	systemctl start shairport
-	$dirbash/status-push.sh
-	;;
-shairportstop )
-	shairportStop
 	;;
 shareddataupdate )
 	systemctl restart mpd

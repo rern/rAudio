@@ -64,10 +64,9 @@ function REFRESHDATA() {
 		}
 		
 		try {
-			if ( $.isEmptyObject( S ) ) {
+			if ( $.isEmptyObject( S ) ) { // 1st load
 				S = JSON.parse( list );
 			} else {
-				if ( $MENU.length ) V.list = COMMON.json.clone( S.list );
 				list = JSON.parse( list );
 				$.each( list, ( k, v ) => { S[ k ] = v } );
 			}
@@ -201,7 +200,10 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 if ( $MENU.length ) {
 	var LIST = {
 		  equal  : list => {
-			if ( ! V.list ) return false
+			if ( ! V.list ) {
+				V.list = COMMON.json.clone( S.list );
+				return false
+			}
 			
 			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 		}

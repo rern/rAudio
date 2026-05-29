@@ -4,7 +4,7 @@
 
 args2var "$1"
 
-if playerActive upnp; then
+if [[ $( < $dirshm/player ) == upnp ]]; then
 	upnp=1
 	name=$( alphaNumeric $ARTIST$ALBUM )
 	localfile=$dirshm/local/$name

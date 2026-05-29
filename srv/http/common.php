@@ -112,7 +112,7 @@ foreach( $js as $j )  $html_end.= $htmljs.$j.'.js'.$hash.'"></script>';
 
 function htmlEnd( $htmlbar ) {
 	global $html_end;
-	if ( $htmlbar ) $html_end.= '
+	if ( $htmlbar ) echo '
 	<div id="bar-bottom">'.$htmlbar.'</div>
 ';
 	echo $html_end.'

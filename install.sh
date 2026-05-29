@@ -4,6 +4,17 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260529
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
+	pacman -Sy --noconfirm mpd_oled
+	file=/etc/default/mpd_oled
+	if grep ' -X' $file; then
+		sed -i 's/ -X//' $file
+	else
+		sed -i 's/fifo"/fifo -X"/' $file
+	fi
+fi
+
 # 20260509
 file=$dirshareddata/source
 if [[ -e $file && $( awk '{print $6}' $file ) ]]; then
@@ -13,16 +24,6 @@ fi
 
 if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
 	sed -i '/^\[core]/,$ d' /etc/pacman.conf
-fi
-
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-1' ]]; then
-	pacman -Sy --noconfirm mpd_oled
-	file=/etc/default/mpd_oled
-	if grep ' -X' $file; then
-		sed -i 's/ -X//' $file
-	else
-		sed -i 's/fifo"/fifo -X"/' $file
-	fi
 fi
 
 file=/etc/udevil/udevil.conf

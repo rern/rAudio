@@ -16,10 +16,10 @@ if ! grep -q ^audioservice <<< $dabscan; then
 fi
 
 dirdabradio=$dirdata/dabradio
-mv $dirdabradio/img $dirshm &> /dev/null
+mv -f $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
-mv $dirshm/img $dirdabradio &> /dev/null
+mv -f $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
 services=$( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' <<< $dabscan )

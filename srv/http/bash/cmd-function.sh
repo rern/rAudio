@@ -19,7 +19,7 @@ plAddRandom() {
 	local ab cuefile dir dirlast len_pos mpcls plL range
 	len_pos=( $( mpc status '%length% %songpos%' ) )
 	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
-
+#...............................................................................
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album
@@ -69,10 +69,10 @@ playerStop() {
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
-	$dirbash/status-push.sh
 	case $player in
 		airplay )
-			shairportStop
+			systemctl stop shairport # metadata
+			systemctl restart shairport-sync
 			;;
 		bluetooth )
 			rm -f $dirshm/{bluetoothdest,bluetoothsink}
@@ -81,6 +81,8 @@ playerStop() {
 		mpd )
 			radioStop
 			mpc -q stop
+			[[ -e $dirshm/skip ]] && return
+#...............................................................................
 			;;
 		snapcast )
 			$dirbash/snapclient.sh stop
@@ -92,9 +94,9 @@ playerStop() {
 		upnp )
 			systemctl restart upmpdcli
 			mpc -q clear
-			$dirbash/status-push.sh
 			;;
 	esac
+	$dirbash/status-push.sh $( [[ $player != mpd ]] && echo playerstop )
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
@@ -111,7 +113,7 @@ pushPlaylist() {
 	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist*
 	if [[ $( mpc status %length% ) == 0 ]]; then
-		pushData playlist '{ "blank": true } }'
+		pushData playlist '{ "blank": true }'
 	else
 		data=$( php /srv/http/playlist.php current | tr -d '\n' )
 		data=$( pushDataSet playlist "$data" )
@@ -132,23 +134,19 @@ pushSavedPlaylist() {
 	fi
 }
 radioStop() {
-	if [[ -e $dirshm/radio ]]; then
-		mpc -q stop
-		systemctl stop radio dab &> /dev/null
-		rm -f $dirshm/radio
-		[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
-	fi
+	[[ ! -e $dirshm/radio ]] && return
+#...............................................................................
+	mpc -q stop
+	systemctl stop radio dab &> /dev/null
+	rm -f $dirshm/radio
+	pushStatus
+	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
 }
 savedPlCount() {
 	playlists=$( ls $dirplaylists | wc -l )
 	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
 	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
 	pushSavedPlaylist
-}
-shairportStop() {
-	systemctl stop shairport
-	systemctl restart shairport-sync
-	$dirbash/status-push.sh
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
@@ -166,11 +164,11 @@ webradioM3uPlsVerify() {
 	url=$1
 	ext=${url/*.}
 	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
-
+#...............................................................................
 	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
+		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
+		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
 # --------------------------------------------------------------------
@@ -179,7 +177,7 @@ webRadioSampling() {
 	local bitrate data file kb rate sample samplerate url
 	url=$1
 	file=$2
-	timeout 3 curl -sL $url -o /tmp/webradio
+	timeout 3 curl -sL "$url" -o /tmp/webradio
 	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
 # --------------------------------------------------------------------
 	data=( $( ffprobe -v quiet -select_streams a:0 \

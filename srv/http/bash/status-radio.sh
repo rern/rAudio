@@ -46,7 +46,7 @@ metadataGet() {
 	if [[ $id < 4 || $id == 5 ]]; then
 		radioparadise=1
 		icon=radioparadise
-		json=$( curl -sGk -m 5 --data-urlencode "chan=$id" https://api.radioparadise.com/api/now_playing )
+		json=$( curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing )
 	else
 		icon=radiofrance
 		if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)

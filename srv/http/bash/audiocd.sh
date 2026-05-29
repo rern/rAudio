@@ -25,7 +25,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/cmd.sh playlistpush
-	$dirbash/status-push.sh
+	pushStatus
 	exit
 # --------------------------------------------------------------------
 fi
@@ -60,13 +60,14 @@ cdData() {
 }
 
 grep -qs -m1 '\^^^' $diraudiocd/$discid && rm $diraudiocd/$discid # remove bad data
-
 if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
-	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
-	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
-	options='hello=owner+rAudio+rAudio+1&proto=6'
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
-	query=$( curl -sfL "$server+query+$discdata&$options" | tr -d '\r' ) # remove \r
+	discid=$( tr ' ' + <<< ${cddiscid[@]} )
+	query=$( curl -sX POST \
+				--data "cmd=cddb+read+data+$discid" \
+				--data "hello=owner+rAudio+rAudio+1" \
+				--data "proto=6" \
+				https://gnudb.gnudb.org/~cddb/cddb.cgi )
 	if [[ $? == 0 ]]; then
 # 210 Found exact matches, list follows (until terminating `.')
 # GENRE0 DISCID ARTIST / ALBUM
