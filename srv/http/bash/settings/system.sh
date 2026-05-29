@@ -183,6 +183,12 @@ dtparam=audio=on"
 	fi
 	configTxt
 	;;
+lcdchar )
+	enableFlagSet
+	i2cset=1
+	configTxt
+	systemctl stop lcdchar
+	;;
 mirror )
 	[[ $MIRROR ]] && MIRROR+=.
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
