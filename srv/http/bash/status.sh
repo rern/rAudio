@@ -35,14 +35,10 @@ else
 	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
-	else
-		. <( grep -E '^card|^mixer' $dirshm/output )
-	fi
-#-----------------------------------------------------------------------------------------
-	if [[ -e $dirshm/nosound ]]; then
+	elif [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		. <( grep -E '^mixer|^mixertype' $dirshm/output )
+		. <( grep -E '^card|^mixer|^mixertype' $dirshm/output )
 		if [[ $mixertype != none ]] \
 			|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
 			|| [[ -e $dirsystem/camilladsp && $mixer ]]; then

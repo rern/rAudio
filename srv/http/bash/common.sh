@@ -665,7 +665,7 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	[[ $CARD == bluealsa ]] && fn_volume=volumeBlueAlsa || fn_volume=$( < $dirshm/volumefunction ) # from player settings
+	fn_volume=$( volumeFunction )
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
@@ -691,6 +691,9 @@ volumeAmixer() { # value control card
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
+}
+volumeFunction() {
+	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
@@ -742,13 +745,14 @@ volumeMpd() {
 	mpc -q volume ${1/\%}
 }
 volumeLimit() {
-	fn_volume=$( < $dirshm/volumefunction )
+	local fn_volume mixer val
 	val=$( getVar $1 $dirsystem/volumelimit.conf )
 	if [[ -e $dirshm/btreceiver ]]; then
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
 	fi
+	fn_volume=$( volumeFunction )
 	$fn_volume $val% "$mixer" $card
 }
 wlanOnboardDisable() {

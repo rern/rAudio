@@ -244,12 +244,3 @@ $value
 $user
 CMD VALUE USR"
 fi
-
-if [[ $BLUETOOTH && ! -e $dirsystem/devicewithbt ]]; then
-	function=volumeBlueAlsa
-elif [[ $mixertype == software ]]; then
-	function=volumeMpd
-else
-	function=volumeAmixer
-fi
-echo $function > $dirshm/volumefunction
