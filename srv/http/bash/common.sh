@@ -736,7 +736,7 @@ volumeGetAmixer() {
 	else
 		val_db=$( amixer -M sget "$1" 2> /dev/null )
 	fi
-	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -dc '[:digit:]-. '
+	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
 }
 volumeMaxGet() {
 	local volumemax
