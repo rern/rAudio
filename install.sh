@@ -15,7 +15,6 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
 	fi
 fi
 
-
 # 20260509
 file=$dirshareddata/source
 if [[ -e $file && $( awk '{print $6}' $file ) ]]; then
