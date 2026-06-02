@@ -669,7 +669,7 @@ volume() {
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$fn_volume $TARGET% "$CONTROL" $CARD
+		$fn_volume $TARGET% "$CONTROL"
 		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
 			[[ $CURRENT == 0 ]] && val=2 || val=0
 			$fn_volume $val% "$CONTROL" $CARD
@@ -680,13 +680,13 @@ volume() {
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$fn_volume $val% "$CONTROL" $CARD
+			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
 	fi
 }
 volumeAmixer() { # value control card
-	amixer -c $3 -Mq sset "$2" $1
+	amixer -Mq sset "$2" $1
 	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control

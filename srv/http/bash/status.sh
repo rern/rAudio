@@ -34,7 +34,6 @@ else
 	[[ $player != mpd ]] && icon=$player
 	. $dirshm/output
 	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
 		volumenone=true
@@ -65,7 +64,6 @@ else
 	status+='
 , "player"       : "'$player'"
 , "btsender"     : '$( exists $dirshm/btmixer )'
-, "card"         : '$card'
 , "control"      : "'$mixer'"
 , "counts"       : '$( < $dirmpd/counts )'
 , "display"      : '$display'

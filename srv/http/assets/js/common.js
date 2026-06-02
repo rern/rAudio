@@ -1662,7 +1662,7 @@ var VOLUME    = {
 			type = 'dragpress';
 			VOLUME.push();
 		}
-		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
 	, push    : () => {
 		V.local = true;
