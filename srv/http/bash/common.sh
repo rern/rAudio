@@ -698,27 +698,25 @@ volumeFunction() {
 volumeGet() {
 	local args card db mixer mixertype name val val_db volume
 	. $dirshm/output
-	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-		val_db=$( amixer -MD bluealsa 2> /dev/null \
-					| grep -m1 % \
-					| awk -F'[][]' '{print $2, $4}' )
+	if [[ $2 == hw ]]; then
+		read val db < <( volumeGetAmixer "$mixer" )
+	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+		read val db < <( volumeGetAmixer bluealsa )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
 		echo -1
 		return
 		
 	elif [[ $mixertype == software ]] && playerActive mpd; then
-		val_db="$( mpc status %volume% | tr -dc [:digit:] ) false"
+		val="$( mpc status %volume% )"
+		db=false
 	else
 		for i in {1..5}; do # some usb might not be ready
-			val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null \
-						| grep -m1 % \
-						| awk -F'[][]' '{print $2, $4}' )
-			[[ $val_db ]] && break || sleep 1
+			read val db < <( volumeGetAmixer "$mixer" )
+			[[ $val ]] && break || sleep 1
 		done
 	fi
-	[[ ! $val_db ]] && echo -1 && return
+	[[ ! $val ]] && echo -1 && return
 	
-	read val db < <( tr -dc '[:digit:]-. ' <<< $val_db )
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
@@ -730,6 +728,15 @@ volumeGet() {
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
+}
+volumeGetAmixer() {
+	local val_db
+	if [[ $1 == bluealsa ]]; then
+		val_db=$( amixer -MD bluealsa 2> /dev/null )
+	else
+		val_db=$( amixer -M sget "$1" 2> /dev/null )
+	fi
+	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -dc '[:digit:]-. '
 }
 volumeMaxGet() {
 	local volumemax

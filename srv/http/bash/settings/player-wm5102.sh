@@ -27,7 +27,7 @@ SPDIF Out Switch"
 control_all=$( printf "%s\n" "${controls[@]}" )
 while read control; do
 	[[ ${control: -1} =~ [12] ]] && val=None || val=off
-	amixer -c $card -q cset "$control" $val
+	amixer -Mq cset "$control" $val
 done <<< $control_all
 
 while read control; do
@@ -41,5 +41,5 @@ while read control; do
 			* )      val=AIF1RX$( sed -E 's/.*(.)$/\1/; s/L/1/; s/R/2/' <<< ${control/ *} );;
 		esac
 	fi
-	amixer -c $card -Mq cset "$control" $val
+	amixer -Mq cset "$control" $val
 done <<< ${controls["$output"]}

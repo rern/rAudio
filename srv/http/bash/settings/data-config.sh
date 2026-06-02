@@ -99,7 +99,7 @@ localbrowser )
 	cp $dirsystem/localbrowser.conf /tmp
 	;;
 mixer )
-	volumeGet json
+	volumeGet json hw
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then
