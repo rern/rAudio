@@ -32,20 +32,12 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
+	. $dirshm/output
 	if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		card='"bluealsa"'
 		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/nosound ]]; then
+	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
 		volumenone=true
-	else
-		. <( grep -E '^card|^mixer|^mixertype' $dirshm/output )
-		if [[ $mixertype != none ]] \
-			|| [[ -e $dirshm/btmixer || -e $dirsystem/snapclientserver ]] \
-			|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
-			volumenone=false
-		else
-			volumenone=true
-		fi
 	fi
 	if [[ -e /bin/firefox ]]; then
 		grep -qs ^screenoff=0 $dirsystem/localbrowser.conf || screenoff=true
