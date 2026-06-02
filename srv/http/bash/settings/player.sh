@@ -11,7 +11,7 @@ amixer0dB() {
 	if [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
 		volumeAmixer 0dB "$mixer" $card
-		volumeGet push hw
+		volumeGet push
 	fi
 }
 
@@ -179,8 +179,7 @@ $data
 	;;
 volume )
 	volume
-	[[ $CARD != bluealsa ]] && hw=hw
-	volumeGet push $hw
+	volumeGet push
 	;;
 volume0db )
 	amixer0dB
