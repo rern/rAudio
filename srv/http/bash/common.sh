@@ -703,20 +703,17 @@ volumeGet() {
 	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		read val db < <( volumeGetAmixer bluealsa )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
-		echo -1
-		return
-		
+		echo 0 0
 	elif [[ $mixertype == software ]] && playerActive mpd; then
 		val="$( mpc status %volume% )"
-		db=false
 	else
 		for i in {1..5}; do # some usb might not be ready
 			read val db < <( volumeGetAmixer "$mixer" )
 			[[ $val ]] && break || sleep 1
 		done
 	fi
-	[[ ! $val ]] && echo -1 && return
-	
+	[[ ! $val ]] && val=0
+	[[ ! $db ]] && db=0
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
