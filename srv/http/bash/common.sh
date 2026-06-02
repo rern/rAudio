@@ -703,7 +703,7 @@ volumeGet() {
 	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		read val db < <( volumeGetAmixer bluealsa )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
-		echo 0 0
+		true
 	elif [[ $mixertype == software ]] && playerActive mpd; then
 		val="$( mpc status %volume% )"
 	else
