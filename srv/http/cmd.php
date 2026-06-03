@@ -10,9 +10,15 @@ $dirshm      = $dirdata.'shm/';
 switch( $CMD ) {
 
 case 'bash':
-	$args    = $post->args ?? '';
-	if ( is_array( $args ) ) $args = escape( implode( "\n", $args ) );
-	$command = $dirbash.$post->filesh.' "'.$args.'"';
+	$command = $dirbash.$post->filesh;
+	if ( isset( $post->args ) ) {
+		if ( is_array( $post->args ) ) {
+			$args = escape( implode( "\n", $post->args ) );
+		} else {
+			$args = $post->args;
+		}
+		$command.= ' "'.$args.'"';
+	}
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;

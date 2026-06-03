@@ -77,12 +77,13 @@ function BASH( args, callback, json ) {
 		}
 	}
 	// php
-	var data = { cmd: 'bash', filesh: filesh, args: args || '' }
+	var data = { cmd: 'bash', filesh: filesh }
+	if ( args.length ) data.args = args;
 	if ( V.debug ) {
 		COMMON.debugConsole( data );
 		return
 	}
-
+	
 	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function ICON( icon, id, tabindex ) {
