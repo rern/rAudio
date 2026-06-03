@@ -9,6 +9,9 @@ $dirshm      = $dirdata.'shm/';
 
 switch( $CMD ) {
 
+case 'bin':
+	echo shell_exec( $dirbash.$post->bin );
+	break;
 case 'bash':
 	$command = $dirbash.$post->filesh;
 	if ( isset( $post->args ) ) {
