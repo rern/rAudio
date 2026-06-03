@@ -154,8 +154,7 @@ dirrename )
 	pushRadioList
 	;;
 display )
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
+	pushStatus
 	systemctl try-restart radio
 	fifoToggle
 	;;
@@ -557,8 +556,7 @@ shairport )
 shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
+	pushStatus
 	;;
 snapserverlist )
 	snapserverList
