@@ -58,13 +58,13 @@ BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function BASH( args, callback, json ) {
 	if ( typeof args === 'string' ) {
-		var filesh = 'settings/'+ args
+		var filesh = ( PAGE ? 'settings/' : '' ) + args;
 		args       = '';
 	} else if ( [ '.sh', '.py' ].includes( args[ 0 ].slice( -3 ) ) ) {
 		var filesh = args[ 0 ];
 		args.shift();
 	} else {
-		var filesh = PAGE ? 'settings/'+ PAGE +'.sh': 'cmd.sh';
+		var filesh = PAGE ? 'settings/'+ PAGE +'.sh' : 'cmd.sh';
 	}
 	// websocket
 	if ( ! callback && WS.readyState === 1 ) {
