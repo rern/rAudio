@@ -361,7 +361,7 @@ ipSharedData() {
 }
 json2var() { # single level only
 	local regex
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/=false$/=/'
 	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
