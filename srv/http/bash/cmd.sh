@@ -545,13 +545,6 @@ savedplsave )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
-scrobbleconf )
-	. $dirsystem/scrobble.conf
-	for k in AIRPLAY BLUETOOTH SPOTIFY UPNP; do
-		conf+=', "'${k,,}'": '$( [[ ${!k} ]] && echo true || echo false )
-	done
-	echo "{ ${conf:1} }"
-	;;
 shairport )
 	if ! playerActive airplay; then
 		echo airplay > $dirshm/player
