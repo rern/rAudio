@@ -13,7 +13,16 @@ args2var "$1"
 #		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
 # [[ $? == 0 && $data ]] && url=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
 	
-### 1 - lastfm ##################################################
+if [[ $( < $dirshm/player ) == upnp ]]; then
+	cover=$( $dirbash/status-coverartupnp.py 2> /dev/null )
+	if [[ $cover ]]; then
+		pushData cover '{ "cover": "'$cover'" }'
+		name=$( alphaNumeric $ARTIST$ALBUM )
+		echo $cover > $dirshm/local/$name
+		exit
+# --------------------------------------------------------------------
+	fi
+fi
 if [[ $MODE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'

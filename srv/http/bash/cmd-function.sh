@@ -92,15 +92,15 @@ playerStop() {
 			systemctl restart spotifyd
 			;;
 		upnp )
-			systemctl restart upmpdcli
+			systemctl stop upmpdcli
 			mpc -q clear
+			systemctl start upmpdcli
 			;;
 	esac
 	if [[ $player == mpd ]]; then
 		$dirbash/status-push.sh
 	else
 		$dirbash/status-push.sh playerstop
-		sleep 1
 	fi
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
