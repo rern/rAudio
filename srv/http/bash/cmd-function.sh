@@ -65,7 +65,7 @@ playerStart() {
 	fi
 }
 playerStop() {
-	local player playerstop
+	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
 	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
@@ -96,8 +96,12 @@ playerStop() {
 			mpc -q clear
 			;;
 	esac
-	[[ $player != mpd ]] && playerstop=playerstop
-	$dirbash/status-push.sh $playerstop
+	if [[ $player == mpd ]]; then
+		$dirbash/status-push.sh
+	else
+		$dirbash/status-push.sh playerstop
+		sleep 1
+	fi
 	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
