@@ -48,11 +48,11 @@ async def cmd( websocket ):
                 if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
                     CLIENTS.discard( IP_CLIENT[ IP ] )
                     IP_CLIENT.pop( IP, None )
-        elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
-            status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
+        elif 'status' in jargs:                   # snapclient
+            status = subprocess.run( [ '/srv/http/bash/status', '-k' ], capture_output=True, text=True )
             status = status.stdout.replace( '\n', '\\n' )
             await websocket.send( status )
-        elif 'ping' in jargs:
+        elif 'ping' in jargs:                     # ws client
             await websocket.send( 'pong' )
 
 async def main():

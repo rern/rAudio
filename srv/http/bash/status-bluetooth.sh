@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RPi as renderer - status.sh > this:
+# RPi as renderer - status > this:
 #    - retreive current status from dbus
 
 . /srv/http/bash/common.sh

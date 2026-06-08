@@ -483,7 +483,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	status=$( $dirbash/status.sh )
+	status=$( $dirbash/status )
 	pushData mpdplayer "$status"
 }
 pushWebsocket() {

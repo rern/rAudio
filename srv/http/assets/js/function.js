@@ -1377,23 +1377,12 @@ var PLAYBACK  = {
 		$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 		PROGRESS.set( 0 );
 		$( '#sampling' ).empty();
-		if ( S.ip || D.ap ) {
-			var ip = S.ip || D.apconf.ip;
-			if ( ! ip ) return
-			
-			var htmlqr = '';
-			if ( ! S.ip && D.ap ) {
-				htmlqr += '<gr>Access Point:</gr> '+ D.apconf.ssid
-						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
-						 + QRCode( D.apconf.qr );
-			}
-			htmlqr   += 'http://<wh>'+ ip +'</wh>'
-					  + '<br>http://'+ S.hostname +'.local'
-					  + QRCode( 'http://'+ ip );
-			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
-			$( '#qr' ).html( htmlqr );
-			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
-			$COVERART.addClass( 'hide' );
+		if ( S.ip ) {
+			PLAYBACK.qrCode( S.ip );
+		} else if ( D.ap ) {
+			BASH( 'settings/data-config.sh ap', ap => {
+				PLAYBACK.qrCode( ap.IP, ap );
+			}, 'json' );
 		} else {
 			$COVERART.removeClass( 'hide' );
 			$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ICON( 'networks' ) +'&ensp;Setup</a>' );
@@ -1539,7 +1528,7 @@ var PLAYBACK  = {
 		}, 1000 );
 	}
 	, get       : () => {
-		BASH( [ 'status.sh' ], list => {
+		$.post( 'cmd.php', { cmd: 'bin', bin: 'status' }, list => {
 			if ( ! list ) return // empty on some startup with shared data
 			
 			if ( list == -1 ) {
@@ -1655,21 +1644,7 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
-			var sonpos   = [ 'mpd', 'upnp' ].includes( S.player ) && S.pllength > 1 ? S.song + 1 +'/'+ S.pllength : '';
-			var sampling = sonpos;
-			sampling += sonpos && S.sampling ? ' • ' : '';
-			if ( S.sampling ) sampling += S.sampling;
-			if ( S.webradio ) {
-				if ( S.icon === 'dabradio' ) {
-					sampling += ' • DAB';
-				} else if ( S.Album && S.station ) {
-					var station = [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ? S.station.split( ' - ' ).pop() : S.station;
-					sampling += ' • '+ station;
-				} else {
-					sampling += ' • '+ S.ext;
-				}
-			}
-			$( '#sampling' ).html( sampling );
+			$( '#sampling' ).html( S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
 					$( '#playericon' )
@@ -1742,6 +1717,21 @@ var PLAYBACK  = {
 		} else { //play
 			PLAYBACK.elapsed();
 		}
+	}
+	, qrCode    : ( ip, ap ) => {
+		var htmlqr = '';
+		if ( ap ) {
+			htmlqr += '<gr>Access Point:</gr> '+ ap.SSID
+					 +'<div class="gr">Password: <wh>'+ ap.PASSPHRASE +'</wh></div>'
+					 + QRCode( 'WIFI:T:WPA;S:'+ ap.SSID +';P:'+ ap.PASSPHRASE +';;' );
+		}
+		htmlqr   += 'http://<wh>'+ ip +'</wh>'
+				  + '<br>http://'+ S.hostname +'.local'
+				  + QRCode( 'http://'+ ip );
+		if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
+		$( '#qr' ).html( htmlqr );
+		$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
+		$COVERART.addClass( 'hide' );
 	}
 	, stop      : () => {
 		PROGRESS.set( 0 );
@@ -2125,7 +2115,7 @@ var PLAYLIST  = {
 			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
-				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
+				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 			) {
 				return
 			}
@@ -2379,7 +2369,11 @@ var UTIL      = {
 			, boxwidth    : 'max'
 			, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 			, beforeshow  : () => {
-				if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
+				if ( S.scrobble ) {
+					BASH( 'settings/data-config.sh scrobble', scrobble => {
+						$( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || scrobble.values[ S.player.toUpperCase() ] );
+					}, 'json' );
+				}
 				if ( paren ) {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$( '#infoList input' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );

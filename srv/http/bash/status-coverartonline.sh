@@ -13,17 +13,7 @@ args2var "$1"
 #		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
 # [[ $? == 0 && $data ]] && url=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
 	
-if [[ $( < $dirshm/player ) == upnp ]]; then
-	cover=$( $dirbash/status-coverartupnp.py 2> /dev/null )
-	if [[ $cover ]]; then
-		pushData cover '{ "cover": "'$cover'" }'
-		name=$( alphaNumeric $ARTIST$ALBUM )
-		echo $cover > $dirshm/local/$name
-		exit
-# --------------------------------------------------------------------
-	fi
-fi
-if [[ $MODE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
+if [[ $MODE == album ]]; then # artist_album
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'
 else
@@ -65,14 +55,9 @@ if [[ $DEBUG ]]; then
 fi
 [[ ! $url ]] && exit
 # --------------------------------------------------------------------
+name=$( alphaNumeric $ARTIST$ALBUM )
 ext=${url/*.}
-if [[ $DISCID ]]; then
-	cover=$diraudiocd/$DISCID.$ext
-else
-	[[ $MODE ]] && prefix=$MODE || prefix=online
-	name=$( alphaNumeric $ARTIST$ALBUM )
-	cover=$dirshm/$prefix/$name.$ext
-fi
+cover=$dirshm/online/$name.$ext
 curl -sfL $url -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
 pushData cover '{ "cover": "'$cover'" }'

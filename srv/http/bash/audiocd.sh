@@ -54,12 +54,17 @@ cdData() {
 			artist=${title/ \/ *}
 			title=${title/* \/ }
 		fi
-		tracks+="$artist^$album^$title^$time"$'\n'
+		mkdir -p $diraudiocd/$discid
+		cat << EOF > $diraudiocd/$discid/i$(( i + 1 ))
+Album="$album"
+Artist="$artist"
+Title="$title"
+Time="$time"
+EOF
 	done
-	echo -n "$tracks" > $diraudiocd/$discid
 }
 
-grep -qs -m1 '\^^^' $diraudiocd/$discid && rm $diraudiocd/$discid # remove bad data
+grep -qs -m1 '\^^^' $diraudiocd/$discid/1 && rm -rf $diraudiocd/$discid # remove bad data
 if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
 	discid=$( tr ' ' + <<< ${cddiscid[@]} )
@@ -159,5 +164,5 @@ fi
 $dirbash/status-coverartonline.sh "cmd
 $artist
 $album
-$discid
-CMD ARTIST ALBUM DISCID" &
+album
+CMD ARTIST ALBUM MODE" &

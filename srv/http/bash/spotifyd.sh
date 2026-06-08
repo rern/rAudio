@@ -22,9 +22,6 @@ fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
 dirspotify=$dirshm/spotify
-for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY
-	printf -v file$key '%s' $dirspotify/$key
-done
 # token
 if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
 	token=$( < $filetoken )
@@ -41,8 +38,8 @@ else
 		exit
 # --------------------------------------------------------------------
 	fi
-	echo $token > $filetoken
-	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
+	echo $token > $dirspotify/token
+	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
 fi
 # data
 readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
@@ -57,21 +54,17 @@ readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/cur
 								.timestamp' ) # not -r: 1-to keep escaped characters 2-already quoted
 [[ ${status[3]} == true ]] && state=play || state=pause
 Time=$(( ( ${status[4]} + 500 ) / 1000 ))
-cat << EOF > $filestatus
-, "Album"    : ${status[0]}
-, "Artist"   : ${status[1]}
-, "coverart" : ${status[2]}
-, "sampling" : "48 kHz 320 kbit/s • Spotify"
-, "state"    : "$state"
-, "Time"     : $Time
-, "Title"    : ${status[5]}
-EOF
 progress=${status[6]}
 elapsed=$(( ( progress + 500 ) / 1000 ))
 timestamp=${status[7]}
 diff=$(( timestamp + ( $( date +%s%3N ) - timestamp ) ))
 start=$(( ( diff - progress + 500 ) / 1000 )) # epoch for elapsed calc while play
-cat << EOF > $filestate
+cat << EOF > $dirspotify/status 
+Album="${status[0]}"
+Artist="${status[1]}"
+Title="${status[5]}"
+coverart="${status[2]}"
+state=$state
 elapsed=$elapsed
 start=$start
 state=$state

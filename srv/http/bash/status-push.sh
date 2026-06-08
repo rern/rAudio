@@ -43,10 +43,10 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-filter='{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   icon, player
-		, song,  station, state,    Time,      timestamp, Title,   volume, webradio }'
+filter='{ Album,    Artist, Composer, Conductor, coverart, elapsed,   file,  icon,   player, pllength
+		, sampling, song,   station,  state,     Time,     timestamp, Title, volume, webradio }'
 if [[ $1 == playerstop ]]; then
-	status=$( $dirbash/status.sh )
+	status=$( $dirbash/status )
 	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
 	state=stop
 elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
@@ -76,8 +76,8 @@ CMD ARTIST ALBUM MODE" &> /dev/null &
 	webradio=true
 	onPlay
 else
-#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( $dirbash/status.sh | jq "$filter" )
+#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) # fix: no state on start playing dsd from network (<rpi4)
+	status=$( $dirbash/status | jq "$filter" )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( json2var "$status" | tee $dirshm/status )
 	isChanged Artist Title Album && trackchanged=1
@@ -95,7 +95,7 @@ fi
 pushData mpdplayer "$status"
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
-	status=$( $dirbash/status.sh snapclient )
+	status=$( $dirbash/status -s )
 	status='{ '${status/,}' }'
 	for ip in $clientip; do
 		pushWebsocket $ip mpdplayer $status
