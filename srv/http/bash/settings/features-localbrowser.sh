@@ -6,7 +6,7 @@
 			systemctl disable --now getty@tty1
 		fi
 		! systemctl -q is-active localbrowser && restart=1
-		. /tmp/localbrowser.conf
+		read rotate zoom screenoff < <( sed 's/.*=//' /tmp/localbrowser.conf | tr '\n' ' ' )
 		if [[ $ROTATE != $rotate ]]; then
 			restart=1
 			file_config=/boot/config.txt
