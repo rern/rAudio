@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # data directories
-mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} \
+mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,renderer,system,webradio,webradio/img} \
 		 /mnt/MPD/{NAS,SD,USB}
 
 . /srv/http/bash/common.sh
