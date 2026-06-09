@@ -605,7 +605,9 @@ snapserverList() {
 splashRotate() {
 	local rotate
 	dirimg=/srv/http/assets/img
-	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+	rotate=$( getVar ROTATE $dirsystem/localbrowser.conf )
+	[[ $rotate == 0 ]] && return
+#...............................................................................
 	magick \
 		-density 48 \
 		-background none $dirimg/icon.svg \
