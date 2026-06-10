@@ -84,7 +84,7 @@ r A u d i o
 	- NVMe / SATA HAT (via PCIe connector - RPi5)
 
 ### Image files
-- Raspberry Pi - [**Release i20251109**](https://github.com/rern/rAudio/releases/tag/i20251109)
+- Raspberry Pi - [**Release i20260529**](https://github.com/rern/rAudio/releases/tag/i20260529)
 - DIY - Build image files with interactive process - [**rOS**](https://github.com/rern/rOS)
 - BeagleBone Black - [Custom DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [Custom DIY](https://github.com/jazzi/rOS)
