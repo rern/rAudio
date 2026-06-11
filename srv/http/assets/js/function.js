@@ -1493,10 +1493,10 @@ var PLAYBACK  = {
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
-		if ( ! S.Time || ( S.webradio && D.radioelapsed ) || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
+		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
-		var t_e      = S.elapsed ? '#elapsed' : '#total';
+		var t_e      = S.elapsed === false ? '#total' : '#elapsed';
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
@@ -1694,7 +1694,7 @@ var PLAYBACK  = {
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( ( S.webradio && D.radioelapsed ) || S.Time || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
@@ -2134,10 +2134,8 @@ var PLAYLIST  = {
 				DISPLAY.pageScroll( top );
 			}
 			$( '#pl-list .elapsed' ).empty();
-			if ( S.webradio ) {
-				PLAYLIST.render.widthRadio();
-				if ( ! D.radioelapsed ) return
-			}
+			if ( S.webradio ) PLAYLIST.render.widthRadio();
+			if ( S.elapsed === false ) return
 			
 			$liactive.addClass( S.state );
 			if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( COMMON.second2HMS( S.Time ) );
