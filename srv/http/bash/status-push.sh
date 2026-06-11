@@ -4,12 +4,6 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-isChanged() {
-	for k in $@; do
-		prev=$( sed -n -E '/^'$k'/ {s/.*="*|"*$//g; p}' <<< $statusprev )
-		[[ $prev != ${!k} ]] && return 0
-	done
-}
 onPlay() {
 	if [[ -e $dirsystem/stoptimer ]]; then
 		if [[ $state == play ]]; then
@@ -80,16 +74,9 @@ else
 	status=$( $dirbash/status | jq "$filter" )
 	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( json2var "$status" | tee $dirshm/status )
-	isChanged Artist Title Album && trackchanged=1
 	onPlay
-	if [[ $webradio == true ]]; then
-		[[ ! $trackchanged && $state == play ]] && exit
+	[[ $webradio == true && $state == play ]] && exit
 # --------------------------------------------------------------------
-	else
-		isChanged state elapsed && statuschanged=1
-		[[ ! $trackchanged && ! $statuschanged ]] && exit
-# --------------------------------------------------------------------
-	fi
 fi
 ########
 pushData mpdplayer "$status"
@@ -112,7 +99,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
-[[ ! -e $dirsystem/scrobble || ( ! $trackchanged && ! -e $dirshm/elapsed ) ]] && exit # track changed || prev/next/stop
+[[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
 . <( echo $statusprev )
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
