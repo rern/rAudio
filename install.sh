@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260616
+rm -f $dirbash/status.sh $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
+
 file=/etc/upmpdcli.conf
 if [[ -e $file ]]; then
 	grep -q -m1 status-push $file && sed -i '/status-push/ d' $file
@@ -81,8 +83,6 @@ rm -f /root/.bashrc
 installstart "$1"
 
 rm -rf /srv/http/assets/{css,js}
-# 20260616
-rm $dirbash/*
 
 getinstallzip
 

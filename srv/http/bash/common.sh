@@ -198,7 +198,7 @@ dabDevice() {
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
-	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
+	[[ $page == status ]] && page='"page" : false' || page='"page" : "'$page'"'
 	json="\
 {
   $page$1
@@ -483,8 +483,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	status=$( $dirbash/status )
-	pushData mpdplayer "$status"
+	$dirbash/status -s
 }
 pushWebsocket() {
 	local data
