@@ -1694,7 +1694,7 @@ var PLAYBACK  = {
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( S.webradio || S.elapsed === false || ! S.Time || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+		if ( S.webradio || S.elapsed === false || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
