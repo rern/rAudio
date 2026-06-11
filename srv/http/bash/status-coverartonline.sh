@@ -13,12 +13,11 @@ args2var "$1"
 #		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
 # [[ $? == 0 && $data ]] && url=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
 	
-if [[ $MODE == album ]]; then # artist_album
+if [[ $ALBUM ]]; then # artist_album
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'
 else
-	artist_title=1
-	param="track=${ALBUM//&/ and }" # $ALBUM = track
+	param="track=${TITLE//&/ and }"
 	method='method=track.getInfo'
 fi
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
@@ -30,7 +29,7 @@ data=$( curl -sfG -m 5 \
 			--data "format=json" \
 			http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 && $data ]]; then
-	[[ $artist_title ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
+	[[ $TITLE ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
 	[[ $album ]] && image=$( jq -r '.image // empty' <<< $album )
 	if [[ $image ]]; then
 		extralarge=$( jq -r '.[3]."#text" // empty' <<< $image )
@@ -47,15 +46,16 @@ if [[ ! $url ]]; then
 		url=$( jq -r '.images[0].image // empty' <<< $imgdata )
 	fi
 fi
+[[ $ALBUM ]] && album_title=$ALBUM || album_title=$TITLE
 if [[ $DEBUG ]]; then
-	[[ ! $url ]] && url="(Not found: $ARTIST - $ALBUM)"
+	[[ ! $url ]] && url="(Not found: $ARTIST - $album_title)"
 	echo coverart: $url
 	exit
 # --------------------------------------------------------------------
 fi
 [[ ! $url ]] && exit
 # --------------------------------------------------------------------
-name=$( alphaNumeric $ARTIST$ALBUM )
+name=$( alphaNumeric $ARTIST$album_title )
 ext=${url/*.}
 cover=$dirshm/online/$name.$ext
 curl -sfL $url -o $cover

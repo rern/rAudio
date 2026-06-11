@@ -1644,7 +1644,7 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
-			$( '#sampling' ).html( S.sampling );
+			$( '#sampling' ).html( S.position + S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
 					$( '#playericon' )

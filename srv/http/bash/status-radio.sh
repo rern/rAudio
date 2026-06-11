@@ -2,9 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-. $dirshm/radio
-id=$( basename ${file/-*} )
-[[ ${id:0:13} == francemusique ]] && id=${id:13}
+touch $dirshm/radio
+
+name=$( mpc current | sed -E 's|.*/(.*)-.*|\1|' )
+[[ $name == francemusique* ]] && id=${name:13} || id=${name/-*}
 [[ ! $id ]] && id=francemusique
 
 case $id in
