@@ -5,8 +5,16 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260616
+file=/etc/upmpdcli.conf
+if [[ -e $file ]]; then
+	grep -q -m1 status-push $file && sed -i '/status-push/ d' $file
+	systemctl try-restart upmpdcli
+fi
+
 file=$dirsystem/localbrowser.conf
-grep -q -m1 ^rotate $file && sed -i 's/.*/\U&/' $file
+if [[ -e $file ]]; then
+	grep -q -m1 ^rotate $file && sed -i 's/.*/\U&/' $file
+fi
 
 # 20260529
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
