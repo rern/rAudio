@@ -212,15 +212,10 @@ lyrics )
 	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
-		. $dirsystem/lyrics.conf
-		if [[ $embedded ]] && playerActive mpd; then
-			file=$( getVar file $dirshm/status )
-			if [[ ${file%/*} =~ ^(USB|NAS|SD)$ ]]; then
-				file="/mnt/MPD/$file"
-				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
-				[[ $lyrics ]] && echo "$lyrics" && exit
+		if [[ $FILE =~ ^(USB|NAS|NVME|SATA|SD)* ]]; then
+			lyrics=$( $dirbash/status -l "/mnt/MPD/$FILE" )
+			[[ $lyrics ]] && echo "$lyrics" && exit
 # --------------------------------------------------------------------
-			fi
 		fi
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
@@ -310,15 +305,6 @@ mpcoption )
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
-	if [[ ! $ACTION ]]; then
-		! playerActive mpd && playerstop && exit
-# --------------------------------------------------------------------
-		if [[ $( mpcState ) == play ]]; then
-			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
-		else
-			ACTION=play
-		fi
-	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q play
@@ -625,21 +611,6 @@ $NAME
 $sampling
 $CHARSET" > "$newfile"
 	pushRadioList
-	;;
-webradiotitle )
-	url=$( getVar file $dirshm/status )
-	metaint=$( curl -s -I -H "Icy-MetaData: 1" "$url" \
-				| grep -i "icy-metaint" \
-				| awk '{print $2}' \
-				| tr -d '\r' )
-	[[ ! $metaint ]] && exit
-# --------------------------------------------------------------------
-# stream: ...[N icy-metaint]...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';\0\0\0>>>\0[255]...
-	curl -s -H 'Icy-MetaData: 1' "$url" \
-		| dd bs=1 skip=$metaint count=255 2>/dev/null \
-		| tr -d '\0' \
-		| grep -o "StreamTitle='[^'][^;]*'" \
-		| sed "s/StreamTitle=' *//; s/ *'$//"
 	;;
 
 esac

@@ -399,6 +399,15 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
+	if [[ ! $1 ]]; then
+		! playerActive mpd && playerstop && exit
+# --------------------------------------------------------------------
+		if [[ $( mpcState ) == play ]]; then
+			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
+		else
+			ACTION=play
+		fi
+	fi
 	$dirbash/cmd.sh "mpcplayback
 $1
 CMD ACTION"
