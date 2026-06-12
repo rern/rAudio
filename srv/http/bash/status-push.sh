@@ -53,8 +53,11 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 , "Artist"    : "'$ARTIST'"
 , "coverart"  : "'$COVERART'"
 , "elapsed"   : '$elapsed'
+, "pause"     : false
+, "play"      : true
 , "pllength"  : '$pllength'
 , "state"     : "play"
+, "stop"      : false
 , "Time"      : false
 , "timestamp" : '$timestamp'
 , "Title"     : "'$TITLE'"
