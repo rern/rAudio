@@ -1496,7 +1496,8 @@ var PLAYBACK  = {
 		if ( ! S.play || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
-		var $elapsed = $( '#elapsed, #progress span, #pl-list li.active .elapsed' );
+		var t_e      = S.webradio && ! D.radioelapsed ? '#total' : '#elapsed';
+		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
 			 PROGRESS.set();
@@ -1692,7 +1693,7 @@ var PLAYBACK  = {
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( S.webradio || ! S.Time || S.elapsed > S.Time ) {
+		if ( ( S.webradio && ! D.radioelapsed ) || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
