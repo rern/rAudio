@@ -186,7 +186,6 @@ var CONFIG       = {
 				, [ 'Start tag',       'text' ]
 				, [ '',                '<gr>Lyrics content ...</gr>' ]
 				, [ 'End tag',         'text' ]
-				, [ 'Embedded lyrics', 'checkbox' ]
 			]
 			, boxwidth     : 300
 			, values       : values
