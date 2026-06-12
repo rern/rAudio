@@ -180,10 +180,11 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	}
 	function headIcon( data ) {
 		if ( data ) {
-			if ( ( ! data.player || ! data.state ) || ( data.player === S.player && data.state === S.state ) ) return
+			if ( data.player === S.player && data.state === S.state ) return
 			
-			S.player = data.player;
-			S.state  = data.state;
+			[ 'player', 'pllength', 'state' ].forEach( k => {
+				if ( k in data ) S[ k ] = data[ k ];
+			} );
 		}
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )

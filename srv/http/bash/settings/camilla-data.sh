@@ -15,9 +15,9 @@ data='
 , "configname" : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"    : "'$mixer'"
 , "devices"    : '$( < $dirshm/hwparams )'
+, "play"       : '$( $dirbash/status | jq .play )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
-, "state"      : "'$( getVar state $dirshm/status )'"
 , "volume"     : '$( [[ $mixer ]] && volumeGet )'
 , "volumemax"  : '$( volumeMaxGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )

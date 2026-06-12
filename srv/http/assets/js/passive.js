@@ -26,7 +26,7 @@ W = {
 		if ( ! V.playback ) {
 			REFRESHDATA();
 		} else {
-			if ( S.webradio && S.state === 'play' ) return
+			if ( S.webradio && S.play ) return
 			
 			var encoded  = data.coverart[ 0 ] === '%';
 			var regex    = encoded ? /^...srv...http/ : /^.srv.http/;

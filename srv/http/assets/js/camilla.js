@@ -1204,7 +1204,7 @@ var RENDER    = {
 		}
 	}
 	, vuBarToggle : () => {
-		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || S.state !== 'play' );
+		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || ! S.play );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -2331,7 +2331,7 @@ var UTIL      = {
 			var cp, p, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
-					if ( S.state !== 'play' ) {
+					if ( ! S.play ) {
 						RENDER.statusStop();
 						return
 					}
@@ -2348,7 +2348,7 @@ var UTIL      = {
 				case 'GetCaptureRate':
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
-					if ( S.state !== 'play' ) {
+					if ( ! S.play ) {
 						RENDER.statusStop();
 						return
 					}
@@ -2380,7 +2380,7 @@ var UTIL      = {
 					break;
 				case 'GetState':
 					if ( 'intervalvu' in V ) {
-						if ( S.state !== 'play' ) RENDER.statusStop();
+						if ( ! S.play ) RENDER.statusStop();
 					} else {
 						if ( ! V.signal ) { // restore after 1st set
 							V.signal = true;

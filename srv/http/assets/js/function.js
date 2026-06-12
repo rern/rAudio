@@ -1278,7 +1278,7 @@ var MENU      = {
 			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
-			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
+			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating_db );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
@@ -1493,11 +1493,10 @@ var PLAYBACK  = {
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
-		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
+		if ( ! S.play || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
-		var t_e      = S.elapsed === false ? '#total' : '#elapsed';
-		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
+		var $elapsed = $( '#elapsed, #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
 			 PROGRESS.set();
@@ -1517,7 +1516,7 @@ var PLAYBACK  = {
 			if ( ! S.Time || S.elapsed < S.Time ) {
 				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
+				if ( ! S.play ) UTIL.intervalClear( 'elapsed' );
 				if ( V.localhost ) PROGRESS.set(); // avoid high cpu load - firefox on rpi
 			} else {
 				S.elapsed = 0;
@@ -1566,11 +1565,10 @@ var PLAYBACK  = {
 	}
 	, info      : {
 		  color  : () => {
-			var pause = S.state === 'pause';
-			$( '#title' ).toggleClass( 'gr', pause );
-			$( '#elapsed' ).toggleClass( 'bl', pause );
-			$( '#total' ).toggleClass( 'wh', pause );
-			$( '#progress i' ).prop( 'class', pause ? 'i-pause' : 'i-play' );
+			$( '#title' ).toggleClass( 'gr', S.pause );
+			$( '#elapsed' ).toggleClass( 'bl', S.pause );
+			$( '#total' ).toggleClass( 'wh', S.pause );
+			$( '#progress i' ).prop( 'class', S.pause ? 'i-pause' : 'i-play' );
 		}
 		, scroll : () => {
 			var tWmax = 0;
@@ -1610,7 +1608,7 @@ var PLAYBACK  = {
 			}
 			if ( S.webradio ) {
 				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.state === 'play' ) {
+				if ( S.play ) {
 					$( '#artist' ).text( S.Artist || S.station );
 					$( '#title' ).html( S.Title || V.blinkdot );
 					$( '#album' ).text( S.Album || url );
@@ -1623,7 +1621,7 @@ var PLAYBACK  = {
 				$( '#artist' ).html( S.Artist || V.dots );
 				$( '#title' )
 					.html( S.Title || V.dots )
-					.toggleClass( 'gr', S.state === 'pause' );
+					.toggleClass( 'gr', S.pause );
 				var album = S.Album || S.file;
 				if ( S.booklet ) album += ' '+ ICON( 'booklet gr' );
 				$( '#album' ).html( album );
@@ -1664,11 +1662,11 @@ var PLAYBACK  = {
 		LOCAL();
 		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
-		if ( S.state === 'stop' ) PROGRESS.set( 0 );
+		if ( S.stop ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
-		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
+		if ( S.player === 'mpd' && S.stop && ! S.pllength ) { // empty queue
 			PLAYBACK.blank();
 			return
 		}
@@ -1679,7 +1677,7 @@ var PLAYBACK  = {
 		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
-		if ( S.state === 'stop' ) {
+		if ( S.stop ) {
 			PLAYBACK.stop();
 			return
 		}
@@ -1694,12 +1692,12 @@ var PLAYBACK  = {
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( S.webradio || S.elapsed === false || ! S.Time || S.elapsed > S.Time ) {
+		if ( S.webradio || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
-			if ( S.state === 'play' ) {
-				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
+			if ( S.play ) {
+				$( '#elapsed' ).html( S.play ? V.blinkdot : '' );
 				if ( D.radioelapsed ) {
 					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
 					PLAYBACK.elapsed();
@@ -1710,7 +1708,7 @@ var PLAYBACK  = {
 			return
 		}
 		
-		if ( S.state === 'pause' ) {
+		if ( S.pause ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 			PROGRESS.set();
@@ -1746,7 +1744,7 @@ var PLAYBACK  = {
 		}
 	}
 	, vu        : () => {
-		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
+		if ( ! S.play || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
 			clearInterval( V.interval.vu );
 			$( '#vuneedle' ).css( 'transform', '' );
 			return
@@ -2134,12 +2132,14 @@ var PLAYLIST  = {
 				DISPLAY.pageScroll( top );
 			}
 			$( '#pl-list .elapsed' ).empty();
-			if ( S.webradio ) PLAYLIST.render.widthRadio();
-			if ( S.elapsed === false ) return
+			if ( S.webradio ) {
+				PLAYLIST.render.widthRadio();
+				if ( ! D.radioelapsed ) return
+			}
 			
 			$liactive.addClass( S.state );
 			if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( COMMON.second2HMS( S.Time ) );
-			if ( S.state === 'pause' ) {
+			if ( S.pause ) {
 				elapsedtxt = COMMON.second2HMS( S.elapsed );
 				$liactive.find( '.elapsed' ).text( elapsedtxt );
 				PLAYLIST.render.width();
@@ -2179,7 +2179,7 @@ var PLAYLIST  = {
 			var $station  = $li2.find( '.station' );
 			var $artist   = $li2.find( '.artist' );
 			var $url      = $li2.find( '.url' );
-			if ( S.state === 'stop' || stop ) {
+			if ( S.stop || stop ) {
 				$img.attr( 'src', $img.data( 'src' ) );
 				$name.text( $station.text() );
 				$station.addClass( 'hide' );
@@ -2218,7 +2218,7 @@ var PLAYLIST  = {
 		}
 		
 		UTIL.intervalClear();
-		if ( S.state !== 'stop' ) {
+		if ( ! S.stop ) {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
@@ -2252,10 +2252,10 @@ var PROGRESS  = {
 		S.elapsed = Math.round( S.Time * deg / 360 );
 		PROGRESS.set();
 		$( '#elapsed, #total' ).removeClass( 'gr' );
-		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
+		if ( ! S.play ) $( '#elapsed' ).addClass( 'bl' );
 		$( '#elapsed' ).text( COMMON.second2HMS( S.elapsed ) );
 		$( '#total' ).text( COMMON.second2HMS( S.Time ) );
-		if ( S.state === 'stop' && UTIL.barVisible() ) {
+		if ( S.stop && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
