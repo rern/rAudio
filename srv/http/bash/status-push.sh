@@ -81,15 +81,8 @@ else
 # --------------------------------------------------------------------
 fi
 ########
-pushData mpdplayer "$status"
-clientip=$( snapclientIP )
-if [[ $clientip ]]; then
-	status=$( $dirbash/status -s )
-	status='{ '${status/,}' }'
-	for ip in $clientip; do
-		pushWebsocket $ip mpdplayer $status
-	done
-fi
+$dirbash/status -s
+
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
