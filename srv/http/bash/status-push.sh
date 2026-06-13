@@ -81,8 +81,8 @@ else
 # --------------------------------------------------------------------
 fi
 ########
-systemctl -q is-active snapserver && b=b # broadcast
-$dirbash/status -p$b
+systemctl -q is-active snapserver && opt=-b || opt=-p
+$dirbash/status $opt
 
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
