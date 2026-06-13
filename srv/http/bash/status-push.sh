@@ -81,7 +81,7 @@ else
 # --------------------------------------------------------------------
 fi
 ########
-systemctl -q is-active snapserver && opt=-b || opt=-p
+[[ -e $dirmpdconf/snapserver.conf ]] && opt=-b || opt=-p
 $dirbash/status $opt
 
 [[ $state == play ]] && start_stop=start || start_stop=stop
