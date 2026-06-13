@@ -488,7 +488,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	$dirbash/status -s
+	$dirbash/status -p
 }
 pushWebsocket() {
 	local data
