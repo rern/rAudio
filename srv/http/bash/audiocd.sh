@@ -164,5 +164,4 @@ fi
 $dirbash/status-coverartonline.sh "cmd
 $artist
 $album
-album
-CMD ARTIST ALBUM MODE" &
+CMD ARTIST ALBUM" &> /dev/null &

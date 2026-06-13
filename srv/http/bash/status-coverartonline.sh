@@ -46,15 +46,9 @@ if [[ ! $url ]]; then
 		url=$( jq -r '.images[0].image // empty' <<< $imgdata )
 	fi
 fi
-[[ $ALBUM ]] && album_title=$ALBUM || album_title=$TITLE
-if [[ $DEBUG ]]; then
-	[[ ! $url ]] && url="(Not found: $ARTIST - $album_title)"
-	echo coverart: $url
-	exit
-# --------------------------------------------------------------------
-fi
 [[ ! $url ]] && exit
 # --------------------------------------------------------------------
+[[ $ALBUM ]] && album_title=$ALBUM || album_title=$TITLE
 name=$( alphaNumeric $ARTIST$album_title )
 ext=${url/*.}
 cover=$dirshm/online/$name.$ext

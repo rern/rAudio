@@ -110,13 +110,6 @@ countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
 	;;
-coverartonline )
-	$dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-debug
-CMD ARTIST ALBUM DEBUG"
-	;;
 coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null \

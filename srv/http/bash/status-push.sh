@@ -66,8 +66,7 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
 $ARTIST
 $ALBUM
-webradio
-CMD ARTIST ALBUM MODE" &> /dev/null &
+CMD ARTIST ALBUM" &> /dev/null &
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
