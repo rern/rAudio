@@ -572,30 +572,6 @@ sharedDataReset() {
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
 }
-snapclientIP() {
-	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
-#...............................................................................
-	local clientip connected data ip lines
-	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
-	lines=$( jq .Groups < /var/lib/snapserver/server.json \
-				| grep -E '"connected":|"ip":' \
-				| tr -d ' ",' )
-	while read l; do
-		if [[ ${l/:*} == connected ]]; then
-			[[ ${l/*:} == true ]] && connected=1 || connected=
-		else
-			[[ ! $connected ]] && continue
-
-			ip=${l/*:}
-			if [[ $data ]]; then
-				websocat --text ws://$ip:8080 <<< $data
-			else
-				clientip+=" $ip"
-			fi
-		fi
-	done <<< $lines
-	[[ $clientip ]] && echo $clientip
-}
 snapserverList() {
 	local name_ip
 	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
@@ -605,6 +581,9 @@ snapserverList() {
 	else
 		echo '[]'
 	fi
+}
+snapserverStop() {
+	[[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
 }
 splashRotate() {
 	local dirimg rotate
