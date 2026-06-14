@@ -480,6 +480,9 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
+pushVolume )
+	volumeGet push
+	;;
 remount )
 	mount -a
 	;;
