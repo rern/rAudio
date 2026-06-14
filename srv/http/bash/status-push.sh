@@ -94,7 +94,6 @@ fi
 [[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
-. <( echo $statusprev )
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # --------------------------------------------------------------------
 if [[ $( < $dirshm/player ) != mpd ]]; then

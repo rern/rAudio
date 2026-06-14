@@ -8,6 +8,7 @@ data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
+volumemax=$( volumeMaxGet )
 ##########
 data+='
 , "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
@@ -31,6 +32,7 @@ data+='
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db" : '$( statusUpdating )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volumemax"   : '$( (( $( volumeMaxGet ) < 100 )) && echo true )
+, "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
+, "volumemax"   : '$volumemax
 
 data2json "$data" $1

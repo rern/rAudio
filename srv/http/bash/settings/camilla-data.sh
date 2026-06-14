@@ -9,6 +9,7 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	name=$( < $dirshm/btname )
 fi
 volumemax=$( volumeMaxGet )
+##########
 data='
 , "bluetooth"   : '$bluetooth'
 , "btreceiver"  : '$( exists $dirshm/btreceiver )'
@@ -20,7 +21,7 @@ data='
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "volume"      : '$( [[ $mixer ]] && volumeGet )'
-, "volumelimit" : '$( (( volumemax < 100 )) && echo true )'
+, "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
