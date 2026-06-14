@@ -480,7 +480,7 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
-pushVolume )
+pushVolume ) # mpd-idle
 	volumeGet push
 	;;
 remount )
