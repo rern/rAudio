@@ -348,7 +348,7 @@ ipAddress() {
 	if [[ $1 ]]; then
 		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}' | head -1
 	else
-		ip route get 1.1.1.1 | awk '/src/ {print $7}' | head -1
+		$dirbash/status -I
 	fi
 }
 ipOnline() {
@@ -607,15 +607,15 @@ snapserverList() {
 	fi
 }
 splashRotate() {
-	local dirimg ROTATE
+	local dirimg rotate
 	dirimg=/srv/http/assets/img
-	. <( grep ^ROTATE $dirsystem/localbrowser.conf )
-	[[ $ROTATE == 0 ]] && return
+	. <( grep ^rotate $dirsystem/localbrowser.conf )
+	[[ $rotate == 0 ]] && return
 #...............................................................................
 	magick \
 		-density 48 \
 		-background none $dirimg/icon.svg \
-		-rotate $ROTATE \
+		-rotate $rotate \
 		-gravity center \
 		-background '#000' \
 		-extent 1920x1080 \
@@ -743,13 +743,13 @@ volumeGetAmixer() {
 	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
 }
 volumeMaxGet() {
-	local MAX
+	local max
 	if [[ -e  $dirsystem/volumelimit ]]; then
-		. <( grep ^MAX $dirsystem/volumelimit.conf )
+		. <( grep ^max $dirsystem/volumelimit.conf )
 	else
-		MAX=100
+		max=100
 	fi
-	echo $MAX
+	echo $max
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}
