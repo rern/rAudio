@@ -1919,7 +1919,9 @@ $( 'body' ).on( 'click', function( e ) {
 	$select
 		.html( $this.html().replace( /<\/*bll>/g, '' ) )
 		.toggleClass( 'active' );
-	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
+	$origin
+		.find( 'option' ).attr( 'selected', false )
+			.eq( $this.index() ).attr( 'selected', true );
 	$origin.trigger( 'input' );
 } ).on( 'input', '.dropdown input', function() {
 	var $this   = $( this );
