@@ -582,9 +582,6 @@ snapserverList() {
 		echo '[]'
 	fi
 }
-snapserverStop() {
-	[[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
-}
 splashRotate() {
 	local dirimg rotate
 	dirimg=/srv/http/assets/img
