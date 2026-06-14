@@ -8,19 +8,20 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
 fi
+volumemax=$( volumeMaxGet )
 data='
-, "bluetooth"  : '$bluetooth'
-, "btreceiver" : '$( exists $dirshm/btreceiver )'
-, "cardname"   : "'$name'"
-, "configname" : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
-, "control"    : "'$mixer'"
-, "devices"    : '$( < $dirshm/hwparams )'
-, "play"       : '$( $dirbash/status | jq .play )'
-, "player"     : "'$( < $dirshm/player )'"
-, "pllength"   : '$( mpc status %length% )'
-, "volume"     : '$( [[ $mixer ]] && volumeGet )'
-, "volumemax"  : '$( volumeMaxGet )'
-, "volumemute" : '$( getContent $dirsystem/volumemute 0 )
+, "bluetooth"   : '$bluetooth'
+, "btreceiver"  : '$( exists $dirshm/btreceiver )'
+, "cardname"    : "'$name'"
+, "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
+, "control"     : "'$mixer'"
+, "devices"     : '$( < $dirshm/hwparams )'
+, "play"        : '$( $dirbash/status | jq .play )'
+, "player"      : "'$( < $dirshm/player )'"
+, "pllength"    : '$( mpc status %length% )'
+, "volume"      : '$( [[ $mixer ]] && volumeGet )'
+, "volumelimit" : '$( (( volumemax < 100 )) && echo true )'
+, "volumemax"   : '$volumemax
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d

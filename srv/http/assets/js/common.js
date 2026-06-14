@@ -1235,7 +1235,7 @@ var COMMON    = {
 		} else {
 			V.debug = true;
 			$( '#debug' ).addClass( 'active' );
-			console.log( '\x1B[31mDebug\x1B[0m Show commands but not send to server' );
+			console.log( '\x1B[31mDebug\x1B[0m Show commands (blocked - not send to server)' );
 		}
 	}
 	, debugConsole  : data => {
@@ -1649,10 +1649,22 @@ var COMMON    = {
 	, updating      : () => {
 		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
 	}
+	, websocket     : disable => {
+		if ( disable ) {
+			V.websocket = false;
+			REFRESHDATA();
+			$( '#websocket' ).removeClass( 'active' );
+			console.log( '\x1B[31mWebSocket\x1B[0m Show message disabled' );
+		} else {
+			V.websocket = true;
+			$( '#websocket' ).addClass( 'active' );
+			console.log( '\x1B[32mWebSocket\x1B[0m Show message from server' );
+		}
+	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
-		if ( S.volumemax && S.volume > S.volumemax ) {
+		if ( S.volumelimit && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 		}
@@ -1718,6 +1730,7 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 				REFRESHDATA();                                                    // - refresh data
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
+				if ( V.websocket ) console.log( json );
 				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
 
 				var channel = json.channel;
@@ -1798,6 +1811,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 } ).press( { // usage
 	  delegate : '#infoIcon'
 	, action   : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
+} );
+$( '#websocket' ).on( 'click', () => {
+	if ( ! V.press ) COMMON.websocket( 'disable' );
+} ).press( () => {
+	COMMON.websocket();
 } );
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return

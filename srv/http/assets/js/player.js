@@ -176,7 +176,7 @@ var UTIL     = {
 			, footer     : '<br>'+ UTIL.warning
 			, values     : val
 			, beforeshow : () => {
-				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
+				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 				$( '.infofooter' ).addClass( 'hide' );
 				var $range  = $( '#infoList input' );
 				$( '#infoList' ).css( 'height', '160px' );

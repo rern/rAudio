@@ -29,7 +29,6 @@ if [[ $1 ]]; then
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
-name0=$( getVar name $dirshm/output )
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
@@ -50,7 +49,8 @@ fi
 . $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
 
 if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
-	[[ $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
+	. <( grep ^name $dirshm/output )
+	[[ $name != $NAME ]] && notify output 'Output Device' "$NAME"
 fi
 
 # outputs -----------------------------------------------------------------------------

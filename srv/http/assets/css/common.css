@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1778159301' );
+	src         : url( '/assets/fonts/rern.woff2?v=1781155993' );
 }
 @font-face {
 	font-family : Lato;
@@ -266,7 +266,8 @@ body {
 i,
 .infobtn,
 .selectnone,
-#debug {
+#debug,
+#websocket {
 	user-select: none;
 	-webkit-user-select: none;
 	-webkit-touch-callout: none;
@@ -391,7 +392,8 @@ codered  {
 	margin-right : -20px;
 }
 
-#debug {
+#debug,
+#websocket {
 	position: fixed;
 	bottom: 0;
 	width: 40px;
@@ -401,8 +403,14 @@ codered  {
 	color: transparent;
 	z-index: 110;
 }
+#websocket {
+	right: 0;
+}
 #debug.active {
 	color: #f00;
+}
+#websocket.active {
+	color: #0f0;
 }
 .splash {
 	background: #000000 !important;

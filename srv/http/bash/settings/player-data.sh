@@ -23,7 +23,7 @@ data+='
 	, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }
 , "mixers"      : '$( getContent $dirshm/mixers )'
-, "mixertype"   : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
+, "mixertype"   : '$( ! grep -q mixertype=none $dirshm/output && echo true )'
 , "output"      : '$( conf2json $dirshm/output )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
@@ -31,6 +31,6 @@ data+='
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db" : '$( statusUpdating )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volumemax"   : '$( volumeMaxGet )
+, "volumemax"   : '$( (( $( volumeMaxGet ) < 100 )) && echo true )
 
 data2json "$data" $1

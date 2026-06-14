@@ -1493,7 +1493,7 @@ var PLAYBACK  = {
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
-		if ( ! S.play || 'audiocdadd' in V ) return // wait for cd cache on start
+		if ( S.stop || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
 		var t_e      = S.webradio && ! D.radioelapsed ? '#total' : '#elapsed';

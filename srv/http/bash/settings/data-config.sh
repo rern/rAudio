@@ -25,7 +25,8 @@ case $ID in
 ap )
 	ssid=$( hostname )
 	file=/var/lib/iwd/ap/$ssid.ap
-	echo '{ "SSID": "'$ssid'", "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
+	. <( grep -E '^Address|^Passphrase' $file )
+	echo '{ "SSID": "'$ssid'", "IP": "'$Address'", "PASSPHRASE": "'$Passphrase'" }'
 	;;
 audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
@@ -49,7 +50,7 @@ crossfade )
 	echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
 	;;
 custom )
-	name=$( getVar name $dirshm/output )
+	. <( grep ^name $dirshm/output )
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
@@ -247,8 +248,9 @@ servermirror )
 }'
 	;;
 serverntp )
+	. <( grep ^NTP /etc/systemd/timesyncd.conf )
 	echo '{
-  "values" : { "NTP": "'$( getVar NTP /etc/systemd/timesyncd.conf )'" }
+  "values" : { "NTP": "'$NTP'" }
 , "rpi01"  : '$( exists /boot/kernel.img )'
 }'
 	;;

@@ -102,6 +102,7 @@ if ( ! $add_guide && ! $log_pass )  {
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<pre id="data" class="hide"></pre>
 	<i id="debug" class="i-pause"></i>
+	<i id="websocket" class="i-pause"></i>
 	'.$divlogo.'
 	<div id="banner" class="hide"></div>
 ';

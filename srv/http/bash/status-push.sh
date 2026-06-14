@@ -73,16 +73,13 @@ CMD ARTIST ALBUM" &> /dev/null &
 	onPlay
 else
 #	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( $dirbash/status | jq "$filter" )
-	statusprev=$( cat $dirshm/status 2> /dev/null )
-	. <( json2var "$status" | tee $dirshm/status )
+	$dirbash/status -k > $dirshm/status
+	. <( grep -E '^state|^webradio' $dirshm/status )
 	onPlay
-	[[ $webradio == true && $state == play ]] && exit
-# --------------------------------------------------------------------
 fi
 ########
-[[ -e $dirmpdconf/snapserver.conf ]] && opt=-b || opt=-p
-$dirbash/status $opt
+[[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
+$dirbash/status $p_b
 
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
@@ -90,15 +87,15 @@ $dirbash/status $opt
 [[ -e $dirshm/power ]] && exit
 # --------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	echo "$status" > $dirshm/status.json
+	$dirbash/status -o > $dirshm/status.json
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
+[[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
 . <( echo $statusprev )
-[[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
+[[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # --------------------------------------------------------------------
 if [[ $( < $dirshm/player ) != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit

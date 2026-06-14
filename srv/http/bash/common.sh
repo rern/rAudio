@@ -607,15 +607,15 @@ snapserverList() {
 	fi
 }
 splashRotate() {
-	local rotate
+	local dirimg ROTATE
 	dirimg=/srv/http/assets/img
-	rotate=$( getVar ROTATE $dirsystem/localbrowser.conf )
-	[[ $rotate == 0 ]] && return
+	. <( grep ^ROTATE $dirsystem/localbrowser.conf )
+	[[ $ROTATE == 0 ]] && return
 #...............................................................................
 	magick \
 		-density 48 \
 		-background none $dirimg/icon.svg \
-		-rotate $rotate \
+		-rotate $ROTATE \
 		-gravity center \
 		-background '#000' \
 		-extent 1920x1080 \
@@ -743,14 +743,13 @@ volumeGetAmixer() {
 	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
 }
 volumeMaxGet() {
-	local volumemax
+	local MAX
 	if [[ -e  $dirsystem/volumelimit ]]; then
-		volumemax=$( getVar max $dirsystem/volumelimit.conf )
-		[[ $volumemax == 100 ]] && volumemax=false
+		. <( grep ^MAX $dirsystem/volumelimit.conf )
 	else
-		volumemax=false
+		MAX=100
 	fi
-	echo $volumemax
+	echo $MAX
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}

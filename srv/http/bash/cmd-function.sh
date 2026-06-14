@@ -102,7 +102,9 @@ playerStop() {
 	else
 		$dirbash/status-push.sh playerstop
 	fi
-	[[ -e $dirshm/relayson && $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
+	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
+		$dirbash/relays-timer.sh &> /dev/null &
+	fi
 }
 plClear() {
 	mpc -q clear

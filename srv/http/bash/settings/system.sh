@@ -213,10 +213,10 @@ dtoverlay=vc4-kms-dsi-ili9881-5inch" >> $file_config
 	fi
 	if [[ $ON ]]; then
 		sed -i "1 s/$/ $fbcon/" $file_cmdline
-		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+		. <( grep ^ROTATE $dirsystem/localbrowser.conf )
 		echo "\
 hdmi_force_hotplug=1
-dtoverlay=$MODEL:rotate=$rotate" >> $file_config
+dtoverlay=$MODEL:rotate=$ROTATE" >> $file_config
 		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
 		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
@@ -261,7 +261,7 @@ powerbutton )
 	else
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
-			led=$( getVar led $dirsystem/powerbutton.conf )
+			. <( grep ^led $dirsystem/powerbutton.conf )
 			gpioset -t0 -c0 $led=0
 		fi
 	fi
@@ -276,8 +276,8 @@ relays )
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
 	if [[ ! -e $dirshm/relayson ]]; then
 		if [[ $ON ]]; then
-			pins="$( getVar on $dirsystem/relays.conf ) "
-			gpioset -t0 -c0 ${pins// /=0 }
+			. <( grep ^on $dirsystem/relays.conf )
+			gpioset -t0 -c0 ${on// /=0 }=0
 		fi
 		exit
 # --------------------------------------------------------------------

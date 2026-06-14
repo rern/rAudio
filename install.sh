@@ -15,7 +15,7 @@ fi
 
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]]; then
-	grep -q -m1 ^rotate $file && sed -i 's/.*/\U&/' $file
+	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
 fi
 
 # 20260529
