@@ -30,7 +30,7 @@ data+='
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( mpcState )'"
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
-, "updating_db" : '$( statusUpdating )'
+, "updating"    : '$( statusUpdating )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax

@@ -154,11 +154,11 @@ var SWITCH  = {
 	}
 }
 W.mpdupdate = data => {
-	var updating_db = 'updating_db' in data;
-	if ( 'updating_db' in S ) S.updating_db = updating_db;
+	var updating = 'updating' in data;
+	if ( 'updating' in S ) S.updating = updating;
 	COMMON.updating();
 	var $update     = $( '.button-lib-update' );
-	if ( $update.length ) $update.toggleClass( 'blink', S.updating_db );
+	if ( $update.length ) $update.toggleClass( 'blink', S.updating );
 }
 W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features

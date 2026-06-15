@@ -454,7 +454,7 @@ pushData() { # send to websocket.py (server)
 		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
 		[[ ' MPD bookmark webradio ' != *" $dir "* ]] && return
 #...............................................................................
-	elif [[ $channel == mpdupdate && $data != '{ "updating_db": true }' ]]; then # update done
+	elif [[ $channel == mpdupdate && $data != '{ "updating": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data=$( tr -d '\n' <<< $data )

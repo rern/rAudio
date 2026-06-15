@@ -402,7 +402,7 @@ mpcskip )
 	fi
 	mpc -q play $POS
 	[[ ! $ACTION ]] && ACTION=$state
-	[[ $ACTION != play ]] && mpc -q $ACTION
+	[[ $ACTION != play ]] && mpc -q stop
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
@@ -410,7 +410,7 @@ mpcskip )
 mpcupdate )
 	rm -f $dirshm/updatedone
 	date +%s > $dirmpd/updatestart
-	pushData mpdupdate '{ "updating_db": true }'
+	pushData mpdupdate '{ "updating": true }'
 	if [[ ! $ACTION ]]; then
 		if [[ -e $dirsystem/mpcupdate.conf ]]; then
 			. <( cat $dirsystem/mpcupdate.conf )
@@ -437,7 +437,7 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "updating_db": true }'
+	pushData mpdupdate '{ "updating": true }'
 	echo "\
 action=update
 mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf

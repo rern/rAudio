@@ -1042,7 +1042,7 @@ var LIBRARY   = {
 				LIBRARY.home( data.html );
 			} else {
 				UTIL.switchPage( 'library' );
-				if ( S.updating_db ) BANNER( 'refresh-library blink', 'Library Database', 'Update ...' );
+				if ( S.updating ) BANNER( 'refresh-library blink', 'Library Database', 'Update ...' );
 			}
 			if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 		}, 'json' );
@@ -1279,14 +1279,14 @@ var MENU      = {
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
-			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating_db );
+			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
-			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
+			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
@@ -1444,7 +1444,7 @@ var PLAYBACK  = {
 		}
 		, updating : () => {
 			var $icon = $( '#library, #button-library, .i-libupdate' );
-			if ( S.updating_db ) {
+			if ( S.updating ) {
 				$icon.addClass( 'blink' );
 				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
 				$( '#update' ).addClass( 'on' );

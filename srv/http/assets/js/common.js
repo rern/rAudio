@@ -1432,7 +1432,7 @@ var COMMON    = {
 	, libraryUpdate : () => {
 		var icon    = 'refresh-library';
 		var title   = 'Library Database';
-		if ( S.updating_db ) {
+		if ( S.updating ) {
 			INFO( {
 				  icon    : icon
 				, title   : title
@@ -1647,7 +1647,7 @@ var COMMON    = {
 		return val
 	}
 	, updating      : () => {
-		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
+		BANNER( 'refresh-library'+ ( S.updating ? ' blink' : '' ), 'Library Update', S.updating ? 'Updating ...' : 'Done' );
 	}
 	, websocket     : disable => {
 		if ( disable ) {

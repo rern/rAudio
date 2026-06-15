@@ -1182,7 +1182,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( cmd ) {
 		case 'forget':
 		case 'unmount':
-			if ( S.updating_db ) {
+			if ( S.updating ) {
 				BANNER( 'library blink', 'Library Database', 'Update ...' );
 				return
 			}

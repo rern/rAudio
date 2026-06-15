@@ -113,10 +113,10 @@ W = {
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
 	, mpdupdate : data => {
-		S.updating_db = 'updating_db' in data;
+		S.updating = 'updating' in data;
 		COMMON.updating();
 		PLAYBACK.button.updating();
-		if ( ! S.updating_db ) {
+		if ( ! S.updating ) {
 			V.html = {}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
 			DISPLAY.library();

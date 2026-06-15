@@ -299,7 +299,7 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	$( '.button-lib-update' ).toggleClass( 'bl', S.updating_db );
+	$( '.button-lib-update' ).toggleClass( 'bl', S.updating );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';

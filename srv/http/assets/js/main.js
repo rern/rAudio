@@ -233,7 +233,7 @@ $( '#library, #button-library' ).on( 'click', function() {
 	} else {
 		UTIL.switchPage( 'library' );
 	}
-	if ( S.updating_db ) BANNER( 'library blink', 'Library Database', 'Update ...' );
+	if ( S.updating ) BANNER( 'library blink', 'Library Database', 'Update ...' );
 } );
 $( '#playback' ).on( 'click', function() {
 	if ( V.playback ) {
