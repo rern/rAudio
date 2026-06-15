@@ -397,7 +397,7 @@ mpcskip )
 	radioStop
 	state=$( mpcState )
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 	fi
 	mpc -q play $POS
