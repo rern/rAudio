@@ -15,22 +15,28 @@ evtest /dev/input/$event | while read line; do
 	
 	! grep -Eq 'KEY_.*CD|KEY_.*SONG' <<< $line && continue # PLAYCD PAUSECD STOPCD NEXTSONG PREVIOUSSONG
 	
-	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//; s/.*/\L&/' <<< $line )
+	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//' <<< $line )
 	case $key in
-		play | pause )
+		PLAY | PAUSE )
 			mpcPlayback
 			;;
-		stop )
+		STOP )
 			mpcPlayback stop
 			;;
-		next | previous )
-			. <( mpc status 'current=%songpos%; length=%length% random=%random%' )
-			if [[ $key == next ]]; then
-				(( $current == $length )) && pos=1 || pos=$(( current + 1 ))
+		NEXT | PREVIOUS )
+			[[ $( < $dirshm/player ) != mpd ]] && continue
+			
+			read length songpos state< <( mpc status '%length% %songpos% %state%' )
+			if [[ $key == NEXT ]]; then
+				(( $pos == $length )) && pos=1 || pos=$(( songpos + 1 ))
 			else
-				(( $current == 1 )) && pos=$length || pos=$(( current - 1 ))
+				(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
 			fi
-			$dirbash/cmd.sh mpcskip$'\n'$pos$'\nCMD POS'
+			[[ $state == stopped ]] && action=stop || action=play
+			$dirbash/cmd.sh "mpcskip
+$pos
+$action
+CMD POS ACTION"
 			;;
 	esac
 done
