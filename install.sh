@@ -105,7 +105,7 @@ elif [[ -e /boot/kernel7.img ]]; then
 else
 	mv $dirbash/status{.armv6h,}
 fi
-rm $dirbash/status.*
+rm $dirbash/status.a*
 
 . $dirbash/common.sh
 cacheBust
