@@ -399,13 +399,15 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
-	if [[ ! $1 ]]; then
+	if [[ $1 ]]; then
+		ACTION=$1
+	else
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
 		[[ $( mpcState ) == play ]] && ACTION=pause || ACTION=play
 	fi
 	$dirbash/cmd.sh "mpcplayback
-$1
+$ACTION
 CMD ACTION"
 }
 mpcState() {
