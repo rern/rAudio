@@ -187,13 +187,16 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
-	if [[ ! $ACTION ]]; then
+	if [[ ! $ACTION && $( < $dirshm/player ) == mpd && $FILE =~ ^(USB|NAS|NVME|SATA|SD) ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
 		if [[ -e $filelrc ]]; then
 			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '1,/^$/ d'
 			exit
 # --------------------------------------------------------------------
 		fi
+		lyrics=$( $dirbash/status -L "/mnt/MPD/$FILE" )
+		[[ $lyrics ]] && echo "$lyrics" && exit
+# --------------------------------------------------------------------
 	fi
 	name="$ARTIST - $TITLE"
 	name=${name##*/}
@@ -205,11 +208,6 @@ lyrics )
 	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
-		if [[ $FILE =~ ^(USB|NAS|NVME|SATA|SD)* ]]; then
-			lyrics=$( $dirbash/status -l "/mnt/MPD/$FILE" )
-			[[ $lyrics ]] && echo "$lyrics" && exit
-# --------------------------------------------------------------------
-		fi
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
