@@ -15,8 +15,6 @@ audio_output {
 	format      "44100:16:2"
 }
 EOF
-	file=$dirmpdconf/bluetooth.conf
-	[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
 fi
 
 rm -f $dirbash/status.sh $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
@@ -117,3 +115,7 @@ fi
 rm -f $dirshm/system
 
 installfinish
+
+# 20260616
+file=$dirmpdconf/bluetooth.conf
+[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
