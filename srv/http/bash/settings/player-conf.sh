@@ -59,21 +59,7 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
 	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-#---------------< bluetooth
-	AUDIOOUTPUTBT='
-	name        "BlueALSA"
-	device      "'$hw'"
-	type        "alsa"'
-	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
-	format      "44100:16:2"'
-#--------------->
-######## >
-	echo "\
-audio_output {\
-$AUDIOOUTPUTBT
-}
-" > $dirmpdconf/bluetooth.conf
-######## >
+	ln -s $dirmpdconf/{conf/,}bluetooth.conf
 fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf

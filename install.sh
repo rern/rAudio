@@ -5,6 +5,20 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260616
+file=$dirmpdconf/conf/bluetooth.conf
+if [[ ! -e $file ]]; then
+	cat << EOF > $file
+audio_output {
+	name        "BlueALSA"
+	device      "bluealsa"
+	type        "alsa"
+	format      "44100:16:2"
+}
+EOF
+	file=$dirmpdconf/bluetooth.conf
+	[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
+fi
+
 rm -f $dirbash/status.sh $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
 
 file=/etc/upmpdcli.conf

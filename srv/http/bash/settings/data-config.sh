@@ -38,7 +38,7 @@ bluetooth )
 	else
 		discoverable=false
 	fi
-	echo '{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
+	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
 btsender )
 	volumeGet json

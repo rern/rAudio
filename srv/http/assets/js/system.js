@@ -110,10 +110,7 @@ var CONFIG        = {
 	, bluetooth     : values => {
 		INFO( {
 			  ...SW
-			, list         : [
-				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
-				, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
-			]
+			, list         : [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
 			, values       : values
 			, checkchanged : S.bluetooth
 			, cancel       : SWITCH.cancel

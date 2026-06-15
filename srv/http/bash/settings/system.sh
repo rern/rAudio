@@ -42,14 +42,6 @@ bluetooth )
 			sleep 1
 			systemctl start bluetooth
 		fi
-		if [[ $bluealsa ]]; then
-			btformat=$dirsystem/btformat
-			if [[ $FORMAT ]]; then
-				[[ ! -e $btformat ]] && touch $btformat && $dirsettings/player-conf.sh
-			else
-				[[ -e $btformat ]] && rm -f $btformat && $dirsettings/player-conf.sh
-			fi
-		fi
 	else
 		touch $dirsystem/btdisable
 		systemctl stop bluetooth

@@ -809,7 +809,7 @@ var DISPLAY   = {
 			.toggleClass( 'i-equalizer', D.equalizer );
 		D.dsp = D.camilladsp || D.equalizer;
 		[ 'dsp', 'lock', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
-			var enabled = D[ el ];
+			var enabled = el == 'lock' ? D.loginsetting : D[ el ];
 			$( '#'+ el )
 				.toggleClass( 'hide', ! enabled )
 				.prev().toggleClass( 'sub', enabled );
