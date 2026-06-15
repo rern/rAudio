@@ -19,7 +19,7 @@ $head = [
 $B->search Available devices
 $B->bluetooth$B->btsender Context menu
 	
-<wh>rAudio as sender:</wh> (or pairing non-audio devices)
+<wh>rAudio as sender:</wh>
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
 	· On rAudio: $B->search Scan to connect &raquo; Select to pair
@@ -37,7 +37,9 @@ $B->bluetooth$B->btsender Context menu
 	· On sender
 	
 Note:
-Forget / remove should be done on both rAudio and sender
+ • rAudio as sender - Audio resampled to 16 bits 44100 Hz.
+ • Forget / remove should be done on both rAudio and sender.
+ • Non-audio devices should be able to pair as well.
 EOF
 ];
 $body = [ '<ul id="bluetooth" class="entries"></ul>' ];
