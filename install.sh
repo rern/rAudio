@@ -98,6 +98,15 @@ rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
 
+if [[ -e /boot/kernel8.img ]]; then
+	mv $dirbash/status{.aarch64,}
+elif [[ -e /boot/kernel7.img ]]; then
+	mv $dirbash/status{.armv7h,}
+else
+	mv $dirbash/status{.armv6h,}
+fi
+rm $dirbash/status.*
+
 . $dirbash/common.sh
 cacheBust
 chmod -R +x $dirbash
