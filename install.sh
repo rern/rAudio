@@ -17,7 +17,7 @@ audio_output {
 EOF
 fi
 
-rm -f $dirbash/status.sh $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
+rm -f $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
 
 file=/etc/upmpdcli.conf
 if [[ -e $file ]]; then
@@ -103,14 +103,14 @@ if [[ -e /boot/kernel8.img ]]; then
 elif [[ -e /boot/kernel7.img ]]; then
 	mv $dirbash/status{.armv7h,}
 else
-	mv $dirbash/status{.armv6h,}
+#	mv $dirbash/status{.armv6h,}
+	rm -f $dirbash/{dab*,status-dab.sh}
 fi
 rm $dirbash/status.a*
 
 . $dirbash/common.sh
 cacheBust
 chmod -R +x $dirbash
-[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
