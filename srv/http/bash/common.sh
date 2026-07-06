@@ -347,6 +347,8 @@ inOutputConf() {
 ipAddress() {
 	if [[ $1 ]]; then
 		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}' | head -1
+	elif [[ -e /boot/kernel/img ]]; then
+		ip route get 1.1.1.1 | awk '/src/ {print $7}' | head -1
 	else
 		$dirbash/status -I
 	fi
