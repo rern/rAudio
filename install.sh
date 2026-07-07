@@ -98,13 +98,17 @@ rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
 
-if [[ -e /boot/kernel8.img ]]; then
-	mv $dirbash/status{.aarch64,}
-elif [[ -e /boot/kernel7.img ]]; then
-	mv $dirbash/status{.armv7h,}
+if [[ -e /boot/kernel.img ]]; then
+	mv $dirbash/{status.armv6h,_status}
+	mv $dirbash/status{.sh,}
+	[[ ! -d /opt/armv6-new  ]] && curl -sL https://github.com/rern/rAudio-status/raw/main/rpi_zero/lib.tar.xz | bsdtar xpf - -C /
 else
-#	mv $dirbash/status{.armv6h,}
-	rm -f $dirbash/{dab*,status-dab.sh}
+	if [[ -e /boot/kernel8.img ]]; then
+		mv $dirbash/status{.aarch64,}
+	else
+		mv $dirbash/status{.armv7h,}
+	fi
+	rm $dirbash/status.sh
 fi
 rm $dirbash/status.a*
 
