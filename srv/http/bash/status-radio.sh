@@ -6,9 +6,7 @@ touch $dirshm/radio
 
 name=$( mpc current -f %file% | xargs basename )
 id=${name/-*} # ID-...
-if [[ $id == francemusique* ]]; then
-	[[ $id != francemusique ]] id=${id:13} # francemusiqueID
-fi
+[[ $id == francemusique* && $id != francemusique ]] && id=${id:13} # francemusiqueID
 
 case $id in
 	beyond ) id=5;;
