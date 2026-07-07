@@ -5,7 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260717
-! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
+if [[ ! -e /boot/kernel.img ]]; then
+	! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
+fi
 
 file=$dirmpdconf/conf/bluetooth.conf
 if [[ ! -e $file ]]; then
