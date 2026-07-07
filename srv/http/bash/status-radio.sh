@@ -4,9 +4,11 @@
 
 touch $dirshm/radio
 
-name=$( mpc current | sed -E 's|.*/(.*)-.*|\1|' )
-[[ $name == francemusique* ]] && id=${name:13} || id=${name/-*}
-[[ ! $id ]] && id=francemusique
+name=$( mpc current -f %file% | xargs basename )
+id=${name/-*} # ID-...
+if [[ $id == francemusique* ]]; then
+	[[ $id != francemusique ]] id=${id:13} # francemusiqueID
+fi
 
 case $id in
 	beyond ) id=5;;
