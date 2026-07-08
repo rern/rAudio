@@ -315,9 +315,9 @@ function renderPage() {
 	if ( bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender, #divvolume' ).removeClass( 'hide' );
 	} else {
-		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender, #divvolume' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
