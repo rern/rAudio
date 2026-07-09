@@ -4,12 +4,6 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-isChanged() {
-	for k in $@; do
-		prev=$( sed -n -E '/^'$k'/ {s/.*="*|"*$//g; p}' <<< $statusprev )
-		[[ $prev != ${!k} ]] && return 0
-	done
-}
 onPlay() {
 	if [[ -e $dirsystem/stoptimer ]]; then
 		if [[ $state == play ]]; then
@@ -43,10 +37,10 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-filter='{ Album, Artist,  Composer, Conductor, coverart,  elapsed, file,   icon, player
-		, song,  station, state,    Time,      timestamp, Title,   volume, webradio }'
+filter='{ Album,    Artist, Composer, Conductor, coverart, elapsed,   file,  icon,   player, pllength
+		, sampling, song,   station,  state,     Time,     timestamp, Title, volume, webradio }'
 if [[ $1 == playerstop ]]; then
-	status=$( $dirbash/status.sh )
+	status=$( $dirbash/status )
 	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
 	state=stop
 elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
@@ -59,8 +53,11 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 , "Artist"    : "'$ARTIST'"
 , "coverart"  : "'$COVERART'"
 , "elapsed"   : '$elapsed'
+, "pause"     : false
+, "play"      : true
 , "pllength"  : '$pllength'
 , "state"     : "play"
+, "stop"      : false
 , "Time"      : false
 , "timestamp" : '$timestamp'
 , "Title"     : "'$TITLE'"
@@ -69,53 +66,35 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
 $ARTIST
 $ALBUM
-webradio
-CMD ARTIST ALBUM MODE" &> /dev/null &
+CMD ARTIST ALBUM" &> /dev/null &
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
 	onPlay
 else
-#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status.sh ) # fix: no state on start playing dsd from network (<rpi4)
-	status=$( $dirbash/status.sh | jq "$filter" )
-	statusprev=$( cat $dirshm/status 2> /dev/null )
-	. <( json2var "$status" | tee $dirshm/status )
-	isChanged Artist Title Album && trackchanged=1
+#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) # fix: no state on start playing dsd from network (<rpi4)
+	$dirbash/status -k > $dirshm/status
+	. <( grep -E '^state|^webradio' $dirshm/status )
 	onPlay
-	if [[ $webradio == true ]]; then
-		[[ ! $trackchanged && $state == play ]] && exit
-# --------------------------------------------------------------------
-	else
-		isChanged state elapsed && statuschanged=1
-		[[ ! $trackchanged && ! $statuschanged ]] && exit
-# --------------------------------------------------------------------
-	fi
 fi
 ########
-pushData mpdplayer "$status"
-clientip=$( snapclientIP )
-if [[ $clientip ]]; then
-	status=$( $dirbash/status.sh snapclient )
-	status='{ '${status/,}' }'
-	for ip in $clientip; do
-		pushWebsocket $ip mpdplayer $status
-	done
-fi
+[[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
+$dirbash/status $p_b
+
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 [[ -e $dirshm/power ]] && exit
 # --------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	echo "$status" > $dirshm/status.json
+	$dirbash/status -o > $dirshm/status.json
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
-[[ ! -e $dirsystem/scrobble || ( ! $trackchanged && ! -e $dirshm/elapsed ) ]] && exit # track changed || prev/next/stop
+[[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
+[[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # --------------------------------------------------------------------
-. <( echo $statusprev )
-[[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
+[[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # --------------------------------------------------------------------
 if [[ $( < $dirshm/player ) != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit

@@ -276,7 +276,7 @@ backend = "pipe"\
 device = "/tmp/snapfifo"
 ' /etc/spotifyd.conf
 	else
-		snapclientIP playerstop
+		$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
 		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
 		for s in shairport-sync spotifyd; do
@@ -329,11 +329,11 @@ spotifytoken )
 startx )
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( screenoff * 60 ))
+	off=$(( SCREENOFF * 60 ))
 	sudo xset s off
 	sudo xset dpms $off $off $off
 	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
-	if [[ $onwhileplay ]]; then
+	if [[ $ONWHILEPLAY ]]; then
 		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
 	fi
 	file=/proc/bus/input/devices

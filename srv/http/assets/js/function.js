@@ -809,7 +809,7 @@ var DISPLAY   = {
 			.toggleClass( 'i-equalizer', D.equalizer );
 		D.dsp = D.camilladsp || D.equalizer;
 		[ 'dsp', 'lock', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
-			var enabled = D[ el ];
+			var enabled = el == 'lock' ? D.loginsetting : D[ el ];
 			$( '#'+ el )
 				.toggleClass( 'hide', ! enabled )
 				.prev().toggleClass( 'sub', enabled );
@@ -1042,7 +1042,7 @@ var LIBRARY   = {
 				LIBRARY.home( data.html );
 			} else {
 				UTIL.switchPage( 'library' );
-				if ( S.updating_db ) BANNER( 'refresh-library blink', 'Library Database', 'Update ...' );
+				if ( S.updating ) BANNER( 'refresh-library blink', 'Library Database', 'Update ...' );
 			}
 			if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 		}, 'json' );
@@ -1278,15 +1278,15 @@ var MENU      = {
 			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
-			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
-			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating_db );
+			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
+			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
-			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
+			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
@@ -1377,23 +1377,12 @@ var PLAYBACK  = {
 		$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 		PROGRESS.set( 0 );
 		$( '#sampling' ).empty();
-		if ( S.ip || D.ap ) {
-			var ip = S.ip || D.apconf.ip;
-			if ( ! ip ) return
-			
-			var htmlqr = '';
-			if ( ! S.ip && D.ap ) {
-				htmlqr += '<gr>Access Point:</gr> '+ D.apconf.ssid
-						 +'<div class="gr">Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
-						 + QRCode( D.apconf.qr );
-			}
-			htmlqr   += 'http://<wh>'+ ip +'</wh>'
-					  + '<br>http://'+ S.hostname +'.local'
-					  + QRCode( 'http://'+ ip );
-			if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
-			$( '#qr' ).html( htmlqr );
-			$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
-			$COVERART.addClass( 'hide' );
+		if ( S.ip ) {
+			PLAYBACK.qrCode( S.ip );
+		} else if ( D.ap ) {
+			BASH( 'settings/data-config.sh ap', ap => {
+				PLAYBACK.qrCode( ap.IP, ap );
+			}, 'json' );
 		} else {
 			$COVERART.removeClass( 'hide' );
 			$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ICON( 'networks' ) +'&ensp;Setup</a>' );
@@ -1455,7 +1444,7 @@ var PLAYBACK  = {
 		}
 		, updating : () => {
 			var $icon = $( '#library, #button-library, .i-libupdate' );
-			if ( S.updating_db ) {
+			if ( S.updating ) {
 				$icon.addClass( 'blink' );
 				$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
 				$( '#update' ).addClass( 'on' );
@@ -1504,10 +1493,10 @@ var PLAYBACK  = {
 	}
 	, elapsed   : () => {
 		UTIL.intervalClear( 'elapsed' );
-		if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
+		if ( S.stop || 'audiocdadd' in V ) return // wait for cd cache on start
 		
 		var elapsedhms;
-		var t_e      = S.elapsed === false ? '#total' : '#elapsed';
+		var t_e      = S.webradio && ! D.radioelapsed ? '#total' : '#elapsed';
 		var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 		if ( S.elapsed ) $elapsed.text( COMMON.second2HMS( S.elapsed ) );
 		if ( S.Time ) { // elapsed + time
@@ -1528,7 +1517,7 @@ var PLAYBACK  = {
 			if ( ! S.Time || S.elapsed < S.Time ) {
 				elapsedhms = COMMON.second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) UTIL.intervalClear( 'elapsed' );
+				if ( ! S.play ) UTIL.intervalClear( 'elapsed' );
 				if ( V.localhost ) PROGRESS.set(); // avoid high cpu load - firefox on rpi
 			} else {
 				S.elapsed = 0;
@@ -1539,7 +1528,7 @@ var PLAYBACK  = {
 		}, 1000 );
 	}
 	, get       : () => {
-		BASH( [ 'status.sh' ], list => {
+		$.post( 'cmd.php', { cmd: 'bin', bin: 'status' }, list => {
 			if ( ! list ) return // empty on some startup with shared data
 			
 			if ( list == -1 ) {
@@ -1577,11 +1566,10 @@ var PLAYBACK  = {
 	}
 	, info      : {
 		  color  : () => {
-			var pause = S.state === 'pause';
-			$( '#title' ).toggleClass( 'gr', pause );
-			$( '#elapsed' ).toggleClass( 'bl', pause );
-			$( '#total' ).toggleClass( 'wh', pause );
-			$( '#progress i' ).prop( 'class', pause ? 'i-pause' : 'i-play' );
+			$( '#title' ).toggleClass( 'gr', S.pause );
+			$( '#elapsed' ).toggleClass( 'bl', S.pause );
+			$( '#total' ).toggleClass( 'wh', S.pause );
+			$( '#progress i' ).prop( 'class', S.pause ? 'i-pause' : 'i-play' );
 		}
 		, scroll : () => {
 			var tWmax = 0;
@@ -1621,7 +1609,7 @@ var PLAYBACK  = {
 			}
 			if ( S.webradio ) {
 				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.state === 'play' ) {
+				if ( S.play ) {
 					$( '#artist' ).text( S.Artist || S.station );
 					$( '#title' ).html( S.Title || V.blinkdot );
 					$( '#album' ).text( S.Album || url );
@@ -1634,7 +1622,7 @@ var PLAYBACK  = {
 				$( '#artist' ).html( S.Artist || V.dots );
 				$( '#title' )
 					.html( S.Title || V.dots )
-					.toggleClass( 'gr', S.state === 'pause' );
+					.toggleClass( 'gr', S.pause );
 				var album = S.Album || S.file;
 				if ( S.booklet ) album += ' '+ ICON( 'booklet gr' );
 				$( '#album' ).html( album );
@@ -1655,21 +1643,7 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
-			var sonpos   = [ 'mpd', 'upnp' ].includes( S.player ) && S.pllength > 1 ? S.song + 1 +'/'+ S.pllength : '';
-			var sampling = sonpos;
-			sampling += sonpos && S.sampling ? ' • ' : '';
-			if ( S.sampling ) sampling += S.sampling;
-			if ( S.webradio ) {
-				if ( S.icon === 'dabradio' ) {
-					sampling += ' • DAB';
-				} else if ( S.Album && S.station ) {
-					var station = [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ? S.station.split( ' - ' ).pop() : S.station;
-					sampling += ' • '+ station;
-				} else {
-					sampling += ' • '+ S.ext;
-				}
-			}
-			$( '#sampling' ).html( sampling );
+			$( '#sampling' ).html( S.position + S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
 					$( '#playericon' )
@@ -1689,11 +1663,11 @@ var PLAYBACK  = {
 		LOCAL();
 		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
-		if ( S.state === 'stop' ) PROGRESS.set( 0 );
+		if ( S.stop ) PROGRESS.set( 0 );
 		VOLUME.set();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
-		if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
+		if ( S.player === 'mpd' && S.stop && ! S.pllength ) { // empty queue
 			PLAYBACK.blank();
 			return
 		}
@@ -1704,7 +1678,7 @@ var PLAYBACK  = {
 		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
-		if ( S.state === 'stop' ) {
+		if ( S.stop ) {
 			PLAYBACK.stop();
 			return
 		}
@@ -1719,12 +1693,12 @@ var PLAYBACK  = {
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
-		if ( S.webradio || S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
+		if ( ( S.webradio && ! D.radioelapsed ) || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
 			$( '#elapsed, #total, #progress' ).empty();
-			if ( S.state === 'play' ) {
-				$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
+			if ( S.play ) {
+				$( '#elapsed' ).html( S.play ? V.blinkdot : '' );
 				if ( D.radioelapsed ) {
 					$( '#progress' ).html( ICON( S.state ) +'<span></span>' );
 					PLAYBACK.elapsed();
@@ -1735,13 +1709,28 @@ var PLAYBACK  = {
 			return
 		}
 		
-		if ( S.state === 'pause' ) {
+		if ( S.pause ) {
 			if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 			PROGRESS.set();
 		} else { //play
 			PLAYBACK.elapsed();
 		}
+	}
+	, qrCode    : ( ip, ap ) => {
+		var htmlqr = '';
+		if ( ap ) {
+			htmlqr += '<gr>Access Point:</gr> '+ ap.SSID
+					 +'<div class="gr">Password: <wh>'+ ap.PASSPHRASE +'</wh></div>'
+					 + QRCode( 'WIFI:T:WPA;S:'+ ap.SSID +';P:'+ ap.PASSPHRASE +';;' );
+		}
+		htmlqr   += 'http://<wh>'+ ip +'</wh>'
+				  + '<br>http://'+ S.hostname +'.local'
+				  + QRCode( 'http://'+ ip );
+		if ( ! $( '#qr' ).length ) $( '#divcover' ).append( '<div id="qr" class="qr"></div>' );
+		$( '#qr' ).html( htmlqr );
+		$( '#coverTR' ).toggleClass( 'empty', ! UTIL.barVisible() );
+		$COVERART.addClass( 'hide' );
 	}
 	, stop      : () => {
 		PROGRESS.set( 0 );
@@ -1756,7 +1745,7 @@ var PLAYBACK  = {
 		}
 	}
 	, vu        : () => {
-		if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
+		if ( ! S.play || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
 			clearInterval( V.interval.vu );
 			$( '#vuneedle' ).css( 'transform', '' );
 			return
@@ -2125,7 +2114,7 @@ var PLAYLIST  = {
 			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
-				|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
+				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 			) {
 				return
 			}
@@ -2144,12 +2133,14 @@ var PLAYLIST  = {
 				DISPLAY.pageScroll( top );
 			}
 			$( '#pl-list .elapsed' ).empty();
-			if ( S.webradio ) PLAYLIST.render.widthRadio();
-			if ( S.elapsed === false ) return
+			if ( S.webradio ) {
+				PLAYLIST.render.widthRadio();
+				if ( ! D.radioelapsed ) return
+			}
 			
 			$liactive.addClass( S.state );
 			if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( COMMON.second2HMS( S.Time ) );
-			if ( S.state === 'pause' ) {
+			if ( S.pause ) {
 				elapsedtxt = COMMON.second2HMS( S.elapsed );
 				$liactive.find( '.elapsed' ).text( elapsedtxt );
 				PLAYLIST.render.width();
@@ -2189,7 +2180,7 @@ var PLAYLIST  = {
 			var $station  = $li2.find( '.station' );
 			var $artist   = $li2.find( '.artist' );
 			var $url      = $li2.find( '.url' );
-			if ( S.state === 'stop' || stop ) {
+			if ( S.stop || stop ) {
 				$img.attr( 'src', $img.data( 'src' ) );
 				$name.text( $station.text() );
 				$station.addClass( 'hide' );
@@ -2228,7 +2219,7 @@ var PLAYLIST  = {
 		}
 		
 		UTIL.intervalClear();
-		if ( S.state !== 'stop' ) {
+		if ( ! S.stop ) {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
@@ -2262,10 +2253,10 @@ var PROGRESS  = {
 		S.elapsed = Math.round( S.Time * deg / 360 );
 		PROGRESS.set();
 		$( '#elapsed, #total' ).removeClass( 'gr' );
-		if ( S.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
+		if ( ! S.play ) $( '#elapsed' ).addClass( 'bl' );
 		$( '#elapsed' ).text( COMMON.second2HMS( S.elapsed ) );
 		$( '#total' ).text( COMMON.second2HMS( S.Time ) );
-		if ( S.state === 'stop' && UTIL.barVisible() ) {
+		if ( S.stop && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
@@ -2379,7 +2370,11 @@ var UTIL      = {
 			, boxwidth    : 'max'
 			, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 			, beforeshow  : () => {
-				if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
+				if ( S.scrobble ) {
+					BASH( 'settings/data-config.sh scrobble', scrobble => {
+						$( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || scrobble.values[ S.player.toUpperCase() ] );
+					}, 'json' );
+				}
 				if ( paren ) {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$( '#infoList input' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
@@ -2447,6 +2442,7 @@ var UTIL      = {
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
 		if ( S.player === 'snapcast' ) {
+			S.icon = 'snapcast';
 			[ 'coverart', 'stationcover' ].forEach( k => {
 				if ( S[ k ] ) S[ k ] = 'http://'+ S.snapserverip + S[ k ];
 			} );

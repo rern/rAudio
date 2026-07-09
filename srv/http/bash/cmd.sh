@@ -110,13 +110,6 @@ countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
 	;;
-coverartonline )
-	$dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-debug
-CMD ARTIST ALBUM DEBUG"
-	;;
 coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null \
@@ -154,8 +147,7 @@ dirrename )
 	pushRadioList
 	;;
 display )
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
+	pushStatus
 	systemctl try-restart radio
 	fifoToggle
 	;;
@@ -195,13 +187,16 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
-	if [[ ! $ACTION ]]; then
+	if [[ ! $ACTION && $( < $dirshm/player ) == mpd && $FILE =~ ^(USB|NAS|NVME|SATA|SD) ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
 		if [[ -e $filelrc ]]; then
 			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '1,/^$/ d'
 			exit
 # --------------------------------------------------------------------
 		fi
+		lyrics=$( $dirbash/status -L "/mnt/MPD/$FILE" )
+		[[ $lyrics ]] && echo "$lyrics" && exit
+# --------------------------------------------------------------------
 	fi
 	name="$ARTIST - $TITLE"
 	name=${name##*/}
@@ -213,16 +208,6 @@ lyrics )
 	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
-		. $dirsystem/lyrics.conf
-		if [[ $embedded ]] && playerActive mpd; then
-			file=$( getVar file $dirshm/status )
-			if [[ ${file%/*} =~ ^(USB|NAS|SD)$ ]]; then
-				file="/mnt/MPD/$file"
-				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
-				[[ $lyrics ]] && echo "$lyrics" && exit
-# --------------------------------------------------------------------
-			fi
-		fi
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
@@ -311,15 +296,6 @@ mpcoption )
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
-	if [[ ! $ACTION ]]; then
-		! playerActive mpd && playerstop && exit
-# --------------------------------------------------------------------
-		if [[ $( mpcState ) == play ]]; then
-			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
-		else
-			ACTION=play
-		fi
-	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q play
@@ -421,12 +397,12 @@ mpcskip )
 	radioStop
 	state=$( mpcState )
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 	fi
 	mpc -q play $POS
 	[[ ! $ACTION ]] && ACTION=$state
-	[[ $ACTION != play ]] && mpc -q $ACTION
+	[[ $ACTION != play ]] && mpc -q stop
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
@@ -434,7 +410,7 @@ mpcskip )
 mpcupdate )
 	rm -f $dirshm/updatedone
 	date +%s > $dirmpd/updatestart
-	pushData mpdupdate '{ "updating_db": true }'
+	pushData mpdupdate '{ "updating": true }'
 	if [[ ! $ACTION ]]; then
 		if [[ -e $dirsystem/mpcupdate.conf ]]; then
 			. <( cat $dirsystem/mpcupdate.conf )
@@ -461,7 +437,7 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "updating_db": true }'
+	pushData mpdupdate '{ "updating": true }'
 	echo "\
 action=update
 mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf
@@ -501,6 +477,9 @@ playlist )
 	;;
 playlistpush )
 	pushPlaylist
+	;;
+pushVolume ) # mpd-idle
+	volumeGet push
 	;;
 remount )
 	mount -a
@@ -557,8 +536,7 @@ shairport )
 shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
+	pushStatus
 	;;
 snapserverlist )
 	snapserverList
@@ -627,21 +605,6 @@ $NAME
 $sampling
 $CHARSET" > "$newfile"
 	pushRadioList
-	;;
-webradiotitle )
-	url=$( getVar file $dirshm/status )
-	metaint=$( curl -s -I -H "Icy-MetaData: 1" "$url" \
-				| grep -i "icy-metaint" \
-				| awk '{print $2}' \
-				| tr -d '\r' )
-	[[ ! $metaint ]] && exit
-# --------------------------------------------------------------------
-# stream: ...[N icy-metaint]...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';\0\0\0>>>\0[255]...
-	curl -s -H 'Icy-MetaData: 1' "$url" \
-		| dd bs=1 skip=$metaint count=255 2>/dev/null \
-		| tr -d '\0' \
-		| grep -o "StreamTitle='[^'][^;]*'" \
-		| sed "s/StreamTitle=' *//; s/ *'$//"
 	;;
 
 esac

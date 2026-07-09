@@ -4,6 +4,36 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260709
+if [[ ! -e /boot/kernel.img ]]; then
+	! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
+fi
+
+file=$dirmpdconf/conf/bluetooth.conf
+if [[ ! -e $file ]]; then
+	cat << EOF > $file
+audio_output {
+	name        "BlueALSA"
+	device      "bluealsa"
+	type        "alsa"
+	format      "44100:16:2"
+}
+EOF
+fi
+
+rm -f $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
+
+file=/etc/upmpdcli.conf
+if [[ -e $file ]]; then
+	grep -q -m1 status-push $file && sed -i '/status-push/ d' $file
+	systemctl try-restart upmpdcli
+fi
+
+file=$dirsystem/localbrowser.conf
+if [[ -e $file ]]; then
+	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
+fi
+
 # 20260529
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
 	pacman -Sy --noconfirm mpd_oled
@@ -15,112 +45,6 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
 	fi
 fi
 
-# 20260509
-file=$dirshareddata/source
-if [[ -e $file && $( awk '{print $6}' $file ) ]]; then
-	mp=$( awk '{print $2}' $file | sed 's/\\040/ /g' )
-	echo "$mp" > $file
-fi
-
-if [[ -e /boot/kernel.img ]] && grep -q '^\[core' /etc/pacman.conf; then
-	sed -i '/^\[core]/,$ d' /etc/pacman.conf
-fi
-
-file=/etc/udevil/udevil.conf
-if ! grep -q /mnt/MPD/NAS/USB $file; then
-	sed -i -e 's/, utf8//
-' -e '/allowed_media_dirs/ s|$|,/mnt/MPD/NAS/USB|
-' $file
-	systemctl restart devmon@http
-	systemctl -q is-active nfs-server && $dirsettings/features.sh nfsserver
-fi
-file=/mnt/MPD/.mpdignore
-if [[ -e $file ]]; then
-	rm $file
-	mv /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
-fi
-
-if [[ -e /bin/camilladsp && $( pacman -Q camilladsp ) < 'camilladsp 4.1.3-1' ]]; then
-	systemctl -q is-active camilladsp && active=1
-	[[ $active ]] && systemctl stop camilladsp
-	rm -f $dirshm/hwparams
-	pacman -Sy --noconfirm camilladsp
-	while read f; do
-		sed -i -E -e 's/FLOAT/F/; s/S24LE3/S24_3_LE/' -e 's/([246])LE/\1_LE/' $f
-	done < <( grep -rl '[246]\+LE' $dircamilladsp )
-	[[ $active ]] && systemctl start camilladsp
-fi
-
-if [[ -e /bin/firefox ]]; then
-	file=/etc/udev/rules.d/mouse.rules
-	if [[ ! -e $file ]]; then
-		echo 'ACTION=="add|remove", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/srv/http/bash/settings/features.sh mouse"' > $file
-		udevadm control --reload-rules
-		udevadm trigger
-	fi
-
-	file=$dirsystem/localbrowser.conf
-	grep -q ^cursor $file && sed -i '/^cursor/ d' $file
-fi
-
-rm -f /root/.bashrc
-
-# 20260409
-if [[ -e /bin/firefox ]]; then
-	file=/lib/firefox/distribution/policies.json
-	[[ ! -e $file ]] && cat << EOF > $file
-{
-	"policies": {
-		"DisableAppUpdate": true,
-		"DontCheckDefaultBrowser": true,
-		"OverrideFirstRunPage": "",
-		"SkipOnboarding": true,
-		"Preferences": {
-			"browser.startup.homepage_override.mstone": "ignore",
-			"browser.sessionstore.resume_from_crash": false,
-			"layout.css.prefers-color-scheme.content-override": 0,
-			"layout.css.devPixelsPerPx": "1.00"
-		}
-	}
-}
-EOF
-	find /root/.config/mozilla -name user.js -delete &> /dev/null
-	file=/etc/systemd/system/localbrowser.service
-	if ! grep -q ^User $file; then
-		sed -i '/^Type/ a\User=root' $file
-		systemctl daemon-reload
-	fi
-fi
-
-dir=/etc/systemd/system/nfs-server.service.d
-if [[ -e /bin/nfsdctl && ! -e $dir ]]; then
-	mkdir -p $dir
-	cat << EOF > $dir/override.conf
-[Service]
-ExecStart=
-ExecStopPost=
-
-ExecStart=/bin/rpc.nfsd
-ExecStop=/bin/rpc.nfsd 0
-EOF
-	systemctl daemon-reload
-	systemctl try-restart nfs-server
-fi
-
-# 20260401
-file=/etc/conf.d/wireless-regdom
-if ! grep -q '^#W' $file; then
-	current=$( < $file )
-	curl -sL https://raw.githubusercontent.com/rern/rAudio/main/wireless-regdom -o $file
-	echo $current >> $file
-fi
-
-file=/etc/ssh/sshd_config
-if grep -q '^PermitEmptyPasswords *yes' $file; then
-	sed -i -E 's/.*(PermitEmptyPasswords ).*/\1no/' $file
-	systemctl restart sshd
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -128,16 +52,37 @@ rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
 
+if [[ -e /boot/kernel.img ]]; then
+	mv $dirbash/{status.armv6h,_status}
+	mv $dirbash/status{.sh,}
+	[[ ! -d /opt/armv6-new  ]] && curl -sL https://github.com/rern/rAudio-status/raw/main/rpi_zero/lib.tar.xz | bsdtar xpf - -C /
+else
+	if [[ -e /boot/kernel8.img ]]; then
+		mv $dirbash/status{.aarch64,}
+	else
+		mv $dirbash/status{.armv7h,}
+	fi
+	rm $dirbash/status.sh
+fi
+rm $dirbash/status.a*
+
 . $dirbash/common.sh
 cacheBust
 chmod -R +x $dirbash
-[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
 fi
-[[ -e /bin/firefox ]] && splashRotate
+if [[ -e /bin/firefox ]]; then
+	splashRotate
+else
+	rm -f $dirbash/startx.sh $dirsettings/features-localbrowser.sh
+fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 
 installfinish
+
+# 20260717
+file=$dirmpdconf/bluetooth.conf
+[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh

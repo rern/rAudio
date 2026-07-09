@@ -25,8 +25,11 @@ fi
 logoLcdOled
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
-$dirbash/cmd.sh playerstop
-snapclientIP playerstop
+if [[ -e $dirmpdconf/snapserver.conf ]]; then
+	$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
+else
+	$dirbash/cmd.sh playerstop
+fi
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 [[ $cdda ]] && mpc -q del $cdda
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off

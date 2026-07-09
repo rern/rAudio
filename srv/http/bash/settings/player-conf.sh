@@ -29,7 +29,6 @@ if [[ $1 ]]; then
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
-name0=$( getVar name $dirshm/output )
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
@@ -50,7 +49,8 @@ fi
 . $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
 
 if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
-	[[ $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
+	. <( grep ^name $dirshm/output )
+	[[ $name != $NAME ]] && notify output 'Output Device' "$NAME"
 fi
 
 # outputs -----------------------------------------------------------------------------
@@ -59,21 +59,7 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
 	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-#---------------< bluetooth
-	AUDIOOUTPUTBT='
-	name        "BlueALSA"
-	device      "'$hw'"
-	type        "alsa"'
-	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
-	format      "44100:16:2"'
-#--------------->
-######## >
-	echo "\
-audio_output {\
-$AUDIOOUTPUTBT
-}
-" > $dirmpdconf/bluetooth.conf
-######## >
+	ln -s $dirmpdconf/{conf/,}bluetooth.conf
 fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
@@ -164,8 +150,7 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
-status=$( $dirbash/status.sh )
-pushData mpdplayer "$status"
+pushStatus
 pushRefresh player
 if [[ ! -e $dirshm/btonoff ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
@@ -244,12 +229,3 @@ $value
 $user
 CMD VALUE USR"
 fi
-
-if [[ $BLUETOOTH && ! -e $dirsystem/devicewithbt ]]; then
-	function=volumeBlueAlsa
-elif [[ $mixertype == software ]]; then
-	function=volumeMpd
-else
-	function=volumeAmixer
-fi
-echo $function > $dirshm/volumefunction

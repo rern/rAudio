@@ -35,8 +35,8 @@ btsender )
 	statusCmd 'amixer -MD bluealsa'
 	;;
 device )
-	c=$( getVar card $dirshm/output )
-	cmd="aplay -D hw:$c /dev/zero --dump-hw-params"
+	. <( grep ^card $dirshm/output )
+	cmd="aplay -D hw:$card /dev/zero --dump-hw-params"
 	data=$( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )
 	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
 	echo "\
@@ -47,8 +47,8 @@ infobluetooth )
 	statusCmd "bluetoothctl info $2"
 	;;
 infocamilla | configuration )
-	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
-	statusCmd "cat $file"
+	[[ $2 ]] && CONFIG="$dircamilladsp/configs/$2" || . <( grep ^CONFIG /etc/default/camilladsp )
+	statusCmd "cat $CONFIG"
 	;;
 infostorage )
 	DEV=$2

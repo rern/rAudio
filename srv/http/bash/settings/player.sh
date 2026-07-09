@@ -11,7 +11,7 @@ amixer0dB() {
 	if [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
 		volumeAmixer 0dB "$mixer" $card
-		volumeGet push hw
+		volumeGet push
 	fi
 }
 
@@ -84,7 +84,7 @@ devicewithbt )
 	fi
 	;;
 dop )
-	name=$( getVar name $dirshm/output )
+	. <( grep ^name $dirshm/output )
 	filedop=$dirsystem/dop-$name # OFF with args - value by index
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh

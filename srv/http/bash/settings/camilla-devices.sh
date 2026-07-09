@@ -67,19 +67,20 @@ if [[ -e $dirshm/btreceiver ]]; then
 else
 	fileformat="$dirsystem/camilla-$NAME"
 	[[ -s $fileformat ]] && format=$( getContent "$fileformat" ) || format=$( jq -r .[0] <<< ${FORMATS[1]} )
-	fileconf=$( getVar CONFIG /etc/default/camilladsp )
-	format0=$( getVar playback.format "$fileconf" )
-	card0=$( getVar playback.device "$fileconf" | cut -c4 )
+	. <( grep ^CONFIG /etc/default/camilladsp )
+	[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
+	format0=$( getVar playback.format "$CONFIG" )
+	card0=$( getVar playback.device "$CONFIG" | cut -c4 )
 	[[ $format0 != $format ]] && changeformat=1
 	[[ $card0 != $CARD ]] && changecard=1
 	if [[ $changeformat || $changecard ]]; then
-		config=$( < "$fileconf" )
+		config=$( < "$CONFIG" )
 		if [[ $changeformat ]]; then
 			config=$( sed -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' <<< $config )
 			echo $format > "$fileformat"
 		fi
 		[[ $changecard ]] && config=$( sed '/playback:/,/device:/ s/hw:./hw:'$CARD'/' <<< $config )
-		echo "$config" > "$fileconf"
+		echo "$config" > "$CONFIG"
 	fi
 	camillaDSPstart
 fi

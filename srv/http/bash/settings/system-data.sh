@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+[[ ! -e /tmp/cmdline.txt ]] && cp /boot/{cmdline,config}.txt /tmp
+
 mhz2ghz() {
 	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz
 }
@@ -134,7 +136,7 @@ data+='
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
-, "updating_db"    : '$( statusUpdating )
+, "updating"       : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
 	ifwlan0=
 ##########

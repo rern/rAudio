@@ -233,7 +233,7 @@ $( '#library, #button-library' ).on( 'click', function() {
 	} else {
 		UTIL.switchPage( 'library' );
 	}
-	if ( S.updating_db ) BANNER( 'library blink', 'Library Database', 'Update ...' );
+	if ( S.updating ) BANNER( 'library blink', 'Library Database', 'Update ...' );
 } );
 $( '#playback' ).on( 'click', function() {
 	if ( V.playback ) {
@@ -265,7 +265,7 @@ $( '#artist, #info-bio' ).on( 'click', function() {
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
-		&& ( ! S.webradio || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
+		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
 			BASH( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
@@ -316,14 +316,14 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	} );
 } );
 $( '#elapsed' ).on( 'click', function() {
-	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
+	S.play ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#time svg, #time-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( S.player !== 'mpd' || S.webradio ) return
 	
 	V.time = UTIL.xy.get( this );
 	UTIL.intervalClear();
-	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
+	if ( ! S.play ) $( '#title' ).addClass( 'gr' );
 	PROGRESS[ V.time.type ]( e ); // move immediatly
 } );
 $( '#vol, #volume-band' ).on( 'touchstart mousedown', function() {
@@ -413,7 +413,7 @@ $( '#map-cover' ).press( e => {
 	
 	if ( ! S.pllength
 		|| V.guide
-		|| ( S.webradio && S.state === 'play' )
+		|| ( S.webradio && S.play )
 		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 	
@@ -548,7 +548,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 			}
 			break
 		default:
-			if ( cmd === 'play' && S.state === 'play' ) cmd = ! S.webradio ? 'pause' : 'stop';
+			if ( cmd === 'play' && S.play ) cmd = ! S.webradio ? 'pause' : 'stop';
 			$( '#'+ cmd ).trigger( 'click' );
 	}
 } );
@@ -600,7 +600,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			
 			if ( S.pllength ) BASH( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
 		} else if ( cmd === 'pause' ) {
-			if ( S.state === 'stop' ) return
+			if ( S.stop ) return
 			
 			S.state = cmd;
 			UTIL.intervalClear( 'elapsed' );
@@ -866,7 +866,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, list       : '<div class="menu">'+ $( '#menu-bkradio' ).html() +'</div>'
 		, beforeshow : () => {
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
-			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
+			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$( '#infoList' ).on( 'click', '.menu a, .menu .submenu', function() {
 				V.action = $( this ).data( 'cmd' );
 				V.mpccmd = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
@@ -1400,7 +1400,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
 	if ( $this.hasClass( 'active' ) ) {
-		if ( S.state === 'play' ) {
+		if ( S.play ) {
 			if ( S.webradio ) {
 				$liactive.removeClass( 'play' );
 				$liactive.find( '.elapsed' ).empty();
@@ -1482,7 +1482,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			}
 			$LI.addClass( 'active' );
 			$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
-			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
+			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
 			MENU.scroll( $menu, $LI.position().top + 48 );
 		}

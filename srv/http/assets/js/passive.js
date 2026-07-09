@@ -26,7 +26,7 @@ W = {
 		if ( ! V.playback ) {
 			REFRESHDATA();
 		} else {
-			if ( S.webradio && S.state === 'play' ) return
+			if ( S.webradio && S.play ) return
 			
 			var encoded  = data.coverart[ 0 ] === '%';
 			var regex    = encoded ? /^...srv...http/ : /^.srv.http/;
@@ -113,10 +113,10 @@ W = {
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
 	, mpdupdate : data => {
-		S.updating_db = 'updating_db' in data;
+		S.updating = 'updating' in data;
 		COMMON.updating();
 		PLAYBACK.button.updating();
-		if ( ! S.updating_db ) {
+		if ( ! S.updating ) {
 			V.html = {}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
 			DISPLAY.library();
@@ -157,7 +157,7 @@ W = {
 				PLAYLIST.render.home();
 			}
 			BANNER_HIDE();
-		} else {
+		} else if ( V.playlist ) {
 			if ( playlisthome ) PLAYLIST.render.home( data );
 			REFRESHDATA();
 		}

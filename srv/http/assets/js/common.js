@@ -58,13 +58,13 @@ BASH: Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function BASH( args, callback, json ) {
 	if ( typeof args === 'string' ) {
-		var filesh = 'settings/'+ args
+		var filesh = ( PAGE ? 'settings/' : '' ) + args;
 		args       = '';
 	} else if ( [ '.sh', '.py' ].includes( args[ 0 ].slice( -3 ) ) ) {
 		var filesh = args[ 0 ];
 		args.shift();
 	} else {
-		var filesh = PAGE ? 'settings/'+ PAGE +'.sh': 'cmd.sh';
+		var filesh = PAGE ? 'settings/'+ PAGE +'.sh' : 'cmd.sh';
 	}
 	// websocket
 	if ( ! callback && WS.readyState === 1 ) {
@@ -77,12 +77,13 @@ function BASH( args, callback, json ) {
 		}
 	}
 	// php
-	var data = { cmd: 'bash', filesh: filesh, args: args || '' }
+	var data = { cmd: 'bash', filesh: filesh }
+	if ( args.length ) data.args = args;
 	if ( V.debug ) {
 		COMMON.debugConsole( data );
 		return
 	}
-
+	
 	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function ICON( icon, id, tabindex ) {
@@ -1234,7 +1235,7 @@ var COMMON    = {
 		} else {
 			V.debug = true;
 			$( '#debug' ).addClass( 'active' );
-			console.log( '\x1B[31mDebug\x1B[0m Show commands but not send to server' );
+			console.log( '\x1B[31mDebug\x1B[0m Show commands (blocked - not send to server)' );
 		}
 	}
 	, debugConsole  : data => {
@@ -1431,7 +1432,7 @@ var COMMON    = {
 	, libraryUpdate : () => {
 		var icon    = 'refresh-library';
 		var title   = 'Library Database';
-		if ( S.updating_db ) {
+		if ( S.updating ) {
 			INFO( {
 				  icon    : icon
 				, title   : title
@@ -1646,12 +1647,24 @@ var COMMON    = {
 		return val
 	}
 	, updating      : () => {
-		BANNER( 'refresh-library'+ ( S.updating_db ? ' blink' : '' ), 'Library Update', S.updating_db ? 'Updating ...' : 'Done' );
+		BANNER( 'refresh-library'+ ( S.updating ? ' blink' : '' ), 'Library Update', S.updating ? 'Updating ...' : 'Done' );
+	}
+	, websocket     : disable => {
+		if ( disable ) {
+			V.websocket = false;
+			REFRESHDATA();
+			$( '#websocket' ).removeClass( 'active' );
+			console.log( '\x1B[31mWebSocket\x1B[0m Show message disabled' );
+		} else {
+			V.websocket = true;
+			$( '#websocket' ).addClass( 'active' );
+			console.log( '\x1B[32mWebSocket\x1B[0m Show message from server' );
+		}
 	}
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
-		if ( S.volumemax && S.volume > S.volumemax ) {
+		if ( S.volumelimit && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 		}
@@ -1662,7 +1675,7 @@ var VOLUME    = {
 			type = 'dragpress';
 			VOLUME.push();
 		}
-		BASH( [ 'volume', vol_prev, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
 	, push    : () => {
 		V.local = true;
@@ -1717,6 +1730,7 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 				REFRESHDATA();                                                    // - refresh data
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
+				if ( V.websocket ) console.log( json );
 				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
 
 				var channel = json.channel;
@@ -1797,6 +1811,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 } ).press( { // usage
 	  delegate : '#infoIcon'
 	, action   : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
+} );
+$( '#websocket' ).on( 'click', () => {
+	if ( ! V.press ) COMMON.websocket( 'disable' );
+} ).press( () => {
+	COMMON.websocket();
 } );
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
@@ -1900,7 +1919,9 @@ $( 'body' ).on( 'click', function( e ) {
 	$select
 		.html( $this.html().replace( /<\/*bll>/g, '' ) )
 		.toggleClass( 'active' );
-	$origin.find( 'option' ).eq( $this.index() ).attr( 'selected', true );
+	$origin
+		.find( 'option' ).attr( 'selected', false )
+			.eq( $this.index() ).attr( 'selected', true );
 	$origin.trigger( 'input' );
 } ).on( 'input', '.dropdown input', function() {
 	var $this   = $( this );

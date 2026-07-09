@@ -5,8 +5,8 @@
 type=$1
 mac=$( < $dirshm/$type )
 filedefault=/etc/default/camilladsp
-getVar CONFIG $filedefault > $dircamilladsp/fileconfig
-filecurrent=$( getVar CONFIG $filedefault )
+. <( grep ^CONFIG $filedefault | tee $dircamilladsp/fileconfig )
+[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
 filemac=$dircamilladsp/$mac
 if [[ -e $filemac ]]; then
 	filedevice=$( < $filemac )
@@ -28,7 +28,7 @@ if [[ $type == btreceiver ]]; then
 s/(device: ).*/\1bluealsa/
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
-}' "$filecurrent" > "$filedevice"
+}' "$CONFIG" > "$filedevice"
 else # btsender
 	dbuspath=$( gdbus introspect \
 					--recurse \
@@ -48,7 +48,7 @@ s/(enable_resampling: )/\1true/
 s/(type: ).*/\1Bluez/
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
-}' "$filecurrent" > "$filedevice"
+}' "$CONFIG" > "$filedevice"
 fi
 
 camillaDSPstart

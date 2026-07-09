@@ -33,13 +33,13 @@ fi
 
 if [[ -e /boot/wifi ]]; then
 	wlandev=$( netDevice w )
-	ssid=$( getVar ESSID /boot/wifi )
+	. <( grep ^ESSID /boot/wifi )
 	sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
-" /boot/wifi > "/etc/netctl/$ssid"
+" /boot/wifi > "/etc/netctl/$ESSID"
 	rm -f /boot/{accesspoint,wifi} $dirsystem/ap
 	$dirsettings/networks.sh "profileconnect
-$ssid
+$ESSID
 CMD ESSID"
 elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
@@ -108,6 +108,7 @@ CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
 $dirsettings/player-conf.sh
+$dirbash/status -k > $dirshm/status
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 # after all sources connected -----------------------------------------------------

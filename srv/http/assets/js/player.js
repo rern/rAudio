@@ -77,7 +77,7 @@ user                   "mpd"</pre></td></tr>
 ...
 audio_output {
     ...
-    mixer_device   "hw:${ S.output.card }"
+    mixer_device   "hw:${ S.output.CARD }"
 </pre></td></tr>
 <tr><td><textarea style="padding-left: 42px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
@@ -104,7 +104,7 @@ audio_output {
 					}
 					
 					NOTIFY_COMMON();
-					BASH( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], error => {
+					BASH( [ 'custom', global, output, S.output.NAME, 'CMD GLOBAL OUTPUT DEVICE' ], error => {
 						if ( error ) {
 							BANNER_HIDE();
 							INFO( {
@@ -125,7 +125,7 @@ audio_output {
 		INFO( {
 			  ...SW
 			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-			, values       : S.mixertype ? S.output.mixertype : 'hardware'
+			, values       : S.mixertype ? S.output.MIXERTYPE : 'hardware'
 			, checkchanged : S.mixertype
 			, cancel       : SWITCH.cancel
 			, ok           : () => UTIL.mixerSet( _INFO.val() )
@@ -148,7 +148,7 @@ audio_output {
 			  [ '',                               'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' } } ]
 			, [ 'Gain control with Device Mixer', 'checkbox' ]
 		];
-		if ( S.output.mixertype !== 'software' || ! S.mixers ) {
+		if ( S.output.MIXERTYPE !== 'software' || ! S.mixers ) {
 			delete values.HARDWARE;
 			list = list[ 0 ];
 		}
@@ -172,17 +172,17 @@ var UTIL     = {
 		INFO( {
 			  icon       : bt ? 'btsender' : 'volume'
 			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ bt ? 'BlueALSA' : S.output.mixer, 'range' ]
+			, list       : [ bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
 			, footer     : '<br>'+ UTIL.warning
 			, values     : val
 			, beforeshow : () => {
-				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
+				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 				$( '.infofooter' ).addClass( 'hide' );
 				var $range  = $( '#infoList input' );
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				var volume  = bt ? 'volumebt' : 'volume';
-				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', val ] : [ 'volume', S.output.mixer, S.output.card, val ];
+				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', val ] : [ 'volume', S.output.MIXER, S.output.CARD, val ];
 				$range.on( 'input', function() {
 					var target      = +this.value;
 					BASH( [ ...cmd, target, 'CMD CONTROL CARD CURRENT TARGET' ] );
@@ -216,7 +216,7 @@ var UTIL     = {
 	}
 	, mixerSet  : mixertype => {
 		NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
-		BASH( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
+		BASH( [ 'mixertype', mixertype, S.output.NAME, 'CMD MIXERTYPE DEVICE' ] );
 	}
 	, novolume  : {
 		  warning : () => {
@@ -299,7 +299,7 @@ var UTIL     = {
 
 function renderPage() {
 	headIcon();
-	$( '.button-lib-update' ).toggleClass( 'bl', S.updating_db );
+	$( '.button-lib-update' ).toggleClass( 'bl', S.updating );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
 					+'<div id="database">';
@@ -312,12 +312,13 @@ function renderPage() {
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	var bluetooth = S.btmixer !== false;
+	var $divvol   = $( '#divbtreceiver, #divbtsender, #divvolume, #divbuffer, #divffmpeg, #divsoxr' );
 	if ( bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
+		$divvol.removeClass( 'hide' );
 	} else {
-		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
+		$divvol.addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
@@ -367,17 +368,17 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#device' ).on( 'input', function() {
 	var device = this.value;
-	if ( device === S.output.name ) return
+	if ( device === S.output.NAME ) return
 	
 	NOTIFY( 'volume', 'Output Device', 'Change ...' );
 	BASH( [ 'device', device, 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	var mixer = this.value;
-	if ( mixer === S.output.mixer ) return
+	if ( mixer === S.output.MIXER ) return
 	
 	NOTIFY( 'volume', 'Mixer', 'Change ...' );
-	BASH( [ 'mixer', mixer, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
+	BASH( [ 'mixer', mixer, S.output.NAME, S.output.CARD, 'CMD MIXER DEVICE CARD' ] );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

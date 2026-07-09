@@ -198,7 +198,7 @@ dabDevice() {
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
-	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
+	[[ $page == status ]] && page='"page" : false' || page='"page" : "'$page'"'
 	json="\
 {
   $page$1
@@ -347,8 +347,10 @@ inOutputConf() {
 ipAddress() {
 	if [[ $1 ]]; then
 		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}' | head -1
-	else
+	elif [[ -e /boot/kernel/img ]]; then
 		ip route get 1.1.1.1 | awk '/src/ {print $7}' | head -1
+	else
+		$dirbash/status -I
 	fi
 }
 ipOnline() {
@@ -361,7 +363,7 @@ ipSharedData() {
 }
 json2var() { # single level only
 	local regex
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/=false$/=/'
 	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
@@ -399,8 +401,15 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
+	if [[ $1 ]]; then
+		ACTION=$1
+	else
+		! playerActive mpd && playerstop && exit
+# --------------------------------------------------------------------
+		[[ $( mpcState ) == play ]] && ACTION=pause || ACTION=play
+	fi
 	$dirbash/cmd.sh "mpcplayback
-$1
+$ACTION
 CMD ACTION"
 }
 mpcState() {
@@ -447,7 +456,7 @@ pushData() { # send to websocket.py (server)
 		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
 		[[ ' MPD bookmark webradio ' != *" $dir "* ]] && return
 #...............................................................................
-	elif [[ $channel == mpdupdate && $data != '{ "updating_db": true }' ]]; then # update done
+	elif [[ $channel == mpdupdate && $data != '{ "updating": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
 		data=$( tr -d '\n' <<< $data )
@@ -483,7 +492,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	$dirbash/status-push.sh
+	$dirbash/status -p
 }
 pushWebsocket() {
 	local data
@@ -567,30 +576,6 @@ sharedDataReset() {
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
 }
-snapclientIP() {
-	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
-#...............................................................................
-	local clientip connected data ip lines
-	[[ $1 ]] && data='{ "filesh": [ "cmd.sh", "playerstop" ] }'
-	lines=$( jq .Groups < /var/lib/snapserver/server.json \
-				| grep -E '"connected":|"ip":' \
-				| tr -d ' ",' )
-	while read l; do
-		if [[ ${l/:*} == connected ]]; then
-			[[ ${l/*:} == true ]] && connected=1 || connected=
-		else
-			[[ ! $connected ]] && continue
-
-			ip=${l/*:}
-			if [[ $data ]]; then
-				websocat --text ws://$ip:8080 <<< $data
-			else
-				clientip+=" $ip"
-			fi
-		fi
-	done <<< $lines
-	[[ $clientip ]] && echo $clientip
-}
 snapserverList() {
 	local name_ip
 	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
@@ -602,9 +587,11 @@ snapserverList() {
 	fi
 }
 splashRotate() {
-	local rotate
+	local dirimg rotate
 	dirimg=/srv/http/assets/img
-	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+	. <( grep ^rotate $dirsystem/localbrowser.conf )
+	[[ $rotate == 0 ]] && return
+#...............................................................................
 	magick \
 		-density 48 \
 		-background none $dirimg/icon.svg \
@@ -665,11 +652,11 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	[[ $CARD == bluealsa ]] && fn_volume=volumeBlueAlsa || fn_volume=$( < $dirshm/volumefunction ) # from player settings
+	fn_volume=$( volumeFunction )
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$fn_volume $TARGET% "$CONTROL" $CARD
+		$fn_volume $TARGET% "$CONTROL"
 		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
 			[[ $CURRENT == 0 ]] && val=2 || val=0
 			$fn_volume $val% "$CONTROL" $CARD
@@ -680,42 +667,40 @@ volume() {
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$fn_volume $val% "$CONTROL" $CARD
+			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
 	fi
 }
 volumeAmixer() { # value control card
-	amixer -c $3 -Mq sset "$2" $1
+	amixer -Mq sset "$2" $1
 	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
+volumeFunction() {
+	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
+}
 volumeGet() {
-	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
-#...............................................................................
-	local args card db mixer val val_db volume
-	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
-		val_db=$( amixer -MD bluealsa 2> /dev/null \
-					| grep -m1 % \
-					| awk -F'[][]' '{print $2, $4}' )
-	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
-				&& grep -q mixertype=software $dirshm/output \
-				&& playerActive mpd; then            # software
-		val_db="$( mpc status %volume% | tr -dc [:digit:] ) false"
-	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
-		. <( grep -E '^card|^mixer' $dirshm/output )
+	local args card db mixer mixertype name val val_db volume
+	. $dirshm/output
+	if [[ $2 == hw ]]; then
+		read val db < <( volumeGetAmixer "$mixer" )
+	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+		read val db < <( volumeGetAmixer bluealsa )
+	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
+		true
+	elif [[ $mixertype == software ]] && playerActive mpd; then
+		val="$( mpc status %volume% )"
+	else
 		for i in {1..5}; do # some usb might not be ready
-			val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null \
-						| grep -m1 % \
-						| awk -F'[][]' '{print $2, $4}' )
-			[[ $val_db ]] && break || sleep 1
+			read val db < <( volumeGetAmixer "$mixer" )
+			[[ $val ]] && break || sleep 1
 		done
 	fi
-	[[ $val_db ]] && val_db=$( tr -dc '[:digit:]-. ' <<< $val_db ) || val_db='-1 -1'
-	val=${val_db/ *}
-	db=${val_db/* }
+	[[ ! $val ]] && val=0
+	[[ ! $db ]] && db=0
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
@@ -728,27 +713,36 @@ volumeGet() {
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
-volumeMaxGet() {
-	local volumemax
-	if [[ -e  $dirsystem/volumelimit ]]; then
-		volumemax=$( getVar max $dirsystem/volumelimit.conf )
-		[[ $volumemax == 100 ]] && volumemax=false
+volumeGetAmixer() {
+	local val_db
+	if [[ $1 == bluealsa ]]; then
+		val_db=$( amixer -MD bluealsa 2> /dev/null )
 	else
-		volumemax=false
+		val_db=$( amixer -M sget "$1" 2> /dev/null )
 	fi
-	echo $volumemax
+	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
+}
+volumeMaxGet() {
+	local max
+	if [[ -e  $dirsystem/volumelimit ]]; then
+		. <( grep ^max $dirsystem/volumelimit.conf )
+	else
+		max=100
+	fi
+	echo $max
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}
 }
 volumeLimit() {
-	fn_volume=$( < $dirshm/volumefunction )
+	local fn_volume mixer val
 	val=$( getVar $1 $dirsystem/volumelimit.conf )
 	if [[ -e $dirshm/btreceiver ]]; then
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
 	fi
+	fn_volume=$( volumeFunction )
 	$fn_volume $val% "$mixer" $card
 }
 wlanOnboardDisable() {
