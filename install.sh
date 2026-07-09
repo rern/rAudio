@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260717
+# 20260709
 if [[ ! -e /boot/kernel.img ]]; then
 	! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
 fi
