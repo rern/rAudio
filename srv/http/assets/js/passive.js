@@ -157,7 +157,7 @@ W = {
 				PLAYLIST.render.home();
 			}
 			BANNER_HIDE();
-		} else if ( V.playlist ) {
+		} else {
 			if ( playlisthome ) PLAYLIST.render.home( data );
 			REFRESHDATA();
 		}
