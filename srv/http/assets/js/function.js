@@ -32,7 +32,7 @@ function REFRESHDATA() {
 				}
 			} );
 		}
-		if ( D.playbackswitch ) {
+		if ( D.playbackswitch && ( V.action === 'addplay' || V.action === 'replaceplay' ) ) {
 			$( '#playback' ).trigger( 'click' );
 		} else {
 			PLAYBACK.get();

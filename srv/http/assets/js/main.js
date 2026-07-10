@@ -1291,7 +1291,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					  '<i class="i-flash red"></i>All'     : 'all'
 					, '<i class="i-cursor"></i>Select ...' : 'select'
 					, '<i class="i-track"></i>Range ...'   : 'range'
-					, '<i class="i-crop yl"></i>Crop'      : 'crop'
+					, '<i class="i-crop ora"></i>Crop'      : 'crop'
 				}
 				, sameline : false
 			} ]
