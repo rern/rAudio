@@ -1,0 +1,318 @@
+/* ==UserStyle==
+@name         github.dev - dark
+@version      20260406.13.12
+@namespace    https://userstyles.world/user/rern
+@description  GitHub web Editor - Dark mode large fonts
+@author       rern
+@license      No License
+==/UserStyle== */
+
+@-moz-document domain("vscode.dev") {
+/*
+[URLs on the domain] github.dev
+Required fonts:
+	Windows    - Inconsolata, Inconsolata SemiCondensed
+	Arch Linux - pacman -S ttf-inconsolata
+	Linux
+		- https://fonts.google.com > download Inconsolata.zip
+		# mkdir -p ~/.local/share/fonts
+		# unzip xf Inconsolata.zip -d ~/.local/share/fonts
+		# fc-cache -fv
+*/
+:root {
+	--cw : hsl(   0, 0%, 90% );
+	--cg : hsl( 200, 3%, 50% );
+	--cg70 : hsl( 200, 3%, 70% );
+	--cg60 : hsl( 200, 3%, 60% );
+	--cg30 : hsl( 200, 3%, 30% );
+	--cg20 : hsl( 200, 3%, 20% );
+	--cg10 : hsl( 200, 3%, 10% );
+}
+.window-appicon {
+	display: inline-block !important;
+}
+.action-item,
+.action-label,
+.line-numbers,
+.monaco-findInput .input,
+.monaco-inputbox,
+.monaco-inputbox .input,
+.monaco-workbench .part > .content,
+.pane-header h3,
+.part.editor .tab,
+.view-line,
+.statusbar > .items-container,
+.sticky-widget span,
+.tab-label a,
+.title-label h2 {
+	font-size: 18px !important;
+	font-family: 'Inconsolata Semi Condensed', 'Inconsolata SemiCondensed';
+}
+.monaco-workbench .part.titlebar { /* top bar */
+	background-color: var(--cg10) !important;
+	border-bottom: none !important;
+}
+.quick-input-widget.show-file-icons { /* top input active */
+	top: -2px !important;
+	padding-left: 22px !important;
+	margin: 0 auto !important;
+	height: 24px !important;
+	width: 614px !important;
+}
+.monaco-workbench .part.activitybar { /* left menu bar */
+	background-color: #000 !important;
+}
+.composite-bar-container .action-item {
+	background-color: var(--cg20);
+}
+.monaco-workbench .part.panel.bottom .composite.title .action-item {
+	border-radius: 5px 5px 0 0;
+}
+.parts\.activitybar .action-label {
+	border-radius: 0;
+}
+.action-item.checked {
+	background-color: var(--cg30);
+}
+.active-item-indicator {
+	display: none;
+}
+.monaco-workbench .part > .title {
+	padding-left: 0;
+	border-bottom: 1px solid var(--cg30);
+}
+.part.sidebar.left .title:first-child {
+	background-color: var(--cg30);
+}
+.part.sidebar.left .action-item.select-container {
+	display: none;
+}
+.pane-header h3.title, /* panel header - top */
+.title-label h2 {      /* panel headers - bottom */
+	font-weight: 600 !important;
+	letter-spacing: 2.5px;
+}
+.icon.checked > .action-label.codicon { /* current panel icon */
+	color: var(--cw) !important;
+	background: var(--cg20)
+}
+.search-icon { /* in top bar */
+	margin-right: 10px !important;
+}
+.search-icon,
+.action-item.disabled .action-label::before,
+.action-label.codicon { /* icons */
+	width: 26px;
+	font-size: 26px !important;
+	color: var(--cg60) !important;
+}
+.titlebar-right > .action-toolbar-container { /* top bar right icons */
+	padding-right: 12px !important;
+}
+.codicon-search-details::before {
+	margin-right: 8px;
+	line-height: 26px;
+}
+.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab {
+	color: var(--cg);
+	background: var(--cg20) !important;
+	border-right-color: #000 !important;
+	border-radius: 5px 5px 0 0 !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active,
+.monaco-breadcrumbs,
+.statusbar > .items-container {
+	background: var(--cg30) !important;
+}
+.tab-border-top-container {
+	background-color: transparent !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab {
+	padding-left: 0;
+}
+.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab > .tab-actions {
+	width: 22px;
+	padding: 0 5px 0 0;
+}
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab a,
+.monaco-breadcrumbs .label-name,
+.statusbar > .items-container { /* tabs breadcrumbs, status bar */
+	color: var(--cg70) !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active a { /* current tab */
+	color: var(--cw) !important;
+}
+.tab-border-bottom-container {
+	background-color: var(--cg30) !important;
+}
+.sticky-widget div { /* code group line under breadcrumbs */
+	background-color: var(--cg20) !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab > .tab-actions .action-label.codicon {
+	display: inline;
+	vertical-align: -5px;
+	font-size: 20px !important;
+	color: var(--cg) !important;
+}
+.action-item.command-center-center, /* input box */
+.monaco-inputbox {
+	min-height: 28px !important;
+	border-color: var(--cg) !important;
+	background-color: #000;
+}
+.find-part textarea { /* tab find */
+	line-height: 22px !important;
+}
+.monaco-findInput > .controls {
+	top: 2px;
+}
+.badge-content,
+.monaco-count-badge { /* changes count */
+	font-size: 14px !important;
+}
+.pane-body .monaco-editor { /* commit inputbox */
+	outline: 1px solid var(--cg);
+}
+.pane-header { /* panel header */
+	height: 36px !important;
+	background: var(--cg20) !important;
+}
+.split-view-view:first-of-type .pane-header h3.title { /* repo name */
+	letter-spacing: unset;
+	text-transform: none;
+}
+.monaco-workbench .codicon[class*="codicon-"]:not(.codicon-remote, .codicon-drop-down-button) { /* icons inside input */
+	margin-right: 3px;
+	height: fit-content;
+	padding: 0 !important;
+	color: var(--cg60) !important;
+}
+.codicon-drop-down-button {
+    padding-left: 0;
+}
+.scm-view .monaco-list-row .actions .action-label { /* icons after commit-changed files*/
+	font-size: 18px !important;
+	width: 14px !important;
+}
+.file-icon::before,
+.monaco-icon-label::before,
+.monaco-workbench .codicon[class*="codicon-"],
+.monaco-action-bar .action-item .codicon {
+	width: 24px;
+}
+.monaco-custom-toggle.codicon.checked {
+    margin-top: 1px;
+	background-color: var(--cg30) !important;
+	border: none;
+}
+.search-widget > .codicon { /* pane search arrows icon */
+	width: 17px !important;
+}
+.search-widget > .codicon::before { /* pane search arrows icon */
+	font-size: 22px;
+	line-height: 26px;
+}
+.button.codicon {
+	font-size: 22px !important;
+}
+.replace-actions {
+	margin-top: -2px;
+}
+.codicon-keybindings-editor-label-icon::before,
+.codicon-settings-editor-label-icon::before { /* tab settings icon */
+	width: 28px !important;
+	text-align: center;
+}
+.monaco-icon-label-iconpath { /* tab pull request icon */
+	margin: 0 10px;
+}
+.replace-input .monaco-findInput { /* replace box */
+	width: 217px !important;
+}
+.monaco-custom-toggle { /* icons inside search boxes - fix 'exclude' bg */
+	background-color: unset !important;
+	font-size: 20px !important;
+}
+.monaco-custom-toggle::before {
+	font-size: 22px;
+}
+.monaco-editor .find-widget > .find-part,
+.monaco-text-button,
+.monaco-workbench .part > .content .message,
+.search-view .query-details.more h4 { /* button text, description text */
+	font-size: 16px;
+	color: var(--cw);
+}
+.scm-view .button-container > .monaco-button-dropdown > .monaco-dropdown-button { /* dropdown arrow - commit button */
+	line-height: 24px;
+	margin-right: -5px;
+}
+.monaco-button-dropdown {
+    border-radius: 4px !important;   
+}
+.find-widget.visible {
+    min-width: 480px;
+}
+.find-widget.visible.replaceToggled {
+        height: 67px !important;
+}
+.monaco-editor-background { /* code window */
+	background-color: #000;
+}
+.current-line.current-line-margin-both {
+	background-color: var(--cg20);
+}
+.monaco-editor .view-line {
+	padding-left: 3px;
+}
+#workbench\.parts\.statusbar * {
+	color: var(--cw) !important;
+}
+#status\.host:hover,
+#status\.host > a:hover {
+    background-color: #0068b7 !important;
+}
+#status\.scm\.0 * {
+	margin: 0;
+	color: #000 !important;
+}
+#status\.scm\.0 { /* branch */
+	max-width: unset;
+	padding: 0 10px 0 5px;
+	color: var(--cw);
+}
+#status\.scm\.0,
+#status\.scm\.0 > a {
+	background-color: #f78166 !important;  
+}
+#status\.scm\.0:hover,
+#status\.scm\.0 > a:hover {
+	background-color: #f26748 !important;  
+}
+.install.action-dropdown,
+.extension-editor *,
+.extension-list-item,
+.notification-container,
+.settings-editor,
+.monaco-menu-container,
+.monaco-button.monaco-text-button > span:not(.codicon),
+.monaco-menu-container .monaco-action-bar .action-item,
+.monaco-menu-container .monaco-action-bar .action-label,
+.vscode-dark { /* menus */
+	font-family: system-ui, Ubuntu, 'Droid Sans', sans-serif !important;
+	font-size: 16px !important;
+}
+.extension-editor .codicon::before,
+.codicon-drop-down-button::before {
+	font-family: codicon;
+}
+.extension-list-item > .details > .footer > .monaco-action-bar > .actions-container .extension-action.label {
+	font-size: 16px !important;
+	line-height: 20px !important;
+}
+.message-action-button,
+.action-label.codicon.extension-action.label.prominent.reload,
+.action-label.codicon.extension-action.label.action-dropdown {
+	font-size: unset !important;
+}
+}
