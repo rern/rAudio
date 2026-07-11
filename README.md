@@ -17,10 +17,10 @@ r A u d i o
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 ### Features
 - Player - Local files
-	- USB HDD
-	- USB Audio CD
+	- HDD (NVME, SATA, USB)
 	- NAS
 	- SD card
+	- USB Audio CD
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
 	- Bluetooth audio receiver
