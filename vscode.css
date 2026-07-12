@@ -48,6 +48,9 @@ Required fonts:
 	font-size: 18px !important;
 	font-family: 'Inconsolata Semi Condensed', 'Inconsolata SemiCondensed';
 }
+.monaco-workbench {
+	font-size: 16px;
+}
 .monaco-workbench .part.titlebar { /* top bar */
 	background-color: var(--cg10) !important;
 	border-bottom: none !important;
