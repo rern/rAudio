@@ -7,7 +7,6 @@
 @license      No License
 ==/UserStyle== */
 
-@-moz-document domain("vscode.dev") {
 /*
 [URLs on the domain] github.dev
 Required fonts:
@@ -236,6 +235,12 @@ Required fonts:
 .monaco-custom-toggle::before {
 	font-size: 22px;
 }
+.editor-group-watermark {
+    width: 300px;
+}
+.monaco-keybinding > .monaco-keybinding-key {
+    font-size: 18px;
+}
 .monaco-editor .find-widget > .find-part,
 .monaco-text-button,
 .monaco-workbench .part > .content .message,
@@ -248,7 +253,7 @@ Required fonts:
 	margin-right: -5px;
 }
 .monaco-button-dropdown {
-    border-radius: 4px !important;   
+    border-radius: 4px !important;
 }
 .find-widget.visible {
     min-width: 480px;
@@ -283,11 +288,11 @@ Required fonts:
 }
 #status\.scm\.0,
 #status\.scm\.0 > a {
-	background-color: #f78166 !important;  
+	background-color: #f78166 !important;
 }
 #status\.scm\.0:hover,
 #status\.scm\.0 > a:hover {
-	background-color: #f26748 !important;  
+	background-color: #f26748 !important;
 }
 .install.action-dropdown,
 .extension-editor *,
@@ -314,5 +319,4 @@ Required fonts:
 .action-label.codicon.extension-action.label.prominent.reload,
 .action-label.codicon.extension-action.label.action-dropdown {
 	font-size: unset !important;
-}
 }
