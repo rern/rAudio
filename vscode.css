@@ -236,7 +236,7 @@ Required fonts:
 	font-size: 22px;
 }
 .editor-group-watermark {
-    width: 300px;
+    max-width: 320px;
 }
 .monaco-keybinding > .monaco-keybinding-key {
     font-size: 18px;
