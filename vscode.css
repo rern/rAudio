@@ -39,11 +39,12 @@ Required fonts:
 .monaco-workbench .part > .content,
 .pane-header h3,
 .part.editor .tab,
-.view-line,
+.quick-input-list,
 .statusbar > .items-container,
 .sticky-widget span,
 .tab-label a,
-.title-label h2 {
+.title-label h2,
+.view-line {
 	font-size: 18px !important;
 	font-family: 'Inconsolata Semi Condensed', 'Inconsolata SemiCondensed';
 }
