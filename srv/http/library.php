@@ -621,8 +621,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$args          = escape( implode( "\n", [ 'cmd', $artist, $album, $mpdpath, 'CMD ARTIST ALBUM FILE' ] ) );
-		$coverart      = exec( '/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
+		$coverart      = exec( '/bin/sudo /srv/http/bash/status -C "/mnt/MPD/'.$file0.'" "'.$artist.'" "'.$album.'"' );
 		if ( ! $coverart ) $coverart = '/assets/img/coverart.svg';
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );

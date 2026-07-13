@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260714
+[[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth
+
 # 20260709
 if [[ ! -e /boot/kernel.img ]]; then
 	! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
