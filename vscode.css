@@ -142,6 +142,9 @@ Required fonts:
 .statusbar > .items-container { /* tabs breadcrumbs, status bar */
 	color: var(--cg70) !important;
 }
+.monaco-workbench .part.editor>.content .editor-group-container.active>.title .tabs-container>.tab.dirty>.tab-actions .action-label:not(:hover):before, .monaco-workbench .part.editor>.content .editor-group-container>.title .tabs-container>.tab.dirty>.tab-actions .action-label:not(:hover):before {
+	color: yellow;
+}
 .monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active a { /* current tab */
 	color: var(--cw) !important;
 }
