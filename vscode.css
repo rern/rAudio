@@ -47,6 +47,7 @@ Required fonts:
 .view-line {
 	font-size: 18px !important;
 	font-family: 'Inconsolata Semi Condensed', 'Inconsolata SemiCondensed';
+	font-weight: bold;
 }
 .monaco-workbench {
 	font-size: 16px;
