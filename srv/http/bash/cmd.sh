@@ -407,6 +407,9 @@ mpcskip )
 	[[ $consume == on ]] && mpc -q del $songpos
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
+mpcplaypause )
+	mpcPlayback
+	;;
 mpcupdate )
 	rm -f $dirshm/updatedone
 	date +%s > $dirmpd/updatestart
