@@ -296,6 +296,9 @@ mpcoption )
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
+# --------------------------------------------------------------------
+	[[ ! $ACTION ]] && mpcPlayback && exit
+# --------------------------------------------------------------------
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q play
@@ -406,9 +409,6 @@ mpcskip )
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
-	;;
-mpcplaypause )
-	mpcPlayback
 	;;
 mpcupdate )
 	rm -f $dirshm/updatedone

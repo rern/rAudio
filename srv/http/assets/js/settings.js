@@ -195,7 +195,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 		S.state = S.state === 'play' ? 'pause' : 'play'
 		headIcon();
 		if ( PAGE === 'camilla' && S.state === 'pause' ) RENDER.statusStop();
-		BASH( [ 'cmd.sh', 'mpcplaypause' ] );
+		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
 if ( $MENU.length ) {
