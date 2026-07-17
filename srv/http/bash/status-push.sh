@@ -1,7 +1,7 @@
 #!/bin/bash
 
 [[ -e /dev/shm/usbdac_rules ]] && exit # debounce usbdac.rules
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
 onPlay() {
@@ -16,7 +16,7 @@ onPlay() {
 			fi
 			pushStatus
 			exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 		fi
 	fi
 	if [[ ! -e /bin/firefox ]] \
@@ -72,8 +72,10 @@ CMD ARTIST ALBUM" &> /dev/null &
 	webradio=true
 	onPlay
 else
-#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) # fix: no state on start playing dsd from network (<rpi4)
+#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) && exit # fix: no state on start playing dsd from network (<rpi4)
 	$dirbash/status -k > $dirshm/status
+	grep -q Title=flac $dirshm/status&& exit
+# ------------------------------------------------------------------------------
 	. <( grep -E '^state|^webradio' $dirshm/status )
 	onPlay
 fi
@@ -85,7 +87,7 @@ $dirbash/status $p_b
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 [[ -e $dirshm/power ]] && exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/status -o > $dirshm/status.json
 	systemctl restart lcdchar
@@ -93,12 +95,12 @@ fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 [[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 if [[ $( < $dirshm/player ) != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 	if [[ $state == play || $state == pause ]]; then # renderers prev/next
 		timestampnew=$( getVar timestamp $dirshm/status )
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
@@ -109,7 +111,7 @@ if [[ -e $dirshm/elapsed ]];then
 	elapsed=$( < $dirshm/elapsed )
 	rm $dirshm/elapsed
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 fi
 $dirbash/scrobble.sh "cmd
 $Artist
