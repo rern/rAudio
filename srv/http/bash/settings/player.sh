@@ -107,6 +107,7 @@ mixer )
 mixertype )
 	. $dirshm/output
 	mpc -q stop
+	rm -f $dirsystem/mixernone
 	filemixertype="$dirsystem/mixertype-$name"
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
@@ -124,11 +125,11 @@ mixertype )
 		fi
 	fi
 	$dirsettings/player-conf.sh
-	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
-	pushData display '{ "volumenone": '$volumenone' }'
+	pushData display '{ "volumenone": false }'
 	;;
 novolume )
 	amixer0dB
+	touch $dirsystem/mixernone
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf

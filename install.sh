@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260718
+grep -q mixertype=none $dirshm/output && touch $dirsystem/mixernone
+
 # 20260714
 [[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth
 
