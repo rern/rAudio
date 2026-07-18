@@ -43,12 +43,12 @@ function NOTIFY_COMMON( message ) {
 }
 function REFRESHDATA() {
 	if ( PAGE === 'guide' || ( I.active && ! I.rangelabel ) ) return
-	
+
 	if ( PAGE === 'features' && ! /features$/.test( window.location.href ) ) { // authorization: spotify / scrobble
 		UTIL.redirect();
 		return
 	}
-	
+
 	BASH( PAGE +'-data.sh', list => {
 		// on load, try catching any errors
 		if ( list.trim() === 'notrunning' ) {
@@ -62,7 +62,7 @@ function REFRESHDATA() {
 			} );
 			return
 		}
-		
+
 		try {
 			if ( $.isEmptyObject( S ) ) { // 1st load
 				S = JSON.parse( list );
@@ -74,7 +74,7 @@ function REFRESHDATA() {
 			COMMON.dataError( e.message, list );
 			return false
 		}
-		
+
 		SWITCH.set();
 		renderPage();
 		COMMON.statusToggle( 'refresh' );
@@ -132,18 +132,18 @@ var SWITCH  = {
 		NOTIFY_COMMON();
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 		if ( V.debug ) return
-		
+
 		$( '.col-r' ).css( 'pointer-events', 'none' );
 		delete SW;
 	}
 	, set    : () => {
 		if ( PAGE === 'camilla' ) return
-		
+
 		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 		BANNER_HIDE();
 		var $switch = $( '.switch' );
 		if ( ! $switch.length ) return
-		
+
 		$switch.removeClass( 'disabled' );
 		$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 		$( '.setting' ).each( ( i, el ) => {
@@ -162,7 +162,7 @@ W.mpdupdate = data => {
 }
 W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
-	
+
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
@@ -181,7 +181,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function headIcon( data ) {
 		if ( data ) {
 			if ( data.player === S.player && data.state === S.state ) return
-			
+
 			[ 'player', 'pllength', 'state' ].forEach( k => {
 				if ( k in data ) S[ k ] = data[ k ];
 			} );
@@ -205,7 +205,7 @@ if ( $MENU.length ) {
 				V.list = COMMON.json.clone( S.list );
 				return false
 			}
-			
+
 			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 		}
 		, render : ( id, html ) => {
@@ -220,7 +220,7 @@ if ( $MENU.length ) {
 				e.stopPropagation();
 				return false
 			}
-			
+
 			return $this.data( 'cmd' )
 		}
 		, isActive : ( $li, e ) => {
@@ -229,7 +229,7 @@ if ( $MENU.length ) {
 				$MENU.addClass( 'hide' );
 				return true
 			}
-			
+
 			var active = ! $MENU.hasClass( 'hide' ) && $li.hasClass( 'active' );
 			$MENU.addClass( 'hide' );
 			$( '.entries li' ).removeClass( 'active' );
@@ -253,7 +253,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 if ( $MENU.length ) {
 	$( '.container' ).on( 'click', function( e ) {
 		if ( $( e.target ).parents( '.entries' ).length ) return
-		
+
 		$MENU.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	} );
@@ -302,7 +302,7 @@ $( '#close' ).on( 'click', function() {
 			location.href = '/';
 			return
 		}
-		
+
 		var message = '';
 		$.each( list, ( k, v ) => message += ICON( k ) +' '+ v +'<br>' );
 		INFO( {
@@ -330,7 +330,7 @@ $( '#bar-bottom div' ).on( 'click', function() {
 } );
 $( '.switch, .setting' ).on( 'click', function() {
 	if ( V.local ) return
-	
+
 	LOCAL();
 	var id   = this.id.replace( 'setting-', '' );
 	var icon = id;
@@ -358,9 +358,9 @@ $( '.switch' ).on( 'click', function() {
 		} );
 		return
 	}
-	
+
 	$this.addClass( 'disabled' );
-	var $setting = $( '#setting-'+ id ); 
+	var $setting = $( '#setting-'+ id );
 	if ( checked ) {
 		if ( id in CONFIG ) {                //    config
 			$setting.trigger( 'click' );
@@ -421,7 +421,7 @@ $( '.textdropdown' ).on( 'click', function() {
 // kb shortcut
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
-	
+
 	var camilla = PAGE === 'camilla';
 	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
 	var tabs    = ! $( '#loader' ).hasClass( 'hide' );
@@ -431,19 +431,19 @@ $( document ).on( 'keydown', function( e ) {
 		case 'ArrowUp':
 			e.preventDefault();
 			if ( ! camilla && tabs ) return
-			
+
 			if ( menu ) {
 				COMMON.focusNext( $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
-			
+
 			var index = 0;
 			var $tabs = $( '[ tabindex=0 ]:not( .menu a )' ).filter( ( i, el ) => {
 				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
 					|| $( el ).parents( '.row' ).hasClass( 'hide' )
 					|| $( el ).is( '.setting.hide' )
 				) return
-					
+
 				return $( el )
 			} );
 			COMMON.focusNext( $tabs, 'focus', key );
@@ -466,13 +466,13 @@ $( document ).on( 'keydown', function( e ) {
 		case 'Enter':
 			var $focus = $( document.activeElement );
 			if ( ! $focus.length ) return
-			
+
 			e.preventDefault();
 			if ( menu ) {
 				$focus.trigger( 'click' );
 				return
 			}
-			
+
 			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
 			$focus.trigger( 'click' );
 			COMMON.loaderHide();
@@ -498,7 +498,7 @@ $( document ).on( 'keydown', function( e ) {
 					COMMON.loaderHide();
 					$( '#bar-bottom' ).css( 'z-index', '' );
 				}
-				
+
 				COMMON.loader( 'fader' );
 				$( '#bar-bottom' ).css( 'z-index', 121 );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
@@ -519,7 +519,7 @@ $( document ).on( 'keydown', function( e ) {
 			break
 		case 'x':
 			if ( ! e.ctrlKey ) return
-			
+
 			$( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':

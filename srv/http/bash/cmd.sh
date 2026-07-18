@@ -296,6 +296,9 @@ mpcoption )
 	;;
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
+# --------------------------------------------------------------------
+	[[ ! $ACTION ]] && mpcPlayback && exit
+# --------------------------------------------------------------------
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q play

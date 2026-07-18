@@ -584,7 +584,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 				PLAYBACK.coverart();
 				PLAYBACK.info.set();
 				$( '#artist, #title, #album' ).addClass( 'disabled' );
-				$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 			}
 			if ( S.player !== 'mpd' ) {
 				BASH( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
