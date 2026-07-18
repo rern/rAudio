@@ -312,13 +312,12 @@ function renderPage() {
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	var bluetooth = S.btmixer !== false;
-	var $divvol   = $( '#divbtreceiver, #divbtsender, #divvolume, #divbuffer, #divffmpeg, #divsoxr' );
 	if ( bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$divvol.removeClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
 	} else {
-		$divvol.addClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender' ).empty().addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
