@@ -675,7 +675,7 @@ volumeBlueAlsa() { # value control
 }
 volumeFunction() {
 	if [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
-		grep -q ^mixertype=hardware $dirshm/output && echo volumeAmixer || echo volumeMpd
+		[[ -e $dirshm/mixerhardware ]] && echo volumeAmixer || echo volumeMpd
 	else
 		echo volumeBlueAlsa
 	fi
