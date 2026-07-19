@@ -137,12 +137,8 @@ if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
 		echo "$data" > $diraddons/addonslist.json
 		latest=$( jq -r .r1.version <<< $data )
 		if [[ $latest > $( < $diraddons/r1 ) ]]; then
-			if [[ $expand || -e $dirsystem/autoupdate ]]; then
-				rAudioUpdate $latest
-			else
-				touch $diraddons/update
-				pushData option '{ "addons": true }'
-			fi
+			touch $diraddons/update
+			pushData option '{ "addons": true }'
 		fi
 	fi
 fi
