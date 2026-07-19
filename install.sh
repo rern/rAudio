@@ -8,6 +8,7 @@ alias=r1
 . $dirshm/output
 if [[ $mixertype == hardware ]]; then
 	touch $dirshm/mixerhardware
+	$dirsettings/player-conf.sh
 elif [[ $mixertype == none ]]; then
 	touch $dirsystem/mixernone
 fi
