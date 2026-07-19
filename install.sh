@@ -5,7 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260719
-grep -q mixertype=none $dirshm/output && touch $dirsystem/mixernone
+. $dirshm/output
+if [[ $mixertype == hardware ]]; then
+	touch $dirshm/mixerhardware
+elif [[ $mixertype == none ]]; then
+	touch $dirsystem/mixernone
+fi
 
 # 20260714
 [[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth

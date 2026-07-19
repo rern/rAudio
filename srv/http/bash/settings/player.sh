@@ -105,7 +105,6 @@ mixer )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	rm -f $dirsystem/mixernone
 	. $dirshm/output
 	mpc -q stop
 	filemixertype="$dirsystem/mixertype-$name"
@@ -128,7 +127,6 @@ mixertype )
 	pushData display '{ "volumenone": false }'
 	;;
 novolume )
-	touch $dirsystem/mixernone
 	amixer0dB
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0

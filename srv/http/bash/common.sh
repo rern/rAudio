@@ -674,7 +674,11 @@ volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
 volumeFunction() {
-	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
+	if [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
+		[[ -e $dirshm/mixerhardware ]] && echo volumeAmixer || echo volumeMpd
+	else
+		echo volumeBlueAlsa
+	fi
 }
 volumeGet() {
 	local args card db mixer mixertype name val val_db volume
