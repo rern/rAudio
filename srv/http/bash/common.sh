@@ -345,12 +345,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	if [[ $1 ]]; then
-		dev=$( netDevice $1 )
-		[[ $dev ]] && ip route show dev $dev | awk '/^default/ {print $7}' | head -1
-	else
-		$dirbash/status -I
-	fi
+	$dirbash/status -I $1
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
@@ -673,11 +668,7 @@ volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
 volumeFunction() {
-	if [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
-		[[ -e $dirshm/mixerhardware ]] && echo volumeAmixer || echo volumeMpd
-	else
-		echo volumeBlueAlsa
-	fi
+	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
 }
 volumeGet() {
 	local args card db mixer mixertype name val val_db volume
