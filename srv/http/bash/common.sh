@@ -409,6 +409,13 @@ CMD ACTION"
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
 }
+mpdOledChip() {
+	if grep -q '\-o ' /etc/default/mpd_oled; then
+		sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled
+	else
+		echo 6
+	fi
+}
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
 }

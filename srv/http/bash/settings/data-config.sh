@@ -111,10 +111,9 @@ monitor )
 	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
-	opt=$( < /etc/default/mpd_oled )
-	[[ $opt == *-x* ]] && chip=$( sed -E 's/.*-x (.).*/\1/' <<< $opt ) || chip=6
-	[[ $opt == *-X* ]] && spectrum=false || spectrum=true
+	chip=$( mpdOledChip )
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
+	grep -q '\-X' /etc/default/mpd_oled && spectrum=false || spectrum=true
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;

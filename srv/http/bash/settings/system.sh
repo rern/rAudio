@@ -224,7 +224,7 @@ mpdoled )
 		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
-		. <( cat /etc/default/mpd_oled )
+		. /etc/default/mpd_oled
 		[[ $OPTS != $opts ]] && echo 'OPTS="'$opts'"' > /etc/default/mpd_oled
 		x_z=-x
 	else
