@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260727
+[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
+
+
 # 20260719
 . $dirshm/output
 if [[ $mixertype == hardware ]]; then
@@ -44,17 +48,6 @@ fi
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]]; then
 	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
-fi
-
-# 20260529
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
-	pacman -Sy --noconfirm mpd_oled
-	file=/etc/default/mpd_oled
-	if grep ' -X' $file; then
-		sed -i 's/ -X//' $file
-	else
-		sed -i 's/fifo"/fifo -X"/' $file
-	fi
 fi
 
 #-------------------------------------------------------------------------------
