@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 
 [[ ! -e /tmp/cmdline.txt ]] && cp /boot/{cmdline,config}.txt /tmp
+[[ ! -e /tmp/raspberrypi.conf ]] && cp /etc/modules-load.d/raspberrypi.conf /tmp
 
 mhz2ghz() {
 	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz

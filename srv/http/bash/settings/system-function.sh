@@ -61,7 +61,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
 	if [[ ! $reboot ]]; then
 		if ! cmp -s $tmp_config $file_config || ! cmp -s $tmp_cmdline $file_cmdline; then
 			reboot=1
-		else
+		elif [[ -e $tmp_module && -e $file_module ]]; then
 			count=$( ls $tmp_module $file_module | wc -l )
 			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi
