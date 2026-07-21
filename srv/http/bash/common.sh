@@ -493,7 +493,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	$dirbash/status -p
+	$dirbash/status-push.sh
 }
 pushWebsocket() {
 	local data
