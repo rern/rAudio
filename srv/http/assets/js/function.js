@@ -107,6 +107,7 @@ var BIO       = {
 				$( '#bio' )
 					.removeClass( 'hide' )
 					.scrollTop( 0 );
+				COMMON.loaderHide();
 				$( '#bio .container' ).trigger( 'focus' );
 				if ( ! data.mbid ) return
 				
@@ -129,14 +130,7 @@ var BIO       = {
 	}
 	, image : imageshtml => {
 		var $artist    = $( '#biocontent .artist' );
-		if ( ! imageshtml ) {
-			if ( $artist.text() !== S.Artist || ! S.coverart ) {
-				COMMON.loaderHide();
-				return
-			}
-			
-			imageshtml = '<a><img src="'+ S.coverart +'"></a>';
-		}
+		if ( ! imageshtml ) imageshtml = '<a><img src="'+ S.coverart +'"></a>';
 		$artist
 			.before( '<div id="bioimg">'+ imageshtml +'</div>' )
 			.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
