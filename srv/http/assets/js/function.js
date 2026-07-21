@@ -107,23 +107,23 @@ var BIO       = {
 				$( '#bio' )
 					.removeClass( 'hide' )
 					.scrollTop( 0 );
-				$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
-					if ( 'error message' in data ) {
+				$( '#bio .container' ).trigger( 'focus' );
+				if ( ! data.mbid ) return
+				
+				BASH( [ 'bioimage', data.mbid, 'CMD MBID' ], data => {
+					if ( 'error' in data ) {
 						BIO.image();
 						return
 					}
 					
-					if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 					var imageshtml = '';
-					if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
+					if ( data.artistthumb && data.artistthumb[ 0 ].url ) {
 						data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
 					}
 					BIO.image( imageshtml )
 					$( '#bio' ).scrollTop( 0 );
-				} ).fail( function() { // 404 not found
-					BIO.image();
-				} );
-				$( '#bio .container' ).trigger( 'focus' );
+				}, 'json' );
 			} );
 		} );
 	}

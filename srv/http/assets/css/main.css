@@ -966,8 +966,8 @@ div.pagerefresh {
 	border-bottom: 1px solid var( --cg );
 }
 #biotitleimg {
+	margin: -10px 10px 0 0;
 	width: 40px;
-	margin-right: 10px;
 	vertical-align: -6px;
 }
 #biocontent .close-root,

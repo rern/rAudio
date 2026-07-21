@@ -18,6 +18,16 @@ albumthumbnail )
 	echo $DIR > $dirshm/dir
 	[[ $OVERWRITE ]] && touch $dirshm/overwrite
 	;;
+bioimage )
+	data=$( curl -sfG -m 5 \
+				--data "api_key=06f56465de874e4c75a2e9f0cc284fa3" \
+				https://webservice.fanart.tv/v3.2/music/$MBID )
+	if [[ $data ]]; then
+		jq '{musicbanner,artistthumb}' <<< $data
+	else
+		echo '{"error":"Artist not found"}'
+	fi
+	;;
 bookmarkadd )
 	file_bk="$dirbookmarks/${NAME//\//|}"
 	[[ -e $file_bk ]] && echo -1 && exit
