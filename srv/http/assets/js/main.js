@@ -609,15 +609,15 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.pllength < 2 ) return
 
 			if ( S.random && cmd === 'next' ) { // previous in random = repeat
-				var current = S.song;
-				S.song = Math.floor( Math.random() * S.pllength ); // S.song: index from 0 to ( S.pllength - 1 )
-				if ( S.song === current ) S.song = current === S.pllength - 1 ? 0 : current + 1; // last track: 0, else: +1
+				var current = S.position;
+				S.position = Math.floor( Math.random() * S.pllength ); // S.position: index from 0 to ( S.pllength - 1 )
+				if ( S.position === current ) S.position = current === S.pllength - 1 ? 0 : current + 1; // last track: 0, else: +1
 			} else {
-				cmd == 'next' ? S.song++ : S.song--;
-				if ( S.song < 0 ) {
-					S.song = S.pllength - 1;
-				} else if ( S.song === S.pllength ) {
-					S.song = 0;
+				cmd == 'next' ? S.position++ : S.position--;
+				if ( S.position < 0 ) {
+					S.position = S.pllength - 1;
+				} else if ( S.position === S.pllength ) {
+					S.position = 0;
 				}
 			}
 			PLAYLIST.skip();
@@ -626,10 +626,10 @@ $( '.btn-cmd' ).on( 'click', function() {
 } );
 /*$( '#previous, #next, #coverR, #coverL' ).press( e => {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );
-	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
+	if ( ( next && S.position + 1 === S.pllength ) || ( ! next && S.position === 0 ) ) return
 
 	BANNER( 'playlist', 'Playlist', 'Skip to '+ ( next ? 'last ...' : 'first ...' ) );
-	S.song   = next ? S.pllength - 1 : 0;
+	S.position   = next ? S.pllength - 1 : 0;
 	PLAYLIST.skip();
 } );*/
 $( '#bio' ).on( 'click', '.biosimilar', function() {

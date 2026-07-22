@@ -1637,7 +1637,7 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
-			$( '#sampling' ).html( S.position + S.sampling );
+			$( '#sampling' ).html( S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
 					$( '#playericon' )
@@ -2108,7 +2108,7 @@ var PLAYLIST  = {
 			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
-				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
+				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.position + 1 ) // on eject cd S.position not yet refreshed
 			) {
 				return
 			}
@@ -2116,7 +2116,7 @@ var PLAYLIST  = {
 			var litop     = UTIL.barVisible( 80, 40 );
 			$( '#menu-plaction' ).addClass( 'hide' );
 			$( '#pl-list li' ).removeClass( 'active pause play updn' );
-			var $liactive = $( '#pl-list li' ).eq( S.song );
+			var $liactive = $( '#pl-list li' ).eq( S.position );
 			$liactive.addClass( 'active' );
 			if ( ! $( '.pl-remove' ).length && ! I.active ) {
 				if ( $( '#pl-list li' ).length < 5 ) {
@@ -2217,7 +2217,7 @@ var PLAYLIST  = {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
-		BASH( [ 'mpcskip', S.song + 1, S.state, 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', S.position + 1, S.state, 'CMD POS ACTION' ] );
 	}
 }
 var PROGRESS  = {
