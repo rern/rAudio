@@ -67,7 +67,6 @@ fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ip=$( ipAddress )
-[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ##########
 data='
 , "device"    : {
@@ -79,7 +78,7 @@ data='
 , "apconf"    : '$apconf'
 , "apstartup" : '$( exists $dirshm/apstartup )'
 , "gateway"   : "'$gateway'"
-, "hostname"  : "'${hostname/.*}'"
+, "hostname"  : "'$( hostname )'.local"
 , "ip"        : "'$ip'"
 , "list"      : {
 	  "bluetooth" : '$listbluetooth'
