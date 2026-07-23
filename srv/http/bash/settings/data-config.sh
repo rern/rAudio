@@ -70,27 +70,43 @@ i2slist )
 	cat /srv/http/assets/data/system-i2s.json
 	;;
 lcdchar )
+	hex=$( i2cAddress )
+	if [[ $hex ]]; then
+		for h in $hex; do
+			dec=$(( 16#$h ))
+			address+=', "0x'$h'": '$dec
+			[[ ! $adr_ok && $dec == $ADDRESS ]] && adr_ok=1
+		done
+		address="{ ${address:1} }"
+	else
+		address='{ "0x27": 39, "0x3f": 63 }'
+	fi
 	fileconf=$dirsystem/lcdchar.json
 	if [[ -e $fileconf ]]; then
 		values=$( < $fileconf )
-		current=$( jq -r .INF $fileconf )
-		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
-# --------------------------------------------------------------------
-	fi
-	val='{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"'
-	if [[ $2 == gpio ]]; then
-		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+		INF=$( jq -r .INF $fileconf )
+		if [[ $INF == i2c ]]; then
+			if [[ $hex ]]; then
+				ADDRESS=$( jq -r .ADDRESS $fileconf )
+				for h in $hex; do
+					[[ $ADDRESS == $(( 16#$h )) ]] && addr_ok=1 && break
+				done
+			fi
+			[[ ! $addr_ok ]] && values=$( jq '.ADDRESS = ""' <<< $values )
+		fi
 	else
-		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": "", "CHIP": "PCF8574"'
+		[[ $2 ]] && INF=$2 || INF=i2c
+		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'
+		if [[ $INF == gpio ]]; then
+			values+=', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+		else
+			values+=', "ADDRESS": "", "CHIP": "PCF8574", "BACKLIGHT": false'
+		fi
+		values+=', "BACKLIGHT": false }'
 	fi
-	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
-	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
-# --------------------------------------------------------------------
-	echo '{
-  "values"  : '$values'
-, "current" : "'$current'"
-, "address" : '$( i2cAddress )'
-}'
+	data='"values": '$values', "current": "'$INF'"'
+	[[ $INF == i2c ]] && data+=', "address" : '$address
+	echo '{ '$data' }'
 	;;
 localbrowser )
 	echo '{

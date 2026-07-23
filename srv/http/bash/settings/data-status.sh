@@ -178,7 +178,7 @@ $ignorepkg"
 $module
 
 <bll># i2cdetect -y N</bll>
-$( i2cAddress list )"
+$( i2cAddress )"
 	fi
 	;;
 timezone )
