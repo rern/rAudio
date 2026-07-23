@@ -182,15 +182,24 @@ countRadio() {
 	echo "$counts"
 }
 coverFileGet() {
-	local path coverfile
-	path=$1
-	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ ! $coverfile ]] && return
-#...............................................................................
-	[[ $2 ]] && echo $coverfile && return
-#...............................................................................
-	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
+	local coverfile dir file files name
+	dir=$1
+	shopt -s nullglob
+	for name in cover folder front album; do
+		files=( "$dir"/[${name:0:1}]"${name:1}".{jpg,png,gif,jpeg} )
+		(( ${#files[@]} )) && coverfile=${files[0]} && break
+	done
+	shopt -u nullglob
+	[[ $coverfile ]] && echo $coverfile && return
+	
+	files=$( mpc ls "${dir:9}" 2> /dev/null )
+	while read file; do
+		file="/mnt/MPD/$file"
+		if [[ -f "$file" ]]; then
+			coverfile=$( $dirbash/status -C "$file" )
+			[[ $coverfile ]] && echo $coverfile && return
+		fi
+	done <<< $files
 }
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
@@ -474,7 +483,7 @@ EOF
 }
 pushDirCounts() {
 	local tf
-	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
+	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
 }
 pushNfsServer() {
