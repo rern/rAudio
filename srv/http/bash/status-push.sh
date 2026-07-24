@@ -72,10 +72,11 @@ fi
 $dirbash/status $p_b
 
 if [[ ! $COVERART ]]; then
-	args=$( sed -n -E -e '/^(Artist|Title|Album|state)/ {
+	args=$( sed -n -E '/^(Artist|Title|Album|state)/ {
 				s/^state.*/CMD ARTIST TITLE ALBUM/
 				s/.*="*//
 				s/ *"*$//
+				s/"/\\"/g
 				s/`/'"'"'/g
 				p
 			}' $dirshm/status )
