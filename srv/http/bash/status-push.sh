@@ -4,6 +4,17 @@
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+argsSet() {
+	sed -n -E '/^(Artist|Title|Album)/ {
+		/^Artist/ i\cmd
+		/^Album/  a\CMD ARTIST TITLE ALBUM
+		s/.*="*//
+		s/ *"*$//
+		s/"/\\"/g
+		s/`/'"'"'/g
+		p
+	}' $dirshm/status
+}
 onPlay() {
 	if [[ -e $dirsystem/stoptimer ]]; then
 		if [[ $state == play ]]; then
@@ -72,20 +83,14 @@ fi
 $dirbash/status $p_b
 
 if [[ ! $COVERART ]]; then
-	args=$( sed -n -E '/^(Artist|Title|Album|state)/ {
-				s/^state.*/CMD ARTIST TITLE ALBUM/
-				s/.*="*//
-				s/ *"*$//
-				s/"/\\"/g
-				s/`/'"'"'/g
-				p
-			}' $dirshm/status )
-	$dirbash/status-coverart.sh "cmd
-$args" &> /dev/null &
+	args=$( argsSet )
+	$dirbash/status-coverart.sh "$args" &> /dev/null &
 fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
-[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
-[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
+if [[ -e $dirsystem/vumeter ]]; then
+	[[ $state != play ]] && pushData vumeter '{ "val": 0 }'
+	systemctl $start_stop cava
+fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
@@ -117,7 +122,5 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-CMD ARTIST TITLE"&> /dev/null &
+[[ ! $args ]] && args=$( argsSet )
+$dirbash/scrobble.sh "$args" &> /dev/null &
