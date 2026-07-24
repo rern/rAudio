@@ -37,14 +37,7 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-filter='{ Album,    Artist, Composer, Conductor, coverart, elapsed,   file,  icon,   player, pllength
-		, sampling, song,   station,  state,     Time,     timestamp, Title, volume, webradio }'
-if [[ $1 == playerstop ]]; then
-	status=$( $dirbash/status -o )
-	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
-	state=stop
-	[[ $( jq -r .coverart <<< $status ) ]] && COVERART=1
-elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
+if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
 	elapsed=$( mpcElapsed webradio )
 	pllength=$( mpc status %length% )
