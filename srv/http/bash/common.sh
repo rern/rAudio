@@ -333,14 +333,13 @@ grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
 i2cAddress() {
-	local d hex n
-	n=$( compgen -G /dev/i2c* | cut -d- -f2 )
-	if [[ $n ]]; then
-		for d in $n; do
-			hex+=$( timeout 0.1 i2cdetect -y $n | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
-		done
-		echo $hex
-	fi
+	local n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+	[[ ! $n ]] && return
+	
+	i2cdetect -y $n \
+		| awk 'NR>1 {for(i=2;i<=NF;i++) print $i}' \
+		| grep -E '^[0-9a-fA-F]{2}$' \
+		| xargs # timeout - if unresponsive
 }
 inOutputConf() {
 	local file
