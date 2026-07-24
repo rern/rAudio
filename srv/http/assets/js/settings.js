@@ -82,11 +82,19 @@ function REFRESHDATA() {
 }
 function SETTING( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
-	if ( V.debug ) console.log( filesh );
+	if ( ! callback ) callback = CONFIG[ id ];
+	if ( V.debug ) {
+		console.log( filesh );
+		var fn = callback;
+		callback = function( data ) {
+			console.log( data );
+			fn( data );
+		}
+	}
 	$.post(
 		  'cmd.php'
 		, { cmd: 'bash', filesh: filesh }
-		, callback || CONFIG[ id ]
+		, callback
 		, 'json'
 	);
 }

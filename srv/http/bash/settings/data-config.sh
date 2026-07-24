@@ -70,43 +70,46 @@ i2slist )
 	cat /srv/http/assets/data/system-i2s.json
 	;;
 lcdchar )
-	hex=$( i2cAddress )
-	if [[ $hex ]]; then
-		for h in $hex; do
-			dec=$(( 16#$h ))
-			address+=', "0x'$h'": '$dec
-			[[ ! $adr_ok && $dec == $ADDRESS ]] && adr_ok=1
-		done
-		address="{ ${address:1} }"
-	else
-		address='{ "0x27": 39, "0x3f": 63 }'
-	fi
 	fileconf=$dirsystem/lcdchar.json
-	if [[ -e $fileconf ]]; then
+	[[ -e $fileconf ]] && INF=$( jq -r .INF $fileconf )
+	if [[ $2 ]]; then
+		[[ $2 == $INF ]] && existing=1 || INF=$2
+	else
+		[[ ! $INF ]] && INF=i2c
+	fi
+	if [[ $INF == i2c ]]; then
+		hex=$( i2cAddress )
+		if [[ $hex ]]; then
+			for h in $hex; do
+				address+=', "0x'$h'": '$(( 16#$h ))
+			done
+			address="{ ${address:1} }"
+		else
+			address='{ "0x27": 39, "0x3f": 63 }'
+		fi
+		address=', "address" : '$address
+	fi
+	if [[ $existing ]]; then
 		values=$( < $fileconf )
-		INF=$( jq -r .INF $fileconf )
 		if [[ $INF == i2c ]]; then
 			if [[ $hex ]]; then
-				ADDRESS=$( jq -r .ADDRESS $fileconf )
+				H=$( printf '%x\n' $( jq -r .ADDRESS $fileconf ) )
 				for h in $hex; do
-					[[ $ADDRESS == $(( 16#$h )) ]] && addr_ok=1 && break
+					[[ $h == $H ]] && addr_ok=1 && break
 				done
 			fi
 			[[ ! $addr_ok ]] && values=$( jq '.ADDRESS = ""' <<< $values )
 		fi
 	else
-		[[ $2 ]] && INF=$2 || INF=i2c
 		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'
 		if [[ $INF == gpio ]]; then
 			values+=', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
 		else
-			values+=', "ADDRESS": "", "CHIP": "PCF8574", "BACKLIGHT": false'
+			values+=', "ADDRESS": "39", "CHIP": "PCF8574", "BACKLIGHT": false'
 		fi
 		values+=', "BACKLIGHT": false }'
 	fi
-	data='"values": '$values', "current": "'$INF'"'
-	[[ $INF == i2c ]] && data+=', "address" : '$address
-	echo '{ '$data' }'
+	echo '{ "values": '$values', "current": "'$INF'"'$address' }'
 	;;
 localbrowser )
 	echo '{
