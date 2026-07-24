@@ -150,9 +150,6 @@ if webradio:
     if state != 'play':
         Artist = station
         Album  = file
-    else:
-        if not Artist and not Title: Artist = station
-        if not Album:                Album  = station or file
 
 if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS

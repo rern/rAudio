@@ -40,9 +40,10 @@ echo $$ > $dirshm/pidstatuspush
 filter='{ Album,    Artist, Composer, Conductor, coverart, elapsed,   file,  icon,   player, pllength
 		, sampling, song,   station,  state,     Time,     timestamp, Title, volume, webradio }'
 if [[ $1 == playerstop ]]; then
-	status=$( $dirbash/status )
+	status=$( $dirbash/status -o )
 	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
 	state=stop
+	[[ $( jq -r .coverart <<< $status ) ]] && COVERART=1
 elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
 	elapsed=$( mpcElapsed webradio )
@@ -63,23 +64,31 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 , "Title"     : "'$TITLE'"
 , "webradio"  : true
 }'
-	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-CMD ARTIST ALBUM" &> /dev/null &
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
 	onPlay
 else
 	$dirbash/status -k > $dirshm/status
-	. <( grep -E '^state|^webradio' $dirshm/status )
+	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
+	[[ $coverart ]] && COVERART=1
 	onPlay
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
 
+if [[ ! $COVERART ]]; then
+	args=$( sed -n -E -e '/^(Artist|Title|Album|state)/ {
+				s/^state.*/CMD ARTIST TITLE ALBUM/
+				s/.*="*//
+				s/ *"*$//
+				s/`/'"'"'/g
+				p
+			}' $dirshm/status )
+	$dirbash/status-coverartonline.sh "cmd
+$args" &> /dev/null &
+fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
 [[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'

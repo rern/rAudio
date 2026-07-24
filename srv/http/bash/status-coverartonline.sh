@@ -3,7 +3,6 @@
 . /srv/http/bash/common.sh
 
 args2var "$1"
-
 ### 0 - itunes ##################################################
 # term="$ARTIST+$ALBUM"
 # data=$( curl -sfG -m 5 \
@@ -12,14 +11,24 @@ args2var "$1"
 #			https://itunes.apple.com/search \
 #		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
 # [[ $? == 0 && $data ]] && url=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
-	
+[[ ! $ARTIST || ( ! $ALBUM && ! $TITLE )]] && exit
+# --------------------------------------------------------------------
 if [[ $ALBUM ]]; then # artist_album
+	name=$( alphaNumeric $ARTIST$ALBUM )
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'
 else
+	if [[ $TITLE == *'('* ]] && ! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren; then
+		TITLE=$( sed 's/ (.*//' <<< $TITLE )
+	fi
+	name=$( alphaNumeric $ARTIST$TITLE )
 	param="track=${TITLE//&/ and }"
 	method='method=track.getInfo'
 fi
+file=$( compgen -G $dirshm/online/$name.* )
+[[ -e $file ]] && pushData cover '{ "cover": "'${file:9}'" }' && exit
+# --------------------------------------------------------------------
+echo $name---
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
 			--data-urlencode "artist=$ARTIST" \
@@ -48,8 +57,6 @@ if [[ ! $url ]]; then
 fi
 [[ ! $url ]] && exit
 # --------------------------------------------------------------------
-[[ $ALBUM ]] && album_title=$ALBUM || album_title=$TITLE
-name=$( alphaNumeric $ARTIST$album_title )
 ext=${url/*.}
 cover=$dirshm/online/$name.$ext
 curl -sfL $url -o $cover
