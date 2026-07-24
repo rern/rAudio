@@ -182,7 +182,7 @@ $module"
 		[[ $n ]] && data+="
 		
 <bll># i2cdetect -y $n</bll>
-$( i2cdetect -y $n )"
+$( timeout 0.1 i2cdetect -y $n )"
 	fi
 	echo "$data"
 	;;

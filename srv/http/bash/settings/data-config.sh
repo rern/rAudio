@@ -79,7 +79,7 @@ lcdchar )
 	fi
 	if [[ $INF == i2c ]]; then
 		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
-		[[ $n ]] && hex=$( i2cdetect -y $n \
+		[[ $n ]] && hex=$( timeout 0.1 i2cdetect -y $n \
 							| awk 'NR>1 {for(i=2;i<=NF;i++) print $i}' \
 							| grep -E '^[0-9a-fA-F]{2}$' )
 		if [[ $hex ]]; then
