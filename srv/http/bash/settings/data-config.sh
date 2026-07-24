@@ -75,7 +75,7 @@ lcdchar )
 	if [[ $2 ]]; then
 		[[ $2 == $INF ]] && existing=1 || INF=$2
 	else
-		[[ ! $INF ]] && INF=i2c
+		[[ $INF ]] && existing=1 || INF=i2c
 	fi
 	if [[ $INF == i2c ]]; then
 		hex=$( i2cAddress )
