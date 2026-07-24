@@ -72,10 +72,7 @@ CMD ARTIST ALBUM" &> /dev/null &
 	webradio=true
 	onPlay
 else
-#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) && exit # fix: no state on start playing dsd from network (<rpi4)
 	$dirbash/status -k > $dirshm/status
-	grep -q Title=flac $dirshm/status&& exit
-# ------------------------------------------------------------------------------
 	. <( grep -E '^state|^webradio' $dirshm/status )
 	onPlay
 fi
@@ -89,7 +86,11 @@ $dirbash/status $p_b
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	$dirbash/status -o > $dirshm/status.json
+	if [[ $status ]]; then
+		echo "$status" > $dirshm/status.json
+	else
+		$dirbash/status -o > $dirshm/status.json
+	fi
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
