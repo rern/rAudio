@@ -78,7 +78,10 @@ lcdchar )
 		[[ $INF ]] && existing=1 || INF=i2c
 	fi
 	if [[ $INF == i2c ]]; then
-		hex=$( i2cAddress )
+		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+		[[ $n ]] && hex=$( i2cdetect -y $n \
+							| awk 'NR>1 {for(i=2;i<=NF;i++) print $i}' \
+							| grep -E '^[0-9a-fA-F]{2}$' )
 		if [[ $hex ]]; then
 			for h in $hex; do
 				address+=', "0x'$h'": '$(( 16#$h ))

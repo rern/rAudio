@@ -162,25 +162,29 @@ $mntusb"
 	;;
 system )
 	statusCmd 'cat /boot/cmdline.txt'
-	echo "
+	data="
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )"
 	cmd="grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf"
 	ignorepkg=$( eval $cmd )
-	[[ $ignorepkg ]] && echo "
+	[[ $ignorepkg ]] && data+="
+
 <bll># $cmd</bll>
 $ignorepkg"
 	filemodule=/etc/modules-load.d/raspberrypi.conf
 	module=$( grep -v snd-bcm2835 $filemodule )
 	if [[ $module ]]; then
-		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
-		echo "
-<bll># cat $filemodule</bll>
-$module
+		data+="
 
+<bll># cat $filemodule</bll>
+$module"
+		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+		[[ $n ]] && data+="
+		
 <bll># i2cdetect -y $n</bll>
-$( i2cAddress )"
+$( i2cdetect -y $n )"
 	fi
+	echo "$data"
 	;;
 timezone )
 	statusCmd timedatectl
