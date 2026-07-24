@@ -79,7 +79,7 @@ if [[ ! $COVERART ]]; then
 				s/`/'"'"'/g
 				p
 			}' $dirshm/status )
-	$dirbash/status-coverartonline.sh "cmd
+	$dirbash/status-coverart.sh "cmd
 $args" &> /dev/null &
 fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
