@@ -173,11 +173,12 @@ $ignorepkg"
 	filemodule=/etc/modules-load.d/raspberrypi.conf
 	module=$( grep -v snd-bcm2835 $filemodule )
 	if [[ $module ]]; then
+		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
 		echo "
 <bll># cat $filemodule</bll>
 $module
 
-<bll># i2cdetect -y N</bll>
+<bll># i2cdetect -y $n</bll>
 $( i2cAddress )"
 	fi
 	;;
