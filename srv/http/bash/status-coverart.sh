@@ -18,10 +18,10 @@ if [[ $ALBUM ]]; then # artist_album
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'
 else
-	if [[ $TITLE == *'('* ]] && ! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren; then
-		TITLE=$( sed 's/ (.*//' <<< $TITLE )
-	fi
 	name=$( alphaNumeric $ARTIST$TITLE )
+	if [[ $TITLE == *')' ]] && ! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren; then
+		TITLE=$( sed 's/ ([^)]*)$//' <<< $TITLE )
+	fi
 	param="track=${TITLE//&/ and }"
 	method='method=track.getInfo'
 fi
