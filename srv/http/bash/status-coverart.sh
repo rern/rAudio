@@ -56,16 +56,16 @@ if [[ ! $URL && ! $ALBUM && $TITLE == *')' ]]; then # try with no last parenthes
 	param="track=${title//&/ and }"
 	getCoverart "$param" "$method"
 fi
+[[ ! $URL && ! $MBID && ! $MBID1 ]] && exit
+# --------------------------------------------------------------------
 ### 2 - coverartarchive.org #####################################
-if [[ ! $URL && $MBID ]]; then
-	data=$( curl -sfL -m 10 https://coverartarchive.org/release/$MBID )
-	[[ $? != 0 ]] && exit
+data=$( curl -sfL -m 10 https://coverartarchive.org/release/$MBID )
+[[ $? != 0 ]] && exit
 # --------------------------------------------------------------------
-	[[ ! $data && $MBID1 ]] && data=$( curl -sfL -m 10 https://coverartarchive.org/release/$MBID1 )
-	[[ ! $data ]] && exit
+[[ ! $data && $MBID1 ]] && data=$( curl -sfL -m 10 https://coverartarchive.org/release/$MBID1 )
+[[ ! $data ]] && exit
 # --------------------------------------------------------------------
-	URL=$( jq -r '.images[0].thumbnails.["500"] // empty' <<< $data )
-fi
+URL=$( jq -r '.images[0].thumbnails.["500"] // empty' <<< $data )
 [[ ! $URL ]] && exit
 # --------------------------------------------------------------------
 ext=${URL/*.}
