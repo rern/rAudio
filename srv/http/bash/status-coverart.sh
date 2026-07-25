@@ -28,14 +28,6 @@ getCoverart() {
 	fi
 }
 
-### 0 - itunes ##################################################
-# term="$ARTIST+$ALBUM"
-# data=$( curl -sfG -m 5 \
-#			--data-urlencode "term=$term" \
-#			--data-urlencode "entity=album" \
-#			https://itunes.apple.com/search \
-#		| jq ".results[] | select(.artistName==\"$ARTIST\") | select(.collectionName==\"$ALBUM\") | .artworkUrl100" )
-# [[ $? == 0 && $data ]] && URL=$( sed 's/100x100/600x600/' <<< $data ) # any from 100x100 - 3000x3000
 [[ $ALBUM ]] && name="$ARTIST$ALBUM" || name="$ARTIST$TITLE"
 name=$( alphaNumeric $name )
 file=$( compgen -G $dirshm/online/$name.* )
