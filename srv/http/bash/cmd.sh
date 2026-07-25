@@ -555,7 +555,7 @@ snapserverlist )
 	snapserverList
 	;;
 titlewithparen )
-	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
+	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
 upnpstart )
 	echo upnp > $dirshm/player

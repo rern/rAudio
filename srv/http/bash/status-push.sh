@@ -24,9 +24,6 @@ onPlay() {
 				rm $dirsystem/stoptimer
 				pushData refresh '{ "page": "features", "stoptimer": false }'
 			fi
-			pushStatus
-			exit
-# ------------------------------------------------------------------------------
 		fi
 	fi
 	if [[ ! -e /bin/firefox ]] \
