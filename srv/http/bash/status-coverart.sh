@@ -28,7 +28,6 @@ fi
 file=$( compgen -G $dirshm/online/$name.* )
 [[ -e $file ]] && pushData cover '{ "cover": "'${file:9}'" }' && exit
 # --------------------------------------------------------------------
-echo $name---
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
 			--data-urlencode "artist=$ARTIST" \
