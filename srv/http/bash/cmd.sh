@@ -120,13 +120,6 @@ countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
 	;;
-coverfileslimit )
-	for type in local online webradio; do
-		ls -t $dirshm/$type/* 2> /dev/null \
-			| tail -n +10 \
-			| xargs rm -f --
-	done
-	;;
 dirdelete )
 	dir="$DIR/$NAME"
 	lsdir=$( ls "$dir" )
