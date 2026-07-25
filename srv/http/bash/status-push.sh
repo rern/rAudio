@@ -10,7 +10,7 @@ argsSet() {
 		/^Album/  a\CMD ARTIST TITLE ALBUM
 		s/.*="*//
 		s/ *"*$//
-		s/`/'"'"'/g
+		s/[`’]/'"'"'/g
 		p
 	}' $dirshm/status
 }
