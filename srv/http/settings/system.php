@@ -459,9 +459,10 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 
 	<heading class="subhead">Data</heading>
 	<div class="list">
-		<a href="https://www.last.fm">last.fm</a> · Coverarts and artist biographies<br>
-		<a href="https://webservice.fanart.tv">fanart.tv</a> · Artist images and fallback coverarts<br>
-		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a> · Coverarts for their own stations<br>
+		<a href="https://last.fm">last.fm</a> · Coverarts and artist biographies<br>
+		<a href="https://coverartarchive.org">Cover Art Archive</a> · Coverarts - secondary<br>
+		<a href="https://webservice.fanart.tv">fanart.tv</a> · Artist images<br>
+		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://fip.fr/">Fip</a> <a href="https://francemusique.fr/">France Musique</a> · Coverarts for their own stations<br>
 		<a href="http://gnudb.gnudb.org">GnuDB</a> · Audio CD track list<br>
 	</div>
 </div>
