@@ -48,7 +48,6 @@ fi
 if [[ ! $url ]]; then
 	mbid=$( jq -r '.mbid // empty' <<< $album )
 	if [[ $mbid ]]; then
-		mbid=76df3287-6cda-33eb-8e9a-044b5e15ffdd
 		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
 		[[ $? != 0 ]] && exit
 # --------------------------------------------------------------------
