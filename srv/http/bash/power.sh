@@ -22,7 +22,6 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-logoLcdOled
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
 if [[ -e $dirmpdconf/snapserver.conf ]]; then
@@ -30,6 +29,7 @@ if [[ -e $dirmpdconf/snapserver.conf ]]; then
 else
 	$dirbash/cmd.sh playerstop
 fi
+logoLcdOled
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 [[ $cdda ]] && mpc -q del $cdda
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
