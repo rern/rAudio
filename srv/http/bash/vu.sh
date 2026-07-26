@@ -13,7 +13,7 @@ if [[ $vuled ]]; then
 		on+=( "$( sed '1,'$i' s/0$/1/' <<< $pin_0 )" )
 	done
 fi
-[[ $1 == stop ]] && exit
+[[ $1 == stop ]] && pkill -9 cava && exit
 # --------------------------------------------------------------------
 cava -p /etc/cava.conf | while read vu; do
 	v=${vu:0:-1}
