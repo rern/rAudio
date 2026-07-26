@@ -12,16 +12,15 @@ evtest $devinputbutton | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
 done &
 
-dn=1%-
-up=1%+
+dn=-1
+up=+1
 fn_volume=$( volumeFunction )
 if [[ -e $dirshm/btreceiver ]]; then
+	dn=1%-
+	up=1%+
 	mixer=$( < $dirshm/btmixer )
 elif [[ -e $dirshm/amixercontrol ]]; then
 	. $dirshm/output 
-else # volumeMpd
-	dn=-1
-	up=+1
 fi
 dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1

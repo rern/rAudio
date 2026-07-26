@@ -93,6 +93,9 @@ rm -f $dirshm/system
 
 installfinish
 
+# 20260729
+systemctl try-restart rotaryencoder
+
 # 20260717
 file=$dirmpdconf/bluetooth.conf
 [[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
