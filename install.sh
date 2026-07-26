@@ -6,7 +6,12 @@ alias=r1
 
 # 20260727
 [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
-
+file=/lib/systemd/system/mpd_oled.service
+if grep -q ^ExecStop $file; then
+	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
+	systemctl daemon-reload
+	systemctl try-restart mpd_oled
+fi
 
 # 20260719
 . $dirshm/output
