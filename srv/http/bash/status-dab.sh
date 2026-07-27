@@ -5,9 +5,9 @@
 . $dirshm/radio
 album='DAB Radio'
 artist=$( head -1 $file )
-filelabel=$dirshm/webradio/DABlabel.txt
-filecover=$dirshm/webradio/DABslide.jpg
-filetitle=$dirshm/webradio/DABtitle
+filelabel=$dirshm/dabradio/DABlabel.txt
+filecover=$dirshm/dabradio/DABslide.jpg
+filetitle=$dirshm/dabradio/DABtitle
 
 while true; do
 	# title
@@ -23,7 +23,7 @@ while true; do
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
 		name=$( alphaNumeric $title )
-		coverfile=/srv/http/data/shm/webradio/$name.jpg
+		coverfile=/srv/http/data/shm/dabradio/$name.jpg
 		if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 			cp -f $filecover $coverfile
 			coverart="${coverfile:9}"
