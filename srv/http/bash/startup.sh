@@ -76,7 +76,13 @@ else # if no connections, start accesspoint
 		[[ $ipaddress ]] && break || sleep 1
 	done
 	if [[ $ipaddress ]]; then
-		grep -q /mnt/MPD/NAS /etc/fstab && mount -a &> /dev/null
+		while read dev; do
+			[[ $dev == /* ]] && ip=$( cut -d/ -f3 <<< $dev ) || ip=${dev/:*}
+			for i in 1 2 3; do
+				sleep 1
+				ipOnline $ip && mount "${dev//\040/ }" && break
+			done
+		done < <( awk '/.mnt.MPD.NAS/ {print $1}' /etc/fstab )
 		if [[ -e $filesharedip ]]; then
 			nfsServerActive && pushNfsServer
 			appendSortUnique $filesharedip $ipaddress

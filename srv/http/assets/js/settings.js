@@ -208,15 +208,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 }
 if ( $MENU.length ) {
 	var LIST = {
-		  equal  : list => {
-			if ( ! V.list ) {
-				V.list = COMMON.json.clone( S.list );
-				return false
-			}
-
-			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
-		}
-		, render : ( id, html ) => {
+		  render : ( id, html ) => {
 			var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
 			$list.html( html );
 			$list.find( 'pre.li' ).each( ( i, el ) => STATUS( id, $( el ).data( 'arg' ), 'info' ) );

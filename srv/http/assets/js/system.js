@@ -815,8 +815,6 @@ var UTIL          = {
 		, tab    : [ ICON( 'power' ) +' Sequence', ICON( 'tag' ) +' Pin - Name' ]
 	}
 	, renderStorage : () => {
-		if ( LIST.equal( 'storage' ) ) return
-		
 		var html = '';
 		S.list.storage.forEach( list => {
 			if ( list.mountpoint == '/mnt/NAS' ) return
