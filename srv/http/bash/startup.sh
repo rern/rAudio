@@ -127,7 +127,7 @@ else
 fi
 
 touch $dirshm/startup
-[[ $expand ]] && pushData reload true
+pushData startup true
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
