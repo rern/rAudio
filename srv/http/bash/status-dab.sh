@@ -2,12 +2,14 @@
 
 . /srv/http/bash/common.sh
 
+# output from dab-start.sh - dab-rtlsdr-3
 filelabel=$dirshm/dabradio/DABlabel.txt
 filecover=$dirshm/dabradio/DABslide.jpg
+for i in {0..5}; then
+	[[ -e $filelabel ]] && break || sleep 10
+done
 
 while true; do
-	[[ ! -e $filelabel ]] && sleep 10 && continue
-	
 	readarray -t artist_title < <( sed 's/ - \|: /\n/' $filelabel )
 	if (( ${#artist_title[@]} == 1 )); then
 		title=${artist_title[0]}
