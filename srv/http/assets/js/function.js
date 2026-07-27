@@ -1601,28 +1601,24 @@ var PLAYBACK  = {
 				, Title  : $( '#title' ).text()
 				, Album  : $( '#album' ).text()
 			}
-			if ( S.webradio ) {
-				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.play ) {
-					$( '#artist' ).text( S.Artist || S.station );
-					$( '#title' ).html( S.Title || V.blinkdot );
-					$( '#album' ).text( S.Album || url );
-				} else {
-					$( '#artist' ).text( S.station );
-					$( '#title' ).html( V.dots );
-					$( '#album' ).text( url );
-				}
-			} else {
-				$( '#artist' ).html( S.Artist || V.dots );
-				$( '#title' )
-					.html( S.Title || V.dots )
-					.toggleClass( 'gr', S.pause );
-				var album = S.Album || S.file;
-				if ( S.booklet ) album += ' '+ ICON( 'booklet gr' );
-				$( '#album' ).html( album );
-				$( '#composer' ).text( S.Composer );
-				$( '#conductor' ).text( S.Conductor );
+			$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
+			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
+			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
+			var artist = S.Artist;
+			var title  = S.Title;
+			var album  = S.Album;
+			if ( ! S.Artist && ! S.Title ) {
+				if ( S.webradio ) artist = S.station;
+				if ( ! S.Album ) album = S.file;
 			}
+			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
+			$( '#artist' ).html( artist || V.dots );
+			$( '#title' )
+				.html( title || V.dots )
+				.toggleClass( 'gr', S.pause );
+			$( '#album' ).html( album || V.dots );
+			$( '#composer' ).text( S.Composer );
+			$( '#conductor' ).text( S.Conductor );
 			$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
 			$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
 			var current = {
@@ -1633,9 +1629,6 @@ var PLAYBACK  = {
 			var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
 				return prev[ k ] !== current[ k ]
 			} );
-			$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
-			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
-			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
 			$( '#sampling' ).html( S.sampling );
 			if ( S.icon ) {

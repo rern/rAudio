@@ -146,13 +146,9 @@ for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
         STATUS[ k ] = ''
 locals().update( STATUS )
 
-if webradio:
-    if state != 'play' or ( not Artist and not Title ):
-        Artist = station
-        Album  = file
-else:
-    if not Artist and not Title:
-        Album = file
+if not Artist and not Title:
+    if webradio: Artist = station
+    if not Album: Album = file
     
 if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS
