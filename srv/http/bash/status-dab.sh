@@ -30,10 +30,10 @@ while true; do
 		fi
 	fi
 	$dirbash/status-push.sh "cmd
-$album
 $artist
-$coverart
 $title
-CMD ALBUM ARTIST COVERART TITLE"
+$album
+$coverart
+CMD ARTIST TITLE ALBUM COVERART"
 	sleep 10
 done
