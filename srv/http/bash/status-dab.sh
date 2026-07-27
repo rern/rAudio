@@ -2,24 +2,19 @@
 
 . /srv/http/bash/common.sh
 
-. $dirshm/radio
-album='DAB Radio'
-artist=$( head -1 $file )
 filelabel=$dirshm/dabradio/DABlabel.txt
 filecover=$dirshm/dabradio/DABslide.jpg
-filetitle=$dirshm/dabradio/DABtitle
 
 while true; do
-	# title
-	label=$( awk NF $filelabel )
-	if [[ ! $label ]] || cmp -s $filelabel $filetitle; then
-		[[ ! $label ]] && pushData mpdradio '{ "Title": "" }'
-		sleep 10
-		continue
-	fi
+	[[ ! -e $filelabel ]] && sleep 10 && continue
 	
-	cp -f $filelabel $filetitle
-	title=$( < $filetitle )
+	readarray -t artist_title < <( sed 's/ - \|: /\n/' $filelabel )
+	if (( ${#artist_title[@]} == 1 )); then
+		title=${artist_title[0]}
+	else
+		artist=${artist_title[0]}
+		title=${artist_title[1]}
+	fi
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
 		name=$( alphaNumeric $title )
@@ -32,7 +27,7 @@ while true; do
 	$dirbash/status-push.sh "cmd
 $artist
 $title
-$album
+DAB Radio
 $coverart
 CMD ARTIST TITLE ALBUM COVERART"
 	sleep 10
