@@ -9,6 +9,7 @@ if [[ $device == 'No supported devices '* ]]; then
 # --------------------------------------------------------------------
 fi
 
+mkdir -p $dirshm/webradio
 systemctl start dab
 
 killsubs() {

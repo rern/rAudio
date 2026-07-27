@@ -49,7 +49,7 @@ case 'imagereplace': // $.post from function.js
 		$base64  = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $post->file, base64_decode( $base64 ) );
 	} else {
-		copy( $post->data, $post->file );
+		rename( $post->data, $post->file );
 	}
 	$args      = escape( implode( "\n", [ $post->type, $post->file, $post->current, 'CMD TARGET CURRENT' ] ) );
 	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );

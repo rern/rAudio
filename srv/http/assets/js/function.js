@@ -894,7 +894,7 @@ var FILEIMAGE = {
 				.then( response => response.json() ) // set response data as json > animated
 				.then( animated => { // 0 / 1
 					if ( animated ) {
-						I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+						I.infofilegif = '/srv/http/data/shm/tmp.gif';
 						var img    = new Image();
 						img.src    = URL.createObjectURL( I.infofile );
 						img.onload = function() {
