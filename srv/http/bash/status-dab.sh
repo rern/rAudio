@@ -2,13 +2,14 @@
 
 . /srv/http/bash/common.sh
 
+album=$( < $dirshm/radio )
 # output from dab-start.sh - dab-rtlsdr-3
 filelabel=$dirshm/dabradio/DABlabel.txt
 filecover=$dirshm/dabradio/DABslide.jpg
+
 for i in {0..5}; then
 	[[ -e $filelabel ]] && break || sleep 10
 done
-
 while true; do
 	readarray -t artist_title < <( sed 's/ - \|: /\n/' $filelabel )
 	if (( ${#artist_title[@]} == 1 )); then
@@ -29,7 +30,7 @@ while true; do
 	$dirbash/status-push.sh "cmd
 $artist
 $title
-DAB Radio
+$album
 $coverart
 CMD ARTIST TITLE ALBUM COVERART"
 	sleep 10
