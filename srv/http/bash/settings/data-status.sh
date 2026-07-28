@@ -29,10 +29,8 @@ bluetooth )
 	statusCmd 'bluetoothctl show'
 	;;
 btreceiver )
-	echo "\
-<bll># bluealsa-aplay -v</bll>
-$( timeout 0.1 bluealsa-aplay -v 2>&1 )
-"
+	pcm=$( bluealsa-cli list-pcms )
+	statusCmd "bluealsa-cli info $pcm"
 	;;
 btsender )
 	statusCmd 'amixer -MD bluealsa'

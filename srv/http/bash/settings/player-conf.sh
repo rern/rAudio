@@ -60,6 +60,15 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	hw=bluealsa
 	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
+	pcm=$( bluealsa-cli list-pcms | tail -1 )
+	if [[ $pcm ]]; then
+		info=$( bluealsa-cli info $pcm )
+		sr=$( awk -F': ' '/^Sampling:/ {print $2}' <<< $info | awk '{print $1}' )
+		bd=$( awk -F': ' '/^Format:/   {print $2}' <<< $info | sed -E 's/^[SU]//; s/_.*//' )
+		ch=$( awk -F': ' '/^Channels:/ {print $2}' <<< $info )
+	fi
+	[[ $sr && $bd && $ch ]] && format=$sr:$bd:$ch || format=44100:16:2
+	sed -i -E 's/(format *").*/\1'$format'"/' $dirmpdconf/bluetooth.conf
 fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
