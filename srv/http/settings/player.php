@@ -42,7 +42,7 @@ $body      = [
 	[
 		  'id'       => 'btreceiver'
 		, 'label'    => 'Bluetooth'
-		, 'sub'      => 'bluealsa'
+		, 'sub'      => 'bluealsa-aplay'
 		, 'status'   => true
 		, 'input'    => 'btreceiver'
 	]
