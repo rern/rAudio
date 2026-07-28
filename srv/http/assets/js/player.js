@@ -317,7 +317,7 @@ function renderPage() {
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
 		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
 	} else {
-		$( '#divbtreceiver, #divbtsender' ).empty().addClass( 'hide' );
+		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
