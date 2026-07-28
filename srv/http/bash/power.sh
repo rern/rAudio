@@ -16,7 +16,7 @@ if [[ -e $filesharedip ]]; then
 		if [[ $( ipSharedData ) ]]; then
 			[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
-			pushNfsServer Offline
+			pushNfsServer false
 		fi
 	fi
 	ipaddress=$( ipAddress )

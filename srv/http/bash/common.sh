@@ -471,7 +471,7 @@ pushDirCounts() {
 	pushData counts '{ "'$1'": '$tf' }'
 }
 pushNfsServer() {
-	$dirbash/status -B '{ "channel": "nfsserver", "data": { "status": "'$1'" } }'
+	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
 pushRefresh() {
 	local page push

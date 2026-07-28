@@ -84,7 +84,7 @@ else # if no connections, start accesspoint
 			done
 		done < <( awk '/.mnt.MPD.NAS/ {print $1}' /etc/fstab )
 		if [[ -e $filesharedip ]]; then
-			nfsServerActive && pushNfsServer Online
+			nfsServerActive && pushNfsServer true
 			appendSortUnique $filesharedip $ipaddress
 		fi
 	else
