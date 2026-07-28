@@ -471,12 +471,7 @@ pushDirCounts() {
 	pushData counts '{ "'$1'": '$tf' }'
 }
 pushNfsServer() {
-	local ip name status
-	name=$( hostname )
-	[[ -e $dirshm/startup ]] && status=Offline || status=Online
-	while read ip; do
-		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
-	done < <( ipSharedData )
+	$dirbash/status -B '{ "channel": "nfsserver", "data": { "status": "'$1'" } }'
 }
 pushRefresh() {
 	local page push
