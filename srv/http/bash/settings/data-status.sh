@@ -29,7 +29,10 @@ bluetooth )
 	statusCmd 'bluetoothctl show'
 	;;
 btreceiver )
-	statusCmd 'bluealsa-aplay -L'
+	echo "\
+<bll># bluealsa-aplay -v</bll>
+$( timeout 0.1 bluealsa-aplay -v 2>&1 )
+"
 	;;
 btsender )
 	statusCmd 'amixer -MD bluealsa'
@@ -130,6 +133,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
+	[[ -e $dirshm/btmixer ]] && echo; statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;
