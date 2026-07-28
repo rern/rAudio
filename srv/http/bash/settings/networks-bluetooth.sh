@@ -86,35 +86,42 @@ if [[ $udev && $ACTION == connect ]]; then
 	if (( $( bluetoothctl info $MAC | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		ACTION=connect
 	else
-		sleep 2
 		ACTION=pair
-		bluetoothctl agent NoInputNoOutput
+		bluetoothctl agent NoInputNoOutput # no device to input credential
 	fi
 fi
 ########################################################################################################
 # 1. continue from [[ $udev && $ACTION == connect ]], 2. from rAudio networks.js
 if [[ $ACTION == connect || $ACTION == pair ]]; then
-	bluetoothctl trust $MAC # always trusr + pair to ensure proper connecting process
-	bluetoothctl pair $MAC
-	name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	info=$( bluetoothctl info $MAC )
+	name=$( sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' <<< $info  )
 	[[ ! $name ]] && name=Bluetooth
-	if [[ $ACTION == pair ]]; then
+	if grep -q -m1 'Paired: no'  <<< $info; then
+		bluetoothctl pair $MAC
 		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Paired: no' && sleep 1 || break
+			bluetoothctl info $MAC | grep -q -m1 'Paired: yes' && paired=1 && break
+			
+			sleep 1
 		done
-		bluetoothctl info $MAC | grep -q -m1 'Paired: no' && notify $type "$name" 'Pair failed.' && exit
+		[[ ! $paired ]] && notify $type "$name" 'Pair failed.' && exit
 # --------------------------------------------------------------------
-		bluetoothctl disconnect $MAC
-#-----
 		notify $type "$name" 'Paired successfully.'
-		sleep 3
-#-----
-		notify "$type blink" "$name" 'Connect ...'
 	fi
-	bluetoothctl info $MAC | grep -q -m1 'Connected: no' && bluetoothctl connect $MAC
+	if grep -q -m1 'Trusted: no' <<< $info; then
+		bluetoothctl trust $MAC
+		for i in {1..5}; do
+			bluetoothctl info $MAC | grep -q -m1 'Trusted: yes' && break || sleep 1
+		done
+	fi
+	notify "$type blink" "$name" 'Connect ...'
+	bluetoothctl connect $MAC
 	for i in {1..5}; do
-		! bluetoothctl info $MAC | grep -q -m1 'UUID:' && sleep 1 || break
+		bluetoothctl info $MAC | grep -q -m1 'UUID:' && connected=1 && break
+		
+		sleep 1
 	done
+	[[ ! $connected ]] && notify $type "$name" 'Connect failed.' && exit
+# --------------------------------------------------------------------
 	sink_source=$( bluetoothctl info $MAC | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ ! $sink_source ]]; then
 ##### non-audio
