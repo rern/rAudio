@@ -4,7 +4,18 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260727
+# 20260729
+file=/etc/udev/rules.d/bluetooth.rules
+if grep -q connect $file; then
+	cat << 'EOF' > $file
+ACTION=="add|remove", \
+SUBSYSTEM=="bluetooth", \
+ENV{DEVTYPE}=="link", \
+RUN+="/srv/http/bash/settings/networks-bluetooth.sh $env{ACTION}"
+EOF
+	udevadm control --reload-rules && udevadm trigger
+fi
+
 [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
 file=/lib/systemd/system/mpd_oled.service
 if grep -q ^ExecStop $file; then

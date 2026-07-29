@@ -489,7 +489,7 @@ var DISPLAY   = {
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', S.webradio );
 		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
+		$( '#'+ S.state ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
 	}

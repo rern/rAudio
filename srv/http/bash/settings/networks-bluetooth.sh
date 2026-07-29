@@ -7,6 +7,14 @@
 
 [[ -e /dev/shm/bluetooth_rules || -e $dirshm/btonoff ]] && exit # debounce bluetooth.rules
 # --------------------------------------------------------------------
+
+btInfo() {
+	local regex
+	regex=$1:
+	[[ ${1:0:1} != U ]] && regex+=' yes'
+	bluetoothctl info $MAC | grep -q -m1 "$regex" && return 0
+}
+
 . /srv/http/bash/common.sh
 
 touch $dirshm/bluetooth_rules
@@ -16,7 +24,7 @@ args2var "$1"
 
 if [[ $CMD != cmd ]]; then
 	udev=1
-	ACTION=$1
+	[[ $1 == add ]] && ACTION=connect || ACTION=disconnect
 fi
 type=btreceiver
 
@@ -48,11 +56,9 @@ refreshPages() {
 # from bluetooth.rules: disconnect from paired device - no MAC
 if [[ $udev && $ACTION == disconnect ]]; then
 	sleep 2
-	lines=$( < $dirshm/btconnected )
-	while read line; do
-		MAC=${line/ *}
-		bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && MAC= || break
-	done <<< $lines
+	while read MAC; do
+		btInfo Connected && MAC= || break
+	done < $dirshm/btconnected
 	[[ $MAC ]] && disconnectRemove
 	exit
 # --------------------------------------------------------------------
@@ -61,62 +67,60 @@ fi
 # from bluetooth.rules: 1. connect from paired device, 2. pair from sender
 if [[ $udev && $ACTION == connect ]]; then
 	sleep 2
-	lines=$( bluetoothctl devices | cut -d' ' -f2 )
-	if [[ $lines ]]; then
-		while read MAC; do
-			if bluetoothctl info $MAC | grep -q -m1 'Connected: yes'; then
-				grep -qs -m1 ^$MAC $dirshm/btconnected && MAC= || break
-			fi
-		done <<< $lines
-	fi
-	[[ $MAC ]] && name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ ! $name ]] && name=Bluetooth
+	while read MAC; do
+		if btInfo Connected; then
+			grep -qs -m1 ^$MAC $dirshm/btconnected && MAC= || break
+		fi
+	done < <( bluetoothctl devices | cut -d' ' -f2 )
 	msg='Connect ...'
 	# fix: rAudio triggered to connect by unpaired sender on boot
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 	if [[ ! -e /var/lib/bluetooth/$controller/$MAC ]]; then
 		for i in {1..5}; do
-			! bluetoothctl info $MAC | grep -q -m1 'UUID:' && sleep 1 || break
+			btInfo UUID && break || sleep 1
 		done
-		bluetoothctl info $MAC | grep -q -m1 'UUID: Audio Source' && msg='Pair ...' || exit
+		btInfo 'UUID: Audio Source' && msg='Pair ...' || exit
 # --------------------------------------------------------------------
 	fi
 #-----
 	notify "$type blink" "$name" "$msg"
-	if (( $( bluetoothctl info $MAC | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
-		ACTION=connect
-	else
+	if ! btInfo Paired; then
 		ACTION=pair
 		bluetoothctl agent NoInputNoOutput # no device to input credential
+	else
+		ACTION=connect
 	fi
 fi
 ########################################################################################################
 # 1. continue from [[ $udev && $ACTION == connect ]], 2. from rAudio networks.js
 if [[ $ACTION == connect || $ACTION == pair ]]; then
-	info=$( bluetoothctl info $MAC )
-	name=$( sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' <<< $info  )
+	name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
-	if grep -q -m1 'Paired: no'  <<< $info; then
-		bluetoothctl pair $MAC
-		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Paired: yes' && paired=1 && break
-			
-			sleep 1
-		done
-		[[ ! $paired ]] && notify $type "$name" 'Pair failed.' && exit
+	if ! btInfo Paired || ! btInfo Trusted; then
+		if ! btInfo Paired; then
+			bluetoothctl pair $MAC
+			for i in {1..5}; do
+				btInfo Paired && paired=1 && break
+				
+				sleep 1
+			done
+			[[ ! $paired ]] && notify $type "$name" 'Pair failed.' && exit
 # --------------------------------------------------------------------
-		notify $type "$name" 'Paired successfully.'
+			notify $type "$name" 'Paired successfully.'
+		fi
+		if ! btInfo Trusted; then
+			bluetoothctl trust $MAC
+			for i in {1..5}; do
+				btInfo Trusted && break || sleep 1
+			done
+		fi
+		notify "$type blink" "$name" 'Connect ...'
+		bluetoothctl connect $MAC
+	else
+		notify "$type blink" "$name" 'Connect ...'
 	fi
-	if grep -q -m1 'Trusted: no' <<< $info; then
-		bluetoothctl trust $MAC
-		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Trusted: yes' && break || sleep 1
-		done
-	fi
-	notify "$type blink" "$name" 'Connect ...'
-	bluetoothctl connect $MAC
 	for i in {1..5}; do
-		bluetoothctl info $MAC | grep -q -m1 'UUID:' && connected=1 && break
+		btInfo UUID && connected=1 && break
 		
 		sleep 1
 	done
@@ -161,7 +165,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	bluetoothctl disconnect $MAC &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && sleep 1 || break
+			btInfo Connected && sleep 1 || break
 		done
 	else
 		bluetoothctl untrust $MAC &> /dev/null
