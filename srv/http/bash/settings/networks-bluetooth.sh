@@ -22,10 +22,7 @@ touch $dirshm/bluetooth_rules
 
 args2var "$1"
 
-if [[ $CMD != cmd ]]; then
-	udev=1
-	[[ $1 == add ]] && ACTION=connect || ACTION=disconnect
-fi
+[[ $CMD != cmd ]] && ACTION=$1
 type=btreceiver
 
 disconnectRemove() {
@@ -53,50 +50,34 @@ refreshPages() {
 	pushRefresh system
 }
 ########################################################################################################
-# from bluetooth.rules: disconnect from paired device - no MAC
-if [[ $udev && $ACTION == disconnect ]]; then
+# from bluetooth.rules: disconnect from paired device
+if [[ $ACTION == remove ]]; then
 	sleep 2
 	while read MAC; do
 		btInfo Connected && MAC= || break
 	done < $dirshm/btconnected
-	[[ $MAC ]] && disconnectRemove
+	[[ $MAC ]] && ACTION=disconnect && disconnectRemove
 	exit
 # --------------------------------------------------------------------
 fi
 ########################################################################################################
 # from bluetooth.rules: 1. connect from paired device, 2. pair from sender
-if [[ $udev && $ACTION == connect ]]; then
+if [[ $ACTION == add ]]; then
 	sleep 2
 	while read MAC; do
 		if btInfo Connected; then
 			grep -qs -m1 ^$MAC $dirshm/btconnected && MAC= || break
 		fi
 	done < <( bluetoothctl devices | cut -d' ' -f2 )
-	msg='Connect ...'
-	# fix: rAudio triggered to connect by unpaired sender on boot
-	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-	if [[ ! -e /var/lib/bluetooth/$controller/$MAC ]]; then
-		for i in {1..5}; do
-			btInfo UUID && break || sleep 1
-		done
-		btInfo 'UUID: Audio Source' && msg='Pair ...' || exit
-# --------------------------------------------------------------------
-	fi
-#-----
-	notify "$type blink" "$name" "$msg"
-	if ! btInfo Paired; then
-		ACTION=pair
-		bluetoothctl agent NoInputNoOutput # no device to input credential
-	else
-		ACTION=connect
-	fi
+	btInfo Paired && ACTION=connect || ACTION=pair
 fi
 ########################################################################################################
-# 1. continue from [[ $udev && $ACTION == connect ]], 2. from rAudio networks.js
+# 1. continue from [[ $ACTION == add ]], 2. from rAudio networks.js
 if [[ $ACTION == connect || $ACTION == pair ]]; then
 	name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
 	if ! btInfo Paired || ! btInfo Trusted; then
+		bluetoothctl agent NoInputNoOutput # no device to input credential
 		if ! btInfo Paired; then
 			bluetoothctl pair $MAC
 			for i in {1..5}; do
@@ -116,7 +97,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		fi
 		notify "$type blink" "$name" 'Connect ...'
 		bluetoothctl connect $MAC
-	else
+	else # Paired and Trusted - auto reconnect
 		notify "$type blink" "$name" 'Connect ...'
 	fi
 	for i in {1..5}; do
