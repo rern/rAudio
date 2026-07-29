@@ -79,6 +79,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 	if ! btInfo Paired || ! btInfo Trusted; then
 		bluetoothctl agent NoInputNoOutput # no device to input credential
 		if ! btInfo Paired; then
+			notify "$type blink" "$name" 'Pair ...'
 			bluetoothctl pair $MAC
 			for i in {1..5}; do
 				btInfo Paired && paired=1 && break
