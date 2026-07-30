@@ -69,7 +69,7 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 		sleep 1
 		Connected=$( bluetoothctl devices Connected | sort )
 		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' ) # < Device 41:42:56:12:21:71 NAME
-		[[ $d ]] && break
+		[[ $d ]] && notify 'bluetooth blink' Bluetooth "${ACTION^}ed." && break
 	done
 	if [[ $d ]]; then
 		MAC=$( cut -d' ' -f3 <<< $d )
@@ -98,6 +98,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	done
 	[[ ! $connected ]] && notify $type "$name" 'Connect failed.' && exit
 # --------------------------------------------------------------------
+	notify "$type blink" "$name" Connected.
 	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
 # --------------------------------------------------------------------
 	for i in {1..5}; do
@@ -121,13 +122,14 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 			sleep 1
 			! btInfo Connected && break
 		done
-		! btInfo Paired && bluetoothctl remove $MAC &> /dev/null
+		notify "$type blink" "$name" Disconnected.
 	else
 		bluetoothctl remove $MAC &> /dev/null
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
+		notify "$type blink" "$name" Forgotten.
 	fi
 	unsetMPD
 fi
