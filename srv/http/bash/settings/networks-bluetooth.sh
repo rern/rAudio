@@ -27,7 +27,7 @@ btInfo() {
 	btAction info | grep -q -m1 "$regex" && return 0
 }
 btMixer() {
-	[[ $ACTION == disconnect || $ACTION == forget ]] && rm -f $dirshm/{btmixer,btname} && return
+	[[ $ACTION == disconnect || $ACTION == forget ]] && rm -f $dirshm/btmixer && return
 #...............................................................................
 	for i in {1..5}; do
 		sleep 1
@@ -42,7 +42,6 @@ btMixer() {
 	fi
 	(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 	cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
-	echo $name > $dirshm/btname
 }
 btName_Type() {
 	name=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )

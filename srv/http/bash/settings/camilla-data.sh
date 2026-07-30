@@ -6,7 +6,7 @@
 . $dirshm/output
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
-	name=$( < $dirshm/btname )
+	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
 fi
 volumemax=$( volumeMaxGet )
 ##########
