@@ -4,14 +4,16 @@
 #   (delay - connect right after paired > mixer not yet ready)
 # Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
+file_flag=/dev/shm/bluetooth_rules
+trap "rm -f $file_flag" EXIT
 
-[[ -e /dev/shm/bluetooth_rules || -e /dev/shm/btonoff ]] && exit # debounce bluetooth.rules
+[[ -e $file_flag || -e /dev/shm/btonoff ]] && exit # debounce bluetooth.rules
 # --------------------------------------------------------------------
+touch $file_flag
+( sleep 5; rm -f $file_flag ) &
+
 
 . /srv/http/bash/common.sh
-
-touch $dirshm/bluetooth_rules
-( sleep 10; rm -f $dirshm/bluetooth_rules ) &
 
 btInfo() {
 	local regex
@@ -119,8 +121,8 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 			sleep 1
 			! btInfo Connected && break
 		done
+		! btInfo Paired && bluetoothctl remove $MAC &> /dev/null
 	else
-		bluetoothctl untrust $MAC &> /dev/null
 		bluetoothctl remove $MAC &> /dev/null
 		for i in {1..5}; do
 			sleep 1
