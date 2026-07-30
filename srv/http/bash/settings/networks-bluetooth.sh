@@ -12,19 +12,24 @@ trap "rm -f $file_flag" EXIT
 touch $file_flag
 ( sleep 5; rm -f $file_flag ) &
 
-
 . /srv/http/bash/common.sh
 
+btAction() {
+	bluetoothctl $1 $MAC
+}
+btConnected() {
+	bluetoothctl devices Connected | sort
+}
 btInfo() {
 	local regex
 	regex=$1:
 	[[ ${1:0:1} != U ]] && regex+=' yes'
-	bluetoothctl info $MAC | grep -q -m1 "$regex" && return 0
+	btAction info | grep -q -m1 "$regex" && return 0
 }
 btName_Type() {
-	name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	name=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
-	sink_source=$( bluetoothctl info $MAC | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
+	sink_source=$( btAction info | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ $sink_source ]]; then
 		[[ $sink_source == Sink ]] && type=btreceiver || type=btsender
 	else
@@ -34,6 +39,7 @@ btName_Type() {
 refreshPages() {
 	pushRefresh networks
 	pushRefresh system
+	btConnected > $dirshm/Connected
 	[[ ! -e $dirsystem/camilladsp ]] && return
 	
 	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $type $MAC && return
@@ -44,7 +50,6 @@ refreshPages() {
 	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
 }
 setMPD() {
-	bluetoothctl devices Connected | sort > $dirshm/Connected
 	[[ $type != btreceiver ]] && return
 	
 	echo $name > $dirshm/btname
@@ -53,7 +58,6 @@ setMPD() {
 	echo $btmixer > $dirshm/btmixer
 }
 unsetMPD() {
-	bluetoothctl devices Connected | sort > $dirshm/Connected
 	[[ $type != btreceiver ]] && return
 	
 	rm -f $dirshm/{btmixer,btname}
@@ -62,18 +66,19 @@ unsetMPD() {
 args2var "$1"
 
 if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
-	prev=$( cat $dirshm/Connected 2> /dev/null )
 	[[ $1 == add ]] && ACTION=connect || ACTION=disconnect
 	notify 'bluetooth blink' Bluetooth "${ACTION^} ..."
+	prev=$( cat $dirshm/Connected 2> /dev/null )
 	for i in {1..5}; do
 		sleep 1
-		Connected=$( bluetoothctl devices Connected | sort )
-		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' ) # < Device 41:42:56:12:21:71 NAME
-		[[ $d ]] && notify 'bluetooth blink' Bluetooth "${ACTION^}ed." && break
+		Connected=$( btConnected )
+		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+		[[ $d ]] && break
 	done
 	if [[ $d ]]; then
-		MAC=$( cut -d' ' -f3 <<< $d )
+		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		btName_Type
+		notify $type "$name" "${ACTION^}ed."
 		[[ $1 == add ]] && setMPD || unsetMPD
 	fi
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
@@ -81,7 +86,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	if ! btInfo Paired; then
 		bluetoothctl agent NoInputNoOutput # force no credential
 		notify "$type blink" "$name" 'Pair ...'
-		bluetoothctl pair $MAC
+		btAction pair
 		for i in {1..5}; do
 			sleep 1
 			btInfo Paired && paired=1 && break
@@ -89,16 +94,16 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		[[ ! $paired ]] && notify $type "$name" 'Pair failed.' && exit
 # --------------------------------------------------------------------
 	fi
-	! btInfo Trusted && bluetoothctl trust $MAC
+	! btInfo Trusted && btAction trust
 	notify "$type blink" "$name" 'Connect ...'
-	bluetoothctl connect $MAC
+	btAction connect
 	for i in {1..5}; do
 		sleep 1
 		btInfo Connected && connected=1 && break
 	done
 	[[ ! $connected ]] && notify $type "$name" 'Connect failed.' && exit
 # --------------------------------------------------------------------
-	notify "$type blink" "$name" Connected.
+	notify $type "$name" Connected.
 	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
 # --------------------------------------------------------------------
 	for i in {1..5}; do
@@ -107,7 +112,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		[[ $btmixer ]] && break
 	done
 	if [[ ! $btmixer && $ACTION == connect ]]; then
-		bluetoothctl disconnect $MAC
+		btAction disconnect
 		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
 # --------------------------------------------------------------------
@@ -116,20 +121,20 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	btName_Type
 	notify "$type blink" "$name" "${ACTION^} ..."
-	bluetoothctl disconnect $MAC &> /dev/null
+	btAction disconnect &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
 			sleep 1
 			! btInfo Connected && break
 		done
-		notify "$type blink" "$name" Disconnected.
+		notify $type "$name" Disconnected.
 	else
-		bluetoothctl remove $MAC &> /dev/null
+		btAction remove &> /dev/null
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
-		notify "$type blink" "$name" Forgotten.
+		notify $type "$name" Forgotten.
 	fi
 	unsetMPD
 fi
@@ -138,4 +143,4 @@ $dirsettings/player-conf.sh
 refreshPages
 [[ $ACTION == disconnect || $ACTION == forget ]] && exit
 # --------------------------------------------------------------------
-grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play 
+grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
