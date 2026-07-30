@@ -49,17 +49,23 @@ refreshPages() {
 	file_config=$( < $dircamilladsp/file_config )
 	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
 }
-setMPD() {
-	[[ $type != btreceiver ]] && return
-	
-	echo $name > $dirshm/btname
+setMixer() {
+	for i in {1..5}; do
+		sleep 1
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		[[ $btmixer ]] && break
+	done
+	if [[ ! $btmixer ]]; then
+		btAction disconnect
+		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
+		exit
+# --------------------------------------------------------------------
+	fi
 	(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-	btmixer=$( cut -d"'" -f2 <<< $btmixer )
-	echo $btmixer > $dirshm/btmixer
+	cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+	echo $name > $dirshm/btname
 }
-unsetMPD() {
-	[[ $type != btreceiver ]] && return
-	
+unsetMixer() {
 	rm -f $dirshm/{btmixer,btname}
 }
 
@@ -79,7 +85,7 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		btName_Type
 		notify $type "$name" "${ACTION^}ed."
-		[[ $1 == add ]] && setMPD || unsetMPD
+		[[ $1 == add ]] && setMixer || unsetMixer
 	fi
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	btName_Type
@@ -106,18 +112,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	notify $type "$name" Connected.
 	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
 # --------------------------------------------------------------------
-	for i in {1..5}; do
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
-		[[ $btmixer ]] && break
-	done
-	if [[ ! $btmixer && $ACTION == connect ]]; then
-		btAction disconnect
-		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
-		exit
-# --------------------------------------------------------------------
-	fi
-	setMPD
+	setMixer
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	btName_Type
 	notify "$type blink" "$name" "${ACTION^} ..."
@@ -136,7 +131,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notify $type "$name" Forgotten.
 	fi
-	unsetMPD
+	unsetMixer
 fi
 $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
