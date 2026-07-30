@@ -371,7 +371,7 @@ localBrowserOff() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
@@ -720,7 +720,7 @@ volumeMpd() {
 volumeLimit() {
 	local fn_volume mixer val
 	val=$( getVar $1 $dirsystem/volumelimit.conf )
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btmixer ]]; then
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output

@@ -62,7 +62,7 @@ data='
 }'
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
-if [[ -e $dirshm/btreceiver ]]; then
+if [[ -e $dirshm/btmixer ]]; then
 	$dirsettings/camilla-bluetooth.sh btreceiver
 else
 	fileformat="$dirsystem/camilla-$NAME"

@@ -12,7 +12,7 @@ volumemax=$( volumeMaxGet )
 ##########
 data='
 , "bluetooth"   : '$bluetooth'
-, "btreceiver"  : '$( exists $dirshm/btreceiver )'
+, "btreceiver"  : '$( exists $dirshm/btmixer )'
 , "cardname"    : "'$name'"
 , "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"     : "'$mixer'"

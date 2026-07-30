@@ -15,7 +15,7 @@ done &
 dn=-1
 up=+1
 fn_volume=$( volumeFunction )
-if [[ -e $dirshm/btreceiver ]]; then
+if [[ -e $dirshm/btmixer ]]; then
 	dn=1%-
 	up=1%+
 	mixer=$( < $dirshm/btmixer )

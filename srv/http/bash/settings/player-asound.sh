@@ -8,7 +8,7 @@ if [[ ! $dirbash ]]; then # if run directly
 	NAME=$name
 fi
 
-if [[ -e $dirshm/btreceiver ]]; then
+if [[ -e $dirshm/btmixer ]]; then
 	BLUETOOTH=1
 	systemctl -q is-active localbrowser && action=stop || action=start
 	systemctl $action bluetoothbutton

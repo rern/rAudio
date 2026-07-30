@@ -41,7 +41,6 @@ else
 	audioCDplClear
 	pushData power '{ "type": "off" }'
 fi
-[[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null

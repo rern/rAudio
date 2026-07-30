@@ -3,27 +3,23 @@
 . /srv/http/bash/common.sh
 
 type=$1
-mac=$( < $dirshm/$type )
-filedefault=/etc/default/camilladsp
-. <( grep ^CONFIG $filedefault | tee $dircamilladsp/fileconfig )
-[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
-filemac=$dircamilladsp/$mac
+
+filemac=$dircamilladsp/$2
 if [[ -e $filemac ]]; then
 	filedevice=$( < $filemac )
 else
 	filedevice=$dircamilladsp/configs-bt/camilladsp.yml
 	echo $filedevice > $filemac
 fi
+filedefault=/etc/default/camilladsp
+. <( grep ^CONFIG $filedefault | tee $dircamilladsp/file_config )
+[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
 sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $filedefault
-if [[ -e $filedevice ]]; then
-	camillaDSPstart
-	exit
+[[ -e $filedevice ]] && camillaDSPstart && exit
 # --------------------------------------------------------------------
-fi
-. <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
-format=$( sed 's/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g' <<< $format )
-
 if [[ $type == btreceiver ]]; then
+	. <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
+	format=$( sed 's/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g' <<< $format )
 	sed -E -e '/playback:$/,/format:/ {
 s/(device: ).*/\1bluealsa/
 s/(channels: ).*/\1'$channels'/
