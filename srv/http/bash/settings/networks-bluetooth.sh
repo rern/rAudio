@@ -53,6 +53,20 @@ btName_Type() {
 		type=bluetooth
 	fi
 }
+connecting() {
+	for i in {1..5}; do
+		sleep 1
+		btInfo Connected && connected=1 && break
+	done
+	[[ ! $connected ]] && notify $type "$name" 'Connect failed' && exit
+# ------------------------------------------------------------------------------
+}
+disconnecting() {
+	for i in {1..5}; do
+		sleep 1
+		! btInfo Connected && break
+	done
+}
 refreshPages() {
 	pushRefresh networks
 	pushRefresh system
@@ -76,6 +90,7 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 		MAC=$( cut -d' ' -f2 <<< $Paired )
 		btName_Type
 		notify "$type blink" "$name" "${ACTION^} ..."
+		[[ $ACTION == connect ]] && connecting || disconnecting
 	else
 		notify 'bluetooth blink' Bluetooth "${ACTION^} ..."
 		prev=$( cat $dirshm/Connected 2> /dev/null )
@@ -86,6 +101,7 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 			[[ $d ]] && break
 		done
 		if [[ $d ]]; then
+			[[ $ACTION == connect ]] && connected=1
 			MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 			btName_Type
 		fi
@@ -108,12 +124,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	! btInfo Trusted && btAction trust
 	notify "$type blink" "$name" 'Connect ...'
 	btAction connect
-	for i in {1..5}; do
-		sleep 1
-		btInfo Connected && connected=1 && break
-	done
-	[[ ! $connected ]] && notify $type "$name" 'Connect failed' && exit
-# ------------------------------------------------------------------------------
+	connecting
 	notify $type "$name" Connected.
 	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
 # ------------------------------------------------------------------------------
@@ -124,10 +135,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	notify "$type blink" "$name" "${ACTION^} ..."
 	btAction disconnect &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
-		for i in {1..5}; do
-			sleep 1
-			! btInfo Connected && break
-		done
+		disconnecting
 		notify $type "$name" Disconnected
 	else
 		btAction remove &> /dev/null
@@ -141,6 +149,6 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 fi
 $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
-[[ ! $disconnect ]] && notify $type "$name" Ready
+[[ $connected ]] && notify $type "$name" Ready
 refreshPages
-[[ ! $disconnect ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+[[ $connected ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
