@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Pair: trust > pair > get sink_source > disconnect > delay > connect
-#   (delay - connect right after paired > mixer not yet ready)
-# Connect: trust > connect > get sink_source
-# Disconnect / Remove: disconnect
 file_flag=/dev/shm/bluetooth_rules
 trap "rm -f $file_flag" EXIT
 
@@ -36,36 +32,26 @@ btMixer() {
 	done
 	if [[ ! $btmixer ]]; then
 		btAction disconnect
-		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
+		notifyState "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
 # ------------------------------------------------------------------------------
 	fi
 	(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 	cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
 }
-btName_Type() {
-	name=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ ! $name ]] && name=Bluetooth
+NAME_TYPE() {
+	alias=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	[[ $alias ]] && NAME=$alias
 	sink_source=$( btAction info | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
-	if [[ $sink_source ]]; then
-		[[ $sink_source == Sink ]] && type=btreceiver || type=btsender
-	else
-		type=bluetooth
-	fi
+	[[ ! $sink_source ]] && return
+	
+	[[ $sink_source == Sink ]] && TYPE=btreceiver || TYPE=btsender
 }
-connecting() {
-	for i in {1..5}; do
-		sleep 1
-		btInfo Connected && connected=1 && break
-	done
-	[[ ! $connected ]] && notify $type "$name" 'Connect failed' && exit
-# ------------------------------------------------------------------------------
+notifyACTION() {
+	notify "$TYPE blink" "$NAME" "${ACTION^} ..."
 }
-disconnecting() {
-	for i in {1..5}; do
-		sleep 1
-		! btInfo Connected && break
-	done
+notifyState() {
+	notify $TYPE "$NAME" "$1"
 }
 refreshPages() {
 	pushRefresh networks
@@ -73,7 +59,7 @@ refreshPages() {
 	btConnected > $dirshm/Connected
 	[[ ! -e $dirsystem/camilladsp ]] && return
 #...............................................................................
-	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $type $MAC && return
+	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $TYPE $MAC && return
 #...............................................................................
 	file_default=/etc/default/camilladsp
 	getVar CONFIG $file_default > $dircamilladsp/$MAC
@@ -83,72 +69,79 @@ refreshPages() {
 
 args2var "$1"
 
+TYPE=bluetooth
+NAME=Bluetooth
+
 if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 	[[ $1 == add ]] && ACTION=connect || ACTION=disconnect
-	Paired=$( bluetoothctl devices Paired )
-	if (( $( wc -l <<< $Paired ) == 1 )); then
-		MAC=$( cut -d' ' -f2 <<< $Paired )
-		btName_Type
-		notify "$type blink" "$name" "${ACTION^} ..."
-		[[ $ACTION == connect ]] && connecting || disconnecting
-	else
-		notify 'bluetooth blink' Bluetooth "${ACTION^} ..."
-		prev=$( cat $dirshm/Connected 2> /dev/null )
-		for i in {1..5}; do
-			sleep 1
-			Connected=$( btConnected )
-			d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
-			[[ $d ]] && break
-		done
-		if [[ $d ]]; then
-			[[ $ACTION == connect ]] && connected=1
-			MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
-			btName_Type
-		fi
+	notifyACTION
+	prev=$( cat $dirshm/Connected 2> /dev/null )
+	for i in {1..5}; do
+		sleep 1
+		Connected=$( btConnected )
+		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+		[[ $d ]] && break
+	done
+	if [[ $d ]]; then
+		[[ $ACTION == connect ]] && connected=1
+		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
+		NAME_TYPE
 	fi
-	notify $type "$name" "${ACTION^}ed"
+	notifyState "${ACTION^}ed"
 	btMixer
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
-	btName_Type
-	if ! btInfo Paired; then
+	NAME_TYPE
+	if [[ $ACTION == pair ]]; then
 		bluetoothctl agent NoInputNoOutput # force no credential
-		notify "$type blink" "$name" 'Pair ...'
+		notifyACTION
 		btAction pair
 		for i in {1..5}; do
 			sleep 1
 			btInfo Paired && paired=1 && break
 		done
-		[[ ! $paired ]] && notify $type "$name" 'Pair failed' && exit
+		[[ ! $paired ]] && notifyState 'Pair failed' && exit
 # ------------------------------------------------------------------------------
 	fi
 	! btInfo Trusted && btAction trust
-	notify "$type blink" "$name" 'Connect ...'
+	notifyACTION
 	btAction connect
-	connecting
-	notify $type "$name" Connected.
-	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
+	for i in {1..5}; do
+		sleep 1
+		btInfo Connected && connected=1 && break
+	done
+	[[ ! $connected ]] && notifyState 'Connect failed' && exit
 # ------------------------------------------------------------------------------
+	if [[ $TYPE == bluetooth ]]; then # non-audio
+		notifyState Ready
+		pushRefresh networks
+		exit
+# ------------------------------------------------------------------------------
+	fi
+	notifyState Connected
 	btMixer
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	disconnect=1
-	btName_Type
-	notify "$type blink" "$name" "${ACTION^} ..."
+	NAME_TYPE
+	notifyACTION
 	btAction disconnect &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
-		disconnecting
-		notify $type "$name" Disconnected
+		for i in {1..5}; do
+			sleep 1
+			! btInfo Connected && break
+		done
+		notifyState Disconnected
 	else
 		btAction remove &> /dev/null
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
-		notify $type "$name" Forgotten
+		notifyState Forgotten
 	fi
 	btMixer
 fi
 $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
-[[ $connected ]] && notify $type "$name" Ready
+[[ $connected ]] && notifyState Ready
 refreshPages
 [[ $connected ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
