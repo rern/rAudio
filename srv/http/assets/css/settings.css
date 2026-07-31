@@ -351,9 +351,6 @@ heading i.disabled {
 	float: right;
 	color: var( --cm );
 }
-li.bt.nopair .i-bluetooth {
-	color: var( --cg );
-}
 .entries {
 	display: block;
 	margin: -16px 0 10px 0;
