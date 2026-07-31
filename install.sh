@@ -4,7 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260729
+# 20260801
+file=/etc/bluetooth/main.conf
+if grep -q -m1 'JustWorksRepairing = never' $file; then
+	sed -i -E 's/#*(JustWorksRepairing = ).*/\1always/' $file
+	systemctl try-restart bluetooth
+fi
+
 file=/etc/udev/rules.d/bluetooth.rules
 if grep -q connect $file; then
 	cat << 'EOF' > $file

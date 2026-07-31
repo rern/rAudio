@@ -6,7 +6,7 @@ trap "rm -f $file_flag" EXIT
 [[ -e $file_flag || -e /dev/shm/btonoff ]] && exit # debounce bluetooth.rules
 # ------------------------------------------------------------------------------
 touch $file_flag
-( sleep 5; rm -f $file_flag ) &
+( sleep 10; rm -f $file_flag ) &
 
 . /srv/http/bash/common.sh
 

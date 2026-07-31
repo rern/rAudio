@@ -201,6 +201,7 @@ var RENDER = {
 		if ( S.list.bluetooth ) {
 			S.list.bluetooth.forEach( list => {
 				cls   = list.connected ? ' current' : '';
+				cls  += list.paired ? '' : ' nopair';
 				html += '<li class="bt'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
 					  + ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'<dot></dot>'+ list.name +'</li>';
 			} );

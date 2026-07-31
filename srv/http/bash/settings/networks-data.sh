@@ -4,7 +4,7 @@
 
 if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
 	devicebt=true
-	devices=$( bluetoothctl devices Paired | sort -k3 -fh  )
+	devices=$( bluetoothctl devices Trusted | sort -k3 -fh  )
 fi
 if [[ $devices ]]; then
 	while read dev; do
@@ -14,6 +14,7 @@ if [[ $devices ]]; then
   "mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
 , "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
+, "paired"    : '$( grep -q -m1 'Paired: yes' <<< $info && echo true || echo false )'
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
 }'
 	done <<< $devices
