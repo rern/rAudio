@@ -90,7 +90,7 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 			btName_Type
 		fi
 	fi
-	notify $type "$name" "${ACTION^}ed."
+	notify $type "$name" "${ACTION^}ed"
 	btMixer
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	btName_Type
@@ -102,7 +102,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 			sleep 1
 			btInfo Paired && paired=1 && break
 		done
-		[[ ! $paired ]] && notify $type "$name" 'Pair failed.' && exit
+		[[ ! $paired ]] && notify $type "$name" 'Pair failed' && exit
 # ------------------------------------------------------------------------------
 	fi
 	! btInfo Trusted && btAction trust
@@ -112,13 +112,14 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		sleep 1
 		btInfo Connected && connected=1 && break
 	done
-	[[ ! $connected ]] && notify $type "$name" 'Connect failed.' && exit
+	[[ ! $connected ]] && notify $type "$name" 'Connect failed' && exit
 # ------------------------------------------------------------------------------
 	notify $type "$name" Connected.
 	[[ $type == bluetooth ]] && refreshPages && exit # non-audio
 # ------------------------------------------------------------------------------
 	btMixer
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
+	disconnect=1
 	btName_Type
 	notify "$type blink" "$name" "${ACTION^} ..."
 	btAction disconnect &> /dev/null
@@ -127,20 +128,19 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 			sleep 1
 			! btInfo Connected && break
 		done
-		notify $type "$name" Disconnected.
+		notify $type "$name" Disconnected
 	else
 		btAction remove &> /dev/null
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
-		notify $type "$name" Forgotten.
+		notify $type "$name" Forgotten
 	fi
 	btMixer
 fi
 $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
+[[ ! $disconnect ]] && notify $type "$name" Ready
 refreshPages
-[[ $ACTION == disconnect || $ACTION == forget ]] && exit
-# ------------------------------------------------------------------------------
-grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+[[ ! $disconnect ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
