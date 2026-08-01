@@ -6,18 +6,15 @@ blueAlsaMixer() {
 	rm -f $dirshm/btmixer
 	[[ $ACTION != connect ]] && return
 #...............................................................................
-	for i in {1..5}; do
+	for i in {1..3}; do
 		sleep 1
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		if [[ $btmixer ]]; then
-			(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-			cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
-			return
-#...............................................................................
-		fi
+		[[ $btmixer ]] && break
 	done
-	# some might be broken on 1st connect
-	if [[ ! $retry ]]; then
+	if [[ $btmixer ]]; then
+		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
+		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+	elif [[ ! $retry ]]; then # some might be broken on 1st connect
 		notify "$TYPE blink" "$NAME" 'Mixer setup ...'
 		retry=1
 		connected=
