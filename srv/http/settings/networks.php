@@ -37,7 +37,6 @@ $B->bluetooth$B->btsender Context menu
 	· On sender
 	
 Note:
- • If auto-reconnect failed, try connecting manually.
  • Forget / remove should be done on both rAudio and sender.
  • Non-audio devices should be able to pair as well.
 EOF

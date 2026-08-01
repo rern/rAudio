@@ -1,17 +1,32 @@
 #!/bin/bash
 
-file_flag=/dev/shm/bluetooth_rules
+file_flag=/dev/shm/btconnect
 trap "rm -f $file_flag" EXIT
 
 [[ -e $file_flag || -e /dev/shm/btonoff ]] && exit # debounce bluetooth.rules
 # ------------------------------------------------------------------------------
 touch $file_flag
-( sleep 10; rm -f $file_flag ) &
 
 . /srv/http/bash/common.sh
 
 btAction() {
 	bluetoothctl $1 $MAC
+}
+btConnect() {
+	btAction connect
+	for i in {1..5}; do
+		sleep 1
+		btInfo Connected && connected=1 && break
+	done
+	[[ ! $connected ]] && notifyState 'Connect failed' && exit
+# ------------------------------------------------------------------------------
+	if [[ $TYPE == bluetooth ]]; then # non-audio
+		notifyState Ready
+		pushRefresh networks
+		exit
+# ------------------------------------------------------------------------------
+	fi
+	btMixer
 }
 btConnected() {
 	bluetoothctl devices Connected | sort
@@ -31,9 +46,17 @@ btMixer() {
 		[[ $btmixer ]] && break
 	done
 	if [[ ! $btmixer ]]; then
+		if [[ $retry ]]; then
+			notifyState 'Mixer not ready'
+# ------------------------------------------------------------------------------
+			exit
+		fi
+		retry=1
+		connected=
 		btAction disconnect
-		notifyState "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
-		exit
+		notify "$TYPE blink" "$NAME" 'Setup ...'
+		btConnect
+		return
 # ------------------------------------------------------------------------------
 	fi
 	(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
@@ -104,21 +127,8 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	fi
 	! btInfo Trusted && btAction trust
 	notifyACTION
-	btAction connect
-	for i in {1..5}; do
-		sleep 1
-		btInfo Connected && connected=1 && break
-	done
-	[[ ! $connected ]] && notifyState 'Connect failed' && exit
-# ------------------------------------------------------------------------------
-	if [[ $TYPE == bluetooth ]]; then # non-audio
-		notifyState Ready
-		pushRefresh networks
-		exit
-# ------------------------------------------------------------------------------
-	fi
+	btConnect
 	notifyState Connected
-	btMixer
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	disconnect=1
 	NAME_TYPE
@@ -145,3 +155,6 @@ $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
 refreshPages
 [[ $connected ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+
+[[ $retry ]] && trap - EXIT && sleep 10
+rm -f $file_flag
