@@ -1,14 +1,36 @@
 #!/bin/bash
 
-file_flag=/dev/shm/btconnect
-trap "rm -f $file_flag" EXIT
-
-[[ -e $file_flag || -e /dev/shm/btonoff ]] && exit # debounce bluetooth.rules
-# ------------------------------------------------------------------------------
-touch $file_flag
-
 . /srv/http/bash/common.sh
 
+blueAlsaMixer() {
+	rm -f $dirshm/btmixer
+	[[ $ACTION != connect ]] && return
+#...............................................................................
+	for i in {1..5}; do
+		sleep 1
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		if [[ $btmixer ]]; then
+			(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
+			cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+			return
+#...............................................................................
+		fi
+	done
+	# some might be broken on 1st connect
+	if [[ ! $retry ]]; then
+		notify "$TYPE blink" "$NAME" 'Mixer setup ...'
+		retry=1
+		connected=
+		touch $dirshm/btsetup
+		( sleep 15; rm -f $dirshm/btsetup ) &
+		btAction disconnect
+		btConnect
+	else
+		notifyState 'Failed: Mixer'
+		exit
+# ------------------------------------------------------------------------------
+	fi
+}
 btAction() {
 	bluetoothctl $1 $MAC
 }
@@ -26,7 +48,7 @@ btConnect() {
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	btMixer
+	[[ $retry ]] && blueAlsaMixer || notifyState Connected
 }
 btConnected() {
 	bluetoothctl devices Connected | sort
@@ -36,31 +58,6 @@ btInfo() {
 	regex=$1:
 	[[ ${1:0:1} != U ]] && regex+=' yes'
 	btAction info | grep -q -m1 "$regex" && return 0
-}
-btMixer() {
-	[[ $ACTION == disconnect || $ACTION == forget ]] && rm -f $dirshm/btmixer && return
-#...............................................................................
-	for i in {1..5}; do
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
-	done
-	if [[ ! $btmixer ]]; then
-		if [[ $retry ]]; then
-			notifyState 'Mixer not ready'
-# ------------------------------------------------------------------------------
-			exit
-		fi
-		retry=1
-		connected=
-		btAction disconnect
-		notify "$TYPE blink" "$NAME" 'Setup ...'
-		btConnect
-		return
-# ------------------------------------------------------------------------------
-	fi
-	(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-	cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
 }
 NAME_TYPE() {
 	alias=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
@@ -95,8 +92,10 @@ args2var "$1"
 TYPE=bluetooth
 NAME=Bluetooth
 
-if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
-	[[ $1 == add ]] && ACTION=connect || ACTION=disconnect
+if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
+	[[ -e $dirshm/btsetup ]] && exit # debounce / suppress onboard toggle
+# ------------------------------------------------------------------------------
+	ACTION=$1 # for notify only
 	notifyACTION
 	prev=$( cat $dirshm/Connected 2> /dev/null )
 	for i in {1..5}; do
@@ -111,7 +110,6 @@ if [[ $CMD != cmd ]]; then # from bluetooth.rules: paired device
 		NAME_TYPE
 	fi
 	notifyState "${ACTION^}ed"
-	btMixer
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	NAME_TYPE
 	if [[ $ACTION == pair ]]; then
@@ -122,15 +120,13 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 			sleep 1
 			btInfo Paired && paired=1 && break
 		done
-		[[ ! $paired ]] && notifyState 'Pair failed' && exit
+		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
 	fi
 	! btInfo Trusted && btAction trust
 	notifyACTION
 	btConnect
-	notifyState Connected
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	disconnect=1
 	NAME_TYPE
 	notifyACTION
 	btAction disconnect &> /dev/null
@@ -148,13 +144,10 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notifyState Forgotten
 	fi
-	btMixer
 fi
+blueAlsaMixer
 $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
 refreshPages
 [[ $connected ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
-
-[[ $retry ]] && trap - EXIT && sleep 10
-rm -f $file_flag
