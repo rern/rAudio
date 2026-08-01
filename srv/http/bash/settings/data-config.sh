@@ -71,26 +71,48 @@ i2slist )
 	;;
 lcdchar )
 	fileconf=$dirsystem/lcdchar.json
-	if [[ -e $fileconf ]]; then
-		values=$( < $fileconf )
-		current=$( jq -r .INF $fileconf )
-		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
-# --------------------------------------------------------------------
-	fi
-	val='{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"'
-	if [[ $2 == gpio ]]; then
-		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+	[[ -e $fileconf ]] && INF=$( jq -r .INF $fileconf )
+	if [[ $2 ]]; then
+		[[ $2 == $INF ]] && existing=1 || INF=$2
 	else
-		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": "", "CHIP": "PCF8574"'
+		[[ $INF ]] && existing=1 || INF=i2c
 	fi
-	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
-	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
-# --------------------------------------------------------------------
-	echo '{
-  "values"  : '$values'
-, "current" : "'$current'"
-, "address" : '$( i2cAddress )'
-}'
+	if [[ $INF == i2c ]]; then
+		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+		[[ $n ]] && hex=$( timeout 0.1 i2cdetect -y $n \
+							| awk 'NR>1 {for(i=2;i<=NF;i++) print $i}' \
+							| grep -E '^[0-9a-fA-F]{2}$' )
+		if [[ $hex ]]; then
+			for h in $hex; do
+				address+=', "0x'$h'": '$(( 16#$h ))
+			done
+			address="{ ${address:1} }"
+		else
+			address='{ "0x27": 39, "0x3f": 63 }'
+		fi
+		address=', "address" : '$address
+	fi
+	if [[ $existing ]]; then
+		values=$( < $fileconf )
+		if [[ $INF == i2c ]]; then
+			if [[ $hex ]]; then
+				H=$( printf '%x\n' $( jq -r .ADDRESS $fileconf ) )
+				for h in $hex; do
+					[[ $h == $H ]] && addr_ok=1 && break
+				done
+			fi
+			[[ ! $addr_ok ]] && values=$( jq '.ADDRESS = ""' <<< $values )
+		fi
+	else
+		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'
+		if [[ $INF == gpio ]]; then
+			values+=', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+		else
+			values+=', "ADDRESS": "39", "CHIP": "PCF8574", "BACKLIGHT": false'
+		fi
+		values+=', "BACKLIGHT": false }'
+	fi
+	echo '{ "values": '$values', "current": "'$INF'"'$address' }'
 	;;
 localbrowser )
 	echo '{
@@ -111,10 +133,9 @@ monitor )
 	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
-	opt=$( < /etc/default/mpd_oled )
-	[[ $opt == *-x* ]] && chip=$( sed -E 's/.*-x (.).*/\1/' <<< $opt ) || chip=6
-	[[ $opt == *-X* ]] && spectrum=false || spectrum=true
+	chip=$( mpdOledChip )
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
+	grep -q '\-X' /etc/default/mpd_oled && spectrum=false || spectrum=true
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;

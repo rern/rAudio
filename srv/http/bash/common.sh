@@ -182,15 +182,24 @@ countRadio() {
 	echo "$counts"
 }
 coverFileGet() {
-	local path coverfile
-	path=$1
-	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ ! $coverfile ]] && return
-#...............................................................................
-	[[ $2 ]] && echo $coverfile && return
-#...............................................................................
-	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
+	local coverfile dir file files name
+	dir=$1
+	shopt -s nullglob
+	for name in cover folder front album; do
+		files=( "$dir"/[${name:0:1}]"${name:1}".{jpg,png,gif,jpeg} )
+		(( ${#files[@]} )) && coverfile=${files[0]} && break
+	done
+	shopt -u nullglob
+	[[ $coverfile ]] && echo $coverfile && return
+	
+	files=$( mpc ls "${dir:9}" 2> /dev/null )
+	while read file; do
+		file="/mnt/MPD/$file"
+		if [[ -f "$file" ]]; then
+			coverfile=$( $dirbash/status -C "$file" )
+			[[ $coverfile ]] && echo $coverfile && return
+		fi
+	done <<< $files
 }
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
@@ -323,35 +332,13 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
-i2cAddress() {
-	n=$( compgen -G /dev/i2c* | cut -d- -f2 )
-	if [[ $n ]]; then
-		for d in $n; do
-			hex+=$( timeout 0.1 i2cdetect -y $n | sed -E 's/^\s.*|^.*: |(--|UU) *//g' ) # timeout - if unresponsive
-		done
-		[[ $1 ]] && echo $hex && return
-#...............................................................................
-		for h in $hex; do
-			address+=', "0x'$h'": '$(( 16#$h ))
-		done
-		echo "{ ${address:1} }"
-	else
-		echo '{ "0x27": 39, "0x3f": 63 }'
-	fi
-}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	if [[ $1 ]]; then
-		ip route show dev $( netDevice $1 ) | awk '/^default/ {print $7}' | head -1
-	elif [[ -e /boot/kernel/img ]]; then
-		ip route get 1.1.1.1 | awk '/src/ {print $7}' | head -1
-	else
-		$dirbash/status -I
-	fi
+	$dirbash/status -I $1
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
@@ -384,7 +371,7 @@ localBrowserOff() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
 logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
@@ -414,6 +401,13 @@ CMD ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
+}
+mpdOledChip() {
+	if grep -q '\-o ' /etc/default/mpd_oled; then
+		sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled
+	else
+		echo 6
+	fi
 }
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
@@ -473,16 +467,11 @@ EOF
 }
 pushDirCounts() {
 	local tf
-	[[ $( ls -d /mnt/MPD/${1^^}/*/ 2> /dev/null | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
+	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
 }
 pushNfsServer() {
-	local ip name status
-	name=$( hostname )
-	[[ -e $dirshm/startup ]] && status=Offline || status=Online
-	while read ip; do
-		pushWebsocket $ip nfsserver '{ "status": "'$status'", "name": "'$name'" }'
-	done < <( ipSharedData )
+	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
 pushRefresh() {
 	local page push
@@ -492,7 +481,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushStatus() {
-	$dirbash/status -p
+	$dirbash/status-push.sh
 }
 pushWebsocket() {
 	local data
@@ -674,11 +663,7 @@ volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
 volumeFunction() {
-	if [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
-		[[ -e $dirshm/mixerhardware ]] && echo volumeAmixer || echo volumeMpd
-	else
-		echo volumeBlueAlsa
-	fi
+	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
 }
 volumeGet() {
 	local args card db mixer mixertype name val val_db volume
@@ -735,7 +720,7 @@ volumeMpd() {
 volumeLimit() {
 	local fn_volume mixer val
 	val=$( getVar $1 $dirsystem/volumelimit.conf )
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btmixer ]]; then
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output

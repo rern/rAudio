@@ -427,17 +427,16 @@ W             = {  // from websocket.py (server)
 		}
 	}
 	, nfsserver : data => {
-		var online = data.status === 'Online';
-		if ( online ) {
+		if ( data.online ) {
 			COMMON.loaderHide();
 			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
 		} else {
 			COMMON.loader();
 		}
-		BANNER( 'nfsserver'+ ( online ? '' : ' blink' )
+		BANNER( 'nfsserver'+ ( data.online ? '' : ' blink' )
 			  , 'Server rAudio'
-			  , data.name +' - '+ data.status
-			  , online ? 9000 : -1
+			  , data.online ? 'Online' : 'Offline'
+			  , data.online ? 9000 : -1
 		);
 	}
 	, volume    : data => {

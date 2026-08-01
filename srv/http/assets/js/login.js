@@ -23,12 +23,10 @@ V.password  = V.type === 'password';
 
 if ( ! V.password ) $( '#message' ).remove();
 E.input.attr( 'spellcheck', 'false' );
-if ( V.type !== 'login' ) {
-	WS           = new WebSocket( 'ws://'+ location.host +':8080' );
-	WS.onopen    = () => WS.send( '{ "client": "add" }' );
-	WS.onmessage = message => {
-		if ( JSON.parse( message.data ).channel === 'reload' ) location.reload();
-	}
+WS           = new WebSocket( 'ws://'+ location.host +':8080' );
+WS.onopen    = () => WS.send( '{ "client": "add" }' );
+WS.onmessage = message => {
+	if ( JSON.parse( message.data ).channel === 'startup' ) location.reload();
 }
 if ( V.type === 'boot' ) { // boot
 	blink();

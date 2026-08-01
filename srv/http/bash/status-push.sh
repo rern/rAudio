@@ -4,6 +4,16 @@
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+argsSet() {
+	sed -n -E '/^(Artist|Title|Album)/ {
+		/^Artist/ i\cmd
+		/^Album/  a\CMD ARTIST TITLE ALBUM
+		s/.*="*//
+		s/ *"*$//
+		s/[`’]/'"'"'/g
+		p
+	}' $dirshm/status
+}
 onPlay() {
 	if [[ -e $dirsystem/stoptimer ]]; then
 		if [[ $state == play ]]; then
@@ -14,9 +24,6 @@ onPlay() {
 				rm $dirsystem/stoptimer
 				pushData refresh '{ "page": "features", "stoptimer": false }'
 			fi
-			pushStatus
-			exit
-# ------------------------------------------------------------------------------
 		fi
 	fi
 	if [[ ! -e /bin/firefox ]] \
@@ -37,13 +44,7 @@ onPlay() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-filter='{ Album,    Artist, Composer, Conductor, coverart, elapsed,   file,  icon,   player, pllength
-		, sampling, song,   station,  state,     Time,     timestamp, Title, volume, webradio }'
-if [[ $1 == playerstop ]]; then
-	status=$( $dirbash/status )
-	json2var "$( jq "$filter" <<< $status )" > $dirshm/status
-	state=stop
-elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
+if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
 	elapsed=$( mpcElapsed webradio )
 	pllength=$( mpc status %length% )
@@ -63,33 +64,37 @@ elif [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 , "Title"     : "'$TITLE'"
 , "webradio"  : true
 }'
-	[[ ! $COVERART ]] && $dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-CMD ARTIST ALBUM" &> /dev/null &
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
 	onPlay
 else
-#	grep -q '"state".*""' <<< $status && status=$( $dirbash/status ) && exit # fix: no state on start playing dsd from network (<rpi4)
 	$dirbash/status -k > $dirshm/status
-	grep -q Title=flac $dirshm/status&& exit
-# ------------------------------------------------------------------------------
-	. <( grep -E '^state|^webradio' $dirshm/status )
+	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
+	[[ $coverart ]] && COVERART=1
 	onPlay
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
 
+if [[ ! $COVERART ]]; then
+	args=$( argsSet )
+	$dirbash/status-coverart.sh "$args" &> /dev/null &
+fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
-[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
-[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
+if [[ -e $dirsystem/vumeter ]]; then
+	[[ $state != play ]] && pushData vumeter '{ "val": 0 }'
+	systemctl $start_stop cava
+fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	$dirbash/status -o > $dirshm/status.json
+	if [[ $status ]]; then
+		echo "$status" > $dirshm/status.json
+	else
+		$dirbash/status -o > $dirshm/status.json
+	fi
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
@@ -113,7 +118,5 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-CMD ARTIST TITLE"&> /dev/null &
+[[ ! $args ]] && args=$( argsSet )
+$dirbash/scrobble.sh "$args" &> /dev/null &

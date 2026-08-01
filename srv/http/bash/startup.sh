@@ -59,7 +59,7 @@ if [[ -d $dirbacklight ]]; then
 	fi
 fi
 
-mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+mkdir -p $dirshm/{airplay,embedded,spotify,online}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
 echo mpd > $dirshm/player
@@ -76,9 +76,15 @@ else # if no connections, start accesspoint
 		[[ $ipaddress ]] && break || sleep 1
 	done
 	if [[ $ipaddress ]]; then
-		grep -q /mnt/MPD/NAS /etc/fstab && mount -a &> /dev/null
+		while read dev; do
+			[[ $dev == /* ]] && ip=$( cut -d/ -f3 <<< $dev ) || ip=${dev/:*}
+			for i in 1 2 3; do
+				sleep 1
+				ipOnline $ip && mount "${dev//\040/ }" && break
+			done
+		done < <( awk '/.mnt.MPD.NAS/ {print $1}' /etc/fstab )
 		if [[ -e $filesharedip ]]; then
-			nfsServerActive && pushNfsServer
+			nfsServerActive && pushNfsServer true
 			appendSortUnique $filesharedip $ipaddress
 		fi
 	else
@@ -121,7 +127,7 @@ else
 fi
 
 touch $dirshm/startup
-[[ $expand ]] && pushData reload true
+pushData startup true
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play

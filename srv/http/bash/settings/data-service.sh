@@ -8,27 +8,26 @@ SERVICE=$1
 skip='register IPv6'
 
 configText() {
-	local config l lines linesL next
-	config="\
+	local l lines linesL next
+	conf="\
 <c>$( pacman -Q $PKG )</c>"
 	readarray -t lines < <( grep -Ev '^#|=$|^$' $1 | awk NF )
-	[[ ! $lines ]] && echo $config && return
+	[[ ! $lines ]] && echo $conf && return
 	
-	config+="
+	conf+="
 <bll># cat $1</bll>"
 	linesL=${#lines[@]}
 	for (( i=0; i < $linesL; i++ )); do # remove empty sections
 		l=${lines[i]}
 		next=${lines[i + 1]}
 		if [[ ${l:0:1} == [ ]]; then
-			[[ $next && ${next:0:1} != [ ]] && config+="
+			[[ $next && ${next:0:1} != [ ]] && conf+="
 $l"
 		else
-			config+="
+			conf+="
 $l"
 		fi
 	done
-	echo "$config"
 }
 
 case $CMD in
@@ -36,8 +35,7 @@ case $CMD in
 ap )
 	PKG=iwd
 	SERVICE=$PKG
-	conf="\
-$( configText /var/lib/iwd/ap/$( hostname ).ap )"
+	configText /var/lib/iwd/ap/$( hostname ).ap
 	if systemctl -q is-active iwd; then
 		cmd='iwctl ap list'
 		conf+="
@@ -55,12 +53,10 @@ $( eval $cmd )"
 	;;
 bluez )
 	SERVICE=bluetooth
-	conf="\
-$( configText /etc/bluetooth/main.conf )"
+	configText /etc/bluetooth/main.conf
 	;;
 camilladsp )
-	conf="\
-$( configText /etc/default/camilladsp )"
+	configText /etc/default/camilladsp
 	;;
 dabradio )
 	PKG=mediamtx
@@ -71,8 +67,7 @@ $( dabDevice )"
 	;;
 localbrowser )
 	PKG=firefox
-	conf="\
-$( configText $dirsystem/localbrowser.conf )"
+	configText $dirsystem/localbrowser.conf
 	skip+='|FATAL: Module g2d_23 not found|XKEYBOARD keymap|Could not resolve keysym|Errors from xkbcomp|Failed to connect to session manager'
 	;;
 mpd )
@@ -98,6 +93,7 @@ $conf"
 mpdoled )
 	PKG=mpd_oled
 	SERVICE=mpd_oled
+	configText /etc/default/mpd_oled
 	;;
 nfsserver )
 	SERVICE=nfs-server
@@ -120,15 +116,14 @@ shairportsync )
 	;;
 smb )
 	PKG=samba
-	conf="\
-$( configText /etc/samba/smb.conf | sed -e '/server/,/spool/ d' -e '/^\[global]/ a\	...' )"
+	configText /etc/samba/smb.conf
 	;;
 snapclient )
 	PKG=snapcast
-	conf="\
-$( configText /etc/default/snapclient )
+	configText /etc/default/snapclient
+	conf+='
 
-<bll># avahi-browse -kprt _snapcast._tcp</bll> <gr>(SnapServer list)</gr>"
+<bll># avahi-browse -kprt _snapcast._tcp</bll> <gr>(SnapServer list)</gr>'
 	if [[ -e $dirsystem/snapclientserver ]]; then
 		conf+='
 (SnapClient + SnapServer)'
@@ -145,8 +140,7 @@ $name_ip"
 	;;
 snapserver )
 	PKG=snapcast
-	conf="\
-$( configText /etc/snapserver.conf )"
+	configText /etc/snapserver.conf
 	;;
 spotifyd )
 	skip+='|No.*specified|no usable credentials'
@@ -161,8 +155,7 @@ vuled )
 
 esac
 
-[[ ! $conf ]] && conf="\
-$( configText /etc/$PKG.conf )"
+[[ ! $conf ]] && configText /etc/$PKG.conf
 status="\
 $( systemctl status $SERVICE \
 		| grep -E -v "$skip" \

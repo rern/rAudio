@@ -4,6 +4,26 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260801
+file=/etc/udev/rules.d/bluetooth.rules
+if grep -q connect $file; then
+	cat << 'EOF' > $file
+ACTION=="add|remove", \
+SUBSYSTEM=="bluetooth", \
+ENV{DEVTYPE}=="link", \
+RUN+="/srv/http/bash/settings/networks-bluetooth.sh $env{ACTION}"
+EOF
+	udevadm control --reload-rules && udevadm trigger
+fi
+
+[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
+file=/lib/systemd/system/mpd_oled.service
+if grep -q ^ExecStop $file; then
+	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
+	systemctl daemon-reload
+	systemctl try-restart mpd_oled
+fi
+
 # 20260719
 . $dirshm/output
 if [[ $mixertype == hardware ]]; then
@@ -46,17 +66,6 @@ if [[ -e $file ]]; then
 	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
 fi
 
-# 20260529
-if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-2' ]]; then
-	pacman -Sy --noconfirm mpd_oled
-	file=/etc/default/mpd_oled
-	if grep ' -X' $file; then
-		sed -i 's/ -X//' $file
-	else
-		sed -i 's/fifo"/fifo -X"/' $file
-	fi
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -94,6 +103,9 @@ fi
 rm -f $dirshm/system
 
 installfinish
+
+# 20260729
+systemctl try-restart rotaryencoder
 
 # 20260717
 file=$dirmpdconf/bluetooth.conf

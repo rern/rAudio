@@ -100,7 +100,10 @@ function renderPage() {
 		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +'</a>' : '';
 		if ( 'revision' in addon ) {
 			var revision = '<p class="revisiontext hide">';
-			addon.revision.forEach( el => revision += '<gr>•</gr> '+ el +'<br>' );
+			addon.revision.forEach( el => {
+				revision += el[ 0 ] === '-' ? '&emsp;&emsp;' : '<gr>•</gr> ';
+				revision += el +'<br>';
+			} );
 			revision    += '</p>';
 		} else {
 			var revision = '';

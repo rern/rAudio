@@ -23,7 +23,7 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	touch $dirshm/btonoff
+	touch $dirshm/btonboard
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		rm -f $dirsystem/btdisable
@@ -51,7 +51,7 @@ bluetooth )
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
-	rm $dirshm/btonoff
+	rm $dirshm/btonboard
 	pushRefresh
 	;;
 bluetoothstart )
@@ -222,15 +222,14 @@ mpdoled )
 	if [[ $ON ]]; then
 		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
-		[[ $CHIP != 6 ]] && opts+="-o $CHiP"
+		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
-		. <( cat /etc/default/mpd_oled )
+		. /etc/default/mpd_oled
 		[[ $OPTS != $opts ]] && echo 'OPTS="'$opts'"' > /etc/default/mpd_oled
-		x_z=-x
+		! grep -q ^play=true $dirshm/status && mpd_oled $opts -x # logo
 	else
-		x_z=-z
+		mpd_oled $opts -z # clear
 	fi
-	compgen -G /dev/i2c* &> /dev/null && timeout 1 mpd_oled $opts $x_z
 	fifoToggle
 	i2cset=1
 	configTxt

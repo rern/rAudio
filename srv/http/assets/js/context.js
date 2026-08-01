@@ -70,7 +70,7 @@ var CONTEXT  = {
 		} );
 	}
 	, current       : () => {
-		S.song = V.list.index;
+		S.position = V.list.index;
 		PLAYLIST.render.scroll();
 		LOCAL();
 		BASH( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );

@@ -1465,8 +1465,6 @@ var RENDER    = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
-		if ( LIST.equal( 'camilla' ) ) return
-		
 		var li = '';
 		S.ls.configs.forEach( f => {
 			var cls  = f === S.configname ? ' class="current"' : '';

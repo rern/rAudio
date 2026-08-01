@@ -9,12 +9,13 @@ if [[ $device == 'No supported devices '* ]]; then
 # --------------------------------------------------------------------
 fi
 
+mkdir -p $dirshm/dabradio
 systemctl start dab
 
 killsubs() {
 	kill $DABPID
 	kill $FFMPID
-	rm $MYPIPE $dirshm/webradio/DAB*
+	rm $MYPIPE $dirshm/dabradio/DAB*
 }
 trap killsubs SIGINT
 
@@ -23,10 +24,14 @@ mkfifo $MYPIPE
 
 pidof -q dab-rtlsdr-3 && sleep 4 # if another radio is playing, give time to stop
 
+channel_id=${2,,}_${1,,}
+file=$( find $dirdabradio -name *"|$channel_id" ) # .../rtsp:||$host:8554|$channel_id
+[[ $file ]] && head -1 "$file" > $dirshm/radio
+
 dab-rtlsdr-3 \
 	-S $1 \
 	-C $2 \
-	-i $dirshm/webradio \
+	-i $dirshm/dabradio \
 	> $MYPIPE &
 DABPID=$!
 

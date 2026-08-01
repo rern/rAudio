@@ -815,8 +815,6 @@ var UTIL          = {
 		, tab    : [ ICON( 'power' ) +' Sequence', ICON( 'tag' ) +' Pin - Name' ]
 	}
 	, renderStorage : () => {
-		if ( LIST.equal( 'storage' ) ) return
-		
 		var html = '';
 		S.list.storage.forEach( list => {
 			if ( list.mountpoint == '/mnt/NAS' ) return
@@ -1005,9 +1003,10 @@ $( '.img' ).on( 'click', function() {
 		return html
 	}
 	var name    = $( this ).data( 'name' );
+	var gpiopin = '<p class="gpiopins">';
 	var vcc1    = htmlLegend( 'ora', 'VCC', 1 );
 	var scasdl  = htmlLegend( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
-	var gnd     = '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ';
+	var gnd     = '<br><c>GND</c> : any black <span style="color: #000">●</span> pin';
 	var title   = {
 		  lcd           : [ 'TFT 3.5" LCD' ]
 		, lcdchar       : [ 'Character LCD' ]
@@ -1018,7 +1017,7 @@ $( '.img' ).on( 'click', function() {
 		, vuled         : [ 'VU LED',         'vuled' ]
 	}
 	var txt     = {
-		  lcdchar       : gnd 
+		  lcdchar       : gpiopin
 						+'<br>GPIO : '+ htmlLegend( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
@@ -1027,9 +1026,10 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
 						+ '<br>I²C'+ COMMON.sp( 21 ) +': '+ vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
+						+ gnd 
 						+'</p><br>'+ ICON( 'warning yl' ) +' I²C VCC - 5V to 3.3V modification'
 						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
-		, mpdoled       : gnd + vcc1
+		, mpdoled       : gpiopin
 						+ '<br>I²C:'+ scasdl
 						+ '<br>SPI:'+ htmlLegend( [
 								  [ 'grn', 'CLK', 23 ]
@@ -1037,10 +1037,16 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
-							] ) +'</p>'
+							] )
+						+ '<br>'+ vcc1
+						+ gnd
+						+'</p>'
 		, relays        : '<br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
-		, rotaryencoder : gnd +'<c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
-						  +'<br><c>+: not use</c></p>'
+		, rotaryencoder : gpiopin
+						 +'<br><c>CLK, DT, SW</c> : any green <grn>●</grn> pins'
+						 +'<br><c>+</c> : not use'
+						 + gnd
+						 +'</p>'
 	}
 	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;

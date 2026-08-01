@@ -23,10 +23,11 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
 		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
 		if [[ -e $dirsystem/mpdoled ]]; then
-			chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+			chip=$( mpdOledChip )
 			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
 		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
+		# $spimpdoled / $i2cmpdoled - from mpdoled )
 		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
 dtparam=i2c_arm=on'
 		[[ $i2cmpdoled ]] && config+="
@@ -60,7 +61,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
 	if [[ ! $reboot ]]; then
 		if ! cmp -s $tmp_config $file_config || ! cmp -s $tmp_cmdline $file_cmdline; then
 			reboot=1
-		else
+		elif [[ -e $tmp_module && -e $file_module ]]; then
 			count=$( ls $tmp_module $file_module | wc -l )
 			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi

@@ -37,7 +37,6 @@ $B->bluetooth$B->btsender Context menu
 	· On sender
 	
 Note:
- • rAudio as sender - Audio resampled to 16 bits 44100 Hz.
  • Forget / remove should be done on both rAudio and sender.
  • Non-audio devices should be able to pair as well.
 EOF

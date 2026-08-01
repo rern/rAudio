@@ -2,11 +2,16 @@
 
 . /srv/http/bash/common.sh
 
-[[ ! -e /tmp/cmdline.txt ]] && cp /boot/{cmdline,config}.txt /tmp
-
 mhz2ghz() {
 	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz
 }
+
+[[ ! -e /tmp/cmdline.txt ]] && cp /boot/{cmdline,config}.txt /tmp
+file_tmp=/tmp/raspberrypi.conf
+if [[ ! -e $file_tmp ]]; then
+	file_mod=/etc/modules-load.d/raspberrypi.conf
+	[[ -e $file_mod ]] && cp $file_mod $file_tmp || touch $file_tmp
+fi
 
 dot='<gr>·</gr>'
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values

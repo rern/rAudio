@@ -16,13 +16,12 @@ if [[ -e $filesharedip ]]; then
 		if [[ $( ipSharedData ) ]]; then
 			[[ ! $CONFIRM ]] && echo nfs && exit
 # --------------------------------------------------------------------
-			pushNfsServer
+			pushNfsServer false
 		fi
 	fi
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-logoLcdOled
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
 if [[ -e $dirmpdconf/snapserver.conf ]]; then
@@ -30,6 +29,7 @@ if [[ -e $dirmpdconf/snapserver.conf ]]; then
 else
 	$dirbash/cmd.sh playerstop
 fi
+logoLcdOled
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 [[ $cdda ]] && mpc -q del $cdda
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
@@ -41,7 +41,6 @@ else
 	audioCDplClear
 	pushData power '{ "type": "off" }'
 fi
-[[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null

@@ -156,12 +156,3 @@ if [[ $trackcd ]]; then
 fi
 $dirbash/cmd.sh playlistpush
 notify audiocd 'Audio CD' Ready
-if [[ ! $album ]]; then
-	line=$( head -1 $diraudiocd/$discid )
-	artist=${line/^*}
-	album=$( cut -d^ -f2 <<< $line )
-fi
-$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-CMD ARTIST ALBUM" &> /dev/null &

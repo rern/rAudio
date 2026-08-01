@@ -1,168 +1,154 @@
 #!/bin/bash
 
-# Pair: trust > pair > get sink_source > disconnect > delay > connect
-#   (delay - connect right after paired > mixer not yet ready)
-# Connect: trust > connect > get sink_source
-# Disconnect / Remove: disconnect
-
-[[ -e /dev/shm/bluetooth_rules || -e $dirshm/btonoff ]] && exit # debounce bluetooth.rules
-# --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-touch $dirshm/bluetooth_rules
-( sleep 5; rm -f $dirshm/bluetooth_rules ) &
-
-args2var "$1"
-
-if [[ $CMD != cmd ]]; then
-	udev=1
-	ACTION=$1
-fi
-type=btreceiver
-
-disconnectRemove() {
-	local file_config file_default line type name
-	line=$( grep ^$MAC $dirshm/btconnected )
-	type=$( cut -d' ' -f2 <<< $line )
-	name=$( cut -d' ' -f3- <<< $line )
-	sed -i "/^$MAC/ d" $dirshm/btconnected
-	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
-	rm -f $dirshm/$type
-	[[ $type == btreceiver ]] && rm -f $dirshm/{btmixer,btname}
+blueAlsaMixer() {
+	rm -f $dirshm/btmixer
+	[[ $ACTION != connect ]] && return
+#...............................................................................
+	for i in {1..3}; do
+		sleep 1
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		[[ $btmixer ]] && break
+	done
+	if [[ $btmixer ]]; then
+		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
+		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+	elif [[ ! $retry ]]; then # some might be broken on 1st connect
+		notify "$TYPE blink" "$NAME" 'Mixer ...'
+		retry=1
+		connected=
+		touch $dirshm/btretry
+		btAction disconnect
+		btConnect
+	else
+		notifyState 'Failed: Mixer'
+		exit
+# ------------------------------------------------------------------------------
+	fi
+}
+btAction() {
+	bluetoothctl $1 $MAC
+}
+btConnect() {
+	btAction connect
+	for i in {1..5}; do
+		sleep 1
+		btInfo Connected && connected=1 && break
+	done
+	[[ ! $connected ]] && notifyState 'Connect failed' && exit
+# ------------------------------------------------------------------------------
+	if [[ $TYPE == bluetooth ]]; then # non-audio
+		notifyState Ready
+		pushRefresh networks
+		exit
+# ------------------------------------------------------------------------------
+	fi
+	[[ $retry ]] && blueAlsaMixer || notifyState Connected
+}
+btConnected() {
+	bluetoothctl devices Connected | sort
+}
+btInfo() {
+	local regex
+	regex=$1:
+	[[ ${1:0:1} != U ]] && regex+=' yes'
+	btAction info | grep -q -m1 "$regex" && return 0
+}
+NAME_TYPE() {
+	alias=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	[[ $alias ]] && NAME=$alias
+	sink_source=$( btAction info | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
+	[[ ! $sink_source ]] && return
+	
+	[[ $sink_source == Sink ]] && TYPE=btreceiver || TYPE=btsender
+}
+notifyACTION() {
+	notify "$TYPE blink" "$NAME" "${ACTION^} ..."
+}
+notifyState() {
+	notify $TYPE "$NAME" "$1"
+}
+refreshPages() {
+	pushRefresh networks
+	pushRefresh system
+	btConnected > $dirshm/Connected
+	[[ ! -e $dirsystem/camilladsp ]] && return
+#...............................................................................
+	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $TYPE $MAC && return
+#...............................................................................
 	file_default=/etc/default/camilladsp
 	getVar CONFIG $file_default > $dircamilladsp/$MAC
 	file_config=$( < $dircamilladsp/file_config )
 	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
-	notify "$type blink" "$name" "${ACTION^} ..."
-	$dirbash/cmd.sh playerstop
-	$dirsettings/player-conf.sh
-	refreshPages
 }
-refreshPages() {
-	sleep 2
-	pushRefresh networks
-	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
-	pushRefresh system
-}
-########################################################################################################
-# from bluetooth.rules: disconnect from paired device - no MAC
-if [[ $udev && $ACTION == disconnect ]]; then
-	sleep 2
-	lines=$( < $dirshm/btconnected )
-	while read line; do
-		MAC=${line/ *}
-		bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && MAC= || break
-	done <<< $lines
-	[[ $MAC ]] && disconnectRemove
-	exit
-# --------------------------------------------------------------------
-fi
-########################################################################################################
-# from bluetooth.rules: 1. connect from paired device, 2. pair from sender
-if [[ $udev && $ACTION == connect ]]; then
-	sleep 2
-	lines=$( bluetoothctl devices | cut -d' ' -f2 )
-	if [[ $lines ]]; then
-		while read MAC; do
-			if bluetoothctl info $MAC | grep -q -m1 'Connected: yes'; then
-				grep -qs -m1 ^$MAC $dirshm/btconnected && MAC= || break
-			fi
-		done <<< $lines
+
+args2var "$1"
+
+TYPE=bluetooth
+NAME=Bluetooth
+
+if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
+	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
+		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
+		exit
+# ------------------------------------------------------------------------------
 	fi
-	[[ $MAC ]] && name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ ! $name ]] && name=Bluetooth
-	msg='Connect ...'
-	# fix: rAudio triggered to connect by unpaired sender on boot
-	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-	if [[ ! -e /var/lib/bluetooth/$controller/$MAC ]]; then
-		for i in {1..5}; do
-			! bluetoothctl info $MAC | grep -q -m1 'UUID:' && sleep 1 || break
-		done
-		bluetoothctl info $MAC | grep -q -m1 'UUID: Audio Source' && msg='Pair ...' || exit
-# --------------------------------------------------------------------
+	ACTION=$1 # for notify only
+	notifyACTION
+	prev=$( cat $dirshm/Connected 2> /dev/null )
+	for i in {1..5}; do
+		sleep 1
+		Connected=$( btConnected )
+		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+		[[ $d ]] && break
+	done
+	if [[ $d ]]; then
+		[[ $ACTION == connect ]] && connected=1
+		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
+		NAME_TYPE
 	fi
-#-----
-	notify "$type blink" "$name" "$msg"
-	if (( $( bluetoothctl info $MAC | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
-		ACTION=connect
-	else
-		sleep 2
-		ACTION=pair
-		bluetoothctl agent NoInputNoOutput
-	fi
-fi
-########################################################################################################
-# 1. continue from [[ $udev && $ACTION == connect ]], 2. from rAudio networks.js
-if [[ $ACTION == connect || $ACTION == pair ]]; then
-	bluetoothctl trust $MAC # always trusr + pair to ensure proper connecting process
-	bluetoothctl pair $MAC
-	name=$( bluetoothctl info $MAC | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ ! $name ]] && name=Bluetooth
+	notifyState "${ACTION^}ed"
+elif [[ $ACTION == connect || $ACTION == pair ]]; then
+	NAME_TYPE
 	if [[ $ACTION == pair ]]; then
+		bluetoothctl agent NoInputNoOutput # force no credential
+		notifyACTION
+		btAction pair
 		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Paired: no' && sleep 1 || break
+			sleep 1
+			btInfo Paired && paired=1 && break
 		done
-		bluetoothctl info $MAC | grep -q -m1 'Paired: no' && notify $type "$name" 'Pair failed.' && exit
-# --------------------------------------------------------------------
-		bluetoothctl disconnect $MAC
-#-----
-		notify $type "$name" 'Paired successfully.'
-		sleep 3
-#-----
-		notify "$type blink" "$name" 'Connect ...'
+		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
+# ------------------------------------------------------------------------------
 	fi
-	bluetoothctl info $MAC | grep -q -m1 'Connected: no' && bluetoothctl connect $MAC
-	for i in {1..5}; do
-		! bluetoothctl info $MAC | grep -q -m1 'UUID:' && sleep 1 || break
-	done
-	sink_source=$( bluetoothctl info $MAC | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
-	if [[ ! $sink_source ]]; then
-##### non-audio
-		echo $MAC bluetooth $name >> $dirshm/btconnected
-		refreshPages
-		exit
-# --------------------------------------------------------------------
-	fi
-	for i in {1..5}; do
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
-		[[ ! $btmixer ]] && sleep 1 || break
-	done
-	if [[ ! $btmixer && $ACTION == connect ]]; then
-		bluetoothctl disconnect $MAC
-		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
-		exit
-# --------------------------------------------------------------------
-	fi
-	[[ $sink_source == Source ]] && type=btsender
-	echo $MAC > $dirshm/$type
-	if [[ $type == btreceiver ]]; then
-		sed 's/ *-* A2DP$//' <<< $name > $dirshm/btname
-		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-		btmixer=$( cut -d"'" -f2 <<< $btmixer )
-		echo $btmixer > $dirshm/btmixer
-		$dirbash/cmd.sh playerstop
-		$dirsettings/player-conf.sh
-		grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
-	fi
-	appendSortUnique $dirshm/btconnected $MAC $type $name
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
-#-----
-	refreshPages
-########################################################################################################
-# from rAudio networks.js - with MAC
+	! btInfo Trusted && btAction trust
+	notifyACTION
+	btConnect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	bluetoothctl disconnect $MAC &> /dev/null
+	NAME_TYPE
+	notifyACTION
+	btAction disconnect &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
-			bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && sleep 1 || break
+			sleep 1
+			! btInfo Connected && break
 		done
+		notifyState Disconnected
 	else
-		bluetoothctl untrust $MAC &> /dev/null
-		bluetoothctl remove $MAC &> /dev/null
+		btAction remove &> /dev/null
 		for i in {1..5}; do
-			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-			[[ -e /var/lib/bluetooth/$controller/$MAC ]] && sleep 1 || break
+			sleep 1
+			! bluetoothctl devices | grep -q $MAC && break
 		done
+		notifyState Forgotten
 	fi
-	disconnectRemove
+fi
+blueAlsaMixer
+$dirbash/cmd.sh playerstop
+$dirsettings/player-conf.sh
+[[ $connected ]] && notifyState Ready
+refreshPages
+if [[ $connected ]]; then
+	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
 fi

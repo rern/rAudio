@@ -29,7 +29,8 @@ bluetooth )
 	statusCmd 'bluetoothctl show'
 	;;
 btreceiver )
-	statusCmd 'bluealsa-aplay -L'
+	pcm=$( bluealsa-cli list-pcms )
+	statusCmd "bluealsa-cli info $pcm"
 	;;
 btsender )
 	statusCmd 'amixer -MD bluealsa'
@@ -130,6 +131,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
+	[[ -e $dirshm/btmixer ]] && echo; statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;
@@ -162,24 +164,29 @@ $mntusb"
 	;;
 system )
 	statusCmd 'cat /boot/cmdline.txt'
-	echo "
+	data="
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )"
 	cmd="grep '^IgnorePkg *= *[a-z]' /etc/pacman.conf"
 	ignorepkg=$( eval $cmd )
-	[[ $ignorepkg ]] && echo "
+	[[ $ignorepkg ]] && data+="
+
 <bll># $cmd</bll>
 $ignorepkg"
 	filemodule=/etc/modules-load.d/raspberrypi.conf
 	module=$( grep -v snd-bcm2835 $filemodule )
 	if [[ $module ]]; then
-		echo "
-<bll># cat $filemodule</bll>
-$module
+		data+="
 
-<bll># i2cdetect -y N</bll>
-$( i2cAddress list )"
+<bll># cat $filemodule</bll>
+$module"
+		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
+		[[ $n ]] && data+="
+		
+<bll># i2cdetect -y $n</bll>
+$( timeout 0.1 i2cdetect -y $n )"
 	fi
+	echo "$data"
 	;;
 timezone )
 	statusCmd timedatectl

@@ -130,11 +130,11 @@ $( jq -r .albumTitle <<< $track )"
 		if [[ $coverurl ]]; then
 			name=$( alphaNumeric $artist$title )
 			ext=${coverurl/*.}
-			coverfile=$dirshm/webradio/$name.$ext
+			coverfile=$dirshm/online/$name.$ext
 			curl -s $coverurl -o $coverfile
 		else
 			name=$( alphaNumeric $artist$album )
-			coverfile=$( ls -X $dirshm/webradio/$name.{jpg,png} 2> /dev/null | head -1 )
+			coverfile=$( compgen -G $dirshm/online/$name.{jpg,png} )
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=

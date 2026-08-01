@@ -53,32 +53,12 @@ while read mpdpath; do
 	echo $i/$count $( tagColor $mpdpath )
 
 	dir="/mnt/MPD/$mpdpath"
-	if [[ ! $overwrite ]] && ls "$dir/coverart".* &> /dev/null; then
+	if [[ ! $overwrite ]] && compgen -G "$dir/coverart".*; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
 
-	for name in cover folder front album; do # file
-		for ext in jpg png gif; do
-			coverfile="$dir/$name.$ext"
-			[[ -e $coverfile ]] && break 2
-			coverfile="$dir/${name^}.$ext" # capitalize
-			[[ -e $coverfile ]] && break 2
-		done
-		coverfile=
-	done
-	if [[ ! $coverfile ]]; then # embedded
-		files=$( mpc ls "$mpdpath" 2> /dev/null )
-		while read file; do
-			file="/mnt/MPD/$file"
-			if [[ -f "$file" ]]; then
-				coverfile="$dir/cover.jpg"
-				kid3-cli -c "select \"$file\"" -c "get picture:\"$coverfile\"" &> /dev/null
-				[[ ! -e $coverfile ]] && coverfile=
-				break
-			fi
-		done <<< $files
-	fi
+	coverfile=$( coverFileGet "$mpdpath" )
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}

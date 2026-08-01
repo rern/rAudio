@@ -117,9 +117,5 @@ mixertype=$MIXERTYPE
 EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
-rm -f $dirshm/{mixerhardware,mixernone}
-if [[ $MIXERTYPE == hardware ]]; then
-	touch $dirshm/mixerhardware
-elif [[ $MIXERTYPE == none ]]; then
-	touch $dirsystem/mixernone
-fi
+file=$dirsystem/mixernone
+[[ $MIXERTYPE == none ]] && touch $file || rm -f $file

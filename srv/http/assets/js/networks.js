@@ -196,8 +196,6 @@ var EDIT   = {
 }
 var RENDER = {
 	  bluetooth : () => {
-		if ( LIST.equal( 'bluetooth' ) ) return
-		
 		var html  = '';
 		var cls;
 		if ( S.list.bluetooth ) {
@@ -223,8 +221,6 @@ var RENDER = {
 	}
 	, raquo     : '&ensp;&raquo;&ensp;'
 	, wlan      : () => {
-		if ( LIST.equal( 'wlan' ) ) return
-		
 		var html = '';
 		if ( S.ap ) {
 			html +=  '<li class="wl ap" data-id="ap">'

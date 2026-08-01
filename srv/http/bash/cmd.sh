@@ -18,6 +18,16 @@ albumthumbnail )
 	echo $DIR > $dirshm/dir
 	[[ $OVERWRITE ]] && touch $dirshm/overwrite
 	;;
+bioimage )
+	data=$( curl -sfG -m 5 \
+				--data "api_key=06f56465de874e4c75a2e9f0cc284fa3" \
+				https://webservice.fanart.tv/v3.2/music/$MBID )
+	if [[ $data ]]; then
+		jq '{musicbanner,artistthumb}' <<< $data
+	else
+		echo '{"error":"Artist not found"}'
+	fi
+	;;
 bookmarkadd )
 	file_bk="$dirbookmarks/${NAME//\//|}"
 	[[ -e $file_bk ]] && echo -1 && exit
@@ -27,8 +37,8 @@ bookmarkadd )
 	[[ NSU == *${DIR:0:1}* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
 	dir="/mnt/MPD/$DIR"
-	if [[ -d $dir  ]] && ! ls "$dir/coverart".* 2> /dev/null; then
-		target=$( coverFileGet "$dir" raw )
+	if [[ -d $dir  ]] && ! compgen -G "$dir/coverart".*; then
+		target=$( coverFileGet "$dir" )
 		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
 $target
 CMD TARGET"
@@ -109,13 +119,6 @@ s/(--ml$m *: ).*/\1$L%;/"
 countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
-	;;
-coverfileslimit )
-	for type in local online webradio; do
-		ls -t $dirshm/$type/* 2> /dev/null \
-			| tail -n +10 \
-			| xargs rm -f --
-	done
 	;;
 dirdelete )
 	dir="$DIR/$NAME"
@@ -545,7 +548,7 @@ snapserverlist )
 	snapserverList
 	;;
 titlewithparen )
-	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
+	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
 upnpstart )
 	echo upnp > $dirshm/player

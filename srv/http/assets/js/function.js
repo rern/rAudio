@@ -107,36 +107,30 @@ var BIO       = {
 				$( '#bio' )
 					.removeClass( 'hide' )
 					.scrollTop( 0 );
-				$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
-					if ( 'error message' in data ) {
+				COMMON.loaderHide();
+				$( '#bio .container' ).trigger( 'focus' );
+				if ( ! data.mbid ) return
+				
+				BASH( [ 'bioimage', data.mbid, 'CMD MBID' ], data => {
+					if ( 'error' in data ) {
 						BIO.image();
 						return
 					}
 					
-					if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 					var imageshtml = '';
-					if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
+					if ( data.artistthumb && data.artistthumb[ 0 ].url ) {
 						data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
 					}
 					BIO.image( imageshtml )
 					$( '#bio' ).scrollTop( 0 );
-				} ).fail( function() { // 404 not found
-					BIO.image();
-				} );
-				$( '#bio .container' ).trigger( 'focus' );
+				}, 'json' );
 			} );
 		} );
 	}
 	, image : imageshtml => {
 		var $artist    = $( '#biocontent .artist' );
-		if ( ! imageshtml ) {
-			if ( $artist.text() !== S.Artist || ! S.coverart ) {
-				COMMON.loaderHide();
-				return
-			}
-			
-			imageshtml = '<a><img src="'+ S.coverart +'"></a>';
-		}
+		if ( ! imageshtml ) imageshtml = '<a><img src="'+ S.coverart +'"></a>';
 		$artist
 			.before( '<div id="bioimg">'+ imageshtml +'</div>' )
 			.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
@@ -495,7 +489,7 @@ var DISPLAY   = {
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', S.webradio );
 		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
+		$( '#'+ S.state ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
 	}
@@ -900,7 +894,7 @@ var FILEIMAGE = {
 				.then( response => response.json() ) // set response data as json > animated
 				.then( animated => { // 0 / 1
 					if ( animated ) {
-						I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+						I.infofilegif = '/srv/http/data/shm/tmp.gif';
 						var img    = new Image();
 						img.src    = URL.createObjectURL( I.infofile );
 						img.onload = function() {
@@ -1607,28 +1601,24 @@ var PLAYBACK  = {
 				, Title  : $( '#title' ).text()
 				, Album  : $( '#album' ).text()
 			}
-			if ( S.webradio ) {
-				var url = S.file.replace( /#charset=.*/, '' );
-				if ( S.play ) {
-					$( '#artist' ).text( S.Artist || S.station );
-					$( '#title' ).html( S.Title || V.blinkdot );
-					$( '#album' ).text( S.Album || url );
-				} else {
-					$( '#artist' ).text( S.station );
-					$( '#title' ).html( V.dots );
-					$( '#album' ).text( url );
-				}
-			} else {
-				$( '#artist' ).html( S.Artist || V.dots );
-				$( '#title' )
-					.html( S.Title || V.dots )
-					.toggleClass( 'gr', S.pause );
-				var album = S.Album || S.file;
-				if ( S.booklet ) album += ' '+ ICON( 'booklet gr' );
-				$( '#album' ).html( album );
-				$( '#composer' ).text( S.Composer );
-				$( '#conductor' ).text( S.Conductor );
+			$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
+			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
+			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
+			var artist = S.Artist;
+			var title  = S.Title;
+			var album  = S.Album;
+			if ( ! S.Artist && ! S.Title ) {
+				if ( S.webradio ) artist = S.station;
+				if ( ! S.Album ) album = S.file;
 			}
+			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
+			$( '#artist' ).html( artist || V.dots );
+			$( '#title' )
+				.html( title || V.dots )
+				.toggleClass( 'gr', S.pause );
+			$( '#album' ).html( album || V.dots );
+			$( '#composer' ).text( S.Composer );
+			$( '#conductor' ).text( S.Conductor );
 			$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
 			$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
 			var current = {
@@ -1639,11 +1629,8 @@ var PLAYBACK  = {
 			var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
 				return prev[ k ] !== current[ k ]
 			} );
-			$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
-			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
-			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 			if ( changed ) PLAYBACK.info.scroll();
-			$( '#sampling' ).html( S.position + S.sampling );
+			$( '#sampling' ).html( S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
 					$( '#playericon' )
@@ -2114,7 +2101,7 @@ var PLAYLIST  = {
 			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
-				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
+				|| ( S.icon == 'audiocd' && $( '#pl-list li' ).length < S.position + 1 ) // on eject cd S.position not yet refreshed
 			) {
 				return
 			}
@@ -2122,7 +2109,7 @@ var PLAYLIST  = {
 			var litop     = UTIL.barVisible( 80, 40 );
 			$( '#menu-plaction' ).addClass( 'hide' );
 			$( '#pl-list li' ).removeClass( 'active pause play updn' );
-			var $liactive = $( '#pl-list li' ).eq( S.song );
+			var $liactive = $( '#pl-list li' ).eq( S.position );
 			$liactive.addClass( 'active' );
 			if ( ! $( '.pl-remove' ).length && ! I.active ) {
 				if ( $( '#pl-list li' ).length < 5 ) {
@@ -2223,7 +2210,7 @@ var PLAYLIST  = {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
-		BASH( [ 'mpcskip', S.song + 1, S.state, 'CMD POS ACTION' ] );
+		BASH( [ 'mpcskip', S.position + 1, S.state, 'CMD POS ACTION' ] );
 	}
 }
 var PROGRESS  = {
