@@ -15,7 +15,7 @@ blueAlsaMixer() {
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
 	elif [[ ! $retry ]]; then # some might be broken on 1st connect
-		notify "$TYPE blink" "$NAME" 'Mixer setup ...'
+		notify "$TYPE blink" "$NAME" 'Mixer ...'
 		retry=1
 		connected=
 		touch $dirshm/btretry
