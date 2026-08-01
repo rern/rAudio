@@ -89,9 +89,9 @@ TYPE=bluetooth
 NAME=Bluetooth
 
 if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
-	if [[ -e $dirshm/btretry || -e $dirshm/btsetup ]]; then
+	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
 		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
-		exit # onboard toggle
+		exit
 # ------------------------------------------------------------------------------
 	fi
 	ACTION=$1 # for notify only

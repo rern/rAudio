@@ -161,7 +161,7 @@ fi
 
 pushStatus
 pushRefresh player
-if [[ ! -e $dirshm/btsetup ]]; then
+if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 fi

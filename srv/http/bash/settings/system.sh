@@ -23,7 +23,7 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	touch $dirshm/btsetup
+	touch $dirshm/btonboard
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		rm -f $dirsystem/btdisable
@@ -51,7 +51,7 @@ bluetooth )
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
-	rm $dirshm/btsetup
+	rm $dirshm/btonboard
 	pushRefresh
 	;;
 bluetoothstart )
