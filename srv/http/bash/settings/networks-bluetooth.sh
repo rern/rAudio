@@ -19,7 +19,6 @@ blueAlsaMixer() {
 		retry=1
 		connected=
 		touch $dirshm/btsetup
-		( sleep 15; rm -f $dirshm/btsetup ) &
 		btAction disconnect
 		btConnect
 	else
@@ -90,7 +89,7 @@ TYPE=bluetooth
 NAME=Bluetooth
 
 if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
-	[[ -e $dirshm/btsetup ]] && exit # debounce / suppress onboard toggle
+	[[ -e $dirshm/btsetup ]] && exit # suppress retry / onboard toggle
 # ------------------------------------------------------------------------------
 	ACTION=$1 # for notify only
 	notifyACTION
@@ -147,4 +146,10 @@ $dirbash/cmd.sh playerstop
 $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
 refreshPages
-[[ $connected ]] && grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+if [[ $connected ]]; then
+	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+fi
+if [[ $retry ]]; then
+	sleep 20
+	rm -f $dirshm/btsetup
+fi
