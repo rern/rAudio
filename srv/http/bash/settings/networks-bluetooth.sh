@@ -96,10 +96,18 @@ if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, no
 	fi
 	ACTION=$1 # for notify only
 	notifyACTION
-	sleep 1 # wait for bluealsa
-	line=$( journalctl -u bluealsa -n 1 --no-pager -g storage.*bluealsa ) && MAC=${line/*\//} && NAME_TYPE
-	# storage.c:123: <Loading|Saving> storage: /var/lib/bluealsa/54:84:50:9A:F6:C2
-	notifyState "${ACTION^}ed"
+	prev=$( cat $dirshm/Connected 2> /dev/null )
+	for i in {1..5}; do
+		sleep 1
+		Connected=$( btConnected )
+		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+		[[ $d ]] && break
+	done
+	if [[ $d ]]; then
+		[[ $ACTION == connect ]] && connected=1
+		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
+		NAME_TYPE
+	fi	notifyState "${ACTION^}ed"
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	NAME_TYPE
 	if [[ $ACTION == pair ]]; then
