@@ -37,7 +37,7 @@ bookmarkadd )
 	[[ NSU == *${DIR:0:1}* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
 	dir="/mnt/MPD/$DIR"
-	if [[ -d $dir  ]] && ! compgen -G "$dir/coverart".*; then
+	if [[ -d $dir && ! $( compgen -G "$dir/coverart".* ) ]]; then
 		target=$( coverFileGet "$dir" )
 		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
 $target
