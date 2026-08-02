@@ -28,7 +28,12 @@ getCoverart() {
 	fi
 }
 
-[[ $ALBUM ]] && name="$ARTIST$ALBUM" || name="$ARTIST$TITLE"
+if [[ $ALBUM ]]; then
+	name="$ARTIST$ALBUM"
+else
+	TITLE=${TITLE/ \[*} # remove bracket - Title [...]
+	name="$ARTIST$TITLE"
+fi
 name=$( alphaNumeric $name )
 file=$( compgen -G $dirshm/online/$name.* )
 [[ -e $file ]] && pushData cover '{ "cover": "'${file:9}'" }' && exit
@@ -43,7 +48,7 @@ fi
 ### 1 - ws.audioscrobbler.com #####################################
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 getCoverart "$param" "$method"
-if [[ ! $URL && ! $ALBUM && $TITLE == *')' ]]; then # try with no last parenthesis
+if [[ ! $URL && ! $ALBUM && $TITLE == *')' ]]; then # try no last parenthesis - Title (...)
 	title=$( sed 's/ ([^)]*)$//' <<< $TITLE )
 	param="track=${title//&/ and }"
 	getCoverart "$param" "$method"

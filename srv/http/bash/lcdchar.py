@@ -146,9 +146,17 @@ for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
         STATUS[ k ] = ''
 locals().update( STATUS )
 
-if not Artist and not Title:
-    if webradio: Artist = station
-    if not Album: Album = file
+if webradio:
+    if not Artist:
+        Artist = station
+    if not Album:
+        if state == 'play' and Artist:
+            Album = station
+        else:
+            Album = file
+else if not Artist and not Title:
+    Artist   = os.path.basename( os.path.dirname( file ) )
+    Title, _ = os.path.splitext( file )
     
 if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS

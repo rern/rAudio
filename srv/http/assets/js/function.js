@@ -1607,9 +1607,14 @@ var PLAYBACK  = {
 			var artist = S.Artist;
 			var title  = S.Title;
 			var album  = S.Album;
-			if ( ! S.Artist && ! S.Title ) {
-				if ( S.webradio ) artist = S.station;
-				if ( ! S.Album ) album = S.file;
+			if ( S.webradio ) {
+				if ( ! artist ) artist = S.station;
+				if ( ! album )  album  = S.play && S.Artist ? S.station : S.file;
+			} else if ( ! artist || ! title ) {
+				var path = S.file.split( '/' );
+				var file = path.pop();
+				if ( ! artist ) artist = path.pop();
+				if ( ! title )  title  = file.replace( /\.[^/.]+$/, '' );
 			}
 			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
 			$( '#artist' ).html( artist || V.dots );
