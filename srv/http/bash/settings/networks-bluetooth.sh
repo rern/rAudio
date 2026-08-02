@@ -107,7 +107,8 @@ if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, no
 		[[ $ACTION == connect ]] && connected=1
 		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		NAME_TYPE
-	fi	notifyState "${ACTION^}ed"
+	fi
+	notifyState "${ACTION^}ed"
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	NAME_TYPE
 	if [[ $ACTION == pair ]]; then
