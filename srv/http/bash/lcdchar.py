@@ -154,7 +154,7 @@ if webradio:
             Album = station
         else:
             Album = file
-else if not Artist and not Title:
+elif not Artist and not Title:
     Artist   = os.path.basename( os.path.dirname( file ) )
     Title, _ = os.path.splitext( file )
     
