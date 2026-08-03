@@ -1729,12 +1729,12 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 				REFRESHDATA();                                                    // - refresh data
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
+				var channel = json.channel;
 				if ( V.websocket ) console.log( json );
-				if ( json.channel === 'startup' ) return
+				if ( channel === 'startup' ) return
 				
 				if ( 'page' in json.data && json.data.page !== S.page ) return    // settings
 
-				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
 			}
