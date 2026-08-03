@@ -268,6 +268,9 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
 }
+fileExist() {
+	compgen -G "$1" > /dev/null && return 0
+}
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
 	systemctl daemon-reload

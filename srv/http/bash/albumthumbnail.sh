@@ -53,7 +53,7 @@ while read mpdpath; do
 	echo $i/$count $( tagColor $mpdpath )
 
 	dir="/mnt/MPD/$mpdpath"
-	if [[ ! $overwrite && $( compgen -G "$dir/coverart".* ) ]]; then
+	if [[ ! $overwrite ]] && fileExist "$dir/coverart.*" then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
