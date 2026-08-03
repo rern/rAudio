@@ -137,30 +137,28 @@ def second2hhmmss( sec ):
     return HH + MM + SS
 
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
-for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
-    if k in STATUS:
-        v = STATUS[ k ] or DOTS
-        if cmA00: STATUS[ k ] = normalize( v ) # character: accent with sequence code > single code
-        STATUS[ k ] = v[ :COLS ]               # set width
-    else:
-        STATUS[ k ] = ''
+for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # [ 'elapsed', 'Time', 'webradio' ] - no trim
+    v = STATUS[ k ]
+    if v:
+        if cmA00: v = normalize( v )
+        v = v[ :COLS ]
+    STATUS[ k ] = v
 locals().update( STATUS )
 
 if webradio:
-    if not Artist:
-        Artist = station
-    if not Album:
-        if state == 'play' and Artist:
-            Album = station
-        else:
-            Album = file
-elif not Artist and not Title:
-    Artist   = os.path.basename( os.path.dirname( file ) )
-    Title, _ = os.path.splitext( file )
+    if not Artist: Artist = station
+    if not Album:  Album  = file
+elif not Title or not Album:
+    from pathlib import Path
     
+    path = Path( file )
+    if not Title: Title = path_obj.stem        # filename
+    if not Album: Album = path_obj.parent.name # dir
+        
 if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS
 if not Album:  Album  = DOTS
+
 if rows == 2:
     if state == 'play': lines = Title
 else:
@@ -171,7 +169,7 @@ hhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 if state == 'stop':
     progress = ( hhmmss + ' ' * COLS )[ :COLS - 4 ]
 else:
-    if elapsed is False: # can be 0
+    if elapsed == 0:
         elapsedhhmmss = ''
         slash         = ''
     else:
@@ -185,7 +183,7 @@ lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
 if BACKLIGHT and state != 'play': backlightOff()
 
-if state != 'play' or elapsed is False: sys.exit()
+if state != 'play' or elapsed == 0: sys.exit()
 # --------------------------------------------------------------------
 row       = rows - 1
 starttime = time.time()

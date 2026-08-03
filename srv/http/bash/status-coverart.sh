@@ -70,6 +70,7 @@ cover=$dirshm/online/$name.$ext
 curl -sfL $URL -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
 pushData cover '{ "cover": "'$cover'" }'
+sed -i -E "s|^(coverart=).*|\1$cover|" $dirshm/status
 ls -t $dirshm/online/* \
 	| tail -n +10 \
 	| xargs rm -f --

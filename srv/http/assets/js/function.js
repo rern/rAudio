@@ -1601,27 +1601,22 @@ var PLAYBACK  = {
 				, Title  : $( '#title' ).text()
 				, Album  : $( '#album' ).text()
 			}
-			$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
-			$( '#title' ).toggleClass( 'disabled', S.Title === '' );
-			$( '#album' ).toggleClass( 'disabled', S.Album === '' );
+			if ( S.booklet && S.Album ) S.Album += ' '+ ICON( 'booklet gr' );
 			var artist = S.Artist;
 			var title  = S.Title;
 			var album  = S.Album;
 			if ( S.webradio ) {
 				if ( ! artist ) artist = S.station;
-				if ( ! album )  album  = S.play && S.Artist ? S.station : S.file;
-			} else if ( ! artist || ! title ) {
+				if ( ! album )  album  = S.file;
+			} else if ( ! title || album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();
-				if ( ! artist ) artist = path.pop();
-				if ( ! title )  title  = file.replace( /\.[^/.]+$/, '' );
+				if ( ! title ) title = file.replace( /\.[^/.]+$/, '' ); // filename
+				if ( ! album ) album = path.pop();                      // dir
 			}
-			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
 			$( '#artist' ).html( artist || V.dots );
-			$( '#title' )
-				.html( title || V.dots )
-				.toggleClass( 'gr', S.pause );
-			$( '#album' ).html( album || V.dots );
+			$( '#title' ).html(  title  || V.dots ).toggleClass( 'gr', S.pause );
+			$( '#album' ).html(  album  || V.dots );
 			$( '#composer' ).text( S.Composer );
 			$( '#conductor' ).text( S.Conductor );
 			$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );

@@ -71,7 +71,7 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 else
 	$dirbash/status -k > $dirshm/status
 	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
-	[[ $coverart ]] && COVERART=1
+	[[ $coverart || ( $webradio && $state == stop ) ]] && COVERART=1
 	onPlay
 fi
 ########

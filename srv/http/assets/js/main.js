@@ -261,9 +261,13 @@ $( '.emptyadd' ).on( 'click', function() {
 	$( '#library' ).trigger( 'click' );
 } );
 $( '#artist, #info-bio' ).on( 'click', function() {
+	if ( S.webradio && S.stop ) return
+	
 	BIO.get( S.Artist );
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
+	if ( ! S.Title ) return
+	
 	if ( S.lyrics
 		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
@@ -284,7 +288,7 @@ $( '#title, #info-lyrics' ).on( 'click', function() {
 
 } );
 $( '#album, #info-booklet' ).on( 'click', function() {
-	if ( V.press || V.localhost ) return
+	if ( V.press || V.localhost || ( S.webradio && S.stop ) ) return
 
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
 	if ( S.booklet ) {
