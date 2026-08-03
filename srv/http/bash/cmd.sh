@@ -463,7 +463,7 @@ password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
 	[[ $HEADLESS ]] && localBrowserOff
-	[[ -e $dirshm/startup ]] && pushData reload true
+	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
 pladdrandom )
 	plAddRandom

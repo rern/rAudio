@@ -1730,7 +1730,9 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
 				if ( V.websocket ) console.log( json );
-				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
+				if ( json.channel === 'startup' ) return
+				
+				if ( 'page' in json.data && json.data.page !== S.page ) return    // settings
 
 				var channel = json.channel;
 				if ( channel in W ) W[ channel ]( json.data );
