@@ -4,8 +4,6 @@
 
 args2var "$1"
 
-[[ ! $ARTIST || ( ! $ALBUM && ! $TITLE ) ]] && exit
-# --------------------------------------------------------------------
 getCoverart() {
 	local album data extralarge image mbid
 	data=$( curl -sfG -m 5 \

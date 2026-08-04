@@ -5,14 +5,25 @@
 . /srv/http/bash/common.sh
 
 argsSet() {
-	sed -n -E '/^(Artist|Title|Album)/ {
-		/^Artist/ i\cmd
-		/^Album/  a\CMD ARTIST TITLE ALBUM
-		s/.*="*//
-		s/ *"*$//
-		s/[`’]/'"'"'/g
-		p
-	}' $dirshm/status
+	[[ $webradio && $state == stop ]] && return 1
+	
+	lines=$( grep -E '^(Album|Artist|Title)' $dirshm/status )
+	. <( echo "$lines" )
+	[[ ! $Artist ]] && return 1
+	
+	if [[ $1 == scrobble ]]; then
+		[[ ! $Title ]] && return 1
+	else
+		[[ ! $Album && ! $Title ]] && return 1
+	fi
+	
+	args=$( sort <<< $lines \
+		| sed '
+			s/.*="*//
+			s/ *"*$//
+			s/[`’]/'"'"'/g
+			1 i\cmd
+			$ a\CMD ALBUM ARTIST TITLE' )
 }
 onPlay() {
 	if [[ -e $dirsystem/stoptimer ]]; then
@@ -71,7 +82,7 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 else
 	$dirbash/status -k > $dirshm/status
 	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
-	[[ $coverart || ( $webradio && $state == stop ) ]] && COVERART=1
+	COVERART=$coverart
 	onPlay
 fi
 ########
@@ -79,8 +90,7 @@ fi
 $dirbash/status $p_b
 
 if [[ ! $COVERART ]]; then
-	args=$( argsSet )
-	$dirbash/status-coverart.sh "$args" &> /dev/null &
+	argsSet && $dirbash/status-coverart.sh "$args" &> /dev/null &
 fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
@@ -118,5 +128,4 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-[[ ! $args ]] && args=$( argsSet )
-$dirbash/scrobble.sh "$args" &> /dev/null &
+argsSet scrobble && $dirbash/scrobble.sh "$args" &> /dev/null &
