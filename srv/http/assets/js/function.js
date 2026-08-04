@@ -317,7 +317,7 @@ var COVERART  = {
 			var artist        = S.Artist;
 			var onlinefetched = $( '#divcover .cover-save' ).length;
 		} else {
-			var rsc           = $( '#liimg' ).attr( 'src' );
+			var src           = $( '#liimg' ).attr( 'src' );
 			var path          = $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
 			var album         = $( '.licover .lialbum' ).text();
