@@ -110,9 +110,13 @@ document.body.addEventListener( 'keydown', e => {
 if ( location.hostname === 'localhost' ) E.titleicon.classList.add( 'local' );
 </script>
 <?php
+$dirbash = '/bin/sudo /srv/http/bash/';
 // ......................................................................................
-if ( in_array( $alias, [ 'dabradio', 'thumbnail' ] ) ) {
-	$command    = $installurl;
+if ( $alias === 'dabradio' ) {
+	$command    = $dirbash.$installurl;
+	$commandtxt = $command;
+} else if ( $alias === 'thumbnail' ) {
+	$command    = $dirbash.$installurl;
 	if ( $alias === 'thumbnail' ) $command.= ' "'.escape( $_POST[ 'path' ] ).'" '.$_POST[ 'overwrite' ];
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
