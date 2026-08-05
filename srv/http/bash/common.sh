@@ -181,26 +181,6 @@ countRadio() {
 	done
 	echo "$counts"
 }
-coverFileGet() {
-	local coverfile dir file files name
-	dir=$1
-	shopt -s nullglob
-	for name in cover folder front album; do
-		files=( "$dir"/[${name:0:1}]"${name:1}".{jpg,png,gif,jpeg} )
-		(( ${#files[@]} )) && coverfile=${files[0]} && break
-	done
-	shopt -u nullglob
-	[[ $coverfile ]] && echo $coverfile && return
-	
-	files=$( mpc ls "${dir:9}" 2> /dev/null )
-	while read file; do
-		file="/mnt/MPD/$file"
-		if [[ -f "$file" ]]; then
-			coverfile=$( $dirbash/status -C "$file" )
-			[[ $coverfile ]] && echo $coverfile && return
-		fi
-	done <<< $files
-}
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
 }

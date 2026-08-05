@@ -14,11 +14,17 @@ W = {
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
-		if ( V.library ) return
-		
 		var src    = data.cover + UTIL.versionHash();
-		$COVERART.attr( 'src', src );
-		PLAYLIST.coverart( src );
+		if ( V.library ) {
+			if ( $( '.licoverimg' ).length
+				&& $( '.lialbum' ).text() === data.album
+				&& $( '.liartist' ).text() === data.artist ) {
+				$( '#liimg' ).attr( 'src', src );
+			}
+		} else {
+			$COVERART.attr( 'src', src );
+			PLAYLIST.coverart( src );
+		}
 	}
 	, coverart  : data => { // change
 		BANNER_HIDE();

@@ -38,7 +38,7 @@ bookmarkadd )
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
 	dir="/mnt/MPD/$DIR"
 	if ! fileExist "$dir/coverart.*"; then
-		target=$( coverFileGet "$dir" )
+		target=$( $dirbash/status -C "$dir" )
 		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
 $target
 CMD TARGET"

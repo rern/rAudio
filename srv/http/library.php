@@ -56,6 +56,7 @@ $format  = '%'.implode( '%^^%', $f ).'%';
 $format  = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
 // $dirmpd $dirsystem $dirwebradio
 foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
+$dirbash = '/bin/sudo /srv/http/bash/';
 
 switch( $CMD ) {
 
@@ -144,7 +145,7 @@ case 'home':
 </li>';
 		}
 	}
-	$lsdir     = exec( '/srv/http/bash/cmd.sh countmnt' );
+	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
 	$lsmnt     = json_decode( $lsdir );
 	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
@@ -579,7 +580,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $f, $GMODE, $html, $search, $STRING, $tag;
+	global $dirbash, $f, $GMODE, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -621,8 +622,12 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$coverart      = exec( '/bin/sudo /srv/http/bash/status -C "/mnt/MPD/'.$file0.'" "'.$artist.'" "'.$album.'"' );
-		if ( ! $coverart ) $coverart = '/assets/img/coverart.svg';
+		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $mpdpath ).'"' );
+		if ( ! $coverart ) {
+			$coverart = '/assets/img/coverart.svg';
+			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, 'CMD ALBUM ARTIST' ] ) );
+			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
+		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );

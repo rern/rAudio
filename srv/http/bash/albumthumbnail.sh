@@ -58,7 +58,7 @@ while read mpdpath; do
 		continue
 	fi
 
-	coverfile=$( coverFileGet "$dir" )
+	coverfile=$( $dirbash/status -C "$dir" )
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}
