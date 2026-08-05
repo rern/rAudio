@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+PATH_MPD=$1
+[[ $2 == true ]] && OVERWRITE=1
+
 basename $0 .sh > $dirshm/script
 
 bar='<a class="cbm">  </a>'
@@ -9,9 +12,6 @@ padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'
 padgr='<a class="cbgr">  </a>'
 warn='<a class="cbr cw"> ! </a>'
-path=$( cat $dirshm/dir )
-[[ -e $dirshm/overwrite ]] && overwrite=1
-rm -f $dirshm/{path,overwrite}
 
 hhmmss() {
 	local fmt
@@ -25,11 +25,11 @@ warningWrite() {
 	echo "   $warn" No write permission: $( tagColor $dir ) $( stat -c '%A (%a)' "$dir" )
 }
 
-dir="/mnt/MPD/$path"
+dir="/mnt/MPD/$PATH_MPD"
 [[ ! -w "$dir" ]] && warningWrite && exit
 # --------------------------------------------------------------------
 echo -e "\nDirectory: $( tagColor $dir )\n"
-if [[ ! $path ]]; then
+if [[ ! $PATH_MPD ]]; then
 	mpdpathlist=$( cut -d^ -f7 $dirmpd/album )
 else
 	mpdpathlist=$( find "$dir" -type d | cut -c10- )
@@ -53,7 +53,7 @@ while read mpdpath; do
 	echo $i/$count $( tagColor $mpdpath )
 
 	dir="/mnt/MPD/$mpdpath"
-	if [[ ! $overwrite ]] && fileExist "$dir/coverart.*"; then
+	if [[ ! $OVERWRITE ]] && fileExist "$dir/coverart.*"; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi

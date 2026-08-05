@@ -378,14 +378,14 @@ var CONTEXT  = {
 			, message : msg
 			, list    : [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ]
 			, ok      : () => {
-				BASH( [ 'albumthumbnail', path, _INFO.val(), 'CMD DIR OVERWRITE' ], () => { // easier escaping path with quotes
-					COMMON.formSubmit( {
-						  alias      : 'thumbnail'
-						, title      : 'Album Thumbnails'
-						, label      : 'Update'
-						, installurl : 'albumthumbnail.sh'
-						, backhref   : '/'
-					} );
+				COMMON.formSubmit( {
+					  alias      : 'thumbnail'
+					, title      : 'Album Thumbnails'
+					, label      : 'Update'
+					, installurl : 'albumthumbnail.sh'
+					, backhref   : '/'
+					, path       : path
+					, overwrite  : _INFO.val()
 				} );
 			}
 		} );

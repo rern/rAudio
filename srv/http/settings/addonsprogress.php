@@ -10,6 +10,10 @@ $opt         = $_POST[ 'opt' ]         ?? '';
 $postmessage = $_POST[ 'postmessage' ] ?? $label.' done.';
 $title       = $_POST[ 'title' ];
 $uninstall   = $_POST[ 'uninstall' ]   ?? '';
+
+function escape( $string ) {
+	return preg_replace( '/(["`])/', '\\\\\1', $string );
+}
 ?>
 
 <style>
@@ -109,15 +113,17 @@ if ( location.hostname === 'localhost' ) E.titleicon.classList.add( 'local' );
 // ......................................................................................
 if ( in_array( $alias, [ 'dabradio', 'thumbnail' ] ) ) {
 	$command    = $installurl;
+	if ( $alias === 'thumbnail' ) $command.= ' "'.escape( $_POST[ 'path' ] ).'" '.$_POST[ 'overwrite' ];
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
 	$command    = 'uninstall_'.$alias.'.sh';
 	$commandtxt = $command;
 } else {
 	$installfile = basename( $installurl );
-	$options     = $alias."\n".$label."\n".$branch;
-	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	$command    = <<< EOF
+	$options     = [ $alias, $label, $branch ];
+	if ( $opt ) array_push( $options, ...$opt );
+	$options     = "\n".escape( implode( "\n", $options ) );
+	$command     = <<< EOF
 curl -sLO $installurl
 [[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
 
