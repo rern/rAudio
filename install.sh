@@ -26,7 +26,7 @@ elif [[ $mixertype == none ]]; then
 fi
 
 # 20260714
-[[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth
+[[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 
 # 20260709
 if [[ ! -e /boot/kernel.img ]]; then

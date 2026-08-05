@@ -59,7 +59,7 @@ while read mpdpath; do
 	fi
 	
 	file0=$( mpc ls "$mpdpath" | head -1 )
-	coverfile=$( $dirbash/status -C "file0" )
+	coverfile=$( $dirbash/status -C "/mnt/MPD/$file0" )
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}
