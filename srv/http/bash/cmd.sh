@@ -34,15 +34,8 @@ bookmarkadd )
 # --------------------------------------------------------------------
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
-	[[ NSU == *${DIR:0:1}* ]] && order=$DIR || order=$NAME
+	[[ ${DIR:0:1} == [NSU]* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
-	dir="/mnt/MPD/$DIR"
-	if ! fileExist "$dir/coverart.*"; then
-		target=$( $dirbash/status -C "$dir" )
-		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
-$target
-CMD TARGET"
-	fi
 	pushBookmark
 	;;
 bookmarkremove )

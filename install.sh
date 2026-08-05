@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260808
+! pacman -Q audiocd-meta &> /dev/null && pacman -Sy --noconfirm audiocd-meta
+
 # 20260801
 [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
 file=/lib/systemd/system/mpd_oled.service

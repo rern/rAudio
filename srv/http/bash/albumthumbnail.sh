@@ -57,8 +57,9 @@ while read mpdpath; do
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
-
-	coverfile=$( $dirbash/status -C "$dir" )
+	
+	file0=$( mpc ls "$mpdpath" | head -1 )
+	coverfile=$( $dirbash/status -C "file0" )
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}
