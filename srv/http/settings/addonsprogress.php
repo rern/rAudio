@@ -113,15 +113,11 @@ if ( location.hostname === 'localhost' ) E.titleicon.classList.add( 'local' );
 $dirbash = '/bin/sudo /srv/http/bash/';
 // ......................................................................................
 if ( $alias === 'dabradio' ) {
-	$command    = $dirbash.$installurl;
-	$commandtxt = $command;
+	$command = $dirbash.$installurl;
 } else if ( $alias === 'thumbnail' ) {
-	$command    = $dirbash.$installurl;
-	if ( $alias === 'thumbnail' ) $command.= ' "'.escape( $_POST[ 'path' ] ).'" '.$_POST[ 'overwrite' ];
-	$commandtxt = $command;
+	$command = $dirbash.$installurl.' "'.escape( $_POST[ 'path' ] ).'" '.$_POST[ 'overwrite' ];
 } else if ( $label === 'Uninstall' ) {
-	$command    = 'uninstall_'.$alias.'.sh';
-	$commandtxt = $command;
+	$command = 'uninstall_'.$alias.'.sh';
 } else {
 	$installfile = basename( $installurl );
 	$options     = [ $alias, $label, $branch ];
@@ -141,6 +137,8 @@ chmod 755 $installfile
 EOF;
 	if ( $label === 'Update' && $uninstall ) $commandtxt = str_replace( './', "uninstall_$alias.sh\n./", $commandtxt );
 }
+if ( ! isset( $commandtxt ) ) $commandtxt = $command;
+
 echo $commandtxt.'<br>';
 
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
