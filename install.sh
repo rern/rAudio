@@ -5,10 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260808
-! pacman -Q audiocd-meta &> /dev/null && pacman -Sy --noconfirm audiocd-meta
+[[ ! -e /bin/audiocd-meta ]] && packages+=' audiocd-meta'
 
 # 20260801
-[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && pacman -Sy --noconfirm mpd_oled
+[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && packages+=' mpd_oled'
 file=/lib/systemd/system/mpd_oled.service
 if grep -q ^ExecStop $file; then
 	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
@@ -25,13 +25,8 @@ elif [[ $mixertype == none ]]; then
 	touch $dirsystem/mixernone
 fi
 
-# 20260714
-[[ $( pacman -Q vapoursynth 2> /dev/null ) ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-
 # 20260709
-if [[ ! -e /boot/kernel.img ]]; then
-	! pacman -Q gcc &> /dev/null && pacman -Sy --noconfirm gcc
-fi
+[[ ! -e /bin/gcc && ! -e /boot/kernel.img ]] && packages+=' gcc'
 
 file=$dirmpdconf/conf/bluetooth.conf
 if [[ ! -e $file ]]; then
@@ -59,6 +54,8 @@ if [[ -e $file ]]; then
 fi
 
 #-------------------------------------------------------------------------------
+[[ $packages ]] && pacman -Sy --noconfirm $packages
+
 installstart "$1"
 
 rm -rf /srv/http/assets/{css,js}
@@ -93,6 +90,7 @@ else
 fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
+[[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 
 installfinish
 
