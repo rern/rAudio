@@ -234,16 +234,15 @@ case 'lsmode':
 	htmlTrack();
 	break;;
 case 'radio':
-	$dir     = $STRING;
 	$subdirs = [];
-	$files   = [];
-	exec( 'ls -d "'.$dir.'"/* | grep -E -v "/img$|\.jpg$|\.gif$"'
+	$dirs   = [];
+	exec( 'ls -d "'.$STRING.'"/*/'
 		, $lists );
-	foreach( $lists as $list ) {
-		if ( is_dir( $list ) ) {
-			$subdirs[] = $list;
+	foreach( $lists as $dir ) { // .../dir/
+		if ( file_exists( $dir.'data' ) ) {
+			$dirs[] = $dir;
 		} else {
-			$files[] = $list;
+			$subdirs[] = $dir;
 		}
 	}
 	htmlRadio();
@@ -503,7 +502,7 @@ function htmlList() { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio() {
-	global $dir, $files, $html, $index0, $indexes, $search, $STRING, $subdirs;
+	global $dirs, $html, $index0, $indexes, $search, $STRING, $subdirs;
 	if ( ! $search && count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object ) [];
@@ -515,10 +514,10 @@ function htmlRadio() {
 		}
 		sortList( $array );
 		foreach( $array as $each ) {
-			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
-			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg'; // /srv/http/data/webradio/... > /data/webradio/...
+			$dataindex = count( $dirs ) ? '' : dataIndex( $each->sort );
+			$thumbsrc  = substr( $each->dir, 9 ).'thumb.jpg'; // /srv/http/data/webradio/... > /data/webradio/...
 			$icon      = iconThumb( $thumbsrc, 'wrdir' );
-			$path      = substr( $each->dir, 24 ); // /srv/http/data/webradio/sub > sub
+			$path      = $each->dirname;
 			$html     .= '
 <li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
 	'.$icon.'
@@ -527,15 +526,16 @@ function htmlRadio() {
 </li>';
 		}
 	}
-	if ( count( $files ) ) {
+	if ( count( $dirs ) ) {
 		unset( $array );
-		foreach( $files as $file ) {
+		foreach( $dirs as $dir ) {
 			$each          = ( object ) [];
-			$data          = file( $file, FILE_IGNORE_NEW_LINES );
-			$name          = $data[ 0 ] ?? '';
-			$each->charset = $data[ 2 ] ?? '';
-			$each->file    = $file;
+			$data          = file( $dir.'data', FILE_IGNORE_NEW_LINES );
+			$name          = basename( $dir );
+			$each->charset = $data[ 2 ] ? ' data-charset="'.$data[ 2 ].'"' : '';
+			$each->dir     = $dir;
 			$each->name    = $name;
+			$each->url     = $data[ 0 ];
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
 		}
@@ -543,10 +543,9 @@ function htmlRadio() {
 		$i = 0;
 		foreach( $array as $each ) {
 			$dataindex   = $search ? '' : dataIndex( $each->sort );
-			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$filename    = basename( $each->file );
-			$url         = str_replace( '|', '/', $filename );
-			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
+			$datacharset = $each->charset;
+			$url         = $each->url;
+			$thumbsrc    = substr( $each->dir, 9 ).'thumb.jpg';
 			$icon        = $search ? icon(  'webradio li-icon' ) : iconThumb( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
@@ -555,7 +554,7 @@ function htmlRadio() {
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			if ( substr( $each->file, 15, 8 ) === 'webradio' ) {
+			if ( substr( $each->dir, 15, 8 ) === 'webradio' ) {
 				$html.= '
 	<div class="li1 name">'.$name.'</div>
 	<div class="li2">'.$url.'</div>';
