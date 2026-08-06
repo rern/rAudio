@@ -88,7 +88,7 @@ async def main():
     # Start the UDP server on port 9000
     await loop.create_datagram_endpoint(
         lambda: UDPBridgeProtocol(),
-        local_addr=( '0.0.0.0', 9000 )
+        local_addr=( '0.0.0.0', 9005 )
     )
 
     # Start the WebSocket server on port 8080
