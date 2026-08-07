@@ -166,26 +166,28 @@ foreach( $lists as $list ) {
 		continue;
 	}
 	// webradio / dabradio
-	$station = '';
+	$station  = '';
 	if ( str_contains( $file, '://' ) ) {
 		$urlname  = str_replace( '/', '|', $file );
 		$radio    = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
 		$dirradio = '/srv/http/data/'.$radio.'/'.$urlname;
 		if ( ! file_exists( $dirradio ) ) $dirradio = exec( 'find /srv/http/data/'.$radio.'/ -type d -name "'.$urlname.'" | head -1' );
-		if ( $dirradio ) $station = file( $dirradio.'/data' )[ 0 ];
+		if ( $dirradio ) {
+			$station = file( $dirradio.'/data' )[ 0 ];
+			$icon    = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
+		} else {
+			$icon    = icon( $radio );
+		}
 	} else {
 		$urlname  = str_replace( '#', '%23', $urlname );
-		$station  = '';
 	}
 	$li2           = $pos.'<a class="artist hide"></a><a class="station hide">';
-	if ( $station !== '' ) {
+	if ( $station ) {
 		$notsaved = '';
 		$li2     .= $station;
-		$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-		$icon     = iconThumb( $thumbsrc, 'filesavedpl' );
 	} else {
 		$notsaved = ' notsaved';
-		$icon     = icon(  'save savewr' ).icon(  'webradio', 'filesavedpl' );
+		$icon     = icon( 'save savewr' ).icon( 'webradio', 'filesavedpl' );
 		$station  = '. . .';
 	}
 	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
