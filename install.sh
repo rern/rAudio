@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260808
-[[ ! -e /bin/audiocd-meta ]] && packages+=' audiocd-meta'
+[[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.1-1' ]] && packages+=' audiocd-meta'
 
 # 20260801
 [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && packages+=' mpd_oled'
@@ -91,6 +91,7 @@ fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
+[[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
 
 installfinish
 

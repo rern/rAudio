@@ -174,10 +174,10 @@ countMnt() {
 	echo "$counts"
 }
 countRadio() {
-	local counts type
-	for type in dabradio webradio; do
-		[[ -e $dirdata/$type ]] && counts+='
-, "'$type'" : '$( find -L $dirdata/$type ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l )
+	local counts 
+	for dir in $dirdabradio $dirwebradio; do
+		[[ -e $dir ]] && counts+='
+, "'${dir: -8}'" : '$( find $dir -type f -name data | wc -l )
 	done
 	echo "$counts"
 }

@@ -116,19 +116,13 @@ countmnt )
 dirdelete )
 	dir="$DIR/$NAME"
 	lsdir=$( ls "$dir" )
-	[[ ! $CONFIRM && $lsdir ]] && echo -1 && exit
+	[[ ! $lsdir ]] && rmdir "$dir" && exit
 # --------------------------------------------------------------------
-	stations=$( find "$dir" -type f -exec basename {} \; )
+	[[ ! $CONFIRM ]] && echo -1 && exit
+# --------------------------------------------------------------------
 	rm -rf "$dir"
-	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushData radiolist '{ "dirdelete": "'$DIR'", "name": "'$NAME'" }'
-	[[ $lsdir ]] && webradioCount
-	while read s; do
-		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
-
-		rm -f "$dirwebradio/img/$s".*
-	done <<< $stations
+	webradioCount
 	;;
 dirnew )
 	mkdir -p "$DIR"
@@ -552,57 +546,41 @@ volume )
 	;;
 webradioadd )
 	url=$( urldecode $URL )
-	urlname=${url//\//|}
 	webradioM3uPlsVerify $url
-	file+="$DIR/$urlname"
-	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
+	dir="$DIR/${url//\//|}"
+	[[ -e $dir ]] && echo "Already exists: <wh>$dir</wh>" && exit
 # --------------------------------------------------------------------
 	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
+	mkdir "$dir"
 	echo "\
 $NAME
 
-$CHARSET" > "$file"
-	chown http:http "$file" # for edit in php
+$CHARSET" > "$dir/data"
+	chown -R http:http "$dir" # for edit in php
 	webradioCount
-	webRadioSampling $url "$file" &> /dev/null &
+	webRadioSampling $url "$dir/data" &> /dev/null &
 	;;
 webradiodelete )
-	urlname=${URL//\//|}
-	rm -f "$DIR/$urlname"
-	path=$dirdata/$MODE
-	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
+	rm -rf "$DIR/${URL//\//|}"
 	webradioCount
 	;;
 webradioedit )
-	newurlname=${URL//\//|}
-	urlname=${OLDURL//\//|}
-	newfile="$DIR/$newurlname"
-	prevfile="$DIR/$urlname"
-	if [[ $URL == $OLDURL ]]; then
-		sampling=$( sed -n 2p "$prevfile" )
-	else
-		[[ -e $newfile ]] && echo 'URL exists:' && exit
+	dir_new="$DIR/${URL//\//|}"
+	[[ -e $dir_new ]] && echo 'URL exists:' && exit
 # --------------------------------------------------------------------
+	dir_prev="$DIR/${OLDURL//\//|}"
+	if [[ $URL == $OLDURL ]]; then
+		sampling=$( sed -n 2p "$dir_prev/data" )
+	else
 		webradioM3uPlsVerify $URL
-		rm "$prevfile"
-		# stationcover
-		imgurl="$dirwebradio/img/$urlname"
-		img=$( ls "$imgurl".* | head -1 )
-		thumb="$imgurl-thumb.jpg"
-		if [[ $img || -e $thumb ]]; then
-			newimgurl="$dirwebradio/img/$newurlname"
-			newimg="$newimgurl.${img##*.}"
-			newthumb="$newimgurl-thumb.jpg"
-			[[ ! -e $newimg && -e $img ]] && cp "$img" "$newimg"
-			[[ ! -e $newthumb && -e $thumb ]] && cp "$thumb" "$newthumb"
-			[[ ! $( find $dirwebradio -name "$urlname" ) ]] && rm -f "$imgurl".* "$thumb"
-		fi
 	fi
 	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
+	mkdir "$dir_new"
 	echo "\
 $NAME
 $sampling
-$CHARSET" > "$newfile"
+$CHARSET" > "$dir_new/data"
+	rm "$dir_prev"
 	pushRadioList
 	;;
 
