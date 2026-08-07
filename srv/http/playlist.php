@@ -109,22 +109,20 @@ foreach( $lists as $list ) {
 		$sec       = HMS2second( $time );
 		if ( substr( $file, 0, 4 ) === 'cdda' ) {
 			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$cdfile    = '/srv/http/data/audiocd/'.$discid;
+			$cdfile    = '/srv/http/data/audiocd/'.$discid.'/data';
 			if ( ! isset( $cdlist ) ) {
 				$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
 			}
 			if ( $cdlist ) {
-				$track   = substr( $file, 8 );
-				$data    = $cdlist[ $track - 1 ];
-				$audiocd = explode( '^', $data );
-				$artist  = $audiocd[ 0 ];
-				$album   = $audiocd[ 1 ];
-				$title   = $audiocd[ 2 ];
-				$time    = second2HMS( $audiocd[ 3 ] );
+				$album   = $cdlist[ 0 ];
+				$artist  = $cdlist[ 1 ];
+				$time_title = $cdlist[ $track + 1 ];
+				$time    = second2HMS( preg_replace( '/ */', '', $time_title ) );
+				$title   = preg_replace( '/* /', '', $time_title );
 			}
 			$class     = 'audiocd';
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-			$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
+			$thumbsrc  = '/data/audiocd/'.$discid.'/cover.jpg';
 			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
 		} else {
 			if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
@@ -168,15 +166,16 @@ foreach( $lists as $list ) {
 		continue;
 	}
 	// webradio / dabradio
+	$station = '';
 	if ( str_contains( $file, '://' ) ) {
-		$urlname   = str_replace( '/', '|', $file );
-		$radio     = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-		$fileradio = '/srv/http/data/'.$radio.'/'.$urlname;
-		if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
-		$station   = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
+		$urlname  = str_replace( '/', '|', $file );
+		$radio    = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+		$dirradio = '/srv/http/data/'.$radio.'/'.$urlname;
+		if ( ! file_exists( $dirradio ) ) $dirradio = exec( 'find /srv/http/data/'.$radio.'/ -type d -name "'.$urlname.'" | head -1' );
+		if ( $dirradio ) $station = file( $dirradio.'/data' )[ 0 ];
 	} else {
-		$urlname   = str_replace( '#', '%23', $urlname );
-		$station   = '';
+		$urlname  = str_replace( '#', '%23', $urlname );
+		$station  = '';
 	}
 	$li2           = $pos.'<a class="artist hide"></a><a class="station hide">';
 	if ( $station !== '' ) {
