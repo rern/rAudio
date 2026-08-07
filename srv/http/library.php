@@ -242,7 +242,7 @@ case 'radio':
 		if ( file_exists( $list.'data' ) ) {
 			$dirs[] = $list;
 		} else {
-			$subdirs[] = $list;
+			$subdirs[] = rtrim( $list, '/' );
 		}
 	}
 	htmlRadio();

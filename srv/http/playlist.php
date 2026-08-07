@@ -166,7 +166,7 @@ foreach( $lists as $list ) {
 		continue;
 	}
 	// webradio / dabradio
-	$station  = '';
+	$station = '';
 	if ( str_contains( $file, '://' ) ) {
 		$urlname  = str_replace( '/', '|', $file );
 		$radio    = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
