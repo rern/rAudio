@@ -7,16 +7,16 @@ for radio in dabradio webradio; do
 	[[ ! -e $dir_radio ]] && continue
 	
 	for path in $dir_radio/**; do
-		[[ -d $path || $path == $dir_radio/img/* ]] && continue
+		uri_name=$( basename "$path" )
+		[[ -d $path || $path == $dir_radio/img/* || $uri_name != http* ]] && continue
 		
-		mv $path /tmp
-		uri_name=$( basename $path )
-		mkdir $path
-		mv /tmp/$uri_name $path/data
-		while read f; do
-			[[ ${f: -10:6} == -thumb ]] && cover=thumb || cover=cover
-			file_cover="$path/$cover${f: -4}"
-			mv $f "$file_cover"
+		mv "$path" /tmp
+		mkdir "$path"
+		mv "/tmp/$uri_name" "$path/data"
+		while read file_prev; do
+			[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
+			file_new="$path/$name.${file_prev: -3}"
+			mv $file_prev "$file_new"
 		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
 	done
 	rm -rf $dir_radio/img
