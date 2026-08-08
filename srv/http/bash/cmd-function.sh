@@ -159,6 +159,9 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
+webradioCharset() {
+	sed -E 's/UTF-*8|iso *-* *//' <<< $1
+}
 webradioCount() {
 	local counts
 	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
@@ -166,9 +169,10 @@ webradioCount() {
 	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
 	pushRadioList
 }
-webradioM3uPlsVerify() {
-	local ext url
+webradioVerify() {
+	local dir ext url
 	url=$1
+	dir=$2
 	ext=${url/*.}
 	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
 #...............................................................................
@@ -179,26 +183,23 @@ webradioM3uPlsVerify() {
 	fi
 	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
 # --------------------------------------------------------------------
-}
-webRadioSampling() {
-	local bitrate data file kb rate sample samplerate url
-	url=$1
-	file=$2
-	timeout 3 curl -sL "$url" -o /tmp/webradio
-	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
+	notify webradio 'Web Radio' 'Stream test ...'
+	. <( timeout 3 ffprobe \
+			-v quiet \
+			-probesize 32k \
+			-analyzeduration 500000 \
+			-select_streams a:0 \
+			-show_entries stream=bits_per_sample,sample_rate \
+			-of default=noprint_wrappers=1 \
+			$url )
+	[[ ! $sample_rate ]] && echo 'Cannot be streamed:' && exit
 # --------------------------------------------------------------------
-	data=( $( ffprobe -v quiet -select_streams a:0 \
-				-show_entries stream=sample_rate \
-				-show_entries format=bit_rate \
-				-of default=noprint_wrappers=1:nokey=1 \
-				/tmp/webradio ) )
-	[[ ! $data ]] && 'No stream data found:' && exit
-# --------------------------------------------------------------------
-	samplerate=${data[0]}
-	bitrate=${data[1]}
-	sample="$( calc 1 $samplerate/1000 ) kHz"
-	kb=$(( bitrate / 1000 ))
-	rate="$(( ( ( kb + 4 ) / 8 ) * 8 )) kbit/s" # round to modulo 8
-	sed -i "2 s|.*|$sample $rate|" "$file"
-	rm /tmp/webradio
+	(( $bits_per_sample > 0 )) && sampling="$bits_per_sample bit "
+	(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
+	mkdir "$dir"
+	echo "\
+$NAME
+$sampling
+$CHARSET" > "$dir/data"
+	webradioCount
 }

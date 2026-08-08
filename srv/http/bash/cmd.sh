@@ -546,42 +546,31 @@ volume )
 	;;
 webradioadd )
 	url=$( urldecode $URL )
-	webradioM3uPlsVerify $url
 	dir="$DIR/${url//\//|}"
 	[[ -e $dir ]] && echo "Already exists: <wh>$dir</wh>" && exit
 # --------------------------------------------------------------------
-	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
-	mkdir "$dir"
-	echo "\
-$NAME
-
-$CHARSET" > "$dir/data"
-	chown -R http:http "$dir" # for edit in php
-	webradioCount
-	webRadioSampling $url "$dir/data" &> /dev/null &
+	CHARSET=$( webradioCharset $CHARSET )
+	webradioVerify $url "$dir"
 	;;
 webradiodelete )
 	rm -rf "$DIR/${URL//\//|}"
 	webradioCount
 	;;
 webradioedit )
-	dir_new="$DIR/${URL//\//|}"
-	[[ -e $dir_new ]] && echo 'URL exists:' && exit
+	dir="$DIR/${URL//\//|}"
+	[[ -e $dir ]] && echo 'URL exists:' && exit
 # --------------------------------------------------------------------
-	dir_prev="$DIR/${OLDURL//\//|}"
+	CHARSET=$( webradioCharset $CHARSET )
 	if [[ $URL == $OLDURL ]]; then
-		sampling=$( sed -n 2p "$dir_prev/data" )
-	else
-		webradioM3uPlsVerify $URL
-	fi
-	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
-	mkdir "$dir_new"
-	echo "\
+		echo "\
 $NAME
-$sampling
-$CHARSET" > "$dir_new/data"
-	rm "$dir_prev"
-	pushRadioList
+$( sed -n 2p "$dir/data" )
+$CHARSET" > "$dir/data"
+		pushRadioList
+	else
+		webradioVerify $URL "$dir"
+		rm "$DIR/${OLDURL//\//|}"
+	fi
 	;;
 
 esac
