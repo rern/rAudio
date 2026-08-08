@@ -174,10 +174,14 @@ countMnt() {
 	echo "$counts"
 }
 countRadio() {
-	local counts 
-	for dir in $dirdabradio $dirwebradio; do
-		[[ -e $dir ]] && counts+='
-, "'${dir: -8}'" : '$( find $dir -type f -name data | wc -l )
+	local counts dir files
+	> $dirmpd/radio
+	for dir in $dirwebradio $dirdabradio; do
+		[[ ! -e $dir ]] && continue
+		
+		files=$( find $dir -type f -name data -printf '%h\n' | tee -a $dirmpd/radio )
+		counts+='
+, "'${dir: -8}'" : '$( wc -l <<< $files )
 	done
 	echo "$counts"
 }

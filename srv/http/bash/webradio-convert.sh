@@ -2,13 +2,15 @@
 
 shopt -s globstar
 
-for radio in dabradio webradio; do
-	dir_radio=/srv/http/data/$radio
-	[[ ! -e $dir_radio ]] && continue
+> $dirmpd/radio
+
+dirdata=/srv/http/data
+for dir in $dirdata/webradio $dirdata/dabradio; do
+	[[ ! -e $dir ]] && continue
 	
-	for path in $dir_radio/**; do
+	for path in $dir/**; do
 		uri_name=$( basename "$path" )
-		[[ -d $path || $path == $dir_radio/img/* || $uri_name != http* ]] && continue
+		[[ -d $path || $path == $dir/img/* || $uri_name != http* ]] && continue
 		
 		mv "$path" /tmp
 		mkdir "$path"
@@ -17,7 +19,9 @@ for radio in dabradio webradio; do
 			[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
 			file_new="$path/$name.${file_prev: -3}"
 			mv $file_prev "$file_new"
-		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
+		done < <( ls $dir/img/$uri_name* 2> /dev/null )
 	done
-	rm -rf $dir_radio/img
+	rm -rf $dir/img
+	find $dir -type f -name data -printf '%h\n' >> $dirmpd/radio
 done
+
