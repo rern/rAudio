@@ -142,7 +142,7 @@ mouse )
 	;;
 multiraudio )
 	enableFlagSet
-	display='{ "submenu": "multiraudio", "value": '$TF' }'
+	display='{ "channel": "display", "submenu": "multiraudio", "value": '$TF' } }'
 	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
 	list=$( tr -d '\n' < $dirsystem/multiraudio.json )
 	if [[ $ON ]]; then
@@ -154,9 +154,9 @@ multiraudio )
 	while read ip; do
 		! ipOnline $ip && continue
 
-		[[ $json ]] && websocat --text ws://$ip:8080 <<< $json
-		pushWebsocket $ip display $display
-		websocat --text ws://$ip:8080 <<< $flagset
+		[[ $ON ]] && pushToIP $ip $json
+		pushToIP $ip $display
+		pushToIP $ip $flagset
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF

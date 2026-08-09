@@ -96,6 +96,9 @@ rm -f $dirshm/system
 
 installfinish
 
+# 20260808
+systemctl restart websocket
+
 # 20260729
 systemctl try-restart rotaryencoder
 

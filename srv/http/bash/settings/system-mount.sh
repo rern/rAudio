@@ -40,7 +40,11 @@ else # server rAudio client
 	fi
 	mv -f /mnt/MPD/{NVME,SATA,SD,USB} /mnt &> /dev/null
 	fstabSet $dirnas "$IP:$dirnas  $dirnas  nfs  $opt_nfs  0  0"
-	notify -ip $IP nfsserver 'Server rAudio' "Client connected: $( hostname ) @$( ipAddress )"
+	data='
+  "icon"    : "nfsserver"
+, "title"   : "Server rAudio"
+, "message" : "Client connected: '$( hostname )' @'$( ipAddress )'"'
+	pushToIP $IP '{ "channel": "notify", "data": { '$data' } }'
 fi
 if [[ $SHAREDDATA ]]; then
 	[[ ! $nfsserver ]] && echo "$mountpoint" > $dirshareddata/source

@@ -1,11 +1,13 @@
 #!/bin/python
 
 # websocket server
-# - receive from local + remote:
-#    - WS.send (common.js)      : (channel, client, filesh, json, ping, status) + data
-#    - websocat (common.sh)     : channel + data
-# - send to local only:
+# - receive message from local / remote (udp datagram):
 #    - WS.onmessage (common.js) : channel + data
+# - send to local only:
+#    - WS.send  (common.js)     : [channel|client|filesh|json] + data, ping, status
+#    - websocat (common.sh)     : ^^
+# - send to local / remote:
+#    - status -B (shell)        : ^^
 
 import asyncio
 import json
@@ -14,17 +16,14 @@ import websockets
 
 CLIENTS   = set()
 IP_CLIENT = dict()
+result    = subprocess.run( [ '/srv/http/bash/status', '-Bp' ], capture_output=True, text=True ) # get port
+UDP_PORT  = result.stdout.strip()
 
-# 1. UDP Protocol Class to handle the C++ Broadcast Bridge on port 9000
 class UDPBridgeProtocol( asyncio.DatagramProtocol ):
-    def datagram_received( self, data, addr ):
+    def datagram_received( self, data, addr ): # from status wsBroadcast() to all hosts (udp)
         try:
             message = data.decode( 'utf-8' )
-            
-            # If we have clients registered, pass them directly to broadcast.
-            # websockets.broadcast natively skips closed connections cleanly.
-            if CLIENTS:
-                websockets.broadcast( CLIENTS, message )
+            if CLIENTS: websockets.broadcast( CLIENTS, message ) # to connected clients only
         except Exception as e:
             print( f"UDP Bridge Error: {e}" )
 
@@ -35,8 +34,7 @@ async def cmd( websocket ):
         async for args in websocket:
             jargs = json.loads( args )
             if 'channel' in jargs:  # broadcast
-                if CLIENTS:
-                    websockets.broadcast( CLIENTS, args )
+                if CLIENTS: websockets.broadcast( CLIENTS, args )
             elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
                 filesh = '/srv/http/bash/'+ jargs[ 'filesh' ][ 0 ]
                 jargs[ 'filesh' ][ 0 ] = filesh
@@ -46,8 +44,7 @@ async def cmd( websocket ):
                 jargsname = jargs[ 'name' ]
                 data      = '{ "channel": "'+ jargsname +'", "data": '+ json.dumps( jargsjson ) +' }'
                 
-                if CLIENTS:
-                    websockets.broadcast( CLIENTS, data )
+                if CLIENTS: websockets.broadcast( CLIENTS, data )
                 
                 pathfile  = '/srv/http/data/system/'+ jargsname
                 with open( pathfile +'.json', 'w' ) as f:
@@ -67,7 +64,7 @@ async def cmd( websocket ):
                     if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
                         CLIENTS.discard( IP_CLIENT[ IP ] )
                         IP_CLIENT.pop( IP, None )
-            elif 'status' in jargs:                   # snapclient
+            elif 'status' in jargs:                   # from remote snapclient
                 status = subprocess.run( [ '/srv/http/bash/status', '-k' ], capture_output=True, text=True )
                 status = status.stdout
                 await websocket.send( status )
@@ -85,13 +82,13 @@ async def cmd( websocket ):
 async def main():
     loop = asyncio.get_running_loop()
 
-    # Start the UDP server on port 9000
+    # datagram(udp) server
     await loop.create_datagram_endpoint(
         lambda: UDPBridgeProtocol(),
-        local_addr=( '0.0.0.0', 9000 )
+        local_addr=( '0.0.0.0', UDP_PORT )
     )
 
-    # Start the WebSocket server on port 8080
+    # webSocket server
     async with websockets.serve( cmd, '0.0.0.0', 8080, max_size=10485760, ping_interval=None, ping_timeout=None ):
         await asyncio.Future()  # Freeze and run both background loops forever
 

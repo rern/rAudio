@@ -64,10 +64,10 @@ fi
 [[ ! $URL ]] && exit
 # --------------------------------------------------------------------
 ext=${URL/*.}
-cover=$dirshm/online/$name.$ext
+[[ $DISCID ]] && cover=$diraudiocd/$DISCID/cover.$ext || cover=$dirshm/online/$name.$ext
 curl -sfL $URL -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
 pushData cover '{ "album": "'$ALBUM'", "artist": "'$ARTIST'", "cover": "'$cover'" }' # album, artist - for library track view
-ls -t $dirshm/online/* \
+compgen -G $dirshm/online/* && ls -t $dirshm/online/* \
 	| tail -n +10 \
 	| xargs rm -f --

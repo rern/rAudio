@@ -403,8 +403,7 @@ nfsServerActive() {
 	systemctl -q is-active nfs-server && return 0
 }
 notify() { # icon title message delayms
-	local data delay icon ip json message title
-	[[ $1 == '-ip' ]] && ip=$2 && shift 2
+	local data delay icon json message title
 	if [[ $4 ]]; then
 		delay=$4
 	else
@@ -413,8 +412,7 @@ notify() { # icon title message delayms
 	icon=$1
 	title=$( quoteEscape $2 )
 	message=$( quoteEscape $3 )
-	[[ ! $ip ]] && ip=127.0.0.1
-	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
@@ -424,14 +422,11 @@ pushBookmark() {
 	pushData bookmark "$data"
 }
 pushData() { # send to websocket.py (server)
-	local channel data dir ip ip_client json
+	local channel data dir
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
-	pushWebsocket 127.0.0.1 $channel $data
+	pushWebsocket $channel $data
 	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
-#...............................................................................
-	ip_client=$( ipSharedData ) # other shared data hosts
-	[[ ! $ip_client ]] && return
 #...............................................................................
 	if [[ $channel == coverart ]]; then
 		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
@@ -443,9 +438,7 @@ pushData() { # send to websocket.py (server)
 		data=$( tr -d '\n' <<< $data )
 		data=$( pushDataSet $channel "$data" )
 	fi
-	for ip in $ip_client; do
-		ipOnline $ip && websocat --text ws://$ip:8080 <<< $data
-	done
+	status -B "$data"
 }
 pushDataSet() {
 	cat << EOF
@@ -470,13 +463,14 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
+pushToIP() {
+	websocat --text ws://$1:8080 <<< ${@:2}
+}
 pushWebsocket() {
 	local data
-	data=$( tr -d '\n' <<< ${@:3} ) # remove newlines (<<< preserve spaces)
-	data=$( pushDataSet $2 "$data" )
-	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
-		websocat --text ws://$1:8080 <<< $data
-	fi
+	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
+	data=$( pushDataSet $1 "$data" )
+	websocat --text ws://127.0.0.1:8080 <<< $data
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"

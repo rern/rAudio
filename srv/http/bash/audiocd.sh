@@ -32,13 +32,12 @@ fi
 mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
 # --------------------------------------------------------------------
 discid=$( audiocd-meta )
-if [[ $discid ]]; then
-	echo "$discid" > $dirshm/discid
-else
-	notify audiocd 'Audio CD' 'Data not found.'
-	exit
+[[ ! $discid ]] && notify audiocd 'Audio CD' 'Failed: Disc ID calculation.' && exit
 # --------------------------------------------------------------------
-fi
+! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
+$( head -2 $diraudiocd/$discid/data )
+$discid
+CMD ALBUM ARTIST DISCID" &> /dev/null &
 # add tracks to playlist
 notify audiocd 'Audio CD' 'Add to Playlist'
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
