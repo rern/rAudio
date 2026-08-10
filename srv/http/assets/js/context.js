@@ -337,7 +337,7 @@ var CONTEXT  = {
 			var imagefilenoext = path + '/coverart';
 		} else { // radio only
 			var path           = V.playback ? S.file : V.list.path;
-			var imagefilenoext = '/srv/http/data/'+ V.mode +'/img/'+ path.replace( /\//g, '|' );
+			var imagefilenoext = UTIL.dirName( path ) +'/cover';
 		}
 		INFO( {
 			  icon        : V.icoverart
@@ -414,7 +414,7 @@ var CONTEXT  = {
 			, okcolor : V.red
 			, ok      : () => {
 				$LI.remove();
-				BASH( ['webradiodelete', $( '#lib-path' ).text(), url, V.mode, 'CMD DIR URL MODE' ] );
+				BASH( [ 'webradiodelete', $( '#lib-path' ).text() +'/'+ name, 'CMD DIR' ] );
 			}
 		} );
 	}
@@ -429,7 +429,7 @@ var CONTEXT  = {
 			, oklabel : ICON( 'remove' ) +'Delete'
 			, okcolor : V.red
 			, ok      : () => {
-				var cmd = [ 'dirdelete', $( '#lib-path' ).text(), V.list.name, 'CMD DIR NAME' ]
+				var cmd = [ 'dirdelete', $( '#lib-path' ).text(), 'CMD DIR' ]
 				BASH( cmd, std => {
 					if ( std == -1 ) {
 						cmd[ 3 ] += ' CONFIRM';
@@ -484,8 +484,6 @@ var CONTEXT  = {
 				  NAME    : V.list.name
 				, URL     : V.list.path
 				, CHARSET : $LI.data( 'charset' ) || 'UTF-8'
-				, DIR     : $( '#lib-path' ).text()
-				, OLDURL  : V.list.path
 			}
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
@@ -500,8 +498,10 @@ var CONTEXT  = {
 			, oklabel      : ICON( 'save' ) +'Save'
 			, ok           : () => {
 				var val = _INFO.val();
+				val.DIR     = $( '#lib-path' ).text();
+				val.OLDNAME = V.list.name;
 				BASH( COMMON.cmd_json2args( 'webradioedit', val ), error => {
-					if ( error ) WEBRADIO.exists( error, '', val.URL );
+					if ( error ) WEBRADIO.exists( error );
 				} );
 			}
 		} );

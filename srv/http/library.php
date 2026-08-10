@@ -120,20 +120,26 @@ case 'home':
 		foreach( $files as $name ) {
 			$bkpath = rtrim( file_get_contents( $dir.'/'.$name ), "\n" );
 			$prefix = substr( $bkpath, 0, 4 );
+			$src    = '';
+			$icon   = '';
 			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
 				$bkradio  = 'bkradio';
-				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
-				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath );
+				$line     = shell_exec( 'grep ^'.$file.' /srv/http/data/mpd/radio' );
+				if ( $line ) {
+					$dirradio = explode( '^^', $line )[ 1 ];
+					$src      = $dirradio.'';
+				}
 			} else {
 				$bkradio  = '';
 				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
 				$src     .= '/coverart';
 			}
-			$icon   = '';
-			foreach( [ '.jpg', '.gif' ] as $ext ) {
-				if ( file_exists( '/srv/http'.$src.$ext ) ) {
-					$icon = '<img class="bkcoverart" src="'.$src.$ext.'^^^">';
-					break;
+			if ( $src ) {
+				foreach( [ '.jpg', '.gif' ] as $ext ) {
+					if ( file_exists( '/srv/http'.$src.$ext ) ) {
+						$icon = '<img class="bkcoverart" src="'.$src.$ext.'^^^">';
+						break;
+					}
 				}
 			}
 			if ( ! $icon ) $icon = icon(  'bookmark bl' ).'<a class="label">'.$name.'</a>';
@@ -530,8 +536,9 @@ function htmlRadio() {
 		unset( $array );
 		foreach( $dirs as $dir ) {
 			$each          = ( object ) [];
+			$name          = basename( $dir );
 			$data          = file( $dir.'data', FILE_IGNORE_NEW_LINES );
-			$name          = $data[ 0 ] ?? '';
+			$each->url     = $data[ 0 ] ?? '';
 			$each->charset = $data[ 2 ] ?? '';
 			$each->dir     = $dir;
 			$each->name    = $name;
@@ -545,15 +552,17 @@ function htmlRadio() {
 			$charset   = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$thumbsrc  = substr( $each->dir, 9 ).'thumb.jpg';
 			$icon      = $search ? icon(  'webradio li-icon' ) : iconThumb( $thumbsrc, 'webradio' );
+			$dir       = $each->dir;
 			$name      = $each->name;
-			$url       = str_replace( '|', '/', basename( $each->dir ) );
+			$url       = $each->url;
 			$html     .= '
 <li data-mode="webradio" '.$charset.$dataindex.'>
 	'.$icon.'
+	<a class="lidir hide">'.rtrim( $dir, '/' ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			if ( substr( $each->dir, 15, 8 ) === 'webradio' ) {
+			if ( substr( $dir, 15, 8 ) === 'webradio' ) {
 				$html.= '
 	<div class="li1 name">'.$name.'</div>
 	<div class="li2">'.$url.'</div>';

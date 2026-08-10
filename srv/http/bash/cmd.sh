@@ -114,13 +114,11 @@ countmnt )
 	echo '{ '${counts/,}' }'
 	;;
 dirdelete )
-	dir="$DIR/$NAME"
-	lsdir=$( ls "$dir" )
-	[[ ! $lsdir ]] && rmdir "$dir" && exit
+	if fileExist "$DIR"/*; then
+		[[ ! $CONFIRM ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	[[ ! $CONFIRM ]] && echo -1 && exit
-# --------------------------------------------------------------------
-	rm -rf "$dir"
+	fi
+	rm -rf "$DIR"
 	pushData radiolist '{ "dirdelete": "'$DIR'", "name": "'$NAME'" }'
 	webradioCount
 	;;
@@ -544,32 +542,23 @@ upnpstart )
 volume )
 	volume
 	;;
-webradioadd )
-	url=$( urldecode $URL )
-	dir="$DIR/${url//\//|}"
-	[[ -e $dir ]] && echo "Already exists: <wh>$dir</wh>" && exit
-# --------------------------------------------------------------------
-	CHARSET=$( webradioCharset $CHARSET )
-	webradioVerify $url "$dir"
-	;;
 webradiodelete )
-	rm -rf "$DIR/${URL//\//|}"
+	rm -rf "$DIR"
 	webradioCount
 	;;
 webradioedit )
-	dir="$DIR/${URL//\//|}"
-	[[ -e $dir ]] && echo 'URL exists:' && exit
+	[[ -e "$DIR" ]] && echo "Already exists: <wh>${DIR:15}</wh>" && exit
 # --------------------------------------------------------------------
 	CHARSET=$( webradioCharset $CHARSET )
-	if [[ $URL == $OLDURL ]]; then
+	if [[ $DIR == $OLDDIR ]]; then
 		echo "\
-$NAME
-$( sed -n 2p "$dir/data" )
-$CHARSET" > "$dir/data"
+$URL
+$( sed -n 2p "$DIR/data" )
+$CHARSET" > "$DIR/data"
 		pushRadioList
 	else
-		webradioVerify $URL "$dir"
-		rm "$DIR/${OLDURL//\//|}"
+		webradioVerify $URL "$DIR"
+		[[ $OLDDIR ]] && rm "$DIR"
 	fi
 	;;
 

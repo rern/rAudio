@@ -2638,6 +2638,7 @@ var WEBRADIO  = {
 		, [ '',        'hidden' ] // OLDURL
 	]
 	, new    : ( name, url, charset ) => {
+		var dir = $( '#lib-path' ).text();
 		INFO( {
 			  icon       : 'webradio'
 			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
@@ -2647,7 +2648,6 @@ var WEBRADIO  = {
 				  NAME    : name
 				, URL     : url
 				, CHARSET : charset || 'UTF-8'
-				, DIR     : $( '#lib-path' ).text()
 			}
 			, checkblank : [ 0, 1 ]
 			, beforeshow : () => {
@@ -2661,15 +2661,15 @@ var WEBRADIO  = {
 							, list       : [ 'Name', 'text' ]
 							, checkblank : true
 							, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-							, ok         : () => BASH( [ 'dirnew', $( '#lib-path' ).text() +'/'+ _INFO.val(), 'CMD DIR' ] )
+							, ok         : () => {
+								BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
+							}
 						} );
 					} );
 			}
 			, ok         : () => {
 				var val = _INFO.val();
-				if ( [ 'm3u', 'pls' ].includes( val.URL.slice( -3 ) ) ) NOTIFY( 'webradio', 'Web Radio', 'Get URL ...' );
-				BASH( COMMON.cmd_json2args( 'webradioadd', val ), error => {
-					BANNER_HIDE();
+				BASH( [ 'webradioedit', dir +'/'+ val.NAME, val.URL, val.CHARSET, 'CMD DIR URL CHARSET' ], error => {
 					if ( error ) WEBRADIO.exists( error, val.NAME, val.URL, val.CHARSET );
 				} );
 			}

@@ -34,20 +34,16 @@ W = {
 		} else {
 			if ( S.webradio && S.play ) return
 			
-			var encoded  = data.coverart[ 0 ] === '%';
-			var regex    = encoded ? /^...srv...http/ : /^.srv.http/;
-			var coverart = data.coverart.replace( regex, '' );
+			var coverart = data.coverart;
+			if ( coverart[ 0 ] === '%' ) coverart = decodeURIComponent( coverart );
+			coverart = coverart.replace( /^.srv.http|^.mnt.MPD./, '' );
 			if ( ! data.current ) {
-				var cover   = encoded ? decodeURIComponent( coverart ) : coverart;
-				cover       = cover.replace( /^.mnt.MPD./, '' );
 				if ( S.webradio ) {
-					var path0 = S.file.replace( /\//g, '|' ); // http://url                        > http:||url
-					var path1 = cover.slice( 19, -4 );        // /data/webradio/img/http:||url.ext > http:||url
+					var path     = coverart.split( '/' ); // .../STATION/cover.jpg
+					data.current = S.station === path[ path.length - 2 ];
 				} else {
-					var path0 = UTIL.dirName( S.file );       // dir/file.ext  > dir
-					var path1 = UTIL.dirName( cover );        // dir/cover.ext > dir
+					data.current = UTIL.dirName( S.file ) === UTIL.dirName( coverart );
 				}
-				data.current = path0 === path1;
 			}
 			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		}

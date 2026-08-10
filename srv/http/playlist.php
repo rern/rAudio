@@ -102,23 +102,23 @@ $sec    = 0;
 $html   = '';
 foreach( $lists as $list ) {
 	$song++;
-	$pos    = '<a class="pos">'.$song.'</a>';
-	$v      = explode( '^^', $list );
+	$pos     = '<a class="pos">'.$song.'</a>';
+	$v       = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
-		$sec       = HMS2second( $time );
+		$sec  = HMS2second( $time );
 		if ( substr( $file, 0, 4 ) === 'cdda' ) {
-			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$cdfile    = '/srv/http/data/audiocd/'.$discid.'/data';
+			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
 			if ( ! isset( $cdlist ) ) {
 				$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
 			}
 			if ( $cdlist ) {
-				$album   = $cdlist[ 0 ];
-				$artist  = $cdlist[ 1 ];
+				$album      = $cdlist[ 0 ];
+				$artist     = $cdlist[ 1 ];
 				$time_title = $cdlist[ $track + 1 ];
-				$time    = second2HMS( preg_replace( '/ */', '', $time_title ) );
-				$title   = preg_replace( '/* /', '', $time_title );
+				$time       = second2HMS( preg_replace( '/ */', '', $time_title ) );
+				$title      = preg_replace( '/* /', '', $time_title );
 			}
 			$class     = 'audiocd';
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
@@ -139,8 +139,8 @@ foreach( $lists as $list ) {
 			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
 		}
-		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
-		$html     .=
+		$li2  = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
+		$html.=
 '<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.
@@ -168,20 +168,18 @@ foreach( $lists as $list ) {
 	// webradio / dabradio
 	$station = '';
 	if ( str_contains( $file, '://' ) ) {
-		$urlname  = str_replace( '/', '|', $file );
-		$radio    = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-		$dirradio = '/srv/http/data/'.$radio.'/'.$urlname;
-		if ( ! file_exists( $dirradio ) ) $dirradio = exec( 'find /srv/http/data/'.$radio.'/ -type d -name "'.$urlname.'" | head -1' );
-		if ( $dirradio ) {
-			$station = file( $dirradio.'/data' )[ 0 ];
-			$icon    = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
-		} else {
-			$icon    = icon( $radio );
+		$line = shell_exec( 'grep ^'.$file.' /srv/http/data/mpd/radio' );
+		if ( $line ) {
+			$dirradio = rtrim( explode( '^^', $line )[ 1 ] );
+			$station  = basename( $dirradio );
+			if ( is_dir( $dirradio ) ) {
+				$icon = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
+			} else {
+				$icon = icon( str_starts_with( $file, 'rtsp' ) ? 'dabradio' : 'webradio' );
+			}
 		}
-	} else {
-		$urlname  = str_replace( '#', '%23', $urlname );
 	}
-	$li2           = $pos.'<a class="artist hide"></a><a class="station hide">';
+	$li2     = $pos.'<a class="artist hide"></a><a class="station hide">';
 	if ( $station ) {
 		$notsaved = '';
 		$li2     .= $station;
@@ -190,8 +188,8 @@ foreach( $lists as $list ) {
 		$icon     = icon( 'save savewr' ).icon( 'webradio', 'filesavedpl' );
 		$station  = '. . .';
 	}
-	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
-	$html         .=
+	$li2    .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
+	$html   .=
 '<li class="webradio '.$notsaved.'">'.
 	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
 	$icon.

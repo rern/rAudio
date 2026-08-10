@@ -179,11 +179,17 @@ countRadio() {
 	for dir in $dirwebradio $dirdabradio; do
 		[[ ! -e $dir ]] && continue
 		
-		files=$( find $dir -type f -name data -printf '%h\n' | tee -a $dirmpd/radio )
+		files=$( find $dir -type f -name data )
 		counts+='
 , "'${dir: -8}'" : '$( wc -l <<< $files )
+		while read file; do
+			uri=$( head -1 "$file" )
+			path=$( dirname "$file" )
+			list+="$uri^^$path"$'\n'
+		done <<< $files
 	done
 	echo "$counts"
+	echo -n "$list" > $dirmpd/radio
 }
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
