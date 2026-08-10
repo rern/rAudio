@@ -42,6 +42,13 @@ case 'giftype': // formdata from common.js
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
 case 'imagereplace': // $.post from function.js
+	if ( $post->file[ 0 ] !== '/' ) { // radio - http... or rtsp...
+		$line = shell_exec( 'grep ^'.$post->file.' /srv/http/data/mpd/radio' );
+		if ( $line ) {
+			$dirradio = rtrim( explode( '^^', $line )[ 1 ] );
+			$post->file = $dirradio.'/cover';
+		}
+	}
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	exec( 'rm -f "'.substr( $post->file, 0, -4 ).'".*' ); // remove existing *.jpg, *.png, *.gif

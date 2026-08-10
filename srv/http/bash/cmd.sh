@@ -547,7 +547,9 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	[[ -e "$DIR" ]] && echo "Already exists: <wh>${DIR:15}</wh>" && exit
+	[[ -e "$DIR" ]] && echo "Station already exists: <wh>${DIR:15}</wh>" && exit
+	line=$( grep ^$URL $dirmpd/radio )
+	[[ $line ]] && echo "URL already exists in: <wh>${line/*^}</wh>" && exit
 # --------------------------------------------------------------------
 	CHARSET=$( webradioCharset $CHARSET )
 	if [[ $DIR == $OLDDIR ]]; then

@@ -40,20 +40,18 @@ imageSave() {
 	fi
 }
 
-targetnoext=${TARGET:0:-4}
-
-[[ ${TARGET:9:13} == '/data/audiocd' ]] && TYPE=audiocd
+dir=$( dirname "$TARGET" )
+file_thumb="$dir/thumb.jpg"
 case $CMD in
 	bookmark | folder )
-		imageSave "$TARGET" "$( dirname "$TARGET" )"/thumb.jpg 80
+		imageSave "$TARGET" "$file_thumb" 80
 		;;
 	coverart )
-		dir=$( dirname "$TARGET" )
-		imageSave "$TARGET" "$dir"/coverart.${TARGET: -3} 200
-		imageSave "$TARGET" "$dir"/thumb.jpg 80
+		imageSave "$TARGET" "$dir/coverart.${TARGET: -3}" 200
+		imageSave "$TARGET" "$file_thumb" 80
 		;;
 	dabradio | webradio )
-		imageSave "$TARGET" "$targetnoext"-thumb.jpg 80
+		imageSave "$TARGET" "$file_thumb" 80
 		;;
 esac
 if [[ $CMD == bookmark ]]; then

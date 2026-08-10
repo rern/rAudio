@@ -421,7 +421,7 @@ $( '#map-cover' ).press( e => {
 		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 
-	S.webradio ? CONTEXT.thumbnail() : COVERART.change();
+	COVERART.change();
 } );
 var btnctrl = {
 	  TL : 'cover'

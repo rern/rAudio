@@ -318,46 +318,30 @@ var CONTEXT  = {
 		}, 'json' );
 	}
 	, thumbnail     : () => {
-		if ( V.playback ) { // radio only
-			var src     = $COVERART.attr( 'src' );
-			var mode    = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-			var name    = S.station;
-			var dir     = '';
+		var $liicon = $LI.find( '.li-icon' );
+		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
+		if ( MODE.radio() ) {
+			var path = $( '#lib-path' ).text() +'/'+ V.list.name;
+			var file = path + '/thumb.jpg';
 		} else {
-			var $liicon = $LI.find( '.li-icon' );
-			var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-			var mode    = V.mode;
-			var name    = V.list.name;
-			var dir     = $LI.hasClass( 'dir' );
-		}
-		if ( dir ) {
-			mode               = 'folder';
-			var path           = MODE.radio() ? $( '#lib-path' ).text() : '/mnt/MPD';
-			path              += '/'+ V.list.path;
-			var imagefilenoext = path + '/coverart';
-		} else { // radio only
-			var path           = V.playback ? S.file : V.list.path;
-			var imagefilenoext = UTIL.dirName( path ) +'/cover';
+			var path = '/mnt/MPD'+ V.list.path;
+			var file = path + '/coverart.jpg';
 		}
 		INFO( {
 			  icon        : V.icoverart
-			, title       : dir ? 'Folder Thumbnail' : 'Station Art'
+			, title       : 'Folder Thumbnail'
 			, message     : '<img class="imgold" src="'+ src +'" >'
-						   +'<p class="infoimgname">'+ name +'</p>'
+						   +'<p class="infoimgname">'+ V.list.name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, beforeshow  : () => {
 				$( '.extrabtn' ).toggleClass( 'hide', src.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
-			, buttonlabel : V.library ? ICON( mode ) +' Icon' : ICON( 'remove' ) +' Remove'
+			, buttonlabel : V.library ? ICON( 'folder' ) +' Icon' : ICON( 'remove' ) +' Remove'
 			, buttoncolor : V.orange
 			, button      : () => {
-				if ( dir ) {
-					BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
-				} else {
-					BASH( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
-				}
+				BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( mode, imagefilenoext )
+			, ok          : () => UTIL.imageReplace( 'folder', file.slice( 0, -4 ) )
 		} );
 	}
 	, thumbupdate   : modealbum => {

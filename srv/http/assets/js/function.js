@@ -324,27 +324,37 @@ var COVERART  = {
 			var artist        = $( '.licover .liartist' ).text();
 			var onlinefetched = $( '.licover .cover-save' ).length;
 		}
-		var coverdefault = src.slice( 0, -13 ) === V.coverdefault;
-		if ( coverdefault ) {
-			if ( 'discid' in S ) {
-				var file = '/srv/http/data/audiocd/'+ S.discid +'.jpg';
-			} else {
-				var file = '/mnt/MPD/'+ path +'/cover.jpg';
-			}
+		var message = '<img class="imgold" src="'+ src +'">';
+		if ( S.webradio && V.playback ) {
+			message          += '<p class="infoimgname">'+ S.station +'</p>';
+			var title         = 'Station Art'
+			var file          = S.file;
+			var embedded      = false;
+			var coverartlocal = false;
 		} else {
-			var file = decodeURIComponent( src.slice( 0, -13 ) );
-			if ( file.slice( 0, 4 ) !== '/srv' ) file = '/srv/http'+ file;
+			message += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
+					  +'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
+			var title         = 'Album Cover Art'
+			var coverdefault  = src.slice( 0, -13 ) === V.coverdefault;
+			if ( coverdefault ) {
+				if ( 'discid' in S ) {
+					var file = '/srv/http/data/audiocd/'+ S.discid +'.jpg';
+				} else {
+					var file = '/mnt/MPD/'+ path +'/cover.jpg';
+				}
+			} else {
+				var file = decodeURIComponent( src.slice( 0, -13 ) );
+				if ( file.slice( 0, 4 ) !== '/srv' ) file = '/srv/http'+ file;
+			}
+			var embedded      = src.split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
+			var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
+								|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
+								&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 		}
-		var embedded        = src.split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-		var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
-							|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
-							&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 		INFO( {
 			  icon        : V.icoverart
-			, title       : 'Album Cover Art'
-			, message     : '<img class="imgold" src="'+ src +'">'
-						   +'<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
-						   +'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
+			, title       : title
+			, message     : message
 			, footer      : embedded
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, buttonlabel : ! coverartlocal ? '' : ICON( 'remove' ) +' Remove'
