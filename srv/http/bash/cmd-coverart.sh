@@ -12,16 +12,16 @@ if [[ $CMD == reset ]]; then
 	case $TYPE in
 		coverart )
 			dir=$( dirname "$FILE" )
-			rm -f "$dir/cover".* "$dir/coverart".* "$dir/thumb".* $dirshm/{embedded,local,online}/*
+			rm -f "$dir/{cover,coverart,thumb}".* $dirshm/{embedded,local,online}/*
 			pushData coverart '{ "coverart": "'$FILE'", "current": '$CURRENT' }'
 			;;
 		folderthumb )
-			rm -f "$DIR/coverart".* "$DIR/thumb".*
+			rm -f "$DIR/{coverart,thumb}".*
 			pushData coverart '{ "coverart": "'$DIR'/coverart.jpg" }'
 			;;
 		stationart )
-			rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-			pushData coverart '{ "coverart": "'$FILENOEXT'.jpg", "current": '$CURRENT' }'
+			rm "$DIR/{cover,thumb}".*
+			pushData coverart '{ "coverart": "'$DIR'/cover.jpg", "current": '$CURRENT' }'
 			;;
 	esac
 	exit

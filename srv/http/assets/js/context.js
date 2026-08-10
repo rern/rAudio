@@ -322,10 +322,10 @@ var CONTEXT  = {
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
 		if ( MODE.radio() ) {
 			var path = $( '#lib-path' ).text() +'/'+ V.list.name;
-			var file = path + '/thumb.jpg';
+			var file = path + '/thumb';
 		} else {
 			var path = '/mnt/MPD'+ V.list.path;
-			var file = path + '/coverart.jpg';
+			var file = path + '/coverart';
 		}
 		INFO( {
 			  icon        : V.icoverart
@@ -341,7 +341,7 @@ var CONTEXT  = {
 			, button      : () => {
 				BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( 'folder', file.slice( 0, -4 ) )
+			, ok          : () => UTIL.imageReplace( 'folder', file )
 		} );
 	}
 	, thumbupdate   : modealbum => {

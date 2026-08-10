@@ -338,9 +338,9 @@ var COVERART  = {
 			var coverdefault  = src.slice( 0, -13 ) === V.coverdefault;
 			if ( coverdefault ) {
 				if ( 'discid' in S ) {
-					var file = '/srv/http/data/audiocd/'+ S.discid +'.jpg';
+					var file = '/srv/http/data/audiocd/'+ S.discid;
 				} else {
-					var file = '/mnt/MPD/'+ path +'/cover.jpg';
+					var file = '/mnt/MPD/'+ path +'/cover';
 				}
 			} else {
 				var file = decodeURIComponent( src.slice( 0, -13 ) );
@@ -363,7 +363,7 @@ var COVERART  = {
 				BASH( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
 				if ( V.playback ) COVERART.default();
 			}
-			, ok          : () => UTIL.imageReplace( 'coverart', file.slice( 0, -4 ) )
+			, ok          : () => UTIL.imageReplace( 'coverart', file )
 		} );
 	}
 	, default : () => {
@@ -2339,7 +2339,7 @@ var UTIL      = {
 		
 		$.post( 'cmd.php', data, std => {
 			if ( std == -1 ) {
-				var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
+				var dir = file.slice( 0, file.lastIndexOf( '/' ) );
 				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 			}
 		} );
