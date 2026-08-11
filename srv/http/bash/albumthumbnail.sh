@@ -58,7 +58,13 @@ while read mpdpath; do
 		continue
 	fi
 	
-	file0=$( mpc ls "$mpdpath" | head -1 )
+	file0=
+	while read f; do
+		f="/mnt/MPD/$f"
+		[[ -f "$f" ]] && file0=$f && break
+	done < <( mpc ls "$mpdpath" )
+	[[ ! $file0 ]] && continue
+	
 	coverfile=$( $dirbash/status -C "/mnt/MPD/$file0" )
 	if [[ $coverfile ]]; then
 		error=
