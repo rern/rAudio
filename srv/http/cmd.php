@@ -46,7 +46,7 @@ case 'imagereplace': // $.post from function.js
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	exec( 'rm -f "'.substr( $post->file, 0, -4 ).'".*' ); // remove existing *.jpg, *.png, *.gif
-	if ( substr( $post->file, -4 ) === 'jpg' ) {
+	if ( substr( $post->file, -4 ) === '.jpg' ) {
 		$base64  = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $post->file, base64_decode( $base64 ) );
 	} else {

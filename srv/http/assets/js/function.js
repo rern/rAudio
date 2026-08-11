@@ -316,34 +316,33 @@ var COVERART  = {
 			} else if ( S.icon === 'audiocd' ) {
 				var path = '/srv/http/data/audiocd/'+ S.discid;
 			} else {
-				var path = UTIL.dirName( S.file );
+				var path = '/mnt/MPD/'+ UTIL.dirName( S.file );
 			}
 			var src    = $COVERART.attr( 'src' );
 			var album  = S.Album;
 			var artist = S.Artist;
 		} else {
-			var src           = $( '#liimg' ).attr( 'src' );
-			var path   = $( '.licover .lipath' ).text();
+			var src    = $( '#liimg' ).attr( 'src' );
+			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
 			var album         = $( '.licover .lialbum' ).text();
 			var artist = $( '.licover .liartist' ).text();
 		}
 		var message = '<img class="imgold" src="'+ src +'">';
 		if ( S.webradio && V.playback ) {
-			message       += '<p class="infoimgname">'+ S.station +'</p>';
-			var title      = 'Station Art'
-			var button     = {}
+			message   += '<p class="infoimgname">'+ S.station +'</p>';
+			var title  = 'Station Art'
 		} else {
-			message += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
-					  +'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
+			message   += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
+						+'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
 			var title      = 'Album Cover Art'
 		}
 		INFO( {
-			  icon        : V.icoverart
-			, title       : title
-			, message     : message
-			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
-			, ok          : () => UTIL.imageReplace( 'coverart', path )
+			  icon    : V.icoverart
+			, title   : title
+			, message : message
+			, file    : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
+			, ok      : () => UTIL.imageReplace( 'coverart', path )
 		} );
 	}
 	, default : () => {

@@ -9,6 +9,7 @@
 args2var "$1"
 
 imageSave() {
+	local size source target
 	source=$1
 	target=$2
 	size=$3
@@ -21,24 +22,13 @@ imageSave() {
 }
 
 dir=$( dirname "$FILE" )
-file_thumb="$dir/thumb.jpg"
-case $CMD in
-	bookmark | folder )
-		imageSave "$FILE" "$file_thumb" 80
-		;;
-	coverart )
-		imageSave "$FILE" "$dir/coverart.${FILE: -3}" 200
-		imageSave "$FILE" "$file_thumb" 80
-		;;
-	dabradio | webradio )
-		imageSave "$FILE" "$file_thumb" 80
-		;;
-esac
+[[ $CMD == coverart ]] && imageSave "$FILE" "$dir/coverart.${FILE: -3}" 200
+imageSave "$FILE" "$dir/thumb.jpg" 80
+
 if [[ $CMD == bookmark ]]; then
 	pushBookmark
 else
-	pushData coverart '{
-  "coverart" : "'$( php -r "echo rawurlencode( '${FILE//\'/\\\'}' );" )'"
-}'
+	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
+	pushData coverart '{ "coverart" : "'$coverart'" }'
 fi
 rm -f $dirshm/{embedded,local,online}/*

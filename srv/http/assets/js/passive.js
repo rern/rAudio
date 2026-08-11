@@ -35,8 +35,7 @@ W = {
 			if ( S.webradio && S.play || 'thumbnail' in data ) return
 			
 			var coverart = data.coverart;
-			if ( coverart[ 0 ] === '%' ) coverart = decodeURIComponent( coverart );
-			coverart = coverart.replace( /^.srv.http|^.mnt.MPD./, '' );
+			if ( coverart.includes( '%' ) ) coverart = decodeURIComponent( coverart );
 			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		}
 	}
