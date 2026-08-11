@@ -38,8 +38,8 @@ var CONTEXT  = {
 					if ( std == -1 ) {
 						BANNER_HIDE();
 						INFO( {
-							  icon    : 'bookmark'
-							, title   : 'Add Bookmark'
+							  icon    : I.icon
+							, title   : I.title
 							, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
 						} );
 					}
@@ -322,10 +322,8 @@ var CONTEXT  = {
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
 		if ( MODE.radio() ) {
 			var path = $( '#lib-path' ).text() +'/'+ V.list.name;
-			var file = path + '/thumb';
 		} else {
 			var path = '/mnt/MPD'+ V.list.path;
-			var file = path + '/coverart';
 		}
 		INFO( {
 			  icon        : V.icoverart
@@ -339,9 +337,9 @@ var CONTEXT  = {
 			, buttonlabel : V.library ? ICON( 'folder' ) +' Icon' : ICON( 'remove' ) +' Remove'
 			, buttoncolor : V.orange
 			, button      : () => {
-				BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
+				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( 'folder', file )
+			, ok          : () => UTIL.imageReplace( 'folder', path )
 		} );
 	}
 	, thumbupdate   : modealbum => {
@@ -403,12 +401,10 @@ var CONTEXT  = {
 		} );
 	}
 	, wrdirdelete   : () => {
-		var icon  = 'webradio';
-		var title = 'Delete Directory';
 		var msg   = ICON( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
 		INFO( {
-			  icon    : icon
-			, title   : title
+			  icon    : 'webradio'
+			, title   : 'Delete Directory'
 			, message : msg
 			, oklabel : ICON( 'remove' ) +'Delete'
 			, okcolor : V.red
@@ -419,8 +415,8 @@ var CONTEXT  = {
 						cmd[ 3 ] += ' CONFIRM';
 						cmd.splice( 3, 0, true );
 						INFO( {
-							  icon    : icon
-							, title   : title
+							  icon    : I.icon
+							, title   : I.title
 							, message : msg +'&nbsp; not empty.'
 										+'<br><br>Continue?'
 							, oklabel : ICON( 'remove' ) +'Delete'
@@ -433,11 +429,9 @@ var CONTEXT  = {
 		} );
 	}
 	, wrdirrename   : () => {
-		var icon  = 'webradio';
-		var title = 'Rename Directory';
 		INFO( {
-			  icon         : icon
-			, title        : title
+			  icon         : 'webradio'
+			, title        : 'Rename Directory'
 			, list         : [ 'Name', 'text' ]
 			, values       : V.list.name
 			, checkblank   : true
@@ -448,8 +442,8 @@ var CONTEXT  = {
 				BASH( [ 'dirrename', $( '#lib-path' ).text(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
 					if ( std == -1 ) {
 						INFO( {
-							  icon    : icon
-							, title   : title
+							  icon    : I.icon
+							, title   : I.title
 							, message : 'Exists: '+ ICON( 'folder gr' ) +'<wh> '+ newname +'</wh>'
 							, ok      : CONTEXT.wrdirrename
 						} );

@@ -32,20 +32,12 @@ W = {
 		if ( ! V.playback ) {
 			REFRESHDATA();
 		} else {
-			if ( S.webradio && S.play ) return
+			if ( S.webradio && S.play || 'thumbnail' in data ) return
 			
 			var coverart = data.coverart;
 			if ( coverart[ 0 ] === '%' ) coverart = decodeURIComponent( coverart );
 			coverart = coverart.replace( /^.srv.http|^.mnt.MPD./, '' );
-			if ( ! data.current ) {
-				if ( S.webradio ) {
-					var path     = coverart.split( '/' ); // .../STATION/cover.jpg
-					data.current = S.station === path[ path.length - 2 ];
-				} else {
-					data.current = UTIL.dirName( S.file ) === UTIL.dirName( coverart );
-				}
-			}
-			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
+			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		}
 	}
 	, display   : data => {

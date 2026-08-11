@@ -8,26 +8,6 @@
 
 args2var "$1"
 
-if [[ $CMD == reset ]]; then
-	case $TYPE in
-		coverart )
-			dir=$( dirname "$FILE" )
-			rm -f "$dir/{cover,coverart,thumb}".* $dirshm/{embedded,local,online}/*
-			pushData coverart '{ "coverart": "'$FILE'", "current": '$CURRENT' }'
-			;;
-		folderthumb )
-			rm -f "$DIR/{coverart,thumb}".*
-			pushData coverart '{ "coverart": "'$DIR'/coverart.jpg" }'
-			;;
-		stationart )
-			rm "$DIR/{cover,thumb}".*
-			pushData coverart '{ "coverart": "'$DIR'/cover.jpg", "current": '$CURRENT' }'
-			;;
-	esac
-	exit
-# --------------------------------------------------------------------
-fi
-
 imageSave() {
 	source=$1
 	target=$2
@@ -40,26 +20,25 @@ imageSave() {
 	fi
 }
 
-dir=$( dirname "$TARGET" )
+dir=$( dirname "$FILE" )
 file_thumb="$dir/thumb.jpg"
 case $CMD in
 	bookmark | folder )
-		imageSave "$TARGET" "$file_thumb" 80
+		imageSave "$FILE" "$file_thumb" 80
 		;;
 	coverart )
-		imageSave "$TARGET" "$dir/coverart.${TARGET: -3}" 200
-		imageSave "$TARGET" "$file_thumb" 80
+		imageSave "$FILE" "$dir/coverart.${FILE: -3}" 200
+		imageSave "$FILE" "$file_thumb" 80
 		;;
 	dabradio | webradio )
-		imageSave "$TARGET" "$file_thumb" 80
+		imageSave "$FILE" "$file_thumb" 80
 		;;
 esac
 if [[ $CMD == bookmark ]]; then
 	pushBookmark
 else
 	pushData coverart '{
-  "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
-, "current"  : '$( [[ $CURRENT ]] && echo true || echo false )'
+  "coverart" : "'$( php -r "echo rawurlencode( '${FILE//\'/\\\'}' );" )'"
 }'
 fi
 rm -f $dirshm/{embedded,local,online}/*

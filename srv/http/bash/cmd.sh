@@ -532,6 +532,10 @@ shareddataupdate )
 snapserverlist )
 	snapserverList
 	;;
+thumbnailreset )
+	rm -f "$DIR/{coverart,thumb}".*
+	pushData coverart '{ "thumbnail": true }'
+	;;
 titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;

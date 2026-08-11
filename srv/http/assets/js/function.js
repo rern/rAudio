@@ -311,59 +311,39 @@ var COLOR     = {
 var COVERART  = {
 	  change  : () =>  {
 		if ( V.playback ) {
-			var src           = $COVERART.attr( 'src' );
-			var path          = UTIL.dirName( S.file );
-			var album         = S.Album;
-			var artist        = S.Artist;
-			var onlinefetched = $( '#divcover .cover-save' ).length;
+			if ( S.webradio ) {
+				var path = S.file;
+			} else if ( S.icon === 'audiocd' ) {
+				var path = '/srv/http/data/audiocd/'+ S.discid;
+			} else {
+				var path = UTIL.dirName( S.file );
+			}
+			var src    = $COVERART.attr( 'src' );
+			var album  = S.Album;
+			var artist = S.Artist;
 		} else {
 			var src           = $( '#liimg' ).attr( 'src' );
-			var path          = $( '.licover .lipath' ).text();
+			var path   = $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
 			var album         = $( '.licover .lialbum' ).text();
-			var artist        = $( '.licover .liartist' ).text();
-			var onlinefetched = $( '.licover .cover-save' ).length;
+			var artist = $( '.licover .liartist' ).text();
 		}
 		var message = '<img class="imgold" src="'+ src +'">';
 		if ( S.webradio && V.playback ) {
-			message          += '<p class="infoimgname">'+ S.station +'</p>';
-			var title         = 'Station Art'
-			var file          = S.file;
-			var embedded      = false;
-			var coverartlocal = false;
+			message       += '<p class="infoimgname">'+ S.station +'</p>';
+			var title      = 'Station Art'
+			var button     = {}
 		} else {
 			message += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
 					  +'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
-			var title         = 'Album Cover Art'
-			var coverdefault  = src.slice( 0, -13 ) === V.coverdefault;
-			if ( coverdefault ) {
-				if ( 'discid' in S ) {
-					var file = '/srv/http/data/audiocd/'+ S.discid;
-				} else {
-					var file = '/mnt/MPD/'+ path +'/cover';
-				}
-			} else {
-				var file = decodeURIComponent( src.slice( 0, -13 ) );
-				if ( file.slice( 0, 4 ) !== '/srv' ) file = '/srv/http'+ file;
-			}
-			var embedded      = src.split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-			var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
-								|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
-								&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
+			var title      = 'Album Cover Art'
 		}
 		INFO( {
 			  icon        : V.icoverart
 			, title       : title
 			, message     : message
-			, footer      : embedded
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
-			, buttonlabel : ! coverartlocal ? '' : ICON( 'remove' ) +' Remove'
-			, buttoncolor : ! coverartlocal ? '' : V.orange
-			, button      : ! coverartlocal ? '' : () => {
-				BASH( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
-				if ( V.playback ) COVERART.default();
-			}
-			, ok          : () => UTIL.imageReplace( 'coverart', file )
+			, ok          : () => UTIL.imageReplace( 'coverart', path )
 		} );
 	}
 	, default : () => {
@@ -451,7 +431,7 @@ var COVERART  = {
 							+'<p class="infoimgname">'+ ICON( 'folder' ) +' '+ album
 							+'<br>'+ ICON( 'artist' ) +' '+ artist +'</p>'
 				, ok      : () => {
-					UTIL.imageReplace( 'coverart', path +'/cover' );
+					UTIL.imageReplace( 'coverart', path );
 					BANNER( icon, title, 'Save ...' );
 				}
 			} );
@@ -2323,13 +2303,15 @@ var UTIL      = {
 		var hash = UTIL.versionHash();
 		return html.replace( /\^\^\^/g, hash )
 	}
-	, imageReplace    : ( type, imagefilenoext ) => {
+	, imageReplace    : ( type, path ) => {
+		var file = path;
+		file    += type === 'coverart' ? '/cover' : '/coverart';
+		file    += I.infofilegif ? '.gif' : '.jpg';
 		var data = {
 			  cmd     : 'imagereplace'
 			, type    : type
-			, file    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
+			, file    : file
 			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
-			, current : V.playback
 		}
 		if ( V.debug ) {
 			console.log( '%cDebug: %ccmd.php', 'color:red', 'color:white' );
@@ -2338,10 +2320,7 @@ var UTIL      = {
 		}
 		
 		$.post( 'cmd.php', data, std => {
-			if ( std == -1 ) {
-				var dir = file.slice( 0, file.lastIndexOf( '/' ) );
-				_INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
-			}
+			if ( std == -1 ) _INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ path +'</c>' );
 		} );
 		BANNER( V.icoverart, I.title, 'Change ...', -1 );
 	}

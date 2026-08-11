@@ -3,12 +3,20 @@
 shopt -s globstar
 
 dirdata=/srv/http/data
-for dir in $dirdata/webradio $dirdata/dabradio; do
-	[[ ! -e $dir ]] && continue
+for radio in webradio dabradio; do
+	dir_radio=$dirdata/$radio
+	[[ ! -e $dir_radio ]] && continue
 	
-	for file in $dir/**; do
+	for file in $dir_radio/**; do
+		if [[ -d "$file" ]]; then
+			[[ -e "$file/data" ]] && list+="\
+$( head -1 "$file/data" )^^$file
+"
+			continue
+		fi
+		
 		uri_name=$( basename "$file" )
-		[[ -d $file || $file == $dir/img/* || $uri_name != http* ]] && continue
+		[[ $file == $dir_radio/img/* || $uri_name != http* ]] && continue
 		
 		dir=$( dirname "$file" )
 		readarray -t data < "$file"
@@ -16,23 +24,24 @@ for dir in $dirdata/webradio $dirdata/dabradio; do
 		station=${data[0]}
 		sampling=${data[1]}
 		charset=${data[2]}
-		mkdir "$dir/$station"
+		dir_station="$dir/$station"
+		mkdir -p "$dir_station"
 		echo "\
 $uri
 $sampling
-$charset" > "$dir/$station/data"
+$charset" > "$dir_station/data"
 		rm "$file"
 		list+="\
-$uri^^$dir/$station
+$uri^^$dir_station
 "
 		
 		while read file_prev; do
 			[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
-			file_new="$dir/$station/$name.${file_prev: -3}"
+			file_new="$dir_station/$name.${file_prev: -3}"
 			mv $file_prev "$file_new"
-		done < <( ls $dir/img/$uri_name* 2> /dev/null )
+		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
 	done
-	rm -rf $dir/img
+	rm -rf $dir_radio/img
 done
 
 echo -n "$list" > $dirdata/mpd/radio

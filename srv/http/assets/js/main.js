@@ -945,7 +945,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ICON( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var dir   = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
+	var path = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
 	INFO( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -954,9 +954,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : V.orange
 		, button      : ! thumbnail ? '' : () => {
-			BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir, 'CMD TYPE DIR' ] );
+			BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 		}
-		, ok          : () => UTIL.imageReplace( 'bookmark', dir +'/coverart' )
+		, ok          : () => UTIL.imageReplace( 'bookmark', path )
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	COMMON.dabScan();

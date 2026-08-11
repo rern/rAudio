@@ -168,15 +168,12 @@ foreach( $lists as $list ) {
 	// webradio / dabradio
 	$station = '';
 	if ( str_contains( $file, '://' ) ) {
-		$line = shell_exec( 'grep ^'.$file.' /srv/http/data/mpd/radio' );
-		if ( $line ) {
-			$dirradio = rtrim( explode( '^^', $line )[ 1 ] );
-			$station  = basename( $dirradio );
-			if ( is_dir( $dirradio ) ) {
-				$icon = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
-			} else {
-				$icon = icon( str_starts_with( $file, 'rtsp' ) ? 'dabradio' : 'webradio' );
-			}
+		$dirradio = radioPath( $file );
+		if ( $dirradio ) {
+			$station = basename( $dirradio );
+			$icon    = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
+		} else {
+			$icon    = icon( str_starts_with( $file, 'rtsp' ) ? 'dabradio' : 'webradio' );
 		}
 	}
 	$li2     = $pos.'<a class="artist hide"></a><a class="station hide">';
