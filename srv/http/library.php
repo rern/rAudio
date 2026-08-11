@@ -248,7 +248,7 @@ case 'radio':
 		if ( file_exists( $list.'data' ) ) {
 			$dirs[] = $list;
 		} else {
-			$subdirs[] = rtrim( $list, '/' );
+			$subdirs[] = $list;
 		}
 	}
 	htmlRadio();
@@ -521,13 +521,11 @@ function htmlRadio() {
 		sortList( $array );
 		foreach( $array as $each ) {
 			$dataindex = count( $dirs ) ? '' : dataIndex( $each->sort );
-			$thumbsrc  = substr( $each->dir, 9 ).'thumb.jpg'; // /srv/http/data/webradio/... > /data/webradio/...
-			$icon      = iconThumb( $thumbsrc, 'wrdir' );
-			$sub       = substr( $each->dir, 24 ); // /srv/http/data/webradio/sub > sub
+			$thumbsrc  = substr( $each->dir, 9 ).'thumb.jpg'; // /srv/http/data/webradio/... > /data/webradio/STATION/
 			$html     .= '
 <li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
-	'.$icon.'
-	<a class="lipath">'.$sub.'</a>
+	'.iconThumb( $thumbsrc, 'wrdir' ).'
+	<a class="lipath">'.rtrim( $each->dir, '/' ).'</a>
 	<span class="single name">'.$each->dirname.'</span>
 </li>';
 		}
@@ -550,7 +548,7 @@ function htmlRadio() {
 		foreach( $array as $each ) {
 			$dataindex = $search ? '' : dataIndex( $each->sort );
 			$charset   = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$dir       = $each->dir;
+			$dir       = $each->dir; // /srv/http/data/webradio/STATION/
 			$icon      = $search ? icon(  'webradio li-icon' ) : iconThumb( substr( $dir, 9 ).'thumb.jpg', 'webradio' );
 			$name      = $each->name;
 			$url       = $each->url;

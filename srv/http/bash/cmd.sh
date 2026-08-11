@@ -533,7 +533,7 @@ snapserverlist )
 	snapserverList
 	;;
 thumbnailreset )
-	rm -f "$DIR/{coverart,thumb}".*
+	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	pushData coverart '{ "thumbnail": true }'
 	;;
 titlewithparen )

@@ -846,7 +846,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		LIBRARY.list( data );
 	} );
-	query.path      = moderadio ? '' : path;
+	query.path      = moderadio ? pathradio : path;
 	query.modetitle = path;
 	V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
