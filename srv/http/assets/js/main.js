@@ -262,12 +262,12 @@ $( '.emptyadd' ).on( 'click', function() {
 } );
 $( '#artist, #info-bio' ).on( 'click', function() {
 	if ( S.webradio && S.stop ) return
-	
+
 	BIO.get( S.Artist );
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( ! S.Title ) return
-	
+
 	if ( S.lyrics
 		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
@@ -967,8 +967,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		$( '.mode.bookmark' ).each( ( i, el ) => {
 			var $this      = $( el );
 			var buttonhtml = ICON( 'remove bkedit bk-remove' );
-			if ( ! $this.find( 'img' ).length )  buttonhtml += ICON( 'edit bkedit bk-rename' );
-			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += ICON( 'coverart bkedit bk-cover' );
+			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
+			if ( $this.hasClass( 'subdir' ) ) buttonhtml += ICON( 'raudio bkedit bk-cover' );
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );

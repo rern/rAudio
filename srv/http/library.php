@@ -118,33 +118,25 @@ case 'home':
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$bkpath = rtrim( file_get_contents( $dir.'/'.$name ), "\n" );
-			$prefix = substr( $bkpath, 0, 4 );
-			$src    = '';
-			$icon   = '';
-			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
-				$bkradio  = 'bkradio';
-				$line     = shell_exec( 'grep ^'.$file.' /srv/http/data/mpd/radio' );
-				if ( $line ) {
-					$dirradio = explode( '^^', $line )[ 1 ];
-					$src      = $dirradio.'';
-				}
+			$bkpath = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
+			$ini    = substr( $bkpath, 0, 4 );
+			if ( $ini === 'http' || $ini === 'rstp' ) { // radio
+				$bkradio  = ' bkradio';
+				$path     = radioPath( $bkpath );
 			} else {
 				$bkradio  = '';
-				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
-				$src     .= '/coverart';
+				$path     = $bkpath[ 0 ] === '/' ? $bkpath :'/mnt/MPD/'.$bkpath;
 			}
+			$src    = exec( $dirbash.'status -C "'.$path.'"' );
+			if ( ! $src ) $src = exec( 'compgen -G "'.$path.'"/coverart.* | sed "s|^/srv/http||"' );
 			if ( $src ) {
-				foreach( [ '.jpg', '.gif' ] as $ext ) {
-					if ( file_exists( '/srv/http'.$src.$ext ) ) {
-						$icon = '<img class="bkcoverart" src="'.$src.$ext.'^^^">';
-						break;
-					}
-				}
+				$icon = '<img class="bkcoverart" src="'.$src.'^^^">';
+			} else {
+				$icon = icon(  'bookmark bl' ).'<a class="label">'.$name.'</a>';
 			}
-			if ( ! $icon ) $icon = icon(  'bookmark bl' ).'<a class="label">'.$name.'</a>';
-			$htmlmode.= '
-<li class="mode bookmark '.$bkradio.'">
+			$subdir = exec( 'find "'.$path.'" -maxdepth 1 -type f -not -name coverart.* -not -name thumb.*' ) ? '' : ' subdir';
+		$htmlmode.= '
+<li class="mode bookmark'.$bkradio.$subdir.'">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="name hide">'.$name.'</a>
 	'.$icon.'

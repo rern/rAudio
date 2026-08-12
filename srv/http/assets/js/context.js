@@ -3,29 +3,21 @@ var CONTEXT  = {
 		// #1 - track list - show image from licover
 		// #2 - dir list   - show image from path + coverart.jpg
 		// #3 - no cover   - icon + directory name
-		var path = V.list.path;
-		if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
-			var $img = $LI.find( '.iconthumb' );
-			var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		var path    = V.list.path;
+		if ( MODE.radio() ) {
 			var name    = V.list.name;
+			var src     = $LI.find( 'img' ).attr( 'src' );
 			var msgpath = name;
 		} else {
-			if ( MODE.radio() ) {
-				var name    = V.list.name;
-				var path    = $( '#lib-path' ).text() +'/'+ name;
-				var src     = path.slice( 9 ) +'/coverart.jpg';
-				var msgpath = path.slice( 24 );
-			} else {
-				if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
-				var src     = '/mnt/MPD/'+ path +'/cover.jpg';
-				var msgpath = path;
-				var name    = path.split( '/' ).pop();
-			}
+			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
+			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
+			var msgpath = path;
+			var name    = path.split( '/' ).pop();
 		}
 		INFO( {
 			  icon       : 'bookmark'
 			, title      : 'Add Bookmark'
-			, message    : '<img src="'+ src + UTIL.versionHash() +'">'
+			, message    : '<img src="'+ src +'">'
 						  +'<br><wh>'+ msgpath +'</wh>'
 			, list       : [ 'As:', 'text' ]
 			, values     : name
@@ -151,7 +143,7 @@ var CONTEXT  = {
 			var album = $( '.licover .lialbum' ).text();
 			var file  = $LI.find( '.lipath' ).text();
 		}
-		
+
 		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
 		var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
 		if ( file.slice( 0, 4 ) === 'http' ) { // webradio
@@ -267,10 +259,10 @@ var CONTEXT  = {
 						if ( $this.is( 'i' ) ) {
 							var mode   = $this.prop( 'class' ).replace( 'i-', '' );
 							if ( [ 'track', 'title' ].includes( mode ) ) return
-							
+
 							var string = $this.parent().next().find( 'input' ).val();
 							if ( ! string ) return
-							
+
 							var query  = {
 								  library : 'findmode'
 								, mode    : mode
@@ -496,12 +488,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
-	
+
 	if ( cmd in CONTEXT ) {
 		CONTEXT[ cmd ]();
 		return
 	}
-	
+
 	/* '' album albumartist artist composer conductor date genre pl wr
 	_add
 	_addplay

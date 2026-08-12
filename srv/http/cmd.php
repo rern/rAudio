@@ -53,7 +53,7 @@ case 'imagereplace': // $.post from function.js
 		rename( $post->data, $post->file );
 	}
 	$args      = escape( implode( "\n", [ $post->type, $post->file, 'CMD FILE' ] ) );
-	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
+	exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';
