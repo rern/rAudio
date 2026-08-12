@@ -194,7 +194,7 @@ webradioVerify() {
 			$url )
 	[[ ! $sample_rate ]] && echo 'Cannot be streamed:' && exit
 # --------------------------------------------------------------------
-	[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample > 0 ]] && sampling="$bits_per_raw_sample bit "
+	[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
 	(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
 	mkdir "$dir"
 	echo "\
