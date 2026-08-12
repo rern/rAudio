@@ -118,26 +118,19 @@ case 'home':
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$bkpath = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
-			$ini    = substr( $bkpath, 0, 4 );
-			if ( $ini === 'http' || $ini === 'rstp' ) { // radio
-				$bkradio  = ' bkradio';
-				$path     = radioPath( $bkpath );
-			} else {
-				$bkradio  = '';
-				$path     = $bkpath[ 0 ] === '/' ? $bkpath :'/mnt/MPD/'.$bkpath;
-			}
-			$src    = exec( $dirbash.'status -C "'.$path.'"' );
-			if ( ! $src ) $src = exec( 'compgen -G "'.$path.'"/coverart.* | sed "s|^/srv/http||"' );
-			if ( $src ) {
-				$icon = '<img class="bkcoverart" src="'.$src.'^^^">';
-			} else {
-				$icon = icon(  'bookmark bl' ).'<a class="label">'.$name.'</a>';
-			}
-			$subdir = exec( 'find "'.$path.'" -maxdepth 1 -type f -not -name coverart.* -not -name thumb.*' ) ? '' : ' subdir';
+			$line    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
+			$path    = $line[ 0 ];
+			$bkradio = count( $line ) > 1 ? ' bkradio' : '';
+			$bkmpd   = ! $bkradio && $path[ 0 ] !== '/';
+			$subdir  = ! $bkmpd && ! $bkradio ? ' subdir' : '';
+			if ( $bkradio ) $path = $line[ 1 ];
+			if ( $bkmpd )   $path = '/mnt/MPD/'.$path;
+			$src  = substr( $path, 0, 4 ) === '/srv' ? substr( $path, 9 ) : $path;
+			$src .= $subdir ? '/coverart.jpg' : '/cover.jpg';
+			$icon = '<img class="bkcoverart" src="'.$src.'">';
 		$htmlmode.= '
 <li class="mode bookmark'.$bkradio.$subdir.'">
-	<a class="lipath">'.$bkpath.'</a>
+	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
 	'.$icon.'
 </li>';
