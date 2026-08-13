@@ -1791,6 +1791,8 @@ var PLAYLIST  = {
 			if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
 		} else if ( $LI.data( 'mode' ) === 'lsmode' ) {
 			V.msg  = '<a class="li1">'+ $( '#lib-path' ).text() +'</a><a class="li2">'+ $LI.find( '.name' ).text() +'</a>';
+		} else if ( V.libraryhome ) {
+			V.msg = V.list.name;
 		} else {
 			V.msg = V.list.path;
 		}
