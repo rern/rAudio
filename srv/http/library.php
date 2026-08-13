@@ -127,8 +127,8 @@ case 'home':
 			} else {
 				$d = $path;
 			}
-			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.*' );
-			$subdir = $files ? '' : ' subdir';
+			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
+			$subdir = $files > 0 ? '' : ' subdir';
 			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
 			$src   .= $subdir ? '/coverart.jpg' : '/cover.jpg';
 			$icon   = '<img class="bkcoverart" src="'.$src.'">';
