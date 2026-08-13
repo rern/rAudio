@@ -26,7 +26,7 @@ pidof -q dab-rtlsdr-3 && sleep 4 # if another radio is playing, give time to sto
 
 channel_id=${2,,}_${1,,}
 line=$( grep $channel_id^^ $dirmpd/radio ) # rtsp://$host:8554/$channel_id^^/path/to/STATION
-basename $line > $dirshm/radio
+basename $line > $dirshm/radio             # used as album name
 
 dab-rtlsdr-3 \
 	-S $1 \
