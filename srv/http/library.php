@@ -118,14 +118,16 @@ case 'home':
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$line    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
-			$path    = $line[ 0 ];
-			$bkradio = count( $line ) > 1 ? ' bkradio' : '';
+			$path    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
+			$bkradio = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
 			$bkmpd   = ! $bkradio && $path[ 0 ] !== '/';
-			$subdir  = ! $bkmpd && ! $bkradio ? ' subdir' : '';
-			if ( $bkradio ) $path = $line[ 1 ];
-			if ( $bkmpd )   $path = '/mnt/MPD/'.$path;
-			$src  = substr( $path, 0, 4 ) === '/srv' ? substr( $path, 9 ) : $path;
+			$subdir  = ! $bkradio && ! $bkmpd ? ' subdir' : '';
+			if ( $bkradio ) {
+				$path = radioPath( $path );;
+			} else if ( $bkmpd ) {
+				$path = '/mnt/MPD/'.$path;
+			}
+			$src  = str_starts_with( $path, '/srv' ) ? substr( $path, 9 ) : $path;
 			$src .= $subdir ? '/coverart.jpg' : '/cover.jpg';
 			$icon = '<img class="bkcoverart" src="'.$src.'">';
 		$htmlmode.= '
@@ -196,7 +198,7 @@ case 'ls':
 	unset( $lists );
 	if ( count( $plfiles ) ) {
 		$plfiles = array_unique( $plfiles ); // fix: ls lists *.cue twice
-		$cue     = substr( $plfiles[ 0 ], -3 ) === 'cue';
+		$cue     = str_ends_with( $plfiles[ 0 ], '.cue' );
 		$type    = $cue ? 'ls' : 'playlist';
 		foreach( $plfiles as $file ) {
 			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'" 2> /dev/null'
@@ -328,7 +330,7 @@ case 'track': // for tag editor
 		if ( count( array_unique( $date ) )      > 1 ) $array[ 6 ] = '*';
 	} else {
 		// MPD not read albumartist in *.wav
-		if ( substr( $file, -3 ) === 'wav' ) {
+		if ( str_ends_with( $file, '.wav' ) ) {
 			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file.'"' );
 			if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
 		}
@@ -459,7 +461,7 @@ function htmlList() { // non-file 'list' command
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
-			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
+			if ( str_ends_with( $path, '.cue' ) ) $path = dirname( $path );
 			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg^^^';
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];

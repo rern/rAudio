@@ -31,4 +31,3 @@ else
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
 	pushData coverart '{ "coverart" : "'$coverart'" }'
 fi
-rm -f $dirshm/{embedded,local,online}/*

@@ -32,14 +32,7 @@ bookmarkadd )
 	file_bk="$dirbookmarks/${NAME//\//|}"
 	[[ -e $file_bk ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	if [[ $DIR == http* || $DIR == rtsp ]]; then
-		line=$( grep ^$DIR $dirmpd/radio )
-		echo "\
-$DIR
-${line/*^}" > "$file_bk"
-	else
-		echo "$DIR" > "$file_bk"
-	fi
+	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
 	[[ ${DIR:0:1} == [NSU]* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order

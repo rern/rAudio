@@ -107,7 +107,7 @@ foreach( $lists as $list ) {
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
 		$sec  = HMS2second( $time );
-		if ( substr( $file, 0, 4 ) === 'cdda' ) {
+		if ( str_starts_with( $file, 'cdda' ) ) {
 			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
 			if ( ! isset( $cdlist ) ) {
@@ -152,8 +152,8 @@ foreach( $lists as $list ) {
 		$count->time += $sec;
 		continue;
 	}
-	
-	if ( substr( $file, 0, 14 ) === 'http://192.168' ) { // upnp
+
+	if ( str_starts_with( $file, 'http://192.168' ) ) { // upnp
 		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
 		$html     .=
 '<li class="upnp">'.

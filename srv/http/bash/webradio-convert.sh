@@ -45,15 +45,3 @@ $uri^^$dir_station
 done
 
 echo -n "$list" > $dirdata/mpd/radio
-
-while read file; do
-	(( $( wc -l < "$file" ) > 1 )) && continue
-
-	dir=$( < "$file" )
-	[[ $dir != http* && $dir != rtsp* ]] && continue
-
-	line=$( grep ^$dir $dirmpd/radio )
-	echo "\
-$dir
-${line/*^}" > "$file"
-done < <( ls $dirbookmarks/* )
