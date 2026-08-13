@@ -1233,9 +1233,6 @@ div.pagerefresh {
 .bk-rename {
 	top: 37px;
 }
-.bk-cover {
-	bottom: 0;
-}
 .coveredit {
 	position: absolute;
 	right: 0;
@@ -1244,14 +1241,17 @@ div.pagerefresh {
 	height: 40px !important;
 	line-height: 40px;
 }
-.coveredit i,
-.bk-cover i {
+.coveredit i {
 	margin: 0 !important;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
 }
-.bk-cover i {
-	line-height: 34px !important;
+.bk-cover {
+	position: absolute;
+	width: 22px !important;
+	right: 5px;
+	bottom: 5px;
+	opacity: 1 !important;
 }
 .cover-save {
 	left: 0;

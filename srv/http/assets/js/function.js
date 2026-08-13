@@ -425,7 +425,7 @@ var COVERART  = {
 			var base64        = filecanvas.toDataURL( 'image/jpeg' );
 			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
 			INFO( {
-				  icon    : 'coverart'
+				  icon    : V.icoverart
 				, title   : 'Save Album Cover Art'
 				, message :  '<img class="infoimgnew" src="'+ base64 +'">'
 							+'<p class="infoimgname">'+ ICON( 'folder' ) +' '+ album

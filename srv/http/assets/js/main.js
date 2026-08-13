@@ -935,19 +935,17 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
-	var thumbnail = $this.find( 'img' ).length;
+	var thumbnail = $this.find( '.bkcoverart' ).length;
 	if ( thumbnail ) {
-		var icon    = 'coverart';
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
-		var icon    = 'bookmark';
 		var message = '<div class="infobookmark">'+ ICON( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
 	var path = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
 	INFO( {
-		  icon        : icon
+		  icon        : V.icoverart
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
@@ -968,7 +966,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			var $this      = $( el );
 			var buttonhtml = ICON( 'remove bkedit bk-remove' );
 			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
-			if ( $this.hasClass( 'subdir' ) ) buttonhtml += ICON( 'raudio bkedit bk-cover' );
+			if ( $this.hasClass( 'subdir' ) ) buttonhtml += '<img class="bkedit bk-cover" src="'+ V.coverart +'">';
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );
