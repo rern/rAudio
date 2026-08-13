@@ -6,17 +6,17 @@
 
 argsSet() {
 	[[ $webradio && $state == stop ]] && return 1
-	
+
 	lines=$( grep -E '^(Album|Artist|Title)' $dirshm/status )
 	. <( echo "$lines" )
 	[[ ! $Artist ]] && return 1
-	
+
 	if [[ $1 == scrobble ]]; then
 		[[ ! $Title ]] && return 1
 	else
 		[[ ! $Album && ! $Title ]] && return 1
 	fi
-	
+
 	args=$( sort <<< $lines \
 		| sed '
 			s/.*="*//
@@ -24,32 +24,6 @@ argsSet() {
 			s/[`’]/'"'"'/g
 			1 i\cmd
 			$ a\CMD ALBUM ARTIST TITLE' )
-}
-onPlay() {
-	if [[ -e $dirsystem/stoptimer ]]; then
-		if [[ $state == play ]]; then
-			[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
-		elif [[ -e $dirshm/pidstoptimer ]]; then
-			killProcess stoptimer
-			if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
-				rm $dirsystem/stoptimer
-				pushData refresh '{ "page": "features", "stoptimer": false }'
-			fi
-		fi
-	fi
-	if [[ ! -e /bin/firefox ]] \
-			|| ! systemctl -q is-active localbrowser \
-			|| ! grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-		return
-#...............................................................................
-	fi
-	export DISPLAY=:0
-	if [[ $state == play ]]; then
-		sudo xset dpms force on
-		sudo xset -dpms
-	else
-		sudo xset +dpms
-	fi
 }
 
 killProcess statuspush
@@ -78,12 +52,10 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
-	onPlay
 else
 	$dirbash/status -k > $dirshm/status
 	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
 	COVERART=$coverart
-	onPlay
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
@@ -108,6 +80,26 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+if [[ -e $dirsystem/stoptimer ]]; then
+	if [[ $state == play ]]; then
+		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
+	elif [[ -e $dirshm/pidstoptimer ]]; then
+		killProcess stoptimer
+		if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
+			rm $dirsystem/stoptimer
+			pushData refresh '{ "page": "features", "stoptimer": false }'
+		fi
+	fi
+fi
+if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+	export DISPLAY=:0
+	if [[ $state == play ]]; then
+		sudo xset dpms force on
+		sudo xset -dpms
+	else
+		sudo xset +dpms
+	fi
+fi
 [[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # ------------------------------------------------------------------------------
