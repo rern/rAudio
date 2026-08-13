@@ -441,9 +441,6 @@ multiraudiolist )
 , "list"    : '$( < $dirsystem/multiraudio.json )'
 }'
 	;;
-order )
-	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
-	;;
 password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
