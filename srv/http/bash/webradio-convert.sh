@@ -19,22 +19,13 @@ $( head -1 "$file/data" )^^$file
 		[[ $file == $dir_radio/img/* || $uri_name != http* ]] && continue
 
 		dir=$( dirname "$file" )
-		readarray -t data < "$file"
-		uri=${uri_name//|/\/}
-		station=${data[0]}
-		sampling=${data[1]}
-		charset=${data[2]}
+		station=$( head -1 "$file" )
 		dir_station="$dir/$station"
 		mkdir -p "$dir_station"
-		echo "\
-$uri
-$sampling
-$charset" > "$dir_station/data"
+		uri=${uri_name//|/\/}
+		sed "1 s|.*|$uri|" "$file" > "$dir_station/data"
 		rm "$file"
-		list+="\
-$uri^^$dir_station
-"
-
+		list+="$uri^^$dir_station"$'\n'
 		while read file_prev; do
 			[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
 			file_new="$dir_station/$name.${file_prev: -3}"
