@@ -956,7 +956,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, button      : ! thumbnail ? '' : () => {
 			BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 		}
-		, ok          : () => UTIL.imageReplace( 'bookmark', path )
+		, ok          : () => UTIL.imageReplace( path, 'coverart' )
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	COMMON.dabScan();

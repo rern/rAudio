@@ -45,14 +45,15 @@ case 'imagereplace': // $.post from function.js
 	if ( $post->file[ 0 ] !== '/' ) $post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	exec( 'rm -f "'.substr( $post->file, 0, -4 ).'".*' ); // remove existing *.jpg, *.png, *.gif
-	if ( str_ends_with( $post->file, '.jpg' ) ) {
+	exec( 'rm -f "'.$post->file.'".*' ); // remove existing *.jpg, *.png, *.gif
+	$file = $post->file.$post->ext;
+	if ( $post->ext === '.jpg' ) {
 		$base64  = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
-		file_put_contents( $post->file, base64_decode( $base64 ) );
+		file_put_contents( $file, base64_decode( $base64 ) );
 	} else {
-		rename( $post->data, $post->file );
+		rename( $post->data, $file );
 	}
-	$args      = escape( implode( "\n", [ $post->type, $post->file, 'CMD FILE' ] ) );
+	$args      = escape( implode( "\n", [ $post->name, $file, 'CMD FILE' ] ) );
 	exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js

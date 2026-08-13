@@ -335,14 +335,14 @@ var COVERART  = {
 		} else {
 			message   += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
 						+'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
-			var title      = 'Album Cover Art'
+			var title  = 'Album Cover Art'
 		}
 		INFO( {
 			  icon    : V.icoverart
 			, title   : title
 			, message : message
 			, file    : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
-			, ok      : () => UTIL.imageReplace( 'coverart', path )
+			, ok      : () => UTIL.imageReplace( path, 'cover' )
 		} );
 	}
 	, default : () => {
@@ -424,17 +424,15 @@ var COVERART  = {
 			ctx.drawImage( img, 0, 0 );
 			var base64        = filecanvas.toDataURL( 'image/jpeg' );
 			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
-			var icon          = 'coverart';
-			var title         = 'Save Album Cover Art';
 			INFO( {
-				  icon    : icon
-				, title   : title
+				  icon    : 'coverart'
+				, title   : 'Save Album Cover Art'
 				, message :  '<img class="infoimgnew" src="'+ base64 +'">'
 							+'<p class="infoimgname">'+ ICON( 'folder' ) +' '+ album
 							+'<br>'+ ICON( 'artist' ) +' '+ artist +'</p>'
 				, ok      : () => {
-					UTIL.imageReplace( 'coverart', path );
-					BANNER( icon, title, 'Save ...' );
+					UTIL.imageReplace( path, 'cover' );
+					BANNER( I.icon, I.title, 'Save ...' );
 				}
 			} );
 		}
@@ -2305,14 +2303,13 @@ var UTIL      = {
 		var hash = UTIL.versionHash();
 		return html.replace( /\^\^\^/g, hash )
 	}
-	, imageReplace    : ( type, path ) => {
-		var file = path;
-		file    += type === 'coverart' ? '/cover' : '/coverart';
-		file    += I.infofilegif ? '.gif' : '.jpg';
+	, imageReplace    : ( path, name ) => { // name: cover - album/station, coverart - album/bookamrk/folder thumbnail
+		var file = path +'/'+ name;
 		var data = {
 			  cmd     : 'imagereplace'
-			, type    : type
+			, name    : name
 			, file    : file
+			, ext     : I.infofilegif ? '.gif' : '.jpg'
 			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		}
 		if ( V.debug ) {
