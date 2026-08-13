@@ -25,8 +25,8 @@ mkfifo $MYPIPE
 pidof -q dab-rtlsdr-3 && sleep 4 # if another radio is playing, give time to stop
 
 channel_id=${2,,}_${1,,}
-file=$( find $dirdabradio -name *"|$channel_id" ) # .../rtsp://$host:8554/$channel_id
-[[ $file ]] && head -1 "$file" > $dirshm/radio
+line=$( grep $channel_id^^ $dirmpd/radio ) # rtsp://$host:8554/$channel_id^^/path/to/STATION
+basename $line > $dirshm/radio
 
 dab-rtlsdr-3 \
 	-S $1 \
