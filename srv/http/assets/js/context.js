@@ -22,7 +22,6 @@ var CONTEXT  = {
 			, list       : [ 'As:', 'text' ]
 			, values     : name
 			, checkblank : true
-			, beforeshow : () => $( '#infoList input' ).parents( 'tr' ).addClass( 'hide' )
 			, ok         : () => {
 				var name = _INFO.val();
 				BANNER( 'bookmark', 'Bookmark', 'Add ...' );
