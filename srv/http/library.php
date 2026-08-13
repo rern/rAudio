@@ -120,19 +120,19 @@ case 'home':
 		foreach( $files as $name ) {
 			$path    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
-			$bkmpd   = ! $bkradio && $path[ 0 ] !== '/';
-			$subdir  = ! $bkradio && ! $bkmpd ? ' subdir' : '';
 			if ( $bkradio ) {
 				$d = radioPath( $path );;
-			} else if ( $bkmpd ) {
+			} else if ( $path[ 0 ] !== '/' ) {
 				$d = '/mnt/MPD/'.$path;
 			} else {
 				$d = $path;
 			}
-			$src  = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
-			$src .= $subdir ? '/coverart.jpg' : '/cover.jpg';
-			$icon = '<img class="bkcoverart" src="'.$src.'">';
-		$htmlmode.= '
+			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.*' );
+			$subdir = $files ? '' : ' subdir';
+			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
+			$src   .= $subdir ? '/coverart.jpg' : '/cover.jpg';
+			$icon   = '<img class="bkcoverart" src="'.$src.'">';
+			$htmlmode.= '
 <li class="mode bookmark'.$bkradio.$subdir.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
