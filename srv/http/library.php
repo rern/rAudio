@@ -123,11 +123,13 @@ case 'home':
 			$bkmpd   = ! $bkradio && $path[ 0 ] !== '/';
 			$subdir  = ! $bkradio && ! $bkmpd ? ' subdir' : '';
 			if ( $bkradio ) {
-				$path = radioPath( $path );;
+				$d = radioPath( $path );;
 			} else if ( $bkmpd ) {
-				$path = '/mnt/MPD/'.$path;
+				$d = '/mnt/MPD/'.$path;
+			} else {
+				$d = $path;
 			}
-			$src  = str_starts_with( $path, '/srv' ) ? substr( $path, 9 ) : $path;
+			$src  = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
 			$src .= $subdir ? '/coverart.jpg' : '/cover.jpg';
 			$icon = '<img class="bkcoverart" src="'.$src.'">';
 		$htmlmode.= '
