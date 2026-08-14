@@ -36,3 +36,24 @@ $( head -1 "$file/data" )^^$file
 done
 
 echo -n "$list" > $dirdata/mpd/radio
+
+# audio cd
+files=$( find $diraudiocd -maxdepth 1 -type f ! -name *.* )
+[[ ! $files ]] && exit
+#-------------------------------------------------------------------------------
+for f in $files; do
+	lines=$( < $f ) # artist^album^title^time
+	l=$( head -1 <<< $lines )
+	data="\
+$( cut -d^ -f2 <<< $l )
+${l/^*}"
+	while read l; do # artist^album^title^time
+		data+="
+${l/*^} $( cut -d^ -f3 <<< $l )"
+	done <<< $lines
+	rm $f
+	mkdir $f
+	f_cover=$( compgen -G $f.* )
+	[[ $f_cover ]] && mv $f_cover $f/cover.${f_cover: -3}
+	echo "$data" > $f/data
+done

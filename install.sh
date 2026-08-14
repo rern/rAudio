@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260808
+# 20260816
 ! grep -q ^UDP_PORT $dirbash/websocket.py && ws_restart=1
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
 [[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.2-1' ]] && packages+=' audiocd-meta'
