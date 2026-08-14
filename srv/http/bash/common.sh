@@ -84,6 +84,8 @@ audioCDtrack() {
 }
 audioCDplClear() {
 	local cdtracks
+	notify audiocd 'Playlist' 'Remove CD tracks ...'
+	mpc -q stop
 	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $cdtracks ]]; then
 		mpc -q del $cdtracks
