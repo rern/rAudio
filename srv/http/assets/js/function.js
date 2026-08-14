@@ -1307,7 +1307,7 @@ var MENU      = {
 		var state     = S.state;
 		var play      = state === 'play';
 		var active    = $LI.hasClass( 'active' );
-		var audiocd   = $LI.hasClass( 'audiocd' );
+		var audiocd   = V.list.path.slice( 0, 4 ) === 'cdda';
 		var notsaved  = $LI.hasClass( 'notsaved' );
 		var upnp      = $LI.hasClass( 'upnp' );
 		$LI.addClass( 'updn' );

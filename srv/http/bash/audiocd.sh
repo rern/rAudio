@@ -32,7 +32,7 @@ fi
 mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
 # --------------------------------------------------------------------
 discid=$( audiocd-meta )
-[[ ! $discid ]] && notify audiocd 'Audio CD' 'Failed: Disc ID calculation.' && exit
+[[ ! $discid ]] && notify audiocd 'Audio CD' 'Failed: Calculate Disc ID.' && exit
 # --------------------------------------------------------------------
 ! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
 $( head -2 $diraudiocd/$discid/data )
@@ -43,6 +43,7 @@ notify audiocd 'Audio CD' 'Add to Playlist'
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
+trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done

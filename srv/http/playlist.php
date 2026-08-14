@@ -83,6 +83,7 @@ function artistAlbum( $artist, $album, $file ) {
 		return $file;
 	}
 }
+
 $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
@@ -107,41 +108,20 @@ foreach( $lists as $list ) {
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
 		$sec  = HMS2second( $time );
-		if ( str_starts_with( $file, 'cdda' ) ) {
-			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
-			if ( ! isset( $cdlist ) ) {
-				$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
-			}
-			if ( $cdlist ) {
-				$album      = $cdlist[ 0 ];
-				$artist     = $cdlist[ 1 ];
-				$time_title = $cdlist[ $track + 1 ];
-				$time       = second2HMS( preg_replace( '/ */', '', $time_title ) );
-				$title      = preg_replace( '/* /', '', $time_title );
-			}
-			$class     = 'audiocd';
-			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-			$thumbsrc  = '/data/audiocd/'.$discid.'/cover.jpg';
-			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
-		} else {
-			if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
-			if ( ! $artist ) $artist = $albumartist;
-			$datatrack = '';
-			if ( strpos( $file, '.cue/track' ) ) {
-				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-				$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
-			}
-			$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
-			$class     = 'music';
-			$discid    = '';
-			$path      = pathinfo( $file, PATHINFO_DIRNAME );
-			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
-			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
+		if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
+		if ( ! $artist ) $artist = $albumartist;
+		$datatrack = '';
+		if ( strpos( $file, '.cue/track' ) ) {
+			$datatrack = 'data-track="'.$track.'"'; // for cue in edit
+			$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 		}
-		$li2  = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
-		$html.=
-'<li class="'.$class.'" '.$datatrack.'>'.
+		$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
+		$path      = pathinfo( $file, PATHINFO_DIRNAME );
+		$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
+		$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
+		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
+		$html     .=
+'<li class="music" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.
 	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
@@ -165,9 +145,41 @@ foreach( $lists as $list ) {
 		$count->upnp++;
 		continue;
 	}
+
+	$ini = substr( $file, 0, 4 );
+	if ( $ini === 'cdda' ) {
+		if ( ! isset( $discid ) ) {
+			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
+			$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
+			if ( $cdlist ) {
+				$cdalbum  = $cdlist[ 0 ];
+				$cdartist = $cdlist[ 1 ];
+				$cdsrc    = '/data/audiocd/'.$discid.'/cover.jpg';
+			}
+		}
+		if ( isset( $cdlist ) ) {
+			$track           = explode( '///', $file )[ 1 ];
+			[ $sec, $title ] = explode( ' ', $cdlist[ $track + 1 ], 2 );
+			$time            = second2HMS( $sec );
+		}
+		$icon      = iconThumb( $cdsrc, 'filesavedpl' );
+		$li2       = $pos.' • '.$track.' - '.artistAlbum( $cdartist, $cdalbum, $file );
+		$html     .=
+'<li class="audiocd">'.
+	'<a class="lipath">'.$file.'</a>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
+	'<div class="li2">'.$li2.'</div>'.
+'</li>
+';
+		$count->song++;
+		$count->time += $sec;
+		continue;
+	}
 	// webradio / dabradio
 	$station = '';
-	if ( str_contains( $file, '://' ) ) {
+	if ( $ini === 'http' || $ini === 'rtsp' ) {
 		$dirradio = radioPath( $file );
 		if ( $dirradio ) {
 			$station = basename( $dirradio );
