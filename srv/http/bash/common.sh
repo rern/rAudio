@@ -84,12 +84,12 @@ audioCDtrack() {
 }
 audioCDplClear() {
 	local cdtracks
-	notify audiocd 'Playlist' 'Remove CD tracks ...'
 	mpc -q stop
 	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $cdtracks ]]; then
+		notify audiocd 'Playlist' 'Remove CD tracks ...'
 		mpc -q del $cdtracks
-		return 0
+		$dirbash/cmd.sh playlistpush
 	fi
 }
 cacheBust() {
@@ -180,7 +180,7 @@ countRadio() {
 	> $dirmpd/radio
 	for dir in $dirwebradio $dirdabradio; do
 		[[ ! -e $dir ]] && continue
-		
+
 		files=$( find $dir -type f -name data )
 		counts+='
 , "'${dir: -8}'" : '$( wc -l <<< $files )

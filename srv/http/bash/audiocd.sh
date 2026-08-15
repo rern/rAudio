@@ -20,16 +20,17 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		rm -f $dirmpdconf/cdio.conf
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
+		pushRefresh player
 	else
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
-	$dirbash/cmd.sh playlistpush
 	pushStatus
 	exit
 # --------------------------------------------------------------------
 fi
-mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
+ready=$( timeout 0.1 cd-paranoia -Q 2>&1 )
+grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
 notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
 discid=$( audiocd-meta )
@@ -42,11 +43,17 @@ $album
 $artist
 $discid
 CMD ALBUM ARTIST DISCID" &> /dev/null &
-	notify 'audiocd blink' 'Audio CD' "$artist - $album"
+	msg="$artist - $album"
 else
-	notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
+	msg='Add to Playlist ...'
 fi
-grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
+notify 'audiocd blink' 'Audio CD' "$msg"
+if grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json; then
+	mpc -q clear
+else
+	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ $cdtracks ]] && mpc -q del $cdtracks
+fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
