@@ -31,18 +31,24 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 fi
 mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
 # --------------------------------------------------------------------
+notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
 discid=$( audiocd-meta )
-[[ ! $discid ]] && notify audiocd 'Audio CD' 'Failed: Calculate Disc ID.' && exit
-# --------------------------------------------------------------------
-! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
-$( head -2 $diraudiocd/$discid/data )
-$discid
-CMD ALBUM ARTIST DISCID" &> /dev/null &
-# add tracks to playlist
-notify audiocd 'Audio CD' 'Add to Playlist'
+if [[ $discid ]]; then
+	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
+	album=${album_artist[0]}
+	artist=${album_artist[1]}
+	! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
+	$album
+	$artist
+	$discid
+	CMD ALBUM ARTIST DISCID" &> /dev/null &
+	notify 'audiocd blink' 'Audio CD' "$artist - $album"
+else
+	notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
+fi
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
+# add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
 trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "

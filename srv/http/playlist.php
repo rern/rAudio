@@ -151,20 +151,19 @@ foreach( $lists as $list ) {
 		if ( ! isset( $discid ) ) {
 			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
-			$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
-			if ( $cdlist ) {
+			if ( file_exists( $cdfile ) ) {
+				$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
 				$cdalbum  = $cdlist[ 0 ];
-				$cdartist = $cdlist[ 1 ];
 				$cdsrc    = '/data/audiocd/'.$discid.'/cover.jpg';
 			}
 		}
 		if ( isset( $cdlist ) ) {
-			$track           = explode( '///', $file )[ 1 ];
-			[ $sec, $title ] = explode( ' ', $cdlist[ $track + 1 ], 2 );
-			$time            = second2HMS( $sec );
+			$track = explode( '///', $file )[ 1 ];
+			[ $artist, $title, $sec ] = explode( '^^', $cdlist[ $track + 1 ] );
+			$time = second2HMS( $sec );
 		}
 		$icon      = iconThumb( $cdsrc, 'filesavedpl' );
-		$li2       = $pos.' • '.$track.' - '.artistAlbum( $cdartist, $cdalbum, $file );
+		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $cdalbum, $file );
 		$html     .=
 '<li class="audiocd">'.
 	'<a class="lipath">'.$file.'</a>'.

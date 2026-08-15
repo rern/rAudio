@@ -373,16 +373,21 @@ function htmlDirectory() {
 		$array[]    = $each;
 	}
 	sortList( $array );
+	$htmld = '';
 	$htmlf = '';
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$dataindex = dataIndex( $each->sort );
 		$name      = modeFile( $GMODE ) ? basename( $path ) : $path;
-		$dir       = is_dir( '/mnt/MPD/'.$path );
+		$fullpath  = '/mnt/MPD/'.$path;
+		$dir       = is_dir( $fullpath );
+		$subdir    = '';
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
-			$icon  = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
-			$class = ' class="dir"';
+			$icon  = iconThumb( $fullpath.'/thumb.jpg', 'folder' );
+			$files = exec( 'find "'.$fullpath.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
+			if ( $files == 0 ) $subdir = ' subdir';
+			$class = ' class="dir'.$subdir.'"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = icon(  'music ', 'file' );
@@ -394,9 +399,15 @@ function htmlDirectory() {
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
 </li>';
-		$dir ? $html.= $htmlli : $htmlf.= $htmlli;
+		if ( $subdir ) {
+			$html.= $htmlli;
+		} else if ( $dir ) {
+			$htmld .= $htmlli;
+		} else {
+			$htmlf.= $htmlli;
+		}
 	}
-	$html .= $htmlf.indexBar( $indexes );
+	$html .= $htmld.$htmlf.indexBar( $indexes );
 	echo $html;
 }
 function htmlFind() { // non-file 'find' command

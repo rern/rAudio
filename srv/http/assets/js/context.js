@@ -311,11 +311,7 @@ var CONTEXT  = {
 	, thumbnail     : () => {
 		var $liicon = $LI.find( '.li-icon' );
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
-		if ( MODE.radio() ) {
-			var path = $( '#lib-path' ).text() +'/'+ V.list.name;
-		} else {
-			var path = '/mnt/MPD'+ V.list.path;
-		}
+		var path    = '/mnt/MPD'+ V.list.path;
 		INFO( {
 			  icon        : V.icoverart
 			, title       : 'Folder Thumbnail'
@@ -325,7 +321,7 @@ var CONTEXT  = {
 			, beforeshow  : () => {
 				$( '.extrabtn' ).toggleClass( 'hide', src.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
-			, buttonlabel : V.library ? ICON( 'folder' ) +' Icon' : ICON( 'remove' ) +' Remove'
+			, buttonlabel : ICON( 'folder' ) +' Icon'
 			, buttoncolor : V.orange
 			, button      : () => {
 				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
@@ -489,7 +485,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 
 	if ( cmd in CONTEXT ) {
-		CONTEXT[ cmd ]();
+		MODE.radio() && ! $LI.hasClass( 'dir' ) ? COVERART.change() : CONTEXT[ cmd ]();
 		return
 	}
 

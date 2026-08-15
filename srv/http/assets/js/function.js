@@ -310,17 +310,19 @@ var COLOR     = {
 }
 var COVERART  = {
 	  change  : () =>  {
+		var radio = MODE.radio();
 		if ( V.playback ) {
-			if ( S.webradio ) {
+			if ( S.webradio || S.icon === 'audiocd' ) {
 				var path = S.file;
-			} else if ( S.icon === 'audiocd' ) {
-				var path = '/srv/http/data/audiocd/'+ S.discid;
 			} else {
 				var path = '/mnt/MPD/'+ UTIL.dirName( S.file );
 			}
 			var src    = $COVERART.attr( 'src' );
 			var album  = S.Album;
 			var artist = S.Artist;
+		} else if ( radio ) {
+			var src    = $LI.find( 'img' ).attr( 'src' );
+			var path   = V.list.path;
 		} else {
 			var src    = $( '#liimg' ).attr( 'src' );
 			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
@@ -329,13 +331,13 @@ var COVERART  = {
 			var artist = $( '.licover .liartist' ).text();
 		}
 		var message = '<img class="imgold" src="'+ src +'">';
-		if ( S.webradio && V.playback ) {
-			message   += '<p class="infoimgname">'+ S.station +'</p>';
-			var title  = 'Station Art'
-		} else {
-			message   += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
+		if ( path[ 0 ] === '/' ) {
+			message  += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
 						+'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
-			var title  = 'Album Cover Art'
+			var title = 'Album Cover Art'
+		} else {
+			message  += '<p class="infoimgname">'+ ( V.playback ? S.station : V.list.name ) +'</p>';
+			var title = 'Station Art'
 		}
 		INFO( {
 			  icon    : V.icoverart
@@ -1260,16 +1262,17 @@ var MENU      = {
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 		} else {
 			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
+			var radio            = MODE.radio();
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
-			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
+			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover || ( ! radio && ! $LI.hasClass( 'subdir' ) ) );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
-			$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
+			$menu.find( '.wrdirrename' ).toggleClass( 'hide', ! radio );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 		}
@@ -2306,11 +2309,10 @@ var UTIL      = {
 		return html.replace( /\^\^\^/g, hash )
 	}
 	, imageReplace    : ( path, name ) => { // name: cover - album/station, coverart - album/bookamrk/folder thumbnail
-		var file = path +'/'+ name;
 		var data = {
 			  cmd     : 'imagereplace'
 			, name    : name
-			, file    : file
+			, file    : path[ 0 ] === '/' ? path +'/'+ name : path
 			, ext     : I.infofilegif ? '.gif' : '.jpg'
 			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		}

@@ -42,7 +42,14 @@ case 'giftype': // formdata from common.js
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
 case 'imagereplace': // $.post from function.js
-	if ( $post->file[ 0 ] !== '/' ) $post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
+	if ( $post->file[ 0 ] !== '/' ) {
+		if ( str_starts_with( $post->file, 'cdda' ) ) {
+			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$post->file = '/srv/http/data/audiocd/'.$discid.'/cover';
+		} else {
+			$post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
+		}
+	}
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	exec( 'rm -f "'.$post->file.'".*' ); // remove existing *.jpg, *.png, *.gif
