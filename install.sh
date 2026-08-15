@@ -7,7 +7,7 @@ alias=r1
 # 20260816
 ! grep -q ^UDP_PORT $dirbash/websocket.py && ws_restart=1
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
-[[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.3-1' ]] && packages+=' audiocd-meta'
+[[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-1' ]] && packages+=' audiocd-meta'
 
 # 20260801
 [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && packages+=' mpd_oled'
