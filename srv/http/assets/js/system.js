@@ -151,7 +151,7 @@ var CONFIG        = {
 			, list         : [
 				  [ 'Controller',              'select', chip ]
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
-				, [ 'Spectrum only',        'checkbox' ]
+				, [ 'Spectrum only',           'checkbox' ]
 			]
 			, values       : values
 			, checkchanged : S.mpdoled
@@ -196,7 +196,7 @@ var CONFIG        = {
 	, soundprofile  : values => {
 		INFO( {
 			  ...SW
-			, list         : [ 
+			, list         : [
 				  [ 'Swappiness',            'number' ]
 				, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
 				, [ 'Transmit Queue Length', 'number' ]
@@ -323,7 +323,7 @@ var UTIL          = {
 	}
 	, gpioState     : state => {
 		if ( ! state ) return // relays / vuled active
-		
+
 		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
 			var $el = $( el );
 			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
@@ -423,7 +423,7 @@ var UTIL          = {
 			}
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
-				
+
 				COMMON.json.save( 'lcdchar', _INFO.val() );
 				SWITCH.enable();
 			}
@@ -486,7 +486,7 @@ var UTIL          = {
 						, SHARE    : ''
 						, USR      : ''
 						, PASSWORD : ''
-						, OPTIONS  : '' 
+						, OPTIONS  : ''
 					}
 				}
 			}
@@ -542,7 +542,7 @@ var UTIL          = {
 						} );
 						return
 					}
-					
+
 					infoval.SHAREDDATA = shareddata;
 					var keys = Object.keys( infoval );
 					var vals = Object.values( infoval );
@@ -614,7 +614,7 @@ var UTIL          = {
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
 				, tab          : [ '', UTIL.powerbutton.ap ]
 				, message      : UTIL.gpiosvg
-				, list         : [ 
+				, list         : [
 					  [ 'On',  'select', { 5: 3 } ]
 					, [ 'Off', ...select_pins ]
 					, [ 'LED', ...select_pins ]
@@ -650,7 +650,7 @@ var UTIL          = {
 				.addClass( 'i-refresh' );
 			return
 		}
-		
+
 		$this.addClass( 'blink wh' )
 		V.intstatus = setInterval( () => {
 			BASH( 'system-data.sh status', data => {
@@ -818,7 +818,7 @@ var UTIL          = {
 		var html = '';
 		S.list.storage.forEach( list => {
 			if ( list.mountpoint == '/mnt/NAS' ) return
-			
+
 			var mp     = list.mountpoint;
 			var icon   = list.icon;
 			var fs     = list.fs;
@@ -1018,7 +1018,7 @@ $( '.img' ).on( 'click', function() {
 	}
 	var txt     = {
 		  lcdchar       : gpiopin
-						+'<br>GPIO : '+ htmlLegend( [ 
+						+'<br>GPIO : '+ htmlLegend( [
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
@@ -1026,7 +1026,7 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
 						+ '<br>I²C'+ COMMON.sp( 21 ) +': '+ vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
-						+ gnd 
+						+ gnd
 						+'</p><br>'+ ICON( 'warning yl' ) +' I²C VCC - 5V to 3.3V modification'
 						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
 		, mpdoled       : gpiopin
@@ -1078,7 +1078,7 @@ $( '.addnas' ).on( 'click', function() {
 		UTIL.warnFormat();
 		return
 	}
-	
+
 	SW = { icon: 'networks' }
 	UTIL.mount.mount();
 } );
@@ -1087,15 +1087,15 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		UTIL.warnFormat();
 		return
 	}
-	
+
 	var $li = $( this );
 	if ( $li.hasClass( 'client' ) ) {
 		BANNER( 'networks', 'Shared Data', 'Server rAudio client' );
 		return
 	}
-	
+
 	if ( MENU.isActive( $li, e ) ) return
-	
+
 	if ( $li.find( '.i-microsd' ).length ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
@@ -1120,7 +1120,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
 	if ( aplayname === S.audioaplayname && output === S.audiooutput ) return
-	
+
 	if ( aplayname === 'cirrus-wm5102' ) {
 		UTIL.wm5102();
 	} else {
@@ -1144,7 +1144,7 @@ $( '#divtimezone' ).on( 'click', '.select', function() {
 $( '#timezone' ).on( 'input', function( e ) {
 	var timezone = this.value;
 	if ( timezone === S.timezone ) return
-	
+
 	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
 	BASH( [ 'timezone', timezone, 'CMD TIMEZONE' ] );
 } );
@@ -1154,14 +1154,14 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	var $list    = $this.next();
 	if ( $this.hasClass( 'backend' ) ) {
 		if ( ! $target.is( 'a' ) ) return
-		
+
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 		if ( active ) {
 			$list.empty();
 			return
 		}
-		
+
 		var timeout = setTimeout( () => BANNER( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
 		BASH( 'data-config.sh packagelist '+ $target.text(), data => {
 			clearTimeout( timeout );
@@ -1179,7 +1179,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 $( '#menu a' ).on( 'click', function( e ) {
 	var cmd = MENU.command( $( this ), e );
 	if ( ! cmd || S.formatting ) return
-	
+
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
 	var source     = $li.data( 'id' );
@@ -1192,7 +1192,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 				BANNER( 'library blink', 'Library Database', 'Update ...' );
 				return
 			}
-			
+
 			NOTIFY( icon, title, COMMON.capitalize( cmd ) +' ...' );
 			delete V.bannerdelay; // allow hide
 			BASH( [ cmd, mountpoint, 'CMD MOUNTPOINT' ] );
@@ -1235,7 +1235,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} );
 					return
 				}
-				
+
 				INFO( {
 					  icon         : icon
 					, title        : title

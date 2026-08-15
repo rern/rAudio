@@ -56,11 +56,7 @@ else
 fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
-for i in $( seq 1 $trackL ); do
-	tracklist+="cdda:///$i "
-done
-mpc -q add $tracklist
+mpc -q add cdda://
 echo $discid > $dirshm/audiocd
 eject -x 4
 # set 1st track of cd as current

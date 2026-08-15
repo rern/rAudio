@@ -327,17 +327,17 @@ var COVERART  = {
 			var src    = $( '#liimg' ).attr( 'src' );
 			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
 			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
-			var album         = $( '.licover .lialbum' ).text();
+			var album  = $( '.licover .lialbum' ).text();
 			var artist = $( '.licover .liartist' ).text();
 		}
 		var message = '<img class="imgold" src="'+ src +'">';
-		if ( path[ 0 ] === '/' ) {
+		if ( radio ) {
+			message  += '<p class="infoimgname">'+ ( V.playback ? S.station : V.list.name ) +'</p>';
+			var title = 'Station Art'
+		} else {
 			message  += '<p class="infoimgname">'+ ICON( 'album wh' ) +' '+ album
 						+'<br>'+ ICON( 'artist wh' ) +' '+ artist +'</p>'
 			var title = 'Album Cover Art'
-		} else {
-			message  += '<p class="infoimgname">'+ ( V.playback ? S.station : V.list.name ) +'</p>';
-			var title = 'Station Art'
 		}
 		INFO( {
 			  icon    : V.icoverart
@@ -1331,6 +1331,7 @@ var MENU      = {
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 		$menu.find( '.similar' ).toggleClass( 'hide', webradio );
 		$menu.find( '.tag' ).toggleClass( 'hide', webradio || upnp || audiocd );
+		$menu.find( '.tagcd' ).toggleClass( 'hide', ! audiocd );
 		$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 		$menu.find( '.remove' ).toggleClass( 'sub', ! singletrack );
 		$menu.find( '.crop, .i-track.submenu' ).toggleClass( 'hide', singletrack );
