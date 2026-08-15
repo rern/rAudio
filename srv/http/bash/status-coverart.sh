@@ -5,16 +5,19 @@
 args2var "$1"
 
 getCoverart() {
-	local album data extralarge image mbid
+	local album data extralarge image mbid method param
+	[[ $ALBUM ]] && param="album=$ALBUM" || param="track=$TITLE"
+	param=${param//&/ and }
+	method=${param/=*}.getInfo
 	data=$( curl -sfG -m 5 \
 			--data-urlencode "artist=$ARTIST" \
-			--data-urlencode "$1" \
-			--data "$2" \
+			--data-urlencode "$param" \
+			--data "method=$method" \
 			--data "api_key=$apikey" \
 			--data "format=json" \
 			http://ws.audioscrobbler.com/2.0 )
 	[[ $? != 0 || ! $data ]] && return
-	
+
 	[[ $TITLE ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
 	[[ $album ]] && image=$( jq -r '.image // empty' <<< $album )
 	[[ $image ]] && extralarge=$( jq -r '.[3]."#text" // empty' <<< $image )
@@ -36,20 +39,12 @@ name=$( alphaNumeric $name )
 file=$( compgen -G $dirshm/online/$name.* )
 [[ -e $file ]] && pushData cover '{ "cover": "'${file:9}'" }' && exit
 # --------------------------------------------------------------------
-if [[ $ALBUM ]]; then # artist_album
-	param="album=${ALBUM//&/ and }"
-	method='method=album.getInfo'
-else
-	param="track=${TITLE//&/ and }"
-	method='method=track.getInfo'
-fi
 ### 1 - ws.audioscrobbler.com #####################################
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-getCoverart "$param" "$method"
+getCoverart
 if [[ ! $URL && ! $ALBUM && $TITLE == *')' ]]; then # try no last parenthesis - Title (...)
-	title=$( sed 's/ ([^)]*)$//' <<< $TITLE )
-	param="track=${title//&/ and }"
-	getCoverart "$param" "$method"
+	TITLE=$( sed 's/ ([^)]*)$//' <<< $TITLE )
+	getCoverart
 fi
 ### 2 - coverartarchive.org #####################################
 if [[ ! $URL && $MBID ]]; then

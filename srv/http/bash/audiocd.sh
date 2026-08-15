@@ -38,10 +38,10 @@ if [[ $discid ]]; then
 	album=${album_artist[0]}
 	artist=${album_artist[1]}
 	! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
-	$album
-	$artist
-	$discid
-	CMD ALBUM ARTIST DISCID" &> /dev/null &
+$album
+$artist
+$discid
+CMD ALBUM ARTIST DISCID" &> /dev/null &
 	notify 'audiocd blink' 'Audio CD' "$artist - $album"
 else
 	notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
