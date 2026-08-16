@@ -99,7 +99,6 @@ $menulist = [
 	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
 	, [ 'similar',    'lastfm',    'Add similar' ]
 	, [ 'tag',        'info',      'Track Info' ]
-	, [ 'tagcd',      'tag',       'Tag Editor' ]
 ];
 htmlMenu( $menulist, 'plaction' );
 // playlist

@@ -34,6 +34,7 @@ grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
 notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
 discid=$( audiocd-meta )
+echo $discid > $dirshm/audiocd
 if [[ $discid ]]; then
 	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
 	album=${album_artist[0]}
@@ -56,8 +57,11 @@ else
 fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-mpc -q add cdda://
-echo $discid > $dirshm/audiocd
+trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
+for i in $( seq 1 $trackL ); do
+	tracklist+="cdda:///$i "
+done
+mpc -q add $tracklist
 eject -x 4
 # set 1st track of cd as current
 if [[ $trackcd ]]; then

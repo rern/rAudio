@@ -1331,7 +1331,6 @@ var MENU      = {
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 		$menu.find( '.similar' ).toggleClass( 'hide', webradio );
 		$menu.find( '.tag' ).toggleClass( 'hide', webradio || upnp || audiocd );
-		$menu.find( '.tagcd' ).toggleClass( 'hide', ! audiocd );
 		$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 		$menu.find( '.remove' ).toggleClass( 'sub', ! singletrack );
 		$menu.find( '.crop, .i-track.submenu' ).toggleClass( 'hide', singletrack );

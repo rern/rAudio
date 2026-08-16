@@ -208,6 +208,11 @@ var CONTEXT  = {
 			, format  : format
 		}
 		LIST( query, function( values ) {
+			name[ 1 ]    = 'Album Artist';
+			var listinfo = [];
+			format.forEach( ( el, i ) => {
+				listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
+			} );
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
@@ -218,14 +223,35 @@ var CONTEXT  = {
 			var fileicon = cue ? 'file-music' : 'playlists';
 			var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message     += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-			var info     = {
+			message += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
+			var footer   = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
+			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
+			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 				, message      : message
-				, list         : name
+				, messagealign : 'left'
+				, list         : listinfo
+				, footer       : footer
+				, footeralign  : 'left'
+				, boxwidth     : 'max'
 				, values       : values
+				, checkchanged : true
 				, beforeshow   : () => {
+					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
+					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
+					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
+					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
+					var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
+					$( '.infofooter span' ).on( 'click', function( e ) {
+						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+							$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
+							$( '.taglabel' ).removeClass( 'hide' );
+						} else {
+							$( '#infoList input' ).css( 'width', inputW +'px' );
+							$( '.taglabel' ).addClass( 'hide' );
+						}
+					} );
 					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
 						var $this  = $( this );
 						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );
@@ -237,7 +263,7 @@ var CONTEXT  = {
 							if ( ! string ) return
 
 							var query  = {
-									library : 'findmode'
+								  library : 'findmode'
 								, mode    : mode
 								, string  : string
 								, format  : [ 'album', 'artist' ]
@@ -246,14 +272,14 @@ var CONTEXT  = {
 							var string = $this.find( '.path' ).text();
 							var mode   = string.split( '/' )[ 0 ].toLowerCase();
 							var query  = {
-									library : 'ls'
+								  library : 'ls'
 								, string  : string
 								, gmode   : mode
 							}
 						}
 						LIST( query, function( html ) {
 							var data = {
-									html      : html
+								  html      : html
 								, modetitle : string
 								, path      : string
 							}
@@ -269,6 +295,7 @@ var CONTEXT  = {
 						} );
 					} );
 				}
+				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
 					var val  = _INFO.val();
 					$.each( val, ( k, v ) => {
@@ -278,74 +305,8 @@ var CONTEXT  = {
 					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
 					BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
 				}
-			}
-			CONTEXT.tagEdit( info );
+			} );
 		}, 'json' );
-	}
-	, tagcd         : () => {
-		var info     = {
-			  icon         : 'tag'
-			, title        : 'Tag Editor'
-			, message      : '<img src="'+ $LI.find( 'img' ).attr( 'src' ) +'">'
-			, list         : [ 'Album', 'AlbumArtist', 'Artist', 'Title', 'Track' ]
-			, values      : { ALBUM: V.list.name, ALBUMARTIST: '', ARTIST: '', TITLE: '' }
-			, ok          : () => {
-
-			}
-		}
-		CONTEXT.tagEdit( info );
-	}
-	, tagEdit       : ( info ) => {
-		var name     = info.list;
-		var format   = name.map( el => el.toLowerCase() );
-		name[ 1 ]    = 'Album Artist';
-		var listinfo = [];
-		format.forEach( ( el, i ) => {
-			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
-		} );
-		var footer   = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
-		if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
-		var edit     = info.icon === 'tag';
-		var audiocd  = V.list.path.slice( 0, 4 ) === 'cdda';
-		INFO( {
-			  icon         : info.icon
-			, title        : info.title
-			, message      : info.message
-			, messagealign : 'left'
-			, list         : listinfo
-			, footer       : footer
-			, footeralign  : 'left'
-			, boxwidth     : 'max'
-			, values       : info.values
-			, checkchanged : edit
-			, beforeshow   : () => {
-				$( '#infoList .infomessage' ).addClass( 'tagmessage' );
-				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
-				$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
-				if ( ! edit ) $( '#infoList input' ).prop( 'disabled' );
-				var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
-				$( '.infofooter span' ).on( 'click', function( e ) {
-					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-						$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
-						$( '.taglabel' ).removeClass( 'hide' );
-					} else {
-						$( '#infoList input' ).css( 'width', inputW +'px' );
-						$( '.taglabel' ).addClass( 'hide' );
-					}
-				} );
-				if ( 'beforeshow' in info ) info.beforeshow();
-			}
-			, okno         : ! edit
-			, ok           : V.playlist ? '' : () => {
-				var val  = _INFO.val();
-				$.each( val, ( k, v ) => {
-					if ( values[ k ] === v ) delete val[ k ];
-				} );
-				val.FILE = file;
-				NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
-				BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
-			}
-		} );
 	}
 	, thumbnail     : () => {
 		var $liicon = $LI.find( '.li-icon' );
