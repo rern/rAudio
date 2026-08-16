@@ -57,7 +57,7 @@ else
 fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-trackL=$(( $( wc -l < $diraudiocd/$discid/data ) - 2 ))
+trackL=$( cd-discid | awk '{print $2}' )
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
