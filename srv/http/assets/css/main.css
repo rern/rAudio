@@ -797,7 +797,7 @@ div.pagerefresh {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
-#random, 
+#random,
 #voldn,
 #volume-band-dn {
 	background: var( --glossy-btn-l );
@@ -1381,7 +1381,6 @@ div.pagerefresh {
 #button-library,
 #button-playlist {
 	float: left;
-	display: inline-block;
 	width: 40px;
 	line-height: 40px;
 	text-align: center;
@@ -1391,9 +1390,8 @@ div.pagerefresh {
 }
 #lib-search,
 #pl-search {
-	display: inline-block;
-	white-space: nowrap;
 	float: right;
+	white-space: nowrap;
 }
 .search input {
 	width: 140px;
@@ -1672,6 +1670,12 @@ li.active .iconthumb {
 }
 #pl-list li.radio {
 	margin: 0;
+}
+#pl-list li.audiocd .name::before {
+	content: '\F538';
+	font-family : rern;
+	margin-right: 5px;
+	color: var( --cg );
 }
 #pl-list li.pause .elapsed::before,
 #pl-list li.play .elapsed::before {
