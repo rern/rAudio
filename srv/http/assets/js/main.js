@@ -315,7 +315,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, title   : 'Audio CD'
 		, message : 'Eject and clear Audio CD tracks?'
 		, oklabel : ICON( 'flash' ) +'Eject'
-		, okcolor : V.red
+		, okcolor : V.orange
 		, ok      : () => BASH( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );

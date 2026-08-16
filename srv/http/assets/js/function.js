@@ -623,7 +623,6 @@ var DISPLAY   = {
 			, playlist      : {
 				  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ICON( 'replace' ) +'Replace'+ ICON( 'play-replace sub' ) + '<a>'
 				, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ICON( 'lastfm' ) +'Add similar</a>'
-				, audiocdplclear : 'Clear on '+ ICON( 'audiocd' ) +'Audio CD load'
 			}
 		}
 		, playback      : () => {

@@ -32,23 +32,8 @@ fi
 ready=$( timeout 0.1 cd-paranoia -Q 2>&1 )
 grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
-notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
-discid=$( audiocd-meta )
-echo $discid > $dirshm/audiocd
-if [[ $discid ]]; then
-	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
-	album=${album_artist[0]}
-	artist=${album_artist[1]}
-	! compgen -G $diraudiocd/$discid/cover.* && $dirbash/status-coverart.sh "cmd
-$album
-$artist
-$discid
-CMD ALBUM ARTIST DISCID" &> /dev/null &
-	msg="$artist - $album"
-else
-	msg='Add to Playlist ...'
-fi
-notify 'audiocd blink' 'Audio CD' "$msg"
+mpc playlist | grep -q ^cdda && exit
+# --------------------------------------------------------------------
 if grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json; then
 	mpc -q clear
 else
@@ -57,16 +42,33 @@ else
 fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-trackL=$( cd-discid | awk '{print $2}' )
+trackL=$( audiocd-meta -t )
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
 mpc -q add $tracklist
 eject -x 4
+
+notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
+discid=$( audiocd-meta )
+echo $discid > $dirshm/audiocd
+if [[ $discid ]]; then
+	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
+	album=${album_artist[0]}
+	artist=${album_artist[1]}
+	! compgen -G $diraudiocd/$discid/cover.* > /dev/null && $dirbash/status-coverart.sh "cmd
+$album
+$artist
+$discid
+CMD ALBUM ARTIST DISCID" &> /dev/null &
+	msg="$artist - $album"
+else
+	msg='Audio CD'
+fi
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
 	mpc -q play $trackcd
 	mpc -q stop
 fi
 $dirbash/cmd.sh playlistpush
-notify audiocd 'Audio CD' Ready
+notify audiocd "$msg" Ready
