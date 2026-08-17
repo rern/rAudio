@@ -82,8 +82,8 @@ Required fonts:
 .parts\.activitybar .action-label {
 	border-radius: 0;
 }
-.action-item.checked {
-	background-color: var(--cg30);
+.monaco-workbench .part.panel.bottom .composite.title .action-item.checked {
+	background-color: var(--cg30) !important;
 }
 .active-item-indicator {
 	display: none;
@@ -91,6 +91,9 @@ Required fonts:
 .monaco-workbench .part > .title {
 	padding-left: 0;
 	border-bottom: 1px solid var(--cg30);
+}
+.style-override.monaco-workbench .part.basepanel:is(.bottom,.top,.left,.right) .composite.title {
+	padding: 0 !important;
 }
 .action-item.agent-status-container { /* top input bar */
 	margin-top: 5px;
