@@ -71,6 +71,9 @@ Required fonts:
 .monaco-workbench .part.activitybar { /* left menu bar */
 	margin: 0 !important;
 	background-color: #000 !important;
+}
+.monaco-workbench.floating-panels .part.activitybar,
+.style-override .monaco-action-bar .action-label {
 	border-radius: 0 !important;
 }
 .composite-bar-container .action-item {
@@ -81,6 +84,9 @@ Required fonts:
 }
 .parts\.activitybar .action-label {
 	border-radius: 0;
+}
+.part.activitybar .action-label.codicon {
+	margin-left: 3px;
 }
 .monaco-workbench .part.panel.bottom .composite.title .action-item.checked {
 	background-color: var(--cg30) !important;
