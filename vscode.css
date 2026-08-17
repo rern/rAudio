@@ -136,6 +136,15 @@ Required fonts:
 .titlebar-right > .action-toolbar-container { /* top bar right icons */
 	padding-right: 12px !important;
 }
+.style-override .monaco-grid-view .part.editor:not(.modal-editor-part) {
+	border: none !important;
+}
+.split-view-view.visible:not(:first-child) {
+	margin-left: -5px;
+}
+.monaco-sash.vertical {
+	width: 3px !important;
+}
 .codicon-search-details::before {
 	margin-right: 8px;
 	line-height: 26px;
