@@ -49,7 +49,7 @@ $album
 $artist"
 	while read l; do # artist^album^title^time
 		data+="
-$( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )
+$( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 	done <<< $lines
 	rm $f
 	mkdir $f
