@@ -25,6 +25,7 @@ if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : re
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
 		pushRefresh player
+		notify audiocd 'Audio CD' Off
 	else
 		[[ $1 == ejecticonclick ]] && eject
 		touch $dirshm/eject
