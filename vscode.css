@@ -53,7 +53,8 @@ Required fonts:
 	font-size: 18px !important;
 	font-family: 'Inconsolata Semi Condensed', 'Inconsolata SemiCondensed';
 }
-.monaco-workbench {
+.monaco-workbench,
+.style-override.monaco-workbench {
 	font-size: 16px;
 }
 .monaco-workbench .part.titlebar { /* top bar */
@@ -68,6 +69,7 @@ Required fonts:
 	width: 614px !important;
 }
 .monaco-workbench .part.activitybar { /* left menu bar */
+	margin: 0 !important;
 	background-color: #000 !important;
 	border-radius: 0 !important;
 }
@@ -96,11 +98,15 @@ Required fonts:
 .quick-input-widget.show-file-icons { /* top input bar - Command Pallete */
 	height: unset !important;
 }
-#workbench.parts.sidebar,
+#workbench\.parts\.sidebar,
 .part.sidebar {
 	margin: 0 !important;
 	border: none !important;
 	border-radius: 0 !important;
+}
+.split-view-view.visible:first-child,
+.split-view-view.visible:nth-child(2) {
+	top: 5px;
 }
 .part.sidebar.left .title:first-child {
 	background-color: var(--cg30);
@@ -135,6 +141,7 @@ Required fonts:
 	line-height: 26px;
 }
 .monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab {
+	padding: 0 7px 0 0 !important;
 	color: var(--cg);
 	background: var(--cg20) !important;
 	border-right-color: #000 !important;
@@ -153,9 +160,6 @@ Required fonts:
 }
 .tab.active>.tab-fill {
 	background: none !important;
-}
-.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab {
-	padding: 0 !important;
 }
 .monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab > .tab-actions {
 	width: 16px !important;
