@@ -20,14 +20,14 @@ if [[ $1 == on ]]; then
 fi
 if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
-		notifyCD 'USB CD Off ...'
 		audioCDplClear
 		rm -f $dirmpdconf/cdio.conf
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
 		pushRefresh player
 	else
-		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
+		[[ $1 == ejecticonclick ]] && eject
+		touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
 		audioCDplClear
 	fi
@@ -47,7 +47,7 @@ for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
 mpc -q add $tracklist
-eject -x 4
+eject -x 4 # set max speed
 
 notifyCD 'Fetch data ...'
 discid=$( audiocd-meta )
