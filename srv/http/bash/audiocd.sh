@@ -13,7 +13,7 @@ if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
-	notify audiocd 'Audio CD' On
+	notify audiocd 'USB Drive' On
 	pushRefresh player
 	exit
 # --------------------------------------------------------------------
@@ -25,7 +25,7 @@ if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : re
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
 		pushRefresh player
-		notify audiocd 'Audio CD' Off
+		notify audiocd 'USB Drive' Off
 	else
 		[[ $1 == ejecticonclick ]] && eject
 		touch $dirshm/eject
@@ -36,21 +36,21 @@ if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : re
 	exit
 # --------------------------------------------------------------------
 fi
+mpc playlist | grep -q ^cdda && exit # debounce udev change
+# --------------------------------------------------------------------
 ready=$( timeout 0.1 cd-paranoia -Q 2>&1 )
 grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
-mpc playlist | grep -q ^cdda && exit # debounce udev change
-# --------------------------------------------------------------------
-# add tracks to playlist
+notifyCD 'Fetch data ...'
+
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 trackL=$( audiocd-meta -t )
-for i in $( seq 1 $trackL ); do
+for i in $( seq 1 $trackL ); do # add tracks to playlist
 	tracklist+="cdda:///$i "
 done
 mpc -q add $tracklist
 eject -x 4 # set max speed
 
-notifyCD 'Fetch data ...'
 discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
 if [[ $discid ]]; then
@@ -62,9 +62,6 @@ $album
 $artist
 $discid
 CMD ALBUM ARTIST DISCID" &> /dev/null &
-	msg="$artist - $album"
-else
-	msg='Audio CD'
 fi
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
@@ -72,4 +69,3 @@ if [[ $trackcd ]]; then
 	mpc -q stop
 fi
 $dirbash/cmd.sh playlistpush
-notify audiocd "$msg" Ready
