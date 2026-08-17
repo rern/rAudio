@@ -13,7 +13,7 @@ if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
-	notify audiocd 'USB Drive' On
+	notify audiocd 'CD Drive' On
 	pushRefresh player
 	exit
 # --------------------------------------------------------------------
@@ -25,7 +25,7 @@ if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : re
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
 		pushRefresh player
-		notify audiocd 'USB Drive' Off
+		notify audiocd 'CD Drive' Off
 	else
 		[[ $1 == ejecticonclick ]] && eject
 		touch $dirshm/eject
