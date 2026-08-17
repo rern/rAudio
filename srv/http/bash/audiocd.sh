@@ -1,11 +1,16 @@
 #!/bin/bash
 
+[[ -e /dev/shm/eject ]] && exit
+
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/eject ]] && exit
+notifyCD() {
+	notify 'audiocd blink' 'Audio CD' "$1" -1
+}
+
 # --------------------------------------------------------------------
 if [[ $1 == on ]]; then
-	notify audiocd 'Audio CD' 'USB CD On'
+	notifyCD 'USB CD On ...'
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
@@ -13,10 +18,10 @@ if [[ $1 == on ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
-	audioCDplClear
+if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
-		notify audiocd 'Audio CD' 'USB CD Off'
+		notifyCD 'USB CD Off ...'
+		audioCDplClear
 		rm -f $dirmpdconf/cdio.conf
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
@@ -24,6 +29,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 	else
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
+		audioCDplClear
 	fi
 	pushStatus
 	exit
@@ -32,14 +38,8 @@ fi
 ready=$( timeout 0.1 cd-paranoia -Q 2>&1 )
 grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
-mpc playlist | grep -q ^cdda && exit
+mpc playlist | grep -q ^cdda && exit # debounce udev change
 # --------------------------------------------------------------------
-if grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json; then
-	mpc -q clear
-else
-	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ $cdtracks ]] && mpc -q del $cdtracks
-fi
 # add tracks to playlist
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 trackL=$( audiocd-meta -t )
@@ -49,7 +49,7 @@ done
 mpc -q add $tracklist
 eject -x 4
 
-notify 'audiocd blink' 'Audio CD' 'Fetch data ...' -1
+notifyCD 'Fetch data ...'
 discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
 if [[ $discid ]]; then
