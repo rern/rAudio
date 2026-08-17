@@ -10,10 +10,10 @@ notifyCD() {
 
 # --------------------------------------------------------------------
 if [[ $1 == on ]]; then
-	notifyCD 'USB CD On ...'
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
+	notify audiocd 'Audio CD' On
 	pushRefresh player
 	exit
 # --------------------------------------------------------------------
