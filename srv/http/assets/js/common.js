@@ -1443,7 +1443,7 @@ var COMMON    = {
 				, message : 'Currently updating ...'
 				, oklabel : ICON( 'flash' ) +'Stop'
 				, okcolor : V.orange
-				, ok      : () => BASH( [ 'mpcupdatestop' ] )
+				, ok      : () => BASH( [ 'cmd.sh', 'mpcupdatestop' ] )
 			} );
 			return
 		}
