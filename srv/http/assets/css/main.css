@@ -1533,6 +1533,9 @@ div.pagerefresh {
 	text-align: center;
 	color: var( --cg60 ) !important;
 }
+.liinfo .i-playlists {
+	margin-right: 0px !important;
+}
 .liinfo c {
 	background: var( --cg );
 }

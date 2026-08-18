@@ -596,9 +596,14 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	}
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
-	if ( substr( $file0, -14, 10 ) === '.cue/track' ) $file0 = dirname( $file0 ); // *.cue/track000n
+	if ( substr( $file0, -14, 10 ) === '.cue/track' ) {
+		$cue   = true;
+		$file0 = dirname( $file0 ); // *.cue/track000n
+		$lines = file( "/mnt/MPD/".$file0, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$line  = preg_grep( '/^FILE/', $lines ); // FILE "NAME.EXT" WAV
+		$file0 = dirname( $file0 ).'/'.explode( '"', reset( $line ) )[ 1 ];
+	}
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
-	$cue        = $ext === 'cue';
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
@@ -620,7 +625,6 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$hidegenre     = $each0->genre && $GMODE !== 'genre' ? '' : ' hide';
 		$hidedate      = $each0->date && $GMODE !== 'date' ? '' : ' hide';
 		$mpdpath       = dirname( $file0 );
-		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
 		$hhmmss        = array_column( $array, 'time' );
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
@@ -634,9 +638,10 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
+		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
-			$ext     = $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION );
-			$exticon = icon(  'playlists' );
+			$type    = $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION );
+			$exticon = icon(  'playlists' ).'<c>'.strtoupper( $type ).'</c>';
 		} else {
 			$exticon = '';
 		}
