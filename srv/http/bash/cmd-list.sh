@@ -45,7 +45,7 @@ updateDone() {
 	pushData mpdupdate '{ '$counts' }'
 	touch $dirshm/updatedone
 	pushStatus
-	pushRefresh
+	pushRefresh player
 	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }
 
