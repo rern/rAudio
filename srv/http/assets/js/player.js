@@ -349,7 +349,6 @@ function renderPage() {
 			.prop( 'checked', novolume )
 			.toggleClass( 'disabled', novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
-		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );

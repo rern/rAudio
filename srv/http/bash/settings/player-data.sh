@@ -6,7 +6,7 @@
 
 data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
-			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
+			$dirmpdconf autoupdate.conf buffer.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
 volumemax=$( volumeMaxGet )
 ##########
