@@ -45,6 +45,7 @@ updateDone() {
 	pushData mpdupdate '{ '$counts' }'
 	touch $dirshm/updatedone
 	pushStatus
+	pushRefresh
 	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
 }
 
@@ -77,7 +78,7 @@ if [[ ! $albumlist ]]; then # very large database
 		albumlist=$( albumList )
 		[[ $albumlist ]] && break
 	done
-	
+
 	if [[ ! $albumlist ]]; then # too large - get by album list instead
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
@@ -164,7 +165,7 @@ updateDone
 	else
 		rm -f $dirmpd/nonutf8
 	fi
-	
+
 	list=$( find -L /mnt/MPD -name .mpdignore )
 	if [[ $list ]]; then
 		while read file; do # verify ignored dirs exist
