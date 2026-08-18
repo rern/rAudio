@@ -17,7 +17,7 @@ amixer0dB() {
 
 case $CMD in
 
-autoupdate | ffmpeg | normalization )
+autoupdate | normalization )
 	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd
 	pushRefresh
@@ -88,17 +88,6 @@ dop )
 	filedop=$dirsystem/dop-$name # OFF with args - value by index
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh
-	;;
-filetype )
-	type=$( mpd -V \
-				| sed -n '/\[ffmpeg/ {s/.*ffmpeg. //; s/ rtp.*//; p}' \
-				| tr ' ' '\n' \
-				| sort )
-	for i in {a..z}; do
-		line=$( grep ^$i <<< $type | tr '\n' ' ' )
-		[[ $line ]] && list+=${line:0:-1}'<br>'
-	done
-	echo "${list:0:-4}"
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
