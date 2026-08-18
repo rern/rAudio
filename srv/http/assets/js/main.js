@@ -778,15 +778,23 @@ $( '#button-lib-back' ).on( 'click', function() {
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
 		return
 	}
-
-	var $target = '';
+	
 	if ( MODE.album() ) {
-		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( V.query.length === 1 ) {
-		$target = $( '#library' );
-	}
-	if ( $target ) {
+		var $target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
 		$target.trigger( 'click' );
+		return
+	}
+	
+	var lidir = $( '#lib-title .lidir' ).length;
+	if ( lidir ) {
+		if ( lidir > 1 ) {
+			$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
+			return
+		}
+	}
+
+	if ( lidir === 1 || V.query.length === 1 ) {
+		$( '#library' ).trigger( 'click' );
 		return
 	}
 

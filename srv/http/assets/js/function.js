@@ -12,6 +12,7 @@ function LIST( query, callback, json ) {
 	);
 }
 function REFRESHDATA() {
+	console.log('REFRESHDATA', V.query.length)
 	if ( V.library ) {
 		if ( V.search ) return
 
@@ -1045,7 +1046,7 @@ var LIBRARY   = {
 			COMMON.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
-		$( '#lib-path' ).empty()
+		$( '#lib-path, #mode-title' ).empty()
 		$( '#lib-home-title, #button-lib-search' ).removeClass( 'hide' );
 		$( '#button-lib-update' ).toggleClass( 'hide', D.bars );
 		$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
