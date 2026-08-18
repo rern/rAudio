@@ -25,21 +25,21 @@ warningWrite() {
 	echo "   $warn" No write permission: $( tagColor $dir ) $( stat -c '%A (%a)' "$dir" )
 }
 
-dir="/mnt/MPD/$PATH_MPD"
-[[ ! -w "$dir" ]] && warningWrite && exit
+path="/mnt/MPD/$PATH_MPD"
+[[ ! -w "$path" ]] && warningWrite && exit
 # --------------------------------------------------------------------
-echo -e "\nDirectory: $( tagColor $dir )\n"
+echo -e "\nDirectory: $( tagColor $path )\n"
 if [[ ! $PATH_MPD ]]; then
-	mpdpathlist=$( cut -d^ -f7 $dirmpd/album )
+	directories=$( sed 's|.*^|/mnt/MPD/|' $dirmpd/album )
 else
-	mpdpathlist=$( find "$dir" -type d | cut -c10- )
+	directories=$( find "$path" -type d )
 fi
-[[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
+[[ ! $directories ]] && echo "$padw No albums found in database." && exit
 # --------------------------------------------------------------------
 SECONDS=0
 unsharp=0x.5
-count=$( wc -l <<< $mpdpathlist )
-while read mpdpath; do
+count=$( wc -l <<< $directories )
+while read dir; do
 	(( i++ ))
 	percent=$(( $i * 100 / $count ))
 	if (( $percent > 0 )); then
@@ -50,22 +50,25 @@ while read mpdpath; do
 		total=0
 	fi
 	echo $percent'% <a class="gr">'$( hhmmss $sec )/$( hhmmss $total )'</a>'
-	echo $i/$count $( tagColor $mpdpath )
+	echo $i/$count $( tagColor $dir )
 
-	dir="/mnt/MPD/$mpdpath"
 	if [[ ! $OVERWRITE ]] && fileExist "$dir/coverart.*"; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
 	
-	file0=
-	while read f; do
-		f="/mnt/MPD/$f"
-		[[ -f "$f" ]] && file0=$f && break
-	done < <( mpc ls "$mpdpath" )
-	[[ ! $file0 ]] && continue
-	
-	coverfile=$( $dirbash/status -C "/mnt/MPD/$file0" )
+	coverfile=$( $dirbash/status -C "$dir" )
+	if [[ ! $coverfile ]]; then
+		file0=
+		while read f; do
+			f="/mnt/MPD/$f"
+			[[ -f "$f" ]] && file0=$f && break
+			
+		done < <( mpc ls "${dir:9}" )
+		[[ ! $file0 ]] && continue
+		
+		coverfile=$( $dirbash/status -C "$file0" )
+	fi
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}
@@ -94,7 +97,7 @@ $coverfile"
 	else
 		echo "   $padgr No coverart found."
 	fi
-done <<< $mpdpathlist
+done <<< $directories
 
 [[ $errorwrite ]] && echo "
 $warn No write permission:
