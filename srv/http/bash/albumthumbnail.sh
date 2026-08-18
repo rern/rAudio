@@ -57,18 +57,15 @@ while read dir; do
 		continue
 	fi
 	
-	coverfile=$( $dirbash/status -C "$dir" )
-	if [[ ! $coverfile ]]; then
-		file0=
-		while read f; do
-			f="/mnt/MPD/$f"
-			[[ -f "$f" ]] && file0=$f && break
-			
-		done < <( mpc ls "${dir:9}" )
-		[[ ! $file0 ]] && continue
+	file0=
+	while read f; do
+		f="/mnt/MPD/$f"
+		[[ -f "$f" ]] && file0=$f && break
 		
-		coverfile=$( $dirbash/status -C "$file0" )
-	fi
+	done < <( mpc ls "${dir:9}" )
+	[[ ! $file0 ]] && continue
+	
+	coverfile=$( $dirbash/status -C "$file0" ) # find in parent dir then embedded
 	if [[ $coverfile ]]; then
 		error=
 		ext=${coverfile: -3}
