@@ -1079,7 +1079,7 @@ var LIBRARY   = {
 		} else if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			var htmlpath = '';
-		} else if ( ! MODE.file( '+radio' ) ) {
+		} else if ( ! MODE.file_radio() ) {
 			var htmlpath = ICON( V.search ? 'search' : V.mode ) + data.modetitle;
 		} else if ( data.path ) { // dir breadcrumbs
 			var dir      = data.path.split( '/' );
@@ -1116,7 +1116,7 @@ var LIBRARY   = {
 				V.librarytrack = false;
 				if ( V.albumlist ) $( '#lib-list' ).addClass( 'album' );
 			}
-			$( '.liinfopath' ).toggleClass( 'hide', MODE.file( '+radio' ) );
+			$( '.liinfopath' ).toggleClass( 'hide', MODE.file_radio() );
 			if ( V.albumlist ) {
 				if ( $( '.licover' ).length ) {
 					$( '.liinfo .lialbum' ).addClass( 'hide' );
@@ -1260,7 +1260,7 @@ var MENU      = {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 		} else {
-			var album_file_radio = MODE.file( '+radio' ) || [ 'album', 'latest' ].includes( mode );
+			var album_file_radio = MODE.file_radio() || [ 'album', 'latest' ].includes( mode );
 			var radio            = MODE.radio();
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
@@ -1345,15 +1345,10 @@ var MENU      = {
 	}
 }
 var MODE      = {
-	  album : () => {
-		return [ 'album', 'latest' ].includes( V.mode )
-	}
-	, file  : radio => {
-		var modes = [ 'nas', 'nvme', 'sata', 'sd', 'usb' ];
-		if ( radio ) modes.push( 'dabradio', 'webradio' );
-		return modes.includes( V.mode )
-	}
-	, radio : () => V.mode.slice( -5 ) === 'radio'
+	  album      : () => [ 'album', 'latest' ].includes( V.mode )
+	, file       : () => [ 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( V.mode )
+	, file_radio : () => [ 'nas', 'nvme', 'sata', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode )
+	, radio      : () => V.mode.slice( -5 ) === 'radio'
 }
 var PLAYBACK  = {
 	  blank     : () => {

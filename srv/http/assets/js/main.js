@@ -857,7 +857,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} );
 	query.path      = moderadio ? pathradio : path;
 	query.modetitle = path;
-	V.query.push( query );
+	if ( ! MODE.file_radio() ) V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 
@@ -907,7 +907,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} );
 	query.path      = path;
 	query.modetitle = path;
-	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
@@ -1105,7 +1104,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $LI.find( '.lipath' ).text();
 	if ( l_modefile ) {
-		if ( MODE.file( '+radio' ) ) {
+		if ( MODE.file_radio() ) {
 			var query     = {
 				  library : 'ls'
 				, string  : path
@@ -1200,7 +1199,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	} );
 	query.path      = path;
 	query.modetitle = modetitle;
-	V.query.push( query );
+	if ( ! MODE.file_radio() ) V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );
