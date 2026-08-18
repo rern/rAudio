@@ -786,6 +786,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 	}
 	
 	var lidir = $( '#lib-title .lidir' ).length;
+	if ( MODE.radio() && ! lidir ) lidir = 1;
 	if ( lidir ) {
 		if ( lidir > 1 ) {
 			$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
@@ -1118,7 +1119,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			var modetitle = libpath; // keep title of non-file modes
 		}
 	} else if ( MODE.radio() ) { // dabradio, webradio
-		path          = '/srv/http/data/'+ V.mode +'/'+ path;
+		path          = path;
 		var query     = {
 			  library : 'radio'
 			, string  : path

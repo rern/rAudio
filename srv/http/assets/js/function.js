@@ -12,7 +12,6 @@ function LIST( query, callback, json ) {
 	);
 }
 function REFRESHDATA() {
-	console.log('REFRESHDATA', V.query.length)
 	if ( V.library ) {
 		if ( V.search ) return
 
