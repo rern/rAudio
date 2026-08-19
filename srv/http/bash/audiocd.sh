@@ -1,158 +1,71 @@
 #!/bin/bash
 
+[[ -e /dev/shm/eject ]] && exit
+
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/eject ]] && exit
+notifyCD() {
+	notify 'audiocd blink' 'Audio CD' "$1" -1
+}
+
 # --------------------------------------------------------------------
 if [[ $1 == on ]]; then
-	notify audiocd 'Audio CD' 'USB CD On'
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
+	notify audiocd 'CD Drive' On
 	pushRefresh player
 	exit
 # --------------------------------------------------------------------
 fi
-if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
-	audioCDplClear
+if [[ $1 == eject || $1 == ejecticonclick || $1 == off ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
-		notify audiocd 'Audio CD' 'USB CD Off'
+		audioCDplClear
 		rm -f $dirmpdconf/cdio.conf
 		systemctl restart mpd
 		( sleep 3 && rm -f $dirshm/audiocd ) &
+		pushRefresh player
+		notify audiocd 'CD Drive' Off
 	else
-		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
+		[[ $1 == ejecticonclick ]] && eject
+		touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
+		audioCDplClear
 	fi
-	$dirbash/cmd.sh playlistpush
 	pushStatus
 	exit
 # --------------------------------------------------------------------
 fi
-mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
+mpc playlist | grep -q ^cdda && exit # debounce udev change
 # --------------------------------------------------------------------
-cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
-if [[ ! $cddiscid ]]; then
-	notify audiocd 'Audio CD' 'CD contains no tracks length'
-	exit
+ready=$( timeout 0.1 cd-paranoia -Q 2>&1 )
+grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
-fi
-discid=${cddiscid[0]}
-trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
+notifyCD 'Fetch data ...'
 
-cdData() {
-	local artist f0 f1 offset time title tracks va
-	offset=( ${cddiscid[@]:2} )                           # offset - frame end
-	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
-	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
-	for (( i=0; i < trackL; i++ )); do                    # ${offset[0]} - lead-in
-		f0=${offset[i]}
-		f1=${offset[i+1]}
-		time=$(( ( f1 - f0 + 37 ) / 75 ))                 # frames > seconds 75:1 (+37 round to nearest)
-		title=${titles[i]}
-		if [[ $va && $title == *' / '* ]]; then
-			artist=${title/ \/ *}
-			title=${title/* \/ }
-		fi
-		mkdir -p $diraudiocd/$discid
-		cat << EOF > $diraudiocd/$discid/i$(( i + 1 ))
-Album="$album"
-Artist="$artist"
-Title="$title"
-Time="$time"
-EOF
-	done
-}
-
-grep -qs -m1 '\^^^' $diraudiocd/$discid/1 && rm -rf $diraudiocd/$discid # remove bad data
-if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
-	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
-	discid=$( tr ' ' + <<< ${cddiscid[@]} )
-	query=$( curl -sX POST \
-				--data "cmd=cddb+read+data+$discid" \
-				--data "hello=owner+rAudio+rAudio+1" \
-				--data "proto=6" \
-				https://gnudb.gnudb.org/~cddb/cddb.cgi )
-	if [[ $? == 0 ]]; then
-# 210 Found exact matches, list follows (until terminating `.')
-# GENRE0 DISCID ARTIST / ALBUM
-# GENRE1 DISCID ARTIST / ALBUM
-		#[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"+"$2}' <<< $query )
-		#[[ $genre_id ]] && data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # remove \r
-		[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"/"$2}' <<< $query )
-		[[ $genre_id ]] && data=$( curl -sfL "https://gnudb.org/gnudb/$genre_id" \
-									| grep '^.TITLE' \
-									| tr -d '\r' ) # remove \r
-		if [[ $data ]]; then
-# DTITLE=ARTIST / ALBUM
-# TTITLE0=TITLE1
-# TTITLE1=TITLE2
-# ...
-			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; p}' <<< $data )
-			artist=${artist_album/ \/ *}
-			album=${artist_album/* \/ }
-			readarray -t titles < <( grep -v ^D <<< $data | cut -d= -f2 )
-			cdData
-		fi
-	fi
-fi
-if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
-	cdinfo=$( cd-info )
-	if [[ ! $cdinfo ]]; then
-		notify audiocd 'Audio CD' 'CD data not found.'
-	else
-		readarray -t msf < <( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
-									| grep ^[0-9] \
-									| sed -E 's/:0/:/g; s/^0//; s/:/ /g' ) # mm:ss:fr
-# Disc mode is listed as: CD-DA
-# CD-ROM Track List (1 - 20)
-# #: MSF       LSN    Type   Green? Copy? Channels Premphasis?
-# 1: 00:02:00  000000 audio  false  no    2        no
-# 2: 04:46:46  021346 audio  false  no    2        no
-# ...
-# CD-TEXT for Disc:
-	# TITLE: ALBUM
-	# PERFORMER: ARTIST
-	# DISC_ID: DISCID
-# ...
-# CD-TEXT for Track  1:
-	# TITLE: TITLE1
-# CD-TEXT for Track  2:
-	# TITLE: TITLE2
-	# PERFORMER: ARTIST
-#...
-		discdata=$( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo )
-		artist=$( grep ^PERFORMER <<< $discdata | cut -d' ' -f2- )
-		album=$( grep ^TITLE <<< $discdata | cut -d' ' -f2- )
-		lines=$( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
-		lines+='
-CD-TEXT-'
-		while read line; do
-			if [[ $line == TITLE:* ]]; then
-				t=$( sed 's/^TITLE: //' <<< $line )
-			elif [[ $line == CD-TEXT* ]]; then
-				titles+=( "$t" )
-				t=
-			fi
-		done <<< $lines
-		cdData
-	fi
-fi
-# add tracks to playlist
-notify audiocd 'Audio CD' 'Add to Playlist'
-grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
-for i in $( seq 1 $trackL ); do
+trackL=$( audiocd-meta -t )
+for i in $( seq 1 $trackL ); do # add tracks to playlist
 	tracklist+="cdda:///$i "
 done
 mpc -q add $tracklist
+eject -x 4 # set max speed
+
+discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
-eject -x 4
+if [[ $discid ]]; then
+	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
+	album=${album_artist[0]}
+	artist=${album_artist[1]}
+	! compgen -G $diraudiocd/$discid/cover.* > /dev/null && $dirbash/status-coverart.sh "cmd
+$album
+$artist
+$discid
+CMD ALBUM ARTIST DISCID" &> /dev/null &
+fi
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
 	mpc -q play $trackcd
 	mpc -q stop
 fi
 $dirbash/cmd.sh playlistpush
-notify audiocd 'Audio CD' Ready

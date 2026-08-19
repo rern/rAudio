@@ -14,11 +14,17 @@ W = {
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
-		if ( V.library ) return
-		
 		var src    = data.cover + UTIL.versionHash();
-		$COVERART.attr( 'src', src );
-		PLAYLIST.coverart( src );
+		if ( V.library ) {
+			if ( $( '.licoverimg' ).length
+				&& $( '.lialbum' ).text() === data.album
+				&& $( '.liartist' ).text() === data.artist ) {
+				$( '#liimg' ).attr( 'src', src );
+			}
+		} else {
+			$COVERART.attr( 'src', src );
+			PLAYLIST.coverart( src );
+		}
 	}
 	, coverart  : data => { // change
 		BANNER_HIDE();
@@ -26,24 +32,11 @@ W = {
 		if ( ! V.playback ) {
 			REFRESHDATA();
 		} else {
-			if ( S.webradio && S.play ) return
+			if ( S.webradio && S.play || 'thumbnail' in data ) return
 			
-			var encoded  = data.coverart[ 0 ] === '%';
-			var regex    = encoded ? /^...srv...http/ : /^.srv.http/;
-			var coverart = data.coverart.replace( regex, '' );
-			if ( ! data.current ) {
-				var cover   = encoded ? decodeURIComponent( coverart ) : coverart;
-				cover       = cover.replace( /^.mnt.MPD./, '' );
-				if ( S.webradio ) {
-					var path0 = S.file.replace( /\//g, '|' ); // http://url                        > http:||url
-					var path1 = cover.slice( 19, -4 );        // /data/webradio/img/http:||url.ext > http:||url
-				} else {
-					var path0 = UTIL.dirName( S.file );       // dir/file.ext  > dir
-					var path1 = UTIL.dirName( cover );        // dir/cover.ext > dir
-				}
-				data.current = path0 === path1;
-			}
-			if ( data.current ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
+			var coverart = data.coverart;
+			if ( coverart.includes( '%' ) ) coverart = decodeURIComponent( coverart );
+			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
 		}
 	}
 	, display   : data => {

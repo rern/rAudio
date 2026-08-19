@@ -84,10 +84,12 @@ audioCDtrack() {
 }
 audioCDplClear() {
 	local cdtracks
+	mpc -q stop
 	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $cdtracks ]]; then
+		notify audiocd Playlist 'CD tracks removed.'
 		mpc -q del $cdtracks
-		return 0
+		$dirbash/cmd.sh playlistpush
 	fi
 }
 cacheBust() {
@@ -174,32 +176,22 @@ countMnt() {
 	echo "$counts"
 }
 countRadio() {
-	local counts type
-	for type in dabradio webradio; do
-		[[ -e $dirdata/$type ]] && counts+='
-, "'$type'" : '$( find -L $dirdata/$type ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l )
+	local counts dir files
+	> $dirmpd/radio
+	for dir in $dirwebradio $dirdabradio; do
+		[[ ! -e $dir ]] && continue
+
+		files=$( find $dir -type f -name data )
+		counts+='
+, "'${dir: -8}'" : '$( wc -l <<< $files )
+		while read file; do
+			uri=$( head -1 "$file" )
+			path=$( dirname "$file" )
+			list+="$uri^^$path"$'\n'
+		done <<< $files
 	done
 	echo "$counts"
-}
-coverFileGet() {
-	local coverfile dir file files name
-	dir=$1
-	shopt -s nullglob
-	for name in cover folder front album; do
-		files=( "$dir"/[${name:0:1}]"${name:1}".{jpg,png,gif,jpeg} )
-		(( ${#files[@]} )) && coverfile=${files[0]} && break
-	done
-	shopt -u nullglob
-	[[ $coverfile ]] && echo $coverfile && return
-	
-	files=$( mpc ls "${dir:9}" 2> /dev/null )
-	while read file; do
-		file="/mnt/MPD/$file"
-		if [[ -f "$file" ]]; then
-			coverfile=$( $dirbash/status -C "$file" )
-			[[ $coverfile ]] && echo $coverfile && return
-		fi
-	done <<< $files
+	echo -n "$list" > $dirmpd/radio
 }
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
@@ -267,6 +259,9 @@ fifoToggle() { # mpdoled vuled vumeter
 		[[ ! $mpdoled ]] && systemctl stop mpd_oled
 		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
 	fi
+}
+fileExist() {
+	compgen -G "$1" > /dev/null && return 0
 }
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab
@@ -416,8 +411,7 @@ nfsServerActive() {
 	systemctl -q is-active nfs-server && return 0
 }
 notify() { # icon title message delayms
-	local data delay icon ip json message title
-	[[ $1 == '-ip' ]] && ip=$2 && shift 2
+	local data delay icon json message title
 	if [[ $4 ]]; then
 		delay=$4
 	else
@@ -426,8 +420,7 @@ notify() { # icon title message delayms
 	icon=$1
 	title=$( quoteEscape $2 )
 	message=$( quoteEscape $3 )
-	[[ ! $ip ]] && ip=127.0.0.1
-	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
@@ -437,14 +430,11 @@ pushBookmark() {
 	pushData bookmark "$data"
 }
 pushData() { # send to websocket.py (server)
-	local channel data dir ip ip_client json
+	local channel data dir
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
-	pushWebsocket 127.0.0.1 $channel $data
+	pushWebsocket $channel $data
 	[[ ! -e $filesharedip || ' bookmark coverart display order mpdupdate playlists radiolist ' != *" $channel "* ]] && return
-#...............................................................................
-	ip_client=$( ipSharedData ) # other shared data hosts
-	[[ ! $ip_client ]] && return
 #...............................................................................
 	if [[ $channel == coverart ]]; then
 		dir=$( jq .coverart <<< $data | sed 's|%2F|/|g' | cut -d/ -f3 )
@@ -456,9 +446,7 @@ pushData() { # send to websocket.py (server)
 		data=$( tr -d '\n' <<< $data )
 		data=$( pushDataSet $channel "$data" )
 	fi
-	for ip in $ip_client; do
-		ipOnline $ip && websocat --text ws://$ip:8080 <<< $data
-	done
+	status -B "$data"
 }
 pushDataSet() {
 	cat << EOF
@@ -483,13 +471,14 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
+pushToIP() {
+	websocat --text ws://$1:8080 <<< ${@:2}
+}
 pushWebsocket() {
 	local data
-	data=$( tr -d '\n' <<< ${@:3} ) # remove newlines (<<< preserve spaces)
-	data=$( pushDataSet $2 "$data" )
-	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
-		websocat --text ws://$1:8080 <<< $data
-	fi
+	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
+	data=$( pushDataSet $1 "$data" )
+	websocat --text ws://127.0.0.1:8080 <<< $data
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"

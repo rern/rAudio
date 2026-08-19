@@ -62,6 +62,10 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
+function radioPath( $url ) {
+	$line = shell_exec( 'grep ^'.$url.' /srv/http/data/mpd/radio' );
+	if ( $line ) return rtrim( explode( '^^', $line )[ 1 ] );
+}
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );
 	$mm = floor( ( $second % 3600 ) / 60 );

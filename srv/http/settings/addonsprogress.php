@@ -10,6 +10,10 @@ $opt         = $_POST[ 'opt' ]         ?? '';
 $postmessage = $_POST[ 'postmessage' ] ?? $label.' done.';
 $title       = $_POST[ 'title' ];
 $uninstall   = $_POST[ 'uninstall' ]   ?? '';
+
+function escape( $string ) {
+	return preg_replace( '/(["`])/', '\\\\\1', $string );
+}
 ?>
 
 <style>
@@ -106,18 +110,20 @@ document.body.addEventListener( 'keydown', e => {
 if ( location.hostname === 'localhost' ) E.titleicon.classList.add( 'local' );
 </script>
 <?php
+$dirbash = '/bin/sudo /srv/http/bash/';
 // ......................................................................................
-if ( in_array( $alias, [ 'dabradio', 'thumbnail' ] ) ) {
-	$command    = $installurl;
-	$commandtxt = $command;
+if ( $alias === 'dabradio' ) {
+	$command = $dirbash.$installurl;
+} else if ( $alias === 'thumbnail' ) {
+	$command = $dirbash.$installurl.' "'.escape( $_POST[ 'path' ] ).'" '.$_POST[ 'overwrite' ];
 } else if ( $label === 'Uninstall' ) {
-	$command    = 'uninstall_'.$alias.'.sh';
-	$commandtxt = $command;
+	$command = 'uninstall_'.$alias.'.sh';
 } else {
 	$installfile = basename( $installurl );
-	$options     = $alias."\n".$label."\n".$branch;
-	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	$command    = <<< EOF
+	$options     = [ $alias, $label, $branch ];
+	if ( $opt ) array_push( $options, ...$opt );
+	$options     = "\n".escape( implode( "\n", $options ) );
+	$command     = <<< EOF
 curl -sLO $installurl
 [[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
 
@@ -131,6 +137,8 @@ chmod 755 $installfile
 EOF;
 	if ( $label === 'Update' && $uninstall ) $commandtxt = str_replace( './', "uninstall_$alias.sh\n./", $commandtxt );
 }
+if ( ! isset( $commandtxt ) ) $commandtxt = $command;
+
 echo $commandtxt.'<br>';
 
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];

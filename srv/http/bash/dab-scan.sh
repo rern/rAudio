@@ -15,11 +15,12 @@ if ! grep -q ^audioservice <<< $dabscan; then
 # --------------------------------------------------------------------
 fi
 
-dirdabradio=$dirdata/dabradio
-mv -f $dirdabradio/img $dirshm &> /dev/null
-rm -rf $dirdabradio
-mkdir -p $dirdabradio/img
-mv -f $dirshm/img $dirdabradio &> /dev/null
+if [[ $dirdabradio ]]; then
+	mv -f $dirdabradio /tmp
+else
+	dirdabradio=$dirdata/dabradio
+fi
+mkdir -p $dirdabradio
 
 host=$( hostname -f )
 services=$( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' <<< $dabscan )
@@ -29,16 +30,18 @@ while read service; do
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
-	
+
 	readarray -d';' -n4 -t field <<< $service
 	name=${field[1]}
 	channel=${field[2]}
 	id=${field[3]}
 	channel_id=${channel,,}_${id,,}
+	dir="$dirdabradio/$ensemble/$name"
+	mkdir -p "$dir"
 	echo "\
-$name
+rtsp://$host:8554/$channel_id
 48 kHz 160 kbit/s
-" > "$dirdabradio/$ensemble/rtsp:||$host:8554|$channel_id"
+" > "$dir/data"
 	list+="\
   $channel_id:
     runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$RTSP_PATH
@@ -46,15 +49,17 @@ $name
     runOnDemandStartTimeout: 15s
     runOnDemandCloseAfter: 3s
 "
+	dir_tmp="/tmp/dabradio/$ensemble/$name"
+	! compgen -G "$dir_tmp"/coverart.* > /dev/null && continue
+
+	for img in coverart thumb; do
+		cp "$dir_tmp"/$img.* "$dir"
+	done
 done <<< $services
 
 fileyml=/etc/mediamtx/mediamtx.yml
 sed -i '1,/^paths:/ !d' $fileyml
 echo "$list" >> $fileyml
 
-chown -R http:http $dirdabradio
-dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
-counts=$( jq ".dabradio = $dabradio" $dirmpd/counts )
-echo "$counts" > $dirmpd/counts
-pushData counts '{ "dabradio": '$dabradio' }'
-rm -f $dirshm/script
+countRadio
+rm -f $dirshm/script /tmp/dabradio

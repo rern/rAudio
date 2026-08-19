@@ -797,7 +797,7 @@ div.pagerefresh {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
-#random, 
+#random,
 #voldn,
 #volume-band-dn {
 	background: var( --glossy-btn-l );
@@ -1233,9 +1233,6 @@ div.pagerefresh {
 .bk-rename {
 	top: 37px;
 }
-.bk-cover {
-	bottom: 0;
-}
 .coveredit {
 	position: absolute;
 	right: 0;
@@ -1244,14 +1241,17 @@ div.pagerefresh {
 	height: 40px !important;
 	line-height: 40px;
 }
-.coveredit i,
-.bk-cover i {
+.coveredit i {
 	margin: 0 !important;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
 }
-.bk-cover i {
-	line-height: 34px !important;
+.bk-cover {
+	position: absolute;
+	width: 22px !important;
+	right: 5px;
+	bottom: 5px;
+	opacity: 1 !important;
 }
 .cover-save {
 	left: 0;
@@ -1381,7 +1381,6 @@ div.pagerefresh {
 #button-library,
 #button-playlist {
 	float: left;
-	display: inline-block;
 	width: 40px;
 	line-height: 40px;
 	text-align: center;
@@ -1391,9 +1390,8 @@ div.pagerefresh {
 }
 #lib-search,
 #pl-search {
-	display: inline-block;
-	white-space: nowrap;
 	float: right;
+	white-space: nowrap;
 }
 .search input {
 	width: 140px;
@@ -1535,6 +1533,9 @@ div.pagerefresh {
 	text-align: center;
 	color: var( --cg60 ) !important;
 }
+.liinfo .i-playlists {
+	margin-right: 0px !important;
+}
 .liinfo c {
 	background: var( --cg );
 }
@@ -1672,6 +1673,12 @@ li.active .iconthumb {
 }
 #pl-list li.radio {
 	margin: 0;
+}
+#pl-list li.audiocd .name::before {
+	content: '\F538';
+	font-family : rern;
+	margin-right: 5px;
+	color: var( --cg );
 }
 #pl-list li.pause .elapsed::before,
 #pl-list li.play .elapsed::before {

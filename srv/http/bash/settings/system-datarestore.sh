@@ -47,4 +47,6 @@ profile=$( getContent $dirsystem/netctlprofile )
 grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 rm -rf $dir_config $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 
+[[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
+
 $dirbash/power.sh reboot

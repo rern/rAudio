@@ -1375,19 +1375,24 @@ var COMMON    = {
 		} );
 	}
 	, formSubmit    : input => {
-		if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/bin/sudo /srv/http/bash/'+ input.installurl
-		var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-		$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
-		$( 'body' ).append( form +'</form>' );
+		var form    = document.createElement( 'form' );
+		form.method = 'POST';
+		form.action = 'settings.php?p=addonsprogress';
 		if ( V.debug ) {
-			var data = {};
-			$( 'form' ).last().serializeArray().forEach( el => data[ el.name ] = el.value );
-			console.log( data );
+			console.log( input );
 			return
 		}
 
+		$.each( input, ( k, v ) => {
+			var input   = document.createElement( 'input' );
+			input.type  = 'hidden';
+			input.name  = k;
+			input.value = v;
+			form.appendChild( input );
+		} );
 		COMMON.loader();
-		$( '#formtemp' ).submit();
+		$( 'body' ).append( form );
+		form.submit();
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
@@ -1438,7 +1443,7 @@ var COMMON    = {
 				, message : 'Currently updating ...'
 				, oklabel : ICON( 'flash' ) +'Stop'
 				, okcolor : V.orange
-				, ok      : () => BASH( [ 'mpcupdatestop' ] )
+				, ok      : () => BASH( [ 'cmd.sh', 'mpcupdatestop' ] )
 			} );
 			return
 		}
@@ -1729,10 +1734,12 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 				REFRESHDATA();                                                    // - refresh data
 			} else {                                                              // pushed data
 				var json    = JSON.parse( data );
-				if ( V.websocket ) console.log( json );
-				if ( 'page' in json.data && json.data.page !== S.page ) return // settings
-
 				var channel = json.channel;
+				if ( V.websocket ) console.log( json );
+				if ( channel === 'startup' ) return
+				
+				if ( 'page' in json.data && json.data.page !== S.page ) return    // settings
+
 				if ( channel in W ) W[ channel ]( json.data );
 				if ( V.debug ) console.log( json );
 			}

@@ -80,7 +80,7 @@ $( < $fileconf )"
 	done
 	conf="\
 $( sort <<< $conf | sed 's/  *"/^"/' | column -t -s^ )"
-	for file in curl cdio ffmpeg bluetooth camilladsp fifo httpd snapserver output soxr soxr-custom; do
+	for file in curl cdio bluetooth camilladsp fifo httpd snapserver output soxr soxr-custom; do
 		fileconf=$dirmpdconf/$file.conf
 		[[ -e $fileconf ]] && conf+="
 $( < $fileconf )"

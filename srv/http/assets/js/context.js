@@ -3,34 +3,25 @@ var CONTEXT  = {
 		// #1 - track list - show image from licover
 		// #2 - dir list   - show image from path + coverart.jpg
 		// #3 - no cover   - icon + directory name
-		var path = V.list.path;
-		if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
-			var $img = $LI.find( '.iconthumb' );
-			var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		var path    = V.list.path;
+		if ( MODE.radio() ) {
 			var name    = V.list.name;
+			var src     = $LI.find( 'img' ).attr( 'src' );
 			var msgpath = name;
 		} else {
-			if ( MODE.radio() ) {
-				var name    = V.list.name;
-				var path    = $( '#lib-path' ).text() +'/'+ name;
-				var src     = path.slice( 9 ) +'/coverart.jpg';
-				var msgpath = path.slice( 24 );
-			} else {
-				if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
-				var src     = '/mnt/MPD/'+ path +'/cover.jpg';
-				var msgpath = path;
-				var name    = path.split( '/' ).pop();
-			}
+			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
+			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
+			var msgpath = path;
+			var name    = path.split( '/' ).pop();
 		}
 		INFO( {
 			  icon       : 'bookmark'
 			, title      : 'Add Bookmark'
-			, message    : '<img src="'+ src + UTIL.versionHash() +'">'
+			, message    : '<img src="'+ src +'">'
 						  +'<br><wh>'+ msgpath +'</wh>'
 			, list       : [ 'As:', 'text' ]
 			, values     : name
 			, checkblank : true
-			, beforeshow : () => $( '#infoList input' ).parents( 'tr' ).addClass( 'hide' )
 			, ok         : () => {
 				var name = _INFO.val();
 				BANNER( 'bookmark', 'Bookmark', 'Add ...' );
@@ -38,8 +29,8 @@ var CONTEXT  = {
 					if ( std == -1 ) {
 						BANNER_HIDE();
 						INFO( {
-							  icon    : 'bookmark'
-							, title   : 'Add Bookmark'
+							  icon    : I.icon
+							, title   : I.title
 							, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
 						} );
 					}
@@ -151,7 +142,7 @@ var CONTEXT  = {
 			var album = $( '.licover .lialbum' ).text();
 			var file  = $LI.find( '.lipath' ).text();
 		}
-		
+
 		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
 		var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
 		if ( file.slice( 0, 4 ) === 'http' ) { // webradio
@@ -267,10 +258,10 @@ var CONTEXT  = {
 						if ( $this.is( 'i' ) ) {
 							var mode   = $this.prop( 'class' ).replace( 'i-', '' );
 							if ( [ 'track', 'title' ].includes( mode ) ) return
-							
+
 							var string = $this.parent().next().find( 'input' ).val();
 							if ( ! string ) return
-							
+
 							var query  = {
 								  library : 'findmode'
 								, mode    : mode
@@ -318,46 +309,24 @@ var CONTEXT  = {
 		}, 'json' );
 	}
 	, thumbnail     : () => {
-		if ( V.playback ) { // radio only
-			var src     = $COVERART.attr( 'src' );
-			var mode    = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-			var name    = S.station;
-			var dir     = '';
-		} else {
-			var $liicon = $LI.find( '.li-icon' );
-			var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-			var mode    = V.mode;
-			var name    = V.list.name;
-			var dir     = $LI.hasClass( 'dir' );
-		}
-		if ( dir ) {
-			mode               = 'folder';
-			var path           = MODE.radio() ? $( '#lib-path' ).text() : '/mnt/MPD';
-			path              += '/'+ V.list.path;
-			var imagefilenoext = path + '/coverart';
-		} else { // radio only
-			var path           = V.playback ? S.file : V.list.path;
-			var imagefilenoext = '/srv/http/data/'+ V.mode +'/img/'+ path.replace( /\//g, '|' );
-		}
+		var $liicon = $LI.find( '.li-icon' );
+		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
+		var path    = '/mnt/MPD'+ V.list.path;
 		INFO( {
 			  icon        : V.icoverart
-			, title       : dir ? 'Folder Thumbnail' : 'Station Art'
+			, title       : 'Folder Thumbnail'
 			, message     : '<img class="imgold" src="'+ src +'" >'
-						   +'<p class="infoimgname">'+ name +'</p>'
+						   +'<p class="infoimgname">'+ V.list.name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 			, beforeshow  : () => {
 				$( '.extrabtn' ).toggleClass( 'hide', src.replace( /\?v=.*/, '' ) === V.coverdefault );
 			}
-			, buttonlabel : V.library ? ICON( mode ) +' Icon' : ICON( 'remove' ) +' Remove'
+			, buttonlabel : ICON( 'folder' ) +' Icon'
 			, buttoncolor : V.orange
 			, button      : () => {
-				if ( dir ) {
-					BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
-				} else {
-					BASH( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
-				}
+				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( mode, imagefilenoext )
+			, ok          : () => UTIL.imageReplace( path, 'coverart' )
 		} );
 	}
 	, thumbupdate   : modealbum => {
@@ -378,14 +347,14 @@ var CONTEXT  = {
 			, message : msg
 			, list    : [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ]
 			, ok      : () => {
-				BASH( [ 'albumthumbnail', path, _INFO.val(), 'CMD DIR OVERWRITE' ], () => { // easier escaping path with quotes
-					COMMON.formSubmit( {
-						  alias      : 'thumbnail'
-						, title      : 'Album Thumbnails'
-						, label      : 'Update'
-						, installurl : 'albumthumbnail.sh'
-						, backhref   : '/'
-					} );
+				COMMON.formSubmit( {
+					  alias      : 'thumbnail'
+					, title      : 'Album Thumbnails'
+					, label      : 'Update'
+					, installurl : 'albumthumbnail.sh'
+					, backhref   : '/'
+					, path       : path
+					, overwrite  : _INFO.val()
 				} );
 			}
 		} );
@@ -414,29 +383,27 @@ var CONTEXT  = {
 			, okcolor : V.red
 			, ok      : () => {
 				$LI.remove();
-				BASH( ['webradiodelete', $( '#lib-path' ).text(), url, V.mode, 'CMD DIR URL MODE' ] );
+				BASH( [ 'webradiodelete', $( '#lib-path' ).text() +'/'+ name, 'CMD DIR' ] );
 			}
 		} );
 	}
 	, wrdirdelete   : () => {
-		var icon  = 'webradio';
-		var title = 'Delete Directory';
 		var msg   = ICON( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
 		INFO( {
-			  icon    : icon
-			, title   : title
+			  icon    : 'webradio'
+			, title   : 'Delete Directory'
 			, message : msg
 			, oklabel : ICON( 'remove' ) +'Delete'
 			, okcolor : V.red
 			, ok      : () => {
-				var cmd = [ 'dirdelete', $( '#lib-path' ).text(), V.list.name, 'CMD DIR NAME' ]
+				var cmd = [ 'dirdelete', $( '#lib-path' ).text(), 'CMD DIR' ]
 				BASH( cmd, std => {
 					if ( std == -1 ) {
 						cmd[ 3 ] += ' CONFIRM';
 						cmd.splice( 3, 0, true );
 						INFO( {
-							  icon    : icon
-							, title   : title
+							  icon    : I.icon
+							, title   : I.title
 							, message : msg +'&nbsp; not empty.'
 										+'<br><br>Continue?'
 							, oklabel : ICON( 'remove' ) +'Delete'
@@ -449,11 +416,9 @@ var CONTEXT  = {
 		} );
 	}
 	, wrdirrename   : () => {
-		var icon  = 'webradio';
-		var title = 'Rename Directory';
 		INFO( {
-			  icon         : icon
-			, title        : title
+			  icon         : 'webradio'
+			, title        : 'Rename Directory'
 			, list         : [ 'Name', 'text' ]
 			, values       : V.list.name
 			, checkblank   : true
@@ -464,8 +429,8 @@ var CONTEXT  = {
 				BASH( [ 'dirrename', $( '#lib-path' ).text(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
 					if ( std == -1 ) {
 						INFO( {
-							  icon    : icon
-							, title   : title
+							  icon    : I.icon
+							, title   : I.title
 							, message : 'Exists: '+ ICON( 'folder gr' ) +'<wh> '+ newname +'</wh>'
 							, ok      : CONTEXT.wrdirrename
 						} );
@@ -484,8 +449,6 @@ var CONTEXT  = {
 				  NAME    : V.list.name
 				, URL     : V.list.path
 				, CHARSET : $LI.data( 'charset' ) || 'UTF-8'
-				, DIR     : $( '#lib-path' ).text()
-				, OLDURL  : V.list.path
 			}
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
@@ -500,8 +463,10 @@ var CONTEXT  = {
 			, oklabel      : ICON( 'save' ) +'Save'
 			, ok           : () => {
 				var val = _INFO.val();
+				val.DIR     = $( '#lib-path' ).text();
+				val.OLDNAME = V.list.name;
 				BASH( COMMON.cmd_json2args( 'webradioedit', val ), error => {
-					if ( error ) WEBRADIO.exists( error, '', val.URL );
+					if ( error ) WEBRADIO.exists( error );
 				} );
 			}
 		} );
@@ -518,12 +483,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
-	
+
 	if ( cmd in CONTEXT ) {
-		CONTEXT[ cmd ]();
+		MODE.radio() && ! $LI.hasClass( 'dir' ) ? COVERART.change() : CONTEXT[ cmd ]();
 		return
 	}
-	
+
 	/* '' album albumartist artist composer conductor date genre pl wr
 	_add
 	_addplay

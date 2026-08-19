@@ -34,15 +34,8 @@ bookmarkadd )
 # --------------------------------------------------------------------
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
-	[[ NSU == *${DIR:0:1}* ]] && order=$DIR || order=$NAME
+	[[ ${DIR:0:1} == [NSU]* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
-	dir="/mnt/MPD/$DIR"
-	if [[ -d $dir  ]] && ! compgen -G "$dir/coverart".*; then
-		target=$( coverFileGet "$dir" )
-		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
-$target
-CMD TARGET"
-	fi
 	pushBookmark
 	;;
 bookmarkremove )
@@ -121,21 +114,13 @@ countmnt )
 	echo '{ '${counts/,}' }'
 	;;
 dirdelete )
-	dir="$DIR/$NAME"
-	lsdir=$( ls "$dir" )
-	[[ ! $CONFIRM && $lsdir ]] && echo -1 && exit
+	if fileExist "$DIR"/*; then
+		[[ ! $CONFIRM ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	stations=$( find "$dir" -type f -exec basename {} \; )
-	rm -rf "$dir"
-	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
+	fi
+	rm -rf "$DIR"
 	pushData radiolist '{ "dirdelete": "'$DIR'", "name": "'$NAME'" }'
-	[[ $lsdir ]] && webradioCount
-	while read s; do
-		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
-
-		rm -f "$dirwebradio/img/$s".*
-	done <<< $stations
+	webradioCount
 	;;
 dirnew )
 	mkdir -p "$DIR"
@@ -456,14 +441,11 @@ multiraudiolist )
 , "list"    : '$( < $dirsystem/multiraudio.json )'
 }'
 	;;
-order )
-	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
-	;;
 password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
 	[[ $HEADLESS ]] && localBrowserOff
-	[[ -e $dirshm/startup ]] && pushData reload true
+	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
 pladdrandom )
 	plAddRandom
@@ -547,6 +529,10 @@ shareddataupdate )
 snapserverlist )
 	snapserverList
 	;;
+thumbnailreset )
+	rm -f "$DIR/coverart".* "$DIR/thumb".*
+	pushData coverart '{ "thumbnail": true }'
+	;;
 titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
@@ -557,60 +543,26 @@ upnpstart )
 volume )
 	volume
 	;;
-webradioadd )
-	url=$( urldecode $URL )
-	urlname=${url//\//|}
-	webradioM3uPlsVerify $url
-	file+="$DIR/$urlname"
-	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
-# --------------------------------------------------------------------
-	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
-	echo "\
-$NAME
-
-$CHARSET" > "$file"
-	chown http:http "$file" # for edit in php
-	webradioCount
-	webRadioSampling $url "$file" &> /dev/null &
-	;;
 webradiodelete )
-	urlname=${URL//\//|}
-	rm -f "$DIR/$urlname"
-	path=$dirdata/$MODE
-	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
+	rm -rf "$DIR"
 	webradioCount
 	;;
 webradioedit )
-	newurlname=${URL//\//|}
-	urlname=${OLDURL//\//|}
-	newfile="$DIR/$newurlname"
-	prevfile="$DIR/$urlname"
-	if [[ $URL == $OLDURL ]]; then
-		sampling=$( sed -n 2p "$prevfile" )
-	else
-		[[ -e $newfile ]] && echo 'URL exists:' && exit
+	[[ -e "$DIR" ]] && echo "Station already exists: <wh>${DIR:15}</wh>" && exit
+	line=$( grep ^$URL $dirmpd/radio )
+	[[ $line ]] && echo "URL already exists in: <wh>${line/*^}</wh>" && exit
 # --------------------------------------------------------------------
-		webradioM3uPlsVerify $URL
-		rm "$prevfile"
-		# stationcover
-		imgurl="$dirwebradio/img/$urlname"
-		img=$( ls "$imgurl".* | head -1 )
-		thumb="$imgurl-thumb.jpg"
-		if [[ $img || -e $thumb ]]; then
-			newimgurl="$dirwebradio/img/$newurlname"
-			newimg="$newimgurl.${img##*.}"
-			newthumb="$newimgurl-thumb.jpg"
-			[[ ! -e $newimg && -e $img ]] && cp "$img" "$newimg"
-			[[ ! -e $newthumb && -e $thumb ]] && cp "$thumb" "$newthumb"
-			[[ ! $( find $dirwebradio -name "$urlname" ) ]] && rm -f "$imgurl".* "$thumb"
-		fi
+	CHARSET=$( webradioCharset $CHARSET )
+	if [[ $DIR == $OLDDIR ]]; then
+		echo "\
+$URL
+$( sed -n 2p "$DIR/data" )
+$CHARSET" > "$DIR/data"
+		pushRadioList
+	else
+		webradioVerify $URL "$DIR"
+		[[ $OLDDIR ]] && rm "$DIR"
 	fi
-	[[ $CHARSET ]] && CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
-	echo "\
-$NAME
-$sampling
-$CHARSET" > "$newfile"
-	pushRadioList
 	;;
 
 esac

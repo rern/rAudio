@@ -5,40 +5,25 @@
 . /srv/http/bash/common.sh
 
 argsSet() {
-	sed -n -E '/^(Artist|Title|Album)/ {
-		/^Artist/ i\cmd
-		/^Album/  a\CMD ARTIST TITLE ALBUM
-		s/.*="*//
-		s/ *"*$//
-		s/[`’]/'"'"'/g
-		p
-	}' $dirshm/status
-}
-onPlay() {
-	if [[ -e $dirsystem/stoptimer ]]; then
-		if [[ $state == play ]]; then
-			[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
-		elif [[ -e $dirshm/pidstoptimer ]]; then
-			killProcess stoptimer
-			if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
-				rm $dirsystem/stoptimer
-				pushData refresh '{ "page": "features", "stoptimer": false }'
-			fi
-		fi
-	fi
-	if [[ ! -e /bin/firefox ]] \
-			|| ! systemctl -q is-active localbrowser \
-			|| ! grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-		return
-#...............................................................................
-	fi
-	export DISPLAY=:0
-	if [[ $state == play ]]; then
-		sudo xset dpms force on
-		sudo xset -dpms
+	[[ $webradio && $state == stop ]] && return 1
+
+	lines=$( grep -E '^(Album|Artist|Title)' $dirshm/status )
+	. <( echo "$lines" )
+	[[ ! $Artist ]] && return 1
+
+	if [[ $1 == scrobble ]]; then
+		[[ ! $Title ]] && return 1
 	else
-		sudo xset +dpms
+		[[ ! $Album && ! $Title ]] && return 1
 	fi
+
+	args=$( sort <<< $lines \
+		| sed '
+			s/.*="*//
+			s/ *"*$//
+			s/[`’]/'"'"'/g
+			1 i\cmd
+			$ a\CMD ALBUM ARTIST TITLE' )
 }
 
 killProcess statuspush
@@ -67,20 +52,17 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 	json2var "$status" > $dirshm/status
 	state=play
 	webradio=true
-	onPlay
 else
 	$dirbash/status -k > $dirshm/status
 	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
-	[[ $coverart ]] && COVERART=1
-	onPlay
+	COVERART=$coverart
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
 
 if [[ ! $COVERART ]]; then
-	args=$( argsSet )
-	$dirbash/status-coverart.sh "$args" &> /dev/null &
+	argsSet && $dirbash/status-coverart.sh "$args" &> /dev/null &
 fi
 [[ $state == play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
@@ -98,6 +80,26 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+if [[ -e $dirsystem/stoptimer ]]; then
+	if [[ $state == play ]]; then
+		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
+	elif [[ -e $dirshm/pidstoptimer ]]; then
+		killProcess stoptimer
+		if grep -q ^onplay=$ $dirsystem/stoptimer.conf; then
+			rm $dirsystem/stoptimer
+			pushData refresh '{ "page": "features", "stoptimer": false }'
+		fi
+	fi
+fi
+if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+	export DISPLAY=:0
+	if [[ $state == play ]]; then
+		sudo xset dpms force on
+		sudo xset -dpms
+	else
+		sudo xset +dpms
+	fi
+fi
 [[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 [[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 # ------------------------------------------------------------------------------
@@ -118,5 +120,4 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-[[ ! $args ]] && args=$( argsSet )
-$dirbash/scrobble.sh "$args" &> /dev/null &
+argsSet scrobble && $dirbash/scrobble.sh "$args" &> /dev/null &

@@ -42,17 +42,26 @@ case 'giftype': // formdata from common.js
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
 case 'imagereplace': // $.post from function.js
+	if ( $post->file[ 0 ] !== '/' ) {
+		if ( str_starts_with( $post->file, 'cdda' ) ) {
+			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$post->file = '/srv/http/data/audiocd/'.$discid.'/cover';
+		} else {
+			$post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
+		}
+	}
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	exec( 'rm -f "'.substr( $post->file, 0, -4 ).'".*' ); // remove existing *.jpg, *.png, *.gif
-	if ( substr( $post->file, -4 ) === 'jpg' ) {
+	exec( 'rm -f "'.$post->file.'".*' ); // remove existing *.jpg, *.png, *.gif
+	$file = $post->file.$post->ext;
+	if ( $post->ext === '.jpg' ) {
 		$base64  = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
-		file_put_contents( $post->file, base64_decode( $base64 ) );
+		file_put_contents( $file, base64_decode( $base64 ) );
 	} else {
-		rename( $post->data, $post->file );
+		rename( $post->data, $file );
 	}
-	$args      = escape( implode( "\n", [ $post->type, $post->file, $post->current, 'CMD TARGET CURRENT' ] ) );
-	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
+	$args      = escape( implode( "\n", [ $post->name, $file, 'CMD FILE' ] ) );
+	exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # data directories
-mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,renderer,system,webradio,webradio/img} \
+mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} \
 		 /mnt/MPD/{NAS,SD,USB}
 
 . /srv/http/bash/common.sh
@@ -15,8 +15,8 @@ for d in album albumartist artist bars           buttons   composer conductor co
 do
 	display+=', "'$d'": true'
 done
-for d in albumbyartist albumyear audiocdplclear backonleft   barsalways  composername   conductorname \
-		 covervu       hidecover progress       radioelapsed tapaddplay  tapreplaceplay vumeter
+for d in albumbyartist albumyear backonleft barsalways  composername conductorname \
+		 covervu       hidecover progress   radioelapsed tapaddplay  tapreplaceplay vumeter
 do
 	display+=', "'$d'": false'
 done

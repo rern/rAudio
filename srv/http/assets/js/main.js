@@ -261,9 +261,13 @@ $( '.emptyadd' ).on( 'click', function() {
 	$( '#library' ).trigger( 'click' );
 } );
 $( '#artist, #info-bio' ).on( 'click', function() {
+	if ( S.webradio && S.stop ) return
+
 	BIO.get( S.Artist );
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
+	if ( ! S.Title ) return
+
 	if ( S.lyrics
 		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
@@ -284,7 +288,7 @@ $( '#title, #info-lyrics' ).on( 'click', function() {
 
 } );
 $( '#album, #info-booklet' ).on( 'click', function() {
-	if ( V.press || V.localhost ) return
+	if ( V.press || V.localhost || ( S.webradio && S.stop ) ) return
 
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
 	if ( S.booklet ) {
@@ -311,7 +315,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, title   : 'Audio CD'
 		, message : 'Eject and clear Audio CD tracks?'
 		, oklabel : ICON( 'flash' ) +'Eject'
-		, okcolor : V.red
+		, okcolor : V.orange
 		, ok      : () => BASH( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );
@@ -417,7 +421,7 @@ $( '#map-cover' ).press( e => {
 		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 
-	S.webradio ? CONTEXT.thumbnail() : COVERART.change();
+	COVERART.change();
 } );
 var btnctrl = {
 	  TL : 'cover'
@@ -774,15 +778,24 @@ $( '#button-lib-back' ).on( 'click', function() {
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
 		return
 	}
-
-	var $target = '';
+	
 	if ( MODE.album() ) {
-		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
-	} else if ( V.query.length === 1 ) {
-		$target = $( '#library' );
-	}
-	if ( $target ) {
+		var $target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
 		$target.trigger( 'click' );
+		return
+	}
+	
+	var lidir = $( '#lib-title .lidir' ).length;
+	if ( MODE.radio() && ! lidir ) lidir = 1;
+	if ( lidir ) {
+		if ( lidir > 1 ) {
+			$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
+			return
+		}
+	}
+
+	if ( lidir === 1 || V.query.length === 1 ) {
+		$( '#library' ).trigger( 'click' );
 		return
 	}
 
@@ -842,9 +855,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		LIBRARY.list( data );
 	} );
-	query.path      = moderadio ? '' : path;
+	query.path      = moderadio ? pathradio : path;
 	query.modetitle = path;
-	V.query.push( query );
+	if ( ! MODE.file_radio() ) V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 
@@ -894,7 +907,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} );
 	query.path      = path;
 	query.modetitle = path;
-	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
@@ -931,28 +943,26 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
-	var thumbnail = $this.find( 'img' ).length;
+	var thumbnail = $this.find( '.bkcoverart' ).length;
 	if ( thumbnail ) {
-		var icon    = 'coverart';
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
-		var icon    = 'bookmark';
 		var message = '<div class="infobookmark">'+ ICON( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var dir   = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
+	var path = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
 	INFO( {
-		  icon        : icon
+		  icon        : V.icoverart
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : V.orange
 		, button      : ! thumbnail ? '' : () => {
-			BASH( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir, 'CMD TYPE DIR' ] );
+			BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 		}
-		, ok          : () => UTIL.imageReplace( 'bookmark', dir +'/coverart' )
+		, ok          : () => UTIL.imageReplace( path, 'coverart' )
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	COMMON.dabScan();
@@ -963,8 +973,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		$( '.mode.bookmark' ).each( ( i, el ) => {
 			var $this      = $( el );
 			var buttonhtml = ICON( 'remove bkedit bk-remove' );
-			if ( ! $this.find( 'img' ).length )  buttonhtml += ICON( 'edit bkedit bk-rename' );
-			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += ICON( 'coverart bkedit bk-cover' );
+			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
+			if ( $this.hasClass( 'subdir' ) ) buttonhtml += '<img class="bkedit bk-cover" src="'+ V.coverart +'">';
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );
@@ -1094,7 +1104,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $LI.find( '.lipath' ).text();
 	if ( l_modefile ) {
-		if ( MODE.file( '+radio' ) ) {
+		if ( MODE.file_radio() ) {
 			var query     = {
 				  library : 'ls'
 				, string  : path
@@ -1108,7 +1118,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			var modetitle = libpath; // keep title of non-file modes
 		}
 	} else if ( MODE.radio() ) { // dabradio, webradio
-		path          = '/srv/http/data/'+ V.mode +'/'+ path;
+		path          = path;
 		var query     = {
 			  library : 'radio'
 			, string  : path
@@ -1189,7 +1199,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	} );
 	query.path      = path;
 	query.modetitle = modetitle;
-	V.query.push( query );
+	if ( ! MODE.file_radio() ) V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );
