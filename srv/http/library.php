@@ -591,12 +591,12 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	}
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
-	if ( substr( $file0, -14, 10 ) === '.cue/track' ) {
-		$cue   = true;
-		$file0 = dirname( $file0 ); // *.cue/track000n
-		$lines = file( "/mnt/MPD/".$file0, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+	$cue        = strpos( $file0, '.cue/track' );
+	if ( $cue ) {
+		$file_cue = dirname( $file0 );
+		$lines = file( '/mnt/MPD/'.$file_cue, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		$line  = preg_grep( '/^FILE/', $lines ); // FILE "NAME.EXT" WAV
-		$file0 = dirname( $file0 ).'/'.explode( '"', reset( $line ) )[ 1 ];
+		$file0 = dirname( $file_cue ).'/'.explode( '"', reset( $line ) )[ 1 ];
 	}
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
