@@ -347,14 +347,15 @@ var CONTEXT  = {
 			, message : msg
 			, list    : [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ]
 			, ok      : () => {
+				var overwrite = _INFO.val();
 				COMMON.formSubmit( {
 					  alias      : 'thumbnail'
 					, title      : 'Album Thumbnails'
-					, label      : 'Update'
+					, label      : overwrite ? 'Rebuild' : 'Update'
 					, installurl : 'albumthumbnail.sh'
 					, backhref   : '/'
 					, path       : path
-					, overwrite  : _INFO.val()
+					, overwrite  : overwrite
 				} );
 			}
 		} );
