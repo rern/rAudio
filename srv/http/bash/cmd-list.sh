@@ -42,7 +42,7 @@ updateDone() {
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	counts+=$( countMnt )
-	pushData mpdupdate '{ '$counts' }'
+	pushData counts '{ '$counts' }'
 	touch $dirshm/updatedone
 	pushStatus
 	pushRefresh player
