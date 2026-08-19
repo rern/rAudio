@@ -381,13 +381,10 @@ function htmlDirectory() {
 		$name      = modeFile( $GMODE ) ? basename( $path ) : $path;
 		$fullpath  = '/mnt/MPD/'.$path;
 		$dir       = is_dir( $fullpath );
-		$subdir    = '';
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
 			$icon  = iconThumb( $fullpath.'/thumb.jpg', 'folder' );
-			$files = exec( 'find "'.$fullpath.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
-			if ( $files == 0 ) $subdir = ' subdir';
-			$class = ' class="dir'.$subdir.'"';
+			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = icon(  'music ', 'file' );
@@ -399,9 +396,7 @@ function htmlDirectory() {
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
 </li>';
-		if ( $subdir ) {
-			$html.= $htmlli;
-		} else if ( $dir ) {
+		if ( $dir ) {
 			$htmld .= $htmlli;
 		} else {
 			$htmlf.= $htmlli;
