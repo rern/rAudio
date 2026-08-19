@@ -17,20 +17,24 @@ function REFRESHDATA() {
 
 		if ( V.libraryhome ) {
 			LIBRARY.get();
-		} else if ( V.query.length === 1 ) {
-			$( '.mode.'+ V.mode ).trigger( 'click' );
 		} else {
-			var query = V.query[ V.query.length - 1 ];
-			LIST( query, function( html ) {
-				if ( html ) {
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : query.path || V.mode.toUpperCase()
+			if ( ! V.query.length ) return
+			
+			if ( V.query.length === 1 ) {
+				$( '.mode.'+ V.mode ).trigger( 'click' );
+			} else {
+				var query = V.query[ V.query.length - 1 ];
+				LIST( query, function( html ) {
+					if ( html ) {
+						var data = {
+							  html      : html
+							, modetitle : query.modetitle
+							, path      : query.path || V.mode.toUpperCase()
+						}
+						LIBRARY.list( data );
 					}
-					LIBRARY.list( data );
-				}
-			} );
+				} );
+			}
 		}
 		if ( D.playbackswitch && ( V.action === 'addplay' || V.action === 'replaceplay' ) ) {
 			$( '#playback' ).trigger( 'click' );
