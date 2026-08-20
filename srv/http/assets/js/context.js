@@ -205,14 +205,17 @@ var CONTEXT  = {
 			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var file     = V.list.path;
-		var cmd      = [ 'tageditor.sh', 'get', file, 'CMD FILE' ];
+		var cmd      = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
+		var CMD      = 'CMD FILE TAGS';
 		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
 			var fileicon = 'playlists';
-			if ( ! V.list.licover ) cmd = [ 'tageditor.sh', 'get', file, V.list.track, 'CMD FILE TRACK' ];
+			cmd.push( V.list.track );
+			CMD += ' TRACK';
 		} else {
 			var fileicon = 'file-music';
 		}
+		cmd.push( CMD );
 		BASH( cmd, values => {
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
