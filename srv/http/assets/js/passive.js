@@ -1,16 +1,16 @@
 W = {
 	  ...W // from common.js
 	, bookmark  : data => {
+		O.order        = data.order;
 		if ( ! V.library || ! V.libraryhome ) return
 		
-		O.order        = data.order;
 		V.html.library = data.html;
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
 	, counts    : data => {
 		COMMON.json.update( C, data );
-		DISPLAY.library();
+		if ( V.library && V.libraryhome ) DISPLAY.library();
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
@@ -110,7 +110,7 @@ W = {
 		PLAYBACK.button.updating();
 		if ( ! S.updating ) {
 			COMMON.json.update( C, data.counts );
-			DISPLAY.library();
+			if ( V.library && V.libraryhome ) DISPLAY.library();
 		}
 		var blink  = S.updating ? ' blink' : '';
 		var msg    = S.updating ? 'Updating ...' : 'Done';
