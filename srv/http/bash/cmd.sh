@@ -14,9 +14,8 @@ albumignore )
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/${MODE}byartist-year
 	[[ $MODE == album ]] && appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	n=$( wc -l < $dirmpd/$MODE )
-	counts=$( jq ".$MODE = $n" $dirmpd/counts )
-	echo "$counts" > $dirmpd/counts
-	pushData counts "$counts"
+	sed -i -E "s/(.*$MODE.: ).*/\1$n,/" $dirmpd/counts
+	pushData counts '{ "'$MODE'": '$n' }'
 	;;
 albumthumbnail )
 	echo $DIR > $dirshm/dir
