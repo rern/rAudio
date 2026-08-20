@@ -604,7 +604,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.( $cue ? $file_cue : $mpdpath ).'</a>
-	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
+	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).'^^^"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
 	<div class="liartist'.$hideartist.'">'.icon(  $iconartist ).$artist.'</div>
