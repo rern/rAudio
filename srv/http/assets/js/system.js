@@ -703,7 +703,7 @@ var UTIL          = {
 			var pin    = data.relays;
 			var name   = data.names;
 			var names  = {}
-			$.each( name, ( k, v ) => { names[ v ] = k } );
+			COMMON.json.update( names, name );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
 				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { colspan: 2, sameline: true } ]

@@ -3,7 +3,7 @@ W.refresh     = data => {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		$.each( data, ( k, v ) => { S[ k ] = v } );
+		COMMON.json.update( S, data );
 		CONFIG.valuesAssign();
 		RENDER[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
 		BANNER_HIDE();
@@ -1666,7 +1666,7 @@ var SETTING   = {
 					[ 'q', 'bandwidth', 'slope', 'unit' ].forEach( k => delete val[ k ] );
 					val[ unit ] = q;
 				}
-				$.each( val, ( k, v ) => { param[ k ] = v } );
+				COMMON.json.update( param, val );
 				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
 				if ( name in FIL && name !== newname ) {
@@ -2042,7 +2042,7 @@ var SETTING   = {
 			, checkchanged : true
 			, ok           : () => {
 				var val = _INFO.val();
-				$.each( val, ( k, v ) => { DEV[ k ] = v } );
+				COMMON.json.update( DEV, val );
 				SETTING.save( title, 'Change ...' );
 				RENDER.devices();
 			}
@@ -2053,7 +2053,7 @@ var SETTING   = {
 		var values  = D.resampler.values[ type ];
 		var current = DEV.resampler && DEV.resampler.type === values.type;
 		if ( profile ) values.profile = profile;
-		if ( current ) $.each( DEV.resampler, ( k, v ) => { values[ k ] = v } );
+		if ( current ) COMMON.json.update( values, DEV.resampler );
 		INFO( {
 			  ...SW
 			, list         : list

@@ -9,7 +9,7 @@ W = {
 		DISPLAY.library();
 	}
 	, counts    : data => {
-		$.each( data, ( k, v ) => { C[ k ] = v } );
+		COMMON.json.update( C, data );
 		DISPLAY.library();
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
@@ -53,7 +53,7 @@ W = {
 		}
 		
 		var albumlistchanged = D.albumbyartist !== data.albumbyartist || D.albumyear !== data.albumyear;
-		$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
+		COMMON.json.update( D, data );
 		V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
 		if ( ! D.covervu && ! D.vumeter ) {
 			$( '#vu' ).remove();
@@ -94,7 +94,7 @@ W = {
 		}, 300 );
 	}
 	, mpdradio  : data => {
-		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.json.update( S, data );
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		if ( D.radioelapsed ) {
@@ -109,11 +109,6 @@ W = {
 		S.updating = 'updating' in data;
 		COMMON.updating();
 		PLAYBACK.button.updating();
-		if ( ! S.updating ) {
-			V.html = {}
-			$.each( data, ( k, v ) => { C[ k ] = v } );
-			DISPLAY.library();
-		}
 	}
 	, option    : data => {
 		if ( V.local ) return

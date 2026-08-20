@@ -68,7 +68,7 @@ function REFRESHDATA() {
 				S = JSON.parse( list );
 			} else {
 				list = JSON.parse( list );
-				$.each( list, ( k, v ) => { S[ k ] = v } );
+				COMMON.json.update( S, list );
 			}
 		} catch( e ) {
 			COMMON.dataError( e.message, list );
@@ -173,7 +173,7 @@ W.refresh   = data => { // except camilla
 
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.json.update( S, data );
 		SWITCH.set();
 		renderPage();
 		$( '.col-r' ).css( 'pointer-events', '' );

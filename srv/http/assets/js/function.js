@@ -1023,7 +1023,7 @@ var LIBRARY   = {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			O = { modes: data.modes, order: data.order };
-			$.each( data.lsmnt, ( k, v ) => { C[ k ] = v } );
+			COMMON.json.update( C, data.lsmnt );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
@@ -2403,7 +2403,7 @@ var UTIL      = {
 	}
 	, statusUpdate    : status => {
 		if ( 'counts' in status ) {
-			$.each( status.counts, ( k, v ) => { C[ k ] = v } );
+			COMMON.json.update( C, status.counts );
 			delete status.counts;
 		}
 		if ( 'display' in status ) {
@@ -2415,7 +2415,7 @@ var UTIL      = {
 			BANNER_HIDE();
 			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.json.update( S, status );
 		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
 		if ( S.player === 'snapcast' ) {
 			S.icon = 'snapcast';

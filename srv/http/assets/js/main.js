@@ -176,7 +176,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 				$( '#button-lib-update' ).trigger( 'click' );
 			} else {
 				BASH( [ 'countmnt' ], counts => {
-					$.each( counts, ( k, v ) => { C[ k ] = v } );
+					COMMON.json.update( C, counts );
 					$( '#button-lib-update' ).trigger( 'click' );
 				}, 'json' );
 			}

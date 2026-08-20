@@ -1396,7 +1396,7 @@ var COMMON    = {
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
-		  clone : json => JSON.parse( JSON.stringify( json ) )
+		  clone     : json => JSON.parse( JSON.stringify( json ) )
 		, highlight : json => {
 			var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
 			var json  = Object.keys( json )
@@ -1416,7 +1416,7 @@ var COMMON    = {
 				else if ( /[\[\]]|null/.test( match ) ) return color( match, 'pur' )
 			} );
 		}
-		, save  : ( name, json ) => {
+		, save      : ( name, json ) => {
 			if ( typeof json === 'object' ) json = JSON.stringify( json );
 			var data = '{ "json": '+ json +', "name": "'+ name +'" }';
 			if ( V.debug ) {
@@ -1426,11 +1426,14 @@ var COMMON    = {
 
 			WS.send( data );
 		}
-		, sort : json => {
+		, sort      : json => {
 			return Object.keys( json ).sort().reduce( function ( result, key ) {
 				result[ key ] = json[ key ];
 				return result;
 			}, {} );
+		}
+		, update    : ( json, new_json ) => {
+			$.each( new_json, ( k, v ) => { json[ k ] = v } );
 		}
 	}
 	, libraryUpdate : () => {
