@@ -4,16 +4,6 @@
 
 args2var "$1"
 
-line2json() {
-	IFS='^' read -r $tags <<< "$1"
-	[[ $ALBUMARTIST ]] && albumartist=$ALBUMARTIST
-	for tag in $tags; do
-		arg+=( --arg $tag "${!tag}" )
-		json+=", $tag: \$$tag"
-	done
-	jq -n "${arg[@]}" "{ ${json:1} }"	
-}
-
 if [[ $CMD == get ]]; then
 	if [[ $FILE == *.cue ]]; then
 		cue=1
