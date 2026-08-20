@@ -5,22 +5,21 @@
 args2var "$1"
 
 if [[ $CMD == get ]]; then
-	if [[ $FILE == *.cue ]]; then
-		cue=1
-	elif [[ -f "/mnt/MPD/$FILE" ]]; then
-		file=1
-	fi
 	format=%${TAGS// /%^%}%
 	lines=$( mpc ls -f $format "$FILE" )
-	if [[ $cue ]]; then
+	if [[ $FILE == *.cue ]]; then
 		lines=$( grep '\^' <<< $lines )
 		[[ $TRACK ]] && values=$( sed -n ${TRACK}p <<< $lines ) # track
 	else
-		[[ $file ]] && f=$FILE || f=$( mpc ls "$FILE" | head -1 )
+		if [[ -f "/mnt/MPD/$FILE" ]]; then
+			values=$lines                                       # track
+			f=$FILE
+		else
+			f=$( mpc ls "$FILE" | head -1 )
+		fi
 		[[ $f == *.wav ]] && wav_albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/$f" )
-		[[ $file ]] && values=$lines # track
 	fi
-	if [[ ! $values ]]; then # album
+	if [[ ! $values ]]; then                                    # album
 		i=1
 		for tag in $TAGS; do
 			v=$( cut -d^ -f $i <<< $lines | sort -u )
