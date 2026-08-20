@@ -106,9 +106,15 @@ W = {
 		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
 	, mpdupdate : data => {
-		S.updating = 'updating' in data;
-		COMMON.updating();
+		S.updating = data.updating;
 		PLAYBACK.button.updating();
+		if ( ! S.updating ) {
+			COMMON.json.update( C, data.counts );
+			DISPLAY.library();
+		}
+		var blink  = S.updating ? ' blink' : '';
+		var mgs    = S.updating ? 'Updating ...' : 'Done';
+		BANNER( 'refresh-library'+ blink, 'Library Update', msg );
 	}
 	, option    : data => {
 		if ( V.local ) return

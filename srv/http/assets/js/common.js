@@ -1653,9 +1653,6 @@ var COMMON    = {
 		if ( val !== '' && ! isNaN( val - 0 ) ) return +val;
 		return val
 	}
-	, updating      : () => {
-		BANNER( 'refresh-library'+ ( S.updating ? ' blink' : '' ), 'Library Update', S.updating ? 'Updating ...' : 'Done' );
-	}
 	, websocket     : disable => {
 		if ( disable ) {
 			V.websocket = false;
