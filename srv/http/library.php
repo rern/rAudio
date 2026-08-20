@@ -98,6 +98,22 @@ case 'findartist': // artist, albumartist
 	$html.= indexBar( $indexes );
 	echo $html;
 	break;
+case 'findmode':
+	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
+			."| awk 'NF && !a[$0]++'"
+		, $lists );
+	if ( end( $f ) === 'file' ) {
+		$lists = array_map( function( $l ) {
+			return dirname( $l );
+		}, $lists );
+		$lists = array_unique( $lists );
+	}
+	if ( count( $f ) > 3 ) {
+		htmlTrack();
+	} else { // modes - album, composer, conductor, date, genre
+		htmlFind();
+	}
+	break;
 case 'home':
 	$modes     = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
 				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
@@ -114,6 +130,7 @@ case 'home':
 </li>';
 	}
 	// bookmarks
+	$hash      = '?v='.time();
 	$dir       = '/srv/http/data/bookmarks';
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
@@ -130,8 +147,8 @@ case 'home':
 			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
 			$subdir = $files > 0 ? '' : ' subdir';
 			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
-			$src   .= $subdir ? '/coverart.jpg' : '/cover.jpg';
-			$icon   = '<img class="bkcoverart" src="'.$src.'">';
+			$src   .= $bkradio ? '/cover.jpg' : '/coverart.jpg';
+			$icon   = '<img class="bkcoverart" src="'.$src.$hash.'">';
 			$htmlmode.= '
 <li class="mode bookmark'.$bkradio.$subdir.'">
 	<a class="lipath">'.$path.'</a>
@@ -155,22 +172,6 @@ case 'home':
 		, 'modes' => $modes_l
 		, 'order' => $order
 	] );
-	break;
-case 'findmode':
-	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
-			."| awk 'NF && !a[$0]++'"
-		, $lists );
-	if ( end( $f ) === 'file' ) {
-		$lists = array_map( function( $l ) {
-			return dirname( $l );
-		}, $lists );
-		$lists = array_unique( $lists );
-	}
-	if ( count( $f ) > 3 ) {
-		htmlTrack();
-	} else { // modes - album, composer, conductor, date, genre
-		htmlFind();
-	}
 	break;
 case 'list':
 	$filemode = $dirmpd.$MODE;

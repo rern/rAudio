@@ -952,7 +952,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ICON( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var path = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
+	var path = $this.find( '.lipath' ).text();
 	INFO( {
 		  icon        : V.icoverart
 		, title       : 'Bookmark Thumbnail'
