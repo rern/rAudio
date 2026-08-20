@@ -29,7 +29,7 @@ if [[ $CMD == get ]]; then
 		done
 		values=${values:1}
 	fi
-	IFS='^' read -r $TAGS <<< "$values"
+	IFS=^ read -r $TAGS <<< "$values"
 	[[ $wav_albumartist ]] && albumartist=$wav_albumartist
 	for tag in $TAGS; do
 		arg+=( --arg $tag "${!tag}" )
