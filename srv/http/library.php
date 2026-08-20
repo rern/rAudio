@@ -627,7 +627,6 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$artist = $each->artist;
 		$title  = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
-		$datatrack = '';
 		if ( $search ) {
 			$datamode  = 'title';
 			$icon      = icon(  $tag === 'title' ? 'music' : $tag, 'file' );
@@ -640,15 +639,12 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 			$icon      = icon(  'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
 			$track1    = ( $i || $hidecover ) ? '' : ' class="track1"';
-			if ( $cue ) {
-				$datatrack = ' data-track="'.( int )substr( $path, -4 ).'"';
-				$path      = dirname( $path );
-			}
+			$datatrack = $cue ? ' data-track="'.( int )substr( $path, -4 ).'"' : '';
 		}
 		$i++;
 		$html  .= '
 <li data-mode="'.$datamode.'" '.$datatrack.$track1.'>
-	<a class="lipath">'.( $cue ? $file_cue : $path ).'</a>
+	<a class="lipath">'.$path.'</a>
 	'.$icon.'
 	<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>

@@ -206,7 +206,8 @@ var CONTEXT  = {
 		} );
 		var file     = V.list.path;
 		var cmd      = [ 'tageditor.sh', 'get', file, 'CMD FILE' ];
-		if ( file.slice( -4 ) === '.cue' ) {
+		if ( V.list.track ) {
+			file         = file.replace( /\.cue\/track.*$/, '.cue' );
 			var fileicon = 'playlists';
 			if ( ! V.list.licover ) cmd = [ 'tageditor.sh', 'get', file, V.list.track, 'CMD FILE TRACK' ];
 		} else {
