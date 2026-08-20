@@ -9,7 +9,7 @@ W = {
 		DISPLAY.library();
 	}
 	, counts    : data => {
-		$.each( data, ( k, v ) => { C[ k ] = v } );
+		C[ data.k ] = data.v;
 		DISPLAY.library();
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer

@@ -1005,23 +1005,18 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	  delegate : '.coverart'
 	, action   : function( e ) {
 		var $this  = $( e.currentTarget );
-		var c1     = $this.find( '.coverart1' ).text();
-		var c2     = $this.find( '.coverart2' ).text();
-		var album  = D.albumbyartist ? c2 : c1;
-		var artist = D.albumbyartist ? c1 : c2;
-		
 		INFO( {
 			  icon    : V.icoverart
 			, title   : 'Album Thumbnail'
 			, message : $this.find( 'img' )[ 0 ].outerHTML
-						+'<p>'+ album
-						+'<br>'+ artist
+						+'<p>'+ $this.find( '.coverart1' ).text()
+						+'<br>'+ $this.find( '.coverart2' ).text()
 						+'</p>'
 						+'<br>Remove this thumbnail from list?'
 			, okcolor : V.orange
 			, oklabel : ICON( 'remove' ) +'Exclude'
 			, ok      : () => {
-				BASH( [ 'albumignore', album, artist, V.mode, 'CMD ALBUM ARTIST MODE' ] );
+				BASH( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
 				$this.remove();
 			}
 		} );

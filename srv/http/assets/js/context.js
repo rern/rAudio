@@ -196,23 +196,23 @@ var CONTEXT  = {
 		}
 	}
 	, tag           : () => {
-		var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
-		var format = name.map( el => el.toLowerCase() );
-		var file   = V.list.path;
-		var dir    = V.list.licover ? file : UTIL.dirName( file );
-		var cue    = file.slice( -4 ) === '.cue';
-		if ( V.list.licover ) format = format.slice( 0, -2 );
-		var query = {
-			  library : 'track'
-			, file    : file
-			, format  : format
+		var name     = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
+		var format   = name.map( el => el.toLowerCase() );
+		if ( V.list.licover ) format = format.slice( 2 );
+		name[ 3 ]    = 'Album Artist';
+		var listinfo = [];
+		format.forEach( ( el, i ) => {
+			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
+		} );
+		var file     = V.list.path;
+		var cmd      = [ 'tageditor.sh', 'get', file, 'CMD FILE' ];
+		if ( file.slice( -4 ) === '.cue' ) {
+			var fileicon = 'playlists';
+			if ( ! V.list.licover ) cmd = [ 'tageditor.sh', 'get', file, V.list.track, 'CMD FILE TRACK' ];
+		} else {
+			var fileicon = 'file-music';
 		}
-		LIST( query, function( values ) {
-			name[ 1 ]    = 'Album Artist';
-			var listinfo = [];
-			format.forEach( ( el, i ) => {
-				listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
-			} );
+		BASH( cmd, values => {
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
@@ -220,7 +220,7 @@ var CONTEXT  = {
 				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
-			var fileicon = cue ? 'file-music' : 'playlists';
+			var dir      = V.list.licover ? file : UTIL.dirName( file );
 			var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
 			message += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';

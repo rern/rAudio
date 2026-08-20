@@ -4,6 +4,54 @@
 
 args2var "$1"
 
+line2json() {
+	IFS='^' read -r $tags <<< "$1"
+	[[ $ALBUMARTIST ]] && albumartist=$ALBUMARTIST
+	for tag in $tags; do
+		arg+=( --arg $tag "${!tag}" )
+		json+=", $tag: \$$tag"
+	done
+	jq -n "${arg[@]}" "{ ${json:1} }"	
+}
+
+if [[ $CMD == get ]]; then
+	if [[ $FILE == *.cue ]]; then
+		cue=1
+	elif [[ -f "/mnt/MPD/$FILE" ]]; then
+		file=1
+	fi
+	[[ $file || $TRACK ]] && tags='track title '
+	tags+='album albumartist artist composer conductor genre date'
+	format=%${tags// /%^%}%
+	lines=$( mpc ls -f $format "$FILE" )
+	if [[ $cue ]]; then
+		lines=$( grep '\^' <<< $lines )
+		[[ $TRACK ]] && values=$( sed -n ${TRACK}p <<< $lines )
+	else
+		[[ $file ]] && f=$FILE || f=$( mpc ls "$FILE" | head -1 )
+		[[ $f == *.wav ]] && ALBUMARTIST=$( kid3-cli -c 'get albumartist' "/mnt/MPD/$f" )
+		[[ $file ]] && values=$lines
+	fi
+	if [[ ! $values ]]; then
+		i=1
+		for tag in $tags; do # album
+			v=$( cut -d^ -f $i <<< $lines | sort -u )
+			(( $( wc -l <<< $v ) > 1 )) && v=*
+			values+="^$v"
+			(( i++ ))
+		done
+		values=${values:1}
+	fi
+	IFS='^' read -r $tags <<< "$values"
+	[[ $ALBUMARTIST ]] && albumartist=$ALBUMARTIST
+	for tag in $tags; do
+		arg+=( --arg $tag "${!tag}" )
+		json+=", $tag: \$$tag"
+	done
+	jq -n "${arg[@]}" "{ ${json:1} }"
+	exit
+fi
+
 path="/mnt/MPD/$FILE"
 argslast=${args[@]: -1} # CMD ALBUM ALBUMARTIST ... FILE - omit unchanged
 [[ -f $path ]] && istrack=1

@@ -1303,7 +1303,8 @@ var MENU      = {
 		V.list.path   = $LI.find( '.lipath' ).text();
 		V.list.name   = $LI.find( webradio ? '.li1 .name' : '.name' ).eq( 0 ).text();
 		V.list.index  = $LI.index();
-		var $menu = $( '#menu-plaction' );
+		V.list.track  = $LI.data( 'track' ) || '';  // cue - in contextmenu
+		var $menu     = $( '#menu-plaction' );
 		var menushow  = ! $menu.hasClass( 'hide' );
 		var updn = $LI.hasClass( 'updn' );
 		MENU.hide();
