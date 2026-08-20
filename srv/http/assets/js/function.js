@@ -1464,7 +1464,7 @@ var PLAYBACK  = {
 				src += UTIL.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
-					.attr( 'src', src )
+					.attr( 'src', encodeURI( src ) )
 					.removeClass( 'hide' )
 					.on( 'load', function() {
 						var cover = $COVERART[ 0 ].getBoundingClientRect();
