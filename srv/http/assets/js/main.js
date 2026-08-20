@@ -650,6 +650,7 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-title' ).on( 'click', 'a', function() {
 	V.query  = [];
+	if ( ! MODE.file_radio() ) V.mode = $( '#lib-title i' ).prop( 'class' ).slice( 2 );
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
@@ -1005,18 +1006,22 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	  delegate : '.coverart'
 	, action   : function( e ) {
 		var $this  = $( e.currentTarget );
+		var c1     = $this.find( '.coverart1' ).text();
+		var c2     = $this.find( '.coverart2' ).text();
+		var album  = D.albumbyartist ? c2 : c1;
+		var artist = D.albumbyartist ? c1 : c2;
 		INFO( {
 			  icon    : V.icoverart
 			, title   : 'Album Thumbnail'
 			, message : $this.find( 'img' )[ 0 ].outerHTML
-						+'<p>'+ $this.find( '.coverart1' ).text()
-						+'<br>'+ $this.find( '.coverart2' ).text()
+						+'<p>'+ album
+						+'<br>'+ artist
 						+'</p>'
 						+'<br>Remove this thumbnail from list?'
 			, okcolor : V.orange
 			, oklabel : ICON( 'remove' ) +'Exclude'
 			, ok      : () => {
-				BASH( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
+				BASH( [ 'albumignore', album, artist, V.mode, 'CMD ALBUM ARTIST MODE' ] );
 				$this.remove();
 			}
 		} );

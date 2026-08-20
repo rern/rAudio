@@ -9,10 +9,13 @@ args2var "$1" # $2 $3 ... if any, still valid
 case $CMD in
 
 albumignore )
-	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
-	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
-	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
-	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
+	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/$MODE
+	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/${MODE}byartist
+	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/${MODE}byartist-year
+	[[ $MODE == album ]] && appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
+	n=$( wc -l < $dirmpd/$MODE )
+	sed -i -E "s/(.*$MODE.: ).*/\1$n,/" $dirmpd/counts
+	pushData counts '{ "'$MODE'": '$n' }'
 	;;
 albumthumbnail )
 	echo $DIR > $dirshm/dir

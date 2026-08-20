@@ -304,46 +304,6 @@ case 'search':
 		echo -1;
 	}
 	break;
-case 'track': // for tag editor
-	$file  = escape( $post->file );
-	if ( is_dir( '/mnt/MPD/'.$file ) ) {
-		$wav = exec( 'mpc ls "'.$file.'" | grep -m1 "\.wav$"' ); // MPD not read albumartist in *.wav
-		if ( $wav ) {
-			$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
-			if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
-		}
-		exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
-			, $lists );
-		// format: [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ]
-		foreach( $lists as $list ) {
-			$each = explode( '^^', $list );
-			$artist[]    = $each[ 2 ];
-			$composer[]  = $each[ 3 ];
-			$conductor[] = $each[ 4 ];
-			$genre[]     = $each[ 5 ];
-			$date[]      = $each[ 6 ];
-			$array[]     = $each;
-		}
-		$array = $array[ 0 ];
-		if ( count( array_unique( $artist ) )    > 1 ) $array[ 2 ] = '*';
-		if ( count( array_unique( $composer ) )  > 1 ) $array[ 3 ] = '*';
-		if ( count( array_unique( $conductor ) ) > 1 ) $array[ 4 ] = '*';
-		if ( count( array_unique( $genre ) )     > 1 ) $array[ 5 ] = '*';
-		if ( count( array_unique( $date ) )      > 1 ) $array[ 6 ] = '*';
-	} else {
-		// MPD not read albumartist in *.wav
-		if ( str_ends_with( $file, '.wav' ) ) {
-			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file.'"' );
-			if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
-		}
-		$lists = exec( 'mpc ls -f "'.$format.'" "'.$file.'"' );
-		$array = explode( '^^', $lists );
-	}
-	$tag = [];
-	$fL  = count( $f );
-	for ( $i = 0; $i < $fL; $i++ ) $tag[ strtoupper( $f[ $i ] ) ] = $array[ $i ];
-	echo json_encode( $tag, JSON_NUMERIC_CHECK );
-	break;
 
 }
 
@@ -591,12 +551,12 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	}
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
-	if ( substr( $file0, -14, 10 ) === '.cue/track' ) {
-		$cue   = true;
-		$file0 = dirname( $file0 ); // *.cue/track000n
-		$lines = file( "/mnt/MPD/".$file0, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+	$cue        = strpos( $file0, '.cue/track' );
+	if ( $cue ) {
+		$file_cue = dirname( $file0 );
+		$lines = file( '/mnt/MPD/'.$file_cue, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		$line  = preg_grep( '/^FILE/', $lines ); // FILE "NAME.EXT" WAV
-		$file0 = dirname( $file0 ).'/'.explode( '"', reset( $line ) )[ 1 ];
+		$file0 = dirname( $file_cue ).'/'.explode( '"', reset( $line ) )[ 1 ];
 	}
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
@@ -643,8 +603,8 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$icon          = icon(  'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
-	<a class="lipath">'.$mpdpath.'</a>
-	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
+	<a class="lipath">'.( $cue ? $file_cue : $mpdpath ).'</a>
+	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).'^^^"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
 	<div class="liartist'.$hideartist.'">'.icon(  $iconartist ).$artist.'</div>
@@ -678,11 +638,12 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
-			$track1    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
+			$track1    = ( $i || $hidecover ) ? '' : ' class="track1"';
+			$datatrack = $cue ? ' data-track="'.( int )substr( $path, -4 ).'"' : '';
 		}
 		$i++;
 		$html  .= '
-<li data-mode="'.$datamode.'" '.$track1.'>
+<li data-mode="'.$datamode.'" '.$datatrack.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'
 	<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>

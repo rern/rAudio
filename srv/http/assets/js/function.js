@@ -1244,12 +1244,9 @@ var MENU      = {
 		// album mode  - path > tracks
 		// other modes - name > name-album > filtered tracks
 		V.list.path        = $LI.find( '.lipath' ).text() || $( '#mode-title' ).text();
-		if ( V.librarytrack && ! V.list.licover && $LI.find( '.li1' ).length ) {
-			V.list.name = $LI.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
-		} else {
-			V.list.name = $LI.find( '.name' ).text() || V.list.path;
-		}
-		V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
+		V.list.name        = $LI.find( '.name' ).text() || '';
+		var track          = $LI.data( 'track' );
+		if ( track ) V.list.track = track;  // cue - in contextmenu
 		if ( ( D.tapaddplay || D.tapreplaceplay )
 			&& ! $target.hasClass( 'li-icon' )
 			&& ! V.list.licover
@@ -1272,7 +1269,7 @@ var MENU      = {
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover || ( ! radio && ! $LI.hasClass( 'subdir' ) ) );
-			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack );
+			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack || ! V.list.licover );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', ! radio );
@@ -1303,7 +1300,9 @@ var MENU      = {
 		V.list.path   = $LI.find( '.lipath' ).text();
 		V.list.name   = $LI.find( webradio ? '.li1 .name' : '.name' ).eq( 0 ).text();
 		V.list.index  = $LI.index();
-		var $menu = $( '#menu-plaction' );
+		var track     = $LI.data( 'track' );
+		if ( track ) V.list.track = track;  // cue - in contextmenu
+		var $menu     = $( '#menu-plaction' );
 		var menushow  = ! $menu.hasClass( 'hide' );
 		var updn = $LI.hasClass( 'updn' );
 		MENU.hide();
@@ -1463,7 +1462,7 @@ var PLAYBACK  = {
 				src += UTIL.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
-					.attr( 'src', src )
+					.attr( 'src', encodeURI( src ) )
 					.removeClass( 'hide' )
 					.on( 'load', function() {
 						var cover = $COVERART[ 0 ].getBoundingClientRect();
@@ -1787,17 +1786,7 @@ var PLAYLIST  = {
 			, replaceplay : 'Replace Playlist and play'
 		}
 		V.title       = cmd_title[ V.action ];
-		if ( MODE.file() ) {
-			V.msg = '<a class="li1">'+ V.list.name +'</a>';
-			if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
-		} else if ( $LI.data( 'mode' ) === 'lsmode' ) {
-			V.msg  = '<a class="li1">'+ $( '#lib-path' ).text() +'</a><a class="li2">'+ $LI.find( '.name' ).text() +'</a>';
-		} else if ( V.libraryhome ) {
-			V.msg = V.list.name;
-		} else {
-			V.msg = V.list.path;
-		}
-		BANNER( 'playlist', V.title, V.msg );
+		BANNER( 'playlist', V.title, V.list.name );
 		var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
 		BASH( cmd );
 		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) UTIL.switchPage( 'playback' );
