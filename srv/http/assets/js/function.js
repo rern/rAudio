@@ -1244,12 +1244,8 @@ var MENU      = {
 		// album mode  - path > tracks
 		// other modes - name > name-album > filtered tracks
 		V.list.path        = $LI.find( '.lipath' ).text() || $( '#mode-title' ).text();
-		if ( V.librarytrack && ! V.list.licover && $LI.find( '.li1' ).length ) {
-			V.list.name = $LI.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
-		} else {
-			V.list.name = $LI.find( '.name' ).text() || V.list.path;
-		}
-		V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
+		V.list.name        = $LI.find( '.name' ).text() || '';
+		if ( V.list.licover ) V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
 		if ( ( D.tapaddplay || D.tapreplaceplay )
 			&& ! $target.hasClass( 'li-icon' )
 			&& ! V.list.licover
@@ -1788,17 +1784,7 @@ var PLAYLIST  = {
 			, replaceplay : 'Replace Playlist and play'
 		}
 		V.title       = cmd_title[ V.action ];
-		if ( MODE.file() ) {
-			V.msg = '<a class="li1">'+ V.list.name +'</a>';
-			if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
-		} else if ( $LI.data( 'mode' ) === 'lsmode' ) {
-			V.msg  = '<a class="li1">'+ $( '#lib-path' ).text() +'</a><a class="li2">'+ $LI.find( '.name' ).text() +'</a>';
-		} else if ( V.libraryhome ) {
-			V.msg = V.list.name;
-		} else {
-			V.msg = V.list.path;
-		}
-		BANNER( 'playlist', V.title, V.msg );
+		BANNER( 'playlist', V.title, V.list.name );
 		var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
 		BASH( cmd );
 		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) UTIL.switchPage( 'playback' );
