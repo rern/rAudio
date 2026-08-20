@@ -23,7 +23,7 @@ data+='
 , "localbrowser" : '$localbrowser'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
 , "shareddata"   : '$( sharedData )'
-, "snapclient"   : '$( findFile $dirsystem/snapclient* && echo true  )'
+, "snapclient"   : '$( compgen -G $dirsystem/snapclient* > /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
 , "stoptimer"    : '$( [[ -e $dirsystem/stoptimer || -e $dirshm/pidstoptimer ]] && echo true )'
 , "wlan"         : '$( exists $dirshm/wlan )
