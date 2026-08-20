@@ -113,7 +113,7 @@ W = {
 			DISPLAY.library();
 		}
 		var blink  = S.updating ? ' blink' : '';
-		var mgs    = S.updating ? 'Updating ...' : 'Done';
+		var msg    = S.updating ? 'Updating ...' : 'Done';
 		BANNER( 'refresh-library'+ blink, 'Library Update', msg );
 	}
 	, option    : data => {
