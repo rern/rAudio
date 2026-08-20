@@ -206,7 +206,7 @@ var CONTEXT  = {
 		} );
 		var file     = V.list.path;
 		var cmd      = [ 'tageditor.sh', 'get', file, 'CMD FILE' ];
-		if ( V.list.track ) {
+		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
 			var fileicon = 'playlists';
 			if ( ! V.list.licover ) cmd = [ 'tageditor.sh', 'get', file, V.list.track, 'CMD FILE TRACK' ];

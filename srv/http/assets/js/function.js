@@ -1245,7 +1245,8 @@ var MENU      = {
 		// other modes - name > name-album > filtered tracks
 		V.list.path        = $LI.find( '.lipath' ).text() || $( '#mode-title' ).text();
 		V.list.name        = $LI.find( '.name' ).text() || '';
-		if ( V.list.licover ) V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
+		var track          = $LI.data( 'track' );
+		if ( track ) V.list.track = track;  // cue - in contextmenu
 		if ( ( D.tapaddplay || D.tapreplaceplay )
 			&& ! $target.hasClass( 'li-icon' )
 			&& ! V.list.licover
@@ -1299,7 +1300,8 @@ var MENU      = {
 		V.list.path   = $LI.find( '.lipath' ).text();
 		V.list.name   = $LI.find( webradio ? '.li1 .name' : '.name' ).eq( 0 ).text();
 		V.list.index  = $LI.index();
-		V.list.track  = $LI.data( 'track' ) || '';  // cue - in contextmenu
+		var track     = $LI.data( 'track' );
+		if ( track ) V.list.track = track;  // cue - in contextmenu
 		var $menu     = $( '#menu-plaction' );
 		var menushow  = ! $menu.hasClass( 'hide' );
 		var updn = $LI.hasClass( 'updn' );
