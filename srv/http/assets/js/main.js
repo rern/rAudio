@@ -650,6 +650,7 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-title' ).on( 'click', 'a', function() {
 	V.query  = [];
+	if ( ! MODE.file_radio() ) V.mode = $( '#lib-title i' ).prop( 'class' ).slice( 2 );
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
