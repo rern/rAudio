@@ -24,7 +24,7 @@ var CONTEXT  = {
 			, checkblank : true
 			, ok         : () => {
 				var name = _INFO.val();
-				BANNER( 'bookmark', 'Bookmark', 'Add ...' );
+				BANNER( 'bookmark', 'Bookmark', 'Added: '+ name );
 				BASH( [ 'bookmarkadd', name, path, 'CMD NAME DIR' ], std => {
 					if ( std == -1 ) {
 						BANNER_HIDE();

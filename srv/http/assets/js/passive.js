@@ -1,6 +1,7 @@
 W = {
 	  ...W // from common.js
 	, bookmark  : data => {
+		BANNER_HIDE();
 		O.order        = data.order;
 		if ( ! V.library || ! V.libraryhome ) return
 		
