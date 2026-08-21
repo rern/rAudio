@@ -74,7 +74,6 @@ W = {
 	}
 	, library   : data => {
 		BANNER_HIDE();
-		O.order        = data.order;
 		if ( ! V.library || ! V.libraryhome ) return
 		
 		V.html.library = data.html;

@@ -131,23 +131,23 @@ case 'home':
 	}
 	// bookmarks
 	$hash      = '?v='.time();
-	$dir       = '/srv/http/data/bookmarks';
-	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
+	$dirbk     = '/srv/http/data/bookmarks';
+	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$path    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
+			$path    = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
 			if ( $bkradio ) {
-				$d = radioPath( $path );;
-			} else if ( $path[ 0 ] !== '/' ) {
-				$d = '/mnt/MPD/'.$path;
+				$dir = radioPath( $path );
+				$key = $name;
 			} else {
-				$d = $path;
+				$dir = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
+				$key = $path;
 			}
-			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
+			$src    = str_starts_with( $dir, '/srv' ) ? substr( $dir, 9 ) : $dir;
 			$src   .= $bkradio ? '/cover.jpg' : '/coverart.jpg';
 			$icon   = '<img class="bkcoverart" src="'.$src.$hash.'">';
-			$html[ $path ] = '
+			$html[ $key ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
@@ -169,7 +169,6 @@ case 'home':
 	echo json_encode( [
 		  'html'  => $htmlhome
 		, 'lsmnt' => $lsmnt
-		, 'modes' => $modes_l
 	] );
 	break;
 case 'list':

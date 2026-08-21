@@ -1022,7 +1022,6 @@ var LIBRARY   = {
 	, get        : () => {
 		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
-			O = { modes: data.modes, order: data.order };
 			COMMON.json.update( C, data.lsmnt );
 			if ( data.html !== V.html.library ) V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();

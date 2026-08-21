@@ -490,7 +490,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 
 	if ( cmd in CONTEXT ) {
-		MODE.radio() && ! $LI.hasClass( 'dir' ) ? COVERART.change() : CONTEXT[ cmd ]();
+		CONTEXT[ cmd ]();
 		return
 	}
 
