@@ -138,16 +138,14 @@ case 'home':
 			$path    = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
 			if ( $bkradio ) {
-				$dir = radioPath( $path );
-				$key = $name;
+				$dir = radioPath( $path ); // $path: http://..., $dir:/srv/http/...
 			} else {
 				$dir = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
-				$key = $path;
 			}
 			$src    = str_starts_with( $dir, '/srv' ) ? substr( $dir, 9 ) : $dir;
 			$src   .= $bkradio ? '/cover.jpg' : '/coverart.jpg';
 			$icon   = '<img class="bkcoverart" src="'.$src.$hash.'">';
-			$html[ $key ] = '
+			$html[ $name ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>

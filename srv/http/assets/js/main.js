@@ -1,7 +1,6 @@
 C = {} // counts
 D = {} // display
 E = {} // equalizer
-O = { order: false } // order
 V = {  // global var
 	  ...V
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
@@ -1523,7 +1522,7 @@ var sortlist = {
 		$( '#lib-mode-list li' ).each( ( i, el ) => {
 			var $el  = $( el );
 			if ( $el.hasClass( 'bookmark' ) ) {
-				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
+				var data = $el.find( '.name' ).text();
 			} else {
 				var data = $el.data( 'mode' );
 			}

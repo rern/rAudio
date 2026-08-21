@@ -37,8 +37,7 @@ bookmarkadd )
 # --------------------------------------------------------------------
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
-	[[ ${DIR:0:1} == [NSU/]* ]] && order=$DIR || order=$NAME
-	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
+	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${NAME//\"/\\\\\"}\"" $file_order
 	pushLibraryHome
 	;;
 bookmarksubdir )
