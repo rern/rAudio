@@ -923,7 +923,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, message : icon
 		, oklabel : ICON( 'remove' ) +'Remove'
 		, okcolor : V.red
-		, ok      : () => BASH( [ 'bookmarkremove', name, 'CMD NAME' ] )
+		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
@@ -938,7 +938,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : ICON( 'flash' ) +'Rename'
-		, ok           : () => BASH( [ 'bookmarkrename', name, _INFO.val(), 'CMD NAME NEWNAME' ] )
+		, ok           : () => CONTEXT.bookmarkname( _INFO.val(), name, 'NEWNAME' )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent();

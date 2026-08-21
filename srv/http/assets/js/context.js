@@ -23,20 +23,48 @@ var CONTEXT  = {
 			, values     : name
 			, checkblank : true
 			, ok         : () => {
-				var name = _INFO.val();
-				BANNER( 'bookmark', 'Bookmark', 'Added: '+ name );
-				BASH( [ 'bookmarkadd', name, path, 'CMD NAME DIR' ], std => {
-					if ( std == -1 ) {
-						BANNER_HIDE();
-						INFO( {
-							  icon    : I.icon
-							, title   : I.title
-							, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
-						} );
+				var modes = [];
+				var names = [];
+				$( '#lib-mode-list .mode' ).each( ( i, el ) => {
+					var $this = $( el );
+					if ( $this.hasClass( 'bookmark' ) ) {
+						names.push( $this.find( '.name' ).text() );
+					} else {
+						modes.push( $this.data( 'mode' ) );
 					}
 				} );
+				CONTEXT.bookmarkname( _INFO.val(), path, 'DIR' );
 			}
 		} );
+	}
+	, bookmarkname  : ( name, arg, type ) => {
+		var modes = [];
+		var names = [];
+		$( '#lib-mode-list .mode' ).each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.hasClass( 'bookmark' ) ) {
+				names.push( $this.find( '.name' ).text() );
+			} else {
+				modes.push( $this.data( 'mode' ) );
+			}
+		} );
+		var name  = _INFO.val();
+		var exist = '';
+		if ( modes.includes( name ) ) {
+			exist = 'Reserved name: <wh>'+ name;
+		} else if ( names.includes( name ) ) {
+			exist = 'Bookmark name: <wh>'+ name +'</wh> already exists.';
+		}
+		if ( exist ) {
+			INFO( {
+				  icon    : I.icon
+				, title   : I.title
+				, message : exist
+			} );
+			return
+		}
+		BASH( [ 'bookmark', name, arg, 'CMD NAME '+ type ] );
+		BANNER( 'bookmark', 'Bookmark', 'Added: '+ name );
 	}
 	, crop          : () => {
 		var $img = $LI.find( 'img' );

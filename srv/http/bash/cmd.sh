@@ -31,17 +31,23 @@ bioimage )
 		echo '{"error":"Artist not found"}'
 	fi
 	;;
-bookmarkadd )
-	file_bk="$dirbookmarks/$NAME"
-	[[ -e $file_bk ]] && echo -1 && exit
-# --------------------------------------------------------------------
-	echo "$DIR" > "$file_bk"
+bookmark )
 	file_order=$dirsystem/order.json
-	if [[ -e $file_order ]]; then
-		json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
-		echo "$json" > $file_order
+	[[ -e $file_order ]] && order=1
+	if [[ $DIR ]]; then
+		echo "$DIR" > "$dirbookmarks/$NAME"
+		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
+	elif [[ $NEWNAME ]]; then
+		mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
+		[[ $order ]] && json=$( jq --arg name "$NAME" --arg newname "$NEWNAME" \
+									'.[$newname] = .[$name] | del(.[$name])' $file_order )
+	else
+		rm "$file_bk"
+		[[ $order ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
+	[[ $order ]] && echo "$json" > $file_order
 	pushLibraryHome
+	;;
 	;;
 bookmarksubdir )
 	while read path; do
@@ -56,21 +62,6 @@ bookmarksubdir )
 		[[ ! $coverart ]] && subdir+=', "'$( basename "$dir" )'" '
 	done < <( ls $dirbookmarks/* )
 	echo "[ ${subdir:1} ]"
-	;;
-bookmarkremove )
-	file_bk="$dirbookmarks/$NAME"
-	file_order=$dirsystem/order.json
-	if [[ -e $file_order ]]; then
-		line=$( sed 's/"/\\"/g' "$file_bk" )
-		order=$( grep -Ev "\[|\"$line\"|]" $file_order | sed '$ s/,$//' )
-		echo "[ $order ]" | jq > $file_order
-	fi
-	rm "$file_bk"
-	pushLibraryHome
-	;;
-bookmarkrename )
-	mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushLibraryHome
 	;;
 cachebust )
 	cacheBust
