@@ -23,21 +23,12 @@ var CONTEXT  = {
 			, values     : name
 			, checkblank : true
 			, ok         : () => {
-				var modes = [];
-				var names = [];
-				$( '#lib-mode-list .mode' ).each( ( i, el ) => {
-					var $this = $( el );
-					if ( $this.hasClass( 'bookmark' ) ) {
-						names.push( $this.find( '.name' ).text() );
-					} else {
-						modes.push( $this.data( 'mode' ) );
-					}
-				} );
-				CONTEXT.bookmarkname( _INFO.val(), path, 'DIR' );
+				CONTEXT.bookmarkname( _INFO.val(), path, 'CMD NAME DIR' );
 			}
 		} );
 	}
-	, bookmarkname  : ( name, arg, type ) => {
+	, bookmarkname  : ( name, arg, cmd ) => {
+		console.log(name)
 		var modes = [];
 		var names = [];
 		$( '#lib-mode-list .mode' ).each( ( i, el ) => {
@@ -48,7 +39,6 @@ var CONTEXT  = {
 				modes.push( $this.data( 'mode' ) );
 			}
 		} );
-		var name  = _INFO.val();
 		var exist = '';
 		if ( modes.includes( name ) ) {
 			exist = 'Reserved name: <wh>'+ name;
@@ -63,8 +53,8 @@ var CONTEXT  = {
 			} );
 			return
 		}
-		BASH( [ 'bookmark', name, arg, 'CMD NAME '+ type ] );
-		BANNER( 'bookmark', 'Bookmark', 'Added: '+ name );
+		BASH( [ 'bookmark', name, arg, cmd ] );
+		if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
 	}
 	, crop          : () => {
 		var $img = $LI.find( 'img' );

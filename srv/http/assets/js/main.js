@@ -938,7 +938,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : ICON( 'flash' ) +'Rename'
-		, ok           : () => CONTEXT.bookmarkname( _INFO.val(), name, 'NEWNAME' )
+		, ok           : () => {
+			CONTEXT.bookmarkname( _INFO.val(), name, 'CMD NEWNAME NAME' );
+		}
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent();

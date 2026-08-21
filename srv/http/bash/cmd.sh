@@ -39,15 +39,16 @@ bookmark )
 		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
 	elif [[ $NEWNAME ]]; then
 		mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-		[[ $order ]] && json=$( jq --arg name "$NAME" --arg newname "$NEWNAME" \
-									'.[$newname] = .[$name] | del(.[$name])' $file_order )
+		if [[ $order ]]; then
+			i=$( jq --arg name "$NAME" 'index($name)' $file_order )
+			json=$( jq --argjson i $i --arg newname "$NEWNAME" '.[$i] = $newname' $file_order )
+		fi
 	else
 		rm "$file_bk"
 		[[ $order ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
 	[[ $order ]] && echo "$json" > $file_order
 	pushLibraryHome
-	;;
 	;;
 bookmarksubdir )
 	while read path; do
