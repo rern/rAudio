@@ -155,25 +155,21 @@ case 'home':
 </li>';
 		}
 	}
-	$htmlhome  = '';
-	$order     = json_decode( file_get_contents( '/srv/http/data/system/order.json') );
-	foreach( $order as $o ) {
-		$htmlhome.= $html[ $o ];
-	}
 	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
 	$lsmnt     = json_decode( $lsdir );
+	$htmlhome  = '';
 	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
 		$order = file_get_contents( $fileorder );
-		$order = $order ? json_decode( $order ) : false;
+		$order = json_decode( $order );
+		foreach( $order as $o ) $htmlhome.= $html[ $o ];
 	} else {
-		$order = false;
+		foreach( $html as $o => $h ) $htmlhome.= $h;
 	}
 	echo json_encode( [
 		  'html'  => $htmlhome
 		, 'lsmnt' => $lsmnt
 		, 'modes' => $modes_l
-		, 'order' => $order
 	] );
 	break;
 case 'list':
