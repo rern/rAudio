@@ -41,7 +41,7 @@ var CONTEXT  = {
 		} );
 		var exist = '';
 		if ( modes.includes( name ) ) {
-			exist = 'Reserved name: <wh>'+ name;
+			exist = 'Reserved name: <wh>'+ name +'</wh> for mode list.';
 		} else if ( names.includes( name ) ) {
 			exist = 'Bookmark name: <wh>'+ name +'</wh> already exists.';
 		}
