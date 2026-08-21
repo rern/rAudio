@@ -32,12 +32,15 @@ bioimage )
 	fi
 	;;
 bookmarkadd )
-	file_bk="$dirbookmarks/${NAME//\//|}"
+	file_bk="$dirbookmarks/$NAME"
 	[[ -e $file_bk ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
-	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${NAME//\"/\\\\\"}\"" $file_order
+	if [[ -e $file_order ]]; then
+		json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
+		echo "$json" > $file_order
+	fi
 	pushLibraryHome
 	;;
 bookmarksubdir )
