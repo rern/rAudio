@@ -44,13 +44,15 @@ case 'giftype': // formdata from common.js
 case 'imagereplace': // $.post from function.js
 	if ( $post->file[ 0 ] !== '/' ) {
 		if ( str_starts_with( $post->file, 'cdda' ) ) {
-			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$post->file = '/srv/http/data/audiocd/'.$discid.'/cover';
+			$discid = file( $dirshm.'audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$post->file = $dirdata.'audiocd/'.$discid.'/cover';
+		} else if ( in_array( $post->file[ 0 ], [ 'N', 'S', 'U' ] ) ) {
+			$post->file = '/mnt/MPD/'.$post->file;
 		} else {
 			$post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
 		}
 	}
-	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
+	if ( ! is_writable( dirname( $post->file ) ) ) exit( 'No write permission:<br><c>'.$post->file.'</c>' );
 //----------------------------------------------------------------------------------
 	exec( 'rm -f "'.$post->file.'".*' ); // remove existing *.jpg, *.png, *.gif
 	$file = $post->file.$post->ext;
@@ -99,7 +101,7 @@ case 'sort': // from cmd-list.sh
 	include 'function.php';
 	$modes = explode( ' ', $argv[ 2 ] );
 	foreach( $modes as $mode ) {
-		$file = '/srv/http/data/mpd/'.$mode;
+		$file = $dirdata.'mpd/'.$mode;
 		if ( ! file_exists( $file ) ) continue;
 
 		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );

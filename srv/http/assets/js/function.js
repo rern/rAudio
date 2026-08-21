@@ -2311,7 +2311,7 @@ var UTIL      = {
 		}
 
 		$.post( 'cmd.php', data, std => {
-			if ( std == -1 ) _INFO.warning( I.icon, I.title, 'No write permission:<br><c>'+ path +'</c>' );
+			if ( std ) _INFO.warning( I.icon, I.title, std );
 		} );
 		BANNER( V.icoverart, I.title, 'Change ...', -1 );
 	}

@@ -144,13 +144,11 @@ case 'home':
 			} else {
 				$d = $path;
 			}
-			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
-			$subdir = $files > 0 ? '' : ' subdir';
 			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
 			$src   .= $bkradio ? '/cover.jpg' : '/coverart.jpg';
 			$icon   = '<img class="bkcoverart" src="'.$src.$hash.'">';
 			$htmlmode.= '
-<li class="mode bookmark'.$bkradio.$subdir.'">
+<li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
 	'.$icon.'

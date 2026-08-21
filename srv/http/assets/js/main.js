@@ -975,10 +975,17 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			var $this      = $( el );
 			var buttonhtml = ICON( 'remove bkedit bk-remove' );
 			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
-			if ( $this.hasClass( 'subdir' ) ) buttonhtml += '<img class="bkedit bk-cover" src="'+ V.coverart +'">';
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );
+		BASH( [ 'bookmarksubdir' ], subdir => {
+			$( '.mode.bookmark' ).each( ( i, el ) => {
+				var $this      = $( el );
+				if ( ! subdir.includes( $this.find( '.name' ).text() ) ) return
+				
+				$this.append( '<img class="bkedit bk-cover" src="'+ V.coverart +'">' );
+			} );
+		}, 'json' );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {

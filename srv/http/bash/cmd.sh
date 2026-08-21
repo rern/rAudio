@@ -41,6 +41,20 @@ bookmarkadd )
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
 	pushBookmark
 	;;
+bookmarksubdir )
+	while read path; do
+		dir=$( < "$path" )
+		if [[ $dir == http* || $dir == rtsp* ]]; then
+			dir=$( grep "^$dir" $dirmpd/radio )
+			dir=${dir/*^}
+		elif [[ ${dir:0:1} != / ]]; then
+			dir="/mnt/MPD/$dir"
+		fi
+		coverart=$( $dirbash/status -C "$dir" )
+		[[ ! $coverart ]] && subdir+=', "'$( basename "$dir" )'" '
+	done < <( ls $dirbookmarks/* )
+	echo "[ ${subdir:1} ]"
+	;;
 bookmarkremove )
 	file_bk="$dirbookmarks/$NAME"
 	file_order=$dirsystem/order.json
