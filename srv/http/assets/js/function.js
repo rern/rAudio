@@ -883,7 +883,7 @@ var FILEIMAGE = {
 		$( '.infoimgnew, .infoimgwh' ).remove();
 		if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
 			FILEIMAGE.reader();
-		} else { // animated gif or not
+		} else { // animated gif or not - have to upload if it is anyway
 			var formdata = new FormData();
 			formdata.append( 'cmd', 'giftype' );
 			formdata.append( 'file', I.infofile );
@@ -891,7 +891,7 @@ var FILEIMAGE = {
 				.then( response => response.json() ) // set response data as json > animated
 				.then( animated => { // 0 / 1
 					if ( animated ) {
-						I.infofilegif = '/srv/http/data/shm/tmp.gif';
+						I.infofilegif = '/tmp/img.gif';
 						var img    = new Image();
 						img.src    = URL.createObjectURL( I.infofile );
 						img.onload = function() {
@@ -901,7 +901,7 @@ var FILEIMAGE = {
 							FILEIMAGE.render( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
 						}
 					} else {
-						FILEIMAGE.reader();
+						FILEIMAGE.reader(); // read to jpg
 					}
 				} );
 		}

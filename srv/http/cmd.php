@@ -39,7 +39,7 @@ case 'giftype': // formdata from common.js
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animated = exec( $sudo.'/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
-	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
+	if ( $animated ) move_uploaded_file( $tmpfile, '/tmp/img.gif' );
 	break;
 case 'imagereplace': // $.post from function.js
 	if ( $post->file[ 0 ] !== '/' ) {
