@@ -1,14 +1,5 @@
 W = {
 	  ...W // from common.js
-	, bookmark  : data => {
-		BANNER_HIDE();
-		O.order        = data.order;
-		if ( ! V.library || ! V.libraryhome ) return
-		
-		V.html.library = data.html;
-		LIBRARY.home( data.html );
-		DISPLAY.library();
-	}
 	, counts    : data => {
 		COMMON.json.update( C, data );
 		if ( V.library && V.libraryhome ) DISPLAY.library();
@@ -81,6 +72,15 @@ W = {
 			PLAYBACK.elapsed();
 		}
 	}
+	, library   : data => {
+		BANNER_HIDE();
+		O.order        = data.order;
+		if ( ! V.library || ! V.libraryhome ) return
+		
+		V.html.library = data.html;
+		LIBRARY.home( data.html );
+		DISPLAY.library();
+	}
 	, mpdplayer : data => { // play/stop
 		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
@@ -128,12 +128,6 @@ W = {
 		var option = Object.keys( data )[ 0 ];
 		S[ option ] = Object.values( data )[ 0 ];
 		PLAYBACK.button.options();
-	}
-	, order     : data => {
-		if ( V.local ) return
-		
-		O.order = data;
-		LIBRARY.order();
 	}
 	, playlist  : data => {
 		if ( V.local || V.sort || $( '.pl-remove' ).length ) return

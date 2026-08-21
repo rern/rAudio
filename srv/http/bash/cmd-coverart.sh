@@ -29,5 +29,5 @@ if [[ $CMD == cover ]]; then
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
 	pushData coverart '{ "coverart" : "'$coverart'" }'
 else
-	pushBookmark
+	pushLibraryHome
 fi

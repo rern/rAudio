@@ -425,10 +425,6 @@ notify() { # icon title message delayms
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
-pushBookmark() {
-	data=$( php /srv/http/library.php home )
-	pushData bookmark "$data"
-}
 pushData() { # send to websocket.py (server)
 	local channel data dir
 	channel=$1
@@ -457,6 +453,10 @@ pushDirCounts() {
 	local tf
 	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
+}
+pushLibraryHome() {
+	data=$( php /srv/http/library.php home )
+	pushData library "$data"
 }
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'

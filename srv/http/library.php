@@ -118,13 +118,13 @@ case 'home':
 	$modes     = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
 				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
 	$modes_l   = [];
-	$htmlmode  = '';
+	$html      = [];
 	foreach( $modes as $mode ) {
 		$lipath    = str_replace( ' ', '', $mode );
 		$mode_l    = strtolower( $lipath );
 		$modes_l[] = $mode_l;
 		$gr        = modeFile( $mode_l ) ? '' : '<gr></gr>';
-		$htmlmode .= '
+		$html[ $mode_l ] = '
 <li class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
 </li>';
@@ -147,13 +147,18 @@ case 'home':
 			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
 			$src   .= $bkradio ? '/cover.jpg' : '/coverart.jpg';
 			$icon   = '<img class="bkcoverart" src="'.$src.$hash.'">';
-			$htmlmode.= '
+			$html[ $path ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
 	'.$icon.'
 </li>';
 		}
+	}
+	$htmlhome  = '';
+	$order     = json_decode( file_get_contents( '/srv/http/data/system/order.json') );
+	foreach( $order as $o ) {
+		$htmlhome.= $html[ $o ];
 	}
 	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
 	$lsmnt     = json_decode( $lsdir );
@@ -165,7 +170,7 @@ case 'home':
 		$order = false;
 	}
 	echo json_encode( [
-		  'html'  => $htmlmode
+		  'html'  => $htmlhome
 		, 'lsmnt' => $lsmnt
 		, 'modes' => $modes_l
 		, 'order' => $order

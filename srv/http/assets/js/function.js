@@ -736,7 +736,6 @@ var DISPLAY   = {
 	}
 	, library    : () => {
 		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) );
-		LIBRARY.order();
 		DISPLAY.pageScroll( V.modescrolltop );
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
@@ -1138,26 +1137,6 @@ var LIBRARY   = {
 			DISPLAY.pageScroll( V.scrolltop[ data.path ] || 0 );
 			LIBRARY.padding();
 			if ( V.color ) COLOR.liActive();
-		} );
-	}
-	, order      : () => {
-		if ( O.order === false ) return
-
-		$list = $( '#lib-mode-list' );
-		$bk   = $( '.mode.bookmark' );
-		O.order.forEach( mode => {
-			if ( O.modes.includes( mode ) ) {
-				$list.append( $( '.mode.'+ mode ) );
-			} else {
-				$bk.filter( ( i, el ) => {
-					var $el = $( el );
-					var cl  = $el.hasClass( 'bkradio' ) ? '.name' : '.lipath';
-					if ( $el.find( cl ).text() === mode ) {
-						$list.append( $el );
-						return false
-					}
-				} );
-			}
 		} );
 	}
 	, padding    : () => {

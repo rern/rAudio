@@ -39,7 +39,7 @@ bookmarkadd )
 	file_order=$dirsystem/order.json
 	[[ ${DIR:0:1} == [NSU/]* ]] && order=$DIR || order=$NAME
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
-	pushBookmark
+	pushLibraryHome
 	;;
 bookmarksubdir )
 	while read path; do
@@ -64,11 +64,11 @@ bookmarkremove )
 		echo "[ $order ]" | jq > $file_order
 	fi
 	rm "$file_bk"
-	pushBookmark
+	pushLibraryHome
 	;;
 bookmarkrename )
 	mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushBookmark
+	pushLibraryHome
 	;;
 cachebust )
 	cacheBust

@@ -558,7 +558,7 @@ function INFO( json ) {
 				if ( I.file.type === 'image/*' ) {
 					I.filechecked = typeimage;
 				} else {
-					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
+					var ext       = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
 					I.filechecked = I.file.type.includes( ext );
 				}
 			}
