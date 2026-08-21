@@ -45,7 +45,7 @@ bookmark )
 		fi
 	else
 		rm "$file_bk"
-		[[ $order ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
+		[[ $json ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
 	[[ $order ]] && echo "$json" > $file_order
 	pushLibraryHome
