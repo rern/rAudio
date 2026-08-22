@@ -816,7 +816,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
 	if ( V.press ) return
 
-	V.mode          = $( this ).data( 'mode' );
+	V.mode          = $( this ).find( '.name' ).text();
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
 		$( '#button-pl-playlists' ).trigger( 'click' );
@@ -1522,13 +1522,7 @@ var sortlist = {
 	  'lib-mode-list' : () => {
 		var order = [];
 		$( '#lib-mode-list li' ).each( ( i, el ) => {
-			var $el  = $( el );
-			if ( $el.hasClass( 'bookmark' ) ) {
-				var data = $el.find( '.name' ).text();
-			} else {
-				var data = $el.data( 'mode' );
-			}
-			order.push( data );
+			order.push( $( el ).find( '.name' ).text() );
 		} );
 		COMMON.json.save( 'order', order );
 	}

@@ -125,8 +125,9 @@ case 'home':
 		$modes_l[] = $mode_l;
 		$gr        = modeFile( $mode_l ) ? '' : '<gr></gr>';
 		$html[ $mode_l ] = '
-<li class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
+<li class="mode '.$mode_l.'">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
+	<a class="name hide">'.$mode_l.'</a>
 </li>';
 	}
 	// bookmarks

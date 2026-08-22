@@ -740,7 +740,7 @@ var DISPLAY   = {
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 			var $this = $( el );
-			var mode  = $this.data( 'mode' );
+			var mode  = $this.find( '.name' ).text();
 			var count = C[ mode ];
 			if ( mode === 'nvme' || mode === 'sata' ) {
 				$this.toggleClass( 'hide', ! count );

@@ -28,16 +28,11 @@ var CONTEXT  = {
 		} );
 	}
 	, bookmarkname  : ( name, arg, cmd ) => {
-		console.log(name)
 		var modes = [];
 		var names = [];
 		$( '#lib-mode-list .mode' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.hasClass( 'bookmark' ) ) {
-				names.push( $this.find( '.name' ).text() );
-			} else {
-				modes.push( $this.data( 'mode' ) );
-			}
+			var name = $this.find( '.name' ).text();
+			$this.hasClass( 'bookmark' ) ? names.push( name ) : modes.push( name );
 		} );
 		var exist = '';
 		if ( modes.includes( name ) ) {
@@ -565,12 +560,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			V.mpccmd = [ 'mpcadd', path ];
 			break;
 		default: // MODE
-			var datamode = $LI.data( 'mode' );
-			if ( datamode === 'album' ) {          // 1st level
+			var mode = $LI.data( 'mode' );
+			if ( mode === 'album' ) {          // 1st level
 				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
 				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', $LI.find( '.name' ).text() );
 				V.mpccmd.push( 'album', $LI.find( '.liname' ).text() );
-			} else if ( datamode !== 'lsmode' ) { // intermediat level
+			} else if ( mode !== 'lsmode' ) { // intermediat level
 				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album
 				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
