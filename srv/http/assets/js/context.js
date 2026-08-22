@@ -226,7 +226,7 @@ var CONTEXT  = {
 			cmd.push( V.list.track );
 			CMD += ' TRACK';
 		} else {
-			var fileicon = 'file-music';
+			var fileicon = 'music';
 		}
 		cmd.push( CMD );
 		BASH( cmd, values => {
