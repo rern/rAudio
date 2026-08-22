@@ -1043,7 +1043,7 @@ var LIBRARY   = {
 		V.query       = [];
 		var title     = 'LIBRARY';
 		if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ICON( 'music' ) +'</a>';
-		$( '#lib-mode-list' ).html( UTIL.htmlHash( html ) ).promise().done( () => {
+		$( '#lib-mode-list' ).html( html ).promise().done( () => {
 			DISPLAY.library();
 			COMMON.draggable( 'lib-mode-list' );
 		} );
