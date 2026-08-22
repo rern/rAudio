@@ -134,7 +134,6 @@ case 'home':
 	$dirbk     = '/srv/http/data/bookmarks';
 	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
-		$hash = '?v='.time();
 		foreach( $files as $name ) {
 			$path      = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio   = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
