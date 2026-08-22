@@ -57,7 +57,7 @@ $htmlcommon  = menuCommon( 'add', 'replace' );
 $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',    'lastfm',      'Add similar' ]
-	, [ 'savedpladd', 'playlists',   'Add to a playlist' ]
+	, [ 'plAdd', 'playlists',   'Add to a playlist' ]
 	, [ 'directory',  'folder-open', 'Browse folder' ]
 	, [ 'tag',        'tag',         'Tag Editor' ]
 ];
@@ -68,18 +68,18 @@ $menu.= menuDiv( 'filepl', $html );
 // filesavedpl
 $html = $htmlcommon;
 $menulist = [
-	  [ 'similar',       'lastfm',    'Add similar' ]
-	, [ 'wrsave',        'save',      'Save to Library' ]
-	, [ 'savedpladd',    'playlists', 'Add to a playlist' ]
-	, [ 'savedplremove', 'remove',    'Remove' ]
+	  [ 'similar',  'lastfm',    'Add similar' ]
+	, [ 'wrSave',   'save',      'Save to Library' ]
+	, [ 'plAdd',    'playlists', 'Add to a playlist' ]
+	, [ 'plRemove', 'remove',    'Remove' ]
 ];
 htmlMenu( $menulist, 'filesavedpl' );
 // folder
 $html     = $htmlcommon;
 $menulist = [
 	  [ 'bookmark',    'star',            'Bookmark' ]
-	, [ 'thumbnail',   $coverart,         'Folder thumbnail' ]
-	, [ 'thumbupdate', $thumbupdate,      'Update thumbnails' ]
+	, [ 'thumbnail',    $coverart,        'Folder thumbnail' ]
+	, [ 'thumbUpdate',  $thumbupdate,     'Update thumbnails' ]
 	, [ 'exclude',     'folder-forbid',   'Exclude directory' ]
 	, [ 'update',      'refresh-library', 'Update database' ]
 	, [ 'directory',   'folder-open',     'Browse folder' ]
@@ -89,23 +89,23 @@ htmlMenu( $menulist, 'folder' );
 // plaction
 $html     = '';
 $menulist = [
-	  [ 'play',       'play',      'Play' ]
-	, [ 'pause',      'pause',     'Pause' ]
-	, [ 'stop',       'stop',      'Stop' ]
-	, [ 'current',    'current',   'Current' ]
-	, [ 'remove',     'remove',    'Remove', 'track', 'removerange' ]
-	, [ 'crop',       'crop',      'Crop' ]
-	, [ 'wrsave',     'save',      'Save to Library' ]
-	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
-	, [ 'similar',    'lastfm',    'Add similar' ]
-	, [ 'tag',        'info',      'Track Info' ]
+	  [ 'play',    'play',      'Play' ]
+	, [ 'pause',   'pause',     'Pause' ]
+	, [ 'stop',    'stop',      'Stop' ]
+	, [ 'current', 'current',   'Current' ]
+	, [ 'remove',  'remove',    'Remove', 'track', 'removeRange' ]
+	, [ 'crop',    'crop',      'Crop' ]
+	, [ 'wrSave',  'save',      'Save to Library' ]
+	, [ 'plAdd',   'playlists', 'Add to a playlist' ]
+	, [ 'similar', 'lastfm',    'Add similar' ]
+	, [ 'tag',     'info',      'Track Info' ]
 ];
 htmlMenu( $menulist, 'plaction' );
 // playlist
 $html     = menuCommon( 'pladd', 'plreplace' );
 $menulist = [
-	  [ 'plrename', 'edit',   'Rename' ]
-	, [ 'pldelete', 'remove', 'Delete' ]
+	  [ 'plRename', 'edit',   'Rename' ]
+	, [ 'plDelete', 'remove', 'Delete' ]
 ];
 htmlMenu( $menulist, 'playlist' );
 // radio bookmark
@@ -114,20 +114,20 @@ $menu    .= menuDiv( 'bkradio', $html );
 // webradio
 $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',      'Bookmark' ]
-	, [ 'wredit',     'edit',      'Edit' ]
-	, [ 'thumbnail',  $coverart,   'Station art' ]
-	, [ 'wrdelete',   'remove',    'Delete' ]
-	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
+	  [ 'bookmark', 'star',      'Bookmark' ]
+	, [ 'wrEdit',   'edit',      'Edit' ]
+	, [ 'thumbnail', $coverart,  'Station art' ]
+	, [ 'wrDelete', 'remove',    'Delete' ]
+	, [ 'plAdd',    'playlists', 'Add to a playlist' ]
 ];
 htmlMenu( $menulist, 'webradio' );
 // wr folder
 $html     = '';
 $menulist = [
 	  [ 'bookmark',    'star',     'Bookmark' ]
-	, [ 'thumbnail',   $coverart,  'Folder thumbnail' ]
-	, [ 'wrdirdelete', 'remove',   'Delete' ]
-	, [ 'wrdirrename', 'edit',     'Rename' ]
+	, [ 'thumbnail',    $coverart, 'Folder thumbnail' ]
+	, [ 'wrDirDelete', 'remove',   'Delete' ]
+	, [ 'wrDirRename', 'edit',     'Rename' ]
 ];
 htmlMenu( $menulist, 'wrdir' );
 

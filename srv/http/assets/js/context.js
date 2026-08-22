@@ -1,5 +1,5 @@
 var CONTEXT  = {
-	  bookmark      : () => {
+	  bookmark     : () => {
 		// #1 - track list - show image from licover
 		// #2 - dir list   - show image from path + coverart.jpg
 		// #3 - no cover   - icon + directory name
@@ -23,35 +23,34 @@ var CONTEXT  = {
 			, values     : name
 			, checkblank : true
 			, ok         : () => {
-				CONTEXT.bookmarkname( _INFO.val(), path, 'CMD NAME DIR' );
+				CONTEXT.bookmarkName( _INFO.val(), path, 'CMD NAME DIR' );
 			}
 		} );
 	}
-	, bookmarkname  : ( name, arg, cmd ) => {
-		var modes = [];
-		var names = [];
-		$( '#lib-mode-list .mode' ).each( ( i, el ) => {
-			var name = $this.find( '.name' ).text();
-			$this.hasClass( 'bookmark' ) ? names.push( name ) : modes.push( name );
-		} );
+	, bookmarkName : ( name, arg, cmd ) => {
 		var exist = '';
-		if ( modes.includes( name ) ) {
-			exist = 'Reserved name: <wh>'+ name +'</wh> for mode list.';
-		} else if ( names.includes( name ) ) {
-			exist = 'Bookmark name: <wh>'+ name +'</wh> already exists.';
-		}
-		if ( exist ) {
-			INFO( {
-				  icon    : I.icon
-				, title   : I.title
-				, message : exist
-			} );
-			return
-		}
+		$( '#lib-mode-list .name' ).each( ( i, el ) => {
+			var $el = $( el );
+			if ( $el.text() === name ) {
+				if ( $el.parent().hasClass( 'bookmark' ) ) {
+					exist = 'Bookmark name: <wh>'+ name +'</wh> already exists.';
+				} else {
+					exist = 'Reserved name: <wh>'+ name +'</wh> for mode list.';
+				}
+				INFO( {
+					  icon    : I.icon
+					, title   : I.title
+					, message : exist
+				} );
+				return false
+			}
+		} );
+		if ( exist ) return
+		
 		BASH( [ 'bookmark', name, arg, cmd ] );
 		if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
 	}
-	, crop          : () => {
+	, crop         : () => {
 		var $img = $LI.find( 'img' );
 		var src  = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
 		INFO( {
@@ -73,13 +72,13 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, current       : () => {
+	, current      : () => {
 		S.position = V.list.index;
 		PLAYLIST.render.scroll();
 		LOCAL();
 		BASH( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 	}
-	, directory     : () => {
+	, directory    : () => {
 		var path      = V.list.path;
 		var modetitle = path;
 		var mode      = COMMON.path2mode( path );
@@ -101,7 +100,7 @@ var CONTEXT  = {
 			setTimeout( () => V.mode = mode0, 300 );
 		} );
 	}
-	, exclude       : () => {
+	, exclude      : () => {
 		INFO( {
 			  icon    : 'folder-forbid'
 			, title   : 'Exclude Directory'
@@ -113,41 +112,7 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, plrename      : () => {
-		var name = V.list.name;
-		INFO( {
-			  icon         : 'playlists'
-			, title        : 'Rename Playlist'
-			, message      : 'From: <wh>'+ name +'</wh>'
-			, list         : [ 'To', 'text' ]
-			, values       : name
-			, checkchanged : true
-			, checkblank   : true
-			, oklabel      : ICON( 'flash' ) +'Rename'
-			, ok           : () => PLAYLIST.playlists.save( _INFO.val(), name )
-		} );
-	}
-	, pldelete      : () => {
-		INFO( {
-			  icon    : 'playlists'
-			, title   : 'Delete Playlist'
-			, message : 'Delete?'
-					   +'<br><wh>'+ V.list.name +'</wh>'
-			, oklabel : ICON( 'remove' ) +'Delete'
-			, okcolor : V.red
-			, ok      : () => {
-				BASH( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
-				$LI.remove();
-			}
-		} );
-	}
-	, remove        : () => {
-		V.contextmenu = true;
-		setTimeout( () => V.contextmenu = false, 500 );
-		PLAYLIST.remove( $LI );
-	}
-	, removerange   : () => PLAYLIST.removeRange( [ $LI.index() + 1, S.pllength ] )
-	, savedpladd    : () => {
+	, plAdd        : () => {
 		if ( V.playlist ) {
 			var album = $LI.find( '.album' ).text();
 			var file  = V.list.path;
@@ -190,13 +155,47 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, savedplremove : () => {
+	, plRemove     : () => {
 		LOCAL();
 		var plname = $( '#pl-title .lipath' ).text();
 		BASH( [ 'savedpledit', plname, 'remove', $LI.index() + 1, 'CMD NAME ACTION POS' ] );
 		$LI.remove();
 	}
-	, similar       : () => {
+	, plRename     : () => {
+		var name = V.list.name;
+		INFO( {
+			  icon         : 'playlists'
+			, title        : 'Rename Playlist'
+			, message      : 'From: <wh>'+ name +'</wh>'
+			, list         : [ 'To', 'text' ]
+			, values       : name
+			, checkchanged : true
+			, checkblank   : true
+			, oklabel      : ICON( 'flash' ) +'Rename'
+			, ok           : () => PLAYLIST.playlists.save( _INFO.val(), name )
+		} );
+	}
+	, plDelete     : () => {
+		INFO( {
+			  icon    : 'playlists'
+			, title   : 'Delete Playlist'
+			, message : 'Delete?'
+					   +'<br><wh>'+ V.list.name +'</wh>'
+			, oklabel : ICON( 'remove' ) +'Delete'
+			, okcolor : V.red
+			, ok      : () => {
+				BASH( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
+				$LI.remove();
+			}
+		} );
+	}
+	, remove       : () => {
+		V.contextmenu = true;
+		setTimeout( () => V.contextmenu = false, 500 );
+		PLAYLIST.remove( $LI );
+	}
+	, removeRange  : () => PLAYLIST.removeRange( [ $LI.index() + 1, S.pllength ] )
+	, similar      : () => {
 		if ( D.plsimilar ) {
 			INFO( {
 				  icon    : 'lastfm'
@@ -208,7 +207,7 @@ var CONTEXT  = {
 			PLAYLIST.addSimilar();
 		}
 	}
-	, tag           : () => {
+	, tag          : () => {
 		var name   = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
 		if ( V.list.licover ) name.splice( 0, 2 );
 		var format = name.map( el => el.toLowerCase() );
@@ -325,7 +324,7 @@ var CONTEXT  = {
 			} );
 		}, 'json' );
 	}
-	, thumbnail     : () => {
+	, thumbnail    : () => {
 		var $liicon = $LI.find( '.li-icon' );
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
 		var path    = '/mnt/MPD'+ V.list.path;
@@ -346,7 +345,7 @@ var CONTEXT  = {
 			, ok          : () => UTIL.imageReplace( path, 'coverart' )
 		} );
 	}
-	, thumbupdate   : modealbum => {
+	, thumbUpdate  : modealbum => {
 		if ( modealbum ) {
 			var src  = $( '#mode-title img' ).attr( 'src' );
 			var msg  = ''
@@ -377,7 +376,7 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, update        : () => {
+	, update       : () => {
 		if ( V.list.path.endsWith( '.cue' ) ) V.list.path = COMMON.dirName( V.list.path );
 		INFO( {
 			  icon       : 'refresh-library'
@@ -386,7 +385,7 @@ var CONTEXT  = {
 			, ok         : () => BASH( [ 'mpcupdate', 'update', V.list.path, 'CMD ACTION PATHMPD' ] )
 		} );
 	}
-	, wrdelete      : () => {
+	, wrDelete     : () => {
 		var name = V.list.name;
 		var img  = $LI.find( 'img' ).attr( 'src' ) || V.coverdefault;
 		var url  = $LI.find( '.li2' ).text();
@@ -405,7 +404,7 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, wrdirdelete   : () => {
+	, wrDirDelete  : () => {
 		var msg   = ICON( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
 		INFO( {
 			  icon    : 'webradio'
@@ -433,7 +432,7 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, wrdirrename   : () => {
+	, wrDirRename  : () => {
 		INFO( {
 			  icon         : 'webradio'
 			, title        : 'Rename Directory'
@@ -444,20 +443,13 @@ var CONTEXT  = {
 			, oklabel      : 'Rename'
 			, ok           : () => {
 				var newname = _INFO.val();
-				BASH( [ 'dirrename', $( '#lib-path' ).text(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
-					if ( std == -1 ) {
-						INFO( {
-							  icon    : I.icon
-							, title   : I.title
-							, message : 'Exists: '+ ICON( 'folder gr' ) +'<wh> '+ newname +'</wh>'
-							, ok      : CONTEXT.wrdirrename
-						} );
-					}
-				} );
+				if ( CONTEXT.wrExists( newname, CONTEXT.wrDirRename ) ) return
+				
+				BASH( [ 'dirrename', $( '#lib-path' ).text(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ] );
 			}
 		} );
 	}
-	, wredit        : () => {
+	, wrEdit       : () => {
 		INFO( {
 			  icon         : 'webradio'
 			, title        : 'Edit Web Radio'
@@ -481,15 +473,31 @@ var CONTEXT  = {
 			, oklabel      : ICON( 'save' ) +'Save'
 			, ok           : () => {
 				var val = _INFO.val();
+				if ( CONTEXT.wrExists( val.NAME, CONTEXT.wrEdit ) ) return
+				
 				val.DIR     = $( '#lib-path' ).text();
 				val.OLDNAME = V.list.name;
-				BASH( COMMON.cmd_json2args( 'webradioedit', val ), error => {
-					if ( error ) WEBRADIO.exists( error );
-				} );
+				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
 			}
 		} );
 	}
-	, wrsave        : () => WEBRADIO.new( '', $LI.find( '.lipath' ).text() )
+	, wrExists     : ( name, callback ) => {
+		var exists = false;
+		$( '#lib-list li .name' ).each( ( i, el ) => {
+			if ( $( el ).text() === name ) {
+				exists = true;
+				INFO( {
+					  icon    : I.icon
+					, title   : I.title
+					, message : 'Name already exists: <wh> '+ name +'</wh>'
+					, ok      : callback
+				} );
+				return false
+			}
+		} );
+		return exists
+	}
+	, wrSave       : () => WEBRADIO.new( '', $LI.find( '.lipath' ).text() )
 }
 
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {

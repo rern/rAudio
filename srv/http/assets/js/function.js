@@ -1952,7 +1952,7 @@ var PLAYLIST  = {
 							   +'<br><br>Already exists.'
 				, buttonlabel : ICON( 'undo' ) +'Rename'
 				, buttoncolor : V.orange
-				, button      : () => rename ? CONTEXT.plrename() : PLAYLIST.new( name )
+				, button      : () => rename ? CONTEXT.plRename() : PLAYLIST.new( name )
 				, oklabel     : ICON( 'flash' ) +'Replace'
 				, ok          : () => rename ? PLAYLIST.playlists.save( name, oldname, 'replace' ) : PLAYLIST.playlists.save( name, '' , 'replace' )
 			} );
@@ -2582,7 +2582,7 @@ var WEBRADIO  = {
 			, title   : 'Add Web Radio'
 			, message : V.i_warning + error
 						+'<br><br><wh>'+ url +'</wh>'
-			, ok      : () => name ? WEBRADIO.new( name, url, charset ) : CONTEXT.wredit()
+			, ok      : () => name ? WEBRADIO.new( name, url, charset ) : CONTEXT.wrEdit()
 		} );
 	}
 	, list   : [
@@ -2626,9 +2626,10 @@ var WEBRADIO  = {
 			}
 			, ok         : () => {
 				var val = _INFO.val();
-				BASH( [ 'webradioedit', dir +'/'+ val.NAME, val.URL, val.CHARSET, 'CMD DIR URL CHARSET' ], error => {
-					if ( error ) WEBRADIO.exists( error, val.NAME, val.URL, val.CHARSET );
-				} );
+				if ( CONTEXT.wrExists( val.NAME, WEBRADIO.new( name, url, charset ) ) ) return
+				
+				val.DIR = dir;
+				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
 			}
 		} );
 	}

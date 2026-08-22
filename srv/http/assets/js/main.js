@@ -694,7 +694,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		} );
 	}
 } ).on ( 'click', '#thumbupdate', function() {
-	CONTEXT.thumbupdate( 'modealbum' );
+	CONTEXT.thumbUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', COMMON.libraryUpdate );
 $( '#button-lib-search' ).on( 'click', function() {
@@ -939,7 +939,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, checkchanged : true
 		, oklabel      : ICON( 'flash' ) +'Rename'
 		, ok           : () => {
-			CONTEXT.bookmarkname( _INFO.val(), name, 'CMD NEWNAME NAME' );
+			CONTEXT.bookmarkName( _INFO.val(), name, 'CMD NEWNAME NAME' );
 		}
 	} );
 } ).on( 'click', '.bk-cover', function() {
