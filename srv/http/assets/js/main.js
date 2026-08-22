@@ -891,7 +891,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	if ( V.press || $( '.bkedit' ).length ) return
 
 	var path  = $( this ).find( '.lipath' ).text();
-	V.mode    = path.slice( 0, 4 ) === '/srv' ? path.slice( 15, 23 ) : path.split( '/' )[ 0 ].toLowerCase();
+	V.mode    = path.slice( 0, 4 ) === '/srv' ? path.slice( 15, 23 ) : COMMON.path2mode( path );
 	var query = {
 		  library : V.mode === 'webradio' ? 'radio' : 'ls'
 		, string  : path
@@ -997,7 +997,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var path  = $this.find( '.lipath' ).text();
 	var query = {
 		  library : 'ls'
-		, gmode   : path.split( '/' )[ 0 ].toLowerCase()
+		, gmode   : COMMON.path2mode( path )
 		, mode    : 'album'
 		, string  : path
 	}
@@ -1090,7 +1090,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} else if ( $target.hasClass( 'liinfopath' ) ) {
 			V.gmode   = V.mode;
 			var path  = $target.text();
-			V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+			V.mode    = COMMON.path2mode( path );
 			var query = {
 				  library : 'ls'
 				, string  : path

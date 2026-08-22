@@ -332,7 +332,7 @@ var COVERART  = {
 		} else {
 			var src    = $( '#liimg' ).attr( 'src' );
 			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-			if ( path.split( '.' ).pop() === 'cue' ) path = COMMON.dirName( path );
+			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
 			var album  = $( '.licover .lialbum' ).text();
 			var artist = $( '.licover .liartist' ).text();
 		}

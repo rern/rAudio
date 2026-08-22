@@ -1165,7 +1165,7 @@ var _INFO     = {
 
 var COMMON    = {
 	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
-	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (index+1) to end
+	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (i+1) to end
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1250,7 +1250,7 @@ var COMMON    = {
 			console.log( bashcmd );
 		}
 	}
-	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) ) // get 0 to before last '/' (index)
+	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) ) // get 0 to before last '/' (i)
 	, draggable     : el => {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
@@ -1514,6 +1514,7 @@ var COMMON    = {
 		var y = e.pageY || e.changedTouches[ 0 ].pageY;
 		return [ x, y ]
 	}
+	, path2mode     : path => path.slice( 0, path.indexOf( '/' ) ).toLowerCase() // get 0 to before 1st '/' (i)
 	, power         : () => {
 		INFO( {
 			  icon        : 'power'

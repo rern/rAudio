@@ -82,7 +82,7 @@ var CONTEXT  = {
 	, directory     : () => {
 		var path      = V.list.path;
 		var modetitle = path;
-		var mode      = path.split( '/' )[ 0 ].toLowerCase();
+		var mode      = COMMON.path2mode( path );
 		var query     = {
 			  library : 'ls'
 			, string  : path
@@ -287,7 +287,7 @@ var CONTEXT  = {
 							}
 						} else {
 							var string = $this.find( '.path' ).text();
-							var mode   = string.split( '/' )[ 0 ].toLowerCase();
+							var mode   = COMMON.path2mode( string );
 							var query  = {
 								  library : 'ls'
 								, string  : string
