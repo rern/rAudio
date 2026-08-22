@@ -1165,7 +1165,7 @@ var _INFO     = {
 
 var COMMON    = {
 	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
-	, baseName      : file => file.split( '/' ).pop()
+	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (index+1) to end
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1250,7 +1250,7 @@ var COMMON    = {
 			console.log( bashcmd );
 		}
 	}
-	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) )
+	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) ) // get 0 to before last '/' (index)
 	, draggable     : el => {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
