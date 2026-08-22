@@ -880,7 +880,7 @@ var FILEIMAGE = {
 		I.rotate   = 0;
 		$( '.infoimgname' ).addClass( 'hide' );
 		$( '.infoimgnew, .infoimgwh' ).remove();
-		if ( I.infofile.name.endsWith( '.gif' ) ) {
+		if ( ! I.infofile.name.endsWith( '.gif' ) ) {
 			FILEIMAGE.reader();
 		} else { // animated gif or not - have to upload if it is anyway
 			var formdata = new FormData();
