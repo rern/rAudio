@@ -738,8 +738,8 @@ var DISPLAY   = {
 		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) );
 		DISPLAY.pageScroll( V.modescrolltop );
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
-		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 		$( '.mode .label' ).toggleClass( 'hide', ! D.label );
+		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 		if ( ! D.count ) return
 		
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
