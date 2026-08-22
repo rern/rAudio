@@ -101,7 +101,6 @@ cacheBust() {
 	local hash
 	hash=$( date +%s )"'"
 	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
-	sed -i "/hash.*=/ s/v=.*/v=$hash;/" /srv/http/library.php
 	[[ $TIME ]] && hash="'.time()"
 	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
 	rm -f $dirshm/system
