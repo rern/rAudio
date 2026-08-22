@@ -1065,7 +1065,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 
 	var l_mode      = $LI.data( 'mode' );
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
-	var l_moderadio = l_mode.slice( -5 ) === 'radio'; // radio .dir has no mode
+	var l_moderadio = l_mode.endsWith( 'radio' ); // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
 		|| $LI.find( '.i-music' ).length
@@ -1137,7 +1137,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
+	} else if ( ! V.search && V.mode.endsWith( 'artist' ) ) {
 		var query     = { // artist, albumartist
 			  library : 'findartist'
 			, mode    : V.mode

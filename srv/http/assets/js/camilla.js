@@ -236,16 +236,16 @@ var F         = {
 [ 'Biquad', 'BiquadCombo', 'Conv', 'Dither' ].forEach( type => {
 	F0.subtype[ type ][ 2 ].forEach( sub => {
 		if ( type === 'Biquad' ) {
-			if ( sub.slice( -4 ) === 'pass' ) {
+			if ( sub.endsWith( 'pass' ) ) {
 				F[ type ][ sub ]        = F0.list[ [ 'H', 'L' ].includes( sub[ 0 ] ) ? 'pass' : 'notch' ];
 				F.values[ type ][ sub ] = F0.values.pass
-			} else if ( sub.slice( -6 ) === 'passFO' ) {
+			} else if ( sub.endsWith( 'passFO' ) ) {
 				F[ type ][ sub ]        = F0.list.passFO;
 				F.values[ type ][ sub ] = F0.values.passFO
-			} else if ( sub.slice( -5 ) === 'shelf' ) {
+			} else if ( sub.endsWith( 'shelf' ) ) {
 				F[ type ][ sub ]        = F0.list.shelf;
 				F.values[ type ][ sub ] = F0.values.shelf
-			} else if ( sub.slice( -7 ) === 'shelfFO' ) {
+			} else if ( sub.endsWith( 'shelfFO' ) ) {
 				F[ type ][ sub ]        = F0.list.shelfFO;
 				F.values[ type ][ sub ] = F0.values.shelfFO
 			}
@@ -2338,7 +2338,7 @@ var UTIL      = {
 						cp = k[ 0 ];
 						value[ k ].forEach( ( db, i ) => {
 							if ( S.volumemute && cp === 'p' ) db = -99;
-							RENDER.vuLevel( k.slice( -1 ) === 's', cp + i, db );
+							RENDER.vuLevel( k.endsWith( 's' ), cp + i, db );
 						} );
 					} );
 					break;

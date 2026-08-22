@@ -638,7 +638,7 @@ function INFO( json ) {
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
-					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
+					if ( htmls.list.endsWith( 'tr>' ) ) htmls.list += '<tr>'
 					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan + width +'>';
 					break;
 				case 'hidden':
@@ -651,7 +651,7 @@ function INFO( json ) {
 					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
-					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
+					htmls.list += htmls.list.endsWith( 'td>' ) ? '' : '<tr><td>'+ label +'</td>';
 					htmls.list += '<td'+ colspan + width +'>';
 			}
 			switch ( type ) {

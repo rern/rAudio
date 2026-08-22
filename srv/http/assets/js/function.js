@@ -377,10 +377,10 @@ var COVERART  = {
 
 			var $img = $( e.target );
 			var src  = $img.attr( 'src' );
-			var ext  = src.slice( -16, -13 );
-			if ( ext === 'jpg' ) {
+			var ext  = src.slice( src.lastIndexOf( '.' ), src.lastIndexOf( '?' ) );
+			if ( ext === '.jpg' ) {
 				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
-			} else if ( ext === 'png' ) {
+			} else if ( ext === '.png' ) {
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
 			} else if ( I.active ) {
 				var icon = I.icon === 'bookmark' ? 'bookmark' : $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
@@ -431,7 +431,7 @@ var COVERART  = {
 			filecanvas.height = imgH;
 			ctx.drawImage( img, 0, 0 );
 			var base64        = filecanvas.toDataURL( 'image/jpeg' );
-			if ( path.slice( -4 ) === '.cue' ) path = COMMON.dirName( path );
+			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
 			INFO( {
 				  icon    : V.icoverart
 				, title   : 'Save Album Cover Art'
@@ -880,7 +880,7 @@ var FILEIMAGE = {
 		I.rotate   = 0;
 		$( '.infoimgname' ).addClass( 'hide' );
 		$( '.infoimgnew, .infoimgwh' ).remove();
-		if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
+		if ( I.infofile.name.endsWith( '.gif' ) ) {
 			FILEIMAGE.reader();
 		} else { // animated gif or not - have to upload if it is anyway
 			var formdata = new FormData();
@@ -1330,7 +1330,7 @@ var MODE      = {
 	  album      : () => [ 'album', 'latest' ].includes( V.mode )
 	, file       : () => [ 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( V.mode )
 	, file_radio : () => [ 'nas', 'nvme', 'sata', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode )
-	, radio      : () => V.mode.slice( -5 ) === 'radio'
+	, radio      : () => V.mode.endsWith( 'radio' )
 }
 var PLAYBACK  = {
 	  blank     : () => {
@@ -1768,7 +1768,7 @@ var PLAYLIST  = {
 		BANNER( 'playlist', V.title, V.list.name );
 		var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
 		BASH( cmd );
-		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) UTIL.switchPage( 'playback' );
+		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
 	, addSimilar  : () => {
 		var icon  = 'lastfm';
@@ -2304,7 +2304,7 @@ var UTIL      = {
 			, [ ICON( 'music wh' ),  'text' ]
 			, [ ICON( 'album wh' ),  'text' ]
 		];
-		var paren      = title.slice( -1 ) === ')';
+		var paren      = title.endsWith( ')' );
 		if ( paren ) {
 			var titlenoparen = title.replace( / $|\(.*$/, '' );
 			list.push( [ ICON( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );

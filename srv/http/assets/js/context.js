@@ -9,7 +9,7 @@ var CONTEXT  = {
 			var src     = $LI.find( 'img' ).attr( 'src' );
 			var msgpath = name;
 		} else {
-			if ( path.slice( -4 ) === '.cue' ) path = COMMON.dirName( path );
+			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
 			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
 			var msgpath = path;
 			var name    = COMMON.baseName( path );
@@ -378,7 +378,7 @@ var CONTEXT  = {
 		} );
 	}
 	, update        : () => {
-		if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = COMMON.dirName( V.list.path );
+		if ( V.list.path.endsWith( '.cue' ) ) V.list.path = COMMON.dirName( V.list.path );
 		INFO( {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'
@@ -538,10 +538,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		case 'pl':
 			cmd = cmd.slice( 2 );
 			if ( V.library ) {
-				V.mpccmd = [ 'mpcaddload', path ];
+				V.mpccmd    = [ 'mpcaddload', path ];
 			} else { // saved playlist
-				var play = cmd.slice( -1 ) === 'y';
-				var replace = cmd.slice( 0, 1 ) === 'r';
+				var play    = cmd.endsWith( 'play' );
+				var replace = cmd.startsWith( 'replace' );
 				if ( replace ) {
 					PLAYLIST.replace( () => PLAYLIST.load( V.list.path, play, replace ) );
 				} else {
