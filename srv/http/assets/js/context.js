@@ -210,7 +210,7 @@ var CONTEXT  = {
 	}
 	, tag           : () => {
 		var name     = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
-		if ( V.list.licover ) name = name.slice( 2 );
+		if ( V.list.licover ) name.splice( 0, 2 );
 		var format   = name.map( el => el.toLowerCase() );
 		name[ 3 ]    = 'Album Artist';
 		var listinfo = [];
