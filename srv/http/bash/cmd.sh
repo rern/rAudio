@@ -60,7 +60,7 @@ bookmarksubdir )
 			dir="/mnt/MPD/$dir"
 		fi
 		coverart=$( $dirbash/status -C "$dir" )
-		[[ ! $coverart ]] && subdir+=', "'$( basename "$dir" )'" '
+		[[ ! $coverart ]] && subdir+=', "'$( basename "$path" )'" '
 	done < <( ls $dirbookmarks/* )
 	echo "[ ${subdir:1} ]"
 	;;
