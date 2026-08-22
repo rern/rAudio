@@ -209,17 +209,17 @@ var CONTEXT  = {
 		}
 	}
 	, tag           : () => {
-		var name     = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
+		var name   = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
 		if ( V.list.licover ) name.splice( 0, 2 );
-		var format   = name.map( el => el.toLowerCase() );
-		name[ 3 ]    = 'Album Artist';
-		var listinfo = [];
+		var format = name.map( el => el.toLowerCase() );
+		name[ 3 ]  = 'Album Artist';
+		var list   = [];
 		format.forEach( ( el, i ) => {
-			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
+			list.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
 		} );
-		var file     = V.list.path;
-		var cmd      = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
-		var CMD      = 'CMD FILE TAGS';
+		var file   = V.list.path;
+		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
+		var CMD    = 'CMD FILE TAGS';
 		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
 			var fileicon = 'playlists';
@@ -248,7 +248,7 @@ var CONTEXT  = {
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 				, message      : message
 				, messagealign : 'left'
-				, list         : listinfo
+				, list         : list
 				, footer       : footer
 				, footeralign  : 'left'
 				, boxwidth     : 'max'
