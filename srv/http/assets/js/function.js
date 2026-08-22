@@ -2576,16 +2576,7 @@ var VOLUME    = {
 	, visible : () => $VOLUME.css( 'display' ) !== 'none'
 }
 var WEBRADIO  = {
-	  exists : ( error, name, url, charset ) => {
-		INFO( {
-			  icon    : 'webradio'
-			, title   : 'Add Web Radio'
-			, message : V.i_warning + error
-						+'<br><br><wh>'+ url +'</wh>'
-			, ok      : () => name ? WEBRADIO.new( name, url, charset ) : CONTEXT.wrEdit()
-		} );
-	}
-	, list   : [
+	  list   : [
 		  [ 'Name',    'text', { colspan: 3 } ]
 		, [ 'URL',     'text', { colspan: 3 } ]
 		, [ 'Charset', 'text', { sameline: true, width: 190 } ]

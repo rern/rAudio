@@ -926,8 +926,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
-	var $this = $( this ).parent();
-	var name  = $this.find( '.name' ).text();
+	var $this = $( this );
+	var name  = $this.parent().find( '.name' ).text();
 	INFO( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
@@ -939,7 +939,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, checkchanged : true
 		, oklabel      : ICON( 'flash' ) +'Rename'
 		, ok           : () => {
-			CONTEXT.bookmarkName( _INFO.val(), name, 'CMD NEWNAME NAME' );
+			CONTEXT.bookmarkEdit( _INFO.val(), name, 'CMD NEWNAME NAME', () => $this.trigger( 'click' ) );
 		}
 	} );
 } ).on( 'click', '.bk-cover', function() {

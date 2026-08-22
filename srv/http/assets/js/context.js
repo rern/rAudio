@@ -23,11 +23,11 @@ var CONTEXT  = {
 			, values     : name
 			, checkblank : true
 			, ok         : () => {
-				CONTEXT.bookmarkName( _INFO.val(), path, 'CMD NAME DIR' );
+				CONTEXT.bookmarkEdit( _INFO.val(), path, 'CMD NAME DIR', CONTEXT.bookmark );
 			}
 		} );
 	}
-	, bookmarkName : ( name, arg, cmd ) => {
+	, bookmarkEdit : ( name, arg, cmd, callback ) => {
 		var exist = '';
 		$( '#lib-mode-list .name' ).each( ( i, el ) => {
 			var $el = $( el );
@@ -41,6 +41,7 @@ var CONTEXT  = {
 					  icon    : I.icon
 					, title   : I.title
 					, message : exist
+					, ok      : callback
 				} );
 				return false
 			}
