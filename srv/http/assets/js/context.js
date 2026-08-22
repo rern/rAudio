@@ -237,11 +237,11 @@ var CONTEXT  = {
 				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
-			var dir      = V.list.licover ? file : UTIL.dirName( file );
-			var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
+			var dir     = V.list.licover ? file : UTIL.dirName( file );
+			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-			var footer   = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
+			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
