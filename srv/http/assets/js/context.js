@@ -386,6 +386,46 @@ var CONTEXT  = {
 			, ok         : () => BASH( [ 'mpcupdate', 'update', V.list.path, 'CMD ACTION PATHMPD' ] )
 		} );
 	}
+	, wrAdd        : ( val ) => {
+		if ( ! val ) val = { NAME: '', URL: '', CHARSET: '' }
+		var dir = $( '#lib-path' ).text();
+		INFO( {
+			  icon       : 'webradio'
+			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
+			, boxwidth   : 'max'
+			, list       : CONTEXT.wrList
+			, values     : {
+				  NAME    : val.NAME
+				, URL     : val.URL
+				, CHARSET : val.CHARSET || 'UTF-8'
+			}
+			, checkblank : [ 0, 1 ]
+			, beforeshow : () => {
+				if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
+				$( '#infoList tr:eq( 2 ) td' ).last()
+					.css( { 'text-align': 'right', cursor: 'pointer' } )
+					.on( 'click', function() {
+						INFO( {
+							  icon       : 'webradio'
+							, title      : 'Add Folder'
+							, list       : [ 'Name', 'text' ]
+							, checkblank : true
+							, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
+							, ok         : () => {
+								BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
+							}
+						} );
+					} );
+			}
+			, ok         : () => {
+				var val = _INFO.val();
+				if ( CONTEXT.wrExists( val.NAME, () => WEBRADIO.new( val ) ) ) return
+				
+				val.DIR = dir;
+				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
+			}
+		} );
+	}
 	, wrDelete     : () => {
 		var name = V.list.name;
 		var img  = $LI.find( 'img' ).attr( 'src' ) || V.coverdefault;
@@ -455,7 +495,7 @@ var CONTEXT  = {
 			  icon         : 'webradio'
 			, title        : 'Edit Web Radio'
 			, message      : '<img src="'+ ( $LI.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
-			, list         : WEBRADIO.list
+			, list         : CONTEXT.wrList
 			, values       : {
 				  NAME    : V.list.name
 				, URL     : V.list.path
@@ -498,6 +538,15 @@ var CONTEXT  = {
 		} );
 		return exists
 	}
+	, wrList       : [
+		  [ 'Name',    'text', { colspan: 3 } ]
+		, [ 'URL',     'text', { colspan: 3 } ]
+		, [ 'Charset', 'text', { sameline: true, width: 190 } ]
+		, [ '',        '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ICON( 'help gr' ), { sameline: true } ]
+		, [ '',        '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' ]
+		, [ '',        'hidden' ] // DIR
+		, [ '',        'hidden' ] // OLDURL
+	]
 	, wrSave       : () => WEBRADIO.new( '', $LI.find( '.lipath' ).text() )
 }
 

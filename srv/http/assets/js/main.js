@@ -674,7 +674,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		LIBRARY.list( data );
 	} );
 } ).on( 'click', '.button-webradio-new', function() {
-	WEBRADIO.new();
+	CONTEXT.wrAdd();
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
 		INFO( {
