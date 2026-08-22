@@ -2585,7 +2585,8 @@ var WEBRADIO  = {
 		, [ '',        'hidden' ] // DIR
 		, [ '',        'hidden' ] // OLDURL
 	]
-	, new    : ( name, url, charset ) => {
+	, new    : ( val ) => {
+		if ( ! val ) val = { NAME: '', URL: '', CHARSET: '' }
 		var dir = $( '#lib-path' ).text();
 		INFO( {
 			  icon       : 'webradio'
@@ -2593,9 +2594,9 @@ var WEBRADIO  = {
 			, boxwidth   : 'max'
 			, list       : WEBRADIO.list
 			, values     : {
-				  NAME    : name
-				, URL     : url
-				, CHARSET : charset || 'UTF-8'
+				  NAME    : val.NAME
+				, URL     : val.URL
+				, CHARSET : val.CHARSET || 'UTF-8'
 			}
 			, checkblank : [ 0, 1 ]
 			, beforeshow : () => {
@@ -2617,7 +2618,7 @@ var WEBRADIO  = {
 			}
 			, ok         : () => {
 				var val = _INFO.val();
-				if ( CONTEXT.wrExists( val.NAME, WEBRADIO.new( name, url, charset ) ) ) return
+				if ( CONTEXT.wrExists( val.NAME, () => WEBRADIO.new( val ) ) ) return
 				
 				val.DIR = dir;
 				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
