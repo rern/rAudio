@@ -1555,7 +1555,7 @@ var SETTING   = {
 			$.each( kv, ( k, v ) => {
 				if ( ! ( k in values ) ) { // exclude: name, type, subtype
 					var val = param[ k ];
-					if ( k === 'filename' ) val = dirName( val );
+					if ( k === 'filename' ) val = COMMON.fileName( val );
 					values[ k ] = val;
 				}
 			} );

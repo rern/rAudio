@@ -1243,13 +1243,12 @@ var COMMON    = {
 			console.log( JSON.parse( data ) );
 			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
 		} else {
-			var bashcmd = dirName( data.filesh );
+			var bashcmd = COMMON.fileName( data.filesh );
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
 			console.log( data );
 			console.log( bashcmd );
 		}
 	}
-	, dirName       : file => file.split( '/' ).pop()
 	, draggable     : el => {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
@@ -1335,6 +1334,7 @@ var COMMON    = {
 		</div>`;
 		}
 	}
+	, fileName      : file => file.split( '/' ).pop()
 	, focusNext     : ( $tabs, target, key ) => {
 		var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
 		var bL    = $tabs.length;
