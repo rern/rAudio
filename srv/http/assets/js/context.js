@@ -12,7 +12,7 @@ var CONTEXT  = {
 			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
 			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
 			var msgpath = path;
-			var name    = path.split( '/' ).pop();
+			var name    = dirName( path );
 		}
 		INFO( {
 			  icon       : 'bookmark'
@@ -109,7 +109,7 @@ var CONTEXT  = {
 						+'<br>'+ ICON( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 			, ok      : () => {
 				BASH( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => $LI.remove() );
-				var dir = V.list.path.split( '/' ).pop();
+				var dir = dirName( V.list );
 			}
 		} );
 	}
@@ -163,7 +163,7 @@ var CONTEXT  = {
 					  +'<br>'+ ICON( 'file' ) +' '+ file +'</div>';
 		} else {
 			message += '<div>'+ ICON( 'folder' ) +' '+ UTIL.dirName( file )
-					  +'<br>'+ ICON( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
+					  +'<br>'+ ICON( 'file' ) +' '+ dirName( file ) +'</div>';
 		}
 		V.pladd      = {
 			  icon    : 'playlists'
@@ -240,7 +240,7 @@ var CONTEXT  = {
 			var dir     = V.list.licover ? file : UTIL.dirName( file );
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ dirName( file ) +'</div>';
 			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {

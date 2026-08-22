@@ -997,7 +997,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var path  = $this.find( '.lipath' ).text();
 	var query = {
 		  library : 'ls'
-		, gmode   : path.replace( /\/.*/, '' ).toLowerCase()
+		, gmode   : path.split( '/' )[ 0 ].toLowerCase()
 		, mode    : 'album'
 		, string  : path
 	}
@@ -1085,13 +1085,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	MENU.hide();
 	if ( $LI.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
-			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $LI.find( '.licomposer' ).text() : $LI.find( '.liartist' ).text();
+			var name  = ( $target.is( '.licomposer, .i-composer' ) ) ? $LI.find( '.licomposer' ).text() : $LI.find( '.liartist' ).text();
 			BIO.get( name );
 		} else if ( $target.hasClass( 'liinfopath' ) ) {
-			V.gmode     = V.mode;
-			var path    = $target.text();
-			V.mode      = path.replace( /\/.*/, '' ).toLowerCase();
-			var query   = {
+			V.gmode   = V.mode;
+			var path  = $target.text();
+			V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+			var query = {
 				  library : 'ls'
 				, string  : path
 				, gmode   : V.mode
