@@ -976,7 +976,7 @@ var FILEIMAGE = {
 				+'<div class="infoimgwh">'
 				+ ( resize ? resize : '' )
 				+ ( original ? 'original: '+ original : '' )
-				+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ICON( 'redo rotate' ) +'Tap to rotate' )
+				+ ( src.startsWith( 'blob' ) ? '' : '<br>'+ ICON( 'redo rotate' ) +'Tap to rotate' )
 				+'</div>'
 			+'</span>'
 		);
@@ -1114,7 +1114,7 @@ var LIBRARY   = {
 			V.albumlist = MODE.album();
 			if ( $( '#lib-list' ).hasClass( 'track' ) ) {
 				V.librarytrack = true;
-				if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
+				if ( $( '#liimg' ).attr( 'src' ).startsWith( '/data/shm/online' ) ) $( '.licoverimg ' ).append( V.icoversave );
 			} else {
 				V.librarytrack = false;
 				if ( V.albumlist ) $( '#lib-list' ).addClass( 'album' );
@@ -1291,7 +1291,7 @@ var MENU      = {
 		var state     = S.state;
 		var play      = state === 'play';
 		var active    = $LI.hasClass( 'active' );
-		var audiocd   = V.list.path.slice( 0, 4 ) === 'cdda';
+		var audiocd   = V.list.path.startsWith( 'cdda' );
 		var notsaved  = $LI.hasClass( 'notsaved' );
 		var upnp      = $LI.hasClass( 'upnp' );
 		$LI.addClass( 'updn' );
@@ -1738,7 +1738,7 @@ var PLAYBACK  = {
 }
 var PLAYLIST  = {
 	  add         : () => {
-		if ( D.plclear && V.action.slice( 0, 7 ) === 'replace' ) {
+		if ( D.plclear && V.action.startsWith( 'replace' ) ) {
 			PLAYLIST.replace( PLAYLIST.addCommand );
 		} else {
 			$( '#infoX' ).trigger( 'click' );

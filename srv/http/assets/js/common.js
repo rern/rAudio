@@ -552,7 +552,7 @@ function INFO( json ) {
 
 			I.infofile    = this.files[ 0 ];
 			var filename  = I.infofile.name;
-			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
+			var typeimage = I.infofile.type.startsWith( 'image' );
 			I.filechecked = true;
 			if ( I.file.type ) {
 				if ( I.file.type === 'image/*' ) {

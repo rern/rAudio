@@ -56,7 +56,7 @@ $( '#loader' ).on( 'click', function() {
 } );
 $COVERART.on( 'load', function() {
 	$( '#divcover .cover-save' ).remove();
-	if ( ! S.webradio && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
+	if ( ! S.webradio && S.player === 'mpd' && S.coverart.startsWith( '/data/shm/online' ) ) {
 		$( this ).after( V.icoversave );
 	}
 	if ( ( V.wW - $( '#divcover' ).width() ) < 80 ) {
@@ -891,9 +891,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	if ( V.press || $( '.bkedit' ).length ) return
 
 	var path  = $( this ).find( '.lipath' ).text();
-	V.mode    = path.slice( 0, 4 ) === '/srv' ? path.slice( 15, 23 ) : COMMON.path2mode( path );
+	V.mode    = path.startsWith( '/srv' ) ? path.split( '/' )[ 4 ] : COMMON.path2mode( path );
 	var query = {
-		  library : V.mode === 'webradio' ? 'radio' : 'ls'
+		  library : V.mode.endsWith( 'radio' ) ? 'radio' : 'ls'
 		, string  : path
 		, gmode   : V.mode
 	}

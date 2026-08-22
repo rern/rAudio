@@ -158,7 +158,7 @@ var CONTEXT  = {
 
 		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
 		var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
-		if ( file.slice( 0, 4 ) === 'http' ) { // webradio
+		if ( file.startsWith( 'http' ) ) { // webradio
 			message += '<div>'+ ICON( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
 					  +'<br>'+ ICON( 'file' ) +' '+ file +'</div>';
 		} else {
