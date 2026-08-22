@@ -1165,6 +1165,7 @@ var _INFO     = {
 
 var COMMON    = {
 	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
+	, baseName      : file => file.split( '/' ).pop()
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1243,12 +1244,13 @@ var COMMON    = {
 			console.log( JSON.parse( data ) );
 			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
 		} else {
-			var bashcmd = COMMON.fileName( data.filesh );
+			var bashcmd = COMMON.baseName( data.filesh );
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
 			console.log( data );
 			console.log( bashcmd );
 		}
 	}
+	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) )
 	, draggable     : el => {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
@@ -1334,7 +1336,6 @@ var COMMON    = {
 		</div>`;
 		}
 	}
-	, fileName      : file => file.split( '/' ).pop()
 	, focusNext     : ( $tabs, target, key ) => {
 		var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
 		var bL    = $tabs.length;

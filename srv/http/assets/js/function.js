@@ -321,7 +321,7 @@ var COVERART  = {
 			if ( S.webradio || S.icon === 'audiocd' ) {
 				var path = S.file;
 			} else {
-				var path = '/mnt/MPD/'+ UTIL.dirName( S.file );
+				var path = '/mnt/MPD/'+ COMMON.dirName( S.file );
 			}
 			var src    = $COVERART.attr( 'src' );
 			var album  = S.Album;
@@ -332,7 +332,7 @@ var COVERART  = {
 		} else {
 			var src    = $( '#liimg' ).attr( 'src' );
 			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-			if ( path.split( '.' ).pop() === 'cue' ) path = UTIL.dirName( path );
+			if ( path.split( '.' ).pop() === 'cue' ) path = COMMON.dirName( path );
 			var album  = $( '.licover .lialbum' ).text();
 			var artist = $( '.licover .liartist' ).text();
 		}
@@ -411,7 +411,7 @@ var COVERART  = {
 		if ( V.playback ) {
 			var src    = $COVERART.attr( 'src' );
 			var file   = S.file;
-			var path   = '/mnt/MPD/'+ UTIL.dirName( file );
+			var path   = '/mnt/MPD/'+ COMMON.dirName( file );
 			var artist = S.Artist;
 			var album  = S.Album;
 		} else {
@@ -431,7 +431,7 @@ var COVERART  = {
 			filecanvas.height = imgH;
 			ctx.drawImage( img, 0, 0 );
 			var base64        = filecanvas.toDataURL( 'image/jpeg' );
-			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
+			if ( path.slice( -4 ) === '.cue' ) path = COMMON.dirName( path );
 			INFO( {
 				  icon    : V.icoverart
 				, title   : 'Save Album Cover Art'
@@ -2269,7 +2269,6 @@ var UTIL      = {
 			}
 		} );
 	}
-	, dirName         : path => path.slice( 0, path.lastIndexOf( '/' ) )
 	, htmlHash        : html => {
 		var hash = UTIL.versionHash();
 		return html.replace( /\^\^\^/g, hash )

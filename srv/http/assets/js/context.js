@@ -9,10 +9,10 @@ var CONTEXT  = {
 			var src     = $LI.find( 'img' ).attr( 'src' );
 			var msgpath = name;
 		} else {
-			if ( path.slice( -4 ) === '.cue' ) path = UTIL.dirName( path );
+			if ( path.slice( -4 ) === '.cue' ) path = COMMON.dirName( path );
 			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
 			var msgpath = path;
-			var name    = COMMON.fileName( path );
+			var name    = COMMON.baseName( path );
 		}
 		INFO( {
 			  icon       : 'bookmark'
@@ -109,7 +109,7 @@ var CONTEXT  = {
 						+'<br>'+ ICON( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 			, ok      : () => {
 				BASH( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => $LI.remove() );
-				var dir = COMMON.fileName( V.list );
+				var dir = COMMON.baseName( V.list );
 			}
 		} );
 	}
@@ -162,8 +162,8 @@ var CONTEXT  = {
 			message += '<div>'+ ICON( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
 					  +'<br>'+ ICON( 'file' ) +' '+ file +'</div>';
 		} else {
-			message += '<div>'+ ICON( 'folder' ) +' '+ UTIL.dirName( file )
-					  +'<br>'+ ICON( 'file' ) +' '+ COMMON.fileName( file ) +'</div>';
+			message += '<div>'+ ICON( 'folder' ) +' '+ COMMON.dirName( file )
+					  +'<br>'+ ICON( 'file' ) +' '+ COMMON.baseName( file ) +'</div>';
 		}
 		V.pladd      = {
 			  icon    : 'playlists'
@@ -237,10 +237,10 @@ var CONTEXT  = {
 				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
-			var dir     = V.list.licover ? file : UTIL.dirName( file );
+			var dir     = V.list.licover ? file : COMMON.dirName( file );
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ COMMON.fileName( file ) +'</div>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ COMMON.baseName( file ) +'</div>';
 			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
@@ -378,7 +378,7 @@ var CONTEXT  = {
 		} );
 	}
 	, update        : () => {
-		if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = UTIL.dirName( V.list.path );
+		if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = COMMON.dirName( V.list.path );
 		INFO( {
 			  icon       : 'refresh-library'
 			, title      : 'Library Database'

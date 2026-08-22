@@ -293,7 +293,7 @@ $( '#album, #info-booklet' ).on( 'click', function() {
 	if ( S.booklet ) {
 		if ( typeof Android !== 'object' ) {
 			var newwindow  = window.open( '', '_blank' ); // fix: popup blocked on mobile
-			newwindow.location.href = '/mnt/MPD/'+ UTIL.dirName( S.file ) +'/booklet.pdf';
+			newwindow.location.href = '/mnt/MPD/'+ COMMON.dirName( S.file ) +'/booklet.pdf';
 		} else {
 			INFO( {
 				  icon    : 'booklet'
@@ -1041,7 +1041,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var album   = $thisli.find( '.lialbum' ).text();
 	var artist  = $thisli.find( '.liartist' ).text();
 	var lipath  = $thisli.next().find( '.lipath' ).text();
-	var path    = '/mnt/MPD/'+ UTIL.dirName( lipath );
+	var path    = '/mnt/MPD/'+ COMMON.dirName( lipath );
 	if ( $this.hasClass( 'cover-save' ) ) {
 		COVERART.save();
 	} else {
