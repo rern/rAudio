@@ -210,8 +210,8 @@ var CONTEXT  = {
 	}
 	, tag           : () => {
 		var name     = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
+		if ( V.list.licover ) name = name.slice( 2 );
 		var format   = name.map( el => el.toLowerCase() );
-		if ( V.list.licover ) format = format.slice( 2 );
 		name[ 3 ]    = 'Album Artist';
 		var listinfo = [];
 		format.forEach( ( el, i ) => {
