@@ -738,6 +738,10 @@ var DISPLAY   = {
 		$( '#lib-mode-list, #search-list' ).css( 'padding-top', UTIL.barVisible( '', 50 ) );
 		DISPLAY.pageScroll( V.modescrolltop );
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
+		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
+		$( '.mode .label' ).toggleClass( 'hide', ! D.label );
+		if ( ! D.count ) return
+		
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 			var $this = $( el );
 			var mode  = $this.find( '.name' ).text();
@@ -752,8 +756,6 @@ var DISPLAY   = {
 			var $gr   = $this.find( 'gr' );
 			if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 		} );
-		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-		$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 	}
 	, pageScroll : top => setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 )
 	, playback   : () => {
