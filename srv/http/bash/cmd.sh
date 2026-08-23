@@ -482,7 +482,7 @@ remount )
 	mount -a
 	;;
 savedpldelete )
-	rm "$dirplaylists/$NAME.m3u"
+	mpc -q rm "$NAME"
 	savedPlCount
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
