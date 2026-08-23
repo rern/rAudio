@@ -506,7 +506,6 @@ function htmlRadio() {
 			$array[]       = $each;
 		}
 		sortList( $array );
-		$i = 0;
 		foreach( $array as $each ) {
 			$dataindex = $search ? '' : dataIndex( $each->sort );
 			$charset   = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
@@ -520,16 +519,9 @@ function htmlRadio() {
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			if ( substr( $dir, 15, 8 ) === 'webradio' ) {
-				$html.= '
+			$html     .= '
 	<div class="li1 name">'.$name.'</div>
-	<div class="li2">'.$url.'</div>';
-			} else {
-				$html.= '
-	<span class="single name">'.$name.'</span>';
-			}
-			$i++;
-			$html.= '
+	<div class="li2">'.$url.'</div>
 </li>';
 		}
 	}
