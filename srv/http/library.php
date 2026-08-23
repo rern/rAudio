@@ -245,8 +245,6 @@ case 'search':
 	foreach( [ 'albumartist', 'artist', 'album', 'composer', 'conductor', 'title' ] as $tag ) {
 		unset( $lists );
 		if ( $tag === 'title' ) {
-			$f      = [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ];
-			$format = '%'.implode( '%^^%', $f ).'%';
 			exec( 'mpc search -f "'.$format.'" '.$tag.' "'.$STRING.'" | awk NF'
 				, $lists );
 		} else {
@@ -276,16 +274,25 @@ case 'search':
 			}
 		}
 	}
+	$subdirs = [];
+	$dirs    = [];
 	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
-		unset( $files );
-		exec( "grep -m1 -rin '$STRING' /srv/http/data/$radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-			, $files );
-		$c     = count( $files );
-		if ( $c ) {
-			htmlRadio();
-			$count+= $c;
-			$t[]   = $radio;
-		}
+		$dir_radio = '/srv/http/data/'.$radio;
+		if ( ! is_dir( $dir_radio ) ) continue;
+		
+		unset( $lists );
+		exec( 'find /srv/http/data/'.$radio.' -type d -iname *"'.$STRING.'"* -printf "%p/"'
+			, $lists );
+		if ( ! count( $lists ) ) continue;
+		
+		unset( $dirs );
+		foreach( $lists as $list ) if ( file_exists( $list.'data' ) ) $dirs[] = $list;
+		$c     = count( $dirs );
+		if ( ! $c ) continue;
+		
+		$count+= $c;
+		$t[]   = $radio;
+		htmlRadio();
 	}
 	if ( $count ) {
 		$html.= '
@@ -471,7 +478,7 @@ function htmlList() { // non-file 'list' command
 }
 function htmlRadio() {
 	global $dirs, $html, $index0, $indexes, $search, $STRING, $subdirs;
-	if ( ! $search && count( $subdirs ) ) {
+	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object ) [];
 			$dirname       = basename( $subdir );
