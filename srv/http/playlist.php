@@ -67,6 +67,7 @@ if ( $CMD === 'list' ) {
 	echo json_encode( [
 		  'html'    => $html
 		, 'indexes' => $indexes
+		, 'count'   => count( $lists )
 	], JSON_NUMERIC_CHECK );
 	exit;
 //----------------------------------------------------------------------------------

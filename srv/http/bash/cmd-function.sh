@@ -137,7 +137,7 @@ pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
 		pushData playlists $( php /srv/http/playlist.php list )
 	else
-		pushData playlists '{ "count": false }'
+		pushData playlists '{ "count": 0 }'
 	fi
 }
 radioStop() {

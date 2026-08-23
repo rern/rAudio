@@ -155,6 +155,7 @@ W = {
 		
 		PLAYLIST.playlists.addClear();
 		var count   = data.count;
+		$( '.mode.playlists gr' ).text( count || '' );
 		if ( V.playlistlist && ! count ) {
 			$( '#playlist' ).trigger( 'click' );
 			return
@@ -166,8 +167,6 @@ W = {
 		} else if ( V.playlisttrack ) {
 			if ( 'delete' in data && $( '#pl-title .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
-		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-		$( '.mode.playlists gr' ).text( count ? count.toLocaleString() : '' );
 	}
 	, radiolist : data => {
 		if ( 'dirdelete' in data ) {
