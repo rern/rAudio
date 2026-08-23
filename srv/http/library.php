@@ -286,11 +286,11 @@ case 'search':
 		$subdirs = [];
 		$dirs    = [];
 		foreach( $lists as $list ) if ( file_exists( $list.'data' ) ) $dirs[] = $list;
-		$c     = count( $dirs );
+		$c       = count( $dirs );
 		if ( ! $c ) continue;
 		
-		$count+= $c;
-		$t[]   = $radio;
+		$count  += $c;
+		$t[]     = $radio;
 		htmlRadio();
 	}
 	if ( $count ) {
