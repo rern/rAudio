@@ -115,19 +115,16 @@ case 'findmode':
 	}
 	break;
 case 'home':
-	$modes     = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
+	$labels    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
 				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
-	$modes_l   = [];
 	$html      = [];
-	foreach( $modes as $mode ) {
-		$lipath    = str_replace( ' ', '', $mode );
-		$mode_l    = strtolower( $lipath );
-		$modes_l[] = $mode_l;
-		$gr        = modeFile( $mode_l ) ? '' : '<gr></gr>';
-		$html[ $mode_l ] = '
-<li class="mode '.$mode_l.'">
-	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
-	<a class="name hide">'.$mode_l.'</a>
+	foreach( $labels as $label ) {
+		$mode          = strtolower( str_replace( ' ', '', $label ) );
+		$gr            = modeFile( $mode ) ? '' : '<gr></gr>';
+		$html[ $mode ] = '
+<li class="mode '.$mode.'">
+	<i class="i-'.$mode.'"></i>'.$gr.'<a class="label">'.$label.'</a>
+	<a class="name hide">'.$mode.'</a>
 </li>';
 	}
 	// bookmarks
