@@ -113,7 +113,7 @@ foreach( $lists as $list ) {
 		$datatrack = '';
 		if ( strpos( $file, '.cue/track' ) ) {
 			$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-			$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
+			$file      = dirname( $file );
 		}
 		$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
 		$path      = pathinfo( $file, PATHINFO_DIRNAME );
