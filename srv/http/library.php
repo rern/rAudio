@@ -279,7 +279,7 @@ case 'search':
 		if ( ! is_dir( $dir_radio ) ) continue;
 		
 		unset( $lists );
-		exec( 'find /srv/http/data/'.$radio.' -type d -iname *"'.$STRING.'"* -printf "%p/"'
+		exec( 'find /srv/http/data/'.$radio.' -type d -iname "*'.$STRING.'*" -printf "%p/"'
 			, $lists );
 		if ( ! count( $lists ) ) continue;
 		
