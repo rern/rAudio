@@ -274,8 +274,6 @@ case 'search':
 			}
 		}
 	}
-	$subdirs = [];
-	$dirs    = [];
 	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
 		$dir_radio = '/srv/http/data/'.$radio;
 		if ( ! is_dir( $dir_radio ) ) continue;
@@ -285,7 +283,8 @@ case 'search':
 			, $lists );
 		if ( ! count( $lists ) ) continue;
 		
-		unset( $dirs );
+		$subdirs = [];
+		$dirs    = [];
 		foreach( $lists as $list ) if ( file_exists( $list.'data' ) ) $dirs[] = $list;
 		$c     = count( $dirs );
 		if ( ! $c ) continue;
