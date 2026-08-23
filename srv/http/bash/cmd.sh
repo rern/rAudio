@@ -499,10 +499,6 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	pushSavedPlaylist
 	;;
 savedplrename )
-	if [[ ! $REPLACE ]]; then
-		mpc lsplaylists | grep -q "$NEWNAME" && echo -1 && exit
-# --------------------------------------------------------------------
-	fi
 	mpc renplaylist "$NAME" "$NEWNAME"
 	pushSavedPlaylist
 	;;

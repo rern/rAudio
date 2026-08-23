@@ -173,7 +173,25 @@ var CONTEXT  = {
 			, checkchanged : true
 			, checkblank   : true
 			, oklabel      : ICON( 'flash' ) +'Rename'
-			, ok           : () => PLAYLIST.playlists.save( _INFO.val(), name )
+			, ok           : () => {
+				var newname = _INFO.val();
+				var exsist  = false;
+				$( '#pl-savedlist .single' ).each( ( i, el ) => {
+					if ( $( el ).text() === newname ) {
+						exist = true;
+						INFO( {
+							  icon    : I.icon
+							, title   : I.title
+							, message : 'Name already exists: <wh> '+ name +'</wh>'
+							, ok      : CONTEXT.plRename
+						} );
+						return false
+					}
+				} );
+				if ( exist ) return
+				
+				PLAYLIST.playlists.save( newname, name );
+			}
 		} );
 	}
 	, plDelete     : () => {
