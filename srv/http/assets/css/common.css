@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1781155993' );
+	src         : url( '/assets/fonts/rern.woff2?v=1787231940' );
 }
 @font-face {
 	font-family : Lato;
@@ -349,7 +349,9 @@ input:focus {
 	background    : #000;
 	border-bottom : 1px solid var( --cg );
 }
-
+cap {
+	text-transform: capitalize;
+}
 codered  {
 	padding : 0px 5px 3px 5px;
 	border-radius : var( --radius-chk );

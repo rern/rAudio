@@ -1013,23 +1013,24 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 } ).press( {
 	  delegate : '.coverart'
 	, action   : function( e ) {
-		var $this  = $( e.currentTarget );
-		var c1     = $this.find( '.coverart1' ).text();
-		var c2     = $this.find( '.coverart2' ).text();
-		var album  = D.albumbyartist ? c2 : c1;
-		var artist = D.albumbyartist ? c1 : c2;
+		var $this = $( e.currentTarget );
+		var c1    = $this.find( '.coverart1' ).text();
+		var c2    = $this.find( '.coverart2' ).text();
+		var mode  = COMMON.path2mode( $this.find( '.lipath' ).text() );
 		INFO( {
-			  icon    : V.icoverart
-			, title   : 'Album Thumbnail'
-			, message : $this.find( 'img' )[ 0 ].outerHTML
-						+'<p>'+ album
-						+'<br>'+ artist
-						+'</p>'
-						+'<br>Remove this thumbnail from list?'
-			, okcolor : V.orange
-			, oklabel : ICON( 'remove' ) +'Exclude'
-			, ok      : () => {
-				BASH( [ 'albumignore', album, artist, V.mode, 'CMD ALBUM ARTIST MODE' ] );
+			  icon         : V.icoverart
+			, title        : 'Album Thumbnail'
+			, message      : $this.find( 'img' )[ 0 ].outerHTML
+							+'<br><wh>'+ c1 +'</wh>'
+							+'<br>'+ c2
+			, messagealign : 'left'
+			, footer       : '<wh>Exclude from this <cap>'+ V.mode +'</cap> list?</wh>'
+							+'<br>(Still available in'+ ICON( mode +' gr' ) + mode.toUpperCase() +')'
+			, okcolor      : V.orange
+			, oklabel      : ICON( 'flash' ) +'Exclude'
+			, ok           : () => {
+				var album_artist = D.albumbyartist ? [ c2, c1 ] : [ c1, c2 ];
+				BASH( [ 'albumignore', ...album_artist, V.mode, 'CMD ALBUM ARTIST MODE' ] );
 				$this.remove();
 			}
 		} );

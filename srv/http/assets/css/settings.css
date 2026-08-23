@@ -216,7 +216,7 @@ heading + .helpblock {
 btn,
 tab {
 	display: inline-block;
-	line-height: 20px;
+	line-height: 19px;
 	padding: 0 7px;
 	border: 1px solid var( --cg );
 	border-radius: var( --radius-chk );
