@@ -175,7 +175,7 @@ var CONTEXT  = {
 			, oklabel      : ICON( 'flash' ) +'Rename'
 			, ok           : () => {
 				var newname = _INFO.val();
-				var exsist  = false;
+				var exist   = false;
 				$( '#pl-savedlist .single' ).each( ( i, el ) => {
 					if ( $( el ).text() === newname ) {
 						exist = true;
