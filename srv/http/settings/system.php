@@ -189,8 +189,8 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
 Toggle: $B->gear
-	<tab style="width: 115px">Sequence</tab>$B->power All
-	<tab>Pin - Name</tab>$greendot
+	<tab>Sequence</tab> $B->power All
+	<tab>Pin - Name</tab> $greendot
 EOF
 	],
 	[

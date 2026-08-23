@@ -180,7 +180,6 @@ heading + .helpblock {
 	padding-left: 15px;
 	text-align: right;
 	background: var( --cga );
-	border-bottom: 1px solid #000;
 }
 .helpmenu.label i {
 	margin: 0 8px;
@@ -224,9 +223,10 @@ tab {
 	background: var( --cga );
 }
 tab {
-	padding: 2px 20px 0;
+	width: 90px;
 	border-radius: 4px 4px 0 0;
 	border: none;
+	text-align: center;
 }
 .clear {
 	clear: both;
