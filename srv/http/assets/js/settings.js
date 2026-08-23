@@ -112,6 +112,7 @@ function STATUS( id, arg, info ) {
 		var $code = $( '#code'+ id );
 		var cmd   = id;
 	}
+	if ( cmd.endsWith( 'ignore' ) ) NOTIFY( 'mpd', 'Excluded List', 'Fetch ...' );
 	BASH( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
 		BANNER_HIDE();
 		if ( info ) $icon.removeClass( 'blink' );

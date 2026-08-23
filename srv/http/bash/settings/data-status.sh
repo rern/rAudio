@@ -14,7 +14,6 @@ case $1 in
 albumignore )
 	echo "\
 <bll># /srv/http/data/mpd/albumignore</bll>
-
 $( cat $dirmpd/albumignore )
 "
 	;;
@@ -119,10 +118,9 @@ mpdignore )
 	while read file; do
 		lines=$( < "$file" )
 		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( sed 's|^data$|& <yl>(rAudio Shared Data)</yl>|' <<< $lines )
-		path="<g>$( dirname "$file" )/</g>"
 		list+="
 $file
-$( sed "s|^|$path|" <<< $lines )"
+$( sed "s|^|  <g>../</g>|" <<< $lines )"
 	done <<< $files
 	echo "$list"
 	;;
