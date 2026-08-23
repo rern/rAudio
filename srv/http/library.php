@@ -513,14 +513,13 @@ function htmlRadio() {
 			$icon      = $search ? icon(  'webradio li-icon' ) : iconThumb( substr( $dir, 9 ).'thumb.jpg', 'webradio' );
 			$name      = $each->name;
 			$url       = $each->url;
+			$li1       = $search ? preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ) : $name;
 			$html     .= '
 <li data-mode="webradio" '.$charset.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$url.'</a>
-	<a class="liname">'.$name.'</a>';
-			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			$html     .= '
-	<div class="li1 name">'.$name.'</div>
+	<a class="liname">'.$name.'</a>
+	<div class="li1 name">'.$li1.'</div>
 	<div class="li2">'.$url.'</div>
 </li>';
 		}
