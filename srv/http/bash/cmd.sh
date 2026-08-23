@@ -503,16 +503,14 @@ savedplrename )
 	pushSavedPlaylist
 	;;
 savedplsave )
-	plfile="$dirplaylists/$NAME.m3u"
 	if [[ $REPLACE ]]; then
-		rm -f "$plfile"
-	elif [[ -e "$plfile" ]]; then
+		mpc -q rm "$NAME"
+	elif [[ -e "$dirplaylists/$NAME.m3u" ]]; then
 		echo -1
 		exit
 # --------------------------------------------------------------------
 	fi
 	mpc -q save "$NAME"
-	chmod 777 "$plfile"
 	savedPlCount
 	;;
 screenoff )
