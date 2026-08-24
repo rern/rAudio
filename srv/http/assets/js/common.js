@@ -336,7 +336,7 @@ W             = {  // from websocket.py (server)
 			V.ctx.hsl  = data.hsl;
 			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
 		}
-		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png?v='+ Math.round( Date.now() / 1000 );
 		$( '#loader rect' ).css( 'fill', data.cm );
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;

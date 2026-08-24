@@ -10,7 +10,7 @@ var CONTEXT  = {
 			var msgpath = name;
 		} else {
 			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
-			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ UTIL.versionHash();
+			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ V.hash;
 			var msgpath = path;
 			var name    = COMMON.baseName( path );
 		}
@@ -57,7 +57,7 @@ var CONTEXT  = {
 		INFO( {
 			  icon    : 'crop'
 			, title   : 'Crop Playlist'
-			, message : '<img src="'+ src + UTIL.versionHash() +'">'
+			, message : '<img src="'+ src + V.hash +'">'
 						+'<br><wh>'+ $LI.find( '.name' ).text() +'</wh>'
 						+'<br><br>Remove all other tracks?'
 			, oklabel : ICON( 'crop' ) +'Crop'

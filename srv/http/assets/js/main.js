@@ -3,19 +3,20 @@ D = {} // display
 E = {} // equalizer
 V = {  // global var
 	  ...V
-	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
-	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
-	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
-	, coverart      : '/assets/img/coverart.svg'
-	, covervu       : '/assets/img/vu.svg'
-	, dots          : '·&ensp;·&ensp;·'
-	, html          : {}
-	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
-	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
-	, page          : 'playback'
-	, progress      : {}
-	, wH            : window.innerHeight
-	, wW            : window.innerWidth
+	, apikeylastfm : '328f08885c2b5a4d1dbe1496cab60b15'
+	, sharedsecret : '8be57656a311be3fd8f003a71b3e0c06'
+	, blinkdot     : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
+	, coverart     : '/assets/img/coverart.svg'
+	, covervu      : '/assets/img/vu.svg'
+	, dots         : '·&ensp;·&ensp;·'
+	, hash         : '?v='+ Math.round( Date.now() / 1000 )
+	, html         : {}
+	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg">'
+	, icoversave   : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
+	, page         : 'playback'
+	, progress     : {}
+	, wH           : window.innerHeight
+	, wW           : window.innerWidth
 };
 [ 'bioartist',     'query' ].forEach(                                            k => V[ k ] = [] );
 [ 'interval',      'list',         'scrolltop',   'status' ].forEach(            k => V[ k ] = {} );

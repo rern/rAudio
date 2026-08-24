@@ -1,4 +1,5 @@
 <?php // for library.php, playlist.php
+$hash = '?v=1787386245'; // for covararts
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
@@ -24,7 +25,8 @@ function icon(  $icon, $menu = '' ) {
 	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
 function iconThumb( $thumbsrc, $menu ) {
-	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).'^^^" data-menu="'.$menu.'">';
+	global $hash;
+	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).$hash.'" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
 	$indexbar  = '<a class="indexed">#</a>';

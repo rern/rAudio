@@ -1,4 +1,6 @@
 <?php
+include 'function.php'; // $hash
+
 $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
@@ -38,8 +40,6 @@ if ( $CMD === 'current' && file_exists( $fileplaylist ) ) {
 	output();
 	exit;
 }
-
-include 'function.php';
 
 if ( $CMD === 'list' ) {
 	exec( 'mpc lsplaylists'

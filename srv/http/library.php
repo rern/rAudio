@@ -36,7 +36,7 @@ File
 search
 			track list: mpc search -f %*% any $keyword
 */
-include 'function.php';
+include 'function.php'; // $hash
 
 $post    = ( object ) $_POST;
 $CMD     = $post->library ?? $argv[ 1 ];
@@ -131,7 +131,6 @@ case 'home':
 	$dirbk     = '/srv/http/data/bookmarks';
 	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
-		$hash = '?v=1787386245';
 		foreach( $files as $name ) {
 			$path      = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio   = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
@@ -424,7 +423,7 @@ function htmlFind() { // non-file 'find' command
 	echo $html;
 }
 function htmlList() { // non-file 'list' command
-	global $lists, $MODE, $GMODE, $html, $index0, $indexes;
+	global $lists, $MODE, $GMODE, $hash, $html, $index0, $indexes;
 	if ( ! in_array( $MODE, [ 'album', 'latest' ] ) ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
@@ -443,7 +442,7 @@ function htmlList() { // non-file 'list' command
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
 			if ( str_ends_with( $path, '.cue' ) ) $path = dirname( $path );
-			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg^^^';
+			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg'.$hash;
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
 				$l1     = $artist;
@@ -542,7 +541,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $dirbash, $f, $GMODE, $html, $search, $STRING, $tag;
+	global $dirbash, $f, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -608,7 +607,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.( $cue ? $file_cue : $mpdpath ).'</a>
-	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).'^^^"></div>
+	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
 	<div class="liartist'.$hideartist.'">'.icon(  $iconartist ).$artist.'</div>

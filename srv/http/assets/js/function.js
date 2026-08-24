@@ -356,17 +356,16 @@ var COVERART  = {
 	, default : () => {
 		if ( D.vumeter ) return
 
-		var hash = UTIL.versionHash();
 		if ( ! D.covervu ) {
 			$COVERART
-				.attr( 'src', V.coverdefault + hash )
+				.attr( 'src', V.coverdefault + V.hash )
 				.css( 'border', V.coverdefault === V.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 			$( '#vu' ).addClass( 'hide' );
 		} else {
 			$COVERART
 				.addClass( 'hide' )
-				.attr( 'src', V.coverdefault + hash );
+				.attr( 'src', V.coverdefault + V.hash );
 			$( '#vu' ).removeClass( 'hide' );
 			PLAYBACK.vu();
 		}
@@ -1111,8 +1110,7 @@ var LIBRARY   = {
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 
-		var html = UTIL.htmlHash( data.html );
-		$( '#lib-mode-list' ).after( html ).promise().done( () => {
+		$( '#lib-mode-list' ).after( data.html ).promise().done( () => {
 			V.albumlist = MODE.album();
 			if ( $( '#lib-list' ).hasClass( 'track' ) ) {
 				V.librarytrack = true;
@@ -1440,7 +1438,7 @@ var PLAYBACK  = {
 		} else {
 			var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
 			if ( src ) {
-				src += UTIL.versionHash();
+				src += V.hash;
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
 					.attr( 'src', encodeURI( src ) )
@@ -1908,9 +1906,8 @@ var PLAYLIST  = {
 			LIST( { playlist: 'list' }, data => {
 				DISPLAY.pageScroll( 0 );
 				$( '#pl-title' ).html( ICON( 'playlists wh' ) +'PLAYLISTS' );
-				var html        = UTIL.htmlHash( data.html );
 				$( '#page-playlist .index' ).remove();
-				$( '#pl-savedlist' ).html( html ).promise().done( PLAYLIST.render.set );
+				$( '#pl-savedlist' ).html( data.html ).promise().done( PLAYLIST.render.set );
 			}, 'json' );
 		}
 		, list : name => { // V.playlisttrack
@@ -1921,8 +1918,7 @@ var PLAYLIST  = {
 			LIST( { playlist: 'get', name: name }, function( data ) {
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
-				var html = UTIL.htmlHash( data.html );
-				$( '#pl-savedlist' ).html( html ).promise().done( () => {
+				$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
 					DISPLAY.pageScroll( 0 );
@@ -2052,8 +2048,7 @@ var PLAYLIST  = {
 			$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
 			if ( data.html !== V.html.playlist ) {
 				V.html.playlist = data.html;
-				var html        = UTIL.htmlHash( data.html );
-				$( '#pl-list' ).html( html ).promise().done( () => {
+				$( '#pl-list' ).html( data.html ).promise().done( () => {
 					var id = 'pl-list';
 					PLAYLIST.render.set();
 					PLAYLIST.render.scroll();
@@ -2271,10 +2266,6 @@ var UTIL      = {
 			}
 		} );
 	}
-	, htmlHash        : html => {
-		var hash = UTIL.versionHash();
-		return html.replace( /\^\^\^/g, hash )
-	}
 	, imageReplace    : ( path, name ) => { // name: cover - album/station, coverart - album/bookamrk/folder thumbnail
 		var data = {
 			  cmd     : 'imagereplace'
@@ -2410,7 +2401,7 @@ var UTIL      = {
 			PLAYBACK.main();
 			BANNER_HIDE();
 		} else if ( V.playlist ) {
-			PLAYLIST.coverart( S.coverart + UTIL.versionHash() );
+			PLAYLIST.coverart( S.coverart + V.hash );
 			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();
@@ -2447,7 +2438,6 @@ var UTIL      = {
 		$( '.page' ).addClass( 'hide' );
 		$( '#page-'+ page ).removeClass( 'hide' );
 	}
-	, versionHash     : () => '?v='+ Math.round( Date.now() / 1000 )
 	, xy              : {
 		  degree : ( x, y, cx, cy ) => {
 			var rad = Math.atan2( y - cy, x - cx );

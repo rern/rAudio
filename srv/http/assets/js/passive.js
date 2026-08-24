@@ -6,7 +6,7 @@ W = {
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
-		var src    = data.cover + UTIL.versionHash();
+		var src    = data.cover + V.hash;
 		if ( V.library ) {
 			if ( $( '.licoverimg' ).length
 				&& $( '.lialbum' ).text() === data.album
@@ -28,7 +28,7 @@ W = {
 			
 			var coverart = data.coverart;
 			if ( coverart.includes( '%' ) ) coverart = decodeURIComponent( coverart );
-			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + UTIL.versionHash() );
+			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + V.hash );
 		}
 	}
 	, display   : data => {

@@ -30,6 +30,7 @@ if [[ $CMD == cover ]]; then
 	pushData coverart '{ "coverart" : "'$coverart'" }'
 else
 	hash=$( date +%s )
-	sed -i "/hash.*=/ s/v=.*/v=$hash';/" /srv/http/library.php
+	sed -i "1,/^\$hash/ s/v=.*/v=$hash';/" /srv/http/function.php    # library and playlist coverart
+	sed -i "1,/, hash/ s/v=.*/v=$hash'/" /srv/http/assets/js/main.js # coverart
 	pushLibraryHome
 fi
