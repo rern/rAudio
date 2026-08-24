@@ -60,9 +60,12 @@ fi
 
 installstart "$1"
 
+hash=$( grep '^\$hash' /srv/http/function.php )
 rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
+
+sed -i "s|^\$hash.*|$hash|" /srv/http/function.php # keep latest coverart change (no need to bust)
 
 if [[ -e /boot/kernel.img ]]; then
 	mv $dirbash/{status.armv6h,_status}
