@@ -1081,12 +1081,12 @@ var LIBRARY   = {
 			var dir      = data.path.split( '/' );
 			var dir0     = dir[ 0 ];
 			var htmlpath = ICON( V.mode );
-			htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
+			htmlpath    += '<a>'+ dir0 +' <wh>/</wh> <span class="lidir">'+ dir0 +'</span></a>';
 			var lidir    = dir0;
 			var iL       = dir.length;
 			for ( var i = 1; i < iL; i++ ) {
-				lidir    += '/'+ dir[ i ];
-				htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
+				lidir    += '<wh>/</wh>'+ dir[ i ];
+				htmlpath += '<a>'+ dir[ i ] +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>';
 			}
 		}
 		if ( V.mode === 'webradio' ) {
