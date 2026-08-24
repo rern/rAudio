@@ -9,7 +9,6 @@ V = {  // global var
 	, coverart     : '/assets/img/coverart.svg'
 	, covervu      : '/assets/img/vu.svg'
 	, dots         : '·&ensp;·&ensp;·'
-	, html         : { library: '', librarylist: '', playlist: '' }
 	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave   : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
 	, page         : 'playback'

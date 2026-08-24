@@ -61,9 +61,6 @@ W = {
 	}
 	, library   : data => {
 		BANNER_HIDE();
-		if ( ! V.library || ! V.libraryhome ) return
-		
-		V.html.library = data.html;
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
