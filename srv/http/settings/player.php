@@ -2,14 +2,15 @@
 commonVariables( [
 	  'buttons' => [ 'album', 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
-		  'DAB Radio'      => 'dabradio'
-		, 'Device'         => ''
-		, 'DSP'            => 'camilla'
-		, 'Equalizer'      => 'equalizer'
-		, 'Mixer'          => ''
-		, 'Shared Data'    => 'networks'
-		, 'SoX Resampler'  => ''
-		, 'Volume Control' => ''
+		  'DAB Radio'         => 'dabradio'
+		, 'Device'            => ''
+		, 'DSP'               => 'camilla'
+		, 'Equalizer'         => 'equalizer'
+		, 'Mixer'             => ''
+		, 'Shared Data'       => 'networks'
+		, 'Signal Processors' => ''
+		, 'SoX Resampler'     => ''
+		, 'Volume Control'    => ''
 	]
 	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
@@ -36,7 +37,7 @@ $head      = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
 	, 'help'   => <<< EOF
-$B->camilla$B->equalizer $T->features Signal Processors enabled
+$B->camilla$B->equalizer $T->features$L->signalprocessors enabled
 EOF];
 $body      = [
 	[
