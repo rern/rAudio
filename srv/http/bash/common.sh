@@ -193,6 +193,10 @@ countRadio() {
 	echo "$counts"
 	echo -n "$list" > $dirmpd/radio
 }
+coverartBust() {
+	sed -i "1,/^\$hash/ s/v=.*/v=$1';/" /srv/http/function.php    # library and playlist coverart
+	sed -i "1,/, hash/ s/v=.*/v=$1'/" /srv/http/assets/js/main.js # coverart
+}
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
 }

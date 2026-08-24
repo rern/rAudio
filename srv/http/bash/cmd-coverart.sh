@@ -29,8 +29,6 @@ if [[ $CMD == cover ]]; then
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
 	pushData coverart '{ "coverart" : "'$coverart'" }'
 else
-	hash=$( date +%s )
-	sed -i "1,/^\$hash/ s/v=.*/v=$hash';/" /srv/http/function.php    # library and playlist coverart
-	sed -i "1,/, hash/ s/v=.*/v=$hash'/" /srv/http/assets/js/main.js # coverart
+	coverartBust $( date +%s )
 	pushLibraryHome
 fi
