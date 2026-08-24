@@ -177,12 +177,12 @@ heading + .helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding-left: 15px;
-	text-align: right;
-	background: var( --cga );
+	padding: 0 7px 0 15px;
+	background: none;
+	border: 1px solid var( --cga );
 }
 .helpmenu.label i {
-	margin: 0 8px;
+	margin-left: 5px;
 	width: fit-content !important;
 }
 .helpmenu.tab {
