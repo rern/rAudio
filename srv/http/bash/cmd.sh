@@ -534,6 +534,7 @@ snapserverlist )
 	snapserverList
 	;;
 thumbnailreset )
+	[[ ${DIR:0:1} != / ]] && DIR="/mnt/MPD/$DIR"
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	pushData coverart '{ "thumbnail": true }'
 	;;
