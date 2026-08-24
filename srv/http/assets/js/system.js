@@ -1048,7 +1048,7 @@ $( '.img' ).on( 'click', function() {
 						 + gnd
 						 +'</p>'
 	}
-	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	var list    = '<img src="/assets/img/'+ name +'.jpg">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
 	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {

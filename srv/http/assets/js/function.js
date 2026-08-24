@@ -1438,7 +1438,7 @@ var PLAYBACK  = {
 		} else {
 			var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
 			if ( src ) {
-				src += V.hash;
+				src += src.startsWith( '/data/shm' ) ? COMMON.versionHash() : V.hash; // bust cache if from online
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
 					.attr( 'src', encodeURI( src ) )

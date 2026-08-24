@@ -336,7 +336,7 @@ W             = {  // from websocket.py (server)
 			V.ctx.hsl  = data.hsl;
 			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
 		}
-		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png?v='+ Math.round( Date.now() / 1000 );
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
 		$( '#loader rect' ).css( 'fill', data.cm );
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;
@@ -1656,6 +1656,7 @@ var COMMON    = {
 		if ( val !== '' && ! isNaN( val - 0 ) ) return +val;
 		return val
 	}
+	, versionHash   : () => '?v='+ Math.round( Date.now() / 1000 )
 	, websocket     : disable => {
 		if ( disable ) {
 			V.websocket = false;

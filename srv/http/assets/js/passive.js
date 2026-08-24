@@ -6,7 +6,7 @@ W = {
 	}
 	, cover     : data => { // online - 1st download, subsequence > mpdplayer
 		S.coverart = data.cover;
-		var src    = data.cover + V.hash;
+		var src    = data.cover + COMMON.versionHash(); // bust cache
 		if ( V.library ) {
 			if ( $( '.licoverimg' ).length
 				&& $( '.lialbum' ).text() === data.album
