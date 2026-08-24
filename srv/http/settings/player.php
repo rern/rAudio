@@ -6,7 +6,7 @@ commonVariables( [
 		, 'Device'         => ''
 		, 'DSP'            => 'camilla'
 		, 'Equalizer'      => 'equalizer'
-		, 'Mixer'          => 'mixer'
+		, 'Mixer'          => ''
 		, 'Shared Data'    => 'networks'
 		, 'SoX Resampler'  => ''
 		, 'Volume Control' => ''
