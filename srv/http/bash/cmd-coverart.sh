@@ -25,10 +25,10 @@ dir=$( dirname "$FILE" )
 [[ $CMD == cover ]] && imageSave "$FILE" "$dir/coverart.${FILE: -3}" 200
 imageSave "$FILE" "$dir/thumb.jpg" 80
 
-coverartBust $( date +%s )
+sed -i "1,/^\$hash/ s/v=.*/v=$1';/" /srv/http/function.php # library and playlist coverart bust
 if [[ $CMD == cover ]]; then
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
 	pushData coverart '{ "coverart" : "'$coverart'" }'
 else
-	pushLibraryHome
+	pushData thumbnail '{ "thumbnail": true }'
 fi

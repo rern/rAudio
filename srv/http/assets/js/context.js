@@ -10,7 +10,7 @@ var CONTEXT  = {
 			var msgpath = name;
 		} else {
 			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
-			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ V.hash;
+			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ COMMON.versionHash();
 			var msgpath = path;
 			var name    = COMMON.baseName( path );
 		}
@@ -53,16 +53,15 @@ var CONTEXT  = {
 	}
 	, crop         : () => {
 		var $img = $LI.find( 'img' );
-		var src  = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		var src  = $img.length ? $img.attr( 'src' ) : '';
 		INFO( {
 			  icon    : 'crop'
 			, title   : 'Crop Playlist'
-			, message : '<img src="'+ src + V.hash +'">'
+			, message : '<img src="'+ src +'">'
 						+'<br><wh>'+ $LI.find( '.name' ).text() +'</wh>'
 						+'<br><br>Remove all other tracks?'
 			, oklabel : ICON( 'crop' ) +'Crop'
 			, ok      : () => {
-				delete V.html.playlist;
 				if ( $LI.hasClass( 'active' ) ) {
 					BASH( [ 'mpccrop' ] );
 				} else {
@@ -94,7 +93,6 @@ var CONTEXT  = {
 				, modetitle : modetitle
 				, path      : path
 			}
-			V.html.librarylist = '';
 			var mode0          = V.mode;
 			V.mode             = mode;
 			LIBRARY.list( data );
@@ -590,7 +588,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replace
 	_replaceplay
 	*/
-	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.html.playlist = '';
 	var path = V.list.path;
 	// mpccmd:
 	// [ 'mpcadd', path ]

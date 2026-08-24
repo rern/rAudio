@@ -48,7 +48,7 @@ bookmark )
 		[[ $json ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
 	[[ $order ]] && echo "$json" > $file_order
-	pushLibraryHome
+	pushData thumbnail '{ "thumbnail": true }'
 	;;
 bookmarksubdir )
 	while read path; do
@@ -536,7 +536,7 @@ snapserverlist )
 thumbnailreset )
 	[[ ${DIR:0:1} != / ]] && DIR="/mnt/MPD/$DIR"
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData coverart '{ "thumbnail": true }'
+	pushData thumbnail '{ "thumbnail": true }'
 	;;
 titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1

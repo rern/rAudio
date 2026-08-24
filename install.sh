@@ -81,7 +81,7 @@ rm $dirbash/status.a*
 
 . $dirbash/common.sh
 cacheBust
-coverartBust $hash
+sed -i "1,/^\$hash/ s/v=.*/v=$1';/" /srv/http/function.php
 chmod -R +x $dirbash
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp

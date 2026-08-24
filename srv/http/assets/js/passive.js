@@ -4,9 +4,9 @@ W = {
 		COMMON.json.update( C, data );
 		if ( V.library && V.libraryhome ) DISPLAY.library();
 	}
-	, cover     : data => { // online - 1st download, subsequence > mpdplayer
-		S.coverart = data.cover;
-		var src    = data.cover + COMMON.versionHash(); // bust cache
+	, coverart  : data => { // online - 1st download, subsequence > mpdplayer
+		S.coverart = data.coverart;
+		var src    = S.coverart + COMMON.versionHash();
 		if ( V.library ) {
 			if ( $( '.licoverimg' ).length
 				&& $( '.lialbum' ).text() === data.album
@@ -16,19 +16,6 @@ W = {
 		} else {
 			$COVERART.attr( 'src', src );
 			PLAYLIST.coverart( src );
-		}
-	}
-	, coverart  : data => { // change
-		BANNER_HIDE();
-		V.html = {}
-		if ( ! V.playback ) {
-			REFRESHDATA();
-		} else {
-			if ( S.webradio && S.play || 'thumbnail' in data ) return
-			
-			var coverart = data.coverart;
-			if ( coverart.includes( '%' ) ) coverart = decodeURIComponent( coverart );
-			if ( S.coverart = coverart ) $COVERART.attr( 'src', coverart + V.hash );
 		}
 	}
 	, display   : data => {
@@ -214,6 +201,10 @@ W = {
 				PLAYLIST.get();
 			}
 		}
+	}
+	, thumbnail : data => { // change
+		BANNER_HIDE();
+		if ( ! V.playback ) REFRESHDATA();
 	}
 	, vumeter   : data => $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ) // 0-100 : 0-42 degree
 }

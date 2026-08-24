@@ -9,8 +9,7 @@ V = {  // global var
 	, coverart     : '/assets/img/coverart.svg'
 	, covervu      : '/assets/img/vu.svg'
 	, dots         : '·&ensp;·&ensp;·'
-	, hash         : '?v='+ Math.round( Date.now() / 1000 )
-	, html         : {}
+	, html         : { library: '', librarylist: '', playlist: '' }
 	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave   : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
 	, page         : 'playback'

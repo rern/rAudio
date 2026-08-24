@@ -358,14 +358,12 @@ var COVERART  = {
 
 		if ( ! D.covervu ) {
 			$COVERART
-				.attr( 'src', V.coverdefault + V.hash )
+				.attr( 'src', V.coverdefault )
 				.css( 'border', V.coverdefault === V.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 			$( '#vu' ).addClass( 'hide' );
 		} else {
-			$COVERART
-				.addClass( 'hide' )
-				.attr( 'src', V.coverdefault + V.hash );
+			$COVERART.addClass( 'hide' );
 			$( '#vu' ).removeClass( 'hide' );
 			PLAYBACK.vu();
 		}
@@ -1021,10 +1019,11 @@ var LIBRARY   = {
 		}
 	}
 	, get        : () => {
-		V.html.librarylist = '';
 		LIST( { library: 'home' }, function( data ) {
 			COMMON.json.update( C, data.lsmnt );
-			if ( data.html !== V.html.library ) V.html.library = data.html;
+			if ( data.html === V.html.library ) return
+			
+			V.html.library = data.html;
 			if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 			if ( V.library ) {
 				if ( V.librarylist ) V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
@@ -1438,7 +1437,7 @@ var PLAYBACK  = {
 		} else {
 			var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
 			if ( src ) {
-				src += src.startsWith( '/data/shm' ) ? COMMON.versionHash() : V.hash; // bust cache if from online
+				src += COMMON.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
 					.attr( 'src', encodeURI( src ) )
@@ -2401,7 +2400,6 @@ var UTIL      = {
 			PLAYBACK.main();
 			BANNER_HIDE();
 		} else if ( V.playlist ) {
-			PLAYLIST.coverart( S.coverart + V.hash );
 			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();

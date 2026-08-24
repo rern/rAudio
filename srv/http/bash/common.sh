@@ -193,10 +193,6 @@ countRadio() {
 	echo "$counts"
 	echo -n "$list" > $dirmpd/radio
 }
-coverartBust() {
-	sed -i "1,/^\$hash/ s/v=.*/v=$1';/" /srv/http/function.php    # library and playlist coverart
-	sed -i "1,/, hash/ s/v=.*/v=$1'/" /srv/http/assets/js/main.js # coverart
-}
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
 }
@@ -457,10 +453,6 @@ pushDirCounts() {
 	local tf
 	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
-}
-pushLibraryHome() {
-	data=$( php /srv/http/library.php home )
-	pushData library "$data"
 }
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
