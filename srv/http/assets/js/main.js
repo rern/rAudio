@@ -1024,7 +1024,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 							+'<br><wh>'+ c1 +'</wh>'
 							+'<br>'+ c2
 			, messagealign : 'left'
-			, footer       : '<wh>Exclude from this <cap>'+ V.mode +'</cap> list?</wh>'
+			, footer       : '<wh>Exclude this album from'+ ICON( V.mode +' gr' ) + COMMON.capitalize( V.mode ) +' list?</wh>'
 							+'<br>(Still available in'+ ICON( mode +' gr' ) + mode.toUpperCase() +')'
 			, okcolor      : V.orange
 			, oklabel      : ICON( 'flash' ) +'Exclude'

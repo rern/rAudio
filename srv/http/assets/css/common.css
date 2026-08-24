@@ -349,9 +349,6 @@ input:focus {
 	background    : #000;
 	border-bottom : 1px solid var( --cg );
 }
-cap {
-	text-transform: capitalize;
-}
 codered  {
 	padding : 0px 5px 3px 5px;
 	border-radius : var( --radius-chk );
