@@ -100,9 +100,9 @@ cacheBust() {
 	fi
 	local hash
 	hash=$( date +%s )"'"
-	sed -i "/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css # icon font
+#	sed -i "/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css # icon font
 	[[ $TIME ]] && hash="'.time()" # debug
-	sed -i "/^\$hash/ s/v=.*/v=$hash;/" /srv/http/common.php # css, js, favicon
+	sed -i "/^\$hash/ s/v=.*/v=$hash;/" /srv/http/common.php # css, js
 	rm -f $dirshm/system
 }
 calc() { # $1 - decimal precision, $2 - math
