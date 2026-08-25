@@ -88,6 +88,7 @@ camilladsp )
 			exit
 # --------------------------------------------------------------------
 		fi
+		getVar card $dirshm/output > $dirshm/card
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF &> /dev/null &
