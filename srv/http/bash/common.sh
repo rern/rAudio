@@ -93,17 +93,9 @@ audioCDplClear() {
 	fi
 }
 cacheBust() {
-	if [[ $TYPE ]]; then # debug
-		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
-		return
-#...............................................................................
-	fi
 	local hash
-	hash=$( date +%s )"'"
-#	sed -i "/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css # icon font
-	[[ $TIME ]] && hash="'.time()" # debug
-	sed -i "/^\$hash/ s/v=.*/v=$hash;/" /srv/http/common.php # css, js
-	rm -f $dirshm/system
+	[[ $3 ]] && hash=$3 || hash="v=$( date +%s )';"
+	sed -i "/$2.*?v=/ s/v=.*/$hash/" /srv/http/$1
 }
 calc() { # $1 - decimal precision, $2 - math
 	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'

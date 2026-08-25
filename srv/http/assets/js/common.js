@@ -1868,7 +1868,7 @@ $( '#debug' ).on( 'click', function() {
 						COMMON.debug();
 						$( '#infoX' ).trigger( 'click' );
 					} else {
-						BASH( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );
+						BASH( [ 'cmd.sh', 'cachebust' ], location.reload() );
 					}
 				} );
 			}

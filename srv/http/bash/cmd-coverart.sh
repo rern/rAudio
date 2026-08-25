@@ -25,8 +25,7 @@ dir=$( dirname "$FILE" )
 [[ $CMD == cover ]] && imageSave "$FILE" "$dir/coverart.${FILE: -3}" 200
 imageSave "$FILE" "$dir/thumb.jpg" 80
 
-hash=$( date +%s )
-sed -i "/^\$hash/ s/v=.*/v=$hash';/" /srv/http/function.php # library and playlist coverart bust
+cacheBust function.php hash # library and playlist coverart bust
 if [[ $CMD == cover ]]; then
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
 	pushData coverart '{ "coverart" : "'$coverart'" }'

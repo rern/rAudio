@@ -65,7 +65,12 @@ bookmarksubdir )
 	echo "[ ${subdir:1} ]"
 	;;
 cachebust )
-	cacheBust
+	if [[ $TYPE ]]; then # debug
+		grep -q -m1 "?v='.time();" /srv/http/common.php && echo time || echo static
+	else
+		cacheBust common.php hash "v='.time();" # css, js
+		rm -f $dirshm/system
+	fi
 	;;
 color )
 	filecss=/srv/http/assets/css/colors.css
@@ -118,8 +123,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
-	hash=$( date +%s )
-	sed -i -E "/^\$hreficon/ s/(hreficon.*v=).*(';)/\1$hash\"';/" /srv/http/common.php
+	cacheHash common.php hreficon
 	;;
 countmnt )
 	counts=$( countMnt )
