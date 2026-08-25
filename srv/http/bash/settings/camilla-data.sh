@@ -22,7 +22,8 @@ data='
 , "pllength"    : '$( mpc status %length% )'
 , "volume"      : '$( [[ $mixer ]] && volumeGet )'
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
-, "volumemax"   : '$volumemax
+, "volumemax"   : '$volumemax'
+, "volumemute"  : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d
