@@ -65,22 +65,14 @@ echo "{ $data }" | jq > $dirshm/hwparams
 if [[ -e $dirshm/btmixer ]]; then
 	$dirsettings/camilla-bluetooth.sh btreceiver
 else
-	fileformat="$dirsystem/camilla-$NAME"
-	[[ -s $fileformat ]] && format=$( getContent "$fileformat" ) || format=$( jq -r .[0] <<< ${FORMATS[1]} )
 	. <( grep ^CONFIG /etc/default/camilladsp )
 	[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
-	format0=$( getVar playback.format "$CONFIG" )
-	card0=$( getVar playback.device "$CONFIG" | cut -c4 )
-	[[ $format0 != $format ]] && changeformat=1
-	[[ $card0 != $CARD ]] && changecard=1
-	if [[ $changeformat || $changecard ]]; then
-		config=$( < "$CONFIG" )
-		if [[ $changeformat ]]; then
-			config=$( sed -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' <<< $config )
-			echo $format > "$fileformat"
-		fi
-		[[ $changecard ]] && config=$( sed '/playback:/,/device:/ s/hw:./hw:'$CARD'/' <<< $config )
-		echo "$config" > "$CONFIG"
-	fi
+	card=$( getVar playback.device "$CONFIG" )
+	[[ $card != hw:$CARD,0 ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$CARD,0/" $CONFIG
+	format=$( getVar playback.format "$CONFIG" )
+	while read f; do
+		[[ $f == $format ]] && f= && break
+	done < <( jq -r .playback.formats.[] $dirshm/hwparams )
+	[[ $f ]] && sed -i -E "/playback:/,/format:/ s/(format: ).*/\1$f/" $CONFIG
 	camillaDSPstart
 fi
