@@ -651,10 +651,10 @@ volumeFunction() {
 	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
 }
 volumeGet() {
-	local args card db mixer mixertype name val val_db volume
+	local card db mixer mixertype name val val_db volume
 	. $dirshm/output
 	if [[ $2 == hw ]]; then
-		read val db < <( volumeGetAmixer "$mixer" )
+		read val db < <( volumeGetAmixer "$mixer" $card )
 	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		read val db < <( volumeGetAmixer bluealsa )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
@@ -663,7 +663,7 @@ volumeGet() {
 		val="$( mpc status %volume% )"
 	else
 		for i in {1..5}; do # some usb might not be ready
-			read val db < <( volumeGetAmixer "$mixer" )
+			read val db < <( volumeGetAmixer "$mixer" $card )
 			[[ $val ]] && break || sleep 1
 		done
 	fi
@@ -686,7 +686,7 @@ volumeGetAmixer() {
 	if [[ $1 == bluealsa ]]; then
 		val_db=$( amixer -MD bluealsa 2> /dev/null )
 	else
-		val_db=$( amixer -M sget "$1" 2> /dev/null )
+		val_db=$( amixer -c $2 -M sget "$1" 2> /dev/null ) # $2-card, $1-scontrol
 	fi
 	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
 }
