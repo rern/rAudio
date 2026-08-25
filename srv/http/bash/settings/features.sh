@@ -78,6 +78,10 @@ brightness )
 camilladsp )
 	if [[ $ON ]]; then
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
+		if [[ ! $fileconf ]]; then
+			fileconf=$dircamilladsp/configs/camilladsp.yml
+			sed -i -E "s|^(CONFIG=)|\1$fileconf|" /etc/default/camilladsp
+		fi
 		error=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
 		if [[ $error ]]; then
 			notify 'warning yl blink' CamillaDSP "$( sed 's/$/<br>/' <<< $error )"

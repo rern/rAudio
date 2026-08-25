@@ -18,11 +18,9 @@ fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
 	. <( grep ^CONFIG /etc/default/camilladsp )
-	[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
 	channels=$( getVar capture.channels "$CONFIG" )
 	format=$( getVar capture.format "$CONFIG" )
 	rate=$( getVar devices.samplerate "$CONFIG" )
-	
 	CAMILLADSP=1
 ########
 	ASOUNDCONF+='

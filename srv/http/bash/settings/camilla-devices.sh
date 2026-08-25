@@ -17,7 +17,7 @@ else
 fi
 for c in Loopback $CARD; do
 	lines=$( timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
-	CHANNELS+=( $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines ) )
+	CHANNELS+=( "[ $( awk -F'[][]' '/^CHANNELS/ {print $2}' <<< $lines | tr ' ' ',' ) ]" )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 	list_f=
 	list_s=
