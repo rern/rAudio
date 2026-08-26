@@ -129,6 +129,9 @@ countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
 	;;
+coverart )
+	$dirbash/status -C "$DIR"
+	;;
 dirdelete )
 	if fileExist "$DIR"/*; then
 		[[ ! $CONFIRM ]] && echo -1 && exit

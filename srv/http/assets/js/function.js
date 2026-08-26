@@ -1252,6 +1252,11 @@ var MENU      = {
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', ! radio );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
+			if ( MODE.file() ) {
+				BASH( [ 'coverart', '/mnt/MPD/'+ V.list.path, 'CMD DIR' ], coverart => {
+					if ( coverart ) $menu.find( '.thumbnail' ).addClass( 'hide' );
+				} );
+			}
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
