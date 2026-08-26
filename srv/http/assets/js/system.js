@@ -671,7 +671,7 @@ var UTIL          = {
 				, [ '', ICON( 'tag gr' ) +' Name' ]
 			];
 			var kL     = keys.length;
-			for ( var i = 0; i < kL; i++ ) {
+			for ( let i = 0; i < kL; i++ ) {
 				list.push( [ '', 'select', { kv: UTIL.board2bcm, width: 80, sameline: true } ], [ '', 'text' ] );
 			}
 			INFO( {
@@ -711,7 +711,7 @@ var UTIL          = {
 			];
 			var values = [];
 			var pL     = pin.ON.length;
-			for ( var i = 0; i < pL; i++ ) {
+			for ( let i = 0; i < pL; i++ ) {
 				var width  = window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20;
 				var param = { kv: names, width: width, colspan: 2 };
 				list.push(
@@ -784,7 +784,7 @@ var UTIL          = {
 				}
 			} else {
 				var pL = order.ON.length;
-				for ( var i = 0; i < pL; i++ ) {
+				for ( let i = 0; i < pL; i++ ) {
 					var j          = i * 4;
 					order.ON[ i ]  = v[ j ];
 					order.OFF[ i ] = v[ j + 1 ];

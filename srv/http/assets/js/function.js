@@ -176,7 +176,7 @@ var COLOR     = {
 			var ctx = V.ctx.context;
 			var h   = V.ctx.hsl.h;
 			var w   = V.ctx.width;
-			for( var i = 0; i <= w; i++ ){                                     // each line
+			for ( let i = 0; i <= w; i++ ){                                     // each line
 				var grad      = ctx.createLinearGradient( 0, 0, w, 0 );        // 0                  ---               width
 				var iy        = i / w * 100;
 				grad.addColorStop( 0, 'hsl(0,0%,'+ iy +'%)' );                 // hsl( 0, 0%,   0% ) --- hsl( h, 100%,  0% )
@@ -299,8 +299,8 @@ var COLOR     = {
 		} )();
 		var pb, pg, pr;
 		match:
-		for ( var y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
-			for ( var x = 0; x < V.ctx.width; x++ ) {
+		for ( let y = 0; y < V.ctx.width; y++ ) { // find pixel with rgb +/- 1
+			for ( let x = 0; x < V.ctx.width; x++ ) {
 				[ pr, pg, pb ] = V.ctx.context.getImageData( x, y, 1, 1 ).data;
 				if ( Math.abs( r - pr ) < 2 && Math.abs( g - pg ) < 2 && Math.abs( b - pb ) < 2 ) {
 					COLOR.pick.rotate();
@@ -849,7 +849,7 @@ EQ            = {
 					}
 					, end   : () => {
 						if ( E.active === 'Flat' ) {
-							for ( var i = 1; i < 10; i++ ) {
+							for ( let i = 1; i < 10; i++ ) {
 								var name = 'New '+ i;
 								if ( ! ( name in E.preset ) ) break;
 							}
@@ -1084,7 +1084,7 @@ var LIBRARY   = {
 			htmlpath    += '<a>'+ dir0 +' <wh>/</wh> <span class="lidir">'+ dir0 +'</span></a>';
 			var lidir    = dir0;
 			var iL       = dir.length;
-			for ( var i = 1; i < iL; i++ ) {
+			for ( let i = 1; i < iL; i++ ) {
 				lidir    += '<wh>/</wh>'+ dir[ i ];
 				htmlpath += '<a>'+ dir[ i ] +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>';
 			}

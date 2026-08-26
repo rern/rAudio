@@ -106,7 +106,7 @@ F0.list       = {
 	, shelf     : [ ...F0.biquad_f, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.biquad_f, F0.gain ]
 }
-for ( var i = 0; i < 15; i++ ) {
+for ( let i = 0; i < 15; i++ ) {
 	F0.list.peq.push( [ i % 3 ? '' : F0.peq[ i / 3 ], 'number', { sameline: i % 3 < 2 } ] );
 }
 var F         = {
@@ -650,7 +650,7 @@ var GRAPH     = {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
 			GRAPH.flowchart.addFrame( txt, cL );
-			for ( var ch = 0; ch < cL; ch++ ) GRAPH.flowchart.addBox( 'ch '+ ch, ch );
+			for ( let ch = 0; ch < cL; ch++ ) GRAPH.flowchart.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
 			var nodb = gain === false;
@@ -800,7 +800,7 @@ var GRAPH     = {
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						GRAPH.flowchart.addBox( 'ch '+ ch, ch, gain );
 					} );
-					for ( var ch = 0; ch < ch_capt; ch++ ) X.ax[ ch ] = X.x + X.w; // ax >| @ capture channel < @ step
+					for ( let ch = 0; ch < ch_capt; ch++ ) X.ax[ ch ] = X.x + X.w; // ax >| @ capture channel < @ step
 					X.x        += X.w * 2;                                         // x  >| @ mixer           < @ step
 				}
 			} );
@@ -994,7 +994,7 @@ var GRAPH     = {
 			var iL   = raw ? 5 : 7;
 			var ticktext = [];
 			var tickvals = [];
-			for ( var i = 0; i < iL; i++ ) {
+			for ( let i = 0; i < iL; i++ ) {
 				ticktext.push( i * 20 );
 				tickvals.push( i * 20 * each );
 			}
@@ -1448,9 +1448,9 @@ var RENDER    = {
 		var ch      = chC > chP ? chC : chP;
 		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
 		var htmlout = htmlin.replace( /c0/g, 'p0' );
-		if ( chC > 1 ) for ( var i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		if ( chC > 1 ) for ( let i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
 		$( '#in' ).html( htmlin );
-		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		if ( chP > 1 ) for ( let i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		RENDER.vuBarToggle();
 		if ( V.localhost ) $( '.bar' ).addClass( 'local' );
@@ -1786,7 +1786,7 @@ var SETTING   = {
 					} );
 				} else {
 					var sources    = [];
-					for ( var i = 0; i < DEV.capture.channels; i++ ) {
+					for ( let i = 0; i < DEV.capture.channels; i++ ) {
 						sources.push( {
 							  channel  : i
 							, gain     : 0
@@ -1795,7 +1795,7 @@ var SETTING   = {
 						} );
 					}
 					var mapping    = [];
-					for ( var i = 0; i < DEV.playback.channels; i++ ) {
+					for ( let i = 0; i < DEV.playback.channels; i++ ) {
 						mapping.push( {
 							  dest    : i
 							, sources : sources
@@ -1844,7 +1844,7 @@ var SETTING   = {
 				}
 				, ok         : () => {
 					var sources = [];
-					for ( var ch = 0; ch < DEV.capture.channels; ch++ ) {
+					for ( let ch = 0; ch < DEV.capture.channels; ch++ ) {
 						sources.push( {
 							  channel  : ch
 							, gain     : 0
@@ -1918,7 +1918,7 @@ var SETTING   = {
 				[ 'monitor_channels', 'process_channels' ].forEach( k => { // >> m_ch0, m_ch1, p_ch0, p_ch1
 					var key = k[ 0 ] +'_ch';
 					var val = values[ k ];
-					for ( i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
+					for ( let i = 0; i < values.channels; i++ ) values[ key + i ] = val.includes( i );
 					delete values[ k ];
 				} );
 			}
@@ -1985,7 +1985,7 @@ var SETTING   = {
 		if ( edit ) {
 			var data = COMMON.json.clone( PIP[ index ] );
 			var nL   = edit ? data.names.length : 1;
-			for ( var i = 0; i < nL; i++ ) list.push( select );
+			for ( let i = 0; i < nL; i++ ) list.push( select );
 		} else {
 			list.push( select );
 		}
@@ -2905,7 +2905,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var width  = ( max - min ) / bands;        // log10 / band
 		var hz     = min + width / 2;              // log10 midband
 		var freq   = [];
-		for ( var i = 0; i < bands; i++ ) {
+		for ( let i = 0; i < bands; i++ ) {
 			freq.push( Math.pow( 10, hz ) );
 			hz += width;
 		}
