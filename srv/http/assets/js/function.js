@@ -1245,16 +1245,17 @@ var MENU      = {
 			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
-			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover || ( ! radio && ! $LI.hasClass( 'dir' ) ) );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack || ! V.list.licover );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', ! radio );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
+			$thumbnail = $menu.find( '.thumbnail' );
+			$thumbnail.toggleClass( 'hide', $LI.find( '.i-music' ).length > 0 );
 			if ( MODE.file() ) {
 				BASH( [ 'coverart', '/mnt/MPD/'+ V.list.path, 'CMD DIR' ], coverart => {
-					if ( coverart ) $menu.find( '.thumbnail' ).addClass( 'hide' );
+					$thumbnail.toggleClass( 'disabled', coverart !== '' );
 				} );
 			}
 		}
