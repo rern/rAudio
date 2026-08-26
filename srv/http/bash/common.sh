@@ -631,10 +631,10 @@ volume() {
 			sleep 0.2
 		done
 	fi
+	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # value control card
+volumeAmixer() { # camilladsp only
 	amixer -Mq sset "$2" $1
-	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
