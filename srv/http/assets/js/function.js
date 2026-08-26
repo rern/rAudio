@@ -12,7 +12,7 @@ function LIST( query, callback, json ) {
 	);
 }
 function REFRESHDATA() {
-	if ( I.active ) return
+	if ( I.active || V.menu ) return
 	
 	if ( V.library ) {
 		if ( V.search ) return
@@ -1199,6 +1199,7 @@ var LYRICS    = {
 }
 var MENU      = {
 	  hide     : () => {
+		V.menu = false;
 		$( '.menu' ).addClass( 'hide' );
 		$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
 		$( '#lib-list li, #pl-savedlist li, #search-list li' ).removeClass( 'active' );
@@ -1234,6 +1235,11 @@ var MENU      = {
 			$LI.addClass( 'active' );
 			return
 		}
+		if ( V.list.licover ) {
+			var menutop = UTIL.barVisible( 310, 270 );
+		} else {
+			var menutop = $LI.offset().top + 48;
+		}
 		if ( $LI.hasClass( 'nodata' ) ) {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
@@ -1252,21 +1258,18 @@ var MENU      = {
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
-			$thumbnail.toggleClass( 'hide', $LI.find( '.i-music' ).length > 0 );
-			if ( MODE.file() ) {
+			if ( ! V.list.licover && MODE.file() ) {
 				BASH( [ 'coverart', '/mnt/MPD/'+ V.list.path, 'CMD DIR' ], coverart => {
-					$thumbnail.toggleClass( 'disabled', coverart !== '' );
+					$thumbnail.toggleClass( 'hide', coverart !== '' );
+					MENU.scroll( $menu, menutop );
 				} );
+			} else {
+				$thumbnail.toggleClass( 'hide', $LI.find( '.i-music' ).length > 0 );
+				MENU.scroll( $menu, menutop );
 			}
 		}
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
-		if ( V.list.licover ) {
-			var menutop = UTIL.barVisible( 310, 270 );
-		} else {
-			var menutop = $LI.offset().top + 48;
-		}
-		MENU.scroll( $menu, menutop );
 		if ( ! MODE.file() || $LI.hasClass( 'nodata' ) ) return
 
 		BASH( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
@@ -1322,6 +1325,7 @@ var MENU      = {
 		MENU.scroll( $menu, $LI.offset().top + 48 );
 	}
 	, scroll   : ( $menu, menutop ) => {
+		V.menu        = true;
 		var fixedmenu = V.library && ( V.list.licover && V.wH > 767 ) && D.fixedcover ? true : false;
 		$menu
 			.css( 'top',  menutop )
