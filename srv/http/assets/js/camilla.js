@@ -1031,7 +1031,23 @@ SORT.set( 'pipeline .entries', ( from, to ) => {
 } );
 
 var CONFIG    = {
-	  configuration       : () => {
+	  capture_samplerate  : () => {
+		var enabled = DEV.capture_samplerate;
+		INFO( {
+			  ...SW
+			, list         : D0.list.capture_samplerate
+			, boxwidth     : 120
+			, values       : [ DEV.capture_samplerate ]
+			, checkchanged : enabled
+			, cancel       : SWITCH.cancel
+			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+			, ok           : () => {
+				DEV.capture_samplerate = DEV.samplerate;
+				SETTING.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, configuration       : () => {
 		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
 			V.tabprev = V.tab;
 			V.tab     = 'config';
@@ -1068,22 +1084,6 @@ var CONFIG    = {
 				DEV.enable_rate_adjust = true;
 				var val                =  _INFO.val();
 				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-				SETTING.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, capture_samplerate  : () => {
-		var enabled = DEV.capture_samplerate;
-		INFO( {
-			  ...SW
-			, list         : D0.list.capture_samplerate
-			, boxwidth     : 120
-			, values       : [ DEV.capture_samplerate ]
-			, checkchanged : enabled
-			, cancel       : SWITCH.cancel
-			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
-			, ok           : () => {
-				DEV.capture_samplerate = DEV.samplerate;
 				SETTING.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
@@ -1145,267 +1145,27 @@ var CONFIG    = {
 	}
 }
 var RENDER    = {
-	  status      : () => { // onload only
-		headIcon();
-		if ( S.volume !== false ) {
-			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#divvolume .control' ).text( S.control );
-			VOLUME.set();
-		} else {
-			$( '#divvolume' ).addClass( 'hide' );
-		}
-		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
-		if ( S.bluetooth ) {
-			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
-		} else {
-			$( '#divconfiguration .col-l i' ).remove();
-		}
-		$( '#configuration' )
-			.html( COMMON.select.option( S.ls.configs ) )
-			.val( S.configname );
-		if ( $( '#vu .bar' ).length ) {
-			RENDER.vuBarToggle();
-			return
-		}
-		
-		var chC     = DEV.capture.channels;
-		var chP     = DEV.playback.channels;
-		var ch      = chC > chP ? chC : chP;
-		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
-		var htmlout = htmlin.replace( /c0/g, 'p0' );
-		if ( chC > 1 ) for ( var i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
-		$( '#in' ).html( htmlin );
-		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
-		$( '#out' ).html( htmlout );
-		RENDER.vuBarToggle();
-		if ( V.localhost ) $( '.bar' ).addClass( 'local' );
-	}
-	, statusStop  : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
-		
-		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
-		RENDER.vuBarToggle();
-		$( '#buffer, #load' ).css( 'width', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
-	}
-	, tab         : () => {
-		$( '.section:not( #divstatus )' ).addClass( 'hide' );
-		$( '#div'+ V.tab ).removeClass( 'hide' );
-		$( '#bar-bottom div' ).removeClass( 'active' );
-		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
-			var data = V.tab === 'pipeline' ? 'index' : 'name';
-			var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
-			RENDER[ V.tab +'Sub' ]( val );
-		} else {
-			RENDER[ V.tab ]();
-		}
-	}
-	, vuBarToggle : () => {
-		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || ! S.play );
-	}
-	, vuLevel     : ( rms, cpi, db ) => {
-		if ( db < -98 ) {
-			var width = 0;
-			var left  = 0;
-		} else {
-			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
-			width     = ( width - 100 ) * 2;
-			var left  = width - 2;
-		}
-		if ( rms ) {
-			$( '.rms.'+ cpi ).css( 'width', width +'px' );
-		} else {
-			$( '.peak.'+ cpi ).css( 'left', left +'px' );
-			if ( db > 0 ) {
-				if ( ! V.timeoutred ) return
-				
-				clearTimeout( V.timeoutred );
-				delete V.timeoutred;
-				$( '.peak, .clipped' )
-					.css( 'transition-duration', '0s' )
-					.addClass( 'red' );
-			} else if ( ! V.timeoutred ) {
-				V.timeoutred = setTimeout( () => {
-					$( '.peak, .clipped' )
-						.css( 'transition-duration', '' )
-						.removeClass( 'red' );
-				}, 200 );
-			}
-		}
-	} //-----------------------------------------------------------------------------------
-	, filters     : () => {
-		var data     = RENDER.dataSort();
-		if ( ! data ) return
-
-		var li       = '';
-		$.each( data, ( k, v ) => li += RENDER.filter( k, v ) );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
-		RENDER.toggle();
-	}
-	, filter      : ( k, v ) => {
-		var param    = v.parameters;
-		var eq       = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type );
-		var cl_eq    = '';
-		var scale    = false;
-		var icon     = ICON( 'filters liicon graph edit' );
-		var icongain = '';
-		var disabled = '';
-		if ( v.type === 'Gain' ) {
-			var scale = param.scale === 'linear' ? 100 : 10;
-			icongain  = ICON( param.mute ? 'volume mute' : 'volume' )
-					  + ICON( param.inverted ? 'inverted bl' : 'inverted' )
-					  + ICON( param.scale === 'linear' ? 'linear bl' : 'linear' );
-			disabled  = param.mute ? ' disabled' : '';
-		}
-		if ( 'gain' in param ) {
-			var gain = param.gain;
-			var li   = '<div class="liinput"><div class="name"><div class="li1">'+ k +'</div>'
-					+'<div class="li2">'
-					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
-					+ ( 'q' in param ? 'Q:'+ param.q : '' )
-					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
-					+'</div>'
-					+'</div>'
-					+ RENDER.htmlRange( scale, gain, disabled )
-					+ icongain
-					+'</div>';
-		} else {
-			if ( eq ) {
-				icon += ICON( 'mixers' );
-				cl_eq = ' class="eq"';
-				var paramdata = param.type;
-			} else {
-				var paramdata = RENDER.json2string( param );
-			}
-			var li        = '<div class="li1">'+ k +'</div>'
-						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
-		}
-		var $graph   = $( '#filters li[data-name="'+ k +'"] .divgraph' );
-		var graph    = $graph.length ? $graph[ 0 ].outerHTML : '';
-		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
-	}
-	, filtersSub  : k => {
-		var li    = '<li class="lihead main files">'+ ICON( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ICON( 'add' ) + ICON( 'back' ) +'</li>';
-		var files = S.ls.coeffs ? [ ...S.ls.coeffs ] : [];
-		if ( S.ls.coeffswav ) files.push( ...S.ls.coeffswav );
-		if ( files.length ) files.forEach( k => li += '<li data-name="'+ k +'">'+ ICON( 'file liicon' ) + k +'</li>' );
-		$( '#'+ V.tab +' .entries.sub' ).html( li );
-		RENDER.toggle( 'sub' );
-	} //-----------------------------------------------------------------------------------
-	, mixers      : () => {
-		var data = RENDER.dataSort();
-		if ( ! data ) return
-		
-		var li   = '';
-		$.each( data, ( k, v ) => li += RENDER.mixer( k, v ) );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
-		RENDER.toggle();
-	}
-	, mixer       : ( k, v ) => {
-		return '<li data-name="'+ k +'">'+ ICON( 'mixers liicon edit' )
-			  +'<div class="li1">'+ k +'</div>'
-			  +'<div class="li2">'+ RENDER.mixerMap( v.mapping ) +'</div>'
-			  +'</li>'
-	}
-	, mixersSub   : name => {
-		var iconadd = max => ICON( max ? 'add disabled' : 'add' );
-		var data    = MIX[ name ].mapping;
-		var chin    = DEV.capture.channels;
-		var chout   = DEV.playback.channels;
-		var li      = '<li class="lihead" data-name="'+ name +'">'+ ICON( 'mixers subicon' ) +'&nbsp;<a>'+ name +'</a>'
-					 + iconadd( chout === data.length ) + ICON( 'back' )
-					 +'</li>';
-		data.forEach( ( kv, i ) => {
-			var dest   = kv.dest;
-			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ICON( 'output liicon' )
-						+'<div>Out: '+ dest +'</div>'
-						+ ICON( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
-						+'</li>';
-			kv.sources.forEach( ( s, si ) => {
-				var sources  = data[ i ].sources[ si ];
-				var ch       = sources.channel;
-				var gain     = sources.gain || 0;
-				var disabled = sources.mute ? ' disabled' : '';
-				var linear   = sources.scale === 'linear';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'" data-source="'+ ch +'">'
-					 + ICON( 'input liicon' ) +'In: '+ ch +'&emsp;'
-					 + RENDER.htmlRange( linear ? 100 : 10, gain, disabled )
-					 + ICON( sources.mute ? 'volume mute' : 'volume' )
-					 + ICON( sources.inverted ? 'inverted bl' : 'inverted' )
-					 + ICON( linear ? 'linear bl' : 'linear' )
-					 +'</li>';
-			} );
-		} );
-		$( '#'+ V.tab +' .entries.sub' ).html( li );
-		RENDER.toggle( 'sub' );
-	}
-	, mixerMap    : mapping => {
-		var ch = '';
-		mapping.forEach( m => {
-			ch     += ' • ';
-			var src = ''
-			m.sources.forEach( s => ch += '<cc>'+ s.channel +'</cc> ' );
-			ch += '» <cp>'+ m.dest +'</cp>';
-		} );
-		return ch.slice( 3 )
-	} //-----------------------------------------------------------------------------------
-	, processors  : () => {
-		var data = RENDER.dataSort();
-		if ( ! data ) return
-		
-		var li   = '';
-		$.each( data, ( k, v ) => {
-			var param = COMMON.json.clone( v.parameters );
-			[ 'channels', 'monitor_channels', 'process_channels' ].forEach( k => delete param[ k ] );
-			li += '<li data-name="'+ k +'">'+ ICON( 'processors liicon edit' )
-				 +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2">'+ v.type +' · '+ RENDER.json2string( param )+'</div>'
-				 +'</li>'
-		} );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
-		RENDER.toggle();
-	} //-----------------------------------------------------------------------------------
-	, pipeline    : () => {
-		var nopip = ! PIP || ! PIP.length;
-		$( '.i-flowchart' ).toggleClass( 'disabled', nopip );
-		if ( nopip ) return
-		
+	  config      : () => {
 		var li = '';
-		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
-		COMMON.draggable( 'pipeline .entries' );
-		RENDER.toggle();
-		GRAPH.flowchart.refresh();
-		$MENU.addClass( 'hide' );
-	}
-	, pipe        : ( el, i ) => {
-		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
-		var graph    = '';
-		if ( el.type === 'Filter' ) {
-			icon      += ' graph';
-			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit';
-			var icon_s = 'filters'
-			var li1    = el.names.join( ' <gr>•</gr> ' );
-			var li2    = '';
-			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
-			var $graph = $( '#pipeline li[data-index="'+ i +'"] .divgraph' );
-			graph      = $graph.length ? $graph[ 0 ].outerHTML : '';
-		} else {
-			var icon_s = 'mixers'
-			var li1    = el.name;
-			var li2    = RENDER.mixerMap( MIX[ el.name ].mapping );
-		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ICON( icon ) + ICON( icon_s )
-				+'<div class="li1">'+ li1 +'</div>'
-				+'<div class="li2">'+ li2 +'</div>'
-				+ graph
-				+'</li>';
-		return li
+		S.ls.configs.forEach( f => {
+			var cls  = f === S.configname ? ' class="current"' : '';
+			var $pre = $( '#config li[data-id="'+ f +'"] pre' );
+			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ICON( 'close infoclose' ) : '';
+			li += '<li'+ cls +' data-id="'+ f +'">'+ ICON( 'file liicon' ) +'<dot></dot><a class="name">'+ f +'</a>'+ pre +'</li>';
+		} );
+		LIST.render( 'camilla', li );
 	} //-----------------------------------------------------------------------------------
+	, dataSort    : () => {
+		var kv   = S.config[ V.tab ];
+		if ( ! kv ) return
+		
+		var keys = Object.keys( kv );
+		if ( ! keys.length ) return false
+		
+		var data = {};
+		keys.sort().forEach( k => data[ k ] = kv[ k ] );
+		return data
+	}
 	, devices     : () => {
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
@@ -1464,27 +1224,65 @@ var RENDER    = {
 			$( '#setting-'+ id ).toggleClass( 'hide', ! enabled );
 		} );
 	} //-----------------------------------------------------------------------------------
-	, config      : () => {
-		var li = '';
-		S.ls.configs.forEach( f => {
-			var cls  = f === S.configname ? ' class="current"' : '';
-			var $pre = $( '#config li[data-id="'+ f +'"] pre' );
-			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ICON( 'close infoclose' ) : '';
-			li += '<li'+ cls +' data-id="'+ f +'">'+ ICON( 'file liicon' ) +'<dot></dot><a class="name">'+ f +'</a>'+ pre +'</li>';
-		} );
-		LIST.render( 'camilla', li );
-	} //-----------------------------------------------------------------------------------
-	, dataSort    : () => {
-		var kv   = S.config[ V.tab ];
-		if ( ! kv ) return
-		
-		var keys = Object.keys( kv );
-		if ( ! keys.length ) return false
-		
-		var data = {};
-		keys.sort().forEach( k => data[ k ] = kv[ k ] );
-		return data
+	, filter      : ( k, v ) => {
+		var param    = v.parameters;
+		var eq       = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type );
+		var cl_eq    = '';
+		var scale    = false;
+		var icon     = ICON( 'filters liicon graph edit' );
+		var icongain = '';
+		var disabled = '';
+		if ( v.type === 'Gain' ) {
+			var scale = param.scale === 'linear' ? 100 : 10;
+			icongain  = ICON( param.mute ? 'volume mute' : 'volume' )
+					  + ICON( param.inverted ? 'inverted bl' : 'inverted' )
+					  + ICON( param.scale === 'linear' ? 'linear bl' : 'linear' );
+			disabled  = param.mute ? ' disabled' : '';
+		}
+		if ( 'gain' in param ) {
+			var gain = param.gain;
+			var li   = '<div class="liinput"><div class="name"><div class="li1">'+ k +'</div>'
+					+'<div class="li2">'
+					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
+					+ ( 'q' in param ? 'Q:'+ param.q : '' )
+					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
+					+'</div>'
+					+'</div>'
+					+ RENDER.htmlRange( scale, gain, disabled )
+					+ icongain
+					+'</div>';
+		} else {
+			if ( eq ) {
+				icon += ICON( 'mixers' );
+				cl_eq = ' class="eq"';
+				var paramdata = param.type;
+			} else {
+				var paramdata = RENDER.json2string( param );
+			}
+			var li        = '<div class="li1">'+ k +'</div>'
+						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
+		}
+		var $graph   = $( '#filters li[data-name="'+ k +'"] .divgraph' );
+		var graph    = $graph.length ? $graph[ 0 ].outerHTML : '';
+		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
 	}
+	, filters     : () => {
+		var data     = RENDER.dataSort();
+		if ( ! data ) return
+
+		var li       = '';
+		$.each( data, ( k, v ) => li += RENDER.filter( k, v ) );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		RENDER.toggle();
+	}
+	, filtersSub  : k => {
+		var li    = '<li class="lihead main files">'+ ICON( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ICON( 'add' ) + ICON( 'back' ) +'</li>';
+		var files = S.ls.coeffs ? [ ...S.ls.coeffs ] : [];
+		if ( S.ls.coeffswav ) files.push( ...S.ls.coeffswav );
+		if ( files.length ) files.forEach( k => li += '<li data-name="'+ k +'">'+ ICON( 'file liicon' ) + k +'</li>' );
+		$( '#'+ V.tab +' .entries.sub' ).html( li );
+		RENDER.toggle( 'sub' );
+	} //-----------------------------------------------------------------------------------
 	, htmlRange   : ( scale, gain, disabled ) => {
 		if ( scale === 100 ) { // filter - Gain / mixer - dB
 			var db    = gain;
@@ -1510,6 +1308,175 @@ var RENDER    = {
 					.replace( /type:|filename:.*\/|format:TEXT,|skip_bytes_lines:.*|read_bytes_lines:.*/g, '' )
 					.replace( /,$/, '' )
 					.replace( /([:,])/g, '$1 ' )
+	}
+	, mixer       : ( k, v ) => {
+		return '<li data-name="'+ k +'">'+ ICON( 'mixers liicon edit' )
+			  +'<div class="li1">'+ k +'</div>'
+			  +'<div class="li2">'+ RENDER.mixerMap( v.mapping ) +'</div>'
+			  +'</li>'
+	}
+	, mixerMap    : mapping => {
+		var ch = '';
+		mapping.forEach( m => {
+			ch     += ' • ';
+			var src = ''
+			m.sources.forEach( s => ch += '<cc>'+ s.channel +'</cc> ' );
+			ch += '» <cp>'+ m.dest +'</cp>';
+		} );
+		return ch.slice( 3 )
+	} //-----------------------------------------------------------------------------------
+	, mixers      : () => {
+		var data = RENDER.dataSort();
+		if ( ! data ) return
+		
+		var li   = '';
+		$.each( data, ( k, v ) => li += RENDER.mixer( k, v ) );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		RENDER.toggle();
+	}
+	, mixersSub   : name => {
+		var iconadd = max => ICON( max ? 'add disabled' : 'add' );
+		var data    = MIX[ name ].mapping;
+		var chin    = DEV.capture.channels;
+		var chout   = DEV.playback.channels;
+		var li      = '<li class="lihead" data-name="'+ name +'">'+ ICON( 'mixers subicon' ) +'&nbsp;<a>'+ name +'</a>'
+					 + iconadd( chout === data.length ) + ICON( 'back' )
+					 +'</li>';
+		data.forEach( ( kv, i ) => {
+			var dest   = kv.dest;
+			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
+			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ICON( 'output liicon' )
+						+'<div>Out: '+ dest +'</div>'
+						+ ICON( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
+						+'</li>';
+			kv.sources.forEach( ( s, si ) => {
+				var sources  = data[ i ].sources[ si ];
+				var ch       = sources.channel;
+				var gain     = sources.gain || 0;
+				var disabled = sources.mute ? ' disabled' : '';
+				var linear   = sources.scale === 'linear';
+				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'" data-source="'+ ch +'">'
+					 + ICON( 'input liicon' ) +'In: '+ ch +'&emsp;'
+					 + RENDER.htmlRange( linear ? 100 : 10, gain, disabled )
+					 + ICON( sources.mute ? 'volume mute' : 'volume' )
+					 + ICON( sources.inverted ? 'inverted bl' : 'inverted' )
+					 + ICON( linear ? 'linear bl' : 'linear' )
+					 +'</li>';
+			} );
+		} );
+		$( '#'+ V.tab +' .entries.sub' ).html( li );
+		RENDER.toggle( 'sub' );
+	}
+	, pipe        : ( el, i ) => {
+		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
+		var graph    = '';
+		if ( el.type === 'Filter' ) {
+			icon      += ' graph';
+			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit';
+			var icon_s = 'filters'
+			var li1    = el.names.join( ' <gr>•</gr> ' );
+			var li2    = '';
+			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
+			var $graph = $( '#pipeline li[data-index="'+ i +'"] .divgraph' );
+			graph      = $graph.length ? $graph[ 0 ].outerHTML : '';
+		} else {
+			var icon_s = 'mixers'
+			var li1    = el.name;
+			var li2    = RENDER.mixerMap( MIX[ el.name ].mapping );
+		}
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ICON( icon ) + ICON( icon_s )
+				+'<div class="li1">'+ li1 +'</div>'
+				+'<div class="li2">'+ li2 +'</div>'
+				+ graph
+				+'</li>';
+		return li
+	} //-----------------------------------------------------------------------------------
+	, pipeline    : () => {
+		var nopip = ! PIP || ! PIP.length;
+		$( '.i-flowchart' ).toggleClass( 'disabled', nopip );
+		if ( nopip ) return
+		
+		var li = '';
+		PIP.forEach( ( el, i ) => li += RENDER.pipe( el, i ) );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		COMMON.draggable( 'pipeline .entries' );
+		RENDER.toggle();
+		GRAPH.flowchart.refresh();
+		$MENU.addClass( 'hide' );
+	}
+	, processors  : () => {
+		var data = RENDER.dataSort();
+		if ( ! data ) return
+		
+		var li   = '';
+		$.each( data, ( k, v ) => {
+			var param = COMMON.json.clone( v.parameters );
+			[ 'channels', 'monitor_channels', 'process_channels' ].forEach( k => delete param[ k ] );
+			li += '<li data-name="'+ k +'">'+ ICON( 'processors liicon edit' )
+				 +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2">'+ v.type +' · '+ RENDER.json2string( param )+'</div>'
+				 +'</li>'
+		} );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		RENDER.toggle();
+	} //-----------------------------------------------------------------------------------
+	, status      : () => { // onload only
+		headIcon();
+		if ( S.volume !== false ) {
+			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#divvolume .control' ).text( S.control );
+			VOLUME.set();
+		} else {
+			$( '#divvolume' ).addClass( 'hide' );
+		}
+		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
+		if ( S.bluetooth ) {
+			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
+		} else {
+			$( '#divconfiguration .col-l i' ).remove();
+		}
+		$( '#configuration' )
+			.html( COMMON.select.option( S.ls.configs ) )
+			.val( S.configname );
+		if ( $( '#vu .bar' ).length ) {
+			RENDER.vuBarToggle();
+			return
+		}
+		
+		var chC     = DEV.capture.channels;
+		var chP     = DEV.playback.channels;
+		var ch      = chC > chP ? chC : chP;
+		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
+		var htmlout = htmlin.replace( /c0/g, 'p0' );
+		if ( chC > 1 ) for ( var i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		$( '#in' ).html( htmlin );
+		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		$( '#out' ).html( htmlout );
+		RENDER.vuBarToggle();
+		if ( V.localhost ) $( '.bar' ).addClass( 'local' );
+	}
+	, statusStop  : () => {
+		if ( ! ( 'intervalvu' in V ) ) return
+		
+		V.signal = false;
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		RENDER.vuBarToggle();
+		$( '#buffer, #load' ).css( 'width', 0 );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
+	}
+	, tab         : () => {
+		$( '.section:not( #divstatus )' ).addClass( 'hide' );
+		$( '#div'+ V.tab ).removeClass( 'hide' );
+		$( '#bar-bottom div' ).removeClass( 'active' );
+		$( '#tab'+ V.tab ).addClass( 'active' );
+		if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
+			var data = V.tab === 'pipeline' ? 'index' : 'name';
+			var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
+			RENDER[ V.tab +'Sub' ]( val );
+		} else {
+			RENDER[ V.tab ]();
+		}
 	}
 	, toggle      : ( sub ) => {
 		var $main = $( '#'+ V.tab +' .entries.main' );
@@ -1539,9 +1506,93 @@ var RENDER    = {
 				.replace( 'Alsa', 'ALSA' )
 				.replace( 'Std',  'std' )
 	}
+	, vuBarToggle : () => {
+		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || ! S.play );
+	}
+	, vuLevel     : ( rms, cpi, db ) => {
+		if ( db < -98 ) {
+			var width = 0;
+			var left  = 0;
+		} else {
+			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
+			width     = ( width - 100 ) * 2;
+			var left  = width - 2;
+		}
+		if ( rms ) {
+			$( '.rms.'+ cpi ).css( 'width', width +'px' );
+		} else {
+			$( '.peak.'+ cpi ).css( 'left', left +'px' );
+			if ( db > 0 ) {
+				if ( ! V.timeoutred ) return
+				
+				clearTimeout( V.timeoutred );
+				delete V.timeoutred;
+				$( '.peak, .clipped' )
+					.css( 'transition-duration', '0s' )
+					.addClass( 'red' );
+			} else if ( ! V.timeoutred ) {
+				V.timeoutred = setTimeout( () => {
+					$( '.peak, .clipped' )
+						.css( 'transition-duration', '' )
+						.removeClass( 'red' );
+				}, 200 );
+			}
+		}
+	} //-----------------------------------------------------------------------------------
 }
 var SETTING   = {
-	  filter        : ( type, subtype, name, edit ) => {
+	  device        : ( dev, type ) => {
+		var type        = type || 'Alsa';
+		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
+		var values      = DEV[ dev ][ type ] === type ? DEV[ dev ][ type ] : COMMON.json.clone( D.values[ vtype ] );
+		values.type     = type;
+		if ( dev === 'playback' ) delete values.stop_on_inactive;
+		values.channels = DEV[ dev ].channels;
+		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
+		var title       = UTIL.key2label( dev );
+		INFO( {
+			  icon         : V.tab
+			, title        : title
+			, list         : D[ dev ][ type ]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : true
+			, beforeshow   : () => {
+				var $input = $( '#infoList input[type=number]' );
+				var $td    = $input.parent();
+				$td.append( $td.next().find( 'i' ) );
+				$input.css( 'width', '70px' );
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+					var typenew = $( this ).val();
+					var file    = false;
+					if ( type === 'capture' ) {
+						if ( typenew === 'RawFile' ) {
+							file = S.ls.raw;
+						} else if ( typenew === 'RawFile' ) {
+							file = S.ls.wave;
+						}
+					} else {
+						if ( typenew === 'File' ) file = S.ls.file;
+					}
+					if ( file ) {
+						SETTING.device( dev, typenew );
+					} else {
+						INFO( {
+							  icon    : V.tab
+							, title   : title
+							, message : 'No <c>'+ typenew +'</c> available.'
+							, ok      : () => SETTING.device( dev, type )
+						} );
+					}
+				} );
+			}
+			, ok           : () => {
+				DEV[ dev ] = _INFO.val();
+				SETTING.save( title, 'Change ...' );
+			}
+		} );
+	}
+	, filter        : ( type, subtype, name, edit ) => {
 		if ( edit ) {
 			var values = { name: name, type: type }
 			var list   = F[ type ];
@@ -1684,6 +1735,28 @@ var SETTING   = {
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
+	, main          : () => {
+		var values   = {};
+		D0.main.forEach( k => {
+			values[ k ] = DEV[ k ];
+		} );
+		var title    = UTIL.tabTitle();
+		INFO( {
+			  icon         : V.tab
+			, title        : title
+			, list         : D.main
+			, boxwidth     : 120
+			, values       : values
+			, checkblank   : true
+			, checkchanged : true
+			, ok           : () => {
+				var val = _INFO.val();
+				COMMON.json.update( DEV, val );
+				SETTING.save( title, 'Change ...' );
+				RENDER.devices();
+			}
+		} );
+	} //-----------------------------------------------------------------------------------
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
 		INFO( {
@@ -1742,6 +1815,16 @@ var SETTING   = {
 				RENDER.mixers();
 			}
 		} );
+	}
+	, mixerGet      : $this => {
+		var $li = $this.parents( 'li' );
+		return {
+			  $li     : $li
+			, name    : $li.data( 'name' )
+			, index   : $li.hasClass( 'lihead' ) ? 'dest' : $li.data( 'index' )
+			, si      : $li.data( 'si' )
+			, checked : ! ( $this.hasClass( 'bl' ) || $this.hasClass( 'mute' ) )
+		}
 	}
 	, mixerMap      : ( name, index ) => {
 		var $li     = $( 'li.active' );
@@ -1820,6 +1903,11 @@ var SETTING   = {
 			.prop( 'checked', false )
 			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
+	, muteToggle    : ( $this, checked ) => {
+		$this.toggleClass( 'mute', checked );
+		$this.siblings( 'input' ).prop( 'disabled', checked );
+		$this.parent().find( '.i-minus, .i-plus, .db' ).toggleClass( 'disabled', checked );
+	}
 	, processor     : ( type, name, edit ) => {
 		if ( ! type ) type = 'Compressor';
 		if ( edit ) {
@@ -1976,130 +2064,6 @@ var SETTING   = {
 	, pipelineTr    : () => {
 		
 	} //-----------------------------------------------------------------------------------
-	, device        : ( dev, type ) => {
-		var type        = type || 'Alsa';
-		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
-		var values      = DEV[ dev ][ type ] === type ? DEV[ dev ][ type ] : COMMON.json.clone( D.values[ vtype ] );
-		values.type     = type;
-		values.channels = DEV[ dev ].channels;
-		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
-		var title       = UTIL.key2label( dev );
-		INFO( {
-			  icon         : V.tab
-			, title        : title
-			, list         : D[ dev ][ type ]
-			, values       : values
-			, checkblank   : true
-			, checkchanged : true
-			, beforeshow   : () => {
-				var $input = $( '#infoList input[type=number]' );
-				var $td    = $input.parent();
-				$td.append( $td.next().find( 'i' ) );
-				$input.css( 'width', '70px' );
-				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
-					var typenew = $( this ).val();
-					var file    = false;
-					if ( type === 'capture' ) {
-						if ( typenew === 'RawFile' ) {
-							file = S.ls.raw;
-						} else if ( typenew === 'RawFile' ) {
-							file = S.ls.wave;
-						}
-					} else {
-						if ( typenew === 'File' ) file = S.ls.file;
-					}
-					if ( file ) {
-						SETTING.device( dev, typenew );
-					} else {
-						INFO( {
-							  icon    : V.tab
-							, title   : title
-							, message : 'No <c>'+ typenew +'</c> available.'
-							, ok      : () => SETTING.device( dev, type )
-						} );
-					}
-				} );
-			}
-			, ok           : () => {
-				DEV[ dev ] = _INFO.val();
-				SETTING.save( title, 'Change ...' );
-			}
-		} );
-	}
-	, main          : () => {
-		var values   = {};
-		D0.main.forEach( k => {
-			values[ k ] = DEV[ k ];
-		} );
-		var title    = UTIL.tabTitle();
-		INFO( {
-			  icon         : V.tab
-			, title        : title
-			, list         : D.main
-			, boxwidth     : 120
-			, values       : values
-			, checkblank   : true
-			, checkchanged : true
-			, ok           : () => {
-				var val = _INFO.val();
-				COMMON.json.update( DEV, val );
-				SETTING.save( title, 'Change ...' );
-				RENDER.devices();
-			}
-		} );
-	} //-----------------------------------------------------------------------------------
-	, resampler     : ( type, profile ) => {
-		var list    = D.resampler[ type ];
-		var values  = D.resampler.values[ type ];
-		var current = DEV.resampler && DEV.resampler.type === values.type;
-		if ( profile ) values.profile = profile;
-		if ( current ) COMMON.json.update( values, DEV.resampler );
-		INFO( {
-			  ...SW
-			, list         : list
-			, boxwidth     : 160
-			, values       : values
-			, checkblank   : true
-			, checkchanged : current
-			, beforeshow   : () => {
-				$( 'select' ).eq( 0 ).on( 'input', function() {
-					SETTING.resampler( $( this ).val() );
-				} );
-				if ( values.type === 'AsyncSinc' ) {
-					$( 'select' ).eq( 1 ).on( 'input', function() {
-						var profile = $( this ).val();
-						if ( type === 'Custom' ) {
-							SETTING.resampler( 'AsyncSinc', profile );
-						} else {
-							if ( profile === 'Custom' ) SETTING.resampler( 'Custom' );
-						}
-					} );
-				}
-			}
-			, cancel       : SWITCH.cancel
-			, ok           : () => {
-				var val        = _INFO.val();
-				if ( val.type === 'Synchronous' && DEV.enable_rate_adjust ) DEV.enable_rate_adjust = false;
-				DEV.resampler = val;
-				SETTING.save( SW.title, 'Change ...' );
-			}
-		} );
-	} //-----------------------------------------------------------------------------------
-	, mixerGet      : $this => {
-		var $li = $this.parents( 'li' );
-		return {
-			  $li     : $li
-			, name    : $li.data( 'name' )
-			, index   : $li.hasClass( 'lihead' ) ? 'dest' : $li.data( 'index' )
-			, si      : $li.data( 'si' )
-			, checked : ! ( $this.hasClass( 'bl' ) || $this.hasClass( 'mute' ) )
-		}
-	}
-	, muteToggle    : ( $this, checked ) => {
-		$this.toggleClass( 'mute', checked );
-		$this.siblings( 'input' ).prop( 'disabled', checked );
-		$this.parent().find( '.i-minus, .i-plus, .db' ).toggleClass( 'disabled', checked );
-	}
 	, rangeGet      : ( $this, type ) => {
 		var input = type === 'input';
 		var $li   = $this.parents( 'li' );
@@ -2155,20 +2119,43 @@ var SETTING   = {
 		}
 		SETTING.save();
 	}
-	, scaleSet      : ( checked, key, $this ) => {
-		var $db = $this.siblings( '.db' );
-		if ( checked ) {
-			var gain  = key.gain / 10;
-			key.scale = 'linear';
-			key.gain  = gain;
-			$db.text( gain.toFixed( 1 ) );
-		} else {
-			var gain  = key.gain * 10;
-			key.scale = 'dB';
-			key.gain  = gain;
-			$db.text( gain );
-		}
-	}
+	, resampler     : ( type, profile ) => {
+		var list    = D.resampler[ type ];
+		var values  = D.resampler.values[ type ];
+		var current = DEV.resampler && DEV.resampler.type === values.type;
+		if ( profile ) values.profile = profile;
+		if ( current ) COMMON.json.update( values, DEV.resampler );
+		INFO( {
+			  ...SW
+			, list         : list
+			, boxwidth     : 160
+			, values       : values
+			, checkblank   : true
+			, checkchanged : current
+			, beforeshow   : () => {
+				$( 'select' ).eq( 0 ).on( 'input', function() {
+					SETTING.resampler( $( this ).val() );
+				} );
+				if ( values.type === 'AsyncSinc' ) {
+					$( 'select' ).eq( 1 ).on( 'input', function() {
+						var profile = $( this ).val();
+						if ( type === 'Custom' ) {
+							SETTING.resampler( 'AsyncSinc', profile );
+						} else {
+							if ( profile === 'Custom' ) SETTING.resampler( 'Custom' );
+						}
+					} );
+				}
+			}
+			, cancel       : SWITCH.cancel
+			, ok           : () => {
+				var val        = _INFO.val();
+				if ( val.type === 'Synchronous' && DEV.enable_rate_adjust ) DEV.enable_rate_adjust = false;
+				DEV.resampler = val;
+				SETTING.save( SW.title, 'Change ...' );
+			}
+		} );
+	} //-----------------------------------------------------------------------------------
 	, save          : ( titlle, msg ) => {
 		clearTimeout( V.debounce );
 		setTimeout( () => {
@@ -2194,6 +2181,20 @@ var SETTING   = {
 		var title = Object.keys( result )[ 0 ];
 		var error = result[ title ];
 		BANNER( 'warning yl', title, error, -1 );
+	}
+	, scaleSet      : ( checked, key, $this ) => {
+		var $db = $this.siblings( '.db' );
+		if ( checked ) {
+			var gain  = key.gain / 10;
+			key.scale = 'linear';
+			key.gain  = gain;
+			$db.text( gain.toFixed( 1 ) );
+		} else {
+			var gain  = key.gain * 10;
+			key.scale = 'dB';
+			key.gain  = gain;
+			$db.text( gain );
+		}
 	}
 	, statusPush    : () => {
 		var status = { 

@@ -1018,6 +1018,7 @@ var _INFO     = {
 					$this.eq( 0 ).prop( 'checked', true );
 				}
 			} else if ( type === 'checkbox' ) {
+				if ( val === null ) I.values[ i ] = val = false; // camilladsp
 				var checked = typeof val === 'boolean' ? val : val == $this.val();
 				$this.prop( 'checked', checked );
 			} else if ( $this.is( 'select' ) ) {
