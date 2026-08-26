@@ -356,14 +356,12 @@ function htmlDirectory() {
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
 			$icon  = iconThumb( $fullpath.'/thumb.jpg', 'folder' );
-			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = icon(  'music ', 'file' );
-			$class = '';
 		}
 		$htmlli   = '
-<li'.$class.' data-mode="'.$mode.'"'.$dataindex.'>
+<li data-mode="'.$mode.'"'.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
