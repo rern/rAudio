@@ -998,7 +998,7 @@ var GRAPH     = {
 				ticktext.push( i * 20 );
 				tickvals.push( i * 20 * each );
 			}
-			ticktext[ i - 1 ]  = '';
+			ticktext[ iL - 2 ]  = '';
 			axes.time.range    = [ 0, imL ];
 			axes.time.tickvals = tickvals;
 			axes.time.ticktext = ticktext;
