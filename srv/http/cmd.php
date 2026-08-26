@@ -48,8 +48,9 @@ case 'imagereplace': // $.post from function.js
 			$post->file = $dirdata.'audiocd/'.$discid.'/cover';
 		} else if ( in_array( $post->file[ 0 ], [ 'N', 'S', 'U' ] ) ) {
 			$post->file = '/mnt/MPD/'.$post->file;
-		} else {
-			$post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
+		} else { // radio - http... or rtsp...
+			$line       = exec( 'grep ^'.$post->file.' /srv/http/data/mpd/radio' );
+			$post->file = explode( '^^', $line )[ 1 ].'/cover';
 		}
 	}
 	if ( ! is_writable( dirname( $post->file ) ) ) exit( 'No write permission:<br><c>'.$post->file.'</c>' );

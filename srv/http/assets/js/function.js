@@ -20,6 +20,12 @@ function REFRESHDATA() {
 		if ( V.libraryhome ) {
 			LIBRARY.get();
 		} else {
+			var $lidir = $( '#mode-title .lidir' );
+			if ( $lidir.length ) {
+				$lidir.last().trigger( 'click' )
+				return
+			}
+			
 			if ( ! V.query.length ) return
 			
 			if ( V.query.length === 1 ) {
@@ -1239,7 +1245,7 @@ var MENU      = {
 			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
-			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover || ( ! radio && ! $LI.hasClass( 'subdir' ) ) );
+			$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover || ( ! radio && ! $LI.hasClass( 'dir' ) ) );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack || ! V.list.licover );
 			$menu.find( '.tag' ).toggleClass( 'hide', ! librarytrack );
 			$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );

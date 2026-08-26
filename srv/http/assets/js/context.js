@@ -344,10 +344,9 @@ var CONTEXT  = {
 	, thumbnail    : () => {
 		var $liicon = $LI.find( '.li-icon' );
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
-		var path    = '/mnt/MPD'+ V.list.path;
 		INFO( {
 			  icon        : V.icoverart
-			, title       : 'Folder Thumbnail'
+			, title       : $LI.hasClass( 'dir' ) ? 'Folder Thumbnail' : 'Station Art'
 			, message     : '<img class="imgold" src="'+ src +'" >'
 						   +'<p class="infoimgname">'+ V.list.name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
@@ -357,9 +356,9 @@ var CONTEXT  = {
 			, buttonlabel : ICON( 'folder' ) +' Icon'
 			, buttoncolor : V.orange
 			, button      : () => {
-				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
+				BASH( [ 'thumbnailreset', V.list.path, 'CMD DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( path, 'coverart' )
+			, ok          : () => UTIL.imageReplace( V.list.path, 'coverart' )
 		} );
 	}
 	, thumbUpdate  : modealbum => {
