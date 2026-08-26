@@ -1235,6 +1235,9 @@ var MENU      = {
 			$LI.addClass( 'active' );
 			return
 		}
+		
+		$LI.siblings( 'li' ).removeClass( 'active' );
+		$LI.addClass( 'active' );
 		if ( V.list.licover ) {
 			var menutop = UTIL.barVisible( 310, 270 );
 		} else {
@@ -1268,8 +1271,6 @@ var MENU      = {
 				MENU.scroll( $menu, menutop );
 			}
 		}
-		$LI.siblings( 'li' ).removeClass( 'active' );
-		$LI.addClass( 'active' );
 		if ( ! MODE.file() || $LI.hasClass( 'nodata' ) ) return
 
 		BASH( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
