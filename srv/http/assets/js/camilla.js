@@ -431,7 +431,7 @@ var D         = {
 		}
 	}
 	, values    : {
-		  Alsa      : { type: '', device: '',   format: '', channels: 2, stop_on_inactive: false }
+		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
 		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
 		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
 		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
@@ -1546,9 +1546,8 @@ var SETTING   = {
 		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
 		var values      = DEV[ dev ][ type ] === type ? DEV[ dev ][ type ] : COMMON.json.clone( D.values[ vtype ] );
 		values.type     = type;
-		if ( dev === 'playback' ) delete values.stop_on_inactive;
-		values.channels = DEV[ dev ].channels;
-		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
+		if ( dev === 'capture' ) values.stop_on_inactive = false;
+		$.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
 		var title       = UTIL.key2label( dev );
 		INFO( {
 			  icon         : V.tab
