@@ -68,11 +68,6 @@ elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
 		rm $dirsystem/output-device # remove if not exist any more
 	fi
 fi
-######## >
-cat << EOF > /etc/asound.conf
-defaults.pcm.card $CARD
-defaults.ctl.card $CARD
-EOF
 
 amixer=$( amixer -c $CARD scontents )
 if [[ $amixer ]]; then

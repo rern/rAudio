@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 statusCmd() {
-	status=$( eval "$1" )
+	status=$( eval "$1" | grep . )
 	echo "\
 <bll># $1</bll>
 $status"
@@ -129,7 +129,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
-	[[ -e $dirshm/btmixer ]] && echo; statusCmd 'bluealsa-aplay -L'
+	[[ -e $dirshm/btmixer ]] && echo && statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;
