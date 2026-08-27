@@ -1457,7 +1457,14 @@ var PLAYBACK  = {
 						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
 						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
 					} );
-				if ( S.webradio ) PLAYLIST.coverart( src );
+				if ( ! S.webradio ) return
+				
+				var $icon = $( '#pl-list li.active .li-icon' );
+				if ( $icon.is( 'i' ) ) {
+					$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
+				} else {
+					$icon.attr( 'src', src );
+				}
 			} else {
 				COVERART.default();
 			}
@@ -1800,14 +1807,6 @@ var PLAYLIST  = {
 			$( '#playlist, #button-playlist' ).removeClass( 'blink' );
 		} else {
 			V.timeoutpl = setTimeout( () => $( '#playlist, #button-playlist' ).addClass( 'blink' ), 1000 );
-		}
-	}
-	, coverart    : src => {
-		var $icon = $( '#pl-list li.active .li-icon' );
-		if ( $icon.is( 'i' ) ) {
-			$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
-		} else {
-			$icon.attr( 'src', src );
 		}
 	}
 	, get         : () => {

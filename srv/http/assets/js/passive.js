@@ -4,20 +4,7 @@ W = {
 		COMMON.json.update( C, data );
 		if ( V.library && V.libraryhome ) DISPLAY.library();
 	}
-	, coverart  : data => { // online - 1st download, subsequence > mpdplayer
-		S.coverart = data.coverart;
-		var src    = S.coverart + COMMON.versionHash();
-		if ( V.library ) {
-			if ( $( '.licoverimg' ).length
-				&& $( '.lialbum' ).text() === data.album
-				&& $( '.liartist' ).text() === data.artist ) {
-				$( '#liimg' ).attr( 'src', src );
-			}
-		} else {
-			$COVERART.attr( 'src', src );
-			PLAYLIST.coverart( src );
-		}
-	}
+	, coverart  : REFRESHDATA
 	, display   : data => {
 		if ( 'submenu' in data ) {
 			D[ data.submenu ] = data.value;
@@ -199,8 +186,7 @@ W = {
 			}
 		}
 	}
-	, thumbnail : data => { // change
-		BANNER_HIDE();
+	, thumbnail : () => {
 		if ( ! V.playback ) REFRESHDATA();
 	}
 	, vumeter   : data => $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ) // 0-100 : 0-42 degree
