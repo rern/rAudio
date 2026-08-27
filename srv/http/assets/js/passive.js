@@ -4,7 +4,15 @@ W = {
 		COMMON.json.update( C, data );
 		if ( V.library && V.libraryhome ) DISPLAY.library();
 	}
-	, coverart  : REFRESHDATA
+	, coverart  : data => {
+		if ( 'cover' in data ) { // from status-coverart.sh
+			if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + COMMON.versionHash() );
+		} else {
+			if ( data.type === 'thumbnail' && V.playback ) return
+			
+			REFRESHDATA();
+		}
+	}
 	, display   : data => {
 		if ( 'submenu' in data ) {
 			D[ data.submenu ] = data.value;
@@ -185,9 +193,6 @@ W = {
 				PLAYLIST.get();
 			}
 		}
-	}
-	, thumbnail : () => {
-		if ( ! V.playback ) REFRESHDATA();
 	}
 	, vumeter   : data => $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ) // 0-100 : 0-42 degree
 }

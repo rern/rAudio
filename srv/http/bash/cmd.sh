@@ -49,7 +49,7 @@ bookmark )
 		[[ $json ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
 	[[ $order ]] && echo "$json" > $file_order
-	pushData thumbnail '{ "thumbnail": true }'
+	pushData coverart '{ "type": "thumbnail" }'
 	;;
 bookmarksubdir )
 	while read path; do
@@ -541,7 +541,7 @@ thumbnailreset )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	[[ $radio ]] && rm -f "$DIR/cover".*
 	cacheBust function.php hash
-	pushData thumbnail '{ "thumbnail": true }'
+	pushData coverart '{ "type": "thumbnail" }'
 	;;
 titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1

@@ -28,7 +28,7 @@ imageSave "$FILE" "$dir/thumb.jpg" 80
 cacheBust function.php hash # library and playlist coverart bust
 if [[ $CMD == cover ]]; then
 	coverart=$( php -r "echo rawurlencode( '${FILE/\/srv\/http\//}' );" )
-	pushData coverart '{ "coverart" : "'$coverart'" }'
+	pushData coverart '{ "type": "coverart" }'
 else
-	pushData thumbnail '{ "thumbnail": true }'
+	pushData coverart '{ "type": "thumbnail" }'
 fi

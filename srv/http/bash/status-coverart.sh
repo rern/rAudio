@@ -28,6 +28,13 @@ getCoverart() {
 		[[ ! $MBID ]] && MBID=$mbid || MBID1=$mbid
 	fi
 }
+pushCoverart() {
+	if [[ $TYPE ]]; then
+		pushData coverart '{ "type": "library" }'
+	else
+		pushData coverart '{ "cover": "'$1'" }'
+	fi
+}
 
 if [[ $ALBUM ]]; then
 	name="$ARTIST$ALBUM"
@@ -36,8 +43,8 @@ else
 	name="$ARTIST$TITLE"
 fi
 name=$( alphaNumeric $name )
-file=$( compgen -G $dirshm/online/$name.* )
-[[ -e $file ]] && pushData coverart '{ "coverart": "'${file:9}'" }' && exit
+cover=$( compgen -G $dirshm/online/$name.* )
+[[ -e $cover ]] && pushCoverart "${cover:9}" && exit
 # --------------------------------------------------------------------
 ### 1 - ws.audioscrobbler.com #####################################
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
@@ -62,7 +69,7 @@ ext=${URL/*.}
 [[ $DISCID ]] && cover=$diraudiocd/$DISCID/cover.$ext || cover=$dirshm/online/$name.$ext
 curl -sfL $URL -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
-pushData coverart '{ "album": "'$ALBUM'", "artist": "'$ARTIST'", "coverart": "'$cover'" }' # album, artist - for library track view
+pushCoverart "$cover"
 compgen -G $dirshm/online/* && ls -t $dirshm/online/* \
 	| tail -n +10 \
 	| xargs rm -f --

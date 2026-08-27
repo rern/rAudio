@@ -588,7 +588,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, 'CMD ALBUM ARTIST' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, library, 'CMD ALBUM ARTIST TYPE' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
