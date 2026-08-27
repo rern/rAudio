@@ -1579,7 +1579,6 @@ var PLAYBACK  = {
 				, Title  : $( '#title' ).text()
 				, Album  : $( '#album' ).text()
 			}
-			if ( S.booklet && S.Album ) S.Album += ' '+ ICON( 'booklet gr' );
 			var artist = S.Artist;
 			var title  = S.Title;
 			var album  = S.Album;
@@ -1602,6 +1601,7 @@ var PLAYBACK  = {
 				.html(  title  || V.dots )
 				.toggleClass( 'disabled', S.Title === '' )
 				.toggleClass( 'gr', S.pause );
+			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
 			$( '#album' )
 				.html(  album  || V.dots )
 				.toggleClass( 'disabled', S.Album === '' );
