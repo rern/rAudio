@@ -2287,7 +2287,6 @@ var UTIL      = {
 		$.post( 'cmd.php', data, std => {
 			if ( std ) _INFO.warning( I.icon, I.title, std );
 		} );
-		BANNER( V.icoverart, I.title, 'Change ...', -1 );
 	}
 	, infoTitle       : () => {
 		var artist = S.Artist;
