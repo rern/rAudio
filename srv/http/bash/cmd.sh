@@ -536,8 +536,11 @@ snapserverlist )
 	snapserverList
 	;;
 thumbnailreset )
+	[[ $DIR == http* || $DIR == rtsp* ]] && radio=1
 	DIR=$( dir2path "$DIR" )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
+	[[ $radio ]] && rm -f "$DIR/cover".*
+	cacheBust function.php hash
 	pushData thumbnail '{ "thumbnail": true }'
 	;;
 titlewithparen )
