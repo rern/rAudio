@@ -1,5 +1,15 @@
 #!/bin/bash
 
+dir2path() {
+	if [[ $1 == /* ]]; then
+		echo "$1"
+	elif [[ $1 == [NSU]* ]]; then
+		echo "/mnt/MPD/$1"
+	else
+		line=$( grep ^$1 $dirmpd/radio )
+		echo "${line/*^}"
+	fi
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop

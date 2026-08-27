@@ -1,5 +1,5 @@
 <?php // for library.php, playlist.php
-$hash = '?v=1787386245'; // for covararts
+$hash = '?v=1787799850';
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
@@ -64,9 +64,8 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
-function radioPath( $url ) {
-	$line = shell_exec( 'grep ^'.$url.' /srv/http/data/mpd/radio' );
-	if ( $line ) return rtrim( explode( '^^', $line )[ 1 ] );
+function radioDir( $url ) {
+	return exec( 'grep ^'.$url.' /srv/http/data/mpd/radio | cut -d^ -f3' );
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

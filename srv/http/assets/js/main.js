@@ -971,13 +971,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	  delegate : '.mode.bookmark'
 	, action   : () => {
 		V.bkedit = true;
-		$( '.mode.bookmark' ).each( ( i, el ) => {
-			var $this      = $( el );
-			var buttonhtml = ICON( 'remove bkedit bk-remove' );
-			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
-			$this.append( buttonhtml );
-		} );
-		$( '.mode.bookmark' ).addClass( 'edit' );
 		BASH( [ 'bookmarksubdir' ], subdir => {
 			$( '.mode.bookmark' ).each( ( i, el ) => {
 				var $this      = $( el );
@@ -986,6 +979,13 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 				$this.append( '<img class="bkedit bk-cover" src="'+ V.coverart +'">' );
 			} );
 		}, 'json' );
+		$( '.mode.bookmark' ).each( ( i, el ) => {
+			var $this      = $( el );
+			var buttonhtml = ICON( 'remove bkedit bk-remove' );
+			if ( ! $this.find( 'img' ).length ) buttonhtml += ICON( 'edit bkedit bk-rename' );
+			$this.append( buttonhtml );
+		} );
+		$( '.mode.bookmark' ).addClass( 'edit' );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
@@ -1035,13 +1035,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} );
 	}
 } ).on( 'click', '.coveredit',  function() {
-	var $this   = $( this );
-	var $img    = $this.siblings( 'img' );
-	var $thisli = $this.parent().parent();
-	var album   = $thisli.find( '.lialbum' ).text();
-	var artist  = $thisli.find( '.liartist' ).text();
-	var lipath  = $thisli.next().find( '.lipath' ).text();
-	var path    = '/mnt/MPD/'+ COMMON.dirName( lipath );
 	if ( $this.hasClass( 'cover-save' ) ) {
 		COVERART.save();
 	} else {

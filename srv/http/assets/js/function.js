@@ -327,7 +327,7 @@ var COVERART  = {
 			if ( S.webradio || S.icon === 'audiocd' ) {
 				var path = S.file;
 			} else {
-				var path = '/mnt/MPD/'+ COMMON.dirName( S.file );
+				var path = COMMON.dirName( S.file );
 			}
 			var src    = $COVERART.attr( 'src' );
 			var album  = S.Album;
@@ -337,11 +337,11 @@ var COVERART  = {
 			var path   = V.list.path;
 		} else {
 			var src    = $( '#liimg' ).attr( 'src' );
-			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
+			var path   = $( '.licover .lipath' ).text();
 			var album  = $( '.licover .lialbum' ).text();
 			var artist = $( '.licover .liartist' ).text();
 		}
+		if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
 		var message = '<img class="imgold" src="'+ src +'">';
 		if ( radio ) {
 			message  += '<p class="infoimgname">'+ ( V.playback ? S.station : V.list.name ) +'</p>';
@@ -414,12 +414,12 @@ var COVERART  = {
 		if ( V.playback ) {
 			var src    = $COVERART.attr( 'src' );
 			var file   = S.file;
-			var path   = '/mnt/MPD/'+ COMMON.dirName( file );
+			var path   = COMMON.dirName( file );
 			var artist = S.Artist;
 			var album  = S.Album;
 		} else {
 			var src = $( '.licover img' ).attr( 'src' );
-			var path   = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
+			var path   = $( '.licover .lipath' ).text();
 			var artist = $( '.licover .liartist' ).text();
 			var album  = $( '.licover .lialbum' ).text();
 		}
@@ -1262,7 +1262,7 @@ var MENU      = {
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
 			if ( ! V.list.licover && MODE.file() ) {
-				BASH( [ 'coverart', '/mnt/MPD/'+ V.list.path, 'CMD DIR' ], coverart => {
+				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
 					$thumbnail.toggleClass( 'hide', coverart !== '' );
 					MENU.scroll( $menu, menutop );
 				} );
@@ -2275,7 +2275,7 @@ var UTIL      = {
 			  cmd     : 'imagereplace'
 			, name    : name
 			, file    : path[ 0 ] === '/' ? path +'/'+ name : path
-			, ext     : I.infofilegif ? '.gif' : '.jpg'
+			, ext     : I.infofilegif ? 'gif' : 'jpg'
 			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		}
 		if ( V.debug ) {

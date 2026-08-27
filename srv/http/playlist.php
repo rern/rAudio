@@ -180,7 +180,7 @@ foreach( $lists as $list ) {
 	// webradio / dabradio
 	$station = '';
 	if ( $ini === 'http' || $ini === 'rtsp' ) {
-		$dirradio = radioPath( $file );
+		$dirradio = radioDir( $file );
 		if ( $dirradio ) {
 			$station = basename( $dirradio );
 			$icon    = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );

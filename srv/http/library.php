@@ -136,7 +136,7 @@ case 'home':
 			$bkradio   = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
 			$coverfile = '';
 			if ( $bkradio ) {
-				$dir = radioPath( $path ); // $path: http://..., $dir:/srv/http/...
+				$dir = radioDir( $path ); // $path: http://..., $dir:/srv/http/...
 			} else {
 				$dir = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
 			}

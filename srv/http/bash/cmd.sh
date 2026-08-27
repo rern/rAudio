@@ -34,6 +34,7 @@ bioimage )
 bookmark )
 	file_order=$dirsystem/order.json
 	[[ -e $file_order ]] && order=1
+	DIR=$( dir2path "$DIR" )
 	if [[ $DIR ]]; then
 		echo "$DIR" > "$dirbookmarks/$NAME"
 		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
@@ -52,13 +53,7 @@ bookmark )
 	;;
 bookmarksubdir )
 	while read path; do
-		dir=$( < "$path" )
-		if [[ $dir == http* || $dir == rtsp* ]]; then
-			dir=$( grep "^$dir" $dirmpd/radio )
-			dir=${dir/*^}
-		elif [[ ${dir:0:1} != / ]]; then
-			dir="/mnt/MPD/$dir"
-		fi
+		dir=$( dir2path "$( < "$path" )" )
 		coverart=$( $dirbash/status -C "$dir" )
 		[[ ! $coverart ]] && subdir+=', "'$( basename "$path" )'" '
 	done < <( ls $dirbookmarks/* )
@@ -130,7 +125,7 @@ countmnt )
 	echo '{ '${counts/,}' }'
 	;;
 coverart )
-	$dirbash/status -C "$DIR"
+	$dirbash/status -C "/mnt/MPD/$DIR"
 	;;
 dirdelete )
 	if fileExist "$DIR"/*; then
