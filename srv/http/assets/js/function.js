@@ -2274,7 +2274,7 @@ var UTIL      = {
 		var data = {
 			  cmd     : 'imagereplace'
 			, name    : name
-			, file    : path[ 0 ] === '/' ? path +'/'+ name : path
+			, file    : path
 			, ext     : I.infofilegif ? 'gif' : 'jpg'
 			, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		}
