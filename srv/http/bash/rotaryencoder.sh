@@ -4,13 +4,25 @@
 
 . $dirsystem/rotaryencoder.conf
 
-# play/pause
-dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
-sleep 1
-devinputbutton=$( realpath /dev/input/by-path/*button* )
-evtest $devinputbutton | while read line; do
-	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
-done &
+declare -A dev
+declare -A param=(
+	[gpio-key]="gpio=$pins label=PLAYCD keycode=200" # play/pause
+	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step" # volume
+)
+
+for dt in gpio-key rotary-encoder; do # remove cannot combine with load
+	dtoverlay -l | grep -q $dt && dtoverlay -r $dt &> /dev/null
+done
+
+for dt in gpio-key rotary-encoder; do
+	dtoverlay $dt ${param[$dt]}
+	[[ $dt == gpio-key ]] && d=button || d=rotary
+	for i in {1..3};do
+		sleep 1
+		compgen -G /dev/input/by-path/*$d* > /dev/null && break
+	done
+	dev[$d]=$( realpath /dev/input/by-path/*$d* )
+done
 
 dn=-1
 up=+1
@@ -22,10 +34,13 @@ if [[ -e $dirshm/btmixer ]]; then
 elif [[ -e $dirshm/amixercontrol ]]; then
 	. $dirshm/output 
 fi
-dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
-sleep 1
-devinputrotary=$( realpath /dev/input/by-path/*rotary* )
-evtest $devinputrotary | while read line; do
+# button -----------------------------------------------------------------------
+evtest ${dev[button]} | while read line; do
+	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
+done &
+
+# volume ----------------------------------------------------------------------
+evtest ${dev[rotary]} | while read line; do
 	case ${line: -2} in
 		' 1' ) updn=$up;;
 		'-1' ) updn=$dn;;

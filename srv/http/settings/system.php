@@ -196,7 +196,8 @@ EOF
 	[
 		  'id'       => 'rotaryencoder'
 		, 'label'    => 'Rotary Encoder'
-		, 'sub'      => 'evtest'
+		, 'sub'      => 'rotaryencoder'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
