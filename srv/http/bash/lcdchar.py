@@ -139,10 +139,9 @@ if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, state, Time, timestamp, webradio
     v = STATUS[ k ]
-    if not v: continue
-    
-    if cmA00: v = normalize( v )
-    STATUS[ k ] = v[ :COLS ]
+    if v:
+        if cmA00: v = normalize( v )
+        STATUS[ k ] = v[ :COLS ]
 locals().update( STATUS )
 
 if webradio:
