@@ -167,23 +167,7 @@ W = {
 			$( '.mode.'+ data.type +' gr' ).text( count ? count.toLocaleString() : '' );
 		}
 		if ( V.library ) {
-			if ( ! V.query ) return // dirdelete - back 1 level
-			
-			if ( V.librarylist && V.mode === data.type ) {
-				if ( V.query.length === 1 ) {
-					$( '.mode.'+ V.mode ).trigger( 'click' );
-				} else {
-					var query = V.query.slice( -1 )[ 0 ];
-					LIST( query, html => {
-						var data = {
-							  html      : html
-							, modetitle : query.modetitle
-							, path      : query.path
-						}
-						LIBRARY.list( data );
-					} );
-				}
-			}
+			if ( V.librarylist && V.mode === data.type ) $( '#mode-title .lidir' ).last().trigger( 'click' );
 		} else if ( V.playlist ) {
 			if ( V.playlistlist ) {
 				$( '#button-pl-playlists' ).trigger( 'click' );

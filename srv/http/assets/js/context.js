@@ -433,12 +433,22 @@ var CONTEXT  = {
 					} );
 			}
 			, ok         : () => {
-				var val = _INFO.val();
-				if ( CONTEXT.wrExists( val.NAME, () => WEBRADIO.new( val ) ) ) return
-				
-				val.DIR = dir;
-				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
+				var val  = _INFO.val();
+				var data = { icon: I.icon, title: I.title, URL: I.values.URL }
+				val.DIR  = dir;
+				CONTEXT.wrCommand( val, data, val.URL !== I.values.URL );
 			}
+		} );
+	}
+	, wrCommand    : ( val, data, callback ) => {
+		if ( CONTEXT.wrExists( val.NAME, () => CONTEXT.wrAdd( val ) ) ) return
+		
+		if ( val.URL !== data.URL ) BANNER( data.icon +' blink', data.title, 'Stream test ...', -1 );
+		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
+			BANNER_HIDE();
+			if ( ! std ) return
+			
+			_INFO.warning( data.icon, data.title, std, () => CONTEXT.wrAdd( val ) );
 		} );
 	}
 	, wrDelete     : () => {
@@ -528,12 +538,10 @@ var CONTEXT  = {
 			}
 			, oklabel      : ICON( 'save' ) +'Save'
 			, ok           : () => {
-				var val = _INFO.val();
-				if ( CONTEXT.wrExists( val.NAME, CONTEXT.wrEdit ) ) return
-				
+				var val     = _INFO.val();
 				val.DIR     = $( '#lib-path' ).text();
 				val.OLDNAME = V.list.name;
-				BASH( COMMON.cmd_json2args( 'webradioedit', val ) );
+				CONTEXT.wrCommand( val, data, val.URL !== I.values.URL );
 			}
 		} );
 	}

@@ -180,20 +180,17 @@ webradioCount() {
 	pushRadioList
 }
 webradioVerify() {
-	local dir ext url
+	local charset ext url
 	url=$1
-	dir=$2
+	[[ $2 ]] && charset="?charset=$2"
 	ext=${url/*.}
-	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
-#...............................................................................
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
-# --------------------------------------------------------------------
-	notify webradio 'Web Radio' 'Stream test ...'
+	[[ ! $url ]] && echo "Failed: No valid URL found in<br>$url" && return
+#...............................................................................
 	. <( timeout 3 ffprobe \
 			-v quiet \
 			-probesize 32k \
@@ -201,15 +198,11 @@ webradioVerify() {
 			-select_streams a:0 \
 			-show_entries stream=bits_per_raw_sample,sample_rate \
 			-of default=noprint_wrappers=1 \
-			$url )
-	[[ ! $sample_rate ]] && echo 'Cannot be streamed:' && exit
-# --------------------------------------------------------------------
+			"$url$charset" )
+	[[ ! $sample_rate ]] && echo "Failed: Cannot be streamed<br>$url$charset" && return
+#...............................................................................
 	[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
 	(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
-	mkdir "$dir"
-	echo "\
-$NAME
-$sampling
-$CHARSET" > "$dir/data"
-	webradioCount
+	echo $sampling
+	return 0
 }

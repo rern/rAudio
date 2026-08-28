@@ -558,17 +558,22 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	CHARSET=$( webradioCharset $CHARSET )
-	if [[ $DIR == $OLDDIR ]]; then
-		echo "\
-$URL
-$( sed -n 2p "$DIR/data" )
-$CHARSET" > "$DIR/data"
-		pushRadioList
+	if [[ $OLDNAME && $( head -1 "$DIR/$OLDNAME/data" ) == $URL ]]; then
+		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
 	else
-		webradioVerify $URL "$DIR"
-		[[ $OLDDIR ]] && rm "$DIR"
+		sampling=$( webradioVerify $URL $CHARSET )
+		[[ $sampling == Failed* ]] && echo $sampling && exit
+# --------------------------------------------------------------------
 	fi
+	CHARSET=$( webradioCharset $CHARSET )
+	mkdir -p "$DIR/$NAME"
+	echo "\
+$URL
+$sampling
+$CHARSET" > "$DIR/$NAME/data"
+	[[ $OLDNAME && $OLDNAME != $NAME ]] && rm -rf "$DIR/$OLDNAME"
+	webradioCount
+	pushRadioList
 	;;
 
 esac
