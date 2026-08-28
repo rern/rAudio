@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# run by status  - systemctl start radio
+
 . /srv/http/bash/common.sh
 
 touch $dirshm/radio

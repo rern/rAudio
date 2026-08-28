@@ -71,12 +71,17 @@ if [[ -e $dirsystem/vumeter ]]; then
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
-	[[ ! $status ]] && status=$( $dirbash/status )
+	if [[ ! $status ]]; then
+		status=$( $dirbash/status )
+		state_file=$(  jq -r .state,.file <<< $status )
+		[[ $state_file == play*radioparadise.com* || $state_file == play*radiofrance.fr* ]] && exit
+# ------------------------------------------------------------------------------
+	fi
 	jq '{ Album, Artist, elapsed, file, state, station, Time, timestamp, Title, webradio }' <<< $status > $dirshm/status.json
 	systemctl restart lcdchar
 fi
-[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/stoptimer ]]; then
 	if [[ $state == play ]]; then
 		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
