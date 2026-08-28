@@ -137,7 +137,7 @@ def second2hms( sec ):
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
-for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, Time, webradio
+for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, state, Time, timestamp, webradio
     v = STATUS[ k ]
     if not v: continue
     
