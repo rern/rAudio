@@ -89,6 +89,12 @@ dmesgDev() {
 pushStorage() {
 	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'
 }
+rotaryencoderDtRemove() {
+	local dt
+	for dt in gpio-key rotary-encoder; do
+		dtoverlay -r $dt &> /dev/null
+	done
+}
 soundProfile() {
 	local lan mtu swappiness txqueuelen
 	if [[ $1 == reset ]]; then

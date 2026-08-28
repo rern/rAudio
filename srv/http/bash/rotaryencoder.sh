@@ -10,18 +10,14 @@ declare -A param=(
 	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step" # volume
 )
 
-for dt in gpio-key rotary-encoder; do # remove cannot combine with load
-	dtoverlay -r $dt &> /dev/null
-done
-
 for dt in gpio-key rotary-encoder; do
-	dtoverlay $dt ${param[$dt]}
+	dtoverlay $dt ${param[$dt]} &> /dev/null
 	[[ $dt == gpio-key ]] && d=button || d=rotary
 	for i in {1..3};do
 		sleep 1
-		compgen -G /dev/input/by-path/*$d* > /dev/null && break
+		path=$( compgen -G /dev/input/by-path/*$d* )
+		[[ $path ]] && dev[$d]=$( realpath $path ) && break
 	done
-	dev[$d]=$( realpath /dev/input/by-path/*$d* )
 done
 
 dn=-1

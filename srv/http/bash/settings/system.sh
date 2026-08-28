@@ -281,11 +281,14 @@ relays )
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
+		if systemctl -q is-active rotaryencoder; then
+			systemctl stop rotaryencoder
+			rotaryencoderDtRemove
+		fi
 		serviceRestartEnable
 	else
 		systemctl disable --now rotaryencoder
-		dtoverlay -r gpio-key
-		dtoverlay -r rotary-encoder
+		rotaryencoderDtRemove
 	fi
 	pushRefresh
 	;;
