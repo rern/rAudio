@@ -72,11 +72,8 @@ fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ $status ]]; then
-		echo "$status" > $dirshm/status.json
-	else
-		$dirbash/status -o > $dirshm/status.json
-	fi
+	[[ ! $status ]] && status=$( $dirbash/status )
+	jq '{ Album, Artist, elapsed, file, state, station, Time, Title, webradio }' <<< $status > $dirshm/status.json
 	systemctl restart lcdchar
 fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
