@@ -11,7 +11,7 @@ declare -A param=(
 )
 
 for dt in gpio-key rotary-encoder; do # remove cannot combine with load
-	dtoverlay -l | grep -q $dt && dtoverlay -r $dt &> /dev/null
+	dtoverlay -r $dt &> /dev/null
 done
 
 for dt in gpio-key rotary-encoder; do
