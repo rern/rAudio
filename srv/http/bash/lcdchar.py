@@ -125,24 +125,24 @@ def backlightOff():
     lcd.close()
     sys.exit()
 # --------------------------------------------------------------------
-def second2hhmmss( sec ):
-    hh  = math.floor( sec / 3600 )
-    mm  = math.floor( ( sec % 3600 ) / 60 )
-    ss  = sec % 60
-    HH  = hh > 0 and str( hh ) +':' or ''
-    mmt = str( mm )
-    MM  = hh > 0 and ( mm > 9 and mmt +':' or '0'+ mmt +':' ) or ( mm > 0 and mmt +':' or '' )
-    sst = str( ss )
-    SS  = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
-    return HH + MM + SS
-
+def second2hms( sec ):
+    h, r = divmod( sec, 3600 )
+    m, s = divmod( r, 60 )
+    if h: return f"{h}:{m:02d}:{s:02d}"
+    
+    if m: return f"{m}:{s:02d}"
+    
+    return f"{s}"
+    
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
-for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # [ 'elapsed', 'Time', 'webradio' ] - no trim
+if 'station' not in STATUS: STATUS[ 'station' ] = ''
+
+for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, Time, webradio
     v = STATUS[ k ]
-    if v:
-        if cmA00: v = normalize( v )
-        v = v[ :COLS ]
-    STATUS[ k ] = v
+    if not v: continue
+    
+    if cmA00: v = normalize( v )
+    STATUS[ k ] = v[ :COLS ]
 locals().update( STATUS )
 
 if webradio:
@@ -164,7 +164,7 @@ if rows == 2:
 else:
     lines = Artist + RN + Title + RN + Album
 
-hhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
+hhmmss = Time and second2hms( round( float( Time ) ) ) or ''
 
 if state == 'stop':
     progress = ( hhmmss + ' ' * COLS )[ :COLS - 4 ]
@@ -174,7 +174,7 @@ else:
         slash         = ''
     else:
         elapsed       = int( elapsed )
-        elapsedhhmmss = second2hhmmss( elapsed )
+        elapsedhhmmss = second2hms( elapsed )
         slash         = COLS > 16 and ' / ' or '/'
     if Time: hhmmss = slash + hhmmss
     progress = ( elapsedhhmmss + hhmmss + ' ' * COLS )[ :COLS - 4 ]
@@ -185,15 +185,17 @@ if BACKLIGHT and state != 'play': backlightOff()
 
 if state != 'play' or elapsed == 0: sys.exit()
 # --------------------------------------------------------------------
+PLAY      = ICON[ 'play' ]
 row       = rows - 1
 starttime = time.time()
 elapsed  += math.ceil( ( starttime * 1000 - timestamp ) / 1000000 )
-PLAY      = ICON[ 'play' ]
+time_mon  = time.monotonic()
 
 while True:
-    sl             = 1 - ( ( time.time() - starttime ) % 1 )
+    time_mon      += 1.0
     lcd.cursor_pos = ( row, 0 )
-    elapsedhhmmss  = second2hhmmss( elapsed )
+    elapsedhhmmss  = second2hms( elapsed )
     lcd.write_string( PLAY + elapsedhhmmss + hhmmss )
     elapsed       += 1
-    time.sleep( sl )
+    sleep_time     = time_mon - time.monotonic()
+    if sleep_time > 0: time.sleep( sleep_time )
