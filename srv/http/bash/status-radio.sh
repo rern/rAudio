@@ -119,7 +119,7 @@ $( jq -r .albumTitle <<< $track )"
 	album=$( quoteEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	
-	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
+	if [[ ! $title || "$artist $title $album" == "$dataprev" ]]; then
 		sleep 5
 		metadataGet
 		return
