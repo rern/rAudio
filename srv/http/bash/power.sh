@@ -29,7 +29,6 @@ if [[ -e $dirmpdconf/snapserver.conf ]]; then
 else
 	$dirbash/cmd.sh playerstop
 fi
-logoLcdOled
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 if [[ $reboot ]]; then
@@ -49,6 +48,6 @@ if [[ -d $dir ]]; then
 elif [[ -e $dirsystem/localbrowser ]]; then
 	DISPLAY=:0 sudo xset dpms force off
 fi
-file=/boot/shutdown.sh
-[[ -e $file ]] && $file
+logoLcdOled
+[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

@@ -45,12 +45,9 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-
-[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
 logoLcdOled
-
+[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
-
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
 	chmod 666 $dirbacklight/{brightness,bl_power}
