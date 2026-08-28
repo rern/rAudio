@@ -164,26 +164,25 @@ if rows == 2:
 else:
     lines = Artist + RN + Title + RN + Album
 
-hhmmss = Time and second2hms( round( float( Time ) ) ) or ''
+if Time:
+    slash    = COLS > 16 and ' / ' or '/'
+    time_hms = second2hms( round( float( Time ) ) )
+else:
+    slash    = ''
+    time_hms = ''
 
 if state == 'stop':
-    progress = ( hhmmss + ' ' * COLS )[ :COLS - 4 ]
+    progress = ( time_hms + ' ' * COLS )[ :COLS - 4 ]
 else:
-    if elapsed == 0:
-        elapsedhhmmss = ''
-        slash         = ''
-    else:
-        elapsed       = int( elapsed )
-        elapsedhhmmss = second2hms( elapsed )
-        slash         = COLS > 16 and ' / ' or '/'
-    if Time: hhmmss = slash + hhmmss
-    progress = ( elapsedhhmmss + hhmmss + ' ' * COLS )[ :COLS - 4 ]
+    time_hms    = slash + time_hms
+    elapsed_hms = elapsed and second2hms( elapsed ) or ''
+    progress    = ( elapsed_hms + time_hms + ' ' * COLS )[ :COLS - 4 ]
 
 lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
 if BACKLIGHT and state != 'play': backlightOff()
 
-if state != 'play' or elapsed == 0: sys.exit()
+if state != 'play': sys.exit()
 # --------------------------------------------------------------------
 PLAY      = ICON[ 'play' ]
 row       = rows - 1
@@ -193,9 +192,11 @@ time_mon  = time.monotonic()
 
 while True:
     time_mon      += 1.0
+    
     lcd.cursor_pos = ( row, 0 )
-    elapsedhhmmss  = second2hms( elapsed )
-    lcd.write_string( PLAY + elapsedhhmmss + hhmmss )
+    elapsed_hms    = second2hms( elapsed )
+    lcd.write_string( PLAY + elapsed_hms + time_hms )
     elapsed       += 1
-    sleep_time     = time_mon - time.monotonic()
+    
+    sleep_time     = time_mon - time.monotonic() # keep 1s - no drift by running codes
     if sleep_time > 0: time.sleep( sleep_time )
