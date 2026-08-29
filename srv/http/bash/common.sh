@@ -630,7 +630,7 @@ volume() {
 			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
-		[[ $fn_volume == volumeAmixer ]] && pushVolume
+		[[ $fn_volume == volumeAmixer ]] && pushVolume # some dac cannot set exactly on some 1% increments
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
