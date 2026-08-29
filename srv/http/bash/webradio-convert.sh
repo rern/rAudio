@@ -38,7 +38,7 @@ done
 echo -n "$list" > $dirdata/mpd/radio
 
 # audio cd
-files=$( find $diraudiocd -maxdepth 1 -type f ! -name *.* )
+files=$( find $dirdata/audiocd -maxdepth 1 -type f ! -name *.* )
 [[ ! $files ]] && exit
 #-------------------------------------------------------------------------------
 for f in $files; do
@@ -56,4 +56,8 @@ $( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 	echo "$data" > $f/data
 	f_cover=$( compgen -G $f.* )
 	[[ $f_cover ]] && mv $f_cover $f/cover.${f_cover: -3}
+done
+
+for d in audiocd webradio dabradio; do
+	chown -R http:http /srv/http/data/$d
 done
