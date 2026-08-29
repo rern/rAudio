@@ -403,7 +403,6 @@ var CONTEXT  = {
 	}
 	, wrAdd        : ( val ) => {
 		if ( ! val ) val = { NAME: '', URL: '', CHARSET: '' }
-		var dir = $( '#lib-path' ).text();
 		INFO( {
 			  icon       : 'webradio'
 			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
@@ -427,28 +426,27 @@ var CONTEXT  = {
 							, checkblank : true
 							, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 							, ok         : () => {
-								BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
+								BASH( [ 'dirnew', $( '#lib-path' ).text() +'/'+ _INFO.val(), 'CMD DIR' ] );
 							}
 						} );
 					} );
 			}
-			, ok         : () => {
-				var val  = _INFO.val();
-				var data = { icon: I.icon, title: I.title, URL: I.values.URL }
-				val.DIR  = dir;
-				CONTEXT.wrCommand( val, data, val.URL !== I.values.URL );
-			}
+			, ok         : () => CONTEXT.wrCommand( _INFO.val(), I, 'wrAdd' )
 		} );
 	}
-	, wrCommand    : ( val, data, callback ) => {
-		if ( CONTEXT.wrExists( val.NAME, () => CONTEXT.wrAdd( val ) ) ) return
+	, wrCommand    : ( val, I, type ) => {
+		var callback = () => CONTEXT[ type ]( val );
+		if ( CONTEXT.wrExists( val.NAME, callback ) ) return
 		
-		if ( val.URL !== data.URL ) BANNER( data.icon +' blink', data.title, 'Stream test ...', -1 );
+		if ( val.URL !== I.values.URL ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+		
+		val.DIR  = $( '#lib-path' ).text();
+		if ( type === 'wrEdit' ) val.OLDNAME = V.list.name;
 		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
 			BANNER_HIDE();
 			if ( ! std ) return
 			
-			_INFO.warning( data.icon, data.title, std, () => CONTEXT.wrAdd( val ) );
+			_INFO.warning( data.icon, data.title, std, callback );
 		} );
 	}
 	, wrDelete     : () => {
@@ -537,15 +535,12 @@ var CONTEXT  = {
 				}
 			}
 			, oklabel      : ICON( 'save' ) +'Save'
-			, ok           : () => {
-				var val     = _INFO.val();
-				val.DIR     = $( '#lib-path' ).text();
-				val.OLDNAME = V.list.name;
-				CONTEXT.wrCommand( val, data, val.URL !== I.values.URL );
-			}
+			, ok           : () => CONTEXT.wrCommand( _INFO.val(), I, 'wrEdit' )
 		} );
 	}
 	, wrExists     : ( name, callback ) => {
+		if ( name === V.list.name ) return false
+		
 		var exists = false;
 		$( '#lib-list li .name' ).each( ( i, el ) => {
 			if ( $( el ).text() === name ) {
