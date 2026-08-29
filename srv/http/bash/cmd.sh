@@ -46,9 +46,9 @@ bookmark )
 		fi
 	else
 		rm "$dirbookmarks/$NAME"
-		[[ -e $file_order ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
+		[[ order ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
 	fi
-	[[ $order ]] && echo "$json" > $file_order
+	[[ $json ]] && echo "$json" > $file_order
 	pushData coverart '{ "type": "thumbnail" }'
 	;;
 bookmarksubdir )
