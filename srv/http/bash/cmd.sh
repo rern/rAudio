@@ -585,6 +585,7 @@ webradioedit )
 $URL
 $sampling
 $CHARSET" > "$DIR/$NAME/data"
+	chown -R http:http "$DIR/$NAME"
 	[[ $OLDNAME && $OLDNAME != $NAME ]] && rm -rf "$DIR/$OLDNAME"
 	webradioCount
 	pushRadioList
