@@ -34,7 +34,6 @@ bioimage )
 bookmark )
 	file_order=$dirsystem/order.json
 	[[ -e $file_order ]] && order=1
-	[[ $DIR == http* || $DIR == rtsp* ]] && DIR=$( dir2path "$DIR" )
 	if [[ $DIR ]]; then
 		echo "$DIR" > "$dirbookmarks/$NAME"
 		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
