@@ -1086,14 +1086,16 @@ var LIBRARY   = {
 		} else if ( data.path ) { // dir breadcrumbs
 			var dir      = data.path.split( '/' );
 			var dir0     = dir[ 0 ];
-			var htmlpath = ICON( V.mode );
-			htmlpath    += '<a>'+ dir0 +' <wh>/</wh> <span class="lidir">'+ dir0 +'</span></a>';
+			var html     = [];
+			html.push( '<a>'+ dir0 +' <wh>/</wh> <span class="lidir">'+ dir0 +'</span></a>' );
 			var lidir    = dir0;
 			var iL       = dir.length;
 			for ( let i = 1; i < iL; i++ ) {
 				lidir    += '<wh>/</wh>'+ dir[ i ];
-				htmlpath += '<a>'+ dir[ i ] +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>';
+				html.push( '<a>'+ dir[ i ] +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>' );
 			}
+			if ( MODE.radio() ) html.splice( 0, 4 );
+			var htmlpath = ICON( V.mode ) + html.join( '' );
 		}
 		if ( V.mode === 'webradio' ) {
 			htmlpath += ICON( 'add btntitle button-webradio-new wh' );
@@ -1104,7 +1106,6 @@ var LIBRARY   = {
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
-			if ( MODE.radio() ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 
