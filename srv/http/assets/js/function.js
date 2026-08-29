@@ -1104,6 +1104,10 @@ var LIBRARY   = {
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
+			if ( MODE.radio() ) {
+				$( '#lib-title a' ).slice( 0, 4 ).remove();
+				$( '#lib-title a' ).eq( 0 ).prepend( '.. <wh>/</wh> ' );
+			}
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 
