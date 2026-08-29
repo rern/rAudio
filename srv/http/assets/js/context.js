@@ -401,18 +401,14 @@ var CONTEXT  = {
 			, ok         : () => BASH( [ 'mpcupdate', 'update', V.list.path, 'CMD ACTION PATHMPD' ] )
 		} );
 	}
-	, wrAdd        : ( val ) => {
-		if ( ! val ) val = { NAME: '', URL: '', CHARSET: '' }
+	, wrAdd        : val => {
+		if ( ! val ) val = { NAME: '', URL: '', CHARSET: 'UTF-8' }
 		INFO( {
 			  icon       : 'webradio'
 			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 			, boxwidth   : 'max'
 			, list       : CONTEXT.wrList
-			, values     : {
-				  NAME    : val.NAME
-				, URL     : val.URL
-				, CHARSET : val.CHARSET || 'UTF-8'
-			}
+			, values     : CONTEXT.wrEditValues( val )
 			, checkblank : [ 0, 1 ]
 			, beforeshow : () => {
 				if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
@@ -431,22 +427,22 @@ var CONTEXT  = {
 						} );
 					} );
 			}
-			, ok         : () => CONTEXT.wrCommand( _INFO.val(), I, 'wrAdd' )
+			, ok         : () => CONTEXT.wrCommand( I )
 		} );
 	}
-	, wrCommand    : ( val, I, type ) => {
-		var callback = () => CONTEXT[ type ]( val );
+	, wrCommand    : ( I ) => {
+		var type     = I.title.split( ' ' )[ 0 ];
+		var val      = _INFO.val();
+		var callback = () => CONTEXT[ 'wr'+ type ]( val );
 		if ( CONTEXT.wrExists( val.NAME, callback ) ) return
 		
-		if ( val.URL !== I.values.URL ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
-		
-		val.DIR  = $( '#lib-path' ).text();
-		if ( type === 'wrEdit' ) val.OLDNAME = V.list.name;
+		val.DIR      = $( '#lib-path' ).text();
+		if ( type === 'Edit' ) val.OLDNAME = V.list.name;
+		val.TEST     = val.URL !== I.values[ 1 ];
+		if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
 		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
 			BANNER_HIDE();
-			if ( ! std ) return
-			
-			_INFO.warning( data.icon, data.title, std, callback );
+			if ( std ) _INFO.warning( I.icon, I.title, std, callback );
 		} );
 	}
 	, wrDelete     : () => {
@@ -513,17 +509,14 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, wrEdit       : () => {
+	, wrEdit       : val => {
+		if ( ! val ) val = { NAME: V.list.name, URL: V.list.path, CHARSET: 'UTF-8' }
 		INFO( {
 			  icon         : 'webradio'
 			, title        : 'Edit Web Radio'
 			, message      : '<img src="'+ ( $LI.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
 			, list         : CONTEXT.wrList
-			, values       : {
-				  NAME    : V.list.name
-				, URL     : V.list.path
-				, CHARSET : $LI.data( 'charset' ) || 'UTF-8'
-			}
+			, values       : CONTEXT.wrEditValues( val )
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
 			, boxwidth     : 'max'
@@ -535,8 +528,15 @@ var CONTEXT  = {
 				}
 			}
 			, oklabel      : ICON( 'save' ) +'Save'
-			, ok           : () => CONTEXT.wrCommand( _INFO.val(), I, 'wrEdit' )
+			, ok           : () => CONTEXT.wrCommand( I )
 		} );
+	}
+	, wrEditValues : val => {
+		return {
+			  NAME    : val.NAME
+			, URL     : val.URL
+			, CHARSET : val.CHARSET
+		}
 	}
 	, wrExists     : ( name, callback ) => {
 		if ( name === V.list.name ) return false

@@ -558,13 +558,31 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	CHARSET=$( webradioCharset $CHARSET )
-	if [[ $OLDNAME && $( head -1 "$DIR/$OLDNAME/data" ) == $URL ]]; then
-		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
-	else
-		sampling=$( webradioVerify $URL $CHARSET )
-		[[ $? == 1 ]] && echo $sampling && exit
+	if [[ $URL == *.m3u ]]; then
+		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^http )
+	elif [[ $URL == *.pls ]]; then
+		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
+	fi
+	[[ ! $URL ]] && echo "No valid URL found in:<br>$URL" && exit
 # --------------------------------------------------------------------
+	CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
+	[[ $CHARSET ]] && charset="?charset=$CHARSET"
+	if [[ $TEST ]]; then
+		. <( ffprobe \
+				-v quiet \
+				-timeout 3000000 \
+				-probesize 32 \
+				-analyzeduration 0 \
+				-select_streams a:0 \
+				-show_entries stream=bits_per_raw_sample,sample_rate \
+				-of default=noprint_wrappers=1 \
+				$URL$charset ) # probesize 32 bytes header - stdout: k=v
+		[[ ! $sample_rate ]] && echo "No audio stream found in:<br>$URL$charset" && exit
+# --------------------------------------------------------------------
+		[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
+		(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
+	else
+		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
 	fi
 	mkdir -p "$DIR/$NAME"
 	echo "\

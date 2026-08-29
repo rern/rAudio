@@ -169,40 +169,10 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-webradioCharset() {
-	sed -E 's/UTF-*8|iso *-* *//' <<< $1
-}
 webradioCount() {
 	local counts
 	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
 	counts+=$( countRadio )
 	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
 	pushRadioList
-}
-webradioVerify() {
-	local charset ext url
-	url=$1
-	[[ $2 ]] && charset="?charset=$2"
-	ext=${url/*.}
-	if [[ $ext == m3u ]]; then
-		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
-	elif [[ $ext == pls ]]; then
-		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
-	fi
-	[[ ! $url ]] && echo "Failed: No valid URL found in<br>$url" && return 1
-#...............................................................................
-	. <( ffprobe \
-			-v quiet \
-			-probesize 32 \
-			-analyzeduration 0 \
-			-select_streams a:0 \
-			-show_entries stream=bits_per_raw_sample,sample_rate \
-			-of default=noprint_wrappers=1 \
-			"$url$charset" ) # probesize 32 bytes header - stdout: k=v
-	[[ ! $sample_rate ]] && echo "Failed: Cannot be streamed<br>$url$charset" && return 1
-#...............................................................................
-	[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
-	(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
-	echo $sampling
-	return 0
 }
