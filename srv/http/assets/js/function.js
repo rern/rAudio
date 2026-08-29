@@ -1076,8 +1076,8 @@ var LIBRARY   = {
 									.replace( 'MARTIST', 'M ARTIST' )
 									.replace( 'BRADIO', 'B RADIO' );
 		}
-		if ( ! data.path || [ '/srv/http/data/webradio', '/srv/http/data/dabradio' ].includes( data.path ) ) { // mode root
-			var htmlpath = ICON( V.mode ) + data.modetitle;
+		if ( ! data.path || data.modetitle.endsWith( 'RADIO' ) ) { // mode root
+			var htmlpath = ICON( V.mode ) + data.modetitle +'<a><span class="lidir">'+ data.path +'</span></a>';
 		} else if ( 'count' in data && V.mode !== 'latest' ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			var htmlpath = '';
@@ -1104,7 +1104,6 @@ var LIBRARY   = {
 			.html( '<span id="mode-title">'+ htmlpath +'</span>' )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
-		if ( MODE.radio() ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 		$( '#lib-list, #page-library .index' ).remove();
 		if ( ! data.html ) return // empty list
 
