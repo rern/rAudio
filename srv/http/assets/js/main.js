@@ -906,20 +906,18 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} );
 	query.path      = path;
 	query.modetitle = path;
-} ).on( 'click', '.bk-remove', function() {
-	var $this = $( this ).parent();
-	var name  = $this.find( '.name' ).text();
-	var $img  = $this.find( 'img' );
-	if ( $img.length ) {
-		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
+} ).on( 'click', '.bk-remove', function( e ) {
+	var $LI   = $( this ).parents( 'li' );
+	var name  = $LI.find( '.name' ).text();
+	if ( $LI.find( '.i-bookmark' ).length ) {
+		var icon = ICON( 'bookmark bl' );
 	} else {
-		var icon = ICON( 'bookmark bl' )
-				  +'<br><a class="bklabel">'+ name +'</a>'
+		var icon = $LI.find( 'img' )[ 0 ].outerHTML;
 	}
 	INFO( {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
-		, message : icon
+		, message : icon +'<br>'+ name
 		, oklabel : ICON( 'remove' ) +'Remove'
 		, okcolor : V.red
 		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
