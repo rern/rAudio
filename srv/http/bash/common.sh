@@ -620,7 +620,7 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		pushVolume # fix - some mixers cannot set exactly at 1%
+		pushVolume
 	else
 		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
@@ -630,7 +630,7 @@ volume() {
 			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
-		pushVolume
+		[[ $fn_volume == volumeAmixer ]] && pushVolume
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
