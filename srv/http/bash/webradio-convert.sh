@@ -58,6 +58,4 @@ $( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 	[[ $f_cover ]] && mv $f_cover $f/cover.${f_cover: -3}
 done
 
-for d in audiocd webradio dabradio; do
-	chown -R http:http /srv/http/data/$d
-done
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null

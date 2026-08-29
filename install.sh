@@ -101,6 +101,7 @@ rm -f $dirshm/system
 installfinish
 
 #20260830
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 systemctl try-restart rotaryencoder
 
 # 20260808
