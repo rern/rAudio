@@ -20,10 +20,11 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-dn=-1
-up=+1
 fn_volume=$( volumeFunction )
-if [[ -e $dirshm/btmixer ]]; then
+if [[ $fn_volume == volumeMpd ]]; then
+	dn=-1
+	up=+1
+elif [[ -e $dirshm/btmixer ]]; then
 	dn=1%-
 	up=1%+
 	mixer=$( < $dirshm/btmixer )
@@ -43,5 +44,5 @@ evtest ${dev[rotary]} | while read line; do
 		* )    continue;;
 	esac
 	$fn_volume $updn "$mixer" $card
-	volumeGet push
+	pushVolume
 done

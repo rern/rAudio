@@ -462,6 +462,9 @@ pushStatus() {
 pushToIP() {
 	websocat --text ws://$1:8080 <<< ${@:2}
 }
+pushVolume() {
+	pushData volume '{ "val": '$( volumeGet )' }'
+}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
@@ -617,12 +620,9 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
-			[[ $CURRENT == 0 ]] && val=2 || val=0
-			$fn_volume $val% "$CONTROL" $CARD
-			pushData volume '{ "val": '$val' }'
-		fi
+		pushVolume # fix - some mixers cannot set exactly at 1%
 	else
+		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
@@ -630,6 +630,7 @@ volume() {
 			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
+		pushVolume
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
@@ -658,7 +659,7 @@ volumeGet() {
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
 		true
 	elif [[ $mixertype == software ]] && playerActive mpd; then
-		val="$( mpc status %volume% )"
+		val="$( mpc status %volume% | tr -d % )"
 	else
 		for i in {1..5}; do # some usb might not be ready
 			read val db < <( volumeGetAmixer "$mixer" $card )

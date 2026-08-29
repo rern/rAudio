@@ -478,9 +478,6 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
-pushVolume ) # mpd-idle
-	volumeGet push
-	;;
 remount )
 	mount -a
 	;;

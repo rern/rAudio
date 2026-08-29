@@ -100,11 +100,11 @@ rm -f $dirshm/system
 
 installfinish
 
+#20260830
+systemctl try-restart rotaryencoder
+
 # 20260808
 [[ $ws_restart ]] && systemctl restart websocket
-
-# 20260729
-systemctl try-restart rotaryencoder
 
 # 20260717
 file=$dirmpdconf/bluetooth.conf
