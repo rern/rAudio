@@ -34,7 +34,7 @@ bioimage )
 bookmark )
 	file_order=$dirsystem/order.json
 	[[ -e $file_order ]] && order=1
-	DIR=$( dir2path "$DIR" )
+	[[ $DIR == http* || $DIR == rtsp* ]] && DIR=$( dir2path "$DIR" )
 	if [[ $DIR ]]; then
 		echo "$DIR" > "$dirbookmarks/$NAME"
 		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
@@ -45,8 +45,8 @@ bookmark )
 			json=$( jq --argjson i $i --arg newname "$NEWNAME" '.[$i] = $newname' $file_order )
 		fi
 	else
-		rm "$file_bk"
-		[[ $json ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
+		rm "$dirbookmarks/$NAME"
+		[[ -e $file_order ]] && json=$( jq --arg name "$NAME" 'del(.[$name])' $file_order )
 	fi
 	[[ $order ]] && echo "$json" > $file_order
 	pushData coverart '{ "type": "thumbnail" }'

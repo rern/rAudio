@@ -33,9 +33,9 @@ var CONTEXT  = {
 			var $el = $( el );
 			if ( $el.text() === name ) {
 				if ( $el.parent().hasClass( 'bookmark' ) ) {
-					exist = 'Bookmark name: <wh>'+ name +'</wh> already exists.';
+					exist = 'Bookmark name already exists:<br>'+ name;
 				} else {
-					exist = 'Reserved name: <wh>'+ name +'</wh> for mode list.';
+					exist = 'Reserved name for mode list:<br>'+ name;
 				}
 				INFO( {
 					  icon    : I.icon
