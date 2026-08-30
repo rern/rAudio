@@ -135,17 +135,16 @@ case 'home':
 			$path    = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$bkradio = bookmarkRadio( $path );
 			if ( $bkradio ) {
-				$dir = radioDir( $path ); // $path: http://..., $dir:/srv/http/...
+				$cover = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
 			} else {
-				$dir = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
+				$cover = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
+				$cover.= '/coverart.jpg';
 			}
-			$icon    = coverIcon( $dir );
-			if ( ! $icon ) $icon = icon( 'bookmark bl' ).'<a class="label">'.$name.'</a>';
 			$html[ $name ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
-	'.$icon.'
+	<img class="bkcoverart" src="'.$cover.$hash.'">
 </li>';
 		}
 	}
@@ -308,18 +307,6 @@ case 'search':
 
 function bookmarkRadio( $path ) {
 	return str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
-}
-function coverIcon( $dir ) {
-	global $hash;
-	foreach ( [ '/coverart', '/cover' ] as $name ) {
-		foreach ( [ '.jpg', '.png'. '.gif' ] as $ext ) {
-			$coverfile = $dir.$name.$ext;
-			if ( file_exists( $coverfile ) ) {
-				if ( str_starts_with( $coverfile, '/srv' ) ) $coverfile = substr( $coverfile, 9 );
-				return '<img class="bkcoverart" src="'.$coverfile.$hash.'">';
-			}
-		}
-	}
 }
 function esc( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
