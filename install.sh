@@ -60,7 +60,7 @@ fi
 
 installstart "$1"
 
-hash=$( sed -n -E "/hash.*v=/ {s/.*=(.*)';/\1/; p}" /srv/http/function.php )
+hash=$( sed -n '/^.hash/ {s/[^0-9]//g; p}' /srv/http/function.php )
 rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
@@ -81,8 +81,8 @@ rm $dirbash/status.a*
 
 . $dirbash/common.sh
 
-cacheBust common.php hash
-[[ $hash ]] && cacheBust function.php hash $hash
+sed -i -E "s/^(.hash.*v=).*/\1$( date +%s )';/" /srv/http/common.php # static cache bust - css, js
+[[ $hash ]] && imageCacheBust $hash
 chmod -R +x $dirbash
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp

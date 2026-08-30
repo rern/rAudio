@@ -58,14 +58,6 @@ bookmarksubdir )
 	done < <( ls $dirbookmarks/* )
 	echo "[ ${subdir:1} ]"
 	;;
-cachebust )
-	if [[ $TYPE ]]; then # debug
-		grep -q -m1 "?v='.time();" /srv/http/common.php && echo time || echo static
-	else
-		cacheBust common.php hash "v='.time();" # css, js
-		rm -f $dirshm/system
-	fi
-	;;
 color )
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
@@ -117,7 +109,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
-	cacheHash common.php hreficon
+	sed -i -E "s/^(.hreficon.*v=).*/\1$( date +%s )\"';/" /srv/http/common.php
 	;;
 countmnt )
 	counts=$( countMnt )
@@ -125,6 +117,14 @@ countmnt )
 	;;
 coverart )
 	$dirbash/status -C "/mnt/MPD/$DIR"
+	;;
+cssjsbust )
+	if [[ $TYPE ]]; then # debug
+		grep -q -m1 "?v='.time();" /srv/http/common.php && echo time || echo static
+	else
+		sed -i -E "s/^(.hash.*v=).*/\1'.time();/" /srv/http/common.php # dynamic cache bust - css, js
+		rm -f $dirshm/system
+	fi
 	;;
 dirdelete )
 	if fileExist "$DIR"/*; then
@@ -536,7 +536,7 @@ thumbnailreset )
 	DIR=$( dir2path "$DIR" )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	[[ $radio ]] && rm -f "$DIR/cover".*
-	cacheBust function.php hash
+	imageCacheBust $( date +%s )
 	pushData coverart '{ "type": "thumbnail" }'
 	;;
 titlewithparen )

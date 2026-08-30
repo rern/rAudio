@@ -133,7 +133,7 @@ monitor )
 	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
-	chip=$( mpdOledChip )
+	chip=$( mpdoledChip )
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	grep -q '\-X' /etc/default/mpd_oled && spectrum=false || spectrum=true
 	[[ ! $baud ]] && baud=800000

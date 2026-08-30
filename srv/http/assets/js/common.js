@@ -1845,7 +1845,7 @@ $( '#debug' ).on( 'click', function() {
 
 	if ( ! $( '#data' ).hasClass( 'hide' ) ) return
 
-	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
+	BASH( [ 'cmd.sh', 'cssjsbust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
 			return
@@ -1869,7 +1869,7 @@ $( '#debug' ).on( 'click', function() {
 						COMMON.debug();
 						$( '#infoX' ).trigger( 'click' );
 					} else {
-						BASH( [ 'cmd.sh', 'cachebust' ], location.reload() );
+						BASH( [ 'cmd.sh', 'cssjsbust' ], location.reload() );
 					}
 				} );
 			}

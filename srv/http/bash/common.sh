@@ -92,11 +92,6 @@ audioCDplClear() {
 		$dirbash/cmd.sh playlistpush
 	fi
 }
-cacheBust() {
-	local hash
-	[[ $3 ]] && hash=$3 || hash="v=$( date +%s )';"
-	sed -i "/$2.*?v=/ s/v=.*/$hash/" /srv/http/$1
-}
 calc() { # $1 - decimal precision, $2 - math
 	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'
 }
@@ -222,11 +217,6 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
-mpdoled_vuled_vumeter() {
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
-	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
-	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
-}
 fifoToggle() { # mpdoled vuled vumeter
 	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
@@ -319,6 +309,9 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+imageCacheBust() {
+	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -389,7 +382,12 @@ CMD ACTION"
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
 }
-mpdOledChip() {
+mpdoled_vuled_vumeter() {
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
+	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
+	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
+}
+mpdoledChip() {
 	if grep -q '\-o ' /etc/default/mpd_oled; then
 		sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled
 	else
