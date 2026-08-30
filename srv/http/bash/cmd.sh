@@ -109,7 +109,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
-	sed -i -E "s/^(.hreficon.*v=).*/\1$( date +%s )\"';/" /srv/http/common.php
+	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
 	;;
 countmnt )
 	counts=$( countMnt )
