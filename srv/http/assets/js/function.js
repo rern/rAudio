@@ -381,32 +381,34 @@ var COVERART  = {
 			var $img = $( e.target );
 			var src  = $img.attr( 'src' );
 			var ext  = src.slice( src.lastIndexOf( '.' ), src.lastIndexOf( '?' ) );
-			if ( ext === '.jpg' ) {
+			if ( V.playback || ( V.library && MODE.album() ) ) {
+				$img.attr( 'src', V.coverart );
+			} else if ( ext === '.jpg' ) {
 				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
 			} else if ( ext === '.png' ) {
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
-			} else if ( I.active ) {
-				var icon = I.icon === 'bookmark' ? 'bookmark' : $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
-				$img.replaceWith( ICON( icon +' msgicon' ) );
-			} else if ( V.playback ) {
-				$img.attr( 'src', V.coverart );
-			} else if ( V.playlist ) {
-				var icon = $img.parent()[ 0 ].classList[ 0 ];
-				$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="filesavedpl"></i>' );
-			} else { // lib-list (home - already exist checked)
-				if ( V.libraryhome ) {
-					var name = $img.prev().text();
-					$img.replaceWith( '<i class="i-bookmark bl"></i><a class="label">'+ name +'</a>' );
-				} else if ( MODE.album() ) {
-					$img.attr( 'src', V.coverart );
-				} else if ( ! MODE.radio() ) {
-					$img.replaceWith( '<i class="i-folder li-icon" data-menu="folder"></i>' );
+			} else {
+				var img;
+				if ( I.active ) {
+					var icon = I.icon === 'bookmark' ? 'bookmark' : $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
+					img      = ICON( icon +' msgicon' );
+				} else if ( V.playlist ) {
+					var icon = $img.parent()[ 0 ].classList[ 0 ];
+					img      = '<i class="i-'+ icon +' li-icon" data-menu="filesavedpl"></i>';
 				} else {
-					var dir = $img.parent().hasClass( 'dir' );
-					var icon = dir ? 'folder' : V.mode;
-					var menu = dir ? 'wrdir' : 'webradio';
-					$img.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
+					if ( V.libraryhome ) {
+						var name = $img.prev().text();
+						img      = '<i class="i-bookmark bl"></i><a class="label">'+ name +'</a>';
+					} else if ( ! MODE.radio() ) {
+						img      = '<i class="i-folder li-icon" data-menu="folder"></i>';
+					} else {
+						var dir  = $img.parent().hasClass( 'dir' );
+						var icon = dir ? 'folder' : V.mode;
+						var menu = dir ? 'wrdir' : 'webradio';
+						img      = '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>';
+					}
 				}
+				$img.replaceWith( img );
 			}
 		}, true ); // useCapture (from parent > target - img onerror not bubble)
 	}
