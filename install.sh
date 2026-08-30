@@ -82,7 +82,7 @@ rm $dirbash/status.a*
 . $dirbash/common.sh
 
 sed -i -E "s/^(.hash.*v=).*/\1$( date +%s )';/" /srv/http/common.php # static cache bust - css, js
-[[ $hash ]] && imageCacheBust $hash
+! grep -q -m1 "^\$hash.*$hash" /srv/http/function.php && imageCacheBust $hash
 chmod -R +x $dirbash
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
