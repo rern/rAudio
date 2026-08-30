@@ -51,7 +51,6 @@ a {
 #lib-mode-list gr,
 #volume,
 .biosimilar p,
-.bklabel,
 .content-top gr,
 .content-top wh,
 .label,
@@ -215,7 +214,6 @@ a {
 	right: 50px;
 }
 .biosimilar p,
-.bklabel,
 .coverart1,
 .coverart2,
 .label,
@@ -1194,17 +1192,13 @@ div.pagerefresh {
 	margin-left: 8px;
 	font-size: 14px;
 }
-.divbklabel {
-	overflow: hidden;
-}
 .bkcoverart {
 	margin-top: 5px;
 	height: 100px;
 	max-width: 100%;
 	border: 1px solid hsl(0,0%,15%);
 }
-.label,
-.bklabel {
+.label {
 	display: block;
 	margin: 0 auto;
 	max-width: 180px;

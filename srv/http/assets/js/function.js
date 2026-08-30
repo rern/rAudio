@@ -2243,6 +2243,12 @@ var UTIL      = {
 
 		return visible ? a : b
 	}
+	, bookmarkData    : $bk => {
+		var name  = $bk.find( '.name' ).text();
+		var path  = $bk.find( '.lipath' ).text();
+		if ( path.startsWith( '/srv' ) ) path = path.slice( 15 );
+		return [ name, path ]
+	}
 	, changeIP        : () => { // for android app
 		INFO( {
 			  icon         : 'networks'

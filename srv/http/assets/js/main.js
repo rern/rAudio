@@ -907,29 +907,32 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	query.path      = path;
 	query.modetitle = path;
 } ).on( 'click', '.bk-remove', function( e ) {
-	var $LI   = $( this ).parents( 'li' );
-	var name  = $LI.find( '.name' ).text();
-	if ( $LI.find( '.i-bookmark' ).length ) {
+	var $bk            = $( this ).parent();
+	var [ name, path ] = UTIL.bookmarkData( $bk );
+	if ( $bk.find( '.i-bookmark' ).length ) {
 		var icon = ICON( 'bookmark bl' );
 	} else {
-		var icon = $LI.find( 'img' )[ 0 ].outerHTML;
+		var icon = $bk.find( 'img' )[ 0 ].outerHTML;
 	}
 	INFO( {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
-		, message : icon +'<br>'+ name
+		, message : icon
+				  +'<br>'+ name
+				  +'<br><g>('+ path +')</g>'
 		, oklabel : ICON( 'remove' ) +'Remove'
 		, okcolor : V.red
 		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
-	var $this = $( this );
-	var name  = $this.parent().find( '.name' ).text();
+	var $this          = $( this );
+	var [ name, path ] = UTIL.bookmarkData( $( this ).parent() );
 	INFO( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
-		, message      : '<div class="infobookmark">'+ ICON( 'bookmark bookmark' )
-						+'<br><span class="bklabel">'+ name +'</span></div>'
+		, message      : ICON( 'bookmark bookmark' )
+						+'<br>'+ name
+						+'<br><g>('+ path +')</g>'
 		, list         : [ 'To:', 'text' ]
 		, values       : name
 		, checkblank   : true
@@ -940,17 +943,18 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 	} );
 } ).on( 'click', '.bk-cover', function() {
-	var $this = $( this ).parent();
-	var name  = $this.find( '.name' ).text();
-	var thumbnail = $this.find( '.bkcoverart' ).length;
+	var $bk            = $( this ).parent();
+	var [ name, path ] = UTIL.bookmarkData( $bk );
+	var thumbnail      = $bk.find( '.bkcoverart' ).length;
 	if ( thumbnail ) {
-		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					 +'<p class="infoimgname">'+ name +'</p>';
+		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">'
+					 +'<br>'+ name
+				     +'<br><g>('+ path +')</g>';
 	} else {
-		var message = '<div class="infobookmark">'+ ICON( 'bookmark' )
-					 +'<span class="bklabel">'+ name +'</span></div>';
+		var message = ICON( 'bookmark' )
+					 +'<br>'+ name
+					 +'<br><g>('+ path +')</g>';
 	}
-	var path = $this.find( '.lipath' ).text();
 	INFO( {
 		  icon        : V.icoverart
 		, title       : 'Bookmark Thumbnail'
