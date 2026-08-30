@@ -184,18 +184,19 @@ if BACKLIGHT and state != 'play': backlightOff()
 
 if state != 'play': sys.exit()
 # --------------------------------------------------------------------
-PLAY      = ICON[ 'play' ]
-row       = rows - 1
-starttime = time.time()
-elapsed  += math.ceil( ( starttime * 1000 - timestamp ) / 1000000 )
-time_mon  = time.monotonic()
+row            = rows - 1
+width          = COLS - 4
+lcd.cursor_pos = ( row, 0 )
+lcd.write_string( ICON[ 'play' ] )
+elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000000 )
+time_mon       = time.monotonic()
 
 while True:
     time_mon      += 1.0
     
-    lcd.cursor_pos = ( row, 0 )
-    elapsed_hms    = second2hms( elapsed )
-    lcd.write_string( PLAY + elapsed_hms + time_hms )
+    lcd.cursor_pos = ( row, 2 )
+    elapsed_hms    = second2hms( elapsed ) + time_hms
+    lcd.write_string( elapsed_hms.ljust( width ) )
     elapsed       += 1
     
     sleep_time     = time_mon - time.monotonic() # keep 1s - no drift by running codes
