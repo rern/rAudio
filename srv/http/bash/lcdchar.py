@@ -106,7 +106,8 @@ if argvL == 2: # 1 argument
     elif val == 'clear':
         lcd.clear()
     else:            # string
-        lcd.write_string( val.replace( '\n', RN ) )
+        lcd.cursor_pos = ( rows - 1, 0 )
+        lcd.write_string( val )
     lcd.close()
     sys.exit()
 # --------------------------------------------------------------------

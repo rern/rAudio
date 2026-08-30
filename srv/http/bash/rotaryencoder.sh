@@ -44,5 +44,4 @@ evtest ${dev[rotary]} | while read line; do
 		* )    continue;;
 	esac
 	$fn_volume $updn "$mixer" $card
-	pushVolume
 done
