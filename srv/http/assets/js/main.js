@@ -947,14 +947,13 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	var [ name, path ] = UTIL.bookmarkData( $bk );
 	var thumbnail      = $bk.find( '.bkcoverart' ).length;
 	if ( thumbnail ) {
-		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">'
-					 +'<br>'+ name
-				     +'<br><g>('+ path +')</g>';
+		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">';
 	} else {
-		var message = ICON( 'bookmark' )
-					 +'<br>'+ name
-					 +'<br><g>('+ path +')</g>';
+//		var message = '<div class="infobookmark">'+ ICON( 'bookmark' ) +'</div>';
+		var message = ICON( 'bookmark' );
 	}
+	message += '<p class="infoimgname">'+ name
+			  +'<br><g>('+ path +')</g></p>';
 	INFO( {
 		  icon        : V.icoverart
 		, title       : 'Bookmark Thumbnail'

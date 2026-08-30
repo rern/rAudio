@@ -66,12 +66,6 @@ a {
 	font-size: 22px;
 	color: var( --cg60 );
 }
-.infobookmark {
-	float: left;
-	min-width: 100px;
-	height: 100px;
-}
-.infobookmark .i-bookmark,
 #infoList .i-bookmark,
 #infoList i.msgicon {
 	margin-top: 30px;
@@ -81,8 +75,8 @@ a {
 #infoList i.msgicon:not( .i-bookmark ) {
 	color: var( --cg50 ) !important;
 }
-.infobookmark .i-bookmark,
 #infoList .i-bookmark {
+	vertical-align: 30px;
 	color: var( --cm ) !important;
 }
 #time-knob.disabled .btn {
