@@ -432,7 +432,7 @@ pushData() { # send to websocket.py (server)
 		data=$( tr -d '\n' <<< $data )
 		data=$( pushDataSet $channel "$data" )
 	fi
-	status -B "$data"
+	$dirbash/status -B "$data"
 }
 pushDataSet() {
 	cat << EOF
