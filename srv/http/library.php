@@ -132,11 +132,12 @@ case 'home':
 	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$path    = file( $dirbk.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
-			$bkradio = bookmarkRadio( $path );
-			if ( $bkradio ) {
+			$path = rtrim( file_get_contents( $dirbk.'/'.$name ), "\n" );
+			if ( str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ) {
+				$bkradio = ' bkradio';
 				$cover = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
 			} else {
+				$bkradio = '';
 				$cover = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
 				$cover.= '/coverart.jpg';
 			}
@@ -305,9 +306,6 @@ case 'search':
 
 }
 
-function bookmarkRadio( $path ) {
-	return str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
-}
 function esc( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
