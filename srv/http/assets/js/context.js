@@ -72,11 +72,8 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, current      : () => {
-		S.position = V.list.index;
-		PLAYLIST.render.scroll();
-		LOCAL();
-		BASH( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
+	, current      : action => {
+		BASH( [ 'mpcskip', V.list.index + 1, action || 'stop', 'CMD POS ACTION' ] );
 	}
 	, directory    : () => {
 		var path      = V.list.path;
@@ -576,11 +573,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		if ( cmd === 'play' ) {
-			BASH( [ 'mpcplayback', 'play', V.list.index + 1, 'CMD ACTION POS' ] );
-		} else {
-			$( '#'+ cmd ).trigger( 'click' );
-		}
+		cmd === 'play' ? CONTEXT.current( cmd ) : $( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 
