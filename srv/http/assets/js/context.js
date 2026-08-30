@@ -510,10 +510,16 @@ var CONTEXT  = {
 	}
 	, wrEdit       : val => {
 		if ( ! val ) val = { NAME: V.list.name, URL: V.list.path, CHARSET: 'UTF-8' }
+		var $img = $LI.find( 'img' );
+		if ( $img.length ) {
+			var icon = '<img src="'+ $img.attr( 'src' ) +'">';
+		} else {
+			var icon = ICON( V.mode +' msgicon' );;
+		}
 		INFO( {
 			  icon         : 'webradio'
 			, title        : 'Edit Web Radio'
-			, message      : '<img src="'+ ( $LI.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
+			, message      : icon
 			, list         : CONTEXT.wrList
 			, values       : CONTEXT.wrEditValues( val )
 			, checkchanged : true

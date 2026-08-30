@@ -950,7 +950,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">';
 	} else {
 //		var message = '<div class="infobookmark">'+ ICON( 'bookmark' ) +'</div>';
-		var message = ICON( 'bookmark' );
+		var message = ICON( 'bookmark msgicon' );
 	}
 	message += '<p class="infoimgname">'+ name
 			  +'<br><g>('+ path +')</g></p>';
