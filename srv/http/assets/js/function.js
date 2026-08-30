@@ -380,35 +380,34 @@ var COVERART  = {
 
 			var $img = $( e.target );
 			var src  = $img.attr( 'src' );
-			var ext  = src.slice( src.lastIndexOf( '.' ), src.lastIndexOf( '?' ) );
-			if ( V.playback || ( V.library && MODE.album() ) ) {
+			var ext  = src.split( '?' )[ 0 ].split( '.' ).pop();
+			if ( V.playback || ( V.library && MODE.album() ) ) { // no try
 				$img.attr( 'src', V.coverart );
-			} else if ( ext === '.jpg' ) {
+			} else if ( ext === '.jpg' ) { // #1 try png
 				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
-			} else if ( ext === '.png' ) {
+			} else if ( ext === '.png' ) { // #2 try gif
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
-			} else {
-				var img;
+			} else {                       // #3 replace with icon
 				if ( I.active ) {
-					var icon = I.icon === 'bookmark' ? 'bookmark' : $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
-					img      = ICON( icon +' msgicon' );
+					var ic   = $LI.find( '.li-icon' )[ 0 ].classList[ 0 ].slice( 2 );
+					var icon = ICON( ic +' msgicon' );
 				} else if ( V.playlist ) {
-					var icon = $img.parent()[ 0 ].classList[ 0 ];
-					img      = '<i class="i-'+ icon +' li-icon" data-menu="filesavedpl"></i>';
+					var ic   = $img.parent()[ 0 ].classList[ 0 ];
+					var icon = '<i class="i-'+ ic +' li-icon" data-menu="filesavedpl"></i>';
 				} else {
 					if ( V.libraryhome ) {
 						var name = $img.prev().text();
-						img      = '<i class="i-bookmark bl"></i><a class="label">'+ name +'</a>';
+						var icon = '<i class="i-bookmark bl"></i><a class="label">'+ name +'</a>';
 					} else if ( ! MODE.radio() ) {
-						img      = '<i class="i-folder li-icon" data-menu="folder"></i>';
+						var icon = '<i class="i-folder li-icon" data-menu="folder"></i>';
 					} else {
 						var dir  = $img.parent().hasClass( 'dir' );
-						var icon = dir ? 'folder' : V.mode;
+						var ic   = dir ? 'folder' : V.mode;
 						var menu = dir ? 'wrdir' : 'webradio';
-						img      = '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>';
+						var icon = '<i class="i-'+ ic +' li-icon" data-menu="'+ menu +'"></i>';
 					}
 				}
-				$img.replaceWith( img );
+				$img.replaceWith( icon );
 			}
 		}, true ); // useCapture (from parent > target - img onerror not bubble)
 	}
