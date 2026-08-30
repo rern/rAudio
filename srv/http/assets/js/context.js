@@ -344,9 +344,11 @@ var CONTEXT  = {
 	, thumbnail    : () => {
 		var $liicon = $LI.find( '.li-icon' );
 		var src     = $liicon.is( 'img' ) ? $liicon.attr( 'src' ) : V.coverdefault;
+		var radio   = MODE.radio();
+		var path    = radio ? $( '#lib-path' ).text() +'/'+ V.list.name : V.list.path;
 		INFO( {
 			  icon        : V.icoverart
-			, title       : $LI.hasClass( 'dir' ) ? 'Folder Thumbnail' : 'Station Art'
+			, title       : radio ? 'Station Art' : 'Folder Thumbnail'
 			, message     : '<img class="imgold" src="'+ src +'" >'
 						   +'<p class="infoimgname">'+ V.list.name +'</p>'
 			, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
@@ -356,9 +358,9 @@ var CONTEXT  = {
 			, buttonlabel : ICON( 'folder' ) +' Icon'
 			, buttoncolor : V.orange
 			, button      : () => {
-				BASH( [ 'thumbnailreset', V.list.path, 'CMD DIR' ] );
+				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( V.list.path, 'coverart' )
+			, ok          : () => UTIL.imageReplace( path, 'coverart' )
 		} );
 	}
 	, thumbUpdate  : modealbum => {
@@ -574,7 +576,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#'+ cmd ).trigger( 'click' );
+		if ( cmd === 'play' ) {
+			BASH( [ 'mpcplayback', 'play', V.list.index + 1, 'CMD ACTION POS' ] );
+		} else {
+			$( '#'+ cmd ).trigger( 'click' );
+		}
 		return
 	}
 

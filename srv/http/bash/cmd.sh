@@ -300,7 +300,7 @@ mpcplayback )
 # --------------------------------------------------------------------
 	radioStop
 	if [[ $ACTION == play ]]; then
-		mpc -q play
+		mpc -q play $POS
 		if audioCDtrack; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
