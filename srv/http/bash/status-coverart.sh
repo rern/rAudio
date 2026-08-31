@@ -18,11 +18,12 @@ getCoverart() {
 			http://ws.audioscrobbler.com/2.0 )
 	[[ $? != 0 || ! $data ]] && return
 
-	[[ $TITLE ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
-	[[ $album ]] && image=$( jq -r '.image // empty' <<< $album )
+	[[ $ALBUM ]] && album=$( jq '.album // empty' <<< $data ) || album=$( jq '.track.album // empty' <<< $data )
+	[[ $album ]] && image=$( jq '.image // empty' <<< $album )
 	[[ $image ]] && extralarge=$( jq -r '.[3]."#text" // empty' <<< $image )
 	if [[ $extralarge ]]; then
 		URL=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
+		echo $URL
 	else
 		mbid=$( jq -r '.mbid // empty' <<< $album )
 		[[ ! $MBID ]] && MBID=$mbid || MBID1=$mbid
