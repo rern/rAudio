@@ -5,7 +5,7 @@
 file_config=/boot/config.txt
 
 gpioState() {
-	[[ -e $dirsystem/vuled ]] && grep -q '^state="play"' $dirshm/status && vuledactive=1
+	[[ -e $dirsystem/vuled ]] && statePlay && vuledactive=1
 	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
 		echo false
 	else

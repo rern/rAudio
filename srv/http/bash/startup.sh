@@ -111,7 +111,6 @@ CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
 $dirsettings/player-conf.sh
-$dirbash/status -k > $dirshm/status
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 # after all sources connected -----------------------------------------------------

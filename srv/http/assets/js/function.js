@@ -2398,12 +2398,6 @@ var UTIL      = {
 		}
 		COMMON.json.update( S, status );
 		if ( S.shareddata ) [ 'sd', 'usb' ].forEach( k => D[ k ] = false );
-		if ( S.player === 'snapcast' ) {
-			S.icon = 'snapcast';
-			[ 'coverart', 'stationcover' ].forEach( k => {
-				if ( S[ k ] ) S[ k ] = 'http://'+ S.snapserverip + S[ k ];
-			} );
-		}
 		COMMON.statusToggle( 'refresh' );
 		if ( V.playback ) {
 			DISPLAY.bars();

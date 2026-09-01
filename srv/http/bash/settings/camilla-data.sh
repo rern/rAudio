@@ -17,7 +17,7 @@ data='
 , "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"     : "'$mixer'"
 , "devices"     : '$( < $dirshm/hwparams )'
-, "play"        : '$( $dirbash/status | jq .play )'
+, "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "volume"      : '$( [[ $mixer ]] && volumeGet )'

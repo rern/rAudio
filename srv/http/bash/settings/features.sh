@@ -337,7 +337,7 @@ startx )
 	sudo xset dpms $off $off $off
 	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
 	if [[ $ONWHILEPLAY ]]; then
-		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
+		statePlay && sudo xset -dpms || sudo xset +dpms
 	fi
 	file=/proc/bus/input/devices
 	if ! grep -q "Handlers=.*mouse" $file \

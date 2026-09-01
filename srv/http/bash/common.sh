@@ -227,7 +227,7 @@ fifoToggle() { # mpdoled vuled vumeter
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
 		fi
-		if grep -q '^state=.*play' $dirshm/status; then
+		if statePlay; then
 			[[ $mpdoled ]] && systemctl restart mpd_oled
 			[[ $vuled || $vumeter ]] && systemctl start cava
 		fi
@@ -561,6 +561,9 @@ splashRotate() {
 		-background '#000' \
 		-extent 1920x1080 \
 		$dirimg/splash.png
+}
+statePlay() {
+	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
 }
 statusColor() {
 	sed -E  -e 's|●|<grn>&</grn>|

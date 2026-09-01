@@ -7,15 +7,15 @@
 argsSet() {
 	[[ $webradio && $state == stop ]] && return 1
 
-	lines=$( grep -E '^(Album|Artist|Title)' $dirshm/status )
-	. <( echo "$lines" )
+	readarray -t lines < <( jq -r .Artist,.Title,.Album $dirshm/status.json )
+	Artist=${lines[0]}
 	[[ ! $Artist ]] && return 1
-
-	if [[ $1 == scrobble ]]; then
-		[[ ! $Title ]] && return 1
-	else
-		[[ ! $Album && ! $Title ]] && return 1
-	fi
+	
+	Title=${lines[1]}
+	[[ $1 == scrobble && ! $Title ]] && return 1
+	
+	Album=${lines[2]}
+	[[ ! $Album && ! $Title ]] && return 1
 
 	args=$( sort <<< $lines \
 		| sed '
@@ -39,23 +39,31 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 , "Artist"    : "'$ARTIST'"
 , "coverart"  : "'$COVERART'"
 , "elapsed"   : '$elapsed'
-, "pause"     : false
-, "play"      : true
+, "file"      : "'$FILE'"
 , "pllength"  : '$pllength'
 , "state"     : "play"
-, "stop"      : false
+, "station"   : "'$STATION'"
 , "Time"      : false
 , "timestamp" : '$timestamp'
 , "Title"     : "'$TITLE'"
 , "webradio"  : true
 }'
-	json2var "$status" > $dirshm/status
+	echo "$status" > $dirshm/status.json
 	state=play
-	webradio=true
+	webradio=1
 else
-	$dirbash/status -k > $dirshm/status
-	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
-	COVERART=$coverart
+	if [[ -e $dirshm/radio ]]; then
+		status=$( < $dirshm/status.json )
+		readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
+	else
+		status=$( $dirbash/status \
+					| jq 'del(.counts, .display)' \
+					| tee $dirshm/status.json )
+		readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
+	fi
+	COVERART=${lines[0]}
+	state=${lines[1]}
+	[[ ${lines[2]} == true ]] && webradio=1
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
@@ -64,26 +72,18 @@ $dirbash/status $p_b
 if [[ ! $COVERART ]]; then
 	argsSet && $dirbash/status-coverart.sh "$args" &> /dev/null &
 fi
-[[ $state == play ]] && start_stop=start || start_stop=stop
+[[ $state == play ]] && state_play=1
+[[ $state_play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
-	[[ $state != play ]] && pushData vumeter '{ "val": 0 }'
+	[[ ! $state_play ]] && pushData vumeter '{ "val": 0 }'
 	systemctl $start_stop cava
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ ! $status ]]; then
-		status=$( $dirbash/status )
-		state_file=$(  jq -r .state,.file <<< $status )
-		[[ $state_file == play*radioparadise.com* || $state_file == play*radiofrance.fr* ]] && exit
-# ------------------------------------------------------------------------------
-	fi
-	jq '{ Album, Artist, elapsed, file, state, station, Time, timestamp, Title, webradio }' <<< $status > $dirshm/status.json
-	systemctl restart lcdchar
-fi
+[[ -e $dirsystem/lcdchar ]] && systemctl restart lcdchar
 if [[ -e $dirsystem/stoptimer ]]; then
-	if [[ $state == play ]]; then
+	if [[ $state_play ]]; then
 		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
 	elif [[ -e $dirshm/pidstoptimer ]]; then
 		killProcess stoptimer
@@ -95,7 +95,7 @@ if [[ -e $dirsystem/stoptimer ]]; then
 fi
 if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 	export DISPLAY=:0
-	if [[ $state == play ]]; then
+	if [[ $state_play ]]; then
 		sudo xset dpms force on
 		sudo xset -dpms
 	else
@@ -110,8 +110,8 @@ fi
 if [[ $( < $dirshm/player ) != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
-	if [[ $state == play || $state == pause ]]; then # renderers prev/next
-		timestampnew=$( getVar timestamp $dirshm/status )
+	if [[ $state_play || $state == pause ]]; then # renderers prev/next
+		timestampnew=$( jq .timestamp $dirshm/status.json )
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
 	fi

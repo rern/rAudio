@@ -6,7 +6,8 @@
 
 touch $dirshm/radio
 
-name=$( mpc current -f %file% | xargs basename )
+file=$( mpc current -f %file% )
+name=$( basename $file )
 id=${name/-*} # ID-...
 [[ $id == francemusique* && $id != francemusique ]] && id=${id:13} # francemusiqueID
 
@@ -140,12 +141,15 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
+	line=$( grep ^$file $dirmpd/radio )
 	$dirbash/status-push.sh "cmd
 $album
 $artist
 $coverart
+$file
+${line/*\/}
 $title
-CMD ALBUM ARTIST COVERART TITLE"
+CMD ALBUM ARTIST COVERART FILE STATION TITLE"
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

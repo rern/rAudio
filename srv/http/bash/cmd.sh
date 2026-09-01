@@ -414,7 +414,7 @@ mpcupdate )
 	date +%s > $dirmpd/updatestart
 	pushData mpdupdate '{ "updating": true }'
 	if [[ ! $ACTION ]]; then
-		if [[ -e $dirsystem/mpcupdate.conf ]]; then
+		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
 			. <( cat $dirsystem/mpcupdate.conf )
 			ACTION=$action
 			PATHMPD=$pathmpd
@@ -422,6 +422,7 @@ mpcupdate )
 			ACTION=rescan
 		fi
 	fi
+	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )

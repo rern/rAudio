@@ -226,7 +226,7 @@ mpdoled )
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. /etc/default/mpd_oled
 		[[ $OPTS != $opts ]] && echo 'OPTS="'$opts'"' > /etc/default/mpd_oled
-		! grep -q ^play=true $dirshm/status && mpd_oled $opts -x # logo
+		! statePlay && mpd_oled $opts -x # logo
 	else
 		mpd_oled $opts -z # clear
 	fi

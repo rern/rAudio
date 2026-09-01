@@ -60,6 +60,8 @@ W = {
 		DISPLAY.library();
 	}
 	, mpdplayer : data => { // play/stop
+		if ( 'snapserverip' in data && data.snapserverip !== S.snapserverip ) return
+		
 		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
@@ -87,13 +89,16 @@ W = {
 	, mpdupdate : data => {
 		S.updating = data.updating;
 		PLAYBACK.button.updating();
-		if ( ! S.updating ) {
-			COMMON.json.update( C, data.counts );
-			if ( V.library && V.libraryhome ) DISPLAY.library();
+		if ( S.updating ) {
+			BANNER( 'refresh-library blink', 'Library Update', 'Updating ...' );
+			return
 		}
-		var blink  = S.updating ? ' blink' : '';
-		var msg    = S.updating ? 'Updating ...' : 'Done';
-		BANNER( 'refresh-library'+ blink, 'Library Update', msg );
+		
+		COMMON.json.update( C, data.counts );
+		if ( V.library ) {
+			V.libraryhome ? DISPLAY.library() : $( '#lib-list li' ).removeClass( 'nodata' );
+		}
+		BANNER( 'refresh-library', 'Library Update', 'Done' );
 	}
 	, option    : data => {
 		if ( V.local ) return
