@@ -4,9 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260816
-! grep -q ^UDP_PORT $dirbash/websocket.py && ws_restart=1
+# 20260909
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
+
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
+
 [[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
 
 # 20260801
@@ -103,12 +105,9 @@ file=$dirsystem/order.json
 
 installfinish
 
-#20260830
-chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
+#20260909
 systemctl try-restart rotaryencoder
-
-# 20260808
-[[ $ws_restart ]] && systemctl restart websocket
+systemctl restart websocket
 
 # 20260717
 file=$dirmpdconf/bluetooth.conf
