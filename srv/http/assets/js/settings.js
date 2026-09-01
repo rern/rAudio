@@ -196,14 +196,14 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 			} );
 		}
 		$( '.playback' )
-			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
+			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
 			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
 		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 	}
 	$( '.playback' ).on( 'click', function() {
-		S.state = S.state === 'play' ? 'pause' : 'play'
+		S.state = S.play ? 'pause' : 'play'
 		headIcon();
-		if ( PAGE === 'camilla' && S.state === 'pause' ) RENDER.statusStop();
+		if ( PAGE === 'camilla' && ! S.play ) RENDER.statusStop();
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }

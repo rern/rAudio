@@ -20,6 +20,7 @@ data='
 , "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
+, "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"      : '$( [[ $mixer ]] && volumeGet )'
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax'
