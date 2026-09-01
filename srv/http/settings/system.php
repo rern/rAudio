@@ -200,8 +200,9 @@ EOF
 		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
- · Turn volume up/down
- · Push to play/pause
+ · Turn: volume up / down
+ · Push: play / pause
+ · Long-press: mute / unmute
 EOF
 	]
 	, [

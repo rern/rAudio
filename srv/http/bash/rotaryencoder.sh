@@ -31,9 +31,48 @@ elif [[ -e $dirshm/btmixer ]]; then
 elif [[ -e $dirshm/amixercontrol ]]; then
 	. $dirshm/output 
 fi
+
+file=$dirshm/button
+action() {
+	if [[ -e $file ]]; then
+		rm $file
+		if [[ $1 == playback ]]; then # toggle play
+			mpcPlayback
+		else                          # toggle mute
+			if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+				control=$( < $dirshm/btmixer )
+			elif [[ -e $dirsystem/camilladsp ]]; then
+				control=$( < $dirshm/amixercontrol )
+			fi
+			if [[ -e $dirsystem/volumemute ]]; then
+				current=0
+				target=$( getContent $dirsystem/volumemute )
+				type=unmute
+			else
+				current=$( volumeGet )
+				target=0
+				type=mute
+			fi
+			$dirbash/cmd.sh "volume
+$current
+$target
+$control
+$type
+CMD CURRENT TARGET CONTROL TYPE"
+		fi
+	fi
+}
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
-	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
+	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
+	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
+	value=$( grep -oP 'value \K[0-9]+' <<< $line ) # ${line: -1} - not work
+	if [[ $value == 1 ]]; then # button down
+		touch $file
+		( sleep 1 && action ) &
+	elif [[ $value == 0 ]]; then # button up
+		action playback
+	fi
 done &
 
 # volume ----------------------------------------------------------------------
