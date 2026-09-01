@@ -880,11 +880,11 @@ function INFO( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
-		if ( I.checkchar ) {
-			$( '#infoList input' ).eq( I.checkchar.input ).on( 'input', function() {
+		if ( I.checktext ) {
+			$( '#infoList input' ).eq( I.checktext.input ).on( 'input', function() {
 				var $this = $( this );
 				var val   = $this.val();
-				if ( val.includes( I.checkchar.char ) ) setTimeout( () => $this.val( val.replace( /\//g, '' ) ), 90 );
+				if ( val.includes( I.checktext.text ) ) setTimeout( () => $this.val( val.replace( /\//g, '' ) ), 90 );
 			} );
 		}
 		if ( 'focus' in I ) {
@@ -984,7 +984,7 @@ var _INFO     = {
 						var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
 						$( '#infoOk' ).toggleClass( 'disabled', disabled );
 					}, 100 );
-				}, 'checkchar' in I ? 100 : 0 );
+				}, 'checktext' in I ? 100 : 0 );
 			} );
 		}
 	}

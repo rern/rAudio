@@ -22,7 +22,7 @@ var CONTEXT  = {
 			, list       : [ 'As:', 'text' ]
 			, values     : name
 			, checkblank : true
-			, checkchar  : { input: 0, char: '/' }
+			, checktext  : { input: 0, text: '/' }
 			, ok         : () => {
 				CONTEXT.bookmarkEdit( _INFO.val(), path, 'CMD NAME DIR', CONTEXT.bookmark );
 			}
@@ -410,7 +410,7 @@ var CONTEXT  = {
 			, list       : CONTEXT.wrList
 			, values     : CONTEXT.wrEditValues( val )
 			, checkblank : [ 0, 1 ]
-			, checkchar  : { input: 0, char: '/' }
+			, checktext  : { input: 0, text: '/' }
 			, beforeshow : () => {
 				if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 				$( '#infoList tr:eq( 2 ) td' ).last()
@@ -501,7 +501,7 @@ var CONTEXT  = {
 			, values       : V.list.name
 			, checkblank   : true
 			, checkchanged : true
-			, checkchar    : { input: 0, char: '/' }
+			, checktext    : { input: 0, text: '/' }
 			, oklabel      : 'Rename'
 			, ok           : () => {
 				var newname = _INFO.val();
@@ -527,7 +527,7 @@ var CONTEXT  = {
 			, values       : CONTEXT.wrEditValues( val )
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
-			, checkchar    : { input: 0, char: '/' }
+			, checktext    : { input: 0, text: '/' }
 			, boxwidth     : 'max'
 			, beforeshow   : () => {
 				$( '#infoList tr:eq( 2 ) td' ).last().addClass( 'hide' );

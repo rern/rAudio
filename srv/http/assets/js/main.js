@@ -937,7 +937,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, values       : name
 		, checkblank   : true
 		, checkchanged : true
-		, checkchar    : { input: 0, char: '/' }
+		, checktext    : { input: 0, text: '/' }
 		, oklabel      : ICON( 'flash' ) +'Rename'
 		, ok           : () => {
 			CONTEXT.bookmarkEdit( _INFO.val(), name, 'CMD NEWNAME NAME', () => $this.trigger( 'click' ) );
