@@ -22,14 +22,16 @@ done
 
 fn_volume=$( volumeFunction )
 if [[ $fn_volume == volumeMpd ]]; then
-	dn=-1
-	up=+1
-elif [[ -e $dirshm/btmixer ]]; then
-	dn=1%-
-	up=1%+
-	mixer=$( < $dirshm/btmixer )
-elif [[ -e $dirshm/amixercontrol ]]; then
-	. $dirshm/output 
+	dn=-$step
+	up=+$step
+else
+	dn=$step%-
+	up=$step%+
+	if [[ $fn_volume == volumeAmixer ]]; then
+		mixer=$( < $dirshm/amixercontrol )
+	else
+		mixer=$( < $dirshm/btmixer )
+	fi
 fi
 
 file=$dirshm/button
@@ -39,11 +41,6 @@ action() {
 		if [[ $1 == playback ]]; then # toggle play
 			mpcPlayback
 		else                          # toggle mute
-			if [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-				control=$( < $dirshm/btmixer )
-			elif [[ -e $dirsystem/camilladsp ]]; then
-				control=$( < $dirshm/amixercontrol )
-			fi
 			if [[ -e $dirsystem/volumemute ]]; then
 				current=0
 				target=$( getContent $dirsystem/volumemute )
@@ -56,7 +53,7 @@ action() {
 			$dirbash/cmd.sh "volume
 $current
 $target
-$control
+$mixer
 $type
 CMD CURRENT TARGET CONTROL TYPE"
 		fi
@@ -66,7 +63,7 @@ CMD CURRENT TARGET CONTROL TYPE"
 evtest ${dev[button]} | while read line; do
 	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
 	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
-	value=$( grep -oP 'value \K[0-9]+' <<< $line ) # ${line: -1} - not work
+	value=${line: -1}
 	if [[ $value == 1 ]]; then # button down
 		touch $file
 		( sleep 1 && action ) &
@@ -82,6 +79,6 @@ evtest ${dev[rotary]} | while read line; do
 		'-1' ) updn=$dn;;
 		* )    continue;;
 	esac
-	$fn_volume $updn "$mixer" $card
+	$fn_volume $updn "$mixer"
 	pushVolume
 done
