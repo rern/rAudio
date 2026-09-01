@@ -60,4 +60,5 @@ done
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
-sed -i 's|".*/|"|' $dirsystem/order.json
+file=$dirsystem/order.json
+[[ -e $file ]] && sed -i 's|".*/|"|' $file
