@@ -59,3 +59,5 @@ $( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 done
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
+
+sed -i 's|".*/|"|' $dirsystem/order.json

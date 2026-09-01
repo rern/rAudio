@@ -79,8 +79,6 @@ else
 fi
 rm $dirbash/status.a*
 
-[[ ! -e /etc/systemd/system/dab.service ]] && rm $dirbash/dab*
-
 . $dirbash/common.sh
 
 sed -i -E "s/^(.hash.*v=).*/\1$( date +%s )';/" /srv/http/common.php # static cache bust - css, js
@@ -90,6 +88,7 @@ if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
 fi
+[[ ! -e /etc/systemd/system/dab.service ]] && rm $dirbash/dab*
 if [[ -e /bin/firefox ]]; then
 	splashRotate
 else
