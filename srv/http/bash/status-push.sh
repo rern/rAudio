@@ -60,11 +60,6 @@ else
 	COVERART=${lines[0]}
 	state=${lines[1]}
 	[[ ${lines[2]} == true ]] && webradio=1
-	if [[ $webradio && $state == play ]]; then
-		state_file=$( jq -r .state,.file <<< $status )
-		[[ $state_file == play*radioparadise* || $state_file == play*radiofrance* ]] && exit
-# ------------------------------------------------------------------------------
-	fi
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
@@ -83,6 +78,11 @@ fi
 # ------------------------------------------------------------------------------
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
+	if [[ $webradio && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
+		file=$( jq -r .file <<< $status )
+		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit
+# ------------------------------------------------------------------------------
+	fi
 	if (( $( jq .pllength <<< $status ) > 0 )); then 
 		systemctl restart lcdchar
 	else
