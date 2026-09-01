@@ -80,7 +80,7 @@ fi
 if [[ -e $dirsystem/lcdchar ]]; then
 	if [[ $webradio && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
 		file=$( jq -r .file <<< $status )
-		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit
+		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
 # ------------------------------------------------------------------------------
 	fi
 	if (( $( jq .pllength <<< $status ) > 0 )); then 
