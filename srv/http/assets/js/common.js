@@ -880,6 +880,13 @@ function INFO( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
+		if ( I.checkchar ) {
+			$( '#infoList input' ).eq( I.checkchar.input ).on( 'input', function() {
+				var $this = $( this );
+				var val   = $this.val();
+				if ( val.includes( I.checkchar.char ) ) setTimeout( () => $this.val( val.replace( /\//g, '' ) ), 90 );
+			} );
+		}
 		if ( 'focus' in I ) {
 			$inputbox.eq( I.focus ).focus();
 		} else {
@@ -966,16 +973,18 @@ var _INFO     = {
 			if ( ! check ) return
 
 			$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
-				var infoval = _INFO.val( 'array' );
-				if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
-				if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
-				if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
-				if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
-				I.timeout.check = setTimeout( () => {
-					var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
-					var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
-					$( '#infoOk' ).toggleClass( 'disabled', disabled );
-				}, 100 );
+				setTimeout( () => {
+					var infoval = _INFO.val( 'array' );
+					if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
+					if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
+					if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
+					if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
+					I.timeout.check = setTimeout( () => {
+						var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
+						var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
+						$( '#infoOk' ).toggleClass( 'disabled', disabled );
+					}, 100 );
+				}, 'checkchar' in I ? 100 : 0 );
 			} );
 		}
 	}

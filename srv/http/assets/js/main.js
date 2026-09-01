@@ -910,7 +910,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	var $bk            = $( this ).parent();
 	var [ name, path ] = UTIL.bookmarkData( $bk );
 	if ( $bk.find( '.i-bookmark' ).length ) {
-		var icon = ICON( 'bookmark bl' );
+		var icon = ICON( 'bookmark msgicon' );
 	} else {
 		var icon = $bk.find( 'img' )[ 0 ].outerHTML;
 	}
@@ -930,13 +930,14 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	INFO( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
-		, message      : ICON( 'bookmark bookmark' )
+		, message      : ICON( 'bookmark msgicon' )
 						+'<br>'+ name
 						+'<br><g>('+ path +')</g>'
 		, list         : [ 'To:', 'text' ]
 		, values       : name
 		, checkblank   : true
 		, checkchanged : true
+		, checkchar    : { input: 0, char: '/' }
 		, oklabel      : ICON( 'flash' ) +'Rename'
 		, ok           : () => {
 			CONTEXT.bookmarkEdit( _INFO.val(), name, 'CMD NEWNAME NAME', () => $this.trigger( 'click' ) );
@@ -949,7 +950,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	if ( thumbnail ) {
 		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">';
 	} else {
-//		var message = '<div class="infobookmark">'+ ICON( 'bookmark' ) +'</div>';
 		var message = ICON( 'bookmark msgicon' );
 	}
 	message += '<p class="infoimgname">'+ name
