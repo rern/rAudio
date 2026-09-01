@@ -81,7 +81,13 @@ fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-[[ -e $dirsystem/lcdchar ]] && systemctl restart lcdchar
+if [[ -e $dirsystem/lcdchar ]]; then
+	if (( $( jq .pllength <<< $status ) > 0 )); then 
+		systemctl restart lcdchar
+	else
+		$dirbash/lcdchar.py logo
+	fi
+fi
 if [[ -e $dirsystem/stoptimer ]]; then
 	if [[ $state_play ]]; then
 		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
