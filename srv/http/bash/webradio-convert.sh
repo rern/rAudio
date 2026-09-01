@@ -37,6 +37,9 @@ done
 
 echo -n "$list" > $dirdata/mpd/radio
 
+file=$dirsystem/order.json
+[[ -e $file ]] && sed -i 's|".*/|"|' $file
+
 # audio cd
 files=$( find $dirdata/audiocd -maxdepth 1 -type f ! -name *.* )
 [[ ! $files ]] && exit
@@ -59,6 +62,3 @@ $( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 done
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
-
-file=$dirsystem/order.json
-[[ -e $file ]] && sed -i 's|".*/|"|' $file
