@@ -41,6 +41,7 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 , "elapsed"   : '$elapsed'
 , "file"      : "'$FILE'"
 , "pllength"  : '$pllength'
+, "play"      : true
 , "state"     : "play"
 , "station"   : "'$STATION'"
 , "Time"      : false
