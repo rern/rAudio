@@ -53,18 +53,18 @@ if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
 	state=play
 	webradio=1
 else
-	if [[ -e $dirshm/radio ]]; then
-		status=$( < $dirshm/status.json )
-		readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
-	else
-		status=$( $dirbash/status \
-					| jq 'del(.counts, .display)' \
-					| tee $dirshm/status.json )
-		readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
-	fi
+	status=$( $dirbash/status \
+				| jq 'del(.counts, .display)' \
+				| tee $dirshm/status.json )
+	readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
 	COVERART=${lines[0]}
 	state=${lines[1]}
 	[[ ${lines[2]} == true ]] && webradio=1
+	if [[ $webradio && $state == play ]]; then
+		state_file=$( jq -r .state,.file <<< $status )
+		[[ $state_file == play*radioparadise* || $state_file == play*radiofrance* ]] && exit
+# ------------------------------------------------------------------------------
+	fi
 fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
