@@ -1447,7 +1447,7 @@ var PLAYBACK  = {
 			$( '#vu' ).removeClass( 'hide' );
 			COMMON.loaderHide();
 		} else {
-			var src = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
+			var src = S.webradio ? ( S.coverart || S.stationart ) : S.coverart;
 			if ( src ) {
 				src += COMMON.versionHash();
 				$( '#vu' ).addClass( 'hide' );

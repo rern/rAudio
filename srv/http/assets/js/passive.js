@@ -60,7 +60,7 @@ W = {
 		DISPLAY.library();
 	}
 	, mpdplayer : data => { // play/stop
-//		if ( 'snapserverip' in data && data.snapserverip !== S.snapserverip ) return
+		if ( 'snapserverip' in data && data.snapserverip !== S.snapserverip ) return
 		
 		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
