@@ -455,7 +455,7 @@ W             = {  // from websocket.py (server)
 			S.volume     = data.val;
 			S.volumemute = 0;
 		}
-		VOLUME.set();
+		if ( 'set' in VOLUME ) VOLUME.set();
 	}
 }
 // info ----------------------------------------------------------------------
