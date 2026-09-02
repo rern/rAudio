@@ -35,30 +35,7 @@ else
 fi
 
 file=$dirshm/button
-action() {
-	if [[ -e $file ]]; then
-		rm $file
-		if [[ $1 == playback ]]; then # toggle play
-			mpcPlayback
-		else                          # toggle mute
-			if [[ -e $dirsystem/volumemute ]]; then
-				current=0
-				target=$( getContent $dirsystem/volumemute )
-				type=unmute
-			else
-				current=$( volumeGet )
-				target=0
-				type=mute
-			fi
-			$dirbash/cmd.sh "volume
-$current
-$target
-$mixer
-$type
-CMD CURRENT TARGET CONTROL TYPE"
-		fi
-	fi
-}
+
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
 	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
@@ -66,9 +43,12 @@ evtest ${dev[button]} | while read line; do
 	value=${line: -1}
 	if [[ $value == 1 ]]; then # button down
 		touch $file
-		( sleep 1 && action ) &
+		(
+			sleep 1
+			[[ -e $file ]] && rm $file && mpcSkip
+		) &
 	elif [[ $value == 0 ]]; then # button up
-		action playback
+		[[ -e $file ]] && rm $file &&  mpcPlayback
 	fi
 done &
 

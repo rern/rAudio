@@ -201,8 +201,8 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn: volume up / down
- · Push: play / pause
- · Long-press: mute / unmute
+ · Push: play / pause (stop if not MPD)
+ · Long-press: next track (MPD only)
 EOF
 	]
 	, [

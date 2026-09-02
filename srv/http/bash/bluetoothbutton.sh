@@ -24,19 +24,7 @@ evtest /dev/input/$event | while read line; do
 			mpcPlayback stop
 			;;
 		NEXT | PREVIOUS )
-			[[ $( < $dirshm/player ) != mpd ]] && continue
-			
-			read length songpos state< <( mpc status '%length% %songpos% %state%' )
-			if [[ $key == NEXT ]]; then
-				(( $pos == $length )) && pos=1 || pos=$(( songpos + 1 ))
-			else
-				(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
-			fi
-			[[ $state == stopped ]] && action=stop || action=play
-			$dirbash/cmd.sh "mpcskip
-$pos
-$action
-CMD POS ACTION"
+			mpcSkip $key
 			;;
 	esac
 done

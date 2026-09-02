@@ -368,16 +368,32 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
+	! playerActive mpd && $dirbash/cmd.sh playerstop && exit
+# --------------------------------------------------------------------
 	if [[ $1 ]]; then
 		ACTION=$1
 	else
-		! playerActive mpd && playerstop && exit
-# --------------------------------------------------------------------
 		[[ $( mpcState ) == play ]] && ACTION=pause || ACTION=play
 	fi
 	$dirbash/cmd.sh "mpcplayback
 $ACTION
 CMD ACTION"
+}
+mpcSkip() {
+	[[ $( < $dirshm/player ) != mpd ]] && return
+	
+	local action length pos songpos state
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	if [[ $1 == PREVIOUS ]]; then
+		(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
+	else
+		(( $songpos == $length )) && pos=1 || pos=$(( songpos + 1 ))
+	fi
+	[[ $state == stopped ]] && action=stop || action=play
+	$dirbash/cmd.sh "mpcskip
+$pos
+$action
+CMD POS ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
