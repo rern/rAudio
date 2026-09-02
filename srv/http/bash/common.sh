@@ -382,17 +382,16 @@ CMD ACTION"
 mpcSkip() {
 	[[ $( < $dirshm/player ) != mpd ]] && return
 	
-	local action length pos songpos state
+	local length pos songpos state
 	read length songpos state < <( mpc status '%length% %songpos% %state%' )
 	if [[ $1 == PREVIOUS ]]; then
 		(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
 	else
 		(( $songpos == $length )) && pos=1 || pos=$(( songpos + 1 ))
 	fi
-	[[ $state == stopped ]] && action=stop || action=play
 	$dirbash/cmd.sh "mpcskip
 $pos
-$action
+${state:0:4}
 CMD POS ACTION"
 }
 mpdoled_vuled_vumeter() {
