@@ -63,7 +63,7 @@ evtest ${dev[button]} | while read line; do
 		
 		if [[ ! -e $file_up ]]; then    # 1st up
 			touch $file_up
-			( sleep 0.5 && action click ) & # -------- #2 0.5s > click        - cancel #1
+			( sleep 0.4 && action click ) & # -------- #2 0.4s > click        - cancel #1
 		else                            # 2nd up
 			rm -f $file_up $file_dn         # -------- #3 0s   > double click - cancel #1,#2
 			mpcSkip PREVIOUS
