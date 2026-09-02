@@ -41,12 +41,7 @@ action() {
 	[[ ! -e $file_dn ]] && return
 	
 	rm -f $file_up $file_dn
-	if [[ $1 == click ]]; then
-		mpcPlayback
-	else
-		mpcSkip
-		( sleep 0.5 && rm -f $file_up ) & # long press run before 'touch $file_up'
-	fi
+	[[ $1 == click ]] && mpcPlayback || mpcSkip
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
