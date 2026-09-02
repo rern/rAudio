@@ -162,13 +162,6 @@ var SWITCH  = {
 		} );
 	}
 }
-W.mpdupdate = data => {
-	var updating = 'updating' in data;
-	if ( 'updating' in S ) S.updating = updating;
-	COMMON.updating();
-	var $update     = $( '.button-lib-update' );
-	if ( $update.length ) $update.toggleClass( 'blink', S.updating );
-}
 W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 
@@ -190,7 +183,6 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
 		  ...W // from common.js
 		, mpdplayer : data =>  {
-			console.log(data.player, S.player && data.state, S.state)
 			if ( data ) {
 				if ( data.player === S.player && data.state === S.state ) return
 
@@ -198,9 +190,15 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 					if ( k in data ) S[ k ] = data[ k ];
 				} );
 			}
-			console.log(S.play)
 			playbackIcon();
 			$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+		}
+		, mpdupdate : data => {
+			var updating = 'updating' in data;
+			if ( 'updating' in S ) S.updating = updating;
+			COMMON.updating();
+			var $update     = $( '.button-lib-update' );
+			if ( $update.length ) $update.toggleClass( 'blink', S.updating );
 		}
 	}
 	$( '.playback' ).on( 'click', function() {
