@@ -194,6 +194,8 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 			$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 		}
 		, mpdupdate : data => {
+			if ( ! $( '.button-lib-update' ).length ) return
+			
 			var updating = 'updating' in data;
 			if ( 'updating' in S ) S.updating = updating;
 			COMMON.updating();
