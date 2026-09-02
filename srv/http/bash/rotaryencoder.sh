@@ -36,6 +36,9 @@ fi
 
 file=$dirshm/button
 
+action() {
+	[[ -e $file ]] && rm $file && $1
+}
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
 	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
@@ -43,12 +46,9 @@ evtest ${dev[button]} | while read line; do
 	value=${line: -1}
 	if [[ $value == 1 ]]; then # button down
 		touch $file
-		(
-			sleep 1
-			[[ -e $file ]] && rm $file && mpcSkip
-		) &
+		( sleep 1 && action mpcSkip ) &
 	elif [[ $value == 0 ]]; then # button up
-		[[ -e $file ]] && rm $file &&  mpcPlayback
+		action mpcPlayback
 	fi
 done &
 
