@@ -38,7 +38,10 @@ file_dn=$dirshm/rotary_dn
 file_up=$dirshm/rotary_up
 
 action() {
-	[[ -e $file_dn ]] && rm $file_dn && $1
+	[[ ! -e $1 ]] && return
+	
+	rm $1
+	$2 $3 # mpcPlayback | mpcSkip [PREVIOUS]
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
@@ -47,12 +50,12 @@ evtest ${dev[button]} | while read line; do
 	value=${line: -1}
 	if [[ $value == 1 ]]; then
 		touch $file_dn
-		( sleep 1 && action mpcSkip ) &
+		( sleep 1 && action $file_dn mpcSkip ) &
 	elif [[ $value == 0 ]]; then
-		action mpcPlayback
-		[[ -e $file_up ]] && rm $file_up && mpcSkip PREVIOUS
+		action $file_dn mpcPlayback
+		action $file_up mpcSkip PREVIOUS
 		touch $file_up
-		( sleep 0.5 && rm -f $file_up ) &
+		( sleep 0.5 && action $file_up ) &
 	fi
 done &
 

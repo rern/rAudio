@@ -266,7 +266,7 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if [[ ! $POS && $( mpcState ) == play ]]; then
+	if [[ ! $POS ]] && statePlay; then
 		mpc -q crop
 	else
 		radioStop
@@ -397,13 +397,11 @@ mpcsimilar )
 	;;
 mpcskip )
 	radioStop
-	state=$( mpcState )
-	if [[ $state == play ]]; then
+	if statePlay; then
 		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 	fi
 	mpc -q play $POS
-	[[ ! $ACTION ]] && ACTION=$state
 	[[ $ACTION != play ]] && mpc -q stop
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos

@@ -43,7 +43,7 @@ grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
 notifyCD 'Fetch data ...'
 
-[[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
+! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
 trackL=$( audiocd-meta -t )
 for i in $( seq 1 $trackL ); do # add tracks to playlist
 	tracklist+="cdda:///$i "

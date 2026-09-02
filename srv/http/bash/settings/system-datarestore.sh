@@ -11,7 +11,7 @@ file_backup=$dirshm/backup.gz
 # --------------------------------------------------------------------
 dir_config=$dirdata/config
 
-[[ $( mpcState ) == play ]] && $dirbash/cmd.sh playerstop
+$dirbash/cmd.sh playerstop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
 rm -rf $dirdata/{mpd,playlists,webradio}

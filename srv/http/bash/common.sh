@@ -373,7 +373,7 @@ mpcPlayback() {
 	if [[ $1 ]]; then
 		ACTION=$1
 	else
-		[[ $( mpcState ) == play ]] && ACTION=pause || ACTION=play
+		statePlay && ACTION=pause || ACTION=play
 	fi
 	$dirbash/cmd.sh "mpcplayback
 $ACTION
@@ -394,9 +394,6 @@ mpcSkip() {
 $pos
 $action
 CMD POS ACTION"
-}
-mpcState() {
-	mpc status %state% | sed -E 's/ing|ped|d$//'
 }
 mpdoled_vuled_vumeter() {
 	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
