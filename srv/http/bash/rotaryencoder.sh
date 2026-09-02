@@ -22,7 +22,7 @@ done
 
 fn_volume=$( volumeFunction )
 if [[ $fn_volume == volumeMpd ]]; then
-	dn=-$step
+	dn=-$step # 1 or 2
 	up=+$step
 else
 	dn=$step%-
