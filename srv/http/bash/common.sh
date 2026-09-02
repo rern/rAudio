@@ -392,7 +392,7 @@ mpcSkip() {
 	$dirbash/cmd.sh "mpcskip
 $pos
 ${state:0:4}
-CMD POS ACTION"
+CMD POS ACTION" # state: playing, paused, stopped
 }
 mpdoled_vuled_vumeter() {
 	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=

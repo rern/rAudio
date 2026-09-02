@@ -41,36 +41,42 @@ action() {
 	[[ ! -e $file_dn ]] && return
 	
 	rm -f $file_up $file_dn
-	$1 $2 # mpcPlayback | mpcSkip [PREVIOUS]
+	if [[ $1 == click ]]; then
+		mpcPlayback
+	else
+		mpcSkip
+		( sleep 0.5 && rm -f $file_up ) & # long press run before 'touch $file_up'
+	fi
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
-	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
+	[[ $line != *value* ]] && continue
+	
 	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
-	value=${line: -1}
-	if [[ $value == 1 ]]; then
-		[[ -e $file_up ]] && continue # 2nd dn
+	if [[ ${line: -1} == 1 ]]; then # ...value 1
+		[[ -e $file_up ]] && continue   # 2nd dn - already set #1
 		
-		touch $file_dn                # 1st dn
-		( sleep 1 && action mpcSkip ) &           #1 1.0s - no cancel    - long press
-	elif [[ $value == 0 ]]; then
-		if [[ ! -e $file_up ]]; then  # 1st up
+		touch $file_dn                  # 1st dn
+		( sleep 1 && action longpress) &    # -------- #1 1s   > long press   - cancel #2,#3
+	else # ...value 0
+		[[ ! -e $file_dn ]] && continue # already run #1
+		
+		if [[ ! -e $file_up ]]; then    # 1st up
 			touch $file_up
-			( sleep 0.5 && action mpcPlayback ) & #2 0.5s - cancel #1    - double click
-		else                          # 2nd up
-			rm -f $file_up $file_dn
-			mpcSkip PREVIOUS                      #3 0s   - cancel #1,#2 - click
+			( sleep 0.5 && action click ) & # -------- #2 0.5s > click        - cancel #1
+		else                            # 2nd up
+			rm -f $file_up $file_dn         # -------- #3 0s   > double click - cancel #1,#2
+			mpcSkip PREVIOUS
 		fi
 	fi
 done &
 
 # volume ----------------------------------------------------------------------
 evtest ${dev[rotary]} | while read line; do
-	case ${line: -2} in
-		' 1' ) updn=$up;;
-		'-1' ) updn=$dn;;
-		* )    continue;;
-	esac
+	[[ $line != *value* ]] && continue
+	
+	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
+	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
 	$fn_volume $updn "$mixer"
 	pushVolume
 done
