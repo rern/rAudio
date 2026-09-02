@@ -472,9 +472,6 @@ pushStatus() {
 pushToIP() {
 	websocat --text ws://$1:8080 <<< ${@:2}
 }
-pushVolume() {
-	pushData volume '{ "val": '$( volumeGet )' }'
-}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
@@ -633,7 +630,7 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		pushVolume
+		volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
@@ -643,7 +640,7 @@ volume() {
 			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
-		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && pushVolume # some dac cannot set exactly on some 1% increments
+		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }

@@ -61,7 +61,7 @@ evtest ${dev[button]} | while read line; do
 	else # ...value 0
 		[[ ! -e $file_dn ]] && continue # already run #1
 		
-		if [[ ! -e $file_up ]]; then    # 1st up
+		if [[ ! -e $file_up ]]; then    # 1st up (click delayed 0.4s to keep playback state for double click)
 			touch $file_up
 			( sleep 0.4 && action click ) & # -------- #2 0.4s > click        - cancel #1
 		else                            # 2nd up
@@ -78,5 +78,5 @@ evtest ${dev[rotary]} | while read line; do
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
 	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
 	$fn_volume $updn "$mixer"
-	pushVolume
+	volumeGet push
 done
