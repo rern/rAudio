@@ -74,7 +74,6 @@ metadataGet() {
 		(( i++ ))
 		if [[ $i == 1 ]]; then
 			notify "$icon blink" Metadata 'Retry ...'
-			pushData mpdradio '{ "Artist": "", "Title": "", "Album": "" }'
 		elif [[ $i == 10 ]]; then
 			notify $icon Metadata 'Not available'
 			systemctl stop radio

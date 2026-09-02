@@ -74,18 +74,6 @@ W = {
 			setTimeout( BANNER_HIDE, 3000 );
 		}, 300 );
 	}
-	, mpdradio  : data => {
-		COMMON.json.update( S, data );
-		PLAYBACK.info.set();
-		PLAYBACK.coverart();
-		if ( D.radioelapsed ) {
-			$( '#progress' ).html( ICON( 'play' ) +'<span></span>' );
-			PLAYBACK.elapsed();
-		} else {
-			PROGRESS.set( 0 );
-		}
-		if ( V.playlist ) PLAYLIST.render.widthRadio();
-	}	
 	, mpdupdate : data => {
 		S.updating = data.updating;
 		PLAYBACK.button.updating();

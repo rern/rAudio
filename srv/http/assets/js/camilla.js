@@ -1421,7 +1421,7 @@ var RENDER    = {
 		RENDER.toggle();
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
-		headIcon();
+		playbackIcon();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#divvolume .control' ).text( S.control );

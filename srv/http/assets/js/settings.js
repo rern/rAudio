@@ -182,27 +182,28 @@ W.refresh   = data => { // except camilla
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
-	W = {
-		  ...W // from common.js
-		, mpdplayer : data => headIcon( data )
-		, mpdradio  : data => headIcon( data )
-	}
-	function headIcon( data ) {
-		if ( data ) {
-			if ( data.player === S.player && data.state === S.state ) return
-
-			[ 'player', 'pllength', 'state' ].forEach( k => {
-				if ( k in data ) S[ k ] = data[ k ];
-			} );
-		}
+	function playbackIcon() {
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
 			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
-		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+	}
+	W = {
+		  ...W // from common.js
+		, mpdplayer : data =>  {
+			console.log(data.player, S.player && data.state, S.state)
+			if ( data ) {
+				if ( data.player === S.player && data.state === S.state ) return
+
+				[ 'play', 'player', 'pllength', 'state' ].forEach( k => {
+					if ( k in data ) S[ k ] = data[ k ];
+				} );
+			}
+			console.log(S.play)
+			playbackIcon();
+			$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+		}
 	}
 	$( '.playback' ).on( 'click', function() {
-		S.state = S.play ? 'pause' : 'play'
-		headIcon();
 		if ( PAGE === 'camilla' && ! S.play ) RENDER.statusStop();
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );

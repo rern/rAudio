@@ -2515,6 +2515,8 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 	, set     : () => {
+		if ( S.volumemute === false ) return // suppress value false on track changed (sometimes)
+		
 		var $bar     = $( '#volume-bar' );
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();

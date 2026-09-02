@@ -1,11 +1,11 @@
-W.volume     = values => {
-	if ( ! ( 'db' in values ) || ! $( '#infoList .inforange' ).length ) return
+W.volume     = data => {
+	if ( ! ( 'db' in data ) || ! $( '#infoList .inforange' ).length ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
 	$( '.confirm' ).addClass( 'hide' );
 	V.local = true;
-	UTIL.volumeSet( values );
+	UTIL.volumeSet( data );
 }
 
 var CONFIG   = {
@@ -298,7 +298,7 @@ var UTIL     = {
 }
 
 function renderPage() {
-	headIcon();
+	playbackIcon();
 	$( '.button-lib-update' ).toggleClass( 'bl', S.updating );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'
