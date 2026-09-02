@@ -34,21 +34,25 @@ else
 	fi
 fi
 
-file=$dirshm/button
+file_dn=$dirshm/rotary_dn
+file_up=$dirshm/rotary_up
 
 action() {
-	[[ -e $file ]] && rm $file && $1
+	[[ -e $file_dn ]] && rm $file_dn && $1
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
 	[[ $line != *EV_KEY*KEY_PLAYCD* ]] && continue
 	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
 	value=${line: -1}
-	if [[ $value == 1 ]]; then # button down
-		touch $file
+	if [[ $value == 1 ]]; then
+		touch $file_dn
 		( sleep 1 && action mpcSkip ) &
-	elif [[ $value == 0 ]]; then # button up
+	elif [[ $value == 0 ]]; then
 		action mpcPlayback
+		[[ -e $file_up ]] && rm $file_up && mpcSkip PREVIOUS
+		touch $file_up
+		( sleep 0.5 && rm -f $file_up ) &
 	fi
 done &
 

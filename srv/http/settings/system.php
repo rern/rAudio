@@ -3,13 +3,15 @@
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'nfsserver', 'sata', 'usbdrive' ]
+	  'buttons' => [ 'add',   'format',   'gear',    'microsd',   'networks', 'next', 'nvme',     'pause', 'play'
+				   , 'power', 'previous', 'refresh', 'nfsserver', 'sata',     'stop', 'usbdrive', 'volume' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
 		, 'Power Button'  => 'power'
+		, 'Renderers'     => ''
 		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spectrum OLED' => 'mpdoled'
@@ -200,9 +202,12 @@ EOF
 		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
- · Turn: volume up / down
- · Push: play / pause (stop if not MPD)
- · Long-press: next track (MPD only)
+ · $B->volume Turn
+ · $B->play$B->pause$B->stop Push
+ · $B->previous Double click *
+ · $B->next Long press *
+
+* Not apllicable for $T->features$L->renderers
 EOF
 	]
 	, [
