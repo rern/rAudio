@@ -38,10 +38,10 @@ file_dn=$dirshm/rotary_dn
 file_up=$dirshm/rotary_up
 
 action() {
-	[[ ! -e $1 ]] && return
+	[[ ! -e $file_dn ]] && return
 	
-	rm $1
-	$2 $3 # mpcPlayback | mpcSkip [PREVIOUS]
+	rm -f $file_up $file_dn
+	$1 $2 # mpcPlayback | mpcSkip [PREVIOUS]
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
@@ -49,13 +49,18 @@ evtest ${dev[button]} | while read line; do
 	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
 	value=${line: -1}
 	if [[ $value == 1 ]]; then
-		touch $file_dn
-		( sleep 1 && action $file_dn mpcSkip ) &
+		[[ -e $file_up ]] && continue # 2nd dn
+		
+		touch $file_dn                # 1st dn
+		( sleep 1 && action mpcSkip ) &           #1 1.0s - no cancel    - long press
 	elif [[ $value == 0 ]]; then
-		action $file_dn mpcPlayback
-		action $file_up mpcSkip PREVIOUS
-		touch $file_up
-		( sleep 0.5 && action $file_up ) &
+		if [[ ! -e $file_up ]]; then  # 1st up
+			touch $file_up
+			( sleep 0.5 && action mpcPlayback ) & #2 0.5s - cancel #1    - double click
+		else                          # 2nd up
+			rm -f $file_up $file_dn
+			mpcSkip PREVIOUS                      #3 0s   - cancel #1,#2 - click
+		fi
 	fi
 done &
 
