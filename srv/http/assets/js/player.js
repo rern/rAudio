@@ -1,5 +1,5 @@
 W.volume     = data => {
-	if ( ! ( 'db' in data ) || ! $( '#infoList .inforange' ).length ) return
+	if ( S.output.MIXERTYPE !== 'hardware' || ! $( '#infoList .inforange' ).length ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
