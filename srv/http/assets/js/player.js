@@ -1,5 +1,5 @@
 W.volume     = data => {
-	if ( S.output.MIXERTYPE !== 'hardware' || ! $( '#infoList .inforange' ).length ) return
+	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoTitle' ).text() !== 'Device Mixer Volume' ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
@@ -215,8 +215,16 @@ var UTIL     = {
 		} );
 	}
 	, mixerSet  : mixertype => {
-		NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
-		BASH( [ 'mixertype', mixertype, S.output.NAME, 'CMD MIXERTYPE DEVICE' ] );
+		INFO( {
+			  ...SW
+			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
+			, values     : 30
+			, footer     : '(Should be low. Adjust later with GUI.)'
+			, ok         : () => {
+				NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
+				BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
+			}
+		} );
 	}
 	, novolume  : {
 		  warning : () => {

@@ -97,22 +97,14 @@ mixertype )
 	. $dirshm/output
 	mpc -q stop
 	filemixertype="$dirsystem/mixertype-$name"
-	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
-	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
-		[[ -e $dirshm/amixercontrol ]] && vol=$( volumeGet ) || vol=33
-		mpc -q volume $vol
+	if [[ $MIXERTYPE == hardware ]]; then
+		rm -f "$filemixertype" $dirsystem/replaygain-hw
 	else
-		rm -f $dirsystem/replaygain-hw
-	fi
-	if [[ $mixer ]]; then # [hw] set to current [sw] || [sw/none] set 0dB
-		if [[ $MIXERTYPE == hardware ]]; then
-			vol=$( mpc status %volume% )
-			volumeAmixer $vol% "$mixer" $card
-		else
-			amixer0dB
-		fi
+		amixer0dB
+		echo $MIXERTYPE > "$filemixertype"
 	fi
 	$dirsettings/player-conf.sh
+	mpc -q volume $VOLUME
 	pushData display '{ "volumenone": false }'
 	;;
 novolume )
