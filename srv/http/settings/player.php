@@ -56,7 +56,7 @@ $body      = [
 		, 'help'     => <<< EOF
 $B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
- · Should be set at 0dB
+ · Should be set at <c>0dB</c>
  · Use volume control on receiver devices to set level
 EOF
 	]
