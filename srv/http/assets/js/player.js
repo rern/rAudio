@@ -124,7 +124,7 @@ audio_output {
 	, mixertype    : () => {
 		INFO( {
 			  ...SW
-			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, list         : [ '', 'radio', { kv: { 'DAC hardware <a class="helpmenu label">Mixer</a>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 			, values       : S.mixertype ? S.output.MIXERTYPE : 'hardware'
 			, checkchanged : S.mixertype
 			, cancel       : SWITCH.cancel
@@ -301,7 +301,7 @@ var UTIL     = {
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
 	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
-				 +'<gr>Signal will be set to original level at 0dB.</gr><br>'
+				 +'<gr>Output will be at original level <c>0dB</c>.</gr><br>'
 				 +'Beware of too high volume.</wh>'
 }
 
