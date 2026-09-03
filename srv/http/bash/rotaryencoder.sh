@@ -6,8 +6,8 @@
 
 declare -A dev
 declare -A param=(
-	[gpio-key]="gpio=$pins label=PLAYCD keycode=200" # play/pause
-	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1" # volume
+	[gpio-key]="gpio=$pins label=PLAYCD keycode=200"           # button
+	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1" # turn
 )
 
 for dt in gpio-key rotary-encoder; do
@@ -66,7 +66,7 @@ evtest ${dev[button]} | while read line; do
 	fi
 done &
 
-# volume ----------------------------------------------------------------------
+# turn -------------------------------------------------------------------------
 evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
 	
