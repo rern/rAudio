@@ -1,5 +1,5 @@
 W.volume     = data => {
-	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoTitle' ).text() !== 'Device Mixer Volume' ) return
+	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoOk' ).text() !== '0dB' ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
