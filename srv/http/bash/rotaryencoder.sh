@@ -7,7 +7,7 @@
 declare -A dev
 declare -A param=(
 	[gpio-key]="gpio=$pins label=PLAYCD keycode=200" # play/pause
-	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step" # volume
+	[rotary-encoder]="pin_a=$pina pin_b=$pinb relative_axis=1" # volume
 )
 
 for dt in gpio-key rotary-encoder; do
@@ -22,11 +22,11 @@ done
 
 fn_volume=$( volumeFunction )
 if [[ $fn_volume == volumeMpd ]]; then
-	dn=-1
-	up=+1
+	dn=-$step # 1 or 2
+	up=+$step
 else
-	dn=1%-
-	up=1%+
+	dn=$step%-
+	up=$step%+
 	if [[ $fn_volume == volumeAmixer ]]; then
 		mixer=$( < $dirshm/amixercontrol )
 	else
