@@ -49,19 +49,19 @@ evtest ${dev[button]} | while read line; do
 	
 	# Event: time 1725184000.123456, type 1 (EV_KEY), code 164 (KEY_PLAYCD), value 0
 	if [[ ${line: -1} == 1 ]]; then # ...value 1
-		[[ -e $file_up ]] && continue   # BLOCK 2nd dn - already set #1
+		[[ -e $file_up ]] && continue   # BLOCK 2nd dn - already set ##1##
 		
-		touch $file_dn                  #1 SET 1st dn
-		( sleep 1 && action longpress) &        #1# LONG PRESS    > after 1s    > OFF #2#,#3#
+		touch $file_dn                  #####1 SET 1st dn
+		( sleep 1 && action longpress) &       ##1## LONG PRESS   > after 1s    > OFF ##2##,##3##
 	else # ...value 0
-		[[ ! -e $file_dn ]] && continue # BLOCK 1st,2nd up - already run #1#
+		[[ ! -e $file_dn ]] && continue # BLOCK 1st,2nd up - already run ##1##
 		
 		if [[ ! -e $file_up ]]; then
-			touch $file_up              #2 SET 1st up (delay to keep playback state on double click)
-			( sleep 0.4 && action click ) &     #2# CLICK         > before 1s   > OFF #1#
-		else                            #3 SET 2nd up
+			touch $file_up              #####2 SET 1st up (delay to keep playback state on double click)
+			( sleep 0.4 && action click ) &    ##2## CLICK        > before 1s   > OFF ##1##
+		else                            #####3 SET 2nd up
 			rm -f $file_up $file_dn
-			mpcSkip PREVIOUS                    #3# DOUBLE CLICK  > before 0.4s > OFF #1#,#2#
+			mpcSkip PREVIOUS                   ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
 		fi
 	fi
 done &
