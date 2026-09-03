@@ -702,9 +702,8 @@ var UTIL          = {
 		}
 		, order  : data => {
 			var pin    = data.relays;
-			var name   = data.names;
 			var names  = {}
-			COMMON.json.update( names, name );
+			$.each( data.names, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
 				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { colspan: 2, sameline: true } ]
