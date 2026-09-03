@@ -151,15 +151,17 @@ multiraudio )
 	if [[ $ON ]]; then
 		json='{ "json": '$list', "name": "multiraudio" }'
 		flagset=${flagset/rm*-f/touch}
+		data=json
 	fi
 	ip=$( ipAddress )
 	iplist=$( jq -r .[] <<< $list | grep -v $ip )
 	while read ip; do
 		! ipOnline $ip && continue
 
-		[[ $ON ]] && pushToIP $ip $json
-		pushToIP $ip $display
-		pushToIP $ip $flagset
+		data+=' display flagset'
+		for d in $data; do
+			$dirbash/status -P $ip "${!d}"
+		done
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF

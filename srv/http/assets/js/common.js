@@ -1252,7 +1252,7 @@ var COMMON    = {
 		console.log( '%cDebug:', 'color:red' );
 		if ( typeof data === 'string' ) {
 			console.log( JSON.parse( data ) );
-			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
+			console.log( "status -P '"+ data +"'" );
 		} else {
 			var bashcmd = COMMON.baseName( data.filesh );
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';

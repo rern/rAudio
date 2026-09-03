@@ -133,11 +133,11 @@ pushPlaylist() {
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data=$( php /srv/http/playlist.php current | tr -d '\n' )
+		data=$( php /srv/http/playlist.php current )
 		data=$( pushDataSet playlist "$data" )
-		b=$( printf '%s' "$data" | wc -c )
-		buffer=$(( b + 100 ))
-		websocat --text -B $buffer ws://127.0.0.1:8080 <<< $data
+		bytes=$( printf '%s' "$data" | wc -c )
+		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }

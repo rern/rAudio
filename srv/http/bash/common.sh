@@ -469,14 +469,11 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
-pushToIP() {
-	websocat --text ws://$1:8080 <<< ${@:2}
-}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
 	data=$( pushDataSet $1 "$data" )
-	websocat --text ws://127.0.0.1:8080 <<< $data
+	$dirbash/status -P "$data"
 }
 quoteEscape() {
 	echo "${@//\"/\\\"}"

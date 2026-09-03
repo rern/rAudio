@@ -44,7 +44,7 @@ else # server rAudio client
   "icon"    : "nfsserver"
 , "title"   : "Server rAudio"
 , "message" : "Client connected: '$( hostname )' @'$( ipAddress )'"'
-	pushToIP $IP '{ "channel": "notify", "data": { '$data' } }'
+	$dirbash/status -P $IP '{ "channel": "notify", "data": { '$data' } }'
 fi
 if [[ $SHAREDDATA ]]; then
 	[[ ! $nfsserver ]] && echo "$mountpoint" > $dirshareddata/source

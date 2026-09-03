@@ -1,13 +1,17 @@
 #!/bin/python
 
 # websocket server
-# - receive message from local / remote (udp datagram):
+
+# client side
+# - receive from local / remote (udp datagram):
 #    - WS.onmessage (common.js) : channel + data
-# - send to local only:
-#    - WS.send  (common.js)     : [channel|client|filesh|json] + data, ping, status
-#    - websocat (common.sh)     : ^^
-# - send to local / remote:
-#    - status -B (shell)        : ^^
+# - send
+#    - WS.send      (common.js) : [channel|client|filesh|json] + data, ping, status
+
+# server side
+#    - status -P [IP]  IP - other server
+#    - status -B       broadcast udp datagram
+#    - websocat        playlist/messages > 65536 bytes(64kB)
 
 import asyncio
 import json
