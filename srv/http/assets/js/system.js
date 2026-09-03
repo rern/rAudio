@@ -328,6 +328,7 @@ var UTIL          = {
 			var $el = $( el );
 			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
 		} );
+		$( '#infoList svg' ).after( '<p><span class="gpiopin"></span> On / High</p>' );
 		$( '#infoList' ).on( 'click', 'circle', function( e ) {
 			var p = $( this ).data( 'bcm' );
 			var on  = ! state[ p ];

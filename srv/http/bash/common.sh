@@ -328,11 +328,6 @@ ipSharedData() {
 	self=$( ipAddress )
 	grep -v $self $filesharedip
 }
-json2var() { # single level only
-	local regex
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/=false$/=/'
-	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
-}
 killProcess() {
 	local filepid
 	filepid=$dirshm/pid$1
