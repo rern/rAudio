@@ -22,11 +22,11 @@ done
 
 fn_volume=$( volumeFunction )
 if [[ $fn_volume == volumeMpd ]]; then
-	dn=-$step # 1 or 2
-	up=+$step
+	dn=-1
+	up=+1
 else
-	dn=$step%-
-	up=$step%+
+	dn=1%-
+	up=1%+
 	if [[ $fn_volume == volumeAmixer ]]; then
 		mixer=$( < $dirshm/amixercontrol )
 	else
