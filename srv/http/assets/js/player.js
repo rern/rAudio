@@ -301,7 +301,8 @@ var UTIL     = {
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
 	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
-				 +'<gr>Output will be at original level <c>0dB</c>.</gr><br>'
+				 +'<gr>Output will be at original level <c>0dB</c>.<br>'
+				 +'Volume controlled via amplifier only.</gr><br>'
 				 +'Beware of too high volume.</wh>'
 }
 
