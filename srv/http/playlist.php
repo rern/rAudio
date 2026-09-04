@@ -101,13 +101,15 @@ $count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
 $song   = 0;
 $sec    = 0;
+$upnp   = 'http://'.strtok( $_SERVER['SERVER_ADDR'], '.' );
 $html   = '';
 foreach( $lists as $list ) {
 	$song++;
 	$pos     = '<a class="pos">'.$song.'</a>';
 	$v       = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
-	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
+	$file0   = $file[ 0 ];
+	if ( isMpdPath( $file0 ) ) { // USB/...
 		$sec  = HMS2second( $time );
 		if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
 		if ( ! $artist ) $artist = $albumartist;
@@ -134,7 +136,7 @@ foreach( $lists as $list ) {
 		continue;
 	}
 
-	if ( str_starts_with( $file, 'http://192.168' ) ) { // upnp
+	if ( str_starts_with( $file, $upnp ) ) { // http://192...
 		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
 		$html     .=
 '<li class="upnp">'.
@@ -147,8 +149,7 @@ foreach( $lists as $list ) {
 		continue;
 	}
 
-	$ini = substr( $file, 0, 4 );
-	if ( $ini === 'cdda' ) {
+	if ( $file0 === 'c' ) { // cdda://...
 		if ( ! isset( $discid ) ) {
 			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
@@ -179,13 +180,13 @@ foreach( $lists as $list ) {
 	}
 	// webradio / dabradio
 	$station = '';
-	if ( $ini === 'http' || $ini === 'rtsp' ) {
+	if ( $file0 === 'h' || $file0 === 'r' ) { // http://... or rtsp://...
 		$dirradio = radioDir( $file );
 		if ( $dirradio ) {
 			$station = basename( $dirradio );
 			$icon    = iconThumb( $dirradio.'/thumb.jpg', 'filesavedpl' );
 		} else {
-			$icon    = icon( str_starts_with( $file, 'rtsp' ) ? 'dabradio' : 'webradio' );
+			$icon    = icon( $file[ 0 ] === 'h' ? 'webradio': 'dabradio' );
 		}
 	}
 	$li2     = $pos.'<a class="artist hide"></a><a class="station hide">';

@@ -42,13 +42,14 @@ case 'giftype': // FILEIMAGE.get() from function.js
 	if ( $animated ) move_uploaded_file( $tmpfile, '/tmp/img.gif' );
 	break;
 case 'imagereplace': // UTIL.imageReplace() from function.js
-	if ( $post->file[ 0 ] === '/' ) {
+	$file0 = $post->file[ 0 ];
+	if ( $file0 === '/' ) {
 		$dir = $post->file;
 	} else {
-		if ( str_starts_with( $post->file, 'cdda' ) ) {
+		if ( $file0 === 'c' ) {
 			$discid = file( $dirshm.'audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$dir    = $dirdata.'audiocd/'.$discid;
-		} else if ( in_array( $post->file[ 0 ], [ 'N', 'S', 'U' ] ) ) {
+		} else if ( isMpdPath( $file0 ) ) {
 			$dir    = '/mnt/MPD/'.$post->file;
 			if ( ! is_dir( $dir ) ) $dir = dirname( $dir );
 		} else { // radio - http... or rtsp...
