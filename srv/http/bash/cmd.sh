@@ -562,7 +562,7 @@ webradioedit )
 	[[ ! $URL ]] && echo "No valid URL found in:<br>$URL" && exit
 # --------------------------------------------------------------------
 	line=$( grep "^$URL^^" $dirmpd/radio )
-	[[ $line ]] && echo "URL already exists as:<br>${line/*^}<br><wh>$URL</wh>" && exit
+	[[ $line ]] && echo "URL already exists as:<br>${line/*\/http\/data\/}<br><wh>$URL</wh>" && exit
 # --------------------------------------------------------------------
 	CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	[[ $CHARSET ]] && charset="?charset=$CHARSET"
