@@ -867,7 +867,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	}
 
 	var $img     = $LI.find( '.bkcoverart' );
-	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ICON( 'bookmark bl' );
+	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ICON( 'bookmark msgicon' );
 	var path     = $LI.find( '.lipath' ).text();
 	V.list.name  = $LI.find( '.name' ).text();
 	INFO( {
