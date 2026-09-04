@@ -9,9 +9,17 @@ for radio in webradio dabradio; do
 
 	for file in $dir_radio/**; do
 		if [[ -d "$file" ]]; then
-			[[ -e "$file/data" ]] && list+="\
+			if [[ -e "$file/data" ]]; then
+				list+="\
 $( head -1 "$file/data" )^^$file
 "
+			else
+				file_cover=$( compgen -G "$file/cover".* )
+				if [[ $file_cover ]]; then
+					ext=${file_cover: -4}
+					mv "$file_cover" "${file_cover:0:-4}art${file_cover: -4}" # ../cover.* > ../coverart.*
+				fi
+			fi
 			continue
 		fi
 
@@ -35,7 +43,10 @@ $( head -1 "$file/data" )^^$file
 	rm -rf $dir_radio/img
 done
 
+
 echo -n "$list" > $dirdata/mpd/radio
+
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
@@ -60,5 +71,3 @@ $( awk F'^' '{print $1"^^"$3"^^"$4}' <<< $l )"
 	f_cover=$( compgen -G $f.* )
 	[[ $f_cover ]] && mv $f_cover $f/cover.${f_cover: -3}
 done
-
-chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null

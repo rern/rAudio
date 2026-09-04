@@ -48,5 +48,6 @@ grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 rm -rf $dir_config $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 
 [[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 $dirbash/power.sh reboot
