@@ -183,7 +183,7 @@ foreach( $lists as $list ) {
 		$dirradio = radioDir( $file );
 		if ( $dirradio ) {
 			$station = basename( $dirradio );
-			$icon    = iconThumb( substr( $dirradio, 9 ).'/thumb.jpg', 'filesavedpl' );
+			$icon    = iconThumb( $dirradio.'/thumb.jpg', 'filesavedpl' );
 		} else {
 			$icon    = icon( str_starts_with( $file, 'rtsp' ) ? 'dabradio' : 'webradio' );
 		}

@@ -132,21 +132,27 @@ case 'home':
 	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$path = rtrim( file_get_contents( $dirbk.'/'.$name ), "\n" );
-			if ( str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ) {
+			$path  = rtrim( file_get_contents( $dirbk.'/'.$name ), "\n" );
+			$path0 = $path[ 0 ];
+			if ( $path0 === 'h' || $path0 === 'r' ) {
 				$bkradio = ' bkradio';
-				$cover   = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
+				$cover   = radioDir( $path ).'/cover.jpg'; // http://... > /webradio/...
 			} else {
 				$bkradio = '';
-				$cover   = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
-				$cover  .= '/coverart.jpg';
+				if ( $path0 !== '/' ) {
+					$cover = '/mnt/MPD/'.$path;            // USB/... > /mnt/MPD/USB/...
+				} else if ( $path[ 1 ] === 's' ) {
+					$cover = substr( $path, 9 );           // /srv/http/... > /webradio/...
+				} else {
+					$cover = $path;
+				}
+				$cover  .= '/coverart.jpg'.$hash;
 			}
-			if ( str_starts_with( $cover, '/srv' ) ) $cover = substr( $cover, 9 );
 			$html[ $name ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$cover.$hash.'">
+	<img class="bkcoverart" src="'.$cover.'">
 </li>';
 		}
 	}

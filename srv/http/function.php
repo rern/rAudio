@@ -65,7 +65,8 @@ function indexBar( $indexes ) {
 <div class="index index1">'.$indexbar1.'</div>';
 }
 function radioDir( $url ) {
-	return exec( 'grep ^'.$url.' /srv/http/data/mpd/radio | cut -d^ -f3' );
+	$dir = exec( 'grep ^'.$url.' /srv/http/data/mpd/radio | cut -d^ -f3' );
+	return substr( $dir, 9 );
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );
