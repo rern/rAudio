@@ -96,7 +96,7 @@ if ( $CMD === 'get' ) {
 	$name = '';
 }
 exec( $cmd, $lists );
-//----------------------------------------------------------------------------------
+//..............................................................................
 $count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
 $song   = 0;
@@ -109,6 +109,7 @@ foreach( $lists as $list ) {
 	$v       = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	$file0   = $file[ 0 ];
+// file ........................................................................
 	if ( isMpdPath( $file0 ) ) { // USB/...
 		$sec  = HMS2second( $time );
 		if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
@@ -135,20 +136,37 @@ foreach( $lists as $list ) {
 		$count->time += $sec;
 		continue;
 	}
-
-	if ( str_starts_with( $file, $upnp ) ) { // http://192...
-		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
-		$html     .=
-'<li class="upnp">'.
-	icon(  'upnp', 'filesavedpl' ).
-	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
+// webradio ....................................................................
+	if ( $file0 === 'h' || $file0 === 'r' ) { // http://... or rtsp://...
+		$station  = '';
+		$dirradio = radioDir( $file );
+		if ( $dirradio ) {
+			$station = basename( $dirradio );
+			$icon    = iconThumb( $dirradio.'/thumb.jpg', 'filesavedpl' );
+		} else {
+			$icon    = icon( $file[ 0 ] === 'h' ? 'webradio': 'dabradio' );
+		}
+		$li2     = $pos.'<a class="artist hide"></a><a class="station hide">';
+		if ( $station ) {
+			$notsaved = '';
+			$li2     .= $station;
+		} else {
+			$notsaved = ' notsaved';
+			$icon     = icon( 'save savewr' ).icon( 'webradio', 'filesavedpl' );
+			$station  = '. . .';
+		}
+		$li2    .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
+		$html   .=
+'<li class="webradio '.$notsaved.'">'.
+	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$station.'</a><a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
 ';
-		$count->upnp++;
-		continue;
+		$count->radio++;
 	}
-
+// audio cd ....................................................................
 	if ( $file0 === 'c' ) { // cdda://...
 		if ( ! isset( $discid ) ) {
 			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
@@ -178,37 +196,20 @@ foreach( $lists as $list ) {
 		$count->time += $sec;
 		continue;
 	}
-	// webradio / dabradio
-	$station = '';
-	if ( $file0 === 'h' || $file0 === 'r' ) { // http://... or rtsp://...
-		$dirradio = radioDir( $file );
-		if ( $dirradio ) {
-			$station = basename( $dirradio );
-			$icon    = iconThumb( $dirradio.'/thumb.jpg', 'filesavedpl' );
-		} else {
-			$icon    = icon( $file[ 0 ] === 'h' ? 'webradio': 'dabradio' );
-		}
-	}
-	$li2     = $pos.'<a class="artist hide"></a><a class="station hide">';
-	if ( $station ) {
-		$notsaved = '';
-		$li2     .= $station;
-	} else {
-		$notsaved = ' notsaved';
-		$icon     = icon( 'save savewr' ).icon( 'webradio', 'filesavedpl' );
-		$station  = '. . .';
-	}
-	$li2    .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
-	$html   .=
-'<li class="webradio '.$notsaved.'">'.
-	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
-	$icon.
-	'<div class="li1"><a class="name">'.$station.'</a><a class="elapsed"></a></div>'.
+// upnp ........................................................................
+	if ( str_starts_with( $file, $upnp ) ) { // http://192...
+		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
+		$html     .=
+'<li class="upnp">'.
+	icon(  'upnp', 'filesavedpl' ).
+	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
 ';
-	$count->radio++;
+		$count->upnp++;
+	}
 }
+
 $counthtml = '';
 if ( $name ) {
 	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.icon(  'playlists savedlist' ).$name.'</span> <gr>·</gr>';
