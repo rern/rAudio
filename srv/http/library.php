@@ -135,16 +135,13 @@ case 'home':
 			$path = rtrim( file_get_contents( $dirbk.'/'.$name ), "\n" );
 			if ( str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ) {
 				$bkradio = ' bkradio';
-				$cover = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
+				$cover   = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
 			} else {
 				$bkradio = '';
-				if ( $path[ 0 ] === '/' ) {
-					$cover = str_starts_with( $path, '/srv' ) ? substr( $path, 9 ) : $path;
-				} else {
-					$cover = '/mnt/MPD/'.$path;
-				}
-				$cover.= '/coverart.jpg';
+				$cover   = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
+				$cover  .= '/coverart.jpg';
 			}
+			if ( str_starts_with( $cover, '/srv' ) ) $cover = substr( $cover, 9 );
 			$html[ $name ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
