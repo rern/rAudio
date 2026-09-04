@@ -138,7 +138,11 @@ case 'home':
 				$cover = substr( radioDir( $path ), 9 ).'/cover.jpg'; // http://... > /srv/http/...
 			} else {
 				$bkradio = '';
-				$cover = $path[ 0 ] === '/' ? $path : '/mnt/MPD/'.$path;
+				if ( $path[ 0 ] === '/' ) {
+					$cover = str_starts_with( $path, '/srv' ) ? substr( $path, 9 ) : $path;
+				} else {
+					$cover = '/mnt/MPD/'.$path;
+				}
 				$cover.= '/coverart.jpg';
 			}
 			$html[ $name ] = '
