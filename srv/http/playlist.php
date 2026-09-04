@@ -2,7 +2,7 @@
 include 'function.php'; // $hash
 
 $post         = ( object ) $_POST;
-$CMD          = $post->playlist ?? $argv[ 1 ];
+$CMD          = $post->playlist ?? $argv[ 1 ]; // current / list
 $fileplaylist = '/srv/http/data/shm/playlist';
 $filecount    = $fileplaylist.'count';
 
@@ -44,6 +44,8 @@ if ( $CMD === 'current' && file_exists( $fileplaylist ) ) {
 if ( $CMD === 'list' ) {
 	exec( 'mpc lsplaylists'
 		, $lists );
+	if ( ! count( $lists ) ) exit;
+	
 	foreach( $lists as $list ) {
 		$each       = ( object ) [];
 		$each->name = $list;
