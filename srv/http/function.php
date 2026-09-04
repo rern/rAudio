@@ -68,7 +68,7 @@ function isMpdPath( $path ) {
 	return $path === 'U' || $path === 'N' || $path === 'S';
 }
 function radioDir( $url ) {
-	$dir   = exec( 'grep "^'.$url.'" /srv/http/data/mpd/radio | head -1 | cut -d^ -f3' );
+	$dir   = exec( 'grep -m1 "^'.$url.'" /srv/http/data/mpd/radio | cut -d^ -f3' );
 	return substr( $dir, 9 ); // /srv/http/... > /webradio/...
 }
 function second2HMS( $second ) {

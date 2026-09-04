@@ -6,7 +6,7 @@ dir2path() {
 	elif [[ $1 == [NSU]* ]]; then
 		echo "/mnt/MPD/$1"
 	else
-		line=$( grep ^$1 $dirmpd/radio | head -1 )
+		line=$( grep -m1 ^$1 $dirmpd/radio )
 		echo "${line/*^}"
 	fi
 }

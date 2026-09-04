@@ -140,7 +140,7 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	line=$( grep ^$file $dirmpd/radio | head -1 )
+	line=$( grep -m1 ^$file $dirmpd/radio )
 	$dirbash/status-push.sh "cmd
 $album
 $artist
