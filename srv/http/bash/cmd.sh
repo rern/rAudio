@@ -476,6 +476,11 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
+radiolist )
+	urls=$( sed 's|^|, "|; s|\^.*|"|' $dirmpd/radio )
+	dirs=$( sed 's|"|\\"|g; s|.*/srv/http/data/|, "|; s|$|"|' $dirmpd/radio )
+	echo '{ "url": [ '${urls:1}' ], "dir": [ '${dirs:1}' ] }'
+	;;
 remount )
 	mount -a
 	;;

@@ -29,25 +29,20 @@ var CONTEXT  = {
 		} );
 	}
 	, bookmarkEdit : ( name, arg, cmd, callback ) => {
-		var exist = '';
+		var exists = false;
 		$( '#lib-mode-list .name' ).each( ( i, el ) => {
 			var $el = $( el );
 			if ( $el.text() === name ) {
+				exists = true;
 				if ( $el.parent().hasClass( 'bookmark' ) ) {
-					exist = 'Bookmark name already exists:<br>'+ name;
+					CONTEXT.existsInfo( 'Bookmark name already exists:<br>'+ name, callback );
 				} else {
-					exist = 'Reserved name for mode list:<br>'+ name;
+					CONTEXT.existsInfo( 'Reserved name for mode list:<br>'+ name, callback );
 				}
-				INFO( {
-					  icon    : I.icon
-					, title   : I.title
-					, message : exist
-					, ok      : callback
-				} );
 				return false
 			}
 		} );
-		if ( exist ) return
+		if ( exists ) return true
 		
 		BASH( [ 'bookmark', name, arg, cmd ] );
 		if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
@@ -107,6 +102,14 @@ var CONTEXT  = {
 				BASH( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => $LI.remove() );
 				var dir = COMMON.baseName( V.list );
 			}
+		} );
+	}
+	, existsInfo   : ( I, message, callback ) => {
+		INFO( {
+			  icon    : I.icon
+			, title   : I.title
+			, message : message
+			, ok      : callback
 		} );
 	}
 	, plAdd        : () => {
@@ -402,6 +405,7 @@ var CONTEXT  = {
 		} );
 	}
 	, wrAdd        : val => {
+		V.list = {}
 		if ( ! val ) val = { NAME: '', URL: '', CHARSET: 'UTF-8' }
 		INFO( {
 			  icon       : 'webradio'
@@ -435,16 +439,33 @@ var CONTEXT  = {
 		var type     = I.title.split( ' ' )[ 0 ];
 		var val      = _INFO.val();
 		var callback = () => CONTEXT[ 'wr'+ type ]( val );
-		if ( CONTEXT.wrExists( val.NAME, callback ) ) return
-		
-		val.DIR      = $( '#lib-path' ).text();
-		if ( type === 'Edit' ) val.OLDNAME = V.list.name;
-		val.TEST     = val.URL !== I.values[ 1 ];
-		if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
-		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
-			BANNER_HIDE();
-			if ( std ) _INFO.warning( I.icon, I.title, std, callback );
-		} );
+		BASH( [ 'radiolist' ], list => {
+			var exist = $( '#lib-list li .name' ).filter( ( i, el ) => {
+				var name = $( el ).text();
+				return name === val.NAME && name !== V.list.name;
+			} );
+			if ( exist.length ) {
+				CONTEXT.existsInfo( I, 'Name already exists:<wh> '+ val.NAME +'</wh>', callback );
+				return
+			}
+			
+			var index = list.url.indexOf( val.URL );
+			if ( index !== -1 ) {
+				CONTEXT.existsInfo( I,   'URL already exists as:'
+										+'<br>'+ list.dir[ index ]
+										+'<br><wh> '+ val.URL +'</wh>', callback );
+				return
+			}
+			
+			val.DIR  = $( '#lib-path' ).text();
+			if ( type === 'Edit' ) val.OLDNAME = V.list.name;
+			val.TEST = val.URL !== I.values[ 1 ];
+			if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+			BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
+				BANNER_HIDE();
+				if ( std ) _INFO.warning( I.icon, I.title, std, callback );
+			} );
+		}, 'json' );
 	}
 	, wrDelete     : () => {
 		var name = V.list.name;
@@ -546,24 +567,6 @@ var CONTEXT  = {
 			, URL     : val.URL
 			, CHARSET : val.CHARSET
 		}
-	}
-	, wrExists     : ( name, callback ) => {
-		if ( name === V.list.name ) return false
-		
-		var exists = false;
-		$( '#lib-list li .name' ).each( ( i, el ) => {
-			if ( $( el ).text() === name ) {
-				exists = true;
-				INFO( {
-					  icon    : I.icon
-					, title   : I.title
-					, message : 'Name already exists: <wh> '+ name +'</wh>'
-					, ok      : callback
-				} );
-				return false
-			}
-		} );
-		return exists
 	}
 	, wrList       : [
 		  [ 'Name',    'text', { colspan: 3 } ]

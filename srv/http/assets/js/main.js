@@ -932,7 +932,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, title        : 'Rename Bookmark'
 		, message      : ICON( 'bookmark msgicon' )
 						+'<br>'+ name
-						+'<br><g>('+ path +')</g>'
+						+'<br><g>'+ path +'</g>'
 		, list         : [ 'To:', 'text' ]
 		, values       : name
 		, checkblank   : true
