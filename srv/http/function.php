@@ -1,5 +1,5 @@
 <?php // for library.php, playlist.php
-$hash = '?v=1787799850';
+$hash = '?v=1788510889';
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
@@ -68,7 +68,7 @@ function isMpdPath( $path ) {
 	return $path === 'U' || $path === 'N' || $path === 'S';
 }
 function radioDir( $url ) {
-	$dir = exec( 'grep ^'.$url.' /srv/http/data/mpd/radio | cut -d^ -f3' );
+	$dir = exec( 'grep ^'.$url.' /srv/http/data/mpd/radio | head -1 | cut -d^ -f3' );
 	return substr( $dir, 9 ); // /srv/http/... > /webradio/...
 }
 function second2HMS( $second ) {

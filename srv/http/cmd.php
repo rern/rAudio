@@ -53,7 +53,7 @@ case 'imagereplace': // UTIL.imageReplace() from function.js
 			$dir    = '/mnt/MPD/'.$post->file;
 			if ( ! is_dir( $dir ) ) $dir = dirname( $dir );
 		} else { // radio - http... or rtsp...
-			$dir    = exec( 'grep ^'.$post->file.' /srv/http/data/mpd/radio | cut -d^ -f3' );
+			$dir    = '/srv/http'.radioDir( $post->file );
 		}
 	}
 	if ( ! is_writable( $dir ) ) exit( 'No write permission:<br><c>'.$dir.'</c>' );
