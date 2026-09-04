@@ -7,8 +7,8 @@
 touch $dirshm/radio
 
 file=$( mpc current -f %file% )
-name=$( basename $file )
-id=${name/-*} # ID-...
+basename=$( basename $file )
+id=${basename/-*} # ID-...
 [[ $id == francemusique* && $id != francemusique ]] && id=${id:13} # francemusiqueID
 
 case $id in
@@ -140,7 +140,7 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	line=$( grep ^$file $dirmpd/radio )
+	line=$( grep ^$file $dirmpd/radio | head -1 )
 	$dirbash/status-push.sh "cmd
 $album
 $artist
