@@ -101,7 +101,8 @@ $count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
 $song   = 0;
 $sec    = 0;
-$upnp   = 'http://'.strtok( $_SERVER['SERVER_ADDR'], '.' );
+$ip     = exec( '/srv/http/bash/status -I' );
+$upnp   = 'http://'.substr( $ip, 0, strrpos( $ip, '.' ) );
 $html   = '';
 foreach( $lists as $list ) {
 	$song++;
