@@ -383,9 +383,9 @@ var COVERART  = {
 			var ext  = src.split( '?' )[ 0 ].split( '.' ).pop();
 			if ( V.playback || ( V.library && MODE.album() ) ) { // no try
 				$img.attr( 'src', V.coverart );
-			} else if ( ext === '.jpg' ) { // #1 try png
+			} else if ( ext === 'jpg' ) { // #1 try png
 				$img.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
-			} else if ( ext === '.png' ) { // #2 try gif
+			} else if ( ext === 'png' ) { // #2 try gif
 				$img.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
 			} else {                       // #3 replace with icon
 				if ( I.active ) {
