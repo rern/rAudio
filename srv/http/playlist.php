@@ -137,6 +137,19 @@ foreach( $lists as $list ) {
 		$count->time += $sec;
 		continue;
 	}
+// upnp ........................................................................
+	if ( str_starts_with( $file, $upnp ) ) { // http://192...
+		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
+		$html     .=
+'<li class="upnp">'.
+	icon(  'upnp', 'filesavedpl' ).
+	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
+	'<div class="li2">'.$li2.'</div>'.
+'</li>
+';
+		$count->upnp++;
+		continue;
+	}
 // webradio ....................................................................
 	if ( $file0 === 'h' || $file0 === 'r' ) { // http://... or rtsp://...
 		$station  = '';
@@ -166,6 +179,7 @@ foreach( $lists as $list ) {
 '</li>
 ';
 		$count->radio++;
+		continue;
 	}
 // audio cd ....................................................................
 	if ( $file0 === 'c' ) { // cdda://...
@@ -195,19 +209,6 @@ foreach( $lists as $list ) {
 ';
 		$count->song++;
 		$count->time += $sec;
-		continue;
-	}
-// upnp ........................................................................
-	if ( str_starts_with( $file, $upnp ) ) { // http://192...
-		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
-		$html     .=
-'<li class="upnp">'.
-	icon(  'upnp', 'filesavedpl' ).
-	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
-	'<div class="li2">'.$li2.'</div>'.
-'</li>
-';
-		$count->upnp++;
 	}
 }
 
