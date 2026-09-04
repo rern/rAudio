@@ -29,20 +29,17 @@ var CONTEXT  = {
 		} );
 	}
 	, bookmarkEdit : ( name, arg, cmd, callback ) => {
-		var exists = false;
-		$( '#lib-mode-list .name' ).each( ( i, el ) => {
-			var $el = $( el );
-			if ( $el.text() === name ) {
-				exists = true;
-				if ( $el.parent().hasClass( 'bookmark' ) ) {
-					CONTEXT.existsInfo( 'Bookmark name already exists:<br>'+ name, callback );
-				} else {
-					CONTEXT.existsInfo( 'Reserved name for mode list:<br>'+ name, callback );
-				}
-				return false
-			}
+		var exist = $( '#lib-mode-list .name' ).filter( ( i, el ) => {
+			return name === $( el ).text() === name;
 		} );
-		if ( exists ) return true
+		if ( exist.length ) {
+			if ( $el.parent().hasClass( 'bookmark' ) ) {
+				CONTEXT.existsInfo( 'Bookmark name already exists:<br>'+ name, callback );
+			} else {
+				CONTEXT.existsInfo( 'Reserved name for mode list:<br>'+ name, callback );
+			}
+			return
+		}
 		
 		BASH( [ 'bookmark', name, arg, cmd ] );
 		if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
@@ -439,33 +436,23 @@ var CONTEXT  = {
 		var type     = I.title.split( ' ' )[ 0 ];
 		var val      = _INFO.val();
 		var callback = () => CONTEXT[ 'wr'+ type ]( val );
-		BASH( [ 'radiolist' ], list => {
-			var exist = $( '#lib-list li .name' ).filter( ( i, el ) => {
-				var name = $( el ).text();
-				return name === val.NAME && name !== V.list.name;
-			} );
-			if ( exist.length ) {
-				CONTEXT.existsInfo( I, 'Name already exists:<wh> '+ val.NAME +'</wh>', callback );
-				return
-			}
-			
-			var index = list.url.indexOf( val.URL );
-			if ( index !== -1 ) {
-				CONTEXT.existsInfo( I,   'URL already exists as:'
-										+'<br>'+ list.dir[ index ]
-										+'<br><wh> '+ val.URL +'</wh>', callback );
-				return
-			}
-			
-			val.DIR  = $( '#lib-path' ).text();
-			if ( type === 'Edit' ) val.OLDNAME = V.list.name;
-			val.TEST = val.URL !== I.values[ 1 ];
-			if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
-			BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
-				BANNER_HIDE();
-				if ( std ) _INFO.warning( I.icon, I.title, std, callback );
-			} );
-		}, 'json' );
+		var exist    = $( '#lib-list li .name' ).filter( ( i, el ) => {
+			var name = $( el ).text();
+			return name === val.NAME && name !== V.list.name;
+		} );
+		if ( exist.length ) {
+			CONTEXT.existsInfo( I, 'Name already exists:<wh> '+ val.NAME +'</wh>', callback );
+			return
+		}
+		
+		val.DIR      = $( '#lib-path' ).text();
+		if ( type === 'Edit' ) val.OLDNAME = V.list.name;
+		val.TEST     = val.URL !== I.values[ 1 ];
+		if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
+			BANNER_HIDE();
+			if ( std ) _INFO.warning( I.icon, I.title, std, callback );
+		} );
 	}
 	, wrDelete     : () => {
 		var name = V.list.name;

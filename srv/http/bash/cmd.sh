@@ -476,11 +476,6 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
-radiolist )
-	urls=$( sed 's|^|, "|; s|\^.*|"|' $dirmpd/radio )
-	dirs=$( sed 's|"|\\"|g; s|.*/srv/http/data/|, "|; s|$|"|' $dirmpd/radio )
-	echo '{ "url": [ '${urls:1}' ], "dir": [ '${dirs:1}' ] }'
-	;;
 remount )
 	mount -a
 	;;
@@ -555,6 +550,7 @@ volume )
 	;;
 webradiodelete )
 	rm -rf "$DIR"
+	sed -i "/\^$DIR$/ d" $dirmpd/radio
 	webradioCount
 	;;
 webradioedit )
@@ -564,6 +560,9 @@ webradioedit )
 		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	[[ ! $URL ]] && echo "No valid URL found in:<br>$URL" && exit
+# --------------------------------------------------------------------
+	line=$( grep "^$URL^^" $dirmpd/radio )
+	[[ $line ]] && echo "URL already exists as:<br>${line/*^}<br><wh>$URL</wh>" && exit
 # --------------------------------------------------------------------
 	CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	[[ $CHARSET ]] && charset="?charset=$CHARSET"
