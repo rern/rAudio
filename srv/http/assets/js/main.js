@@ -919,7 +919,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, title   : 'Remove Bookmark'
 		, message : icon
 				  +'<br>'+ name
-				  +'<br><g>('+ path +')</g>'
+				  +'<br><g>'+ path +'</g>'
 		, oklabel : ICON( 'remove' ) +'Remove'
 		, okcolor : V.red
 		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
