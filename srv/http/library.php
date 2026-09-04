@@ -136,7 +136,7 @@ case 'home':
 			$path0 = $path[ 0 ];
 			if ( $path0 === 'h' || $path0 === 'r' ) {
 				$bkradio = ' bkradio';
-				$cover   = radioDir( $path ).'/cover.jpg'; // http://... > /webradio/...
+				$cover   = radioDir( $path, $name ).'/cover.jpg'; // http://... > /webradio/...
 			} else {
 				$bkradio = '';
 				if ( $path0 !== '/' ) {
