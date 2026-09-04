@@ -380,7 +380,7 @@ var COVERART  = {
 
 			var $img = $( e.target );
 			var src  = $img.attr( 'src' );
-			var ext  = src.split( '?' )[ 0 ].split( '.' ).pop();
+			var ext  = src.slice( -16, -13 );
 			if ( V.playback || ( V.library && MODE.album() ) ) { // no try
 				$img.attr( 'src', V.coverart );
 			} else if ( ext === 'jpg' ) { // #1 try png
