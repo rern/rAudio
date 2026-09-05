@@ -64,9 +64,6 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
-function isMpdPath( $path ) {
-	return $path === 'U' || $path === 'N' || $path === 'S';
-}
 function radioDir( $url ) {
 	$dir   = exec( 'grep -m1 "^'.$url.'" /srv/http/data/mpd/radio | cut -d^ -f3' );
 	return substr( $dir, 9 ); // /srv/http/... > /webradio/...

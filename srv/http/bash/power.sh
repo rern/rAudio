@@ -31,6 +31,7 @@ else
 fi
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
+[[ $( < $dirshm/player ) == upnp ]] && mpc -q clear
 if [[ $reboot ]]; then
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'

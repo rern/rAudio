@@ -42,19 +42,21 @@ case 'giftype': // FILEIMAGE.get() from function.js
 	if ( $animated ) move_uploaded_file( $tmpfile, '/tmp/img.gif' );
 	break;
 case 'imagereplace': // UTIL.imageReplace() from function.js
-	$file0 = $post->file[ 0 ];
-	if ( $file0 === '/' ) {
-		$dir = $post->file;
-	} else {
-		if ( $file0 === 'c' ) {
+	switch ( $post->file[ 0 ] ) {
+		case '/':
+			$dir = $post->file;
+			break;
+		case 'c':
 			$discid = file( $dirshm.'audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$dir    = $dirdata.'audiocd/'.$discid;
-		} else if ( isMpdPath( $file0 ) ) {
+			break;
+		case 'h':
+		case 'r':
+			$dir    = '/srv/http'.radioDir( $post->file );
+			break;
+		default:
 			$dir    = '/mnt/MPD/'.$post->file;
 			if ( ! is_dir( $dir ) ) $dir = dirname( $dir );
-		} else { // radio - http... or rtsp...
-			$dir    = '/srv/http'.radioDir( $post->file );
-		}
 	}
 	if ( ! is_writable( $dir ) ) exit( 'No write permission:<br><c>'.$dir.'</c>' );
 //----------------------------------------------------------------------------------
