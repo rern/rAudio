@@ -358,7 +358,7 @@ var CONTEXT  = {
 			, button      : () => {
 				BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
 			}
-			, ok          : () => UTIL.imageReplace( path, 'coverart' )
+			, ok          : () => UTIL.imageReplace( path, radio ? 'cover' : 'coverart' )
 		} );
 	}
 	, thumbUpdate  : modealbum => {
