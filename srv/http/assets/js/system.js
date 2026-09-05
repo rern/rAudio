@@ -180,7 +180,8 @@ var CONFIG        = {
 			  ...SW
 			, message      : UTIL.gpiosvg
 			, list         : [
-				  [ 'CLK',  ...select_pins ]
+				  [ ICON( 'tag gr' ) +' Fn', ICON( 'gpiopins gr' ) +'Pin' ]
+				, [ 'CLK',  ...select_pins ]
 				, [ 'DT',   ...select_pins ]
 				, [ 'SW',   ...select_pins ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
@@ -224,7 +225,7 @@ var CONFIG        = {
 	}
 	, timezone      : () => UTIL.server.ntp()
 	, vuled         : values => {
-		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
+		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin' ] ];
 		var prefix = '<gr>#</gr> ';
 		values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
 		INFO( {
@@ -599,7 +600,8 @@ var UTIL          = {
 				, tab          : [ '', UTIL.powerbutton.ap ]
 				, message      : UTIL.gpiosvg
 				, list         : [
-					  [ 'On',  'select', { 5: 3 } ]
+					  [ ICON( 'tag gr' ) +' Fn', ICON( 'gpiopins gr' ) +'Pin' ]
+					, [ 'On',  'select', { 5: 3 } ]
 					, [ 'Off', ...select_pins ]
 					, [ 'LED', ...select_pins ]
 				]

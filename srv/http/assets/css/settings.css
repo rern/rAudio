@@ -57,7 +57,6 @@ li.profile dot::before          { color: var( --cg60 ) }
 	color: var( --gr );
 }
 
-.head,
 #bar-bottom {
 	box-shadow: var( --shadow-bar );
 }
@@ -651,6 +650,7 @@ input.disabled + .switchlabel::after {
 .infomessage:has( svg ) {
 	width: 100%;
 	padding: 0;
+	box-shadow: 0 5px 5px 0 #000;
 }
 .gpiopins {
 	margin-top: 0;
@@ -659,8 +659,7 @@ input.disabled + .switchlabel::after {
 }
 .gpiopin {
 	margin-bottom: 5px !important;
-	padding: 0 0 5px 12px;
-	border-bottom: 1px solid var( --cg );
+	padding: 0 0 0 12px;
 }
 .gpiopin span {
 	display: inline-block;
