@@ -188,6 +188,7 @@ var CONFIG        = {
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.rotaryencoder
+			, beforeshow   : UTIL.gpioState
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 			, fileconf     : true
@@ -223,16 +224,16 @@ var CONFIG        = {
 		} );
 	}
 	, timezone      : () => UTIL.server.ntp()
-	, vuled         : data => {
+	, vuled         : values => {
 		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
 		var prefix = '<gr>#</gr> ';
-		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
+		values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
 		INFO( {
 			  ...SW
 			, message      : UTIL.gpiosvg
 			, list         : list
 			, footer       : ICON( 'power' ) +'On/Off'
-			, values       : data.values
+			, values       : values
 			, checkchanged : S.vuled
 			, checkunique  : true
 			, boxwidth     : 70
@@ -244,7 +245,7 @@ var CONFIG        = {
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				UTIL.gpioState( data.state );
+				UTIL.gpioState();
 			}
 			, cancel       : SWITCH.cancel
 			, ok           : () => {
@@ -321,21 +322,20 @@ var UTIL          = {
 			} );
 		}
 	}
-	, gpioState     : state => {
-		if ( ! state ) return // relays / vuled active
-
-		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
-			var $el = $( el );
-			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
-		} );
-		$( '#infoList svg' ).after( '<p><span class="gpiopin"></span>Off &ensp; <span class="gpiopin on"></span> On / Active</p>' );
-		$( '#infoList' ).on( 'click', 'circle', function( e ) {
-			var p = $( this ).data( 'bcm' );
-			var on  = ! state[ p ];
-			state[ p ] = on;
-			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-			BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
-		} );
+	, gpioState     : () => {
+		BASH( 'data-config.sh gpiostate', state => {
+			$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
+				var $el = $( el );
+				$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
+			} );
+			$( '#infoList' ).on( 'click', 'circle', function( e ) {
+				var p = $( this ).data( 'bcm' );
+				var on  = ! state[ p ];
+				state[ p ] = on;
+				$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+				BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
+			} );
+		}, 'json' );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, hostname      : () => {
@@ -400,7 +400,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
-				, beforeshow   : () => UTIL.gpioState( data.state )
+				, beforeshow   : UTIL.gpioState
 			} );
 		}
 		, i2c  : data => {
@@ -624,7 +624,10 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : values
 				, checkchanged : S.powerbutton
-				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
+				, beforeshow   : () => {
+					UTIL.gpioState();
+					$( '.pwr' ).removeClass( 'hide' );
+				}
 				, cancel       : SWITCH.cancel
 				, ok           : SWITCH.enable
 				, fileconf     : true
@@ -695,7 +698,7 @@ var UTIL          = {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
 					_INFO.addRemove();
-					UTIL.gpioState( data.state );
+					UTIL.gpioState();
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -765,7 +768,7 @@ var UTIL          = {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					UTIL.gpioState( data.state );
+					UTIL.gpioState();
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -1072,6 +1075,9 @@ $( '.img' ).on( 'click', function() {
 		}
 		, okno       : true
 	} );
+} );
+$( '#infoList' ).on( 'load', 'svg', function() {
+	console.log(9)
 } );
 $( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {

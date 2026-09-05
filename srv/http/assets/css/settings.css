@@ -654,7 +654,7 @@ input.disabled + .switchlabel::after {
 	text-align: left;
 	line-height: 20px;
 }
-.gpiopin {
+.gpiopin span {
 	display: inline-block;
 	width: 12px;
 	height: 12px;
@@ -663,7 +663,7 @@ input.disabled + .switchlabel::after {
 	background: #00FF00;
 	outline: 1px solid #000;
 }
-.gpiopin.on {
+.gpiopin span.on {
 	outline: 4px solid red;
 }
 circle.on {

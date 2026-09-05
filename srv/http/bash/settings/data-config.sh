@@ -4,20 +4,6 @@
 
 file_config=/boot/config.txt
 
-gpioState() {
-	[[ -e $dirsystem/vuled ]] && statePlay && vuledactive=1
-	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
-		echo false
-	else
-		local output pins state
-		pins=$( gpioinfo -c0 | grep GPIO )
-		output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
-		state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
-		state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
-		echo '{ '${state:0:-1}' }'
-	fi
-}
-
 ID=$1
 
 case $ID in
@@ -55,6 +41,19 @@ custom )
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
 $( getContent "$dirsystem/custom-output-$name" )"
+	;;
+gpiostate )
+	[[ -e $dirsystem/vuled ]] && statePlay && vuledactive=1
+	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
+		echo false
+	else
+		local output pins state
+		pins=$( gpioinfo -c0 | grep GPIO )
+		output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
+		state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
+		state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
+		echo '{ '${state:0:-1}' }'
+	fi
 	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
@@ -107,13 +106,12 @@ lcdchar )
 		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'
 		if [[ $INF == gpio ]]; then
 			values+=', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
-			state=', "state"  : '$( gpioState )
 		else
 			values+=', "ADDRESS": "39", "CHIP": "PCF8574", "BACKLIGHT": false'
 		fi
 		values+=', "BACKLIGHT": false }'
 	fi
-	echo '{ "values": '$values', "current": "'$INF'"'$address$state' }'
+	echo '{ "values": '$values', "current": "'$INF'"'$address' }'
 	;;
 localbrowser )
 	echo '{
@@ -218,7 +216,6 @@ relays )
 	, "TIMER"   : '$timer'
 }
 , "names"  : '$names'
-, "state"  : '$( gpioState )'
 }'
 	;;
 replaygain )
@@ -336,10 +333,7 @@ timezonelist )
 vuled )
 	file=$dirsystem/vuled.conf
 	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
-	echo '{
-  "values" : [ '$( tr ' ' , <<< $conf )' ]
-, "state"  : '$( gpioState )'
-}'
+	echo '[ '$( tr ' ' , <<< $conf )' ]'
 	;;
 wlan )
 	codes=$( curl -sL https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt \

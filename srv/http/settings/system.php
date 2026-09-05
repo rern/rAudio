@@ -1,4 +1,7 @@
-<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
+<div id="gpiosvg" class="hide">
+<?php include 'assets/img/gpio.svg';?>
+<p class="gpiopin"><span></span>Off &ensp; <span class="on"></span> On / Active</p>
+</div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
