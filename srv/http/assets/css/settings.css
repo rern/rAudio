@@ -643,7 +643,10 @@ input.disabled + .switchlabel::after {
 	color: var( --cw );
 }
 #infoList:has( svg ) {
-	padding-top: 10px;
+	padding: 10px 0 0 0;
+}
+#infoList svg {
+	width: 95%;
 }
 .infomessage:has( svg ) {
 	width: 100%;
@@ -656,6 +659,8 @@ input.disabled + .switchlabel::after {
 }
 .gpiopin {
 	margin-bottom: 5px !important;
+	padding: 0 0 5px 12px;
+	border-bottom: 1px solid var( --cg );
 }
 .gpiopin span {
 	display: inline-block;
