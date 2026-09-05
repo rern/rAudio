@@ -100,7 +100,7 @@ fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-[[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
+$dirbash/webradio-convert.sh
 file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
