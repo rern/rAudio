@@ -1,7 +1,22 @@
 #!/bin/bash
 
-shopt -s globstar
+coverart() {
+	local dir file_cover
+	dir=$1
+	file_cover=$( compgen -G "$dir/cover".* )
+	[[ ! $file_cover ]] && return
+	
+	compgen -G "$dir/coverart".* > /dev/null && return
+	
+	if [[ ${file_cover: -3} == gif ]]; then
+		gifsicle -O3 --resize-fit 200x200 "$file_cover" > "$dir/coverart.gif"
+	else
+		magick "$file_cover" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+	fi
+}
 
+shopt -s globstar
+# webradio
 dirdata=/srv/http/data
 for radio in webradio dabradio; do
 	dir_radio=$dirdata/$radio
@@ -9,17 +24,10 @@ for radio in webradio dabradio; do
 
 	for file in $dir_radio/**; do
 		if [[ -d "$file" ]]; then
-			if [[ -e "$file/data" ]]; then
-				list+="\
+			[[ -e "$file/data" ]] && list+="\
 $( head -1 "$file/data" )^^$file
 "
-			else
-				file_cover=$( compgen -G "$file/cover".* )
-				if [[ $file_cover ]]; then
-					ext=${file_cover: -4}
-					mv "$file_cover" "${file_cover:0:-4}art${file_cover: -4}" # ../cover.* > ../coverart.*
-				fi
-			fi
+			coverart "$file"
 			continue
 		fi
 
@@ -38,16 +46,17 @@ $( head -1 "$file/data" )^^$file
 			[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
 			file_new="$dir_station/$name.${file_prev: -3}"
 			mv $file_prev "$file_new"
+			coverart "$dir_station"
 		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
 	done
 	rm -rf $dir_radio/img
 done
 
-
 echo -n "$list" > $dirdata/mpd/radio
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
+# order
 file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
