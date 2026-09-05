@@ -654,6 +654,9 @@ input.disabled + .switchlabel::after {
 	text-align: left;
 	line-height: 20px;
 }
+.gpiopin {
+	margin-bottom: 5px !important;
+}
 .gpiopin span {
 	display: inline-block;
 	width: 12px;
