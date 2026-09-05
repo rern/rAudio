@@ -15,8 +15,8 @@ coverart() {
 	fi
 }
 
-shopt -s globstar
 # webradio
+shopt -s globstar
 dirdata=/srv/http/data
 for radio in webradio dabradio; do
 	dir_radio=$dirdata/$radio
@@ -51,6 +51,7 @@ $( head -1 "$file/data" )^^$file
 	done
 	rm -rf $dir_radio/img
 done
+shopt -u globstar
 
 echo -n "$list" > $dirdata/mpd/radio
 
