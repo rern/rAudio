@@ -107,12 +107,13 @@ lcdchar )
 		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'
 		if [[ $INF == gpio ]]; then
 			values+=', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+			state=', "state"  : '$( gpioState )
 		else
 			values+=', "ADDRESS": "39", "CHIP": "PCF8574", "BACKLIGHT": false'
 		fi
 		values+=', "BACKLIGHT": false }'
 	fi
-	echo '{ "values": '$values', "current": "'$INF'"'$address' }'
+	echo '{ "values": '$values', "current": "'$INF'"'$address$state' }'
 	;;
 localbrowser )
 	echo '{

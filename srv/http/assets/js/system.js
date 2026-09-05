@@ -400,6 +400,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
+				, beforeshow   : () => UTIL.gpioState( data.state )
 			} );
 		}
 		, i2c  : data => {
