@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260909
+[[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf

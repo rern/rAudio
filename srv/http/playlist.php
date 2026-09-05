@@ -103,7 +103,7 @@ $count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
 $song   = 0;
 $sec    = 0;
-$upnp   = file_get_contents( '/srv/http/data/shm/player' ) === 'upnp';
+$upnp   = file_exists( '/srv/http/data/shm/upnp' );
 $html   = '';
 foreach( $lists as $list ) {
 	$song++;

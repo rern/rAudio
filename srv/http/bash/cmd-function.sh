@@ -65,7 +65,9 @@ playerStart() {
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
 		spotify )   service=spotifyd;;
-		upnp )      service=upmpdcli;;
+		upnp )
+					service=upmpdcli
+					touch $dirshm/upnp;;
 	esac
 	if [[ $service ]]; then
 		for pid in $( pgrep $service ); do
@@ -104,6 +106,7 @@ playerStop() {
 		upnp )
 			systemctl stop upmpdcli
 			mpc -q clear
+			rm -f $dirshm/upnp
 			systemctl start upmpdcli
 			;;
 	esac
