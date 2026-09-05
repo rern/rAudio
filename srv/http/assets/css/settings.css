@@ -654,6 +654,22 @@ input.disabled + .switchlabel::after {
 	text-align: left;
 	line-height: 20px;
 }
+.gpiopin {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin: 0 5px 0 5px;
+	border-radius: 50%;
+	background: #00FF00;
+	outline: 1px solid #000;
+}
+.gpiopin.on {
+	outline: 4px solid red;
+}
+circle.on {
+	stroke: red;
+	stroke-width: 4px;
+}
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
 	padding-right: 2px !important;
@@ -690,19 +706,6 @@ input.disabled + .switchlabel::after {
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
-}
-circle.on {
-	stroke: red;
-	stroke-width: 4px;
-}
-.gpiopin {
-	display: inline-block;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	border: 4px solid red;
-	vertical-align: -4px;
-	background: #00FF00;
 }
 
 @media (max-height: 570px) {
