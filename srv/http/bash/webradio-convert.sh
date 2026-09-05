@@ -57,7 +57,7 @@ echo -n "$list" > $dirdata/mpd/radio
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 # order
-file=$dirsystem/order.json
+file=$dirdata/system/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
 # audio cd
