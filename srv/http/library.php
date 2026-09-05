@@ -136,23 +136,22 @@ case 'home':
 			$path0 = $path[ 0 ];
 			if ( $path0 === 'h' || $path0 === 'r' ) {
 				$bkradio = ' bkradio';
-				$cover   = radioDir( $path.'^^.*/'.$name.'$' ).'/cover.jpg'; // http://... > /webradio/...
+				$cover   = radioDir( $path.'^^.*/'.$name.'$' ); // http://... > /data/webradio/...
 			} else {
 				$bkradio = '';
 				if ( $path0 !== '/' ) {
 					$cover = '/mnt/MPD/'.$path;            // USB/... > /mnt/MPD/USB/...
 				} else if ( $path[ 1 ] === 's' ) {
-					$cover = substr( $path, 9 );           // /srv/http/... > /webradio/...
+					$cover = substr( $path, 9 );           // /srv/http/... > /data/...
 				} else {
 					$cover = $path;
 				}
-				$cover  .= '/coverart.jpg'.$hash;
 			}
 			$html[ $name ] = '
 <li class="mode bookmark'.$bkradio.'">
 	<a class="lipath">'.$path.'</a>
 	<a class="name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$cover.'">
+	<img class="bkcoverart" src="'.$cover.'/coverart.jpg'.$hash.'">
 </li>';
 		}
 	}

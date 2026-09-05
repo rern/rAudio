@@ -66,7 +66,7 @@ function indexBar( $indexes ) {
 }
 function radioDir( $url ) {
 	$dir   = exec( 'grep -m1 "^'.$url.'" /srv/http/data/mpd/radio | cut -d^ -f3' );
-	return substr( $dir, 9 ); // /srv/http/... > /webradio/...
+	return substr( $dir, 9 ); // /srv/http/data/webradio/... > /data/webradio/...
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );
