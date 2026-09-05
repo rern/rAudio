@@ -188,7 +188,6 @@ var CONFIG        = {
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.rotaryencoder
-			, beforeshow   : UTIL.gpioState
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 			, fileconf     : true
@@ -245,7 +244,6 @@ var CONFIG        = {
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				UTIL.gpioState();
 			}
 			, cancel       : SWITCH.cancel
 			, ok           : () => {
@@ -322,21 +320,6 @@ var UTIL          = {
 			} );
 		}
 	}
-	, gpioState     : () => {
-		BASH( 'data-config.sh gpiostate', state => {
-			$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
-				var $el = $( el );
-				$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
-			} );
-			$( '#infoList' ).on( 'click', 'circle', function( e ) {
-				var p = $( this ).data( 'bcm' );
-				var on  = ! state[ p ];
-				state[ p ] = on;
-				$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-				BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
-			} );
-		}, 'json' );
-	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, hostname      : () => {
 		SW = {
@@ -400,7 +383,6 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
-				, beforeshow   : UTIL.gpioState
 			} );
 		}
 		, i2c  : data => {
@@ -624,10 +606,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : values
 				, checkchanged : S.powerbutton
-				, beforeshow   : () => {
-					UTIL.gpioState();
-					$( '.pwr' ).removeClass( 'hide' );
-				}
+				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
 				, cancel       : SWITCH.cancel
 				, ok           : SWITCH.enable
 				, fileconf     : true
@@ -698,7 +677,6 @@ var UTIL          = {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
 					_INFO.addRemove();
-					UTIL.gpioState();
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -768,7 +746,6 @@ var UTIL          = {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					UTIL.gpioState();
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -992,6 +969,25 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	CONTENT();
+}
+var infoToggle = _INFO.toggle;
+_INFO.toggle   = () => { // append existing function
+	infoToggle.apply( this );
+	if ( ! $( '#infoList svg' ).length ) return
+	
+	BASH( 'data-config.sh gpiostate', state => {
+		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
+			var $el = $( el );
+			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
+		} );
+		$( '#infoList' ).on( 'click', 'circle', function( e ) {
+			var p = $( this ).data( 'bcm' );
+			var on  = ! state[ p ];
+			state[ p ] = on;
+			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+			BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
+		} );
+	}, 'json' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

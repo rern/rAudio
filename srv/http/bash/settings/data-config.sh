@@ -43,17 +43,11 @@ $( getContent $dirmpdconf/conf/custom.conf )
 $( getContent "$dirsystem/custom-output-$name" )"
 	;;
 gpiostate )
-	[[ -e $dirsystem/vuled ]] && statePlay && vuledactive=1
-	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
-		echo false
-	else
-		local output pins state
-		pins=$( gpioinfo -c0 | grep GPIO )
-		output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
-		state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
-		state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
-		echo '{ '${state:0:-1}' }'
-	fi
+	pins=$( gpioinfo -c0 | grep GPIO )
+	output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
+	state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
+	state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
+	echo '{ '${state:0:-1}' }'
 	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
