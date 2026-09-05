@@ -101,8 +101,6 @@ fi
 rm -f $dirshm/system
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 $dirbash/webradio-convert.sh
-file=$dirsystem/order.json
-[[ -e $file ]] && sed -i 's|".*/|"|' $file
 
 installfinish
 
