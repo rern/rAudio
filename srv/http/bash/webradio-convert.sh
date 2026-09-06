@@ -15,7 +15,7 @@ $( head -1 "$dir/data" )^^$dir
 "
 		else
 			uri_name=$( basename "$file" )
-			[[ $file == $dir_radio/img/* || $uri_name != http* ]] && continue
+			[[ $file == $dir_radio/img/* || $uri_name != http*  || $uri_name != rtsp* ]] && continue
 
 			path=$( dirname "$file" )
 			station=$( head -1 "$file" )
