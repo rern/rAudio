@@ -16,13 +16,12 @@ coverart() {
 }
 
 # webradio
-shopt -s globstar
 dirdata=/srv/http/data
 for radio in webradio dabradio; do
 	dir_radio=$dirdata/$radio
 	[[ ! -e $dir_radio ]] && continue
 
-	for file in $dir_radio/**; do
+	while read file; do
 		if [[ -d "$file" ]]; then
 			[[ -e "$file/data" ]] && list+="\
 $( head -1 "$file/data" )^^$file
@@ -48,10 +47,9 @@ $( head -1 "$file/data" )^^$file
 			mv $file_prev "$file_new"
 			coverart "$dir_station"
 		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
-	done
+	done < <( find $dir_radio )
 	rm -rf $dir_radio/img
 done
-shopt -u globstar
 
 echo -n "$list" > $dirdata/mpd/radio
 
