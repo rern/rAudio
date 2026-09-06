@@ -5,7 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260909
+! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=' websocket'
+! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=' rotaryencoder'
+
 [[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
+
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
@@ -17,8 +21,7 @@ chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 file=/lib/systemd/system/mpd_oled.service
 if grep -q ^ExecStop $file; then
 	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-	systemctl daemon-reload
-	systemctl try-restart mpd_oled
+	restart+=' mpd_oled'
 fi
 
 # 20260719
@@ -28,34 +31,6 @@ if [[ $mixertype == hardware ]]; then
 	$dirsettings/player-conf.sh
 elif [[ $mixertype == none ]]; then
 	touch $dirsystem/mixernone
-fi
-
-# 20260709
-[[ ! -e /bin/gcc && ! -e /boot/kernel.img ]] && packages+=' gcc'
-
-file=$dirmpdconf/conf/bluetooth.conf
-if [[ ! -e $file ]]; then
-	cat << EOF > $file
-audio_output {
-	name        "BlueALSA"
-	device      "bluealsa"
-	type        "alsa"
-	format      "44100:16:2"
-}
-EOF
-fi
-
-rm -f $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
-
-file=/etc/upmpdcli.conf
-if [[ -e $file ]]; then
-	grep -q -m1 status-push $file && sed -i '/status-push/ d' $file
-	systemctl try-restart upmpdcli
-fi
-
-file=$dirsystem/localbrowser.conf
-if [[ -e $file ]]; then
-	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
 fi
 
 #-------------------------------------------------------------------------------
@@ -99,14 +74,15 @@ else
 fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
+if [[ $restart ]]; then
+	systemctl daemon-reload
+	systemctl try-restart $restart
+fi
+
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 $dirbash/webradio-convert.sh
 
 installfinish
-
-#20260909
-systemctl try-restart rotaryencoder
-systemctl restart websocket
 
 # 20260717
 file=$dirmpdconf/bluetooth.conf
