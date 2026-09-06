@@ -108,8 +108,6 @@ installfinish
 systemctl try-restart rotaryencoder
 systemctl restart websocket
 
-echo 0----------
 # 20260717
 file=$dirmpdconf/bluetooth.conf
 [[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
-echo 1----------
