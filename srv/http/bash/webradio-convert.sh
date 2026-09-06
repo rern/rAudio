@@ -8,20 +8,20 @@ for radio in webradio dabradio; do
 	[[ ! -e $dir_radio ]] && continue
 
 	while read file; do
-		if [[ -d "$file" ]]; then
+		if [[ -d "$file" ]]; then # already converted
 			dir=$file
 			[[ -e "$dir/data" ]] && list+="\
 $( head -1 "$dir/data" )^^$dir
 "
-		else
+		else # ../webradio/subdir/https:||...
 			uri_name=$( basename "$file" )
-			[[ $file == $dir_radio/img/* || $uri_name != http*  || $uri_name != rtsp* ]] && continue
+			uri=${uri_name//|/\/}
+			[[ $uri != http*//* && $uri != rtsp*//* ]] && continue
 
 			path=$( dirname "$file" )
 			station=$( head -1 "$file" )
 			dir="$path/$station"
 			mkdir -p "$dir"
-			uri=${uri_name//|/\/}
 			sed "1 s|.*|$uri|" "$file" > "$dir/data"
 			rm "$file"
 			list+="$uri^^$dir"$'\n'
@@ -42,7 +42,7 @@ $( head -1 "$dir/data" )^^$dir
 		else
 			magick "$file_cover" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 		fi
-	done < <( find $dir_radio -mindepth 1 )
+	done < <( find $dir_radio -mindepth 1 -path $dir_radio/img -prune -o -print )
 	n=$( find $dir_radio -type f -name data | wc -l )
 	sed -i -E 's/("'$radio'": )[0-9]+(,*)$/\1'$n'\2/' $dirmpd/counts
 	rm -rf $dir_radio/img
