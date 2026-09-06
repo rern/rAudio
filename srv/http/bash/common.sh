@@ -168,7 +168,7 @@ countRadio() {
 	for dir in $dirwebradio $dirdabradio; do
 		[[ ! -e $dir ]] && continue
 
-		files=$( find $dir -type f -name data )
+		files=$( find $dir/ -type f -name data )
 		counts+='
 , "'${dir: -8}'" : '$( wc -l <<< $files )
 		while read file; do
