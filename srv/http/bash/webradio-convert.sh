@@ -60,7 +60,7 @@ file=$dirdata/system/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
 # audio cd
-files=$( find $dirdata/audiocd -maxdepth 1 -type f ! -name *.* )
+files=$( find $dirdata/audiocd -maxdepth 1 -type f ! -name '*.*' )
 [[ ! $files ]] && exit
 #-------------------------------------------------------------------------------
 for f in $files; do
