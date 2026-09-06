@@ -9,30 +9,29 @@ for radio in webradio dabradio; do
 
 	while read file; do
 		if [[ -d "$file" ]]; then
-			[[ -e "$file/data" ]] && list+="\
-$( head -1 "$file/data" )^^$file
+			dir=$file
+			[[ -e "$dir/data" ]] && list+="\
+$( head -1 "$dir/data" )^^$dir
 "
 		else
 			uri_name=$( basename "$file" )
 			[[ $file == $dir_radio/img/* || $uri_name != http* ]] && continue
 
-			dir=$( dirname "$file" )
+			path=$( dirname "$file" )
 			station=$( head -1 "$file" )
-			dir_station="$dir/$station"
-			mkdir -p "$dir_station"
+			dir="$path/$station"
+			mkdir -p "$dir"
 			uri=${uri_name//|/\/}
-			sed "1 s|.*|$uri|" "$file" > "$dir_station/data"
+			sed "1 s|.*|$uri|" "$file" > "$dir/data"
 			rm "$file"
-			list+="$uri^^$dir_station"$'\n'
+			list+="$uri^^$dir"$'\n'
 			while read file_prev; do
 				[[ ${file_prev: -10:6} == -thumb ]] && name=thumb || name=cover
-				file_new="$dir_station/$name.${file_prev: -3}"
+				file_new="$dir/$name.${file_prev: -3}"
 				mv $file_prev "$file_new"
-				coverart "$dir_station"
 			done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
 		fi
 		
-		dir=$file
 		file_cover=$( compgen -G "$dir/cover".* )
 		[[ ! $file_cover ]] && continue
 		
