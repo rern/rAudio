@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260909
+touch /root/{.bash,.php,.python}_history
+
 ! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=' websocket'
 ! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=' rotaryencoder'
 
