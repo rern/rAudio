@@ -43,7 +43,7 @@ $( head -1 "$file/data" )^^$file
 		else
 			magick "$file_cover" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 		fi
-	done < <( find $dir_radio )
+	done < <( find $dir_radio -mindepth 1 )
 	n=$( find $dir_radio -type f -name data | wc -l )
 	sed -i -E 's/("'$radio'": )[0-9]+(,*)$/\1'$n'\2/' $dirmpd/counts
 	rm -rf $dir_radio/img
