@@ -67,7 +67,7 @@ hash=$( sed -n '/^.hash/ {s/[^0-9]//g; p}' /srv/http/function.php )
 rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
-echo 0----------
+
 if [[ -e /boot/kernel.img ]]; then
 	mv $dirbash/{status.armv6h,_status}
 	mv $dirbash/status{.sh,}
@@ -83,7 +83,7 @@ fi
 rm $dirbash/status.a*
 
 . $dirbash/common.sh
-echo 1----------
+
 sed -i -E "s/^(.hash.*v=).*/\1$( date +%s )';/" /srv/http/common.php # static cache bust - css, js
 ! grep -q -m1 "^\$hash.*$hash" /srv/http/function.php && imageCacheBust $hash
 chmod -R +x $dirbash
@@ -91,29 +91,25 @@ if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
 fi
-echo 2----------
 [[ ! -e /etc/systemd/system/dab.service ]] && rm $dirbash/dab*
 if [[ -e /bin/firefox ]]; then
 	splashRotate
 else
 	rm -f $dirbash/startx.sh $dirsettings/features-localbrowser.sh
 fi
-echo 3----------
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-echo 4----------
 $dirbash/webradio-convert.sh
-echo 5----------
 
 installfinish
-echo 6----------
 
 #20260909
 systemctl try-restart rotaryencoder
 systemctl restart websocket
-echo 7----------
 
+echo 0----------
 # 20260717
 file=$dirmpdconf/bluetooth.conf
 [[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
+echo 1----------
