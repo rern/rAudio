@@ -67,7 +67,7 @@ function indexBar( $indexes ) {
 function radioDir( $url ) {
 	static $map = null;
 
-	if ( $map === null ) {
+	if ( $map === null ) { // run once
 		$map   = [];
 		$file  = '/srv/http/data/mpd/radio';
 		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
