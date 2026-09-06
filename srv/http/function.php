@@ -65,9 +65,20 @@ function indexBar( $indexes ) {
 <div class="index index1">'.$indexbar1.'</div>';
 }
 function radioDir( $url ) {
-	$url = str_replace( '*', '.', $url );
-	$dir = exec( 'grep -m1 "^'.$url.'" /srv/http/data/mpd/radio | cut -d^ -f3' );
-	return substr( $dir, 9 ); // /srv/http/data/webradio/... > /data/webradio/...
+	static $map = null;
+
+	if ( $map === null ) {
+		$map   = [];
+		$file  = '/srv/http/data/mpd/radio';
+		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+
+		foreach ( $lines as $line ) {
+			$key         = strstr( $line, '^^', true );        // true: before ^^
+			$map[ $key ] = strstr( $line, '/data/webradio/' ); // no true: from /data/webradio/
+		}
+	}
+	
+	return $map[ $url ] ?? null;
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );
