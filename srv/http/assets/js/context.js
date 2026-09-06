@@ -445,7 +445,7 @@ var CONTEXT  = {
 			return
 		}
 		
-		val.DIR      = $( '#lib-path' ).text();
+		val.DIR      = V.library ? $( '#lib-path' ).text() : '/srv/http/data/webradio';
 		if ( type === 'Edit' ) val.OLDNAME = V.list.name;
 		val.TEST     = val.URL !== I.values[ 1 ];
 		if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
@@ -564,7 +564,7 @@ var CONTEXT  = {
 		, [ '',        'hidden' ] // DIR
 		, [ '',        'hidden' ] // OLDURL
 	]
-	, wrSave       : () => WEBRADIO.new( '', $LI.find( '.lipath' ).text() )
+	, wrSave       : () => CONTEXT.wrAdd( { NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } )
 }
 
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
