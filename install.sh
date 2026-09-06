@@ -100,7 +100,7 @@ fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-$dirbash/webradio-convert.sh
+#$dirbash/webradio-convert.sh
 
 installfinish
 
