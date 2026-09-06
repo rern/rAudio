@@ -42,8 +42,8 @@ $( head -1 "$dir/data" )^^$dir
 		else
 			magick "$file_cover" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 		fi
-	done < <( find $dir_radio/ -mindepth 1 -path $dir_radio/img -prune -o -print )
-	n=$( find $dir_radio/ -type f -name data | wc -l )
+	done < <( find -L $dir_radio -mindepth 1 -path $dir_radio/img -prune -o -print )
+	n=$( find -L $dir_radio -type f -name data | wc -l )
 	sed -i -E 's/("'$radio'": )[0-9]+(,*)$/\1'$n'\2/' $dirmpd/counts
 	rm -rf $dir_radio/img
 done
@@ -57,7 +57,7 @@ file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
 # audio cd
-files=$( find $diraudiocd/ -maxdepth 1 -type f ! -name '*.*' )
+files=$( find -L $diraudiocd -maxdepth 1 -type f ! -name '*.*' )
 [[ ! $files ]] && exit
 #-------------------------------------------------------------------------------
 for f in $files; do
