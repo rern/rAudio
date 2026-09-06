@@ -404,17 +404,26 @@ var CONTEXT  = {
 	, wrAdd        : val => {
 		V.list = {}
 		if ( ! val ) val = { NAME: '', URL: '', CHARSET: 'UTF-8' }
+		if ( 'DIR' in val ) {
+			var list = [
+				  [ 'Folder', 'select', { kv: val.DIR, colspan: 3 } ]
+				, ...CONTEXT.wrList
+			];
+			val.DIR = '';
+		} else {
+			var list = CONTEXT.wrList;
+		}
 		INFO( {
 			  icon       : 'webradio'
 			, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 			, boxwidth   : 'max'
-			, list       : CONTEXT.wrList
-			, values     : CONTEXT.wrEditValues( val )
+			, list       : list
+			, values     : V.library ? CONTEXT.wrEditValues( val ) : val
 			, checkblank : [ 0, 1 ]
 			, checktext  : { input: 0, text: '/' }
 			, beforeshow : () => {
 				if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
-				$( '#infoList tr:eq( 2 ) td' ).last()
+				$( '#infoList tr:eq( -3 ) td' ).last()
 					.css( { 'text-align': 'right', cursor: 'pointer' } )
 					.on( 'click', function() {
 						INFO( {
@@ -441,14 +450,18 @@ var CONTEXT  = {
 			return name === val.NAME && name !== V.list.name;
 		} );
 		if ( exist.length ) {
-			CONTEXT.existsInfo( I, 'Name already exists:<wh> '+ val.NAME +'</wh>', callback );
+			CONTEXT.existsInfo( I, 'Name already exists: <wh>'+ val.NAME +'</wh>', callback );
 			return
 		}
 		
-		val.DIR      = V.library ? $( '#lib-path' ).text() : '/srv/http/data/webradio';
-		if ( type === 'Edit' ) val.OLDNAME = V.list.name;
-		val.TEST     = val.URL !== I.values[ 1 ];
-		if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+		if ( V.library ) {
+			val.DIR  = $( '#lib-path' ).text();
+			val.TEST = val.URL !== I.values[ 1 ];
+			if ( type === 'Edit' ) val.OLDNAME = V.list.name;
+			if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+		} else {
+			val.DIR = '/srv/http/data/'+ val.DIR;
+		}
 		BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
 			BANNER_HIDE();
 			if ( std ) _INFO.warning( I.icon, I.title, std, callback );
@@ -564,7 +577,11 @@ var CONTEXT  = {
 		, [ '',        'hidden' ] // DIR
 		, [ '',        'hidden' ] // OLDURL
 	]
-	, wrSave       : () => CONTEXT.wrAdd( { NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } )
+	, wrSave       : () => {
+		BASH( [ 'webradiodirs' ], dirs => {
+			CONTEXT.wrAdd( { DIR: dirs, NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } );
+		}, 'json' );
+	}
 }
 
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {

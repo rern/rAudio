@@ -9,10 +9,9 @@ for d in NAS SD USB; do
 done
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
-dirs=$( ls $dirdata )
-for dir in $dirs; do
+while read dir; do
 	printf -v dir$dir '%s' $dirdata/$dir
-done
+done < <( ls $dirdata )
 https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 # args2var "\
 #	command

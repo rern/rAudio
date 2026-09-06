@@ -553,7 +553,15 @@ webradiodelete )
 	sed -i "/\^$DIR$/ d" $dirmpd/radio
 	webradioCount
 	;;
+webradiodirs )
+	while read d; do
+		dirs+=', "'$( quoteEscape $d )'"'
+	done < <( find $dirwebradio -type d ! -exec test -e '{}/data' \; -print | cut -c 16- )
+	echo '[ '${dirs:1}' ]'
+	;;
 webradioedit )
+	[[ -e "$DIR/$NAME" ]] && echo "Name already exists: <wh>${DIR:15}/$NAME</wh>" && exit
+# --------------------------------------------------------------------
 	if [[ $URL == *.m3u ]]; then
 		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^http )
 	elif [[ $URL == *.pls ]]; then
