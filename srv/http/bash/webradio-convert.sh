@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 coverart() {
 	local dir file_cover
 	dir=$1
@@ -16,7 +18,6 @@ coverart() {
 }
 
 # webradio
-dirdata=/srv/http/data
 for radio in webradio dabradio; do
 	dir_radio=$dirdata/$radio
 	[[ ! -e $dir_radio ]] && continue
@@ -48,19 +49,21 @@ $( head -1 "$file/data" )^^$file
 			coverart "$dir_station"
 		done < <( ls $dir_radio/img/$uri_name* 2> /dev/null )
 	done < <( find $dir_radio )
+	n=$( find $dir_radio -type f -name data | wc -l )
+	sed -i -E 's/("'$radio'": )[0-9]+(,*)$/\1'$n'\2/' $dirmpd/counts
 	rm -rf $dir_radio/img
 done
 
-echo -n "$list" > $dirdata/mpd/radio
+echo -n "$list" > $dirmpd/radio
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 # order
-file=$dirdata/system/order.json
+file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
 
 # audio cd
-files=$( find $dirdata/audiocd -maxdepth 1 -type f ! -name '*.*' )
+files=$( find $diraudiocd -maxdepth 1 -type f ! -name '*.*' )
 [[ ! $files ]] && exit
 #-------------------------------------------------------------------------------
 for f in $files; do
