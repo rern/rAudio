@@ -129,9 +129,6 @@ var CONTEXT  = {
 			}
 		} );
 	}
-	, current      : action => {
-		BASH( [ 'mpcskip', V.list.index + 1, action || 'stop', 'CMD POS ACTION' ] );
-	}
 	, directory    : () => {
 		var path      = V.list.path;
 		var modetitle = path;
@@ -172,6 +169,13 @@ var CONTEXT  = {
 			, message : message
 			, ok      : callback
 		} );
+	}
+	, playback     : {
+		  cmd     : action => BASH( [ 'mpcskip', V.list.index + 1, action, 'CMD POS ACTION' ] )
+		, current : () => CONTEXT.playback.cmd( 'stop' )
+		, pause   : () => $( '#pause' ).trigger( 'click' )
+		, play    : () => CONTEXT.playback.cmd( 'play' )
+		, stop    : () => $( '#stop' ).trigger( 'click' )
 	}
 	, playlists    : {
 		  add        : () => {
@@ -653,29 +657,21 @@ var CONTEXT  = {
 	}
 }
 
+var context = {
+	  BK : 'bookmark'
+	, PB : 'playback'
+	, PL : 'playlists'
+	, WR : 'webradio'
+}
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var $this = $( this );
 	var cmd   = $this.data( 'cmd' );
+	var CMD   = cmd.slice( 0, 2 );
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	
-	if ( cmd === 'bookmark' ) {
-		CONTEXT.bookmark.add();
-		return
-	}
-	
-	if ( cmd.startsWith( 'WR' ) ) {
-		CONTEXT.webradio[ cmd.slice( 2 ) ]();
-		return
-	}
-	
-	if ( cmd.startsWith( 'PL' ) ) {
-		CONTEXT.playlists[ cmd.slice( 2 ) ]();
-		return
-	}
-	
-	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		cmd === 'play' ? CONTEXT.current( cmd ) : $( '#'+ cmd ).trigger( 'click' );
+	if ( CMD in context ) {
+		CONTEXT[ context[ CMD ] ][ cmd.slice( 2 ) ]();
 		return
 	}
 	

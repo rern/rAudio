@@ -1306,17 +1306,17 @@ var MENU      = {
 		var upnp      = $LI.hasClass( 'upnp' );
 		$LI.addClass( 'updn' );
 		$( '#menu-plaction a' ).removeClass( 'hide' );
-		$menu.find( '.current' ).toggleClass( 'hide', active || play );
+		$menu.find( '.PBcurrent' ).toggleClass( 'hide', active || play );
 		if ( S.player === 'mpd' || S.player === 'upnp' ) {
 			if ( active ) {
-				$menu.find( '.play' ).toggleClass( 'hide', play );
-				$menu.find( '.pause' ).toggleClass( 'hide', ! play || webradio );
-				$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
+				$menu.find( '.PBplay' ).toggleClass( 'hide', play );
+				$menu.find( '.PBpause' ).toggleClass( 'hide', ! play || webradio );
+				$menu.find( '.PBstop' ).toggleClass( 'hide', state === 'stop' );
 			} else {
-				$menu.find( '.pause, .stop' ).addClass( 'hide' );
+				$menu.find( '.PBpause, .PBstop' ).addClass( 'hide' );
 			}
 		} else {
-			$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
+			$menu.find( '.PBpause, .PBstop, .PBcurrent' ).addClass( 'hide' );
 		}
 		var singletrack = S.pllength < 2;
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );

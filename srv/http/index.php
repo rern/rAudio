@@ -77,7 +77,7 @@ htmlMenu( $menulist, 'filesavedpl' );
 // folder
 $html     = $htmlcommon;
 $menulist = [
-	  [ 'bookmark',    'star',            'Bookmark' ]
+	  [ 'BKadd',       'star',            'Bookmark' ]
 	, [ 'thumbnail',    $coverart,        'Folder thumbnail' ]
 	, [ 'thumbUpdate',  $thumbupdate,     'Update thumbnails' ]
 	, [ 'exclude',     'folder-forbid',   'Exclude directory' ]
@@ -89,16 +89,16 @@ htmlMenu( $menulist, 'folder' );
 // plaction
 $html     = '';
 $menulist = [
-	  [ 'play',    'play',      'Play' ]
-	, [ 'pause',   'pause',     'Pause' ]
-	, [ 'stop',    'stop',      'Stop' ]
-	, [ 'current', 'current',   'Current' ]
-	, [ 'remove',  'remove',    'Remove', 'track', 'removeRange' ]
-	, [ 'crop',    'crop',      'Crop' ]
-	, [ 'WRsave',  'save',      'Save to Library' ]
-	, [ 'PLadd',   'playlists', 'Add to a playlist' ]
-	, [ 'similar', 'lastfm',    'Add similar' ]
-	, [ 'tag',     'info',      'Track Info' ]
+	  [ 'PBplay',    'play',      'Play' ]
+	, [ 'PBpause',   'pause',     'Pause' ]
+	, [ 'PBstop',    'stop',      'Stop' ]
+	, [ 'PBcurrent', 'current',   'Current' ]
+	, [ 'remove',    'remove',    'Remove', 'track', 'removeRange' ]
+	, [ 'crop',      'crop',      'Crop' ]
+	, [ 'WRsave',    'save',      'Save to Library' ]
+	, [ 'PLadd',     'playlists', 'Add to a playlist' ]
+	, [ 'similar',   'lastfm',    'Add similar' ]
+	, [ 'tag',       'info',      'Track Info' ]
 ];
 htmlMenu( $menulist, 'plaction' );
 // playlist
@@ -114,7 +114,7 @@ $menu    .= menuDiv( 'bkradio', $html );
 // webradio
 $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark', 'star',      'Bookmark' ]
+	  [ 'BKadd',    'star',      'Bookmark' ]
 	, [ 'WRedit',   'edit',      'Edit' ]
 	, [ 'thumbnail', $coverart,  'Station art' ]
 	, [ 'WRdelete', 'remove',    'Delete' ]
@@ -124,7 +124,7 @@ htmlMenu( $menulist, 'webradio' );
 // wr folder
 $html     = '';
 $menulist = [
-	  [ 'bookmark',    'star',     'Bookmark' ]
+	  [ 'BKadd',       'star',     'Bookmark' ]
 	, [ 'thumbnail',    $coverart, 'Folder thumbnail' ]
 	, [ 'WRdirDelete', 'remove',   'Delete' ]
 	, [ 'WRdirRename', 'edit',     'Rename' ]
