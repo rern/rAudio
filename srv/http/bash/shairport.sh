@@ -45,8 +45,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			[[ $B64 == AQ== ]] && state=play || state=pause
 			[[ $elapsed == false ]] && state=stop
 			if [[ $prev_state != $state ]]; then
+				pushData mpdplayer '{ "state": "'$state'" }'
 				echo $state > $dirairplay/state
-				pushStatus
 				prev_state=$state
 			fi
 			;;
@@ -66,10 +66,10 @@ cat /tmp/shairport-sync-metadata | while read line; do
 				start=$(( start - elapsed )) # epoch for elapsed calc while play
 				state=play
 			fi
+			pushData mpdplayer '{ "elapsed": '$elapsed', "state": "'$state'", "Time": '$Time' }'
 			for k in elapsed start state Time; do
 				echo ${!k} > $dirairplay/$k
 			done
-			pushStatus
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )

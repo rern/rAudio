@@ -47,28 +47,27 @@ readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/cur
 							| jq '.item.album.name,
 								.item.artists[0].name,
 								.item.album.images[0].url,
+								.item.name,
 								.is_playing,
 								.item.duration_ms,
-								.item.name,
 								.progress_ms,
 								.timestamp' ) # not -r: 1-to keep escaped characters 2-already quoted
-[[ ${status[3]} == true ]] && state=play || state=pause
-Time=$(( ( ${status[4]} + 500 ) / 1000 ))
+[[ ${status[4]} == true ]] && state=play || state=pause
+Time=$(( ( ${status[5]} + 500 ) / 1000 ))
 progress=${status[6]}
 elapsed=$(( ( progress + 500 ) / 1000 ))
 timestamp=${status[7]}
 diff=$(( timestamp + ( $( date +%s%3N ) - timestamp ) ))
 start=$(( ( diff - progress + 500 ) / 1000 )) # epoch for elapsed calc while play
-cat << EOF > $dirspotify/status 
-Album="${status[0]}"
-Artist="${status[1]}"
-Title="${status[5]}"
-coverart="${status[2]}"
-state=$state
-elapsed=$elapsed
-start=$start
-state=$state
-Time=$Time
-EOF
-
-pushStatus
+status='{
+  "Album"     : "'${status[0]}'"
+, "Artist"    : "'${status[1]}'"
+, "coverart"  : "'${status[2]}'"
+, "elapsed"   : '$elapsed'
+, "state"     : "'$state'"
+, "start"     : '$start'
+, "Time"      : '$Time'
+, "timestamp" : '$timestamp'
+, "Title"     : "'${status[3]}'"
+}'
+$dirbash/status-push.sh "$status"
