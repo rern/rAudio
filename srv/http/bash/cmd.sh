@@ -570,9 +570,11 @@ webradioedit )
 	fi
 	[[ ! $URL ]] && echo "No valid URL found in:<br>$URL" && exit
 # --------------------------------------------------------------------
-	line=$( grep "^$URL^^" $dirmpd/radio )
-	[[ $line ]] && echo "URL already exists as:<br>${line/*\/http\/data\/}<br><wh>$URL</wh>" && exit
+	if [[ $OLDDIR && $OLDDIR == $DIR ]]; then
+		line=$( grep "^$URL^^" $dirmpd/radio )
+		[[ $line ]] && echo "URL already exists as:<br>${line/*\/http\/data\/}<br><wh>$URL</wh>" && exit
 # --------------------------------------------------------------------
+	fi
 	CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
 	[[ $CHARSET ]] && charset="?charset=$CHARSET"
 	if [[ $TEST ]]; then
@@ -593,6 +595,9 @@ webradioedit )
 		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
 	fi
 	mkdir -p "$DIR/$NAME"
+	if [[ $OLDDIR && $OLDDIR != $DIR ]]; then
+		mv "$OLDDIR/$OLDNAME" "$DIR/$NAME"
+	fi
 	echo "\
 $URL
 $sampling

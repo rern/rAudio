@@ -474,22 +474,32 @@ var CONTEXT  = {
 	}
 	, webradio     : {
 		  _add       : val => {
-			V.list = {}
+			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
+			if ( val && 'icon' in val ) {
+				var title   = 'Edit';
+				var message = val.icon;
+				delete val.icon;
+			} else {
+				var title   = V.library ? 'Add' : 'Save';
+				var message = '';
+			}
 			INFO( {
 				  icon       : 'webradio'
-				, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
+				, title      : title +' Web Radio'
 				, boxwidth   : 'max'
+				, message    : message
 				, list       : CONTEXT.webradio.list
-				, values     : V.library ? CONTEXT.webradio.editValues( val ) : val
+				, values     : val
 				, checkblank : [ 0, 1 ]
 				, checktext  : { input: 0, text: '/' }
+				, checkchanged : title === 'Edit'
 				, beforeshow : () => {
-					if ( V.library ) {
-						$( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
-					} else {
+					if ( V.library && title === 'Add' ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
+					if ( V.playlist || /stream.radioparadise.com|icecast.radiofrance.fr/.test( val.URL ) ) {
 						$( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
+						$( '#infoList tr:eq( 3 )' ).find( 'td:not(:eq(3))' ).empty();
 					}
-					$( '#infoList tr:eq( -2 ) td' ).last()
+					$( '#infoList td' ).last()
 						.css( { 'text-align': 'right', cursor: 'pointer' } )
 						.on( 'click', function() {
 							var dir = $( '#infoList select' ).val();
@@ -514,27 +524,25 @@ var CONTEXT  = {
 				CONTEXT.webradio._add( val );
 			}, 'json' );
 		}
-		, command    : ( I ) => {
-			var type     = I.title.split( ' ' )[ 0 ];
+		, command    : I => {
 			var val      = _INFO.val();
-			var callback = () => CONTEXT[ 'wr'+ type ]( val );
-			var exist    = $( '#lib-list li .name' ).filter( ( i, el ) => {
-				var name = $( el ).text();
-				return name === val.NAME && name !== V.list.name;
-			} );
-			if ( exist.length ) {
-				CONTEXT.existsInfo( I, 'Name already exists: <wh>'+ val.NAME +'</wh>', callback );
-				return
+			var edit     = I.title.startsWith( 'Edit' );
+			var callback = () => {
+				if ( edit ) {
+					CONTEXT.webradio.edit();
+				} else {
+					CONTEXT.webradio._add( val );
+				}
 			}
-			
-			if ( V.library ) {
-				val.DIR  = $( '#lib-path' ).text();
-				val.TEST = val.URL !== I.values[ 1 ];
-				if ( type === 'Edit' ) val.OLDNAME = V.list.name;
-				if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+			if ( edit ) {
+				val.OLDDIR  = $( '#lib-path' ).text();
+				val.OLDNAME = V.list.name;
+				val.OLDURL  = V.list.path;
+				val.TEST    = val.OLDURL !== val.URL;
 			} else {
-				val.DIR = '/srv/http/data/'+ val.DIR;
+				val.TEST    = I.title.startsWith( 'Add' );
 			}
+			if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
 			BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
 				BANNER_HIDE();
 				if ( std ) _INFO.warning( I.icon, I.title, std, callback );
@@ -599,49 +607,19 @@ var CONTEXT  = {
 				, oklabel      : 'Rename'
 				, ok           : () => {
 					var newname = _INFO.val();
-					if ( CONTEXT.webradio.exists( newname, CONTEXT.webradio.dirRename ) ) return
-					
 					BASH( [ 'dirrename', $( '#lib-path' ).text(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ] );
 				}
 			} );
 		}
-		, edit       : val => {
-			if ( ! val ) val = { NAME: V.list.name, URL: V.list.path, CHARSET: 'UTF-8' }
+		, edit       : () => {
 			var $img = $LI.find( 'img' );
-			if ( $img.length ) {
-				var icon = '<img src="'+ $img.attr( 'src' ) +'">';
-			} else {
-				var icon = ICON( V.mode +' msgicon' );;
-			}
-			INFO( {
-				  icon         : 'webradio'
-				, title        : 'Edit Web Radio'
-				, message      : icon
-				, list         : CONTEXT.webradio.list
-				, values       : CONTEXT.webradio.editValues( val )
-				, checkchanged : true
-				, checkblank   : [ 0, 1 ]
-				, checktext    : { input: 0, text: '/' }
-				, boxwidth     : 'max'
-				, beforeshow   : () => {
-					$( '#infoList tr:eq( 2 ) td' ).last().addClass( 'hide' );
-					if ( /stream.radioparadise.com|icecast.radiofrance.fr/.test( V.list.path ) ) {
-						$( '#infoList input' ).eq( 1 ).addClass( 'disabled' );
-						$( '#infoList tr' ).eq( 2 ).addClass( 'hide' );
-					}
-				}
-				, oklabel      : ICON( 'save' ) +'Save'
-				, ok           : () => CONTEXT.webradio.command( I )
+			CONTEXT.webradio.add( {
+				  DIR     : $( '#lib-path' ).text()
+				, NAME    : V.list.name
+				, URL     : V.list.path
+				, CHARSET : 'UTF-8'
+				, icon    : $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ICON( V.mode +' msgicon' )
 			} );
-		}
-		, editValues : val => {
-			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
-			return {
-				  DIR     : val.DIR
-				, NAME    : val.NAME
-				, URL     : val.URL
-				, CHARSET : val.CHARSET
-			}
 		}
 		, list       : [
 			  [ 'Folder',  'select' ]
@@ -650,9 +628,13 @@ var CONTEXT  = {
 			, [ 'Charset', 'text',   { sameline: true, width: 190 } ]
 			, [ '',        '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ICON( 'help gr' ), { sameline: true } ]
 			, [ '',        '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' ]
-			, [ '',        'hidden' ] // OLDURL
 		]
-		, save       : () => CONTEXT.webradio.add( { DIR: '', NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } )
+		, save       : () => CONTEXT.webradio.add( {
+			  DIR     : ''
+			, NAME    : ''
+			, URL     : $LI.find( '.lipath' ).text()
+			, CHARSET : 'UTF-8'
+		} )
 	}
 }
 
