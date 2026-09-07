@@ -140,23 +140,19 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	line=$( grep -m1 ^$file $dirmpd/radio )
-	station=${line##*/}
-	elapsed=$( mpcElapsed webradio )
-	pllength=$( mpc status %length% )
-	timestamp=$( date +%s%3N )
+	url_station=$( grep -m1 ^$file $dirmpd/radio )
 	status='{
   "Album"     : "'$album'"
 , "Artist"    : "'$artist'"
 , "coverart"  : "'$coverart'"
-, "elapsed"   : '$elapsed'
+, "elapsed"   : '$( mpcElapsed webradio )'
 , "file"      : "'$file'"
-, "pllength"  : '$pllength'
+, "pllength"  : '$( mpc status %length% )'
 , "play"      : true
 , "state"     : "play"
-, "station"   : "'$station'"
+, "station"   : "'${url_station##*/}'"
 , "Time"      : false
-, "timestamp" : '$timestamp'
+, "timestamp" : '$( date +%s%3N )'
 , "Title"     : "'$title'"
 , "webradio"  : true
 }'
