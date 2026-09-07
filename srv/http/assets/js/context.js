@@ -501,19 +501,7 @@ var CONTEXT  = {
 					}
 					$( '#infoList td' ).last()
 						.css( { 'text-align': 'right', cursor: 'pointer' } )
-						.on( 'click', function() {
-							var dir = $( '#infoList select' ).val();
-							INFO( {
-								  icon       : 'webradio'
-								, title      : 'Add Folder'
-								, list       : [ 'Name', 'text' ]
-								, checkblank : true
-								, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-								, ok         : () => {
-									BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
-								}
-							} );
-						} );
+						.on( 'click', CONTEXT.webradio.dirAdd );
 				}
 				, ok         : () => CONTEXT.webradio.command( I )
 			} );
@@ -564,6 +552,20 @@ var CONTEXT  = {
 				, ok      : () => {
 					$LI.remove();
 					BASH( [ 'webradiodelete', $( '#lib-path' ).text() +'/'+ name, 'CMD DIR' ] );
+				}
+			} );
+		}
+		, dirAdd     : () => {
+			var dir = $( '#infoList select' ).val();
+			INFO( {
+				  icon       : 'webradio'
+				, title      : 'Add Folder'
+				, message    : dir.slice( 15 ) +'/'
+				, list       : [ 'Name', 'text' ]
+				, checkblank : true
+				, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
+				, ok         : () => {
+					BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
 				}
 			} );
 		}
