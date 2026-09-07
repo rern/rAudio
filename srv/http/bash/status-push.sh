@@ -29,7 +29,7 @@ argsSet() {
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
+if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
 	args2var "$1"
 	elapsed=$( mpcElapsed webradio )
 	pllength=$( mpc status %length% )

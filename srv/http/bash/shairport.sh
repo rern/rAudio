@@ -28,7 +28,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						 start=$( date +%s );; # elapsed reference while play
 	#		*61656e64* )                 # aend - airplay end
 	#			echo mpd > $dirshm/player
-	#			$dirbash/status-push.sh playerstop
+	#			$dirbash/status-push.sh
 	#			systemctl stop shairport
 	#			break
 		esac
