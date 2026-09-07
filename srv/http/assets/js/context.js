@@ -475,19 +475,19 @@ var CONTEXT  = {
 	, webradio     : {
 		  _add       : val => {
 			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
-			if ( val && 'icon' in val ) {
-				var title   = 'Edit';
-				var message = val.icon;
-				delete val.icon;
+			if ( val && 'thumb' in val ) {
+				var title = 'Edit';
+				var thumb = val.thumb;
+				delete val.thumb;
 			} else {
-				var title   = V.library ? 'Add' : 'Save';
-				var message = '';
+				var title = V.library ? 'Add' : 'Save';
+				var thumb = '';
 			}
 			INFO( {
 				  icon       : 'webradio'
 				, title      : title +' Web Radio'
 				, boxwidth   : 'max'
-				, message    : message
+				, message    : thumb
 				, list       : CONTEXT.webradio.list
 				, values     : val
 				, checkblank : [ 0, 1 ]
@@ -618,7 +618,7 @@ var CONTEXT  = {
 				, NAME    : V.list.name
 				, URL     : V.list.path
 				, CHARSET : 'UTF-8'
-				, icon    : $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ICON( V.mode +' msgicon' )
+				, thumb   : $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ICON( V.mode +' msgicon' )
 			} );
 		}
 		, list       : [
