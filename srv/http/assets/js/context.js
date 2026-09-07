@@ -473,7 +473,13 @@ var CONTEXT  = {
 		} );
 	}
 	, webradio     : {
-		  _add       : val => {
+		  add        : val => {
+			BASH( [ 'webradiodirs' ], dirs => {
+				CONTEXT.webradio.list[ 0 ][ 2 ] = { kv: dirs, colspan: 3 }
+				CONTEXT.webradio.addEdit( val );
+			}, 'json' );
+		}
+		, addEdit    : val => {
 			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
 			if ( val && 'thumb' in val ) {
 				var cmd = 'Edit';
@@ -510,7 +516,7 @@ var CONTEXT  = {
 						if ( edit ) {
 							CONTEXT.webradio.edit();
 						} else {
-							CONTEXT.webradio._add( val );
+							CONTEXT.webradio.addEdit( val );
 						}
 					}
 					if ( edit ) {
@@ -528,12 +534,6 @@ var CONTEXT  = {
 					} );
 				}
 			} );
-		}
-		, add        : val => {
-			BASH( [ 'webradiodirs' ], dirs => {
-				CONTEXT.webradio.list[ 0 ][ 2 ] = { kv: dirs, colspan: 3 }
-				CONTEXT.webradio._add( val );
-			}, 'json' );
 		}
 		, delete     : () => {
 			var name = V.list.name;
