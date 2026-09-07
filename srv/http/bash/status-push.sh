@@ -30,25 +30,7 @@ killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
-	args2var "$1"
-	elapsed=$( mpcElapsed webradio )
-	pllength=$( mpc status %length% )
-	timestamp=$( date +%s%3N )
-	status='{
-  "Album"     : "'$ALBUM'"
-, "Artist"    : "'$ARTIST'"
-, "coverart"  : "'$COVERART'"
-, "elapsed"   : '$elapsed'
-, "file"      : "'$FILE'"
-, "pllength"  : '$pllength'
-, "play"      : true
-, "state"     : "play"
-, "station"   : "'$STATION'"
-, "Time"      : false
-, "timestamp" : '$timestamp'
-, "Title"     : "'$TITLE'"
-, "webradio"  : true
-}'
+	status=$1
 	echo "$status" > $dirshm/status.json
 	state=play
 	webradio=1

@@ -141,14 +141,26 @@ $( jq -r .albumTitle <<< $track )"
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
 	line=$( grep -m1 ^$file $dirmpd/radio )
-	$dirbash/status-push.sh "cmd
-$album
-$artist
-$coverart
-$file
-${line##*/}
-$title
-CMD ALBUM ARTIST COVERART FILE STATION TITLE"
+	station=${line##*/}
+	elapsed=$( mpcElapsed webradio )
+	pllength=$( mpc status %length% )
+	timestamp=$( date +%s%3N )
+	status='{
+  "Album"     : "'$album'"
+, "Artist"    : "'$artist'"
+, "coverart"  : "'$coverart'"
+, "elapsed"   : '$elapsed'
+, "file"      : "'$file'"
+, "pllength"  : '$pllength'
+, "play"      : true
+, "state"     : "play"
+, "station"   : "'$station'"
+, "Time"      : false
+, "timestamp" : '$timestamp'
+, "Title"     : "'$title'"
+, "webradio"  : true
+}'
+	$dirbash/status-push.sh "$status"
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet
