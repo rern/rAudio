@@ -906,66 +906,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} );
 	query.path      = path;
 	query.modetitle = path;
-} ).on( 'click', '.bk-remove', function( e ) {
-	var $bk            = $( this ).parent();
-	var [ name, path ] = UTIL.bookmarkData( $bk );
-	if ( $bk.find( '.i-bookmark' ).length ) {
-		var icon = ICON( 'bookmark msgicon' );
-	} else {
-		var icon = $bk.find( 'img' )[ 0 ].outerHTML;
-	}
-	INFO( {
-		  icon    : 'bookmark'
-		, title   : 'Remove Bookmark'
-		, message : icon
-				  +'<br>'+ name
-				  +'<br><g>'+ path +'</g>'
-		, oklabel : ICON( 'remove' ) +'Remove'
-		, okcolor : V.red
-		, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
-	} );
-} ).on( 'click', '.bk-rename', function() {
-	var $this          = $( this );
-	var [ name, path ] = UTIL.bookmarkData( $( this ).parent() );
-	INFO( {
-		  icon         : 'bookmark'
-		, title        : 'Rename Bookmark'
-		, message      : ICON( 'bookmark msgicon' )
-						+'<br>'+ name
-						+'<br><g>'+ path +'</g>'
-		, list         : [ 'To:', 'text' ]
-		, values       : name
-		, checkblank   : true
-		, checkchanged : true
-		, checktext    : { input: 0, text: '/' }
-		, oklabel      : ICON( 'flash' ) +'Rename'
-		, ok           : () => {
-			CONTEXT.bookmarkEdit( _INFO.val(), name, 'CMD NEWNAME NAME', () => $this.trigger( 'click' ) );
-		}
-	} );
-} ).on( 'click', '.bk-cover', function() {
-	var $bk            = $( this ).parent();
-	var [ name, path ] = UTIL.bookmarkData( $bk );
-	var thumbnail      = $bk.find( '.bkcoverart' ).length;
-	if ( thumbnail ) {
-		var message = '<img class="imgold" src="'+ $bk.find( 'img' ).attr( 'src' ) +'">';
-	} else {
-		var message = ICON( 'bookmark msgicon' );
-	}
-	message += '<p class="infoimgname">'+ name
-			  +'<br><g>('+ path +')</g></p>';
-	INFO( {
-		  icon        : V.icoverart
-		, title       : 'Bookmark Thumbnail'
-		, message     : message
-		, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
-		, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
-		, buttoncolor : ! thumbnail ? '' : V.orange
-		, button      : ! thumbnail ? '' : () => {
-			BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
-		}
-		, ok          : () => UTIL.imageReplace( path, 'coverart' )
-	} );
+} ).on( 'click', '.bkedit', function() {
+	var $this = $( this );
+	CONTEXT.bookmark[ $this.prop( 'class' ).replace( /.*-/, '' ) ]( $this );
 } ).on( 'click', '.dabradio.nodata', function() {
 	COMMON.dabScan();
 } ).press( {

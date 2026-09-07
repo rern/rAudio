@@ -1,48 +1,112 @@
 var CONTEXT  = {
-	  bookmark     : () => {
-		// #1 - track list - show image from licover
-		// #2 - dir list   - show image from path + coverart.jpg
-		// #3 - no cover   - icon + directory name
-		var path    = V.list.path;
-		if ( MODE.radio() ) {
-			var name    = V.list.name;
-			var src     = $LI.find( 'img' ).attr( 'src' );
-			var msgpath = name;
-		} else {
-			if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
-			var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ COMMON.versionHash();
-			var msgpath = path;
-			var name    = COMMON.baseName( path );
-		}
-		INFO( {
-			  icon       : 'bookmark'
-			, title      : 'Add Bookmark'
-			, message    : '<img src="'+ src +'">'
-						  +'<br><wh>'+ msgpath +'</wh>'
-			, list       : [ 'As:', 'text' ]
-			, values     : name
-			, checkblank : true
-			, checktext  : { input: 0, text: '/' }
-			, ok         : () => {
-				CONTEXT.bookmarkEdit( _INFO.val(), path, 'CMD NAME DIR', CONTEXT.bookmark );
-			}
-		} );
-	}
-	, bookmarkEdit : ( name, arg, cmd, callback ) => {
-		var exist = $( '#lib-mode-list .name' ).filter( ( i, el ) => {
-			return name === $( el ).text() === name;
-		} );
-		if ( exist.length ) {
-			if ( $el.parent().hasClass( 'bookmark' ) ) {
-				CONTEXT.existsInfo( 'Bookmark name already exists:<br>'+ name, callback );
+	  bookmark     : {
+		  add    : () => {
+			// #1 - track list - show image from licover
+			// #2 - dir list   - show image from path + coverart.jpg
+			// #3 - no cover   - icon + directory name
+			var path    = V.list.path;
+			if ( MODE.radio() ) {
+				var name    = V.list.name;
+				var src     = $LI.find( 'img' ).attr( 'src' );
+				var msgpath = name;
 			} else {
-				CONTEXT.existsInfo( 'Reserved name for mode list:<br>'+ name, callback );
+				if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
+				var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ COMMON.versionHash();
+				var msgpath = path;
+				var name    = COMMON.baseName( path );
 			}
-			return
+			INFO( {
+				  icon       : 'bookmark'
+				, title      : 'Add Bookmark'
+				, message    : '<img src="'+ src +'">'
+							  +'<br><wh>'+ msgpath +'</wh>'
+				, list       : [ 'As:', 'text' ]
+				, values     : name
+				, checkblank : true
+				, checktext  : { input: 0, text: '/' }
+				, ok         : () => {
+					CONTEXT.bookmark.edit( _INFO.val(), path, 'CMD NAME DIR', CONTEXT.bookmark.add );
+				}
+			} );
 		}
-		
-		BASH( [ 'bookmark', name, arg, cmd ] );
-		if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
+		, cover  : $bkcover => {
+			var $this          = $bkcover.parent();
+			var [ name, path ] = UTIL.bookmarkData( $this );
+			var thumbnail      = $this.find( '.bkcoverart' ).length;
+			if ( thumbnail ) {
+				var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">';
+			} else {
+				var message = ICON( 'bookmark msgicon' );
+			}
+			message += '<p class="infoimgname">'+ name
+					  +'<br><g>('+ path +')</g></p>';
+			INFO( {
+				  icon        : V.icoverart
+				, title       : 'Bookmark Thumbnail'
+				, message     : message
+				, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
+				, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
+				, buttoncolor : ! thumbnail ? '' : V.orange
+				, button      : ! thumbnail ? '' : () => {
+					BASH( [ 'thumbnailreset', path, 'CMD DIR' ] );
+				}
+				, ok          : () => UTIL.imageReplace( path, 'coverart' )
+			} );
+		}
+		, edit   : ( name, arg, cmd, callback ) => {
+			var exist = $( '#lib-mode-list .name' ).filter( ( i, el ) => {
+				return name === $( el ).text() === name;
+			} );
+			if ( exist.length ) {
+				if ( $el.parent().hasClass( 'bookmark' ) ) {
+					CONTEXT.existsInfo( 'Bookmark name already exists:<br>'+ name, callback );
+				} else {
+					CONTEXT.existsInfo( 'Reserved name for mode list:<br>'+ name, callback );
+				}
+				return
+			}
+			
+			BASH( [ 'bookmark', name, arg, cmd ] );
+			if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
+		}
+		, remove : $bkremove => {
+			var $this          = $bkremove.parent();
+			var [ name, path ] = UTIL.bookmarkData( $this );
+			if ( $this.find( '.i-bookmark' ).length ) {
+				var icon = ICON( 'bookmark msgicon' );
+			} else {
+				var icon = $this.find( 'img' )[ 0 ].outerHTML;
+			}
+			INFO( {
+				  icon    : 'bookmark'
+				, title   : 'Remove Bookmark'
+				, message : icon
+						  +'<br>'+ name
+						  +'<br><g>'+ path +'</g>'
+				, oklabel : ICON( 'remove' ) +'Remove'
+				, okcolor : V.red
+				, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
+			} );
+		}
+		, rename : $bkrename => {
+			var [ name, path ] = UTIL.bookmarkData( $bkrename.parent() );
+			INFO( {
+				  icon         : 'bookmark'
+				, title        : 'Rename Bookmark'
+				, message      : ICON( 'bookmark msgicon' )
+								+'<br>'+ name
+								+'<br><g>'+ path +'</g>'
+				, list         : [ 'To:', 'text' ]
+				, values       : name
+				, checkblank   : true
+				, checkchanged : true
+				, checktext    : { input: 0, text: '/' }
+				, oklabel      : ICON( 'flash' ) +'Rename'
+				, ok           : () => {
+					CONTEXT.bookmark.edit( _INFO.val(), name, 'CMD NEWNAME NAME', () => $bkrename.trigger( 'click' ) );
+				}
+			} );
+		}
 	}
 	, crop         : () => {
 		var $img = $LI.find( 'img' );
@@ -109,100 +173,103 @@ var CONTEXT  = {
 			, ok      : callback
 		} );
 	}
-	, plAdd        : () => {
-		if ( V.playlist ) {
-			var album = $LI.find( '.album' ).text();
-			var file  = V.list.path;
-		} else {
-			var album = $( '.licover .lialbum' ).text();
-			var file  = $LI.find( '.lipath' ).text();
-		}
+	, playlists    : {
+		  add        : () => {
+			if ( V.playlist ) {
+				var album = $LI.find( '.album' ).text();
+				var file  = V.list.path;
+			} else {
+				var album = $( '.licover .lialbum' ).text();
+				var file  = $LI.find( '.lipath' ).text();
+			}
 
-		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
-		var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
-		if ( file.startsWith( 'http' ) ) { // webradio
-			message += '<div>'+ ICON( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
-					  +'<br>'+ ICON( 'file' ) +' '+ file +'</div>';
-		} else {
-			message += '<div>'+ ICON( 'folder' ) +' '+ COMMON.dirName( file )
-					  +'<br>'+ ICON( 'file' ) +' '+ COMMON.baseName( file ) +'</div>';
+			var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
+			var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
+			if ( file.startsWith( 'http' ) ) { // webradio
+				message += '<div>'+ ICON( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
+						  +'<br>'+ ICON( 'file' ) +' '+ file +'</div>';
+			} else {
+				message += '<div>'+ ICON( 'folder' ) +' '+ COMMON.dirName( file )
+						  +'<br>'+ ICON( 'file' ) +' '+ COMMON.baseName( file ) +'</div>';
+			}
+			V.pladd      = {
+				  icon    : 'playlists'
+				, title   : 'Add to a playlist'
+				, album   : album
+				, path    : file
+				, width   : 500
+				, message : message
+			}
+			INFO( {
+				  ...V.pladd
+				, beforeshow : () => {
+					$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
+					PLAYLIST.insert.set();
+				}
+				, oklabel    : ICON( 'cursor' ) +'Target'
+				, ok         : () => {
+					if ( ! V.playlist ) PLAYLIST.get();
+					setTimeout( () => {
+						$( '#button-pl-playlists' ).trigger( 'click' );
+						NOTIFY( 'cursor', V.pladd.title, 'Choose target playlist' );
+					}, V.playlist ? 100 : 300 );
+					$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
+				}
+			} );
 		}
-		V.pladd      = {
-			  icon    : 'playlists'
-			, title   : 'Add to a playlist'
-			, album   : album
-			, path    : file
-			, width   : 500
-			, message : message
+		, delete     : () => {
+			INFO( {
+				  icon    : 'playlists'
+				, title   : 'Delete Playlist'
+				, message : 'Delete?'
+						   +'<br><wh>'+ V.list.name +'</wh>'
+				, oklabel : ICON( 'remove' ) +'Delete'
+				, okcolor : V.red
+				, ok      : () => {
+					BASH( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
+					$LI.remove();
+				}
+			} );
 		}
-		INFO( {
-			  ...V.pladd
-			, beforeshow : () => {
-				$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
-				PLAYLIST.insert.set();
-			}
-			, oklabel    : ICON( 'cursor' ) +'Target'
-			, ok         : () => {
-				if ( ! V.playlist ) PLAYLIST.get();
-				setTimeout( () => {
-					$( '#button-pl-playlists' ).trigger( 'click' );
-					NOTIFY( 'cursor', V.pladd.title, 'Choose target playlist' );
-				}, V.playlist ? 100 : 300 );
-				$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
-			}
-		} );
-	}
-	, plRemove     : () => {
-		LOCAL();
-		var plname = $( '#pl-title .lipath' ).text();
-		BASH( [ 'savedpledit', plname, 'remove', $LI.index() + 1, 'CMD NAME ACTION POS' ] );
-		$LI.remove();
-	}
-	, plRename     : () => {
-		var name = V.list.name;
-		INFO( {
-			  icon         : 'playlists'
-			, title        : 'Rename Playlist'
-			, message      : 'From: <wh>'+ name +'</wh>'
-			, list         : [ 'To', 'text' ]
-			, values       : name
-			, checkchanged : true
-			, checkblank   : true
-			, oklabel      : ICON( 'flash' ) +'Rename'
-			, ok           : () => {
-				var newname = _INFO.val();
-				var exist   = false;
-				$( '#pl-savedlist .single' ).each( ( i, el ) => {
-					if ( $( el ).text() === newname ) {
-						exist = true;
-						INFO( {
-							  icon    : I.icon
-							, title   : I.title
-							, message : 'Name already exists: <wh> '+ name +'</wh>'
-							, ok      : CONTEXT.plRename
-						} );
-						return false
-					}
-				} );
-				if ( exist ) return
-				
-				PLAYLIST.playlists.save( newname, name );
-			}
-		} );
-	}
-	, plDelete     : () => {
-		INFO( {
-			  icon    : 'playlists'
-			, title   : 'Delete Playlist'
-			, message : 'Delete?'
-					   +'<br><wh>'+ V.list.name +'</wh>'
-			, oklabel : ICON( 'remove' ) +'Delete'
-			, okcolor : V.red
-			, ok      : () => {
-				BASH( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
-				$LI.remove();
-			}
-		} );
+		, remove     : () => {
+			LOCAL();
+			var plname = $( '#pl-title .lipath' ).text();
+			BASH( [ 'savedpledit', plname, 'remove', $LI.index() + 1, 'CMD NAME ACTION POS' ] );
+			$LI.remove();
+		}
+		, rename     : () => {
+			console.log(9)
+			var name = V.list.name;
+			INFO( {
+				  icon         : 'playlists'
+				, title        : 'Rename Playlist'
+				, message      : 'From: <wh>'+ name +'</wh>'
+				, list         : [ 'To', 'text' ]
+				, values       : name
+				, checkchanged : true
+				, checkblank   : true
+				, oklabel      : ICON( 'flash' ) +'Rename'
+				, ok           : () => {
+					var newname = _INFO.val();
+					var exist   = false;
+					$( '#pl-savedlist .single' ).each( ( i, el ) => {
+						if ( $( el ).text() === newname ) {
+							exist = true;
+							INFO( {
+								  icon    : I.icon
+								, title   : I.title
+								, message : 'Name already exists: <wh> '+ name +'</wh>'
+								, ok      : CONTEXT.plRename
+							} );
+							return false
+						}
+					} );
+					if ( exist ) return
+					
+					PLAYLIST.playlists.save( newname, name );
+				}
+			} );
+		}
 	}
 	, remove       : () => {
 		V.contextmenu = true;
@@ -589,16 +656,28 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var cmd   = $this.data( 'cmd' );
 	MENU.hide();
 	$( 'li.updn' ).removeClass( 'updn' );
+	
+	if ( cmd === 'bookmark' ) {
+		CONTEXT.bookmark.add();
+		return
+	}
+	
+	if ( cmd.slice( 0, 2 ) === 'PL' ) {
+		console.log(cmd.slice( 2 ))
+		CONTEXT.playlists[ cmd.slice( 2 ) ]();
+		return
+	}
+	
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		cmd === 'play' ? CONTEXT.current( cmd ) : $( '#'+ cmd ).trigger( 'click' );
 		return
 	}
-
+	
 	if ( cmd in CONTEXT ) {
 		CONTEXT[ cmd ]();
 		return
 	}
-
+	
 	/* '' album albumartist artist composer conductor date genre pl wr
 	_add
 	_addplay

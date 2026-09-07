@@ -57,7 +57,7 @@ $htmlcommon  = menuCommon( 'add', 'replace' );
 $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',    'lastfm',      'Add similar' ]
-	, [ 'plAdd', 'playlists',   'Add to a playlist' ]
+	, [ 'PLadd', 'playlists',   'Add to a playlist' ]
 	, [ 'directory',  'folder-open', 'Browse folder' ]
 	, [ 'tag',        'tag',         'Tag Editor' ]
 ];
@@ -70,8 +70,8 @@ $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',  'lastfm',    'Add similar' ]
 	, [ 'wrSave',   'save',      'Save to Library' ]
-	, [ 'plAdd',    'playlists', 'Add to a playlist' ]
-	, [ 'plRemove', 'remove',    'Remove' ]
+	, [ 'PLadd',    'playlists', 'Add to a playlist' ]
+	, [ 'PLremove', 'remove',    'Remove' ]
 ];
 htmlMenu( $menulist, 'filesavedpl' );
 // folder
@@ -96,7 +96,7 @@ $menulist = [
 	, [ 'remove',  'remove',    'Remove', 'track', 'removeRange' ]
 	, [ 'crop',    'crop',      'Crop' ]
 	, [ 'wrSave',  'save',      'Save to Library' ]
-	, [ 'plAdd',   'playlists', 'Add to a playlist' ]
+	, [ 'PLadd',   'playlists', 'Add to a playlist' ]
 	, [ 'similar', 'lastfm',    'Add similar' ]
 	, [ 'tag',     'info',      'Track Info' ]
 ];
@@ -104,8 +104,8 @@ htmlMenu( $menulist, 'plaction' );
 // playlist
 $html     = menuCommon( 'pladd', 'plreplace' );
 $menulist = [
-	  [ 'plRename', 'edit',   'Rename' ]
-	, [ 'plDelete', 'remove', 'Delete' ]
+	  [ 'PLrename', 'edit',   'Rename' ]
+	, [ 'PLdelete', 'remove', 'Delete' ]
 ];
 htmlMenu( $menulist, 'playlist' );
 // radio bookmark
