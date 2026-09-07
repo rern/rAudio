@@ -146,7 +146,7 @@ $album
 $artist
 $coverart
 $file
-${line/*\/}
+${line##*/}
 $title
 CMD ALBUM ARTIST COVERART FILE STATION TITLE"
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
