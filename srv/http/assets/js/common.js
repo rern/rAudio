@@ -1917,7 +1917,7 @@ $( 'body' ).on( 'click', function( e ) {
 		var search  = $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text" spellcheck="false"></div>' : '';
 		var html_li = '';
 		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
-		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
+		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul></div>' );
 		$dropdown   = $this.next();
 	}
 	$this.addClass( 'active' );
