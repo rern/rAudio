@@ -476,25 +476,25 @@ var CONTEXT  = {
 		  _add       : val => {
 			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
 			if ( val && 'thumb' in val ) {
-				var title = 'Edit';
+				var cmd = 'Edit';
 				var thumb = val.thumb;
 				delete val.thumb;
 			} else {
-				var title = V.library ? 'Add' : 'Save';
+				var cmd = V.library ? 'Add' : 'Save';
 				var thumb = '';
 			}
 			INFO( {
 				  icon       : 'webradio'
-				, title      : title +' Web Radio'
+				, title      : cmd +' Web Radio'
 				, boxwidth   : 'max'
 				, message    : thumb
 				, list       : CONTEXT.webradio.list
 				, values     : val
 				, checkblank : [ 0, 1 ]
 				, checktext  : { input: 0, text: '/' }
-				, checkchanged : title === 'Edit'
+				, checkchanged : cmd === 'Edit'
 				, beforeshow : () => {
-					if ( V.library && title === 'Add' ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
+					if ( V.library && cmd === 'Add' ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
 					if ( V.playlist || /stream.radioparadise.com|icecast.radiofrance.fr/.test( val.URL ) ) {
 						$( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 						$( '#infoList tr:eq( 3 )' ).find( 'td:not(:eq(3))' ).empty();
@@ -503,7 +503,30 @@ var CONTEXT  = {
 						.css( { 'text-align': 'right', cursor: 'pointer' } )
 						.on( 'click', CONTEXT.webradio.dirAdd );
 				}
-				, ok         : () => CONTEXT.webradio.command( I )
+				, ok         : () => {
+					var val      = _INFO.val();
+					var edit     = cmd === 'Edit';
+					var callback = () => {
+						if ( edit ) {
+							CONTEXT.webradio.edit();
+						} else {
+							CONTEXT.webradio._add( val );
+						}
+					}
+					if ( edit ) {
+						val.OLDDIR  = $( '#lib-path' ).text();
+						val.OLDNAME = V.list.name;
+						val.OLDURL  = V.list.path;
+						val.TEST    = val.OLDURL !== val.URL;
+					} else {
+						val.TEST    = cmd === 'Add';
+					}
+					if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
+					BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
+						BANNER_HIDE();
+						if ( std ) _INFO.warning( I.icon, I.title, std, callback );
+					} );
+				}
 			} );
 		}
 		, add        : val => {
@@ -511,30 +534,6 @@ var CONTEXT  = {
 				CONTEXT.webradio.list[ 0 ][ 2 ] = { kv: dirs, colspan: 3 }
 				CONTEXT.webradio._add( val );
 			}, 'json' );
-		}
-		, command    : I => {
-			var val      = _INFO.val();
-			var edit     = I.title.startsWith( 'Edit' );
-			var callback = () => {
-				if ( edit ) {
-					CONTEXT.webradio.edit();
-				} else {
-					CONTEXT.webradio._add( val );
-				}
-			}
-			if ( edit ) {
-				val.OLDDIR  = $( '#lib-path' ).text();
-				val.OLDNAME = V.list.name;
-				val.OLDURL  = V.list.path;
-				val.TEST    = val.OLDURL !== val.URL;
-			} else {
-				val.TEST    = I.title.startsWith( 'Add' );
-			}
-			if ( val.TEST ) BANNER( I.icon +' blink', I.title, 'Stream test ...', -1 );
-			BASH( COMMON.cmd_json2args( 'webradioedit', val ), std => {
-				BANNER_HIDE();
-				if ( std ) _INFO.warning( I.icon, I.title, std, callback );
-			} );
 		}
 		, delete     : () => {
 			var name = V.list.name;
