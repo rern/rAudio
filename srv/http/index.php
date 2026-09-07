@@ -69,7 +69,7 @@ $menu.= menuDiv( 'filepl', $html );
 $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',  'lastfm',    'Add similar' ]
-	, [ 'wrSave',   'save',      'Save to Library' ]
+	, [ 'WRsave',   'save',      'Save to Library' ]
 	, [ 'PLadd',    'playlists', 'Add to a playlist' ]
 	, [ 'PLremove', 'remove',    'Remove' ]
 ];
@@ -95,7 +95,7 @@ $menulist = [
 	, [ 'current', 'current',   'Current' ]
 	, [ 'remove',  'remove',    'Remove', 'track', 'removeRange' ]
 	, [ 'crop',    'crop',      'Crop' ]
-	, [ 'wrSave',  'save',      'Save to Library' ]
+	, [ 'WRsave',  'save',      'Save to Library' ]
 	, [ 'PLadd',   'playlists', 'Add to a playlist' ]
 	, [ 'similar', 'lastfm',    'Add similar' ]
 	, [ 'tag',     'info',      'Track Info' ]
@@ -115,9 +115,9 @@ $menu    .= menuDiv( 'bkradio', $html );
 $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark', 'star',      'Bookmark' ]
-	, [ 'wrEdit',   'edit',      'Edit' ]
+	, [ 'WRedit',   'edit',      'Edit' ]
 	, [ 'thumbnail', $coverart,  'Station art' ]
-	, [ 'wrDelete', 'remove',    'Delete' ]
+	, [ 'WRdelete', 'remove',    'Delete' ]
 	, [ 'plAdd',    'playlists', 'Add to a playlist' ]
 ];
 htmlMenu( $menulist, 'webradio' );
@@ -126,8 +126,8 @@ $html     = '';
 $menulist = [
 	  [ 'bookmark',    'star',     'Bookmark' ]
 	, [ 'thumbnail',    $coverart, 'Folder thumbnail' ]
-	, [ 'wrDirDelete', 'remove',   'Delete' ]
-	, [ 'wrDirRename', 'edit',     'Rename' ]
+	, [ 'WRdirDelete', 'remove',   'Delete' ]
+	, [ 'WRdirRename', 'edit',     'Rename' ]
 ];
 htmlMenu( $menulist, 'wrdir' );
 

@@ -673,7 +673,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		LIBRARY.list( data );
 	} );
 } ).on( 'click', '.button-webradio-new', function() {
-	CONTEXT.wrAdd();
+	CONTEXT.webradio.add();
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
 		INFO( {
