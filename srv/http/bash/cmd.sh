@@ -555,9 +555,10 @@ webradiodelete )
 	;;
 webradiodirs )
 	while read d; do
-		dirs+=', "'$( quoteEscape $d )'"'
-	done < <( find $dirwebradio -type d ! -exec test -e '{}/data' \; -print | cut -c 16- )
-	echo '[ '${dirs:1}' ]'
+		dir=$( quoteEscape $d )
+		dirs+=', "'${dir:15}'" : "'$dir'"'
+	done < <( find $dirwebradio -type d ! -exec test -e '{}/data' \; -print )
+	echo '{ '${dirs:1}' }'
 	;;
 webradioedit )
 	[[ -e "$DIR/$NAME" ]] && echo "Name already exists: <wh>${DIR:15}/$NAME</wh>" && exit

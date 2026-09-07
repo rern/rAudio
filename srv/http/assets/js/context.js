@@ -473,31 +473,26 @@ var CONTEXT  = {
 		} );
 	}
 	, webradio     : {
-		  add        : val => {
+		  _add       : val => {
 			V.list = {}
-			if ( ! val ) val = { NAME: '', URL: '', CHARSET: 'UTF-8' }
-			if ( 'DIR' in val ) {
-				var list = [
-					  [ 'Folder', 'select', { kv: val.DIR, colspan: 3 } ]
-					, ...CONTEXT.webradio.list
-				];
-				val.DIR = '';
-			} else {
-				var list = CONTEXT.webradio.list;
-			}
 			INFO( {
 				  icon       : 'webradio'
 				, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 				, boxwidth   : 'max'
-				, list       : list
+				, list       : CONTEXT.webradio.list
 				, values     : V.library ? CONTEXT.webradio.editValues( val ) : val
 				, checkblank : [ 0, 1 ]
 				, checktext  : { input: 0, text: '/' }
 				, beforeshow : () => {
-					if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
-					$( '#infoList tr:eq( -3 ) td' ).last()
+					if ( V.library ) {
+						$( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
+					} else {
+						$( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
+					}
+					$( '#infoList tr:eq( -2 ) td' ).last()
 						.css( { 'text-align': 'right', cursor: 'pointer' } )
 						.on( 'click', function() {
+							var dir = $( '#infoList select' ).val();
 							INFO( {
 								  icon       : 'webradio'
 								, title      : 'Add Folder'
@@ -505,13 +500,19 @@ var CONTEXT  = {
 								, checkblank : true
 								, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 								, ok         : () => {
-									BASH( [ 'dirnew', $( '#lib-path' ).text() +'/'+ _INFO.val(), 'CMD DIR' ] );
+									BASH( [ 'dirnew', dir +'/'+ _INFO.val(), 'CMD DIR' ] );
 								}
 							} );
 						} );
 				}
 				, ok         : () => CONTEXT.webradio.command( I )
 			} );
+		}
+		, add        : val => {
+			BASH( [ 'webradiodirs' ], dirs => {
+				CONTEXT.webradio.list[ 0 ][ 2 ] = { kv: dirs, colspan: 3 }
+				CONTEXT.webradio._add( val );
+			}, 'json' );
 		}
 		, command    : ( I ) => {
 			var type     = I.title.split( ' ' )[ 0 ];
@@ -567,7 +568,7 @@ var CONTEXT  = {
 				, oklabel : ICON( 'remove' ) +'Delete'
 				, okcolor : V.red
 				, ok      : () => {
-					var cmd = [ 'dirdelete', $( '#lib-path' ).text(), 'CMD DIR' ]
+					var cmd = [ 'dirdelete', $( '#lib-path' ).text() +'/'+ V.list.name, 'CMD DIR' ]
 					BASH( cmd, std => {
 						if ( std == -1 ) {
 							cmd[ 3 ] += ' CONFIRM';
@@ -634,26 +635,24 @@ var CONTEXT  = {
 			} );
 		}
 		, editValues : val => {
+			if ( ! val ) val = { DIR: $( '#lib-path' ).text(), NAME: '', URL: '', CHARSET: 'UTF-8' }
 			return {
-				  NAME    : val.NAME
+				  DIR     : val.DIR
+				, NAME    : val.NAME
 				, URL     : val.URL
 				, CHARSET : val.CHARSET
 			}
 		}
 		, list       : [
-			  [ 'Name',    'text', { colspan: 3 } ]
-			, [ 'URL',     'text', { colspan: 3 } ]
-			, [ 'Charset', 'text', { sameline: true, width: 190 } ]
+			  [ 'Folder',  'select' ]
+			, [ 'Name',    'text',   { colspan: 3 } ]
+			, [ 'URL',     'text',   { colspan: 3 } ]
+			, [ 'Charset', 'text',   { sameline: true, width: 190 } ]
 			, [ '',        '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ICON( 'help gr' ), { sameline: true } ]
 			, [ '',        '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' ]
-			, [ '',        'hidden' ] // DIR
 			, [ '',        'hidden' ] // OLDURL
 		]
-		, save       : () => {
-			BASH( [ 'webradiodirs' ], dirs => {
-				CONTEXT.webradio.add( { DIR: dirs, NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } );
-			}, 'json' );
-		}
+		, save       : () => CONTEXT.webradio.add( { DIR: '', NAME: '', URL: $LI.find( '.lipath' ).text(), CHARSET: 'UTF-8' } )
 	}
 }
 
