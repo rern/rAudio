@@ -27,11 +27,16 @@ while true; do
 			coverart="${coverfile:9}"
 		fi
 	fi
-	$dirbash/status-push.sh "cmd
-$artist
-$title
-$album
-$coverart
-CMD ARTIST TITLE ALBUM COVERART"
+	status='{
+  "Album"     : "'$album'"
+, "Artist"    : "'$artist'"
+, "coverart"  : "'$coverart'"
+, "play"      : true
+, "state"     : "play"
+, "Time"      : false
+, "Title"     : "'$title'"
+, "webradio"  : true
+}'
+	$dirbash/status-push.sh "$status"
 	sleep 10
 done

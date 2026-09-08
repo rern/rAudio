@@ -4,52 +4,58 @@
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-argsSet() {
+coverart_scrobble() {
+	local Album args Artist lines Title
 	[[ $webradio && $state == stop ]] && return 1
 
-	readarray -t lines < <( jq -r .Artist,.Title,.Album $dirshm/status.json )
+	readarray -t lines < <( jq -r .Album,.Artist,.Title <<< $status )
 	Artist=${lines[0]}
 	[[ ! $Artist ]] && return 1
 	
 	Title=${lines[1]}
-	[[ $1 == scrobble && ! $Title ]] && return 1
+	[[ $scrobble && ! $Title ]] && return
 	
 	Album=${lines[2]}
-	[[ ! $Album && ! $Title ]] && return 1
+	[[ ! $Album && ! $Title ]] && return
 
-	args=$( sort <<< $lines \
-		| sed '
-			s/.*="*//
-			s/ *"*$//
-			s/[`’]/'"'"'/g
-			1 i\cmd
-			$ a\CMD ALBUM ARTIST TITLE' )
+	args="cmd
+$Album
+$Artist
+$Title
+CMD ALBUM ARTIST TITLE"
+	if [[ $scrobble ]]; then
+		$dirbash/scrobble.sh "$args" &> /dev/null &
+	else
+		$dirbash/status-coverart.sh "$args" &> /dev/null &
+	fi
 }
 
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 ]]; then # from status-dab.sh, status-radio.sh
+player=$( < $dirshm/player )
+# > status.json - for:
+#	1. refresh page: radio, spotify
+#	2. get: play, state
+#	3. lcdchar.py
+if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
 	status=$1
 	echo "$status" > $dirshm/status.json
-	state=play
-	webradio=1
 else
-	status=$( $dirbash/status \
-				| jq 'del(.counts, .display)' \
+	keys='{Album,Artist,coverart,elapsed,file,play,pllength,state,station,Time,timestamp,Title,webradio}'
+	status=$( $dirbash/status -s \
+				| jq $keys \
 				| tee $dirshm/status.json )
-	readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
-	COVERART=${lines[0]}
-	state=${lines[1]}
-	[[ ${lines[2]} == true ]] && webradio=1
 fi
+readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
+coverart=${lines[0]}
+state=${lines[1]}
+[[ ${lines[2]} == true ]] && webradio=1
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
 
-if [[ ! $COVERART ]]; then
-	argsSet && $dirbash/status-coverart.sh "$args" &> /dev/null &
-fi
+[[ ! $coverart ]] && coverart_scrobble
 [[ $state == play ]] && state_play=1
 [[ $state_play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
@@ -96,7 +102,7 @@ fi
 # ------------------------------------------------------------------------------
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # ------------------------------------------------------------------------------
-if [[ $( < $dirshm/player ) != mpd ]]; then
+if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
 	if [[ $state_play || $state == pause ]]; then # renderers prev/next
@@ -111,4 +117,5 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-argsSet scrobble && $dirbash/scrobble.sh "$args" &> /dev/null &
+scrobble=1
+coverart_scrobble

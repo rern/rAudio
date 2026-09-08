@@ -138,7 +138,7 @@ def second2hms( sec ):
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
-for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, state, Time, timestamp, webradio
+for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, play, state, Time, timestamp, webradio
     v = STATUS[ k ]
     if v:
         if cmA00: v = normalize( v )
@@ -160,7 +160,7 @@ if not Title:  Title  = DOTS
 if not Album:  Album  = DOTS
 
 if rows == 2:
-    if state == 'play': lines = Title
+    if play: lines = Title
 else:
     lines = Artist + RN + Title + RN + Album
 
@@ -180,9 +180,9 @@ else:
 
 lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
-if BACKLIGHT and state != 'play': backlightOff()
+if BACKLIGHT and not play: backlightOff()
 
-if state != 'play': sys.exit()
+if not play: sys.exit()
 # --------------------------------------------------------------------
 row            = rows - 1
 width          = COLS - 4
