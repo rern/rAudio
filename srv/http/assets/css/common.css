@@ -653,6 +653,13 @@ label:has( input[ disabled ] ) {
 #infoList .updn {
 	line-height: 40px;
 }
+#infoList:has( hr ),
+#infoList:has( hr ) .infomessage {
+	padding: 5px 0;
+}
+#infoBox:has( #infoTab ) #infoList {
+	padding-top: 15px;
+}
 
 hr {
 	margin: 10px 0 0 0;
@@ -766,7 +773,7 @@ hr {
 	color: var( --cg60 );
 }
 #infoList {
-	padding: 20px 10px 10px 10px;
+	padding: 10px;
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
