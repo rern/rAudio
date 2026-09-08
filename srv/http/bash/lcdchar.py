@@ -147,7 +147,11 @@ locals().update( STATUS )
 
 if webradio:
     if not Artist: Artist = station
-    if not Album:  Album  = Artist and station or file
+    if not Album: 
+        if Title:
+            Album  = Artist and station or file
+        else:
+            Album  = file
 elif not Title or not Album:
     from pathlib import Path
     
