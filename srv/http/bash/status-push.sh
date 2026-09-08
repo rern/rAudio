@@ -8,7 +8,7 @@ coverart_scrobble() {
 	local Album args Artist lines Title
 	[[ $webradio && $state == stop ]] && return 1
 
-	readarray -t lines < <( jq -r .Album,.Artist,.Title <<< $status )
+	readarray -t lines < <( jq -r .Artist,.Title,.Album <<< $status )
 	Artist=${lines[0]}
 	[[ ! $Artist ]] && return 1
 	
