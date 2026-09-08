@@ -146,12 +146,8 @@ for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - el
 locals().update( STATUS )
 
 if webradio:
+    if not Album:  Album  = Artist and '('+ station +')' or file
     if not Artist: Artist = station
-    if not Album: 
-        if Title:
-            Album  = Artist and station or file
-        else:
-            Album  = file
 elif not Title or not Album:
     from pathlib import Path
     
