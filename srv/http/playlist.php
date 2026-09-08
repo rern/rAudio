@@ -61,7 +61,7 @@ if ( $CMD === 'list' ) {
 		$name      = $each->name;
 		$html     .=
 '<li '.$dataindex.'>'.
-	icon(  'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
+	icon(  'file-playlist', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
 '</li>
 ';
 	}
