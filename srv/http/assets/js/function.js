@@ -1600,7 +1600,7 @@ var PLAYBACK  = {
 					artist = S.station;
 					if ( V.play ) $( '#artist' ).addClass( 'disabled' );
 				}
-				if ( ! album ) album  = S.file;
+				if ( ! album ) album = S.Artist ? S.station : S.file;
 			} else if ( ! title || ! album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();
