@@ -53,13 +53,10 @@ eject -x 4 # set max speed
 
 discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
-if [[ $discid ]]; then
-	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
-	album=${album_artist[0]//\`/\'}
-	artist=${album_artist[1]//\`/\'}
-	! compgen -G $diraudiocd/$discid/cover.* > /dev/null && $dirbash/status-coverart.sh "cmd
-$album
-$artist
+if [[ $discid ]] && ! compgen -G $diraudiocd/$discid/cover.* > /dev/null; then
+	album_artist=$( head -2 $diraudiocd/$discid/data )
+	$dirbash/status-coverart.sh "cmd
+${album_artist//\`/\'}
 $discid
 CMD ALBUM ARTIST DISCID" &> /dev/null &
 fi
