@@ -661,7 +661,7 @@ label:has( input[ disabled ] ) {
 	padding-top: 15px;
 }
 .infomessage:has(.i-bookmark) .infoimgname {
-	margin-top: -30px;
+	margin-top: -25px;
 }
 
 hr {

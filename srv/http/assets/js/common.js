@@ -536,7 +536,7 @@ function INFO( json ) {
 		V.debug = false;
 	} );
 	if ( I.file ) {
-		var htmlfile = '<div id="infoFilename"><c>(select file)</c></div>'
+		var htmlfile = '<div id="infoFilename"></div>'
 					  +'<input type="file" class="hide" id="infoFileBox"'+ ( I.file.type ? ' accept="'+ I.file.type +'">' : '>' )
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 					  + ( I.file.label || ICON( 'folder-open' ) +' File' ) +'</a>';
