@@ -55,8 +55,8 @@ discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
 if [[ $discid ]]; then
 	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
-	album=${album_artist[0]}
-	artist=${album_artist[1]}
+	album=${album_artist[0]//\`/\'}
+	artist=${album_artist[1]//\`/\'}
 	! compgen -G $diraudiocd/$discid/cover.* > /dev/null && $dirbash/status-coverart.sh "cmd
 $album
 $artist
