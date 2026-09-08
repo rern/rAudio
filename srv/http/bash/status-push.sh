@@ -4,27 +4,6 @@
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-coverart_scrobble() {
-	local Album Artist lines Title
-	[[ $webradio && $state == stop ]] && return 1
-
-	readarray -t lines < <( jq -r .Artist,.Title,.Album <<< $status )
-	Artist=${lines[0]}
-	[[ ! $Artist ]] && return 1
-	
-	Title=${lines[1]}
-	[[ $1 == scrobble.sh && ! $Title ]] && return
-	
-	Album=${lines[2]}
-	[[ ! $Album && ! $Title ]] && return
-
-	$dirbash/$1 "cmd
-$Album
-$Artist
-$Title
-CMD ALBUM ARTIST TITLE" &> /dev/null &
-}
-
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
@@ -42,15 +21,24 @@ else
 				| jq $keys \
 				| tee $dirshm/status.json )
 fi
-readarray -t lines < <( jq -r .coverart,.state,.webradio <<< $status )
-coverart=${lines[0]}
-state=${lines[1]}
-[[ ${lines[2]} == true ]] && webradio=1
+readarray -t lines < <( jq -r .Artist,.Title,.Album,.coverart,.state,.webradio <<< ${status//\`/\'} )
+Artist=${lines[0]}
+Title=${lines[1]}
+Album=${lines[2]}
+coverart=${lines[3]}
+state=${lines[4]}
+[[ ${lines[5]} == true ]] && webradio=1
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
-
-[[ ! $coverart ]] && coverart_scrobble status-coverart.sh
+# coverart #############################
+if [[ ! $coverart && $Artist && ( $Album || $Title )]]; then
+	$dirbash/status-coverart.sh "cmd
+$Album
+$Artist
+$Title
+CMD ALBUM ARTIST TITLE" &> /dev/null &
+fi
 [[ $state == play ]] && state_play=1
 [[ $state_play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
@@ -112,4 +100,8 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-coverart_scrobble scrobble.sh
+# scrobble #############################
+$dirbash/scrobble.sh "cmd
+$Artist
+$Title
+CMD ARTIST TITLE" &> /dev/null &
