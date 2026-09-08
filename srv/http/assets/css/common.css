@@ -660,6 +660,9 @@ label:has( input[ disabled ] ) {
 #infoBox:has( #infoTab ) #infoList {
 	padding-top: 15px;
 }
+.infomessage:has(.i-bookmark) .infoimgname {
+	margin-top: -30px;
+}
 
 hr {
 	margin: 10px 0 0 0;
@@ -880,7 +883,7 @@ hr {
 .infomessage img {
 	width: auto;
 	height: 100px;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 }
 .infomessage object {
 	height: 100px;
