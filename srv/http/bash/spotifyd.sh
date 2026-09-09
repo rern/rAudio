@@ -43,7 +43,7 @@ else
 fi
 # data
 JSON=$( curl -s -H "Authorization: Bearer $token" \
-			https://api.spotify.com/v1/me/player/currently-playing ) || exit
+			https://api.spotify.com/v1/me/player/currently-playing )
 ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
 # ------------------------------------------------------------------------------
 STATUS=$( jq '{
