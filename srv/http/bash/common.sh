@@ -474,7 +474,7 @@ pushWebsocket() {
 	data=$( pushDataSet $1 "$data" )
 	$dirbash/status -P "$data"
 }
-quoteEscape() {
+quoteEscape() { # backtick ` - no need to escape for json
 	echo "${@//\"/\\\"}"
 }
 serviceRestartEnable() {
