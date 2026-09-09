@@ -54,7 +54,7 @@ eject -x 4 # set max speed
 discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
 if [[ $discid ]] && ! compgen -G $diraudiocd/$discid/cover.* > /dev/null; then
-	album_artist=$( head -2 $diraudiocd/$discid/data )
+	album_artist=$( head -n 2 $diraudiocd/$discid/data )
 	$dirbash/status-coverart.sh "cmd
 ${album_artist//\`/\'}
 $discid

@@ -15,7 +15,7 @@ if [[ $CMD == get ]]; then
 			values=$lines                                       # track
 			f=$FILE
 		else
-			f=$( mpc ls "$FILE" | head -1 )
+			f=$( mpc ls "$FILE" | head -n 1 )
 		fi
 		[[ $f == *.wav ]] && wav_albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/$f" )
 	fi

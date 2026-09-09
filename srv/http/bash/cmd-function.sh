@@ -31,10 +31,10 @@ plAddRandom() {
 	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
 #...............................................................................
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album
 		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
-		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
 	fi
 	if [[ -s $dirsystem/librandom ]]; then # album
 		mpc -q add "$dir"

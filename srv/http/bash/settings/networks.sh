@@ -84,7 +84,7 @@ lanedit )
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
-	file=$( ls /etc/systemd/network/e* | head -1 )
+	file=$( ls /etc/systemd/network/e* | head -n 1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
 ' -e '/^DNSSEC/ i\

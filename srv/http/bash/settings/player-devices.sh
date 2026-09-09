@@ -88,7 +88,7 @@ if [[ $amixer ]]; then
 		if [[ -e $mixerfile ]]; then # manual
 			MIXER=$( < "$mixerfile" )
 		elif [[ ! $MIXER ]]; then    # not Digital
-			MIXER=$( head -1 <<< $controls )
+			MIXER=$( head -n 1 <<< $controls )
 		fi
 	fi
 fi

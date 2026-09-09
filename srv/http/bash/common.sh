@@ -120,7 +120,7 @@ conf2json() {
 	fi
 	[[ ! $lines ]] && echo false && return
 #...............................................................................
-	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
+	[[ $( head -n 1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
@@ -171,7 +171,7 @@ countRadio() {
 		counts+='
 , "'${dir: -8}'" : '$( wc -l <<< $files )
 		while read file; do
-			uri=$( head -1 "$file" )
+			uri=$( head -n 1 "$file" )
 			path=$( dirname "$file" )
 			list+="$uri^^$path"$'\n'
 		done <<< $files
@@ -243,6 +243,11 @@ fifoToggle() { # mpdoled vuled vumeter
 }
 fileExist() {
 	compgen -G "$1" > /dev/null && return 0
+}
+fileCoverLimit() {
+	ls -t $dirshm/online/* &> /dev/null \
+		| tail -n +10 \
+		| xargs rm -f --
 }
 fstabColumnReload() {
 	column -t <<< $1 > /etc/fstab

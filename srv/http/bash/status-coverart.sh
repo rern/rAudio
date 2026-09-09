@@ -71,6 +71,4 @@ ext=${URL/*.}
 curl -sfL $URL -o $cover
 [[ ${cover:0:4} == /srv ]] && cover=${cover:9}
 pushCoverart "$cover"
-compgen -G $dirshm/online/* && ls -t $dirshm/online/* \
-	| tail -n +10 \
-	| xargs rm -f --
+fileCoverLimit

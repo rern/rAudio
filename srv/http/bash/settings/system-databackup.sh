@@ -36,7 +36,7 @@ EOF
 while read file; do
 	[[ ! -e $file && ! -e ${file/\*} ]] && continue
 	
-	dir_target=$dir_config/$( dirname $file | head -1 )
+	dir_target=$dir_config/$( dirname $file | head -n 1 )
 	mkdir -p $dir_target
 	cp $file $dir_target &> /dev/null # suppress not include dirs
 done  <<< $files

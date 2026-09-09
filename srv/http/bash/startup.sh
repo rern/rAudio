@@ -20,7 +20,7 @@ if [[ -e /boot/expand ]]; then # run once
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
 
-backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
+backupfile=$( ls /boot/*.gz 2> /dev/null | head -n 1 )
 if [[ -e $backupfile ]]; then
 	mv -f "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh

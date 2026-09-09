@@ -11,7 +11,7 @@ for radio in webradio dabradio; do
 		if [[ -d "$file" ]]; then # already converted
 			dir=$file
 			[[ -e "$dir/data" ]] && list+="\
-$( head -1 "$dir/data" )^^$dir
+$( head -n 1 "$dir/data" )^^$dir
 "
 		else # ../webradio/subdir/https:||...
 			uri_name=$( basename "$file" )
@@ -19,7 +19,7 @@ $( head -1 "$dir/data" )^^$dir
 			[[ $uri != http*//* && $uri != rtsp*//* ]] && continue
 
 			path=$( dirname "$file" )
-			station=$( head -1 "$file" )
+			station=$( head -n 1 "$file" )
 			dir="$path/$station"
 			mkdir -p "$dir"
 			sed "1 s|.*|$uri|" "$file" > "$dir/data"
@@ -62,7 +62,7 @@ files=$( find -L $diraudiocd -maxdepth 1 -type f ! -name '*.*' )
 #-------------------------------------------------------------------------------
 for f in $files; do
 	lines=$( < $f ) # artist^album^title^time
-	read artist album < <( head -1 <<< $lines | awk F'^' '{print $1" "$2}' )
+	read artist album < <( head -n 1 <<< $lines | awk F'^' '{print $1" "$2}' )
 	data="\
 $album
 $artist"

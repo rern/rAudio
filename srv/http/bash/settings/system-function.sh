@@ -84,7 +84,7 @@ dmesgDev() {
 	dmesg \
 		| tail \
 		| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-		| tail -1
+		| tail -n 1
 }
 pushStorage() {
 	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'

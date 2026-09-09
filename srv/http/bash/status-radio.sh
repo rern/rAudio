@@ -142,6 +142,7 @@ metadataGet() {
 			ext=${coverurl/*.}
 			coverart=$dirshm/online/$name.$ext
 			curl -s $coverurl -o $coverart
+			fileCoverLimit
 		else
 			album=${meta[2]}
 			name=$( alphaNumeric $artist$album )

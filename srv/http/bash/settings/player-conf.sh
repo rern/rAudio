@@ -58,9 +58,9 @@ if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from pla
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
-	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
-	pcm=$( bluealsa-cli list-pcms | tail -1 )
+	pcm=$( bluealsa-cli list-pcms | tail -n 1 )
 	if [[ $pcm ]]; then
 		info=$( bluealsa-cli info $pcm | grep -E '^(Channels|Format|Sampling)' )
 		if [[ $info ]]; then

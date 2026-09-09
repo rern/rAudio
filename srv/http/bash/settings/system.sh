@@ -132,7 +132,7 @@ hostname )
 	sed -i -E "/^source/ s/(name=).*/\1$NAME/" /etc/snapserver.conf
 	sed -i -E "s/^(friendlyname = ).*/\1$NAME/" /etc/upmpdcli.conf
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
-	nameprev=$( ls /var/lib/iwd/ap | head -1 )
+	nameprev=$( ls /var/lib/iwd/ap | head -n 1 )
 	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
 	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'

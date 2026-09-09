@@ -46,7 +46,7 @@ if [[ $lines ]]; then
 		grep -q ^$source /etc/fstab && continue                 # not in fstab
 		[[ ! $( blkid -o value -s TYPE $source ) ]] && continue # no fs - unformatted
 		
-		mountpoint=$( df -l --output=target $source | tail -1 )
+		mountpoint=$( df -l --output=target $source | tail -n 1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
 		else
