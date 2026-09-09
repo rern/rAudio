@@ -19,11 +19,10 @@ case $id in
 	rock )   id=2;;
 #	x )      id=?;;
 #	y )      id=?;;
-#                                                             openapi (no coverart)
 	fip )           id=7;;  # FIP                             FIP
 	fipelectro )    id=74;; # Electro                         FIP_ELECTRO
 	fipgroove )     id=66;; # Groove                          FIP_GROOVE
-	fiphiphop )     id=95;; # Hip-Hop                         FIP_HIP_HOP ***
+	fiphiphop )     id=95;; # Hip-Hop                         FIP_HIP_HOP ***openapi
 	fipjazz )       id=65;; # Jazz                            FIP_JAZZ
 	fipmetal )      id=77;; # Metal                           FIP_METAL
 	fipnouveautes ) id=70;; # Nouveautés                      FIP_NOUVEAUTES
@@ -42,35 +41,81 @@ case $id in
 	lajazz )              id=405;; # La Jazz                  FRANCEMUSIQUE_LA_JAZZ
 	ocoramonde )          id=404;; # Ocora Musiques du Monde  FRANCEMUSIQUE_OCORA_MONDE
 	opera )               id=409;; # Opéra                    FRANCEMUSIQUE_OPERA
-#	pianozen )            id=410;; # Piano Zen                FRANCEMUSIQUE_PIANO_ZEN ***
+#	pianozen )            id=410;; # Piano Zen                FRANCEMUSIQUE_PIANO_ZEN ***openapi
 esac
 
-i=0
-metadataGet() {
-	if [[ $id < 4 || $id == 5 ]]; then
-		radioparadise=1
-		icon=radioparadise
-		json=$( curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing )
-	else
-		icon=radiofrance
-		if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
-			hiphop=1
-			query='{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }'
-			json=$( curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
-						-H 'Accept-Encoding: gzip, deflate, br' \
-						-H 'Content-Type: application/json' \
-						-H 'Accept: application/json' \
-						-H 'Connection: keep-alive' \
-						-H 'DNT: 1' \
-						-H 'Origin: https://openapi.radiofrance.fr' \
-						-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
-						--compressed \
-						--data-binary "$query" )
-		else # api: current until switched to openapi ( except hophop)
-			json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
-		fi
+if [[ $id < 4 || $id == 5 ]]; then
+	radioparadise=1
+	icon=radioparadise
+	FN_JSON=radioParadise.json
+	FN_STATUS=radioParadise.status
+else
+	icon=radiofrance
+	FN_JSON=radioFrance.json
+	FN_STATUS=radioFrance.status
+	if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
+		FN_JSON+=.hiphop
+		FN_STATUS+=.hiphop
 	fi
-	if [[ ! $json || ${json:0:1} != '{' || $json == *,\"error\":* ]]; then
+fi
+
+radioFrance.json() {
+	curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id
+}
+radioFrance.status() {
+	jq '.levels[0]                as $level
+		| $level.position         as $position
+		| $level.items[$position] as $item
+		| .steps[$item]           // empty
+		| {
+			Album     : (.titreAlbum? // ""),
+			Artist    : (.authors?    // (.composers? // "")),
+			countdown : ((.end?       // now) - now | round),
+			coverurl  : (.visual?     // ""),
+			Title     : (.title?      // "")
+		  }
+		' <<< $JSON
+}
+radioFrance.json.hiphop() {
+	curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
+		-H 'Accept-Encoding: gzip, deflate, br' \
+		-H 'Content-Type: application/json' \
+		-H 'Accept: application/json' \
+		-H 'Connection: keep-alive' \
+		-H 'DNT: 1' \
+		-H 'Origin: https://openapi.radiofrance.fr' \
+		-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
+		--compressed \
+		--data-binary '{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }' \
+			| jq .data.live.song
+}
+radioFrance.status.hiphop() {
+	jq '.track as $track
+		| {
+			Album     : ($track.albumTitle  // ""),
+			Artist    : ($track.mainArtists // [] | join(", ")),
+			countdown : ((.end?             // now) - now | round),
+			coverurl  : "",
+			Title     : ($track.title       // "")
+		  }
+		' <<< $JSON
+}
+radioParadise.json() {
+	curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing
+}
+radioParadise.status() {
+	jq '{
+			Album     : (.album?  // ""),
+			Artist    : (.artist? // ""),
+			countdown : ((.time?  // 0) | round ),
+			coverurl  : (.cover?  // ""),
+			Title     : (.title?  // "")
+		}' <<< $JSON
+}
+metadataGet() {
+	sleep $1
+	JSON=$( $FN_JSON )
+	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
 		(( i++ ))
 		if [[ $i == 1 ]]; then
 			notify "$icon blink" Metadata 'Retry ...'
@@ -78,88 +123,51 @@ metadataGet() {
 			notify $icon Metadata 'Not available'
 			systemctl stop radio
 			exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 		fi
-		sleep 1
-		metadataGet
+		metadataGet 1
 		return
+# ..............................................................................
 	fi
-	
-	if [[ $radioparadise ]]; then
-		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
-		countdown=${metadata[4]/.*} # remove decimals
-	else 
-		if [[ $hiphop ]]; then
-			song=$( jq -r '.data.live.song // empty' <<< $json )
-			if [[ ! $song ]]; then
-				sleep 5
-				metadataGet
-				return
-			fi
-			
-			track=$( jq .track <<< $song )
-			artists=$(  jq -r '.mainArtists[] // empty' <<< $track )
-			readarray -t metadata <<< "\
-${artists//$'\n'/, }
-$( jq -r .title <<< $track )
-$( jq -r .albumTitle <<< $track )"
-			end=$( jq -r .end <<< $song )
-		else
-			levels=$( jq '.levels[0] // empty' <<< $json )
-			position=$( jq .position <<< $levels )
-			item=$( jq .items[$position] <<< $levels )
-			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' ) # titreAlbum[sic]
-			end=$( jq -r .end <<< $step )
-		fi
-		now=$( date +%s )
-		countdown=$(( end - now ))
-	fi
-	dataprev="$artist $title $album"
-	artist=$( quoteEscape ${metadata[0]} )
-	title=$( quoteEscape ${metadata[1]} )
-	album=$( quoteEscape ${metadata[2]} )
-	coverurl=${metadata[3]}
-	
-	if [[ ! $title || "$artist $title $album" == "$dataprev" ]]; then
-		sleep 5
-		metadataGet
-		return
-	fi
-	
-	[[ ! $artist ]] && artist=$( jq -r '.composers // empty' <<< $step )
+	STATUS=$( $FN_STATUS )
+	keys=.Artist,.Title,.Album
+	readarray -t meta < <( jq -r $keys,.coverurl,.countdown <<< $STATUS )
+	[[ ${meta[@]:0:3} == $( jq -jr $keys $dirshm/status.json ) ]] && metadataGet 5 && return
+# ..............................................................................
 	if [[ ! -e $dirsystem/vumeter ]]; then
+		coverurl=${meta[3]}
+		artist=${meta[0]}
 		if [[ $coverurl ]]; then
+			title=${meta[1]}
 			name=$( alphaNumeric $artist$title )
 			ext=${coverurl/*.}
-			coverfile=$dirshm/online/$name.$ext
-			curl -s $coverurl -o $coverfile
+			coverart=$dirshm/online/$name.$ext
+			curl -s $coverurl -o $coverart
 		else
+			album=${meta[2]}
 			name=$( alphaNumeric $artist$album )
-			coverfile=$( compgen -G $dirshm/online/$name.{jpg,png} )
+			coverart=$( compgen -G $dirshm/online/$name.* )
 		fi
+	else
+		coverart=
 	fi
-	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	url_station=$( grep -m1 ^$file $dirmpd/radio )
-	status='{
-  "Album"     : "'$album'"
-, "Artist"    : "'$artist'"
-, "coverart"  : "'$coverart'"
+	
+	STATUS=$( sed -E '/"countdown":|"coverurl":|^}/ d' <<< $STATUS )
+	STATUS+='
+, "coverart"  : "'${coverart:9}'"
 , "elapsed"   : '$( mpcElapsed webradio )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true
 , "state"     : "play"
-, "station"   : "'${url_station##*/}'"
+, "station"   : "'$( sed -n "\|^$file| {s|.*/||; p}" $dirmpd/radio )'"
 , "Time"      : false
 , "timestamp" : '$( date +%s%3N )'
-, "Title"     : "'$title'"
 , "webradio"  : true
 }'
-	$dirbash/status-push.sh "$status"
-	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
-	sleep $(( countdown + 5 )) # add 5s delay
-	metadataGet
+	$dirbash/status-push.sh "$STATUS"
+	countdown=${meta[4]}
+	metadataGet $(( countdown + 5 )) # add 5s delay
 }
 
-metadataGet
+metadataGet 0

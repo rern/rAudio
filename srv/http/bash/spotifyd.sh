@@ -17,7 +17,7 @@ if ! playerActive spotify; then
 	echo spotify > $dirshm/player
 	$dirbash/cmd.sh playerstart
 	exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
@@ -36,39 +36,25 @@ else
 	if [[ ! $token ]]; then
 		notify spotify Spotify 'Access token renewal failed.'
 		exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 	fi
 	echo $token > $dirspotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
 fi
 # data
-readarray -t status < <( curl -s -H "Authorization: Bearer $token" \
-							https://api.spotify.com/v1/me/player/currently-playing \
-								| jq -r '.item.album.name,
-										 .item.artists[0].name,
-										 .item.album.images[0].url,
-										 .item.name,
-										 .is_playing,
-										 .item.duration_ms,
-										 .progress_ms,
-										 .timestamp'
-								| sed 's|"|\\"|g' )
-[[ ${status[4]} == true ]] && state=play || state=pause
-Time=$(( ( ${status[5]} + 500 ) / 1000 ))
-progress=${status[6]}
-elapsed=$(( ( progress + 500 ) / 1000 ))
-timestamp=${status[7]}
-diff=$(( timestamp + ( $( date +%s%3N ) - timestamp ) ))
-start=$(( ( diff - progress + 500 ) / 1000 )) # epoch for elapsed calc while play
-status='{
-  "Album"     : "'${status[0]}'"
-, "Artist"    : "'${status[1]}'"
-, "coverart"  : "'${status[2]}'"
-, "elapsed"   : '$elapsed'
-, "state"     : "'$state'"
-, "start"     : '$start'
-, "Time"      : '$Time'
-, "timestamp" : '$timestamp'
-, "Title"     : "'${status[3]}'"
-}'
-$dirbash/status-push.sh "$status"
+JSON=$( curl -s -H "Authorization: Bearer $token" \
+			https://api.spotify.com/v1/me/player/currently-playing ) || exit
+! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
+# ------------------------------------------------------------------------------
+STATUS=$( jq '{
+			Album     : (.item.album.name?          // ""),
+			Artist    : (.item.artists[0].name?     // ""),
+			coverart  : (.item.album.images[0].url? // ""),
+			elapsed   : (((.progress_ms + (now * 1000 - .timestamp)) / 1000) | floor),
+			play      : .is_playing,
+			state     : (if .is_playing then "play" else "pause" end),
+			Time      : ((.item.duration_ms?        // 0) / 1000 | round),
+			timestamp : .timestamp,
+			Title     : (.item.name?                // "")
+		}' <<< $JSON )
+$dirbash/status-push.sh "$STATUS"
