@@ -42,16 +42,17 @@ else
 	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
 fi
 # data
-readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
-							-H "Authorization: Bearer $token" \
-							| jq '.item.album.name,
-								.item.artists[0].name,
-								.item.album.images[0].url,
-								.item.name,
-								.is_playing,
-								.item.duration_ms,
-								.progress_ms,
-								.timestamp' ) # not -r: 1-to keep escaped characters 2-already quoted
+readarray -t status < <( curl -s -H "Authorization: Bearer $token" \
+							https://api.spotify.com/v1/me/player/currently-playing \
+								| jq -r '.item.album.name,
+										 .item.artists[0].name,
+										 .item.album.images[0].url,
+										 .item.name,
+										 .is_playing,
+										 .item.duration_ms,
+										 .progress_ms,
+										 .timestamp'
+								| sed 's|"|\\"|g' )
 [[ ${status[4]} == true ]] && state=play || state=pause
 Time=$(( ( ${status[5]} + 500 ) / 1000 ))
 progress=${status[6]}
