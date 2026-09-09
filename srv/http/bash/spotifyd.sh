@@ -12,6 +12,9 @@
 
 . /srv/http/bash/common.sh
 
+dirspotify=$dirshm/spotify
+mkdir -p $dirspotify
+
 ##### start
 if ! playerActive spotify; then
 	echo spotify > $dirshm/player
@@ -21,7 +24,6 @@ if ! playerActive spotify; then
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
-dirspotify=$dirshm/spotify
 # token
 if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
 	token=$( < $filetoken )

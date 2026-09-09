@@ -6,6 +6,7 @@
 . /srv/http/bash/common.sh
 
 dirairplay=$dirshm/airplay
+mkdir -p $dirairplay
 elapsed=$( getContent $dirairplay/elapsed false )
 
 # ...

@@ -56,8 +56,7 @@ if [[ -d $dirbacklight ]]; then
 	fi
 fi
 
-mkdir -p $dirshm/{airplay,embedded,spotify,online}
-chmod -R 777 $dirshm
+mkdir -p $dirshm/online
 chown -R http:http $dirshm
 echo mpd > $dirshm/player
 
