@@ -47,36 +47,22 @@ esac
 if [[ $id < 4 || $id == 5 ]]; then
 	radioparadise=1
 	icon=radioparadise
-	FN_JSON=radioParadise.json
-	FN_STATUS=radioParadise.status
+	FN_JSON=JSON.radioParadise
+	FN_STATUS=STATUS.radioParadise
 else
 	icon=radiofrance
-	FN_JSON=radioFrance.json
-	FN_STATUS=radioFrance.status
+	FN_JSON=JSON.radioFrance
+	FN_STATUS=STATUS.radioFrance
 	if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
 		FN_JSON+=.hiphop
 		FN_STATUS+=.hiphop
 	fi
 fi
 
-radioFrance.json() {
+JSON.radioFrance() {
 	curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id
 }
-radioFrance.status() {
-	jq '.levels[0]                as $level
-		| $level.position         as $position
-		| $level.items[$position] as $item
-		| .steps[$item]           // empty
-		| {
-			Album     : (.titreAlbum? // ""),
-			Artist    : (.authors?    // (.composers? // "")),
-			countdown : ((.end?       // now) - now | round),
-			coverurl  : (.visual?     // ""),
-			Title     : (.title?      // "")
-		  }
-		' <<< $JSON
-}
-radioFrance.json.hiphop() {
+JSON.radioFrance.hiphop() {
 	curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
 		-H 'Accept-Encoding: gzip, deflate, br' \
 		-H 'Content-Type: application/json' \
@@ -89,29 +75,43 @@ radioFrance.json.hiphop() {
 		--data-binary '{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }' \
 			| jq .data.live.song
 }
-radioFrance.status.hiphop() {
-	jq '{
-			Album     : (.track.albumTitle  // ""),
-			Artist    : (.track.mainArtists // [] | join(", ")),
-			countdown : ((.end?             // now) - now | round),
-			coverurl  : "",
-			Title     : (.track.title       // "")
+JSON.radioParadise() {
+	curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing
+}
+STATUS.radioFrance() {
+	jq '.levels[0]                as $level
+		| $level.position         as $position
+		| $level.items[$position] as $item
+		| .steps[$item]           // empty
+		| {
+			Album    : (.titreAlbum? // ""),
+			Artist   : (.authors?    // (.composers? // "")),
+			coverart : (.visual?     // ""),
+			timeleft : ((.end?       // now) - now | round),
+			Title    : (.title?      // "")
 		  }
 		' <<< $JSON
 }
-radioParadise.json() {
-	curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing
-}
-radioParadise.status() {
+STATUS.radioFrance.hiphop() {
 	jq '{
-			Album     : (.album?  // ""),
-			Artist    : (.artist? // ""),
-			countdown : ((.time?  // 0) | round ),
-			coverurl  : (.cover?  // ""),
-			Title     : (.title?  // "")
+			Album    : (.track.albumTitle  // ""),
+			Artist   : (.track.mainArtists // [] | join(", ")),
+			coverart : "",
+			timeleft : ((.end?             // now) - now | round),
+			Title    : (.track.title       // "")
+		  }
+		' <<< $JSON
+}
+STATUS.radioParadise() {
+	jq '{
+			Album    : (.album?  // ""),
+			Artist   : (.artist? // ""),
+			coverart : (.cover?  // ""),
+			timeleft : ((.time?  // 0) | round ),
+			Title    : (.title?  // "")
 		}' <<< $JSON
 }
-metadataGet() {
+metaData() {
 	sleep $1
 	JSON=$( $FN_JSON )
 	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
@@ -124,37 +124,17 @@ metadataGet() {
 			exit
 # ------------------------------------------------------------------------------
 		fi
-		metadataGet 1
+		metaData 1
 		return
 # ..............................................................................
 	fi
 	STATUS=$( $FN_STATUS )
 	keys=.Artist,.Title,.Album
-	readarray -t meta < <( jq -r $keys,.coverurl,.countdown <<< $STATUS )
-	[[ ${meta[@]:0:3} == $( jq -jr $keys $dirshm/status.json ) ]] && metadataGet 5 && return
+	[[ $( jq -jr $keys <<< $STATUS ) == $( jq -jr $keys $dirshm/status.json ) ]] && metaData 5 && return
 # ..............................................................................
-	if [[ ! -e $dirsystem/vumeter ]]; then
-		coverurl=${meta[3]}
-		artist=${meta[0]}
-		if [[ $coverurl ]]; then
-			title=${meta[1]}
-			name=$( alphaNumeric $artist$title )
-			ext=${coverurl/*.}
-			coverart=$dirshm/online/$name.$ext
-			curl -s $coverurl -o $coverart
-			fileCoverLimit
-		else
-			album=${meta[2]}
-			name=$( alphaNumeric $artist$album )
-			coverart=$( compgen -G $dirshm/online/$name.* )
-		fi
-	else
-		coverart=
-	fi
-	
-	STATUS=$( sed -E '/"countdown":|"coverurl":|^}/ d' <<< $STATUS )
+	timeleft=$( jq .timeleft <<< $STATUS )
+	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
 	STATUS+='
-, "coverart"  : "'${coverart:9}'"
 , "elapsed"   : '$( mpcElapsed webradio )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
@@ -166,8 +146,8 @@ metadataGet() {
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"
-	countdown=${meta[4]}
-	metadataGet $(( countdown + 5 )) # add 5s delay
+	timeleft=${meta[4]}
+	metaData $(( timeleft + 5 )) # add 5s delay
 }
 
-metadataGet 0
+metaData 0

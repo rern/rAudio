@@ -1449,10 +1449,9 @@ var PLAYBACK  = {
 		} else {
 			var src = S.webradio ? ( S.coverart || S.stationart ) : S.coverart;
 			if ( src ) {
-				if ( 'snapserverip' in S && ! src.startsWith( 'http' ) ) { // spotify: https://...
-					src = 'http://'+ S.snapserverip + src;
-				}
-				src += COMMON.versionHash();
+				var local = ! src.startsWith( 'http' );
+				if ( 'snapserverip' in S && local ) src = 'http://'+ S.snapserverip + src;
+				if ( local ) src += COMMON.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
 					.attr( 'src', encodeURI( src ) )
