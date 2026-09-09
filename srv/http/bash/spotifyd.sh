@@ -46,15 +46,16 @@ JSON=$( curl -s -H "Authorization: Bearer $token" \
 			https://api.spotify.com/v1/me/player/currently-playing )
 ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
 # ------------------------------------------------------------------------------
-STATUS=$( jq '{
-			Album     : (.item.album.name?          // ""),
-			Artist    : (.item.artists[0].name?     // ""),
-			coverart  : (.item.album.images[0].url? // ""),
-			elapsed   : (((.progress_ms + (now * 1000 - .timestamp)) / 1000) | floor),
-			play      : .is_playing,
-			state     : (if .is_playing then "play" else "pause" end),
-			Time      : ((.item.duration_ms?        // 0) / 1000 | round),
-			timestamp : .timestamp,
-			Title     : (.item.name?                // "")
-		}' <<< $JSON )
+STATUS=$( jq '
+			{
+				Album     : (.item.album.name?          // ""),
+				Artist    : (.item.artists[0].name?     // ""),
+				coverart  : (.item.album.images[0].url? // ""),
+				elapsed   : (((.progress_ms + (now * 1000 - .timestamp)) / 1000) | floor),
+				play      : .is_playing,
+				state     : (if .is_playing then "play" else "pause" end),
+				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
+				timestamp : .timestamp,
+				Title     : (.item.name?                // "")
+			}' <<< $JSON )
 $dirbash/status-push.sh "$STATUS"

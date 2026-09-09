@@ -90,13 +90,12 @@ radioFrance.json.hiphop() {
 			| jq .data.live.song
 }
 radioFrance.status.hiphop() {
-	jq '.track as $track
-		| {
-			Album     : ($track.albumTitle  // ""),
-			Artist    : ($track.mainArtists // [] | join(", ")),
+	jq '{
+			Album     : (.track.albumTitle  // ""),
+			Artist    : (.track.mainArtists // [] | join(", ")),
 			countdown : ((.end?             // now) - now | round),
 			coverurl  : "",
-			Title     : ($track.title       // "")
+			Title     : (.track.title       // "")
 		  }
 		' <<< $JSON
 }
