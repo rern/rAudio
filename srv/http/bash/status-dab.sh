@@ -4,37 +4,34 @@
 
 album=$( < $dirshm/radio )
 # output from dab-start.sh - dab-rtlsdr-3
-filelabel=$dirshm/dabradio/DABlabel.txt
-filecover=$dirshm/dabradio/DABslide.jpg
+file_label=$dirdabradio/DABlabel.txt
+file_slide=$dirdabradio/DABslide.jpg
+file_cover=$dirdabradio/cover.jpg
 
-for i in {0..5}; then
-	[[ -e $filelabel ]] && break || sleep 10
+for i in {0..5}; do
+	[[ -e $file_label ]] && break || sleep 10
 done
 while true; do
-	readarray -t artist_title < <( sed 's/ - \|: /\n/' $filelabel )
-	if (( ${#artist_title[@]} == 1 )); then
-		title=${artist_title[0]}
+	lable=$( < $file_label )
+	[[ $lable == $lable_prev ]] && continue
+	
+	lable_prev=$label
+	if cmp -s $file_slide $file_cover; then
+		coverart=
 	else
-		artist=${artist_title[0]}
-		title=${artist_title[1]}
+		cp -f $file_slide $file_cover
+		coverart=${file_cover:9}
 	fi
-	coverart=
-	if [[ $( awk NF $filecover ) ]]; then
-		name=$( alphaNumeric $title )
-		coverfile=/srv/http/data/shm/dabradio/$name.jpg
-		if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
-			cp -f $filecover $coverfile
-			coverart="${coverfile:9}"
-		fi
-	fi
+	artist_title=$( sed -E 's/ - |: /^/' <<< $label )
 	STATUS='{
   "Album"     : "'$album'"
-, "Artist"    : "'$( quoteEscape $artist )'"
+, "Artist"    : "'$( quoteEscape ${artist_title/^*} )'"
 , "coverart"  : "'$coverart'"
 , "play"      : true
 , "state"     : "play"
-, "Time"      : false
-, "Title"     : "'$( quoteEscape $title )'"
+, "Time"      : 0
+, "timestamp" : '$( date +%s%3N )'
+, "Title"     : "'$( quoteEscape ${artist_title/*^} )'"
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"

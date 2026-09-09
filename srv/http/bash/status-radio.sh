@@ -141,7 +141,7 @@ metaData() {
 , "play"      : true
 , "state"     : "play"
 , "station"   : "'$( sed -n "\|^$file| {s|.*/||; p}" $dirmpd/radio )'"
-, "Time"      : false
+, "Time"      : 0
 , "timestamp" : '$( date +%s%3N )'
 , "webradio"  : true
 }'
