@@ -245,8 +245,8 @@ fileExist() {
 	compgen -G "$1" > /dev/null && return 0
 }
 fileCoverLimit() {
-	ls -t $dirshm/online/* &> /dev/null \
-		| tail -n +10 \
+	ls -t $dirshm/online/* 2> /dev/null \
+		| tail -n +11 \
 		| xargs rm -f --
 }
 fstabColumnReload() {
