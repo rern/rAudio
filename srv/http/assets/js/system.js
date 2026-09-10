@@ -403,12 +403,16 @@ var UTIL          = {
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
 			, beforeshow : () => {
-				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '#infoList label' ).css( 'width', '70px' );
+				$( '#infoList' ).css( 'padding-top', '5px' );
 				var $radio = $( '#infoList input:radio' );
 				var tr     = '<tr style="height: 5px"></tr>';
 				$radio.first().parents( 'tr' ).before( tr );
 				$radio.last().parents( 'tr' ).after( tr );
+				if ( I.values[ 0 ] === 'i2c' ) return
+				
+				$( '#infoList label' )
+					.css( 'width', '70px' )
+					.parents( 'td' ).prop( 'colspan', 3 );
 			}
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
@@ -651,7 +655,12 @@ var UTIL          = {
 		}, 10000 );
 		}
 	, relays        : {
-		  name   : data => {
+		  css    : () => {
+			$( '#infoList' ).css( 'padding-top', '5px' );
+			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:first-child' ).remove();
+		}
+		, name   : data => {
 			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -677,8 +686,7 @@ var UTIL          = {
 				, checkunique  : true
 				, values       : values
 				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
+					UTIL.relays.css();
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
@@ -733,8 +741,7 @@ var UTIL          = {
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
+					UTIL.relays.css();
 					var $tdtimer = $( '#infoList tr:last td' );
 					var $timer   = $tdtimer.slice( 1 )
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
