@@ -39,5 +39,6 @@ while true; do
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"
+	coverFileLimit
 	sleep 10
 done
