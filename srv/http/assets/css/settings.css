@@ -649,17 +649,19 @@ input.disabled + .switchlabel::after {
 	padding: 0;
 	box-shadow: var( --shadow-msg );
 }
-.infomessage svg {
+#infoList svg {
 	width: 95%;
 }
 .gpiopins {
 	margin-top: 0;
 	text-align: left;
 	line-height: 20px;
+	padding: 0 15px;
 }
 .gpiopin {
-	margin-bottom: 5px !important;
+	margin: 0 0 5px 0 !important;
 	padding: 0 0 0 12px;
+	text-align: left;
 }
 .gpiopin span {
 	display: inline-block;

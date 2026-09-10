@@ -1044,7 +1044,7 @@ $( '.img' ).on( 'click', function() {
 						+ '<br>'+ vcc1
 						+ gnd
 						+'</p>'
-		, relays        : '<br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
+		, relays        : '<br><br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
 		, rotaryencoder : gpiopin
 						 +'<br><c>CLK, DT, SW</c> : any green <grn>●</grn> pins'
 						 +'<br><c>+</c> : not use'
@@ -1053,7 +1053,7 @@ $( '.img' ).on( 'click', function() {
 	}
 	var list    = '<img src="/assets/img/'+ name +'.jpg">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
-	if ( name in txt ) list += '<br>'+ txt[ name ];
+	if ( name in txt ) list += txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
