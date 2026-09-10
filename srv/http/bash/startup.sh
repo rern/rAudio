@@ -56,10 +56,8 @@ if [[ -d $dirbacklight ]]; then
 	fi
 fi
 
-mkdir -p $dirshm/online
-chown -R http:http $dirshm
+mkdirRW $dirshm/online
 echo mpd > $dirshm/player
-
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 
 netctllist=$( netctl list )

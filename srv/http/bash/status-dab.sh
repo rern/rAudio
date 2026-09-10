@@ -2,36 +2,38 @@
 
 . /srv/http/bash/common.sh
 
-album=$( < $dirshm/radio )
-# output from dab-start.sh - dab-rtlsdr-3
-file_label=$dirdabradio/DABlabel.txt
-file_slide=$dirdabradio/DABslide.jpg
-file_cover=$dirdabradio/cover.jpg
+file_label=$dirdabradio/DABlabel.txt # output from dab-start.sh - dab-rtlsdr-3
+coverart=$dirdabradio/DABslide.jpg   # ^^
+station=$( < $dirshm/radio )
 
-for i in {0..5}; do
-	[[ -e $file_label ]] && break || sleep 10
-done
-while true; do
-	lable=$( < $file_label )
-	[[ $lable == $lable_prev ]] && continue
+for i in {0..9}; do
+	[[ -e $file_label ]] && break
 	
-	lable_prev=$label
-	if cmp -s $file_slide $file_cover; then
-		coverart=
-	else
-		cp -f $file_slide $file_cover
-		coverart=${file_cover:9}
-	fi
+	sleep 5
+done
+
+while true; do
+	label=$( < $file_label )
+	[[ $label == $label_prev ]] && continue
+	
+	label_prev=$label
 	artist_title=$( sed -E 's/ - |: /^/' <<< $label )
+	if [[ $artist_title == *^* ]]; then
+		artist=${artist_title/^*}
+		title=${artist_title/*^}
+	else
+		title=$artist_title
+	fi
 	STATUS='{
-  "Album"     : "'$album'"
-, "Artist"    : "'$( quoteEscape ${artist_title/^*} )'"
+  "Album"     : ""
+, "Artist"    : "'$( quoteEscape $artist )'"
 , "coverart"  : "'$coverart'"
 , "play"      : true
 , "state"     : "play"
+, "station"   : "'$station'"
 , "Time"      : 0
 , "timestamp" : '$( date +%s%3N )'
-, "Title"     : "'$( quoteEscape ${artist_title/*^} )'"
+, "Title"     : "'$( quoteEscape $title )'"
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"

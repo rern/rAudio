@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # data directories
-mkdir -p /srv/http/data/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} \
+mkdir -p /srv/http/data/{addons,audiocd,bookmarks,lyrics,mpd,mpdconf,playlists,system,webradio} \
 		 /mnt/MPD/{NAS,SD,USB}
 
 . /srv/http/bash/common.sh
 
-[[ -e /bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} || rmdir $dircamilladsp
+[[ -e /bin/camilladsp ]] && mkdir -p $dirdata/camilladsp/{coeffs,configs,configs-bt,raw}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 # display

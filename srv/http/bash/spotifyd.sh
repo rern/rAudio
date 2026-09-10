@@ -13,7 +13,7 @@
 . /srv/http/bash/common.sh
 
 dirspotify=$dirshm/spotify
-mkdir -p $dirspotify
+mkdirRW $dirspotify
 
 ##### start
 if ! playerActive spotify; then

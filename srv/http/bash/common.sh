@@ -354,6 +354,12 @@ logoLcdOled() {
 		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
 	fi
 }
+mkdirRW() {
+	[[ -e $1 ]] && return
+	
+	mkdir $1
+	chmod 777 $1
+}
 mpcElapsed() {
 	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
 		echo false
