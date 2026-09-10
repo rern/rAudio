@@ -207,10 +207,8 @@ EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · $B->volume Turn
  · $B->play$B->pause$B->stop Push
- · $B->previous Double click *
- · $B->next Long press *
-
-* Not applicable for $T->features$L->renderers
+ · $B->previous Double click
+ · $B->next Long press
 EOF
 	]
 	, [
