@@ -161,8 +161,7 @@ case 'home':
 	$htmlhome  = '';
 	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
-		$order = file_get_contents( $fileorder );
-		$order = json_decode( $order );
+		$order = json_decode( file_get_contents( $fileorder ) );
 		foreach( $order as $o ) $htmlhome.= $html[ $o ];
 	} else {
 		foreach( $html as $o => $h ) $htmlhome.= $h;
