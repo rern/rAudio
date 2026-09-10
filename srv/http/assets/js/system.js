@@ -616,7 +616,10 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : values
 				, checkchanged : S.powerbutton
-				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
+				, beforeshow   : () => {
+					$( '#infoList' ).css( 'padding-top', '5px' );
+					$( '.pwr' ).removeClass( 'hide' );
+				}
 				, cancel       : SWITCH.cancel
 				, ok           : SWITCH.enable
 				, fileconf     : true
