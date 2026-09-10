@@ -652,8 +652,8 @@ input.disabled + .switchlabel::after {
 	padding: 0;
 	box-shadow: 0 5px 5px 0 #000;
 }
-#infoList:has( svg ) table {
-	margin-top: 5px;
+#infoList:has( svg ):has( input[ type=radio ] ) table {
+	margin-top: 10px;
 }
 .gpiopins {
 	margin-top: 0;
