@@ -20,7 +20,7 @@ if [[ -e /boot/expand ]]; then # run once
 	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
 fi
 
-backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
+backupfile=$( ls /boot/*.gz 2> /dev/null | head -n 1 )
 if [[ -e $backupfile ]]; then
 	mv -f "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
@@ -45,12 +45,9 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-
-[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
 logoLcdOled
-
+[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
-
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
 	chmod 666 $dirbacklight/{brightness,bl_power}
@@ -59,11 +56,8 @@ if [[ -d $dirbacklight ]]; then
 	fi
 fi
 
-mkdir -p $dirshm/{airplay,embedded,spotify,online}
-chmod -R 777 $dirshm
-chown -R http:http $dirshm
+mkdirRW $dirshm/online
 echo mpd > $dirshm/player
-
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 
 netctllist=$( netctl list )
@@ -114,7 +108,6 @@ CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
 $dirsettings/player-conf.sh
-$dirbash/status -k > $dirshm/status
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 # after all sources connected -----------------------------------------------------

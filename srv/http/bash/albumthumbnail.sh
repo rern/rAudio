@@ -32,7 +32,7 @@ echo -e "\nDirectory: $( tagColor $path )\n"
 if [[ ! $PATH_MPD ]]; then
 	directories=$( sed 's|.*^|/mnt/MPD/|' $dirmpd/album )
 else
-	directories=$( find "$path" -type d )
+	directories=$( find -L "$path" -type d )
 fi
 [[ ! $directories ]] && echo "$padw No albums found in database." && exit
 # --------------------------------------------------------------------

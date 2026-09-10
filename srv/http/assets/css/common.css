@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1781155993' );
+	src         : url( '/assets/fonts/rern.woff2?v=1787231943' );
 }
 @font-face {
 	font-family : Lato;
@@ -103,6 +103,7 @@ i {
 .i-file::before,
 .i-playlists::before       { content: '\F548' }
 .i-file-music::before      { content: '\F549' }
+.i-file-playlist::before   { content: '\F60D' }
 .i-filters::before         { content: '\F52A' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
@@ -349,7 +350,6 @@ input:focus {
 	background    : #000;
 	border-bottom : 1px solid var( --cg );
 }
-
 codered  {
 	padding : 0px 5px 3px 5px;
 	border-radius : var( --radius-chk );
@@ -654,6 +654,16 @@ label:has( input[ disabled ] ) {
 #infoList .updn {
 	line-height: 40px;
 }
+#infoList:has( hr ),
+#infoList:has( hr ) .infomessage {
+	padding: 5px 0;
+}
+#infoBox:has( #infoTab ) #infoList {
+	padding-top: 15px;
+}
+.infomessage:has(.i-bookmark) .infoimgname {
+	margin-top: -25px;
+}
 
 hr {
 	margin: 10px 0 0 0;
@@ -767,7 +777,7 @@ hr {
 	color: var( --cg60 );
 }
 #infoList {
-	padding: 20px 10px 10px 10px;
+	padding: 10px;
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
@@ -874,11 +884,14 @@ hr {
 .infomessage img {
 	width: auto;
 	height: 100px;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 }
 .infomessage object {
 	height: 100px;
 	margin-bottom: 0;
+}
+.infoimgname {
+	text-align: center !important;
 }
 .infoimgnew {
 	margin-left: 10px;
@@ -1081,6 +1094,7 @@ input[ type=radio ]:disabled {
 .dropdown ul {
 	width: 100%;
 	max-height: 400px;
+	margin: 0;
 	padding: 0;
 	overflow-x: hidden;
 }

@@ -180,7 +180,8 @@ var CONFIG        = {
 			  ...SW
 			, message      : UTIL.gpiosvg
 			, list         : [
-				  [ 'CLK',  ...select_pins ]
+				  [ ICON( 'tag gr' ), ICON( 'gpiopins gr' ) +'Pin' ]
+				, [ 'CLK',  ...select_pins ]
 				, [ 'DT',   ...select_pins ]
 				, [ 'SW',   ...select_pins ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
@@ -223,16 +224,16 @@ var CONFIG        = {
 		} );
 	}
 	, timezone      : () => UTIL.server.ntp()
-	, vuled         : data => {
-		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
+	, vuled         : values => {
+		var list   = [ [ ICON( 'vuled gr' ), ICON( 'gpiopins gr' ) +'Pin' ] ];
 		var prefix = '<gr>#</gr> ';
-		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
+		values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), ...select_pins ] ) );
 		INFO( {
 			  ...SW
 			, message      : UTIL.gpiosvg
 			, list         : list
 			, footer       : ICON( 'power' ) +'On/Off'
-			, values       : data.values
+			, values       : values
 			, checkchanged : S.vuled
 			, checkunique  : true
 			, boxwidth     : 70
@@ -244,7 +245,6 @@ var CONFIG        = {
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				UTIL.gpioState( data.state );
 			}
 			, cancel       : SWITCH.cancel
 			, ok           : () => {
@@ -320,21 +320,6 @@ var UTIL          = {
 				, ok           : () => BASH( [ 'monitor', 'rpidisplay2', _INFO.val(), 'CMD MODEL ON' ] )
 			} );
 		}
-	}
-	, gpioState     : state => {
-		if ( ! state ) return // relays / vuled active
-
-		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
-			var $el = $( el );
-			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
-		} );
-		$( '#infoList' ).on( 'click', 'circle', function( e ) {
-			var p = $( this ).data( 'bcm' );
-			var on  = ! state[ p ];
-			state[ p ] = on;
-			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-			BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
-		} );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, hostname      : () => {
@@ -615,7 +600,8 @@ var UTIL          = {
 				, tab          : [ '', UTIL.powerbutton.ap ]
 				, message      : UTIL.gpiosvg
 				, list         : [
-					  [ 'On',  'select', { 5: 3 } ]
+					  [ ICON( 'tag gr' ), ICON( 'gpiopins gr' ) +'Pin' ]
+					, [ 'On',  'select', { 5: 3 } ]
 					, [ 'Off', ...select_pins ]
 					, [ 'LED', ...select_pins ]
 				]
@@ -671,7 +657,7 @@ var UTIL          = {
 				, [ '', ICON( 'tag gr' ) +' Name' ]
 			];
 			var kL     = keys.length;
-			for ( var i = 0; i < kL; i++ ) {
+			for ( let i = 0; i < kL; i++ ) {
 				list.push( [ '', 'select', { kv: UTIL.board2bcm, width: 80, sameline: true } ], [ '', 'text' ] );
 			}
 			INFO( {
@@ -693,7 +679,6 @@ var UTIL          = {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
 					_INFO.addRemove();
-					UTIL.gpioState( data.state );
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -701,9 +686,8 @@ var UTIL          = {
 		}
 		, order  : data => {
 			var pin    = data.relays;
-			var name   = data.names;
 			var names  = {}
-			$.each( name, ( k, v ) => { names[ v ] = k } );
+			$.each( data.names, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
 				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { colspan: 2, sameline: true } ]
@@ -711,7 +695,7 @@ var UTIL          = {
 			];
 			var values = [];
 			var pL     = pin.ON.length;
-			for ( var i = 0; i < pL; i++ ) {
+			for ( let i = 0; i < pL; i++ ) {
 				var width  = window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20;
 				var param = { kv: names, width: width, colspan: 2 };
 				list.push(
@@ -764,7 +748,6 @@ var UTIL          = {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					UTIL.gpioState( data.state );
 				}
 				, cancel       : SWITCH.cancel
 				, ok           : () => UTIL.relays.set( data )
@@ -784,7 +767,7 @@ var UTIL          = {
 				}
 			} else {
 				var pL = order.ON.length;
-				for ( var i = 0; i < pL; i++ ) {
+				for ( let i = 0; i < pL; i++ ) {
 					var j          = i * 4;
 					order.ON[ i ]  = v[ j ];
 					order.OFF[ i ] = v[ j + 1 ];
@@ -989,6 +972,25 @@ function renderPage() {
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	CONTENT();
 }
+var infoToggle = _INFO.toggle;
+_INFO.toggle   = () => { // append existing function
+	infoToggle.apply( this );
+	if ( ! $( '#infoList svg' ).length ) return
+	
+	BASH( 'data-config.sh gpiostate', state => {
+		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
+			var $el = $( el );
+			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
+		} );
+		$( '#infoList' ).on( 'click', 'circle', function( e ) {
+			var p = $( this ).data( 'bcm' );
+			var on  = ! state[ p ];
+			state[ p ] = on;
+			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+			BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
+		} );
+	}, 'json' );
+}
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -1048,7 +1050,7 @@ $( '.img' ).on( 'click', function() {
 						 + gnd
 						 +'</p>'
 	}
-	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	var list    = '<img src="/assets/img/'+ name +'.jpg">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
 	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {
@@ -1071,6 +1073,9 @@ $( '.img' ).on( 'click', function() {
 		}
 		, okno       : true
 	} );
+} );
+$( '#infoList' ).on( 'load', 'svg', function() {
+	console.log(9)
 } );
 $( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {

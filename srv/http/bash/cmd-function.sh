@@ -1,5 +1,15 @@
 #!/bin/bash
 
+dir2path() {
+	if [[ $1 == /* ]]; then
+		echo "$1"
+	elif [[ $1 == [NSU]* ]]; then
+		echo "/mnt/MPD/$1"
+	else
+		line=$( grep -m1 ^$1 $dirmpd/radio )
+		echo "${line/*^}"
+	fi
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
@@ -21,10 +31,10 @@ plAddRandom() {
 	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
 #...............................................................................
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album
 		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
-		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
 	fi
 	if [[ -s $dirsystem/librandom ]]; then # album
 		mpc -q add "$dir"
@@ -55,7 +65,9 @@ playerStart() {
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
 		spotify )   service=spotifyd;;
-		upnp )      service=upmpdcli;;
+		upnp )
+					service=upmpdcli
+					touch $dirshm/upnp;;
 	esac
 	if [[ $service ]]; then
 		for pid in $( pgrep $service ); do
@@ -94,14 +106,11 @@ playerStop() {
 		upnp )
 			systemctl stop upmpdcli
 			mpc -q clear
+			rm -f $dirshm/upnp
 			systemctl start upmpdcli
 			;;
 	esac
-	if [[ $player == mpd ]]; then
-		$dirbash/status-push.sh
-	else
-		$dirbash/status-push.sh playerstop
-	fi
+	$dirbash/status-push.sh
 	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	fi
@@ -111,6 +120,7 @@ plClear() {
 	radioStop
 	rm -f $dirsystem/librandom $dirshm/playlist*
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
+	$dirbash/status-push.sh
 }
 pushPlaylist() {
 	local b buffer data
@@ -122,11 +132,11 @@ pushPlaylist() {
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data=$( php /srv/http/playlist.php current | tr -d '\n' )
+		data=$( php /srv/http/playlist.php current )
 		data=$( pushDataSet playlist "$data" )
-		b=$( printf '%s' "$data" | wc -c )
-		buffer=$(( b + 100 ))
-		websocat --text -B $buffer ws://127.0.0.1:8080 <<< $data
+		bytes=$( printf '%s' "$data" | wc -c )
+		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
@@ -137,7 +147,7 @@ pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
 		pushData playlists $( php /srv/http/playlist.php list )
 	else
-		pushData playlists '{ "count": false }'
+		pushData playlists '{ "count": 0 }'
 	fi
 }
 radioStop() {
@@ -159,47 +169,10 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-webradioCharset() {
-	sed -E 's/UTF-*8|iso *-* *//' <<< $1
-}
 webradioCount() {
 	local counts
 	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
 	counts+=$( countRadio )
 	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
 	pushRadioList
-}
-webradioVerify() {
-	local dir ext url
-	url=$1
-	dir=$2
-	ext=${url/*.}
-	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
-#...............................................................................
-	if [[ $ext == m3u ]]; then
-		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^http )
-	elif [[ $ext == pls ]]; then
-		url=$( curl -s "$url" 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
-	fi
-	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
-# --------------------------------------------------------------------
-	notify webradio 'Web Radio' 'Stream test ...'
-	. <( timeout 3 ffprobe \
-			-v quiet \
-			-probesize 32k \
-			-analyzeduration 500000 \
-			-select_streams a:0 \
-			-show_entries stream=bits_per_raw_sample,sample_rate \
-			-of default=noprint_wrappers=1 \
-			$url )
-	[[ ! $sample_rate ]] && echo 'Cannot be streamed:' && exit
-# --------------------------------------------------------------------
-	[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
-	(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
-	mkdir "$dir"
-	echo "\
-$NAME
-$sampling
-$CHARSET" > "$dir/data"
-	webradioCount
 }

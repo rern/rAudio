@@ -336,7 +336,7 @@ W             = {  // from websocket.py (server)
 			V.ctx.hsl  = data.hsl;
 			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
 		}
-		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ UTIL.versionHash();
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
 		$( '#loader rect' ).css( 'fill', data.cm );
 		$( '#loader path' ).css( 'fill', data.cg );
 		delete V.color;
@@ -455,7 +455,7 @@ W             = {  // from websocket.py (server)
 			S.volume     = data.val;
 			S.volumemute = 0;
 		}
-		VOLUME.set();
+		if ( 'set' in VOLUME ) VOLUME.set();
 	}
 }
 // info ----------------------------------------------------------------------
@@ -536,7 +536,7 @@ function INFO( json ) {
 		V.debug = false;
 	} );
 	if ( I.file ) {
-		var htmlfile = '<div id="infoFilename"><c>(select file)</c></div>'
+		var htmlfile = '<div id="infoFilename"></div>'
 					  +'<input type="file" class="hide" id="infoFileBox"'+ ( I.file.type ? ' accept="'+ I.file.type +'">' : '>' )
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 					  + ( I.file.label || ICON( 'folder-open' ) +' File' ) +'</a>';
@@ -552,13 +552,13 @@ function INFO( json ) {
 
 			I.infofile    = this.files[ 0 ];
 			var filename  = I.infofile.name;
-			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
+			var typeimage = I.infofile.type.startsWith( 'image' );
 			I.filechecked = true;
 			if ( I.file.type ) {
 				if ( I.file.type === 'image/*' ) {
 					I.filechecked = typeimage;
 				} else {
-					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
+					var ext       = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
 					I.filechecked = I.file.type.includes( ext );
 				}
 			}
@@ -638,7 +638,7 @@ function INFO( json ) {
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
-					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
+					if ( htmls.list.endsWith( 'tr>' ) ) htmls.list += '<tr>'
 					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan + width +'>';
 					break;
 				case 'hidden':
@@ -651,7 +651,7 @@ function INFO( json ) {
 					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
-					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
+					htmls.list += htmls.list.endsWith( 'td>' ) ? '' : '<tr><td>'+ label +'</td>';
 					htmls.list += '<td'+ colspan + width +'>';
 			}
 			switch ( type ) {
@@ -812,7 +812,7 @@ function INFO( json ) {
 		if ( I.updn.length ) {
 			var max = [];
 			var min = [];
-			for ( var i = 0; i < I.updn.length; i++ ) {
+			for ( let i = 0; i < I.updn.length; i++ ) {
 				min.push( I.updn[ i ].min );
 				max.push( I.updn[ i ].max );
 			}
@@ -840,7 +840,7 @@ function INFO( json ) {
 						}
 					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					for ( var i = 0; i < I.updn.length; i++ ) {
+					for ( let i = 0; i < I.updn.length; i++ ) {
 						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
 						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
 					}
@@ -880,6 +880,13 @@ function INFO( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
+		if ( I.checktext ) {
+			$( '#infoList input' ).eq( I.checktext.input ).on( 'input', function() {
+				var $this = $( this );
+				var val   = $this.val();
+				if ( val.includes( I.checktext.text ) ) setTimeout( () => $this.val( val.replace( /\//g, '' ) ), 90 );
+			} );
+		}
 		if ( 'focus' in I ) {
 			$inputbox.eq( I.focus ).focus();
 		} else {
@@ -966,16 +973,18 @@ var _INFO     = {
 			if ( ! check ) return
 
 			$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
-				var infoval = _INFO.val( 'array' );
-				if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
-				if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
-				if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
-				if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
-				I.timeout.check = setTimeout( () => {
-					var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
-					var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
-					$( '#infoOk' ).toggleClass( 'disabled', disabled );
-				}, 100 );
+				setTimeout( () => {
+					var infoval = _INFO.val( 'array' );
+					if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
+					if ( I.checkblank )  I.timeout.blank  = setTimeout( _INFO.check.blank, 0 );   // #1
+					if ( I.checklength ) I.timeout.length = setTimeout( _INFO.check.length, 20 ); // #2
+					if ( I.checkip )     I.timeout.ip     = setTimeout( _INFO.check.ip, 40 );     // #3
+					I.timeout.check = setTimeout( () => {
+						var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
+						var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
+						$( '#infoOk' ).toggleClass( 'disabled', disabled );
+					}, 100 );
+				}, 'checktext' in I ? 100 : 0 );
 			} );
 		}
 	}
@@ -1018,6 +1027,7 @@ var _INFO     = {
 					$this.eq( 0 ).prop( 'checked', true );
 				}
 			} else if ( type === 'checkbox' ) {
+				if ( val === null ) I.values[ i ] = val = false; // camilladsp
 				var checked = typeof val === 'boolean' ? val : val == $this.val();
 				$this.prop( 'checked', checked );
 			} else if ( $this.is( 'select' ) ) {
@@ -1165,6 +1175,7 @@ var _INFO     = {
 
 var COMMON    = {
 	  bottom        : $el => $el[ 0 ].getBoundingClientRect().bottom
+	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (i+1) to end
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
 	, dataError     : ( msg, list ) => {
@@ -1241,14 +1252,15 @@ var COMMON    = {
 		console.log( '%cDebug:', 'color:red' );
 		if ( typeof data === 'string' ) {
 			console.log( JSON.parse( data ) );
-			console.log( "websocat --text ws://127.0.0.1:8080 <<< '"+ data +"'" );
+			console.log( "status -P '"+ data +"'" );
 		} else {
-			var bashcmd = data.filesh.split( '/' ).pop();
+			var bashcmd = COMMON.baseName( data.filesh );
 			if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
 			console.log( data );
 			console.log( bashcmd );
 		}
 	}
+	, dirName       : path => path.slice( 0, path.lastIndexOf( '/' ) ) // get 0 to before last '/' (i)
 	, draggable     : el => {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
@@ -1396,7 +1408,7 @@ var COMMON    = {
 	}
 	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
 	, json          : {
-		  clone : json => JSON.parse( JSON.stringify( json ) )
+		  clone     : json => JSON.parse( JSON.stringify( json ) )
 		, highlight : json => {
 			var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
 			var json  = Object.keys( json )
@@ -1416,7 +1428,7 @@ var COMMON    = {
 				else if ( /[\[\]]|null/.test( match ) ) return color( match, 'pur' )
 			} );
 		}
-		, save  : ( name, json ) => {
+		, save      : ( name, json ) => {
 			if ( typeof json === 'object' ) json = JSON.stringify( json );
 			var data = '{ "json": '+ json +', "name": "'+ name +'" }';
 			if ( V.debug ) {
@@ -1426,11 +1438,14 @@ var COMMON    = {
 
 			WS.send( data );
 		}
-		, sort : json => {
+		, sort      : json => {
 			return Object.keys( json ).sort().reduce( function ( result, key ) {
 				result[ key ] = json[ key ];
 				return result;
 			}, {} );
+		}
+		, update    : ( json, new_json ) => {
+			$.each( new_json, ( k, v ) => { json[ k ] = v } );
 		}
 	}
 	, libraryUpdate : () => {
@@ -1509,6 +1524,7 @@ var COMMON    = {
 		var y = e.pageY || e.changedTouches[ 0 ].pageY;
 		return [ x, y ]
 	}
+	, path2mode     : path => path.slice( 0, path.indexOf( '/' ) ).toLowerCase() // get 0 to before 1st '/' (i)
 	, power         : () => {
 		INFO( {
 			  icon        : 'power'
@@ -1650,9 +1666,7 @@ var COMMON    = {
 		if ( val !== '' && ! isNaN( val - 0 ) ) return +val;
 		return val
 	}
-	, updating      : () => {
-		BANNER( 'refresh-library'+ ( S.updating ? ' blink' : '' ), 'Library Update', S.updating ? 'Updating ...' : 'Done' );
-	}
+	, versionHash   : () => '?v='+ Math.round( Date.now() / 1000 )
 	, websocket     : disable => {
 		if ( disable ) {
 			V.websocket = false;
@@ -1840,7 +1854,7 @@ $( '#debug' ).on( 'click', function() {
 
 	if ( ! $( '#data' ).hasClass( 'hide' ) ) return
 
-	BASH( [ 'cmd.sh', 'cachebust', true, 'CMD TYPE' ], type => {
+	BASH( [ 'cmd.sh', 'cssjsbust', true, 'CMD TYPE' ], type => {
 		if ( type === 'time' ) {
 			COMMON.debug();
 			return
@@ -1864,7 +1878,7 @@ $( '#debug' ).on( 'click', function() {
 						COMMON.debug();
 						$( '#infoX' ).trigger( 'click' );
 					} else {
-						BASH( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );
+						BASH( [ 'cmd.sh', 'cssjsbust' ], location.reload() );
 					}
 				} );
 			}
@@ -1903,7 +1917,7 @@ $( 'body' ).on( 'click', function( e ) {
 		var search  = $origin.find( 'option' ).length > 10 ? '<div class="search"><input type="text" spellcheck="false"></div>' : '';
 		var html_li = '';
 		$origin.find( 'option' ).each( ( i, el ) => html_li += '<li>'+ COMMON.select.label( $( el ).text() ) +'</li>' );
-		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul><div>' );
+		$this.after( '<div class="dropdown">'+ search +'<ul>'+ html_li +'</ul></div>' );
 		$dropdown   = $this.next();
 	}
 	$this.addClass( 'active' );

@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 statusCmd() {
-	status=$( eval "$1" )
+	status=$( eval "$1" | grep . )
 	echo "\
 <bll># $1</bll>
 $status"
@@ -14,7 +14,6 @@ case $1 in
 albumignore )
 	echo "\
 <bll># /srv/http/data/mpd/albumignore</bll>
-
 $( cat $dirmpd/albumignore )
 "
 	;;
@@ -119,10 +118,9 @@ mpdignore )
 	while read file; do
 		lines=$( < "$file" )
 		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( sed 's|^data$|& <yl>(rAudio Shared Data)</yl>|' <<< $lines )
-		path="<g>$( dirname "$file" )/</g>"
 		list+="
 $file
-$( sed "s|^|$path|" <<< $lines )"
+$( sed "s|^|  <g>../</g>|" <<< $lines )"
 	done <<< $files
 	echo "$list"
 	;;
@@ -131,7 +129,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
-	[[ -e $dirshm/btmixer ]] && echo; statusCmd 'bluealsa-aplay -L'
+	[[ -e $dirshm/btmixer ]] && echo && statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;
@@ -139,7 +137,7 @@ status )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 # --------------------------------------------------------------------
-	cmd='systemd-analyze | head -1'
+	cmd='systemd-analyze | head -n 1'
 	startupfinished=$( eval $cmd )
 	if grep -q 'Startup finished' <<< $startupfinished; then
 		cmd1='journalctl -b'

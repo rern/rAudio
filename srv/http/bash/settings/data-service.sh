@@ -110,6 +110,12 @@ $( < /etc/exports )
 $ip_client"
 	fi
 	;;
+rotaryencoder )
+	file=$dirsystem/rotaryencoder.conf
+	conf="\
+<bll># cat $file</bll>
+$( cat $file )"
+	;;
 shairportsync )
 	PKG=shairport-sync
 	SERVICE=$PKG

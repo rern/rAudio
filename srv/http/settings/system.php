@@ -1,15 +1,20 @@
-<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
+<div id="gpiosvg" class="hide">
+<?php include 'assets/img/gpio.svg';?>
+<p class="gpiopin"><span></span>Off &ensp; <span class="on"></span> On / Active</p>
+</div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
 $greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
-	  'buttons' => [ 'add', 'format', 'gear', 'microsd', 'networks', 'nvme', 'power', 'refresh', 'nfsserver', 'sata', 'usbdrive' ]
+	  'buttons' => [ 'add',   'format',   'gear',    'microsd',   'networks', 'next', 'nvme',     'pause', 'play'
+				   , 'power', 'previous', 'refresh', 'nfsserver', 'sata',     'stop', 'usbdrive', 'volume' ]
 	, 'labels'  => [
 		  'Airplay'       => 'airplay'
 		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
 		, 'Power Button'  => 'power'
+		, 'Renderers'     => ''
 		, 'Server rAudio' => 'nfsserver'
 		, 'Shared Data'   => 'networks'
 		, 'Spectrum OLED' => 'mpdoled'
@@ -189,18 +194,23 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
 Toggle: $B->gear
-	<tab style="width: 115px">Sequence</tab>$B->power All
-	<tab>Pin - Name</tab>$greendot
+	<tab>Sequence</tab> $B->power All
+	<tab>Pin - Name</tab> $greendot
 EOF
 	],
 	[
 		  'id'       => 'rotaryencoder'
 		, 'label'    => 'Rotary Encoder'
-		, 'sub'      => 'evtest'
+		, 'sub'      => 'rotaryencoder'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
- · Turn volume up/down
- · Push to play/pause
+ · $B->volume Turn
+ · $B->play$B->pause$B->stop Push
+ · $B->previous Double click *
+ · $B->next Long press *
+
+* Not apllicable for $T->features$L->renderers
 EOF
 	]
 	, [

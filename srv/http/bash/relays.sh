@@ -22,10 +22,9 @@ else
 	delay=( $ond )
 	color=wh
 fi
-. <( json2var $dirsystem/relays.json | sed 's/^/p/' )
-for pin in $pins; do
-	ppin=p$pin
-	order+=${!ppin}$'\n'
+json=$( < $dirsystem/relays.json )
+for p in $pins; do
+	order+=$( jq -r --arg p $p '.[$p]' <<< $json )$'\n'
 done
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff

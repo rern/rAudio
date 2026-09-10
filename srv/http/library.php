@@ -36,7 +36,7 @@ File
 search
 			track list: mpc search -f %*% any $keyword
 */
-include 'function.php';
+include 'function.php'; // $hash
 
 $post    = ( object ) $_POST;
 $CMD     = $post->library ?? $argv[ 1 ];
@@ -98,64 +98,6 @@ case 'findartist': // artist, albumartist
 	$html.= indexBar( $indexes );
 	echo $html;
 	break;
-case 'home':
-	$modes     = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
-				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
-	$modes_l   = [];
-	$htmlmode  = '';
-	foreach( $modes as $mode ) {
-		$lipath    = str_replace( ' ', '', $mode );
-		$mode_l    = strtolower( $lipath );
-		$modes_l[] = $mode_l;
-		$gr        = modeFile( $mode_l ) ? '' : '<gr></gr>';
-		$htmlmode .= '
-<li class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
-	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
-</li>';
-	}
-	// bookmarks
-	$dir       = '/srv/http/data/bookmarks';
-	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
-	if ( count( $files ) ) {
-		foreach( $files as $name ) {
-			$path    = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES )[ 0 ];
-			$bkradio = str_starts_with( $path, 'http' ) || str_starts_with( $path, 'rtsp' ) ? ' bkradio' : '';
-			if ( $bkradio ) {
-				$d = radioPath( $path );;
-			} else if ( $path[ 0 ] !== '/' ) {
-				$d = '/mnt/MPD/'.$path;
-			} else {
-				$d = $path;
-			}
-			$files  = exec( 'find "'.$d.'" -maxdepth 1 -type f ! -name coverart.* ! -name thumb.* | wc -l' );
-			$subdir = $files > 0 ? '' : ' subdir';
-			$src    = str_starts_with( $d, '/srv' ) ? substr( $d, 9 ) : $d;
-			$src   .= $subdir ? '/coverart.jpg' : '/cover.jpg';
-			$icon   = '<img class="bkcoverart" src="'.$src.'">';
-			$htmlmode.= '
-<li class="mode bookmark'.$bkradio.$subdir.'">
-	<a class="lipath">'.$path.'</a>
-	<a class="name hide">'.$name.'</a>
-	'.$icon.'
-</li>';
-		}
-	}
-	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
-	$lsmnt     = json_decode( $lsdir );
-	$fileorder = $dirsystem.'order.json';
-	if ( file_exists( $fileorder ) ) {
-		$order = file_get_contents( $fileorder );
-		$order = $order ? json_decode( $order ) : false;
-	} else {
-		$order = false;
-	}
-	echo json_encode( [
-		  'html'  => $htmlmode
-		, 'lsmnt' => $lsmnt
-		, 'modes' => $modes_l
-		, 'order' => $order
-	] );
-	break;
 case 'findmode':
 	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
 			."| awk 'NF && !a[$0]++'"
@@ -171,6 +113,63 @@ case 'findmode':
 	} else { // modes - album, composer, conductor, date, genre
 		htmlFind();
 	}
+	break;
+case 'home':
+	$labels    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre' ,    'Latest'
+				 , 'NAS',   'NVMe',   'SATA',         'SD',       'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
+	$html      = [];
+	foreach( $labels as $label ) {
+		$mode          = strtolower( str_replace( ' ', '', $label ) );
+		$gr            = modeFile( $mode ) ? '' : '<gr></gr>';
+		$html[ $mode ] = '
+<li class="mode '.$mode.'">
+	<i class="i-'.$mode.'"></i>'.$gr.'<a class="label">'.$label.'</a>
+	<a class="name hide">'.$mode.'</a>
+</li>';
+	}
+	// bookmarks
+	$dirbk     = '/srv/http/data/bookmarks';
+	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
+	if ( count( $files ) ) {
+		foreach( $files as $name ) {
+			$path  = rtrim( file_get_contents( $dirbk.'/'.$name ), "\n" );
+			$path0 = $path[ 0 ];
+			if ( $path0 === 'h' || $path0 === 'r' ) {
+				$bkradio = ' bkradio';
+				$cover   = radioDir( $path ); // http://... > /data/webradio/...
+			} else {
+				$bkradio = '';
+				if ( $path0 !== '/' ) {
+					$cover = '/mnt/MPD/'.$path;            // USB/... > /mnt/MPD/USB/...
+				} else if ( $path[ 1 ] === 's' ) {
+					$cover = substr( $path, 9 );           // /srv/http/... > /data/...
+				} else {
+					$cover = $path;
+				}
+			}
+			$html[ $name ] = '
+<li class="mode bookmark'.$bkradio.'">
+	<a class="lipath">'.$path.'</a>
+	<a class="name hide">'.$name.'</a>
+	<img class="bkcoverart" src="'.$cover.'/coverart.jpg'.$hash.'">
+</li>';
+		}
+	}
+	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
+	$lsmnt     = json_decode( $lsdir );
+	$htmlhome  = '';
+	$fileorder = $dirsystem.'order.json';
+	if ( file_exists( $fileorder ) ) {
+		$order = file_get_contents( $fileorder );
+		$order = json_decode( $order );
+		foreach( $order as $o ) $htmlhome.= $html[ $o ];
+	} else {
+		foreach( $html as $o => $h ) $htmlhome.= $h;
+	}
+	echo json_encode( [
+		  'html'  => $htmlhome
+		, 'lsmnt' => $lsmnt
+	] );
 	break;
 case 'list':
 	$filemode = $dirmpd.$MODE;
@@ -250,8 +249,6 @@ case 'search':
 	foreach( [ 'albumartist', 'artist', 'album', 'composer', 'conductor', 'title' ] as $tag ) {
 		unset( $lists );
 		if ( $tag === 'title' ) {
-			$f      = [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ];
-			$format = '%'.implode( '%^^%', $f ).'%';
 			exec( 'mpc search -f "'.$format.'" '.$tag.' "'.$STRING.'" | awk NF'
 				, $lists );
 		} else {
@@ -282,15 +279,23 @@ case 'search':
 		}
 	}
 	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
-		unset( $files );
-		exec( "grep -m1 -rin '$STRING' /srv/http/data/$radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-			, $files );
-		$c     = count( $files );
-		if ( $c ) {
-			htmlRadio();
-			$count+= $c;
-			$t[]   = $radio;
-		}
+		$dir_radio = '/srv/http/data/'.$radio;
+		if ( ! is_dir( $dir_radio ) ) continue;
+		
+		unset( $lists );
+		exec( 'find /srv/http/data/'.$radio.' -type d -iname "*'.$STRING.'*" -printf "%p/"'
+			, $lists );
+		if ( ! count( $lists ) ) continue;
+		
+		$subdirs = [];
+		$dirs    = [];
+		foreach( $lists as $list ) if ( file_exists( $list.'data' ) ) $dirs[] = $list;
+		$c       = count( $dirs );
+		if ( ! $c ) continue;
+		
+		$count  += $c;
+		$t[]     = $radio;
+		htmlRadio();
 	}
 	if ( $count ) {
 		$html.= '
@@ -344,14 +349,12 @@ function htmlDirectory() {
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
 			$icon  = iconThumb( $fullpath.'/thumb.jpg', 'folder' );
-			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = icon(  'music ', 'file' );
-			$class = '';
 		}
 		$htmlli   = '
-<li'.$class.' data-mode="'.$mode.'"'.$dataindex.'>
+<li data-mode="'.$mode.'"'.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
@@ -411,7 +414,7 @@ function htmlFind() { // non-file 'find' command
 	echo $html;
 }
 function htmlList() { // non-file 'list' command
-	global $lists, $MODE, $GMODE, $html, $index0, $indexes;
+	global $lists, $MODE, $GMODE, $hash, $html, $index0, $indexes;
 	if ( ! in_array( $MODE, [ 'album', 'latest' ] ) ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
@@ -430,7 +433,7 @@ function htmlList() { // non-file 'list' command
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
 			if ( str_ends_with( $path, '.cue' ) ) $path = dirname( $path );
-			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg^^^';
+			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg'.$hash;
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
 				$l1     = $artist;
@@ -464,7 +467,7 @@ function htmlList() { // non-file 'list' command
 }
 function htmlRadio() {
 	global $dirs, $html, $index0, $indexes, $search, $STRING, $subdirs;
-	if ( ! $search && count( $subdirs ) ) {
+	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object ) [];
 			$dirname       = basename( $subdir );
@@ -499,7 +502,6 @@ function htmlRadio() {
 			$array[]       = $each;
 		}
 		sortList( $array );
-		$i = 0;
 		foreach( $array as $each ) {
 			$dataindex = $search ? '' : dataIndex( $each->sort );
 			$charset   = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
@@ -507,22 +509,14 @@ function htmlRadio() {
 			$icon      = $search ? icon(  'webradio li-icon' ) : iconThumb( substr( $dir, 9 ).'thumb.jpg', 'webradio' );
 			$name      = $each->name;
 			$url       = $each->url;
+			$li1       = $search ? preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ) : $name;
 			$html     .= '
 <li data-mode="webradio" '.$charset.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$url.'</a>
-	<a class="liname">'.$name.'</a>';
-			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			if ( substr( $dir, 15, 8 ) === 'webradio' ) {
-				$html.= '
-	<div class="li1 name">'.$name.'</div>
-	<div class="li2">'.$url.'</div>';
-			} else {
-				$html.= '
-	<span class="single name">'.$name.'</span>';
-			}
-			$i++;
-			$html.= '
+	<a class="liname">'.$name.'</a>
+	<div class="li1 name">'.$li1.'</div>
+	<div class="li2">'.$url.'</div>
 </li>';
 		}
 	}
@@ -538,7 +532,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $dirbash, $f, $GMODE, $html, $search, $STRING, $tag;
+	global $dirbash, $f, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -587,7 +581,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, 'CMD ALBUM ARTIST' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, library, 'CMD ALBUM ARTIST TYPE' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
@@ -604,7 +598,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.( $cue ? $file_cue : $mpdpath ).'</a>
-	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).'^^^"></div>
+	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
 	<div class="liartist'.$hideartist.'">'.icon(  $iconartist ).$artist.'</div>

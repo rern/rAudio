@@ -4,9 +4,18 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260816
-! grep -q ^UDP_PORT $dirbash/websocket.py && ws_restart=1
+# 20260909
+touch /root/{.bash,.php,.python}_history
+
+! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=' websocket'
+! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=' rotaryencoder'
+
+[[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
+
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
+
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
+
 [[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
 
 # 20260801
@@ -14,8 +23,7 @@ alias=r1
 file=/lib/systemd/system/mpd_oled.service
 if grep -q ^ExecStop $file; then
 	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-	systemctl daemon-reload
-	systemctl try-restart mpd_oled
+	restart+=' mpd_oled'
 fi
 
 # 20260719
@@ -27,39 +35,12 @@ elif [[ $mixertype == none ]]; then
 	touch $dirsystem/mixernone
 fi
 
-# 20260709
-[[ ! -e /bin/gcc && ! -e /boot/kernel.img ]] && packages+=' gcc'
-
-file=$dirmpdconf/conf/bluetooth.conf
-if [[ ! -e $file ]]; then
-	cat << EOF > $file
-audio_output {
-	name        "BlueALSA"
-	device      "bluealsa"
-	type        "alsa"
-	format      "44100:16:2"
-}
-EOF
-fi
-
-rm -f $dirbash/status-{bluetooth,coverart,coverartupnp}.sh
-
-file=/etc/upmpdcli.conf
-if [[ -e $file ]]; then
-	grep -q -m1 status-push $file && sed -i '/status-push/ d' $file
-	systemctl try-restart upmpdcli
-fi
-
-file=$dirsystem/localbrowser.conf
-if [[ -e $file ]]; then
-	grep -q -m1 ^ROTATE $file && sed -i 's/.*/\L&/' $file
-fi
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 
 installstart "$1"
 
+hash=$( sed -n '/^.hash/ {s/[^0-9]//g; p}' /srv/http/function.php )
 rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
@@ -79,12 +60,15 @@ fi
 rm $dirbash/status.a*
 
 . $dirbash/common.sh
-cacheBust
+
+sed -i -E "s/^(.hash.*v=).*/\1$( date +%s )';/" /srv/http/common.php # static cache bust - css, js
+! grep -q -m1 "^\$hash.*$hash" /srv/http/function.php && imageCacheBust $hash
 chmod -R +x $dirbash
 if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
 fi
+[[ ! -e /etc/systemd/system/dab.service ]] && rm $dirbash/dab*
 if [[ -e /bin/firefox ]]; then
 	splashRotate
 else
@@ -92,16 +76,15 @@ else
 fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
+if [[ $restart ]]; then
+	systemctl daemon-reload
+	systemctl try-restart $restart
+fi
+
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-[[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
+$dirbash/webradio-convert.sh
 
 installfinish
-
-# 20260808
-[[ $ws_restart ]] && systemctl restart websocket
-
-# 20260729
-systemctl try-restart rotaryencoder
 
 # 20260717
 file=$dirmpdconf/bluetooth.conf

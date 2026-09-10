@@ -68,7 +68,7 @@ function REFRESHDATA() {
 				S = JSON.parse( list );
 			} else {
 				list = JSON.parse( list );
-				$.each( list, ( k, v ) => { S[ k ] = v } );
+				COMMON.json.update( S, list );
 			}
 		} catch( e ) {
 			COMMON.dataError( e.message, list );
@@ -112,6 +112,7 @@ function STATUS( id, arg, info ) {
 		var $code = $( '#code'+ id );
 		var cmd   = id;
 	}
+	if ( cmd.endsWith( 'ignore' ) ) NOTIFY( 'mpd', 'Excluded List', 'Fetch ...' );
 	BASH( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
 		BANNER_HIDE();
 		if ( info ) $icon.removeClass( 'blink' );
@@ -161,19 +162,12 @@ var SWITCH  = {
 		} );
 	}
 }
-W.mpdupdate = data => {
-	var updating = 'updating' in data;
-	if ( 'updating' in S ) S.updating = updating;
-	COMMON.updating();
-	var $update     = $( '.button-lib-update' );
-	if ( $update.length ) $update.toggleClass( 'blink', S.updating );
-}
 W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		COMMON.json.update( S, data );
 		SWITCH.set();
 		renderPage();
 		$( '.col-r' ).css( 'pointer-events', '' );
@@ -181,28 +175,36 @@ W.refresh   = data => { // except camilla
 	}, 300 );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
+	function playbackIcon() {
+		$( '.playback' )
+			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
+			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
+	}
 	W = {
 		  ...W // from common.js
-		, mpdplayer : data => headIcon( data )
-		, mpdradio  : data => headIcon( data )
-	}
-	function headIcon( data ) {
-		if ( data ) {
-			if ( data.player === S.player && data.state === S.state ) return
+		, mpdplayer : data =>  {
+			if ( data ) {
+				if ( data.player === S.player && data.state === S.state ) return
 
-			[ 'player', 'pllength', 'state' ].forEach( k => {
-				if ( k in data ) S[ k ] = data[ k ];
-			} );
+				[ 'play', 'player', 'pllength', 'state' ].forEach( k => {
+					if ( k in data ) S[ k ] = data[ k ];
+				} );
+			}
+			playbackIcon();
+			$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 		}
-		$( '.playback' )
-			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
-			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
-		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+		, mpdupdate : data => {
+			if ( ! $( '.button-lib-update' ).length ) return
+			
+			var updating = 'updating' in data;
+			if ( 'updating' in S ) S.updating = updating;
+			COMMON.updating();
+			var $update     = $( '.button-lib-update' );
+			if ( $update.length ) $update.toggleClass( 'blink', S.updating );
+		}
 	}
 	$( '.playback' ).on( 'click', function() {
-		S.state = S.state === 'play' ? 'pause' : 'play'
-		headIcon();
-		if ( PAGE === 'camilla' && S.state === 'pause' ) RENDER.statusStop();
+		if ( PAGE === 'camilla' && ! S.play ) RENDER.statusStop();
 		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }

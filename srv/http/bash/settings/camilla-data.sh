@@ -17,12 +17,14 @@ data='
 , "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"     : "'$mixer'"
 , "devices"     : '$( < $dirshm/hwparams )'
-, "play"        : '$( $dirbash/status | jq .play )'
+, "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
+, "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"      : '$( [[ $mixer ]] && volumeGet )'
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
-, "volumemax"   : '$volumemax
+, "volumemax"   : '$volumemax'
+, "volumemute"  : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d

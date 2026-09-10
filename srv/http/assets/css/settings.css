@@ -57,7 +57,6 @@ li.profile dot::before          { color: var( --cg60 ) }
 	color: var( --gr );
 }
 
-.head,
 #bar-bottom {
 	box-shadow: var( --shadow-bar );
 }
@@ -155,6 +154,12 @@ heading + .helpblock {
 	text-align: center;
 	border-radius: 2px;
 }
+.helpblock .i-next,
+.helpblock .i-pause,
+.helpblock .i-previous,
+.helpblock .i-stop {
+	font-size: 14px !important;
+}
 .helpblock btn .btn {
 	border: none;
 }
@@ -177,13 +182,12 @@ heading + .helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding-left: 15px;
-	text-align: right;
-	background: var( --cga );
-	border-bottom: 1px solid #000;
+	padding: 0 7px 0 15px;
+	background: none;
+	border: 1px solid var( --cga );
 }
 .helpmenu.label i {
-	margin: 0 8px;
+	margin-left: 5px;
 	width: fit-content !important;
 }
 .helpmenu.tab {
@@ -217,16 +221,17 @@ heading + .helpblock {
 btn,
 tab {
 	display: inline-block;
-	line-height: 20px;
+	line-height: 19px;
 	padding: 0 7px;
 	border: 1px solid var( --cg );
 	border-radius: var( --radius-chk );
 	background: var( --cga );
 }
 tab {
-	padding: 2px 20px 0;
+	width: 90px;
 	border-radius: 4px 4px 0 0;
 	border: none;
+	text-align: center;
 }
 .clear {
 	clear: both;
@@ -637,16 +642,43 @@ input.disabled + .switchlabel::after {
 	color: var( --cw );
 }
 #infoList:has( svg ) {
-	padding-top: 10px;
+	padding: 10px 0 0 0;
+}
+#infoList svg {
+	width: 95%;
 }
 .infomessage:has( svg ) {
 	width: 100%;
 	padding: 0;
+	box-shadow: 0 5px 5px 0 #000;
+}
+#infoList:has( svg ) table {
+	margin-top: 5px;
 }
 .gpiopins {
 	margin-top: 0;
 	text-align: left;
 	line-height: 20px;
+}
+.gpiopin {
+	margin-bottom: 5px !important;
+	padding: 0 0 0 12px;
+}
+.gpiopin span {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin: 0 5px 0 5px;
+	border-radius: 50%;
+	background: #00FF00;
+	outline: 1px solid #000;
+}
+.gpiopin span.on {
+	outline: 4px solid red;
+}
+circle.on {
+	stroke: red;
+	stroke-width: 4px;
 }
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
@@ -684,10 +716,6 @@ input.disabled + .switchlabel::after {
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
-}
-circle.on {
-	stroke: red;
-	stroke-width: 4px;
 }
 
 @media (max-height: 570px) {

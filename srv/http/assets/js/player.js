@@ -1,11 +1,11 @@
-W.volume     = values => {
-	if ( ! ( 'db' in values ) || ! $( '#infoList .inforange' ).length ) return
+W.volume     = data => {
+	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoOk' ).text() !== '0dB' ) return
 	
 	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
 	$( '#infoList' ).removeClass( 'hide' );
 	$( '.confirm' ).addClass( 'hide' );
 	V.local = true;
-	UTIL.volumeSet( values );
+	UTIL.volumeSet( data );
 }
 
 var CONFIG   = {
@@ -124,7 +124,7 @@ audio_output {
 	, mixertype    : () => {
 		INFO( {
 			  ...SW
-			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, list         : [ '', 'radio', { kv: { 'DAC hardware <a class="helpmenu label">Mixer</a>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 			, values       : S.mixertype ? S.output.MIXERTYPE : 'hardware'
 			, checkchanged : S.mixertype
 			, cancel       : SWITCH.cancel
@@ -215,8 +215,16 @@ var UTIL     = {
 		} );
 	}
 	, mixerSet  : mixertype => {
-		NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
-		BASH( [ 'mixertype', mixertype, S.output.NAME, 'CMD MIXERTYPE DEVICE' ] );
+		INFO( {
+			  ...SW
+			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
+			, values     : 30
+			, footer     : '(Should be low. Adjust later with GUI.)'
+			, ok         : () => {
+				NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
+				BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
+			}
+		} );
 	}
 	, novolume  : {
 		  warning : () => {
@@ -293,12 +301,13 @@ var UTIL     = {
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
 	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
-				 +'<gr>Signal will be set to original level at 0dB.</gr><br>'
+				 +'<gr>Output will be at original level <c>0dB</c>.<br>'
+				 +'Volume controlled via amplifier only.</gr><br>'
 				 +'Beware of too high volume.</wh>'
 }
 
 function renderPage() {
-	headIcon();
+	playbackIcon();
 	$( '.button-lib-update' ).toggleClass( 'bl', S.updating );
 	var htmlstatus = S.version
 					+'<br>'+ S.lastupdate +' <gr>'+ S.updatetime +'</gr>'

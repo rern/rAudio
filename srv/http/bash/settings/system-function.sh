@@ -23,7 +23,7 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
 		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
 		if [[ -e $dirsystem/mpdoled ]]; then
-			chip=$( mpdOledChip )
+			chip=$( mpdoledChip )
 			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
 		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
@@ -84,10 +84,16 @@ dmesgDev() {
 	dmesg \
 		| tail \
 		| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
-		| tail -1
+		| tail -n 1
 }
 pushStorage() {
 	pushData storage '{ "page": "system", "storage"  : '$( $dirsettings/system-storage.sh )' }'
+}
+rotaryencoderDtRemove() {
+	local dt
+	for dt in gpio-key rotary-encoder; do
+		dtoverlay -r $dt &> /dev/null
+	done
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen

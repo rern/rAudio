@@ -12,16 +12,18 @@
 
 . /srv/http/bash/common.sh
 
+dirspotify=$dirshm/spotify
+mkdirRW $dirspotify
+
 ##### start
 if ! playerActive spotify; then
 	echo spotify > $dirshm/player
 	$dirbash/cmd.sh playerstart
 	exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
-dirspotify=$dirshm/spotify
 # token
 if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
 	token=$( < $filetoken )
@@ -36,39 +38,26 @@ else
 	if [[ ! $token ]]; then
 		notify spotify Spotify 'Access token renewal failed.'
 		exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 	fi
 	echo $token > $dirspotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
 fi
 # data
-readarray -t status < <( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
-							-H "Authorization: Bearer $token" \
-							| jq '.item.album.name,
-								.item.artists[0].name,
-								.item.album.images[0].url,
-								.is_playing,
-								.item.duration_ms,
-								.item.name,
-								.progress_ms,
-								.timestamp' ) # not -r: 1-to keep escaped characters 2-already quoted
-[[ ${status[3]} == true ]] && state=play || state=pause
-Time=$(( ( ${status[4]} + 500 ) / 1000 ))
-progress=${status[6]}
-elapsed=$(( ( progress + 500 ) / 1000 ))
-timestamp=${status[7]}
-diff=$(( timestamp + ( $( date +%s%3N ) - timestamp ) ))
-start=$(( ( diff - progress + 500 ) / 1000 )) # epoch for elapsed calc while play
-cat << EOF > $dirspotify/status 
-Album="${status[0]}"
-Artist="${status[1]}"
-Title="${status[5]}"
-coverart="${status[2]}"
-state=$state
-elapsed=$elapsed
-start=$start
-state=$state
-Time=$Time
-EOF
-
-pushStatus
+JSON=$( curl -s -H "Authorization: Bearer $token" \
+			https://api.spotify.com/v1/me/player/currently-playing )
+! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
+# ------------------------------------------------------------------------------
+STATUS=$( jq '
+			{
+				Album     : (.item.album.name?          // ""),
+				Artist    : (.item.artists[0].name?     // ""),
+				coverart  : (.item.album.images[0].url? // ""),
+				elapsed   : (((.progress_ms + (now * 1000 - .timestamp)) / 1000) | floor),
+				play      : .is_playing,
+				state     : (if .is_playing then "play" else "pause" end),
+				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
+				timestamp : .timestamp,
+				Title     : (.item.name?                // "")
+			}' <<< $JSON )
+$dirbash/status-push.sh "$STATUS"

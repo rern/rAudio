@@ -4,20 +4,6 @@
 
 file_config=/boot/config.txt
 
-gpioState() {
-	[[ -e $dirsystem/vuled ]] && grep -q '^state="play"' $dirshm/status && vuledactive=1
-	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
-		echo false
-	else
-		local output pins state
-		pins=$( gpioinfo -c0 | grep GPIO )
-		output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
-		state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
-		state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
-		echo '{ '${state:0:-1}' }'
-	fi
-}
-
 ID=$1
 
 case $ID in
@@ -55,6 +41,13 @@ custom )
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
 $( getContent "$dirsystem/custom-output-$name" )"
+	;;
+gpiostate )
+	pins=$( gpioinfo -c0 | grep GPIO )
+	output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
+	state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
+	state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
+	echo '{ '${state:0:-1}' }'
 	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
@@ -133,7 +126,7 @@ monitor )
 	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
-	chip=$( mpdOledChip )
+	chip=$( mpdoledChip )
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	grep -q '\-X' /etc/default/mpd_oled && spectrum=false || spectrum=true
 	[[ ! $baud ]] && baud=800000
@@ -217,7 +210,6 @@ relays )
 	, "TIMER"   : '$timer'
 }
 , "names"  : '$names'
-, "state"  : '$( gpioState )'
 }'
 	;;
 replaygain )
@@ -335,10 +327,7 @@ timezonelist )
 vuled )
 	file=$dirsystem/vuled.conf
 	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
-	echo '{
-  "values" : [ '$( tr ' ' , <<< $conf )' ]
-, "state"  : '$( gpioState )'
-}'
+	echo '[ '$( tr ' ' , <<< $conf )' ]'
 	;;
 wlan )
 	codes=$( curl -sL https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt \

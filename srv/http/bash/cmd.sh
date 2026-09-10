@@ -9,12 +9,12 @@ args2var "$1" # $2 $3 ... if any, still valid
 case $CMD in
 
 albumignore )
-	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/$MODE
-	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/${MODE}byartist
-	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/${MODE}byartist-year
+	sed -i "\|\^$ALBUM^^$ARTIST^| d" $dirmpd/$MODE
+	sed -i "\|\^$ARTIST^^$ALBUM^| d" $dirmpd/${MODE}byartist
+	sed -i "\|\^$ARTIST^^.*^^$ALBUM^| d" $dirmpd/${MODE}byartist-year
 	[[ $MODE == album ]] && appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	n=$( wc -l < $dirmpd/$MODE )
-	sed -i -E "s/(.*$MODE.: ).*/\1$n,/" $dirmpd/counts
+	sed -i -E 's/(.*"'$MODE'": ).*/\1'$n',/' $dirmpd/counts
 	pushData counts '{ "'$MODE'": '$n' }'
 	;;
 albumthumbnail )
@@ -31,33 +31,32 @@ bioimage )
 		echo '{"error":"Artist not found"}'
 	fi
 	;;
-bookmarkadd )
-	file_bk="$dirbookmarks/${NAME//\//|}"
-	[[ -e $file_bk ]] && echo -1 && exit
-# --------------------------------------------------------------------
-	echo "$DIR" > "$file_bk"
+bookmark )
 	file_order=$dirsystem/order.json
-	[[ ${DIR:0:1} == [NSU]* ]] && order=$DIR || order=$NAME
-	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${order//\"/\\\\\"}\"" $file_order
-	pushBookmark
-	;;
-bookmarkremove )
-	file_bk="$dirbookmarks/$NAME"
-	file_order=$dirsystem/order.json
-	if [[ -e $file_order ]]; then
-		line=$( sed 's/"/\\"/g' "$file_bk" )
-		order=$( grep -Ev "\[|\"$line\"|]" $file_order | sed '$ s/,$//' )
-		echo "[ $order ]" | jq > $file_order
+	[[ -e $file_order ]] && order=1
+	if [[ $DIR ]]; then
+		echo "$DIR" > "$dirbookmarks/$NAME"
+		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
+	elif [[ $NEWNAME ]]; then
+		mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
+		if [[ $order ]]; then
+			i=$( jq --arg name "$NAME" 'index($name)' $file_order )
+			json=$( jq --argjson i $i --arg newname "$NEWNAME" '.[$i] = $newname' $file_order )
+		fi
+	else
+		rm "$dirbookmarks/$NAME"
+		[[ order ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
 	fi
-	rm "$file_bk"
-	pushBookmark
+	[[ $json ]] && echo "$json" > $file_order
+	pushData coverart '{ "type": "thumbnail" }'
 	;;
-bookmarkrename )
-	mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushBookmark
-	;;
-cachebust )
-	cacheBust
+bookmarksubdir )
+	while read path; do
+		dir=$( dir2path "$( < "$path" )" )
+		coverart=$( $dirbash/status -C "$dir" )
+		[[ ! $coverart ]] && subdir+=', "'$( basename "$path" )'" '
+	done < <( ls $dirbookmarks/* )
+	echo "[ ${subdir:1} ]"
 	;;
 color )
 	filecss=/srv/http/assets/css/colors.css
@@ -110,11 +109,22 @@ s/(--ml$m *: ).*/\1$L%;/"
 }'
 	pushData color "$color"
 	splashRotate
-	! grep -q "?v='.time()" /srv/http/common.php && cacheBust
+	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
 	;;
 countmnt )
 	counts=$( countMnt )
 	echo '{ '${counts/,}' }'
+	;;
+coverart )
+	$dirbash/status -C "/mnt/MPD/$DIR"
+	;;
+cssjsbust )
+	if [[ $TYPE ]]; then # debug
+		grep -q -m1 "?v='.time();" /srv/http/common.php && echo time || echo static
+	else
+		sed -i -E "s/^(.hash.*v=).*/\1'.time();/" /srv/http/common.php # dynamic cache bust - css, js
+		rm -f $dirshm/system
+	fi
 	;;
 dirdelete )
 	if fileExist "$DIR"/*; then
@@ -132,8 +142,6 @@ dirnew )
 	pushRadioList
 	;;
 dirrename )
-	[[ -e "$DIR/$NEWNAME" ]] && echo -1 && exit
-# --------------------------------------------------------------------
 	mv -f "$DIR/$NAME" "$DIR/$NEWNAME"
 	pushRadioList
 	;;
@@ -258,7 +266,7 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if [[ ! $POS && $( mpcState ) == play ]]; then
+	if [[ ! $POS ]] && statePlay; then
 		mpc -q crop
 	else
 		radioStop
@@ -292,7 +300,7 @@ mpcplayback )
 # --------------------------------------------------------------------
 	radioStop
 	if [[ $ACTION == play ]]; then
-		mpc -q play
+		mpc -q play $POS
 		if audioCDtrack; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
@@ -389,13 +397,11 @@ mpcsimilar )
 	;;
 mpcskip )
 	radioStop
-	state=$( mpcState )
-	if [[ $state == play ]]; then
+	if statePlay; then
 		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 	fi
 	mpc -q play $POS
-	[[ ! $ACTION ]] && ACTION=$state
 	[[ $ACTION != play ]] && mpc -q stop
 	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 	[[ $consume == on ]] && mpc -q del $songpos
@@ -406,7 +412,7 @@ mpcupdate )
 	date +%s > $dirmpd/updatestart
 	pushData mpdupdate '{ "updating": true }'
 	if [[ ! $ACTION ]]; then
-		if [[ -e $dirsystem/mpcupdate.conf ]]; then
+		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
 			. <( cat $dirsystem/mpcupdate.conf )
 			ACTION=$action
 			PATHMPD=$pathmpd
@@ -414,6 +420,7 @@ mpcupdate )
 			ACTION=rescan
 		fi
 	fi
+	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
@@ -469,14 +476,11 @@ playlist )
 playlistpush )
 	pushPlaylist
 	;;
-pushVolume ) # mpd-idle
-	volumeGet push
-	;;
 remount )
 	mount -a
 	;;
 savedpldelete )
-	rm "$dirplaylists/$NAME.m3u"
+	mpc -q rm "$NAME"
 	savedPlCount
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
@@ -493,24 +497,18 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	pushSavedPlaylist
 	;;
 savedplrename )
-	if [[ ! $REPLACE ]]; then
-		mpc lsplaylists | grep -q "$NEWNAME" && echo -1 && exit
-# --------------------------------------------------------------------
-	fi
 	mpc renplaylist "$NAME" "$NEWNAME"
 	pushSavedPlaylist
 	;;
 savedplsave )
-	plfile="$dirplaylists/$NAME.m3u"
 	if [[ $REPLACE ]]; then
-		rm -f "$plfile"
-	elif [[ -e "$plfile" ]]; then
+		mpc -q rm "$NAME"
+	elif [[ -e "$dirplaylists/$NAME.m3u" ]]; then
 		echo -1
 		exit
 # --------------------------------------------------------------------
 	fi
 	mpc -q save "$NAME"
-	chmod 777 "$plfile"
 	savedPlCount
 	;;
 screenoff )
@@ -533,8 +531,12 @@ snapserverlist )
 	snapserverList
 	;;
 thumbnailreset )
+	[[ $DIR == http* || $DIR == rtsp* ]] && radio=1
+	DIR=$( dir2path "$DIR" )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData coverart '{ "thumbnail": true }'
+	[[ $radio ]] && rm -f "$DIR/cover".*
+	imageCacheBust $( date +%s )
+	pushData coverart '{ "type": "thumbnail" }'
 	;;
 titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
@@ -548,24 +550,62 @@ volume )
 	;;
 webradiodelete )
 	rm -rf "$DIR"
+	sed -i "/\^$DIR$/ d" $dirmpd/radio
 	webradioCount
 	;;
+webradiodirs )
+	while read d; do
+		dir=$( quoteEscape $d )
+		dirs+=', "'${dir:15}'" : "'$dir'"'
+	done < <( find $dirwebradio -type d ! -exec test -e '{}/data' \; -print )
+	echo '{ '${dirs:1}' }'
+	;;
 webradioedit )
-	[[ -e "$DIR" ]] && echo "Station already exists: <wh>${DIR:15}</wh>" && exit
-	line=$( grep ^$URL $dirmpd/radio )
-	[[ $line ]] && echo "URL already exists in: <wh>${line/*^}</wh>" && exit
+	[[ -e "$DIR/$NAME" ]] && echo "Name already exists: <wh>${DIR:15}/$NAME</wh>" && exit
 # --------------------------------------------------------------------
-	CHARSET=$( webradioCharset $CHARSET )
-	if [[ $DIR == $OLDDIR ]]; then
-		echo "\
-$URL
-$( sed -n 2p "$DIR/data" )
-$CHARSET" > "$DIR/data"
-		pushRadioList
-	else
-		webradioVerify $URL "$DIR"
-		[[ $OLDDIR ]] && rm "$DIR"
+	if [[ $URL == *.m3u ]]; then
+		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^http )
+	elif [[ $URL == *.pls ]]; then
+		URL=$( curl -s $URL 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
+	[[ ! $URL ]] && echo "No valid URL found in:<br>$URL" && exit
+# --------------------------------------------------------------------
+	if [[ $OLDDIR && $OLDDIR == $DIR ]]; then
+		line=$( grep "^$URL^^" $dirmpd/radio )
+		[[ $line ]] && echo "URL already exists as:<br>${line/*\/http\/data\/}<br><wh>$URL</wh>" && exit
+# --------------------------------------------------------------------
+	fi
+	CHARSET=$( sed -E 's/UTF-*8|iso *-* *//' <<< $CHARSET )
+	[[ $CHARSET ]] && charset="?charset=$CHARSET"
+	if [[ $TEST ]]; then
+		. <( ffprobe \
+				-v quiet \
+				-timeout 3000000 \
+				-probesize 32 \
+				-analyzeduration 0 \
+				-select_streams a:0 \
+				-show_entries stream=bits_per_raw_sample,sample_rate \
+				-of default=noprint_wrappers=1 \
+				$URL$charset ) # probesize 32 bytes header - stdout: k=v
+		[[ ! $sample_rate ]] && echo "No audio stream found in:<br>$URL$charset" && exit
+# --------------------------------------------------------------------
+		[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
+		(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
+	else
+		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
+	fi
+	mkdir -p "$DIR/$NAME"
+	if [[ $OLDDIR && $OLDDIR != $DIR ]]; then
+		mv "$OLDDIR/$OLDNAME" "$DIR/$NAME"
+	fi
+	echo "\
+$URL
+$sampling
+$CHARSET" > "$DIR/$NAME/data"
+	chown -R http:http "$DIR/$NAME"
+	[[ $OLDNAME && $OLDNAME != $NAME ]] && rm -rf "$DIR/$OLDNAME"
+	webradioCount
+	pushRadioList
 	;;
 
 esac

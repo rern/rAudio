@@ -41,7 +41,7 @@ if [[ -e $dirsystem/color ]]; then
 	$dirbash/cmd.sh color
 fi
 # nas
-dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+dirs=$( find -L $dirnas -mindepth 1 -maxdepth 1 -type d )
 if [[ $dirs ]]; then
 	while read dir; do
 		umount -l "$dir"

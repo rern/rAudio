@@ -6,6 +6,7 @@
 . /srv/http/bash/common.sh
 
 dirairplay=$dirshm/airplay
+mkdirRW $dirairplay
 elapsed=$( getContent $dirairplay/elapsed false )
 
 # ...
@@ -28,7 +29,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						 start=$( date +%s );; # elapsed reference while play
 	#		*61656e64* )                 # aend - airplay end
 	#			echo mpd > $dirshm/player
-	#			$dirbash/status-push.sh playerstop
+	#			$dirbash/status-push.sh
 	#			systemctl stop shairport
 	#			break
 		esac
@@ -45,14 +46,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			[[ $B64 == AQ== ]] && state=play || state=pause
 			[[ $elapsed == false ]] && state=stop
 			if [[ $prev_state != $state ]]; then
+				pushData mpdplayer '{ "state": "'$state'" }'
 				echo $state > $dirairplay/state
-				pushStatus
 				prev_state=$state
 			fi
 			;;
 		coverart )
 			base64 -d <<< $B64 > $dirairplay/coverart.jpg
-			pushData cover '{ "cover": "/data/shm/airplay/coverart.jpg" }'
+			pushData coverart '{ "cover": "/data/shm/airplay/coverart.jpg" }'
 			;;
 		progress ) # begin/current/end @44100/s (play current slips after pause - reset in a few seconds)
 			frame=$( base64 -d <<< $B64 2> /dev/null )
@@ -66,10 +67,10 @@ cat /tmp/shairport-sync-metadata | while read line; do
 				start=$(( start - elapsed )) # epoch for elapsed calc while play
 				state=play
 			fi
+			pushData mpdplayer '{ "elapsed": '$elapsed', "state": "'$state'", "Time": '$Time' }'
 			for k in elapsed start state Time; do
 				echo ${!k} > $dirairplay/$k
 			done
-			pushStatus
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )

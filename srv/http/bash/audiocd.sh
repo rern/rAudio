@@ -43,7 +43,7 @@ grep -q '^++ WARN: .* No medium found' <<< $ready && exit
 # --------------------------------------------------------------------
 notifyCD 'Fetch data ...'
 
-[[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
+! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
 trackL=$( audiocd-meta -t )
 for i in $( seq 1 $trackL ); do # add tracks to playlist
 	tracklist+="cdda:///$i "
@@ -53,13 +53,10 @@ eject -x 4 # set max speed
 
 discid=$( audiocd-meta )
 echo $discid > $dirshm/audiocd
-if [[ $discid ]]; then
-	readarray -t album_artist < <( head -2 $diraudiocd/$discid/data )
-	album=${album_artist[0]}
-	artist=${album_artist[1]}
-	! compgen -G $diraudiocd/$discid/cover.* > /dev/null && $dirbash/status-coverart.sh "cmd
-$album
-$artist
+if [[ $discid ]] && ! compgen -G $diraudiocd/$discid/cover.* > /dev/null; then
+	album_artist=$( head -n 2 $diraudiocd/$discid/data )
+	$dirbash/status-coverart.sh "cmd
+${album_artist//\`/\'}
 $discid
 CMD ALBUM ARTIST DISCID" &> /dev/null &
 fi

@@ -2,14 +2,15 @@
 commonVariables( [
 	  'buttons' => [ 'album', 'camilla', 'equalizer', 'gear', 'pause', 'play', 'refreshlibrary', 'stop', 'volume' ]
 	, 'labels'  => [ 
-		  'DAB Radio'      => 'dabradio'
-		, 'Device'         => ''
-		, 'DSP'            => 'camilla'
-		, 'Equalizer'      => 'equalizer'
-		, 'Mixer'          => 'mixer'
-		, 'Shared Data'    => 'networks'
-		, 'SoX Resampler'  => ''
-		, 'Volume Control' => ''
+		  'DAB Radio'         => 'dabradio'
+		, 'Device'            => ''
+		, 'DSP'               => 'camilla'
+		, 'Equalizer'         => 'equalizer'
+		, 'Mixer'             => ''
+		, 'Shared Data'       => 'networks'
+		, 'Signal Processors' => ''
+		, 'SoX Resampler'     => ''
+		, 'Volume Control'    => ''
 	]
 	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
@@ -36,7 +37,7 @@ $head      = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
 	, 'help'   => <<< EOF
-$B->camilla$B->equalizer $T->features Signal Processors enabled
+$B->camilla$B->equalizer $T->features$L->signalprocessors enabled
 EOF];
 $body      = [
 	[
@@ -55,8 +56,8 @@ $body      = [
 		, 'help'     => <<< EOF
 $B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
-	 · Should be set at 0dB
-	 · Use volume control on receiver devices to set level
+ · Should be set at <c>0dB</c>
+ · Use volume control on receiver devices to set level
 EOF
 	]
 	, [
@@ -77,6 +78,7 @@ EOF
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume DAC hardware volume level
+ · $L->volumecontrol$B->gear If MPD software, this should be set at <c>0dB</c>
 EOF
 	]
 	, [
@@ -91,7 +93,7 @@ $B->gear Type:
 Note: Should be disabled for best sound quality
  · GUI knob hidden
  · Use amplifier volume
-(The later in the signal chain the better sound quality.)
+(The later in the signal chain the better quality.)
 EOF
 	]
 	, [

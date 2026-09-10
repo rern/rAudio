@@ -1,11 +1,14 @@
 #!/bin/bash
 
+# run by status  - systemctl start radio
+
 . /srv/http/bash/common.sh
 
 touch $dirshm/radio
 
-name=$( mpc current -f %file% | xargs basename )
-id=${name/-*} # ID-...
+file=$( mpc current -f %file% )
+basename=$( basename $file )
+id=${basename/-*} # ID-...
 [[ $id == francemusique* && $id != francemusique ]] && id=${id:13} # francemusiqueID
 
 case $id in
@@ -16,11 +19,10 @@ case $id in
 	rock )   id=2;;
 #	x )      id=?;;
 #	y )      id=?;;
-#                                                             openapi (no coverart)
 	fip )           id=7;;  # FIP                             FIP
 	fipelectro )    id=74;; # Electro                         FIP_ELECTRO
 	fipgroove )     id=66;; # Groove                          FIP_GROOVE
-	fiphiphop )     id=95;; # Hip-Hop                         FIP_HIP_HOP ***
+	fiphiphop )     id=95;; # Hip-Hop                         FIP_HIP_HOP ***openapi
 	fipjazz )       id=65;; # Jazz                            FIP_JAZZ
 	fipmetal )      id=77;; # Metal                           FIP_METAL
 	fipnouveautes ) id=70;; # Nouveautés                      FIP_NOUVEAUTES
@@ -39,114 +41,113 @@ case $id in
 	lajazz )              id=405;; # La Jazz                  FRANCEMUSIQUE_LA_JAZZ
 	ocoramonde )          id=404;; # Ocora Musiques du Monde  FRANCEMUSIQUE_OCORA_MONDE
 	opera )               id=409;; # Opéra                    FRANCEMUSIQUE_OPERA
-#	pianozen )            id=410;; # Piano Zen                FRANCEMUSIQUE_PIANO_ZEN ***
+#	pianozen )            id=410;; # Piano Zen                FRANCEMUSIQUE_PIANO_ZEN ***openapi
 esac
 
-i=0
-metadataGet() {
-	if [[ $id < 4 || $id == 5 ]]; then
-		radioparadise=1
-		icon=radioparadise
-		json=$( curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing )
-	else
-		icon=radiofrance
-		if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
-			hiphop=1
-			query='{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }'
-			json=$( curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
-						-H 'Accept-Encoding: gzip, deflate, br' \
-						-H 'Content-Type: application/json' \
-						-H 'Accept: application/json' \
-						-H 'Connection: keep-alive' \
-						-H 'DNT: 1' \
-						-H 'Origin: https://openapi.radiofrance.fr' \
-						-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
-						--compressed \
-						--data-binary "$query" )
-		else # api: current until switched to openapi ( except hophop)
-			json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
-		fi
+if [[ $id < 4 || $id == 5 ]]; then
+	radioparadise=1
+	icon=radioparadise
+	FN_JSON=JSON.radioParadise
+	FN_STATUS=STATUS.radioParadise
+else
+	icon=radiofrance
+	FN_JSON=JSON.radioFrance
+	FN_STATUS=STATUS.radioFrance
+	if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
+		FN_JSON+=.hiphop
+		FN_STATUS+=.hiphop
 	fi
-	if [[ ! $json || ${json:0:1} != '{' || $json == *,\"error\":* ]]; then
+fi
+
+JSON.radioFrance() {
+	curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id
+}
+JSON.radioFrance.hiphop() {
+	curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
+		-H 'Accept-Encoding: gzip, deflate, br' \
+		-H 'Content-Type: application/json' \
+		-H 'Accept: application/json' \
+		-H 'Connection: keep-alive' \
+		-H 'DNT: 1' \
+		-H 'Origin: https://openapi.radiofrance.fr' \
+		-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
+		--compressed \
+		--data-binary '{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }' \
+			| jq .data.live.song
+}
+JSON.radioParadise() {
+	curl -sGk -m 5 --data "chan=$id" https://api.radioparadise.com/api/now_playing
+}
+STATUS.radioFrance() {
+	jq '.levels[0]                as $level
+		| $level.position         as $position
+		| $level.items[$position] as $item
+		| .steps[$item]           // empty
+		| {
+			Album    : (.titreAlbum? // ""),
+			Artist   : (.authors?    // (.composers? // "")),
+			coverart : (.visual?     // ""),
+			timeleft : ((.end?       // now) - now | round),
+			Title    : (.title?      // "")
+		  }
+		' <<< $JSON
+}
+STATUS.radioFrance.hiphop() {
+	jq '{
+			Album    : (.track.albumTitle  // ""),
+			Artist   : (.track.mainArtists // [] | join(", ")),
+			coverart : "",
+			timeleft : ((.end?             // now) - now | round),
+			Title    : (.track.title       // "")
+		  }
+		' <<< $JSON
+}
+STATUS.radioParadise() {
+	jq '{
+			Album    : (.album?  // ""),
+			Artist   : (.artist? // ""),
+			coverart : (.cover?  // ""),
+			timeleft : ((.time?  // 0) | round ),
+			Title    : (.title?  // "")
+		}' <<< $JSON
+}
+metaData() {
+	sleep $1
+	JSON=$( $FN_JSON )
+	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
 		(( i++ ))
 		if [[ $i == 1 ]]; then
 			notify "$icon blink" Metadata 'Retry ...'
-			pushData mpdradio '{ "Artist": "", "Title": "", "Album": "" }'
 		elif [[ $i == 10 ]]; then
 			notify $icon Metadata 'Not available'
 			systemctl stop radio
 			exit
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 		fi
-		sleep 1
-		metadataGet
+		metaData 1
 		return
+# ..............................................................................
 	fi
-	
-	if [[ $radioparadise ]]; then
-		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
-		countdown=${metadata[4]/.*} # remove decimals
-	else 
-		if [[ $hiphop ]]; then
-			song=$( jq -r '.data.live.song // empty' <<< $json )
-			if [[ ! $song ]]; then
-				sleep 5
-				metadataGet
-				return
-			fi
-			
-			track=$( jq .track <<< $song )
-			artists=$(  jq -r '.mainArtists[] // empty' <<< $track )
-			readarray -t metadata <<< "\
-${artists//$'\n'/, }
-$( jq -r .title <<< $track )
-$( jq -r .albumTitle <<< $track )"
-			end=$( jq -r .end <<< $song )
-		else
-			levels=$( jq '.levels[0] // empty' <<< $json )
-			position=$( jq .position <<< $levels )
-			item=$( jq .items[$position] <<< $levels )
-			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual <<< $step | sed 's/^null$//' ) # titreAlbum[sic]
-			end=$( jq -r .end <<< $step )
-		fi
-		now=$( date +%s )
-		countdown=$(( end - now ))
-	fi
-	dataprev="$artist $title $album"
-	artist=$( quoteEscape ${metadata[0]} )
-	title=$( quoteEscape ${metadata[1]} )
-	album=$( quoteEscape ${metadata[2]} )
-	coverurl=${metadata[3]}
-	
-	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
-		sleep 5
-		metadataGet
-		return
-	fi
-	
-	[[ ! $artist ]] && artist=$( jq -r '.composers // empty' <<< $step )
-	if [[ ! -e $dirsystem/vumeter ]]; then
-		if [[ $coverurl ]]; then
-			name=$( alphaNumeric $artist$title )
-			ext=${coverurl/*.}
-			coverfile=$dirshm/online/$name.$ext
-			curl -s $coverurl -o $coverfile
-		else
-			name=$( alphaNumeric $artist$album )
-			coverfile=$( compgen -G $dirshm/online/$name.{jpg,png} )
-		fi
-	fi
-	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	$dirbash/status-push.sh "cmd
-$album
-$artist
-$coverart
-$title
-CMD ALBUM ARTIST COVERART TITLE"
-	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0 # next fetch
-	sleep $(( countdown + 5 )) # add 5s delay
-	metadataGet
+	STATUS=$( $FN_STATUS )
+	keys=.Artist,.Title,.Album
+	[[ $( jq -jr $keys <<< $STATUS ) == $( jq -jr $keys $dirshm/status.json ) ]] && metaData 5 && return
+# ..............................................................................
+	timeleft=$( jq .timeleft <<< $STATUS )
+	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
+	STATUS+='
+, "elapsed"   : '$( mpcElapsed webradio )'
+, "file"      : "'$file'"
+, "pllength"  : '$( mpc status %length% )'
+, "play"      : true
+, "state"     : "play"
+, "station"   : "'$( sed -n "\|^$file| {s|.*/||; p}" $dirmpd/radio )'"
+, "Time"      : 0
+, "timestamp" : '$( date +%s%3N )'
+, "webradio"  : true
+}'
+	$dirbash/status-push.sh "$STATUS"
+	timeleft=${meta[4]}
+	metaData $(( timeleft + 5 )) # add 5s delay
 }
 
-metadataGet
+metaData 0

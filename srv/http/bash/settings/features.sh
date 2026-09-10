@@ -78,6 +78,10 @@ brightness )
 camilladsp )
 	if [[ $ON ]]; then
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
+		if [[ ! $fileconf ]]; then
+			fileconf=$dircamilladsp/configs/camilladsp.yml
+			sed -i -E "s|^(CONFIG=)|\1$fileconf|" /etc/default/camilladsp
+		fi
 		error=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
 		if [[ $error ]]; then
 			notify 'warning yl blink' CamillaDSP "$( sed 's/$/<br>/' <<< $error )"
@@ -147,15 +151,17 @@ multiraudio )
 	if [[ $ON ]]; then
 		json='{ "json": '$list', "name": "multiraudio" }'
 		flagset=${flagset/rm*-f/touch}
+		data=json
 	fi
 	ip=$( ipAddress )
 	iplist=$( jq -r .[] <<< $list | grep -v $ip )
 	while read ip; do
 		! ipOnline $ip && continue
 
-		[[ $ON ]] && pushToIP $ip $json
-		pushToIP $ip $display
-		pushToIP $ip $flagset
+		data+=' display flagset'
+		for d in $data; do
+			$dirbash/status -P $ip "${!d}"
+		done
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF
@@ -333,7 +339,7 @@ startx )
 	sudo xset dpms $off $off $off
 	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
 	if [[ $ONWHILEPLAY ]]; then
-		grep -q ^state=.*play $dirshm/status && sudo xset -dpms || sudo xset +dpms
+		statePlay && sudo xset -dpms || sudo xset +dpms
 	fi
 	file=/proc/bus/input/devices
 	if ! grep -q "Handlers=.*mouse" $file \

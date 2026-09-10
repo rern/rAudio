@@ -51,7 +51,6 @@ a {
 #lib-mode-list gr,
 #volume,
 .biosimilar p,
-.bklabel,
 .content-top gr,
 .content-top wh,
 .label,
@@ -67,23 +66,16 @@ a {
 	font-size: 22px;
 	color: var( --cg60 );
 }
-.infobookmark {
-	float: left;
-	min-width: 100px;
-	height: 100px;
-}
-.infobookmark .i-bookmark,
-#infoList .i-bookmark,
 #infoList i.msgicon {
-	margin-top: 30px;
 	width: 100px !important;
+	line-height: 100px !important;
 	font-size: 48px !important;
 }
 #infoList i.msgicon:not( .i-bookmark ) {
 	color: var( --cg50 ) !important;
 }
-.infobookmark .i-bookmark,
 #infoList .i-bookmark {
+	vertical-align: 30px;
 	color: var( --cm ) !important;
 }
 #time-knob.disabled .btn {
@@ -215,7 +207,6 @@ a {
 	right: 50px;
 }
 .biosimilar p,
-.bklabel,
 .coverart1,
 .coverart2,
 .label,
@@ -389,9 +380,6 @@ div.pagerefresh {
 }
 #album.disabled {
 	font-weight: 300;
-}
-.capitalize {
-	text-transform: capitalize;
 }
 #infoicon {
 	height: 25px;
@@ -1197,17 +1185,13 @@ div.pagerefresh {
 	margin-left: 8px;
 	font-size: 14px;
 }
-.divbklabel {
-	overflow: hidden;
-}
 .bkcoverart {
 	margin-top: 5px;
 	height: 100px;
 	max-width: 100%;
 	border: 1px solid hsl(0,0%,15%);
 }
-.label,
-.bklabel {
+.label {
 	display: block;
 	margin: 0 auto;
 	max-width: 180px;

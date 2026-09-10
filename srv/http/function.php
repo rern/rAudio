@@ -1,4 +1,5 @@
 <?php // for library.php, playlist.php
+$hash = '?v=1788510889';
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
@@ -24,7 +25,8 @@ function icon(  $icon, $menu = '' ) {
 	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
 function iconThumb( $thumbsrc, $menu ) {
-	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).'^^^" data-menu="'.$menu.'">';
+	global $hash;
+	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).$hash.'" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
 	$indexbar  = '<a class="indexed">#</a>';
@@ -62,9 +64,21 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
-function radioPath( $url ) {
-	$line = shell_exec( 'grep ^'.$url.' /srv/http/data/mpd/radio' );
-	if ( $line ) return rtrim( explode( '^^', $line )[ 1 ] );
+function radioDir( $url ) {
+	static $map = null;
+
+	if ( $map === null ) { // run once
+		$map   = [];
+		$file  = '/srv/http/data/mpd/radio';
+		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+
+		foreach ( $lines as $line ) {
+			$key         = strstr( $line, '^^', true );        // true: before ^^
+			$map[ $key ] = strstr( $line, '/data/webradio/' ); // no true: from /data/webradio/
+		}
+	}
+	
+	return $map[ $url ] ?? null;
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

@@ -2,36 +2,42 @@
 
 . /srv/http/bash/common.sh
 
-album=$( < $dirshm/radio )
-# output from dab-start.sh - dab-rtlsdr-3
-filelabel=$dirshm/dabradio/DABlabel.txt
-filecover=$dirshm/dabradio/DABslide.jpg
+file_label=$dirdabradio/DABlabel.txt # output from dab-start.sh - dab-rtlsdr-3
+file_slide=$dirdabradio/DABslide.jpg # ^^
+station=$( < $dirshm/radio )
 
-for i in {0..5}; then
-	[[ -e $filelabel ]] && break || sleep 10
+for i in {0..9}; do
+	[[ -e $file_label ]] && break
+	
+	sleep 5
 done
+
 while true; do
-	readarray -t artist_title < <( sed 's/ - \|: /\n/' $filelabel )
-	if (( ${#artist_title[@]} == 1 )); then
-		title=${artist_title[0]}
+	label=$( < $file_label )
+	[[ $label == $label_prev ]] && continue
+	
+	label_prev=$label
+	artist_title=$( sed -E 's/ - |: /^/' <<< $label )
+	if [[ $artist_title == *^* ]]; then
+		artist=${artist_title/^*}
+		title=${artist_title/*^}
 	else
-		artist=${artist_title[0]}
-		title=${artist_title[1]}
+		title=$artist_title
 	fi
-	coverart=
-	if [[ $( awk NF $filecover ) ]]; then
-		name=$( alphaNumeric $title )
-		coverfile=/srv/http/data/shm/dabradio/$name.jpg
-		if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
-			cp -f $filecover $coverfile
-			coverart="${coverfile:9}"
-		fi
-	fi
-	$dirbash/status-push.sh "cmd
-$artist
-$title
-$album
-$coverart
-CMD ARTIST TITLE ALBUM COVERART"
+	coverart=$dirdata/online/$( alphaNumeric $label ).jpg
+	cp -f $file_slide $coverart
+	STATUS='{
+  "Album"     : ""
+, "Artist"    : "'$( quoteEscape $artist )'"
+, "coverart"  : "'$coverart'"
+, "play"      : true
+, "state"     : "play"
+, "station"   : "'$station'"
+, "Time"      : 0
+, "timestamp" : '$( date +%s%3N )'
+, "Title"     : "'$( quoteEscape $title )'"
+, "webradio"  : true
+}'
+	$dirbash/status-push.sh "$STATUS"
 	sleep 10
 done

@@ -26,9 +26,10 @@ data+='
 , "mixers"      : '$( getContent $dirshm/mixers )'
 , "mixertype"   : '$( ! grep -q mixertype=none $dirshm/output && echo true )'
 , "output"      : '$( conf2json $dirshm/output )'
+, "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
-, "state"       : "'$( mpcState )'"
+, "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
 , "updating"    : '$( statusUpdating )'
 , "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"

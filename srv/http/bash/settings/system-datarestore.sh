@@ -11,7 +11,7 @@ file_backup=$dirshm/backup.gz
 # --------------------------------------------------------------------
 dir_config=$dirdata/config
 
-[[ $( mpcState ) == play ]] && $dirbash/cmd.sh playerstop
+$dirbash/cmd.sh playerstop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
 rm -rf $dirdata/{mpd,playlists,webradio}
@@ -48,5 +48,6 @@ grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 rm -rf $dir_config $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 
 [[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
+chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 $dirbash/power.sh reboot

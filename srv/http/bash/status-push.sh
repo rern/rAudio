@@ -4,84 +4,64 @@
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-argsSet() {
-	[[ $webradio && $state == stop ]] && return 1
-
-	lines=$( grep -E '^(Album|Artist|Title)' $dirshm/status )
-	. <( echo "$lines" )
-	[[ ! $Artist ]] && return 1
-
-	if [[ $1 == scrobble ]]; then
-		[[ ! $Title ]] && return 1
-	else
-		[[ ! $Album && ! $Title ]] && return 1
-	fi
-
-	args=$( sort <<< $lines \
-		| sed '
-			s/.*="*//
-			s/ *"*$//
-			s/[`’]/'"'"'/g
-			1 i\cmd
-			$ a\CMD ALBUM ARTIST TITLE' )
-}
-
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 && $1 != playerstop ]]; then # from status-dab.sh, status-radio.sh
-	args2var "$1"
-	elapsed=$( mpcElapsed webradio )
-	pllength=$( mpc status %length% )
-	timestamp=$( date +%s%3N )
-	status='{
-  "Album"     : "'$ALBUM'"
-, "Artist"    : "'$ARTIST'"
-, "coverart"  : "'$COVERART'"
-, "elapsed"   : '$elapsed'
-, "pause"     : false
-, "play"      : true
-, "pllength"  : '$pllength'
-, "state"     : "play"
-, "stop"      : false
-, "Time"      : false
-, "timestamp" : '$timestamp'
-, "Title"     : "'$TITLE'"
-, "webradio"  : true
-}'
-	json2var "$status" > $dirshm/status
-	state=play
-	webradio=true
+player=$( < $dirshm/player )
+# > status.json - for:
+#	1. refresh page: radio, spotify
+#	2. get: play, state
+#	3. lcdchar.py
+if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
+	status=$1
+	echo "$status" > $dirshm/status.json
 else
-	$dirbash/status -k > $dirshm/status
-	. <( grep -E '^(coverart|state|webradio)' $dirshm/status )
-	COVERART=$coverart
+	keys='{Album,Artist,coverart,elapsed,file,play,pllength,state,station,Time,timestamp,Title,webradio}'
+	status=$( $dirbash/status -s \
+				| jq $keys \
+				| tee $dirshm/status.json )
 fi
+readarray -t lines < <( jq -r .Artist,.Title,.Album,.coverart,.state,.webradio <<< ${status//\`/\'} )
+Artist=${lines[0]}
+Title=${lines[1]}
+Album=${lines[2]}
+coverart=${lines[3]}
+state=${lines[4]}
+[[ ${lines[5]} == true ]] && webradio=1
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
 $dirbash/status $p_b
-
-if [[ ! $COVERART ]]; then
-	argsSet && $dirbash/status-coverart.sh "$args" &> /dev/null &
+# coverart #############################
+if [[ ! $coverart && $Artist && ( $Album || $Title )]]; then
+	$dirbash/status-coverart.sh "cmd
+$Album
+$Artist
+$Title
+CMD ALBUM ARTIST TITLE" &> /dev/null &
 fi
-[[ $state == play ]] && start_stop=start || start_stop=stop
+[[ $state == play ]] && state_play=1
+[[ $state_play ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
-	[[ $state != play ]] && pushData vumeter '{ "val": 0 }'
+	[[ ! $state_play ]] && pushData vumeter '{ "val": 0 }'
 	systemctl $start_stop cava
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
-if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ $status ]]; then
-		echo "$status" > $dirshm/status.json
-	else
-		$dirbash/status -o > $dirshm/status.json
-	fi
-	systemctl restart lcdchar
-fi
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+if [[ -e $dirsystem/lcdchar ]]; then
+	if [[ $webradio && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
+		file=$( jq -r .file <<< $status )
+		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
+# ------------------------------------------------------------------------------
+	fi
+	if (( $( jq .pllength <<< $status ) > 0 )); then 
+		systemctl restart lcdchar
+	else
+		$dirbash/lcdchar.py logo
+	fi
+fi
 if [[ -e $dirsystem/stoptimer ]]; then
-	if [[ $state == play ]]; then
+	if [[ $state_play ]]; then
 		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
 	elif [[ -e $dirshm/pidstoptimer ]]; then
 		killProcess stoptimer
@@ -93,7 +73,7 @@ if [[ -e $dirsystem/stoptimer ]]; then
 fi
 if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 	export DISPLAY=:0
-	if [[ $state == play ]]; then
+	if [[ $state_play ]]; then
 		sudo xset dpms force on
 		sudo xset -dpms
 	else
@@ -105,11 +85,11 @@ fi
 # ------------------------------------------------------------------------------
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # ------------------------------------------------------------------------------
-if [[ $( < $dirshm/player ) != mpd ]]; then
+if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
-	if [[ $state == play || $state == pause ]]; then # renderers prev/next
-		timestampnew=$( getVar timestamp $dirshm/status )
+	if [[ $state_play || $state == pause ]]; then # renderers prev/next
+		timestampnew=$( jq .timestamp $dirshm/status.json )
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
 	fi
@@ -120,4 +100,8 @@ if [[ -e $dirshm/elapsed ]];then
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
 fi
-argsSet scrobble && $dirbash/scrobble.sh "$args" &> /dev/null &
+# scrobble #############################
+$dirbash/scrobble.sh "cmd
+$Artist
+$Title
+CMD ARTIST TITLE" &> /dev/null &

@@ -1,13 +1,17 @@
 #!/bin/python
 
 # websocket server
-# - receive message from local / remote (udp datagram):
+
+# client side
+# - receive from local / remote (udp datagram):
 #    - WS.onmessage (common.js) : channel + data
-# - send to local only:
-#    - WS.send  (common.js)     : [channel|client|filesh|json] + data, ping, status
-#    - websocat (common.sh)     : ^^
-# - send to local / remote:
-#    - status -B (shell)        : ^^
+# - send
+#    - WS.send      (common.js) : [channel|client|filesh|json] + data, ping, status
+
+# server side
+#    - status -P [IP]  IP - other server
+#    - status -B       broadcast udp datagram
+#    - websocat        playlist/messages > 65536 bytes(64kB)
 
 import asyncio
 import json
@@ -16,7 +20,8 @@ import websockets
 
 CLIENTS   = set()
 IP_CLIENT = dict()
-result    = subprocess.run( [ '/srv/http/bash/status', '-Bp' ], capture_output=True, text=True ) # get port
+DIR_BASH  = '/srv/http/bash/'
+result    = subprocess.run( [ DIR_BASH +'status', '-Bp' ], capture_output=True, text=True ) # get port
 UDP_PORT  = result.stdout.strip()
 
 class UDPBridgeProtocol( asyncio.DatagramProtocol ):
@@ -36,11 +41,11 @@ async def cmd( websocket ):
             if 'channel' in jargs:  # broadcast
                 if CLIENTS: websockets.broadcast( CLIENTS, args )
             elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
-                filesh = '/srv/http/bash/'+ jargs[ 'filesh' ][ 0 ]
+                filesh = DIR_BASH + jargs[ 'filesh' ][ 0 ]
                 jargs[ 'filesh' ][ 0 ] = filesh
                 subprocess.Popen( jargs[ 'filesh' ] ) 
             elif 'json' in jargs:   # save to NAME.json and broadcast
-                jargsjson = jargs[ 'json' ]           
+                jargsjson = jargs[ 'json' ]
                 jargsname = jargs[ 'name' ]
                 data      = '{ "channel": "'+ jargsname +'", "data": '+ json.dumps( jargsjson ) +' }'
                 
@@ -64,13 +69,16 @@ async def cmd( websocket ):
                     if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
                         CLIENTS.discard( IP_CLIENT[ IP ] )
                         IP_CLIENT.pop( IP, None )
-            elif 'status' in jargs:                   # from remote snapclient
-                status = subprocess.run( [ '/srv/http/bash/status', '-k' ], capture_output=True, text=True )
-                status = status.stdout
-                await websocket.send( status )
             elif 'ping' in jargs:                     # ws client
                 await websocket.send( 'pong' )
-                
+            elif 'status' in jargs:                   # from snapclient
+                status = subprocess.run( [ DIR_BASH +'status', '-s' ], capture_output=True, text=True )
+                await websocket.send( status.stdout )
+                #1 snapclient request : wsSend(ip, "status");      * inside binary status
+                #2 ws server receive  : status                     * this sanpserver
+                #3 this server get    : status -s                  * without counts and display
+                #4 reply to sender    : websocket.send( status )   * to sender ip (either local or remote)
+                #5 snapclient receive : status                     * json
     except websockets.exceptions.ConnectionClosed:
         pass 
     finally:

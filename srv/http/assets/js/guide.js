@@ -11,7 +11,6 @@ var E          = {
 	  bar : document.getElementById( 'bar-bottom' )
 	, img : document.querySelector( 'img' )
 };
-var HASH       = '?v='+ Math.round( Date.now() / 1000 );
 var n          = 1;
 [ 'close', 'library', 'playback', 'playlist', 'settings', 'prev', 'next' ].forEach( id => {
 	E[ id ] = document.getElementById( id )
@@ -42,7 +41,7 @@ var n          = 1;
 		}
 		tabactive.className = '';
 		document.getElementById( active ).className = 'active'
-		E.img.src = '/assets/img/guide/'+ n +'.jpg'+ HASH;
+		E.img.src = '/assets/img/guide/'+ n +'.jpg';
 	} );
 } );
 E.playback.classList.add( 'active' );

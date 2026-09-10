@@ -9,10 +9,9 @@ for d in NAS SD USB; do
 done
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
-dirs=$( ls $dirdata )
-for dir in $dirs; do
+while read dir; do
 	printf -v dir$dir '%s' $dirdata/$dir
-done
+done < <( ls $dirdata )
 https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 # args2var "\
 #	command
@@ -92,19 +91,6 @@ audioCDplClear() {
 		$dirbash/cmd.sh playlistpush
 	fi
 }
-cacheBust() {
-	if [[ $TYPE ]]; then
-		grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
-		return
-#...............................................................................
-	fi
-	local hash
-	hash=$( date +%s )"'"
-	sed -i "1,/rern.woff2/ s/woff2.*/woff2?v=$hash );/" /srv/http/assets/css/common.css
-	[[ $TIME ]] && hash="'.time()"
-	sed -i "1,/hash.*=/ s/v=.*/v=$hash;/" /srv/http/common.php
-	rm -f $dirshm/system
-}
 calc() { # $1 - decimal precision, $2 - math
 	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'
 }
@@ -134,7 +120,7 @@ conf2json() {
 	fi
 	[[ ! $lines ]] && echo false && return
 #...............................................................................
-	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
+	[[ $( head -n 1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	while read line; do
 		k=${line/=*}
 		v=${line/*=}
@@ -181,11 +167,11 @@ countRadio() {
 	for dir in $dirwebradio $dirdabradio; do
 		[[ ! -e $dir ]] && continue
 
-		files=$( find $dir -type f -name data )
+		files=$( find -L $dir -type f -name data )
 		counts+='
 , "'${dir: -8}'" : '$( wc -l <<< $files )
 		while read file; do
-			uri=$( head -1 "$file" )
+			uri=$( head -n 1 "$file" )
 			path=$( dirname "$file" )
 			list+="$uri^^$path"$'\n'
 		done <<< $files
@@ -230,11 +216,6 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
-mpdoled_vuled_vumeter() {
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
-	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
-	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
-}
 fifoToggle() { # mpdoled vuled vumeter
 	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
@@ -245,7 +226,7 @@ fifoToggle() { # mpdoled vuled vumeter
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
 		fi
-		if grep -q '^state=.*play' $dirshm/status; then
+		if statePlay; then
 			[[ $mpdoled ]] && systemctl restart mpd_oled
 			[[ $vuled || $vumeter ]] && systemctl start cava
 		fi
@@ -327,6 +308,9 @@ getVar() { # var=value
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
+imageCacheBust() {
+	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
+}
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -342,11 +326,6 @@ ipSharedData() {
 	local self
 	self=$( ipAddress )
 	grep -v $self $filesharedip
-}
-json2var() { # single level only
-	local regex
-	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/=false$/=/'
-	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
 	local filepid
@@ -375,6 +354,12 @@ logoLcdOled() {
 		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
 	fi
 }
+mkdirRW() {
+	[[ -e $1 ]] && return
+	
+	mkdir $1
+	chmod 777 $1
+}
 mpcElapsed() {
 	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
 		echo false
@@ -383,21 +368,38 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
+	! playerActive mpd && $dirbash/cmd.sh playerstop && exit
+# --------------------------------------------------------------------
 	if [[ $1 ]]; then
 		ACTION=$1
 	else
-		! playerActive mpd && playerstop && exit
-# --------------------------------------------------------------------
-		[[ $( mpcState ) == play ]] && ACTION=pause || ACTION=play
+		statePlay && ACTION=pause || ACTION=play
 	fi
 	$dirbash/cmd.sh "mpcplayback
 $ACTION
 CMD ACTION"
 }
-mpcState() {
-	mpc status %state% | sed -E 's/ing|ped|d$//'
+mpcSkip() {
+	[[ $( < $dirshm/player ) != mpd ]] && return
+	
+	local length pos songpos state
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	if [[ $1 == PREVIOUS ]]; then
+		(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
+	else
+		(( $songpos == $length )) && pos=1 || pos=$(( songpos + 1 ))
+	fi
+	$dirbash/cmd.sh "mpcskip
+$pos
+${state:0:4}
+CMD POS ACTION" # state: playing, paused, stopped
 }
-mpdOledChip() {
+mpdoled_vuled_vumeter() {
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
+	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
+	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
+}
+mpdoledChip() {
 	if grep -q '\-o ' /etc/default/mpd_oled; then
 		sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled
 	else
@@ -425,10 +427,6 @@ notify() { # icon title message delayms
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
-pushBookmark() {
-	data=$( php /srv/http/library.php home )
-	pushData bookmark "$data"
-}
 pushData() { # send to websocket.py (server)
 	local channel data dir
 	channel=$1
@@ -446,7 +444,7 @@ pushData() { # send to websocket.py (server)
 		data=$( tr -d '\n' <<< $data )
 		data=$( pushDataSet $channel "$data" )
 	fi
-	status -B "$data"
+	$dirbash/status -B "$data"
 }
 pushDataSet() {
 	cat << EOF
@@ -471,16 +469,13 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
-pushToIP() {
-	websocat --text ws://$1:8080 <<< ${@:2}
-}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
 	data=$( pushDataSet $1 "$data" )
-	websocat --text ws://127.0.0.1:8080 <<< $data
+	$dirbash/status -P "$data"
 }
-quoteEscape() {
+quoteEscape() { # backtick ` - no need to escape for json
 	echo "${@//\"/\\\"}"
 }
 serviceRestartEnable() {
@@ -573,6 +568,9 @@ splashRotate() {
 		-extent 1920x1080 \
 		$dirimg/splash.png
 }
+statePlay() {
+	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
+}
 statusColor() {
 	sed -E  -e 's|●|<grn>&</grn>|
 					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
@@ -629,12 +627,9 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
-			[[ $CURRENT == 0 ]] && val=2 || val=0
-			$fn_volume $val% "$CONTROL" $CARD
-			pushData volume '{ "val": '$val' }'
-		fi
+		volumeGet push
 	else
+		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
@@ -642,32 +637,39 @@ volume() {
 			$fn_volume $val% "$CONTROL"
 			sleep 0.2
 		done
+		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
+	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # value control card
+volumeAmixer() { # camilladsp only
 	amixer -Mq sset "$2" $1
-	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
 volumeFunction() {
-	[[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]] && echo volumeMpd || echo volumeBlueAlsa
+	if [[ -e $dirsystem/camilladsp ]]; then
+		echo volumeAmixer
+	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
+		echo volumeMpd
+	else
+		echo volumeBlueAlsa
+	fi
 }
 volumeGet() {
-	local args card db mixer mixertype name val val_db volume
+	local card db mixer mixertype name val val_db volume
 	. $dirshm/output
 	if [[ $2 == hw ]]; then
-		read val db < <( volumeGetAmixer "$mixer" )
+		read val db < <( volumeGetAmixer "$mixer" $card )
 	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		read val db < <( volumeGetAmixer bluealsa )
 	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
 		true
 	elif [[ $mixertype == software ]] && playerActive mpd; then
-		val="$( mpc status %volume% )"
+		val="$( mpc status %volume% | tr -d % )"
 	else
 		for i in {1..5}; do # some usb might not be ready
-			read val db < <( volumeGetAmixer "$mixer" )
+			read val db < <( volumeGetAmixer "$mixer" $card )
 			[[ $val ]] && break || sleep 1
 		done
 	fi
@@ -690,7 +692,7 @@ volumeGetAmixer() {
 	if [[ $1 == bluealsa ]]; then
 		val_db=$( amixer -MD bluealsa 2> /dev/null )
 	else
-		val_db=$( amixer -M sget "$1" 2> /dev/null )
+		val_db=$( amixer -c $2 -M sget "$1" 2> /dev/null ) # $2-card, $1-scontrol
 	fi
 	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
 }

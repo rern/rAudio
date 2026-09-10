@@ -25,45 +25,54 @@ case 'bash':
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;
-case 'camilla': // formdata from camilla.js
+case 'camilla': // SETTING.upload() from camilla.js
 	fileUploadSave( $dirdata.'camilladsp/'.$post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
-case 'datarestore': // formdata from system.js
+case 'datarestore': // CONFIG.restore() from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $post->libraryonly ?? '';
 	exec( $dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
-case 'giftype': // formdata from common.js
+case 'giftype': // FILEIMAGE.get() from function.js
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animated = exec( $sudo.'/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
-	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
+	if ( $animated ) move_uploaded_file( $tmpfile, '/tmp/img.gif' );
 	break;
-case 'imagereplace': // $.post from function.js
-	if ( $post->file[ 0 ] !== '/' ) {
-		if ( str_starts_with( $post->file, 'cdda' ) ) {
-			$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$post->file = '/srv/http/data/audiocd/'.$discid.'/cover';
-		} else {
-			$post->file = radioPath( $post->file ).'/cover'; // radio - http... or rtsp...
-		}
+case 'imagereplace': // UTIL.imageReplace() from function.js
+	switch ( $post->file[ 0 ] ) {
+		case '/':
+			$dir = $post->file;
+			break;
+		case 'c':
+			$discid = file( $dirshm.'audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$dir    = $dirdata.'audiocd/'.$discid;
+			break;
+		case 'h':
+		case 'r':
+			$dir    = '/srv/http'.radioDir( $post->file );
+			break;
+		default:
+			$dir    = '/mnt/MPD/'.$post->file;
+			if ( ! is_dir( $dir ) ) $dir = dirname( $dir );
 	}
-	if ( ! is_writable( dirname( $post->file ) ) ) exit( '-1' );
+	if ( ! is_writable( $dir ) ) exit( 'No write permission:<br><c>'.$dir.'</c>' );
 //----------------------------------------------------------------------------------
-	exec( 'rm -f "'.$post->file.'".*' ); // remove existing *.jpg, *.png, *.gif
-	$file = $post->file.$post->ext;
-	if ( $post->ext === '.jpg' ) {
-		$base64  = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
+	$file = $dir.'/'.$post->name;
+	exec( 'rm -f "'.$file.'".*' ); // remove existing *.jpg, *.png, *.gif
+	$file.= '.'.$post->ext;
+	if ( $post->ext === 'jpg' ) {
+		$base64 = preg_replace( '/^.*,/', '', $post->data ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $file, base64_decode( $base64 ) );
 	} else {
 		rename( $post->data, $file );
 	}
-	$args      = escape( implode( "\n", [ $post->name, $file, 'CMD FILE' ] ) );
+	$args = escape( implode( "\n", [ $post->name, $file, 'CMD FILE' ] ) );
 	exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
-case 'login': // $.post from features.js
+case 'login': // CONFIG.login() from features.js
 	$filelogin   = $dirdata.'system/login';
 	$pwd         = $post->pwd;
 	if ( file_exists( $filelogin ) ) {
@@ -92,14 +101,14 @@ case 'login': // $.post from features.js
 		exec( $dirsettings.'features.sh login' );
 	}
 	break;
-case 'logout': // $.post from main.js
+case 'logout': // click .submenu lock from main.js
 	sessionStop();
 	break;
 case 'sort': // from cmd-list.sh
 	include 'function.php';
 	$modes = explode( ' ', $argv[ 2 ] );
 	foreach( $modes as $mode ) {
-		$file = '/srv/http/data/mpd/'.$mode;
+		$file = $dirdata.'mpd/'.$mode;
 		if ( ! file_exists( $file ) ) continue;
 
 		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );

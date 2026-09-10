@@ -34,7 +34,7 @@ function commonVariables( $list ) {
 	$list = ( object ) $list;
 	foreach( $list->buttons as $b ) $B->$b = icon( $b.' btn' );
 	foreach( $list->labels as $label => $icon ) {
-		$icon     = $icon ? icon( $icon ) : ' &emsp;';
+		$icon     = $icon ? icon( $icon ) : '';
 		$name     = strtolower( preg_replace( '/[^\da-z]/i', '', $label ) );
 		$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
 	}
