@@ -654,10 +654,10 @@ label:has( input[ disabled ] ) {
 #infoList .updn {
 	line-height: 40px;
 }
-#infoList.libupdate {
+#infoList.msgshadow {
 	padding: 10px 0;
 }
-#infoList.libupdate .infomessage {
+#infoList.msgshadow .infomessage {
 	width: 100%;
 	margin-bottom: 10px;
 	padding: 10px 0;
