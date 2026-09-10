@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 file_label=$dirdabradio/DABlabel.txt # output from dab-start.sh - dab-rtlsdr-3
-coverart=$dirdabradio/DABslide.jpg   # ^^
+file_slide=$dirdabradio/DABslide.jpg # ^^
 station=$( < $dirshm/radio )
 
 for i in {0..9}; do
@@ -24,6 +24,8 @@ while true; do
 	else
 		title=$artist_title
 	fi
+	coverart=$dirdata/online/$( alphaNumeric $label ).jpg
+	cp -f $file_slide $coverart
 	STATUS='{
   "Album"     : ""
 , "Artist"    : "'$( quoteEscape $artist )'"
