@@ -194,8 +194,8 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
 Toggle test: $B->gear
-	<tab>Sequence</tab> $B->power All
 	<tab>Pin - Name</tab> $greendot
+	<tab>Sequence</tab> $B->power All
 EOF
 	],
 	[
@@ -208,7 +208,7 @@ EOF
  · $B->volume Turn
  · $B->play$B->pause$B->stop Push
  · $B->previous Double click
- · $B->next Long press
+ · $B->next Long press *
 EOF
 	]
 	, [
