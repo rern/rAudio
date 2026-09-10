@@ -641,17 +641,6 @@ input.disabled + .switchlabel::after {
 	display: none;
 	color: var( --cw );
 }
-#infoList:has( svg ) {
-	padding: 10px 0 0 0;
-}
-.infomessage:has( svg ) {
-	width: 100%;
-	padding: 0;
-	box-shadow: var( --shadow-msg );
-}
-#infoList svg {
-	width: 95%;
-}
 .gpiopins {
 	margin-top: 0;
 	text-align: left;
@@ -659,7 +648,6 @@ input.disabled + .switchlabel::after {
 	padding: 0 15px;
 }
 .gpiopin {
-	margin: 0 0 5px 0 !important;
 	padding: 0 0 0 12px;
 	text-align: left;
 }
@@ -673,11 +661,11 @@ input.disabled + .switchlabel::after {
 	outline: 1px solid #000;
 }
 .gpiopin span.on {
-	outline: 4px solid red;
+	outline: 3px solid red;
 }
 circle.on {
 	stroke: red;
-	stroke-width: 4px;
+	stroke-width: 3px;
 }
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;

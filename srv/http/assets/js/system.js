@@ -384,7 +384,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
-				, beforeshow   : () => $( '.infomessage' ).css( 'margin-bottom', '10px' )
+				, beforeshow   : () => $( '.infomessage' ).css( 'margin-bottom', '5px' )
 			} );
 		}
 		, i2c  : data => {
@@ -1051,8 +1051,7 @@ $( '.img' ).on( 'click', function() {
 						 + gnd
 						 +'</p>'
 	}
-	var list    = '<img src="/assets/img/'+ name +'.jpg">';
-	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
+	var list    = '<br><img src="/assets/img/'+ name +'.jpg">';
 	if ( name in txt ) list += txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
@@ -1061,6 +1060,7 @@ $( '.img' ).on( 'click', function() {
 	INFO( {
 		  icon       : title[ name ][ 1 ] || name
 		, title      : title[ name ][ 0 ]
+		, message    : [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ? '' : UTIL.gpiosvg
 		, list       : list
 		, beforeshow : () => {
 			if ( name in pinhide ) {
