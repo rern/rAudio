@@ -644,16 +644,13 @@ input.disabled + .switchlabel::after {
 #infoList:has( svg ) {
 	padding: 10px 0 0 0;
 }
-#infoList svg {
-	width: 95%;
-}
 .infomessage:has( svg ) {
 	width: 100%;
 	padding: 0;
-	box-shadow: 0 5px 5px 0 #000;
+	box-shadow: var( --shadow-msg );
 }
-#infoList:has( svg ):has( input[ type=radio ] ) table {
-	margin-top: 10px;
+.infomessage svg {
+	width: 95%;
 }
 .gpiopins {
 	margin-top: 0;

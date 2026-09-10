@@ -654,9 +654,14 @@ label:has( input[ disabled ] ) {
 #infoList .updn {
 	line-height: 40px;
 }
-#infoList:has( hr ),
-#infoList:has( hr ) .infomessage {
-	padding: 5px 0;
+#infoList.libupdate {
+	padding: 10px 0;
+}
+#infoList.libupdate .infomessage {
+	width: 100%;
+	margin-bottom: 10px;
+	padding: 10px 0;
+	box-shadow: var( --shadow-msg );
 }
 #infoBox:has( #infoTab ) #infoList {
 	padding-top: 15px;

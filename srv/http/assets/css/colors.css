@@ -32,6 +32,7 @@
 	--shadow-menu   :  4px  4px 10px     #000;
 	--shadow-menu-l : -4px  4px 10px     #000;
 	--shadow-menu-u : -4px -4px 10px     #000;
+	--shadow-msg    :  0    5px  5px 0   #000;
 	--shadow-select : -1px  1px  1px     #000;
 	--shadow-text   : -1px  0    2px     #000;
 								   /* w    h      x    y   inner(color)       w    outer(color)       w */

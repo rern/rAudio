@@ -1480,12 +1480,12 @@ var COMMON    = {
 		INFO( {
 			  icon       : icon
 			, title      : title
-			, message    : message +'<hr>'
+			, message    : message
 			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
-				$( '.infomessage' ).css( 'width', '100%' );
+				$( '#infoList' ).addClass( 'libupdate' );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
 				if ( S.shareddata ) return
 				

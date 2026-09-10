@@ -384,6 +384,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
+				, beforeshow   : () => $( '.infomessage' ).css( 'margin-bottom', '10px' )
 			} );
 		}
 		, i2c  : data => {
