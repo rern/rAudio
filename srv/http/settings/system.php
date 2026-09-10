@@ -193,7 +193,7 @@ EOF
  · Can be enabled and run as a test without a connected relay module.
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off: $M->relays
-Toggle: $B->gear
+Toggle test: $B->gear
 	<tab>Sequence</tab> $B->power All
 	<tab>Pin - Name</tab> $greendot
 EOF
@@ -209,8 +209,6 @@ EOF
  · $B->play$B->pause$B->stop Push
  · $B->previous Double click *
  · $B->next Long press *
-
-* Not apllicable for $T->features$L->renderers
 EOF
 	]
 	, [
@@ -219,9 +217,8 @@ EOF
 		, 'sub'      => 'cava'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-<a class="img" data-name="vuled">LEDs</a> - display audio level
- · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear Toggle:
+<a class="img" data-name="vuled">LEDs</a> - display audio level (<bl id="ledcalc">LED resister calculator</bl>)
+Toggle test: $B->gear
 	$greendot
 	$B->power All
 EOF
