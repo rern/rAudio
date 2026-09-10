@@ -210,7 +210,7 @@ EOF
  · $B->previous Double click *
  · $B->next Long press *
 
-* Not apllicable for $T->features$L->renderers
+* Not applicable for $T->features$L->renderers
 EOF
 	]
 	, [
