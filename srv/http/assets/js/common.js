@@ -1486,6 +1486,7 @@ var COMMON    = {
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
 				$( '#infoList' ).addClass( 'msgshade' );
+				$( '#infoList table' ).css( 'margin-top', '10px' );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
 				if ( S.shareddata ) return
 				
