@@ -384,7 +384,6 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : data.values
 				, checkchanged : S.lcdchar && data.current === 'gpio'
-				, beforeshow   : () => $( '.infomessage' ).css( 'margin-bottom', '5px' )
 			} );
 		}
 		, i2c  : data => {
@@ -406,6 +405,10 @@ var UTIL          = {
 			, beforeshow : () => {
 				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '#infoList label' ).css( 'width', '70px' );
+				var $radio = $( '#infoList input:radio' );
+				var tr     = '<tr style="height: 5px"></tr>';
+				$radio.first().parents( 'tr' ).before( tr );
+				$radio.last().parents( 'tr' ).after( tr );
 			}
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
