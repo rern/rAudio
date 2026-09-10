@@ -209,6 +209,8 @@ EOF
  · $B->play$B->pause$B->stop Push
  · $B->previous Double click *
  · $B->next Long press *
+
+* Not apllicable for $T->features$L->renderers
 EOF
 	]
 	, [
