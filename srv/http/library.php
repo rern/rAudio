@@ -54,9 +54,9 @@ if ( $CMD === 'lsmode' ) {
 }
 $format  = '%'.implode( '%^^%', $f ).'%';
 $format  = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
-// $dirmpd $dirsystem $dirwebradio
-foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
 $dirbash = '/bin/sudo /srv/http/bash/';
+$dirmpd  = '/srv/http/data/mpd/';
+$fileorder = '/srv/http/data/system/order.json';
 
 switch( $CMD ) {
 
@@ -158,7 +158,6 @@ case 'home':
 	$lsdir     = exec( $dirbash.'cmd.sh countmnt' );
 	$lsmnt     = json_decode( $lsdir );
 	$htmlhome  = '';
-	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
 		$order = file_get_contents( $fileorder );
 		$order = json_decode( $order );
@@ -174,7 +173,7 @@ case 'home':
 case 'list':
 	$filemode = $dirmpd.$MODE;
 	if ( in_array( $MODE, [ 'album', 'latest' ] ) ) {
-		$display = json_decode( file_get_contents( $dirsystem.'display.json' ) );
+		$display = json_decode( file_get_contents( $fileorder ) );
 		if ( $display->albumbyartist ) $filemode.= 'byartist';
 		if ( $display->albumyear ) $filemode.= '-year';
 	}
@@ -526,7 +525,7 @@ function htmlRadio() {
 	echo $html;
 }
 function htmlTrack() { // track list - no sort ($string: cuefile or search)
-	global $lists;
+	global $fileorder $lists;
 	if ( ! count( $lists ) ) {
 		echo -1;
 		exit;
@@ -534,7 +533,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	}
 	global $dirbash, $f, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
-	$fL         = count( $f );
+	$fL        = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
 
@@ -543,17 +542,17 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		for ( $i = 0; $i < $fL; $i++ ) $each->{$f[ $i ]} = $list[ $i ];
 		$array[] = $each;
 	}
-	$each0      = $array[ 0 ];
-	$file0      = $each0->file;
-	$cue        = strpos( $file0, '.cue/track' );
+	$each0     = $array[ 0 ];
+	$file0     = $each0->file;
+	$cue       = strpos( $file0, '.cue/track' );
 	if ( $cue ) {
 		$file_cue = dirname( $file0 );
 		$lines = file( '/mnt/MPD/'.$file_cue, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		$line  = preg_grep( '/^FILE/', $lines ); // FILE "NAME.EXT" WAV
 		$file0 = dirname( $file_cue ).'/'.explode( '"', reset( $line ) )[ 1 ];
 	}
-	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
-	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
+	$ext       = pathinfo( $file0, PATHINFO_EXTENSION );
+	$hidecover = exec( 'grep "hidecover.*true" '.$fileorder );
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
 			$albumartist = $each0->albumartist;
@@ -612,7 +611,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	</div>
 </li>';
 	}
-	$i    = 0;
+	$i         = 0;
 	foreach( $array as $each ) {
 		if ( ! $each->time ) continue;
 
