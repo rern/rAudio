@@ -208,7 +208,7 @@ EOF
  · $B->volume Turn
  · $B->play$B->pause$B->stop Push
  · $B->previous Double click
- · $B->next Long press *
+ · $B->next Long press
 EOF
 	]
 	, [
