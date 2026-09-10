@@ -797,6 +797,9 @@ hr {
 #infoList tr {
 	height: 42px;
 }
+#infoList tr:has(input[type=checkbox], input[type=radio]) {
+	height: 36px;
+}
 #infoList td {
 	padding: 0;
 	text-align: left;

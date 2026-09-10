@@ -749,11 +749,6 @@ function INFO( json ) {
 		} );
 		// assign values
 		_INFO.setValues();
-		// set height shorter if checkbox / radio only
-		$( '#infoList tr' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
-		} );
 		// show
 		_INFO.toggle();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
