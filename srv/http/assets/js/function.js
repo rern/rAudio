@@ -1597,8 +1597,12 @@ var PLAYBACK  = {
 			var album  = S.Album;
 			$( '#artist' ).removeClass( 'disabled' );
 			if ( S.webradio ) {
-				if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
-				if ( ! artist ) artist = S.station;
+				if ( S.station ) {
+					if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
+					if ( ! artist ) artist = S.station;
+				} else {
+					if ( ! album )  album  = S.file;
+				}
 			} else if ( ! title || ! album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();

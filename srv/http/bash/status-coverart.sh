@@ -30,7 +30,7 @@ getCoverart() {
 	fi
 }
 pushCoverart() {
-	if [[ $TYPE ]]; then
+	if [[ $TYPE ]]; then # from library.php
 		pushData coverart '{ "type": "library" }'
 	else
 		pushData coverart '{ "cover": "'$1'" }'
