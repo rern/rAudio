@@ -1868,20 +1868,17 @@ li.active .li2 bl {
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
-	width: calc( 100% - 10px );
-	padding: 10px 0 0 15px;
-	line-height: 24px;
 	cursor: pointer;
 }
 .tagmessage img {
-	margin: 0;
+	margin: 5px 0 0 10px;
 }
 .tagmessage div {
 	margin-left: 10px;
 	text-align: left;
 }
 .tagfooter {
-	padding: 8px 12px;
+	padding: 8px;
 }
 .tagfooter div {
 	display: inline-block;
