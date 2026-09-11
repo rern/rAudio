@@ -1463,14 +1463,6 @@ var PLAYBACK  = {
 						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
 						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
 					} );
-				if ( ! S.webradio ) return
-				
-				var $icon = $( '#pl-list li.active .li-icon' );
-				if ( $icon.is( 'i' ) ) {
-					$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
-				} else {
-					$icon.attr( 'src', src );
-				}
 			} else {
 				COVERART.default();
 			}
