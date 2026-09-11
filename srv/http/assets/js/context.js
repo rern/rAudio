@@ -307,11 +307,11 @@ var CONTEXT  = {
 		var CMD    = 'CMD FILE TAGS';
 		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
-			var fileicon = 'playlists';
+			var fileicon = 'file-playlists';
 			cmd.push( V.list.track );
 			CMD += ' TRACK';
 		} else {
-			var fileicon = 'music';
+			var fileicon = 'file-music';
 		}
 		cmd.push( CMD );
 		BASH( cmd, values => {
@@ -324,8 +324,8 @@ var CONTEXT  = {
 			}
 			var dir     = V.list.licover ? file : COMMON.dirName( file );
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ COMMON.baseName( file ) +'</div>';
+						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
 			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
