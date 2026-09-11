@@ -29,8 +29,7 @@ coverart=${lines[3]}
 state=${lines[4]}
 [[ ${lines[5]} == true ]] && webradio=1
 ########
-[[ -e $dirmpdconf/snapserver.conf ]] && p_b=-b || p_b=-p
-$dirbash/status $p_b
+[[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -b || $dirbash/status -p
 # coverart #############################
 if [[ ! $coverart && $Artist && ( $Album || $Title )]]; then
 	$dirbash/status-coverart.sh "cmd
