@@ -408,11 +408,7 @@ var UTIL          = {
 				var tr     = '<tr style="height: 5px"></tr>';
 				$radio.first().parents( 'tr' ).before( tr );
 				$radio.last().parents( 'tr' ).after( tr );
-				if ( I.values[ 0 ] === 'i2c' ) return
-				
-				$( '#infoList label' )
-					.css( 'width', '70px' )
-					.parents( 'td' ).prop( 'colspan', 3 );
+				$( '#infoList label' ).css( 'width', '70px' );
 			}
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
@@ -422,11 +418,11 @@ var UTIL          = {
 			}
 		}
 		, list : [
-			  [ 'Type',                 'hidden'  ]
-			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
-			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
-			, [ 'Address',              'radio',    [ '' ] ] // set by SETTING
-			, [ 'Chip',                 'select',   [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
+			  [ 'Type',                 'hidden' ]
+			, [ 'Size',                 'radio',  { kv: { '20x4': 20, '16x2': 16 }, colspan: 3 } ]
+			, [ 'Character Map',        'radio',  { kv: [ 'A00', 'A02' ],           colspan: 3 } ]
+			, [ 'Address',              'radio',  [] ] // set by SETTING
+			, [ 'Chip',                 'select', [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}
