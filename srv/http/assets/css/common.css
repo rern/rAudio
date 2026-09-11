@@ -667,6 +667,9 @@ label:has( input[ disabled ] ) {
 #infoList:has(.infomessage:only-child) {
 	padding: 20px 0 10px 0;
 }
+#infoList:has(.msgicon) {
+	padding: 0 !important;
+}
 
 hr {
 	margin: 10px 0 0 0;
@@ -854,6 +857,13 @@ hr {
 	padding: 0 15px;
 	text-align: left;
 }
+.infoimgname {
+	text-align: center !important;
+}
+.infomessage:has( .imgnew ) {
+	width: fit-content;
+	margin: 0 auto;
+}
 .infoheader,
 .infomessage,
 .infofooter {
@@ -890,15 +900,8 @@ hr {
 	height: 100px;
 	margin-bottom: 0;
 }
-.infoimgname {
-	margin-top: -20px !important;
-	text-align: center !important;
-}
-.infomessage:has(img) .infoimgname {
-	margin-top: 0;
-}
 .infoimgnew {
-	margin-left: 10px;
+	margin-left: 10px !important;
 }
 .infoimgwh {
 	text-align: right;
@@ -906,6 +909,10 @@ hr {
 .infoimgwh i {
 	font-size: 18px;
 	margin: 0;
+}
+#infoFilename {
+	margin-bottom: 10px;
+	color: var( --cg60 );
 }
 #infoList textarea {
 	width: 100%;
@@ -990,9 +997,6 @@ input[ type=radio ]:disabled {
 	margin-right: 5px !important;
 	vertical-align: -10px;
 	border: none;
-}
-#infoFilename {
-	padding: 0 10px 10px;
 }
 #infoButton {
 	margin-top: 10px;

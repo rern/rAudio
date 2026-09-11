@@ -885,6 +885,7 @@ var FILEIMAGE = {
 		$( '#infoFileLabel i' ).addClass( 'blink' );
 		delete I.infofilegif;
 		I.rotate   = 0;
+		$( '.msgicon' ).css( 'display', 'inline-block' );
 		$( '.infoimgname' ).addClass( 'hide' );
 		$( '.infoimgnew, .infoimgwh' ).remove();
 		if ( ! I.infofile.name.endsWith( '.gif' ) ) {

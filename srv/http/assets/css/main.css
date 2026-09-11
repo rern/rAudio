@@ -67,8 +67,11 @@ a {
 	color: var( --cg60 );
 }
 #infoList i.msgicon {
+	display: block;
 	width: 100px !important;
-	line-height: 100px !important;
+	margin: 0 auto;
+	height: 70px;
+	line-height: 80px !important;
 	font-size: 48px !important;
 }
 #infoList i.msgicon:not( .i-bookmark ) {
