@@ -860,6 +860,9 @@ hr {
 .infoimgname {
 	text-align: center !important;
 }
+.infoimgname i {
+	color: var( --cg60 ) !important;
+}
 .infomessage:has( .imgnew ) {
 	width: fit-content;
 	margin: 0 auto;
