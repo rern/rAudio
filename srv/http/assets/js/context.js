@@ -345,7 +345,7 @@ var CONTEXT  = {
 					var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
 					$( '.infofooter span' ).on( 'click', function( e ) {
 						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-							$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
+							$( '#infoList input' ).css( 'width', ( inputW - 88 ) +'px' );
 							$( '.taglabel' ).removeClass( 'hide' );
 						} else {
 							$( '#infoList input' ).css( 'width', inputW +'px' );
