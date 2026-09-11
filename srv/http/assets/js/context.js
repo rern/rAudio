@@ -341,17 +341,9 @@ var CONTEXT  = {
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
 					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
+					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
-					var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
-					$( '.infofooter span' ).on( 'click', function( e ) {
-						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-							$( '#infoList input' ).css( 'width', ( inputW - 88 ) +'px' );
-							$( '.taglabel' ).removeClass( 'hide' );
-						} else {
-							$( '#infoList input' ).css( 'width', inputW +'px' );
-							$( '.taglabel' ).addClass( 'hide' );
-						}
-					} );
+					$( '.infofooter span' ).on( 'click', () => $( '.taglabel' ).toggleClass( 'hide' ) );
 					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
 						var $this  = $( this );
 						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );
