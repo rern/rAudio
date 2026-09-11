@@ -567,13 +567,14 @@ input[ type=range ]::-moz-range-track {
 	text-align: center;
 }
 .inforange div {
-	margin-bottom: 10px;
-	line-height: 16px;
+	margin-top: 10px;
+	line-height: 24px;
 	font-size: 18px;
 	font-weight: 300;
 }
-.inforange .sub {
-	margin-top: 5px;
+.inforange .value {
+	margin-top: 0;
+	margin-bottom: 10px;
 }
 .inforange i {
 	position: relative;
@@ -654,21 +655,14 @@ label:has( input[ disabled ] ) {
 #infoList .updn {
 	line-height: 40px;
 }
-#infoList.msgshade,
-#infoList:has( svg ) {
-	padding: 0 0 10px 0;
-}
-#infoList.msgshade .infomessage,
 .infomessage:has( svg ) {
-	width: 100%;
-	padding: 10px 0;
 	background: var( --cgd );
 }
 #infoList svg {
 	width: 95%;
 }
-#infoBox:has( #infoTab ) #infoList {
-	padding-top: 15px;
+#infoList:has(.infomessage:only-child) {
+	padding: 20px 0 10px 0;
 }
 .infomessage:has(.i-bookmark) .infoimgname {
 	margin-top: -25px;
@@ -786,13 +780,13 @@ hr {
 	color: var( --cg60 );
 }
 #infoList {
-	padding: 10px;
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
 #infoList table {
 	margin: 0 auto;
-	border-spacing: 5px 1px;
+	padding-top: 10px;
+	border-spacing: 10px 0;
 }
 #infoList tr {
 	height: 42px;
@@ -806,7 +800,6 @@ hr {
 	white-space: nowrap;
 }
 #infoList td:first-child { /* label */
-	padding-right: 5px;
 	text-align: right;
 }
 #infoList td:last-child { /* chekbox only which has no label */
@@ -863,11 +856,9 @@ hr {
 .infoheader,
 .infomessage,
 .infofooter {
-	width: fit-content;
-	max-width: 100%;
 	max-height: 800px;
-	margin: 0 auto;
-	padding: 10px 5px;
+	padding-top: 5px;
+	line-height: 24px;
 	color: var( --cg60 );
 }
 .infofooter i {
@@ -881,10 +872,6 @@ hr {
 .infofooter span:last-child {
 	margin-right: 0;
 }
-.infomessage {
-	padding-top: 5px;
-	line-height: 24px;
-}
 .infoprompt {
 	padding: 25px 5px;
 }
@@ -896,7 +883,7 @@ hr {
 .infomessage img {
 	width: auto;
 	height: 100px;
-	margin-bottom: 5px;
+	margin: 10px 0 0;
 }
 .infomessage object {
 	height: 100px;
@@ -959,11 +946,6 @@ input[ type=number ]:disabled {
 	margin-top: 0 !important;
 	outline: none;
 }
-#infoList .i-eye {
-	width: 40px;
-	line-height: 40px;
-	margin-right: -25px;
-}
 input[ type=radio ],
 input[ type=checkbox ] {
 	width: 24px;
@@ -1008,7 +990,7 @@ input[ type=radio ]:disabled {
 	padding: 0 10px 10px;
 }
 #infoButton {
-	margin: 5px;
+	margin-top: 10px;
 }
 .infomenu {
 	display: inline-block;

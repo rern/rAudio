@@ -683,7 +683,7 @@ function INFO( json ) {
 						var k = isarray ? v : k;
 						if ( tr ) htmls.list += '<tr><td></td><td colspan="'+ colspan +'">';
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						if ( param.sameline === false ) { // default: true
+						if ( param.sameline === false ) { // radio default: true
 							tr          = true;
 							htmls.list += '</td></tr>';
 						} else {
@@ -710,7 +710,7 @@ function INFO( json ) {
 					} else {
 						if ( param.sameline ) {
 							var lblnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += lblnext ? '<td style="padding: 0 5px; text-align: right;">'+ lblnext +'</td>' : '</td>';
+							htmls.list += lblnext ? '<td style="text-align: right;">'+ lblnext +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
@@ -721,8 +721,9 @@ function INFO( json ) {
 					break;
 				default: // string
 					if ( type ) htmls.list += type;
-					if ( 'suffix' in param ) htmls.list += '</td><td>'+ param.suffix;
-					htmls.list += param.sameline ? '</td>' : '</td></tr>';
+					htmls.list += '</td>';
+					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
+					htmls.list += param.sameline ? '' : '</tr>';
 			}
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
@@ -1148,7 +1149,7 @@ var _INFO     = {
 			}
 			var allW     = $( '#infoList' ).width();
 			var labelW   = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
-			I.boxW       = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+			I.boxW       = ( widthmax ? allW - labelW - 40 : I.boxwidth );
 		} else {
 			I.boxW       = 230;
 		}
@@ -1480,8 +1481,7 @@ var COMMON    = {
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
-				$( '#infoList' ).addClass( 'msgshade' );
-				$( '#infoList table' ).css( 'margin-top', '10px' );
+				$( '.infomessage' ).css( { background: 'var( --cgd )', 'padding': '10px' } );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
 				if ( S.shareddata ) return
 				

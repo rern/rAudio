@@ -288,11 +288,10 @@ var CONFIG       = {
 			return
 		}
 		
-		var list = [];
+		var list = [ [ '', 'Write permission:' ] ];
 		Object.keys( values ).forEach( k => list.push( [ '<gr>NAS/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {
 			  ...SW
-			, message      : '<wh>Write</wh> permission:'
 			, list         : list
 			, values       : values
 			, checkchanged : S.nfsserver
@@ -304,11 +303,10 @@ var CONFIG       = {
 		data.key ? UTIL.scrobble.player( data.values ) : UTIL.scrobble.key();
 	}
 	, smb          : values => {
-		var list = [];
+		var list = [ [ '', 'Write permission:' ] ];
 		Object.keys( values ).forEach( k => list.push( [ '<gr>/mnt/MPD/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {
 			  ...SW
-			, message      : '<wh>Write</wh> permission:'
 			, list         : list
 			, values       : values
 			, checkchanged : S.smb
@@ -368,15 +366,14 @@ var CONFIG       = {
 				$( '#spotifyd' ).prop( 'checked', false );
 				return
 			}
-
+			
 			INFO( {
 				  ...SW
 				, list        : [
 					  [ 'ID',     'text' ]
 					, [ 'Secret', 'text' ]
+					, [ '',       'ID, Secret <gr>from Spotify private app</gr> '+ ICON( 'help help' ) ]
 				]
-				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ICON( 'help help' )
-				, footeralign : 'right'
 				, boxwidth    : 320
 				, checklength : { 0: 32, 1: 32 }
 				, beforeshow  : () => {

@@ -514,6 +514,11 @@ var DISPLAY   = {
 		var values = {}
 		keys.forEach( k => { values[ k ] = D[ k ] } );
 		var list   = [];
+		if ( type === 'playback' ) {
+			list = [ [ '', '<gr>Show:</gr>', { colspan: 3, sameline: true } ], [ '', '<gr>Options:</gr>' ] ];
+		} else if ( type === 'playlist' ) {
+			list = [ [ '', '<gr>Options:</gr>' ] ];
+		}
 		Object.values( json ).forEach( ( l, i ) => {
 			if ( ! l ) {
 				list.push( [ '', '' ] );
@@ -641,8 +646,6 @@ var DISPLAY   = {
 			INFO( {
 				  icon         : 'playback'
 				, title        : 'Playback'
-				, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
-				, messagealign : 'left'
 				, list         : kv.list
 				, values       : kv.values
 				, checkchanged : true
@@ -729,8 +732,6 @@ var DISPLAY   = {
 			INFO( {
 				  icon         : 'playlist'
 				, title        : 'Playlist'
-				, message      : 'Options:'
-				, messagealign : 'left'
 				, list         : kv.list
 				, values       : kv.values
 				, checkchanged : true

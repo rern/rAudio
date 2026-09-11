@@ -88,9 +88,13 @@ var EDIT   = {
 		if ( values ) {
 			var dhcp = values.DHCP;
 		} else {
-			values   = COMMON.json.clone( S.list.lan );
-			var dhcp = values.DHCP
-			delete values.DHCP;
+			if ( S.list.lan ) {
+				values   = COMMON.json.clone( S.list.lan );
+				var dhcp = values.DHCP
+				delete values.DHCP;
+			} else {
+				values   = { IP: S.ip ? S.ip.slice( 0, S.ip.lastIndexOf( '.' ) + 1 ) : '', DHCP: '' }
+			}
 		}
 		var $li   = $( 'li.active' );
 		var icon  = 'lan';
@@ -105,7 +109,7 @@ var EDIT   = {
 			, footer       : S.ip ===  location.hostname ? WLAN.warning( 'This is' ) : ''
 			, values       : values
 			, focus        : 0
-			, checkchanged : true
+			, checkchanged : S.list.lan
 			, checkip      : [ 0, 1 ]
 			, beforeshow   : () => $( '.extrabtn' ).toggleClass( 'disabled', dhcp )
 			, buttonlabel  : 'DHCP'

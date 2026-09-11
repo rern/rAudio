@@ -254,16 +254,17 @@ var CONFIG        = {
 		} );
 	}
 	, wlan          : data => {
-		var accesspoint = 'Auto start Access Point<br>'+ COMMON.sp( 30 ) +'<gr>(if not connected)</gr>';
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Country',   'select', data.list ]
-				, [ accesspoint, 'checkbox' ]
+				  [ 'Country',                 'select', data.list ]
+				, [ 'Auto start Access Point', 'checkbox' ]
 			]
+			, footer       : '<gr>(if not connected)</gr>'
 			, boxwidth     : 250
 			, values       : data.values
 			, checkchanged : S.wlan
+			, beforeshow   : () => $( '.infofooter' ).css( 'margin-top', '-16px' )
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 		} );
