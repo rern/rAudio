@@ -324,7 +324,7 @@ var CONTEXT  = {
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
 			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
-			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
+			var footer  = '<span>'+ ICON( 'help gr', '', 'tabindex' ) +'Label</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'

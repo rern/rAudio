@@ -1878,7 +1878,7 @@ li.active .li2 bl {
 	text-align: left;
 }
 .tagfooter {
-	padding: 8px;
+	padding: 8px 8px 0 8px;
 }
 .tagfooter div {
 	display: inline-block;
