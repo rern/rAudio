@@ -34,16 +34,14 @@ var CONTEXT  = {
 			var [ name, path ] = UTIL.bookmarkData( $this );
 			var thumbnail      = $this.find( '.bkcoverart' ).length;
 			if ( thumbnail ) {
-				var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">';
+				var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">';
 			} else {
-				var message = ICON( 'bookmark msgicon' );
+				var icon = ICON( 'bookmark msgicon' );
 			}
-			message += '<p class="infoimgname">'+ name
-					  +'<br><g>('+ path +')</g></p>';
 			INFO( {
 				  icon        : V.icoverart
 				, title       : 'Bookmark Thumbnail'
-				, message     : message
+				, message     : CONTEXT.bookmark.message( icon, name, path )
 				, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 				, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
 				, buttoncolor : ! thumbnail ? '' : V.orange
@@ -69,6 +67,9 @@ var CONTEXT  = {
 			BASH( [ 'bookmark', name, arg, cmd ] );
 			if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
 		}
+		, message : ( icon, name, path ) => icon
+											+'<p class="infoimgname">'+ name
+											+'<br><g>'+ path +'</g></p>'
 		, remove : $bkremove => {
 			var $this          = $bkremove.parent();
 			var [ name, path ] = UTIL.bookmarkData( $this );
@@ -80,9 +81,7 @@ var CONTEXT  = {
 			INFO( {
 				  icon    : 'bookmark'
 				, title   : 'Remove Bookmark'
-				, message : icon
-						  +'<br>'+ name
-						  +'<br><g>'+ path +'</g>'
+				, message : CONTEXT.bookmark.message( icon, name, path )
 				, oklabel : ICON( 'remove' ) +'Remove'
 				, okcolor : V.red
 				, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
@@ -93,9 +92,7 @@ var CONTEXT  = {
 			INFO( {
 				  icon         : 'bookmark'
 				, title        : 'Rename Bookmark'
-				, message      : ICON( 'bookmark msgicon' )
-								+'<br>'+ name
-								+'<br><g>'+ path +'</g>'
+				, message      : CONTEXT.bookmark.message( ICON( 'bookmark msgicon' ), name, path )
 				, list         : [ 'To:', 'text' ]
 				, values       : name
 				, checkblank   : true
