@@ -443,11 +443,14 @@ cp {
 	line-height: 20px;
 	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
 }
+.dropdown li,
 .ellipsis,
 .head .title,
 .infoheader,
+.infoimgname,
 .infomessage,
 .infofooter,
+.select,
 #bannerTitle,
 #bannerMessage,
 #infoTitle {
@@ -664,9 +667,6 @@ label:has( input[ disabled ] ) {
 #infoList:has(.infomessage:only-child) {
 	padding: 20px 0 10px 0;
 }
-.infomessage:has(.i-bookmark) .infoimgname {
-	margin-top: -25px;
-}
 
 hr {
 	margin: 10px 0 0 0;
@@ -851,6 +851,7 @@ hr {
 }
 .infomessage p {
 	margin: 0;
+	padding: 0 15px;
 	text-align: left;
 }
 .infoheader,
@@ -890,7 +891,11 @@ hr {
 	margin-bottom: 0;
 }
 .infoimgname {
+	margin-top: -20px !important;
 	text-align: center !important;
+}
+.infomessage:has(img) .infoimgname {
+	margin-top: 0;
 }
 .infoimgnew {
 	margin-left: 10px;
@@ -1099,9 +1104,6 @@ input[ type=radio ]:disabled {
 	line-height: 40px;
 	background: var( --cga );
 	list-style: none;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	cursor: pointer;
 }
 .dropdown li.selected {

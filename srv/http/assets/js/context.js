@@ -6,20 +6,21 @@ var CONTEXT  = {
 			// #3 - no cover   - icon + directory name
 			var path    = V.list.path;
 			if ( MODE.radio() ) {
-				var name    = V.list.name;
-				var src     = $LI.find( 'img' ).attr( 'src' );
-				var msgpath = name;
+				var name = V.list.name;
 			} else {
 				if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
-				var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ COMMON.versionHash();
-				var msgpath = path;
-				var name    = COMMON.baseName( path );
+				var name = COMMON.baseName( path );
+			}
+			var $liicon  = $LI.find( '.li-icon' );
+			if ( $liicon.is( 'i' ) ) {
+				var icon = ICON( $liicon.prop( 'class' ).slice( 2, -8 ) +' msgicon' );
+			} else {
+				var icon = '<img src="'+ $liicon.attr( 'src' ) +'">';
 			}
 			INFO( {
 				  icon       : 'bookmark'
 				, title      : 'Add Bookmark'
-				, message    : '<img src="'+ src +'">'
-							  +'<br><wh>'+ msgpath +'</wh>'
+				, message    : CONTEXT.bookmark.message( icon, '', path )
 				, list       : [ 'As:', 'text' ]
 				, values     : name
 				, checkblank : true
@@ -68,8 +69,8 @@ var CONTEXT  = {
 			if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
 		}
 		, message : ( icon, name, path ) => icon
-											+'<p class="infoimgname">'+ name
-											+'<br><g>'+ path +'</g></p>'
+											+'<p class="infoimgname">'+ ( name ? name +'<br>' : '' )
+											+'<g>'+ path +'</g></p>'
 		, remove : $bkremove => {
 			var $this          = $bkremove.parent();
 			var [ name, path ] = UTIL.bookmarkData( $this );
