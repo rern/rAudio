@@ -13,6 +13,8 @@
 . /srv/http/bash/common.sh
 
 dirspotify=$dirshm/spotify
+file_expire=$dirspotify/expire
+file_token=$dirspotify/token
 mkdirRW $dirspotify
 
 ##### start
@@ -25,8 +27,8 @@ fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
 # token
-if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
-	token=$( < $filetoken )
+if [[ -e $file_expire && $( < $file_expire ) > $( date +%s ) ]]; then
+	token=$( < $file_token )
 else
 	. $dirsystem/spotifykey # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
@@ -40,8 +42,8 @@ else
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	echo $token > $dirspotify/token
-	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
+	echo $token > $file_token
+	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
 # data
 JSON=$( curl -s -H "Authorization: Bearer $token" \
