@@ -214,7 +214,7 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
-control = "'$hwspotifyd'"'
+control = "'$mixer'"'
 			[[ ! $mixerno ]] && CONF+='
 mixer = "hw"'
 		fi
