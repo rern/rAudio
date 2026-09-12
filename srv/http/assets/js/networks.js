@@ -139,7 +139,7 @@ var EDIT   = {
 			, [ 'Password',     'password' ]
 			, [ 'IP',           'text' ]     // static - ADDRESS
 			, [ 'Gateway',      'text' ]     // static - GATEWAY
-			, [ 'WEP Protocol', 'checkbox' ]
+			, [ 'WEP Protocol', 'checkbox', { padding: 'top' } ]
 			, [ 'Hidden SSID',  'checkbox' ]
 		];
 		var json = {

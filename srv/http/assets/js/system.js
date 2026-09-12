@@ -183,7 +183,7 @@ var CONFIG        = {
 				  [ ICON( 'tag gr' ), ICON( 'gpiopins gr' ) +'Pin' ]
 				, [ 'CLK',  ...select_pins ]
 				, [ 'DT',   ...select_pins ]
-				, [ 'SW',   ...select_pins ]
+				, [ 'SW',   'select', { kv: UTIL.board2bcm, padding: 'bottom' } ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
 			]
 			, boxwidth     : 70
@@ -258,7 +258,7 @@ var CONFIG        = {
 			  ...SW
 			, list         : [
 				  [ 'Country',                 'select', data.list ]
-				, [ 'Auto start Access Point', 'checkbox' ]
+				, [ 'Auto start Access Point', 'checkbox', { padding: 'top' } ]
 			]
 			, footer       : '<gr>(if not connected)</gr>'
 			, boxwidth     : 250
@@ -373,6 +373,7 @@ var UTIL          = {
 		  gpio : data => {
 			var list0 = COMMON.json.clone( UTIL.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
+			list[ 2 ][ 2 ].padding = 'bottom';
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
 				list.push( [ k, 'select', { kv: UTIL.board2bcm, sameline: i % 2 === 0 } ] );
 			} );
@@ -405,15 +406,10 @@ var UTIL          = {
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
 			, beforeshow : () => {
 				$( '#infoList' ).css( 'padding-top', '5px' );
-				var $radio = $( '#infoList input:radio' );
-				var tr     = '<tr style="height: 5px"></tr>';
-				$radio.first().parents( 'tr' ).before( tr );
-				$radio.last().parents( 'tr' ).after( tr );
 				$( '#infoList label' ).css( 'width', '70px' );
 			}
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
-
 				COMMON.json.save( 'lcdchar', _INFO.val() );
 				SWITCH.enable();
 			}
@@ -423,8 +419,8 @@ var UTIL          = {
 			, [ 'Size',                 'radio',  { kv: { '20x4': 20, '16x2': 16 }, colspan: 3 } ]
 			, [ 'Character Map',        'radio',  { kv: [ 'A00', 'A02' ],           colspan: 3 } ]
 			, [ 'Address',              'radio',  [] ] // set by SETTING
-			, [ 'Chip',                 'select', [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
-			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
+			, [ 'Chip',                 'select', { kv: [ 'MCP23008', 'MCP23017', 'PCF8574' ], padding: 'top' } ]
+			, [ 'Idle sleep <gr>(60s)', 'checkbox', { padding: 'top' } ]
 		]
 	}
 	, ledcalc       : () => {

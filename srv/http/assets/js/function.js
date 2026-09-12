@@ -2339,7 +2339,7 @@ var UTIL      = {
 					var val = _INFO.val();
 					$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 				} );
-				$( '.infofooter' ).css( 'padding-left', '35px' );
+				$( '.infofooter' ).css( 'padding-left', '45px' );
 				var $span = $( '.infofooter span' );
 				$span.eq( 0 ).toggleClass( 'hide', ! S.lyrics );
 				$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );

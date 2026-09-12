@@ -636,6 +636,7 @@ function INFO( json ) {
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
+			if ( param.padding === 'top' ) htmls.list += '<tr style="height: 5px"></tr>';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.endsWith( 'tr>' ) ) htmls.list += '<tr>'
@@ -725,6 +726,7 @@ function INFO( json ) {
 					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
 					htmls.list += param.sameline ? '' : '</tr>';
 			}
+			if ( param.padding === 'bottom' ) htmls.list += '<tr style="height: 5px"></tr>';
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
