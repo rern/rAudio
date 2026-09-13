@@ -619,24 +619,28 @@ function INFO( json ) {
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
 	} else {
+		var is_chk_rad = type => [ 'checkbox', 'radio' ].includes( type );
 		htmls.list     = '';
+		var tr_padding = '<tr style="height: 5px"></tr>';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, disabled, kv, label, param, type;
-		var i          = 0; // for radio name
+		var chk_rad, colspan, disabled, kv, label, param, type;
 		I.list.forEach( ( l, i ) => {
-			label   = l[ 0 ];
-			type    = l[ 1 ];
-			param   = l[ 2 ] || {};
+			label    = l[ 0 ];
+			type     = l[ 1 ];
+			param    = l[ 2 ] || {};
 			if ( type === 'html' ) {
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
+			chk_rad  = is_chk_rad( type );
+			if ( chk_rad ) {
+				if ( ! colspan ) colspan = 2;
+				if ( i > 0 && ! is_chk_rad( I.list[ i - 1 ][ 1 ] ) ) htmls.list += tr_padding;
+			}
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
-			if ( param.padding === 'top' ) htmls.list += '<tr style="height: 5px"></tr>';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.endsWith( 'tr>' ) ) htmls.list += '<tr>'
@@ -692,7 +696,6 @@ function INFO( json ) {
 						}
 					} );
 					htmls.list += tr ? '' : '</td></tr>';
-					i++;
 					break;
 				case 'range':
 					I.range = true;
@@ -726,7 +729,9 @@ function INFO( json ) {
 					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
 					htmls.list += param.sameline ? '' : '</tr>';
 			}
-			if ( param.padding === 'bottom' ) htmls.list += '<tr style="height: 5px"></tr>';
+			if ( chk_rad && i + 1 < I.list.length ) {
+				if ( ! is_chk_rad( I.list[ i + 1 ][ 1 ] ) ) htmls.list += tr_padding;
+			}
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
 	}

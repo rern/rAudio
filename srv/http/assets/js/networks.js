@@ -137,9 +137,9 @@ var EDIT   = {
 		var list = [
 			  [ 'SSID',         'text' ]
 			, [ 'Password',     'password' ]
-			, [ 'IP',           'text' ]     // static - ADDRESS
-			, [ 'Gateway',      'text' ]     // static - GATEWAY
-			, [ 'WEP Protocol', 'checkbox', { padding: 'top' } ]
+			, [ 'IP',           'text' ] // static - ADDRESS
+			, [ 'Gateway',      'text' ] // static - GATEWAY
+			, [ 'WEP Protocol', 'checkbox' ]
 			, [ 'Hidden SSID',  'checkbox' ]
 		];
 		var json = {

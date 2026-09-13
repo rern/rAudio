@@ -248,7 +248,7 @@ var UTIL     = {
 				, tab          : [ '', () => SETTING( 'soxr soxr-custom', UTIL.soxr.custom ) ]
 				, list         : [
 					  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
-					, [ 'Threads', 'radio',  { Auto: 0, Single: 1, padding: 'top' } ]
+					, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
 				]
 				, values       : values
 				, checkblank   : true

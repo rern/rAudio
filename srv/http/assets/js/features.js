@@ -105,7 +105,7 @@ var CONFIG       = {
 				  [ 'Rotation',                  'select', { kv: rotate, nosort : true, colspan : 2, width : 120 } ]
 				, [ 'Zoom <gr>(%)</gr>',         'number', { updn: { step: 5, min: 50, max: 300 } } ]
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
-				, [ 'On while play',             'checkbox', { colspan: 2, padding: 'top' } ]
+				, [ 'On while play',             'checkbox', { colspan: 2 } ]
 			]
 			, footer       : _INFO.footerIcon( {
 				  Reload          : 'reload'
@@ -164,7 +164,7 @@ var CONFIG       = {
 			, list       : [
 				  [ S.login ? 'Existing' : 'Password', 'password' ]
 				, [ 'New',                             S.login ? 'password' : 'hidden' ]
-				, [ 'Setting pages only',              'checkbox', { padding: 'top' } ]
+				, [ 'Setting pages only',              'checkbox' ]
 			]
 			, footer     : S.login ? '(<wh>New</wh> = <c>blank</c> - No password change)' : ''
 			, checkblank : [ 0 ]
@@ -404,8 +404,8 @@ var CONFIG       = {
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',            'number',   { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop',  'checkbox', { padding: 'top' } ]
+				  [ 'Minutes',            'number', { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop',  'checkbox' ]
 				, [ 'Rerun on each play', 'checkbox' ]
 			]
 			, boxwidth     : 70
@@ -549,7 +549,7 @@ var UTIL        = {
 					, tab          : [ '', UTIL.spotify.keys ]
 					, list         : [
 						  [ 'Device', 'select', data.devices ]
-						, [ 'Volume', 'radio',  { kv: { Default: 'alsa', Linear: 'alsa_linear', None: 'none' }, padding: 'top' } ]
+						, [ 'Volume', 'radio',  { kv: { Default: 'alsa', Linear: 'alsa_linear', None: 'none' } } ]
 					]
 					, boxwidth     : 300
 					, values       : data.values
