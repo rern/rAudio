@@ -378,7 +378,7 @@ var CONFIG       = {
 				, checklength : { 0: 32, 1: 32 }
 				, beforeshow  : () => {
 					$( '#infoList .help' ).on( 'click', function() {
-						$( '.container .help' ).eq( 0 ).trigger( 'click' );
+						$( '#divspotifyd .helpblock' ).removeClass( 'hide' );
 						$( '#infoX' ).trigger( 'click' );
 					} );
 				}
