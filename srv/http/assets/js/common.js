@@ -619,7 +619,7 @@ function INFO( json ) {
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
 	} else {
-		var is_chk_rad = type => [ 'checkbox', 'radio' ].includes( type );
+		var is_chk_rad = type => [ 'checkbox', 'radio', '' ].includes( type );
 		htmls.list     = '';
 		var tr_padding = '<tr style="height: 5px"></tr>';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
