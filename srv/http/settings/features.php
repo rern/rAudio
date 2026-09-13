@@ -87,7 +87,7 @@ EOF
 		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
-Require:
+Required:
  · Premium account
  · <c>Client ID</c> and <c>Client secret</c> from your Spotify private app
 
