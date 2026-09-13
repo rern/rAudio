@@ -661,9 +661,6 @@ label:has( input[ disabled ] ) {
 .infomessage:has( svg ) {
 	background: var( --cgd );
 }
-#infoList svg {
-	width: 95%;
-}
 #infoList:has(.infomessage:only-child) {
 	padding: 20px 0 10px 0;
 }
@@ -786,6 +783,9 @@ hr {
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
+#infoList:has( svg ) {
+	padding-top: 5px;
+}
 #infoList table {
 	margin: 0 auto;
 	padding-top: 10px;
@@ -871,7 +871,7 @@ hr {
 .infomessage,
 .infofooter {
 	max-height: 800px;
-	padding-top: 5px;
+	padding: 5px;
 	line-height: 24px;
 	color: var( --cg60 );
 }
