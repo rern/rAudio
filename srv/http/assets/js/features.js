@@ -361,12 +361,6 @@ var CONFIG       = {
 		} else if ( spotifykey ) {
 			S.camilladsp ? UTIL.spotify.keys() : UTIL.spotify.output();
 		} else {
-			if ( navigator.userAgent.includes( 'Firefox' ) ) {
-				_INFO.warning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
-				$( '#spotifyd' ).prop( 'checked', false );
-				return
-			}
-			
 			INFO( {
 				  ...SW
 				, list        : [
@@ -475,6 +469,7 @@ var UTIL        = {
 		} else if ( error ) {
 			_INFO.warning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 		}
+		window.location.href = window.location.origin +'/settings.php?p=features';
 	}
 	, scrobble : {
 		  key    : () => {

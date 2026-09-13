@@ -43,8 +43,8 @@ function NOTIFY_COMMON( message ) {
 }
 function REFRESHDATA() {
 	if ( PAGE === 'guide' || ( I.active && ! I.rangelabel ) ) return
-
-	if ( PAGE === 'features' && ! /features$/.test( window.location.href ) ) { // authorization: spotify / scrobble
+	
+	if ( PAGE === 'features' && ! window.location.href.endsWith( 'features' ) ) { // authorization: spotify / scrobble
 		UTIL.redirect();
 		return
 	}
