@@ -299,6 +299,7 @@ spotifykey )
 spotifykeyremove )
 	notify 'spotify blink' 'Spotify Client Keys' "Remove ..."
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
+	$dirbash/cmd.sh playerstop
 	systemctl disable --now spotifyd
 	pushRefresh
 	;;

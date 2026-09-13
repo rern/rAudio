@@ -514,6 +514,11 @@ var DISPLAY   = {
 		var values = {}
 		keys.forEach( k => { values[ k ] = D[ k ] } );
 		var list   = [];
+		if ( type === 'playback' ) {
+			list = [ [ '', '<gr>Show:</gr>', { colspan: 3, sameline: true } ], [ '', '<gr>Options:</gr>' ] ];
+		} else if ( type === 'playlist' ) {
+			list = [ [ '', '<gr>Options:</gr>' ] ];
+		}
 		Object.values( json ).forEach( ( l, i ) => {
 			if ( ! l ) {
 				list.push( [ '', '' ] );
@@ -641,8 +646,6 @@ var DISPLAY   = {
 			INFO( {
 				  icon         : 'playback'
 				, title        : 'Playback'
-				, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
-				, messagealign : 'left'
 				, list         : kv.list
 				, values       : kv.values
 				, checkchanged : true
@@ -729,8 +732,6 @@ var DISPLAY   = {
 			INFO( {
 				  icon         : 'playlist'
 				, title        : 'Playlist'
-				, message      : 'Options:'
-				, messagealign : 'left'
 				, list         : kv.list
 				, values       : kv.values
 				, checkchanged : true
@@ -884,6 +885,7 @@ var FILEIMAGE = {
 		$( '#infoFileLabel i' ).addClass( 'blink' );
 		delete I.infofilegif;
 		I.rotate   = 0;
+		$( '.msgicon' ).css( 'display', 'inline-block' );
 		$( '.infoimgname' ).addClass( 'hide' );
 		$( '.infoimgnew, .infoimgwh' ).remove();
 		if ( ! I.infofile.name.endsWith( '.gif' ) ) {
@@ -1461,14 +1463,6 @@ var PLAYBACK  = {
 						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
 						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
 					} );
-				if ( ! S.webradio ) return
-				
-				var $icon = $( '#pl-list li.active .li-icon' );
-				if ( $icon.is( 'i' ) ) {
-					$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
-				} else {
-					$icon.attr( 'src', src );
-				}
 			} else {
 				COVERART.default();
 			}
@@ -1595,8 +1589,12 @@ var PLAYBACK  = {
 			var album  = S.Album;
 			$( '#artist' ).removeClass( 'disabled' );
 			if ( S.webradio ) {
-				if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
-				if ( ! artist ) artist = S.station;
+				if ( S.station ) {
+					if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
+					if ( ! artist ) artist = S.station;
+				} else {
+					if ( ! album )  album  = S.file;
+				}
 			} else if ( ! title || ! album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();
@@ -2341,7 +2339,7 @@ var UTIL      = {
 					var val = _INFO.val();
 					$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 				} );
-				$( '.infofooter' ).css( 'padding-left', '35px' );
+				$( '.infofooter' ).css( 'padding-left', '45px' );
 				var $span = $( '.infofooter span' );
 				$span.eq( 0 ).toggleClass( 'hide', ! S.lyrics );
 				$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );

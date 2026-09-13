@@ -6,20 +6,21 @@ var CONTEXT  = {
 			// #3 - no cover   - icon + directory name
 			var path    = V.list.path;
 			if ( MODE.radio() ) {
-				var name    = V.list.name;
-				var src     = $LI.find( 'img' ).attr( 'src' );
-				var msgpath = name;
+				var name = V.list.name;
 			} else {
 				if ( path.endsWith( '.cue' ) ) path = COMMON.dirName( path );
-				var src     = '/mnt/MPD/'+ path +'/cover.jpg'+ COMMON.versionHash();
-				var msgpath = path;
-				var name    = COMMON.baseName( path );
+				var name = COMMON.baseName( path );
+			}
+			var $liicon  = $LI.find( '.li-icon' );
+			if ( $liicon.is( 'i' ) ) {
+				var icon = ICON( $liicon.prop( 'class' ).slice( 2, -8 ) +' msgicon' );
+			} else {
+				var icon = '<img src="'+ $liicon.attr( 'src' ) +'">';
 			}
 			INFO( {
 				  icon       : 'bookmark'
 				, title      : 'Add Bookmark'
-				, message    : '<img src="'+ src +'">'
-							  +'<br><wh>'+ msgpath +'</wh>'
+				, message    : CONTEXT.bookmark.message( icon, '', path )
 				, list       : [ 'As:', 'text' ]
 				, values     : name
 				, checkblank : true
@@ -34,16 +35,14 @@ var CONTEXT  = {
 			var [ name, path ] = UTIL.bookmarkData( $this );
 			var thumbnail      = $this.find( '.bkcoverart' ).length;
 			if ( thumbnail ) {
-				var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">';
+				var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">';
 			} else {
-				var message = ICON( 'bookmark msgicon' );
+				var icon = ICON( 'bookmark msgicon' );
 			}
-			message += '<p class="infoimgname">'+ name
-					  +'<br><g>('+ path +')</g></p>';
 			INFO( {
 				  icon        : V.icoverart
 				, title       : 'Bookmark Thumbnail'
-				, message     : message
+				, message     : CONTEXT.bookmark.message( icon, name, path )
 				, file        : { oklabel: ICON( 'flash' ) +'Replace', type: 'image/*' }
 				, buttonlabel : ! thumbnail ? '' : ICON( 'bookmark' ) +' Icon'
 				, buttoncolor : ! thumbnail ? '' : V.orange
@@ -69,6 +68,9 @@ var CONTEXT  = {
 			BASH( [ 'bookmark', name, arg, cmd ] );
 			if ( cmd === 'CMD NAME DIR' ) BANNER( 'bookmark', 'Bookmark', 'Added' );
 		}
+		, message : ( icon, name, path ) => icon
+											+'<p class="infoimgname">'+ ( name ? name +'<br>' : '' )
+											+'<g>'+ path +'</g></p>'
 		, remove : $bkremove => {
 			var $this          = $bkremove.parent();
 			var [ name, path ] = UTIL.bookmarkData( $this );
@@ -80,9 +82,7 @@ var CONTEXT  = {
 			INFO( {
 				  icon    : 'bookmark'
 				, title   : 'Remove Bookmark'
-				, message : icon
-						  +'<br>'+ name
-						  +'<br><g>'+ path +'</g>'
+				, message : CONTEXT.bookmark.message( icon, name, path )
 				, oklabel : ICON( 'remove' ) +'Remove'
 				, okcolor : V.red
 				, ok      : () => BASH( [ 'bookmark', name, 'CMD NAME' ] )
@@ -93,9 +93,7 @@ var CONTEXT  = {
 			INFO( {
 				  icon         : 'bookmark'
 				, title        : 'Rename Bookmark'
-				, message      : ICON( 'bookmark msgicon' )
-								+'<br>'+ name
-								+'<br><g>'+ path +'</g>'
+				, message      : CONTEXT.bookmark.message( ICON( 'bookmark msgicon' ), name, path )
 				, list         : [ 'To:', 'text' ]
 				, values       : name
 				, checkblank   : true
@@ -307,11 +305,11 @@ var CONTEXT  = {
 		var CMD    = 'CMD FILE TAGS';
 		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
-			var fileicon = 'playlists';
+			var fileicon = 'file-playlists';
 			cmd.push( V.list.track );
 			CMD += ' TRACK';
 		} else {
-			var fileicon = 'music';
+			var fileicon = 'file-music';
 		}
 		cmd.push( CMD );
 		BASH( cmd, values => {
@@ -324,9 +322,9 @@ var CONTEXT  = {
 			}
 			var dir     = V.list.licover ? file : COMMON.dirName( file );
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-						  +'<div>'+ ICON( 'folder' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon ) +' '+ COMMON.baseName( file ) +'</div>';
-			var footer  = '<span>'+ ICON( 'help', '', 'tabindex' ) +'Label</span>';
+						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
+			var footer  = '<span>'+ ICON( 'help gr', '', 'tabindex' ) +'Label » click to search</span>';
 			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
@@ -343,17 +341,9 @@ var CONTEXT  = {
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
 					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
+					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
-					var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
-					$( '.infofooter span' ).on( 'click', function( e ) {
-						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-							$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
-							$( '.taglabel' ).removeClass( 'hide' );
-						} else {
-							$( '#infoList input' ).css( 'width', inputW +'px' );
-							$( '.taglabel' ).addClass( 'hide' );
-						}
-					} );
+					$( '.infofooter span' ).on( 'click', () => $( '.taglabel' ).toggleClass( 'hide' ) );
 					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
 						var $this  = $( this );
 						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );

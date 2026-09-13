@@ -100,7 +100,6 @@ playerStop() {
 			$dirbash/snapclient.sh stop
 			;;
 		spotify )
-			rm -f $dirshm/spotify/start
 			systemctl restart spotifyd
 			;;
 		upnp )

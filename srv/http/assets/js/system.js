@@ -254,16 +254,17 @@ var CONFIG        = {
 		} );
 	}
 	, wlan          : data => {
-		var accesspoint = 'Auto start Access Point<br>'+ COMMON.sp( 30 ) +'<gr>(if not connected)</gr>';
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Country',   'select', data.list ]
-				, [ accesspoint, 'checkbox' ]
+				  [ 'Country',                 'select', data.list ]
+				, [ 'Auto start Access Point', 'checkbox' ]
 			]
+			, footer       : '<gr>(if not connected)</gr>'
 			, boxwidth     : 250
 			, values       : data.values
 			, checkchanged : S.wlan
+			, beforeshow   : () => $( '.infofooter' ).css( 'margin-top', '-16px' )
 			, cancel       : SWITCH.cancel
 			, ok           : SWITCH.enable
 		} );
@@ -402,23 +403,19 @@ var UTIL          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, beforeshow : () => {
-				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '#infoList label' ).css( 'width', '70px' );
-			}
+			, beforeshow : () => $( '#infoList label' ).css( 'width', '70px' )
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
-
 				COMMON.json.save( 'lcdchar', _INFO.val() );
 				SWITCH.enable();
 			}
 		}
 		, list : [
-			  [ 'Type',                 'hidden'  ]
-			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
-			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
-			, [ 'Address',              'radio',    [ '' ] ] // set by SETTING
-			, [ 'Chip',                 'select',   [ 'MCP23008', 'MCP23017', 'PCF8574' ] ]
+			  [ 'Type',                 'hidden' ]
+			, [ 'Size',                 'radio',  { kv: { '20x4': 20, '16x2': 16 }, colspan: 3 } ]
+			, [ 'Character Map',        'radio',  { kv: [ 'A00', 'A02' ],           colspan: 3 } ]
+			, [ 'Address',              'radio',  [] ] // set by SETTING
+			, [ 'Chip',                 'select', { kv: [ 'MCP23008', 'MCP23017', 'PCF8574' ] } ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}
@@ -647,7 +644,11 @@ var UTIL          = {
 		}, 10000 );
 		}
 	, relays        : {
-		  name   : data => {
+		  css    : () => {
+			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:first-child' ).remove();
+		}
+		, name   : data => {
 			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -673,8 +674,7 @@ var UTIL          = {
 				, checkunique  : true
 				, values       : values
 				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
+					UTIL.relays.css();
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
@@ -729,8 +729,7 @@ var UTIL          = {
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
+					UTIL.relays.css();
 					var $tdtimer = $( '#infoList tr:last td' );
 					var $timer   = $tdtimer.slice( 1 )
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
@@ -1043,16 +1042,15 @@ $( '.img' ).on( 'click', function() {
 						+ '<br>'+ vcc1
 						+ gnd
 						+'</p>'
-		, relays        : '<br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
+		, relays        : '<br><br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
 		, rotaryencoder : gpiopin
 						 +'<br><c>CLK, DT, SW</c> : any green <grn>●</grn> pins'
 						 +'<br><c>+</c> : not use'
 						 + gnd
 						 +'</p>'
 	}
-	var list    = '<img src="/assets/img/'+ name +'.jpg">';
-	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
-	if ( name in txt ) list += '<br>'+ txt[ name ];
+	var list    = '<br><img src="/assets/img/'+ name +'.jpg">';
+	if ( name in txt ) list += txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
@@ -1060,6 +1058,7 @@ $( '.img' ).on( 'click', function() {
 	INFO( {
 		  icon       : title[ name ][ 1 ] || name
 		, title      : title[ name ][ 0 ]
+		, message    : [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ? '' : UTIL.gpiosvg
 		, list       : list
 		, beforeshow : () => {
 			if ( name in pinhide ) {

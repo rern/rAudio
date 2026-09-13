@@ -2,31 +2,33 @@
 
 # spotifyd.conf > this:
 #    - spotifyd 'onevent' hook
-# env var: ($PLAYER_EVENT still not consistent - used for detect emitted events only)
-# $PLAYER_EVENT: load/preload/change/start/play/pause/volumeset
+# $PLAYER_EVENT: play, pause, stop, change, start, preload, preloading, endoftrack, volumeset
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
 # $DURATION_MS
 # $VOLUME
 
-. /srv/http/bash/common.sh
-
-dirspotify=$dirshm/spotify
-mkdirRW $dirspotify
-
 ##### start
 if ! playerActive spotify; then
-	echo spotify > $dirshm/player
-	$dirbash/cmd.sh playerstart
+	echo spotify > /srv/http/data/shm/player
+	/srv/http/bash/cmd.sh playerstart
 	exit
 # ------------------------------------------------------------------------------
 fi
-[[ $PLAYER_EVENT == volumeset ]] && volumeGet push
+[[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
+[[ $PLAYER_EVENT != play && $PLAYER_EVENT != pause ]] && exit
+# ------------------------------------------------------------------------------
+. /srv/http/bash/common.sh
+
+dirspotify=$dirshm/spotify
+file_expire=$dirspotify/expire
+file_token=$dirspotify/token
+mkdirRW $dirspotify
 
 # token
-if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
-	token=$( < $filetoken )
+if [[ -e $file_expire && $( < $file_expire ) > $( date +%s ) ]]; then
+	token=$( < $file_token )
 else
 	. $dirsystem/spotifykey # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
@@ -40,8 +42,8 @@ else
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	echo $token > $dirspotify/token
-	echo $(( $( date +%s ) + 3550 )) > $dirspotify/expire # 10s before 3600s
+	echo $token > $file_token
+	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
 # data
 JSON=$( curl -s -H "Authorization: Bearer $token" \
@@ -53,11 +55,11 @@ STATUS=$( jq '
 				Album     : (.item.album.name?          // ""),
 				Artist    : (.item.artists[0].name?     // ""),
 				coverart  : (.item.album.images[0].url? // ""),
-				elapsed   : (((.progress_ms + (now * 1000 - .timestamp)) / 1000) | floor),
+				elapsed   : ((.progress_ms / 1000) | floor),
 				play      : .is_playing,
 				state     : (if .is_playing then "play" else "pause" end),
 				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
-				timestamp : .timestamp,
+				timestamp : now * 1000,
 				Title     : (.item.name?                // "")
 			}' <<< $JSON )
 $dirbash/status-push.sh "$STATUS"

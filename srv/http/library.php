@@ -52,11 +52,12 @@ if ( $CMD === 'lsmode' ) {
 	array_splice( $f, $i, 1 );
 	array_unshift( $f, $GMODE );
 }
-$format  = '%'.implode( '%^^%', $f ).'%';
-$format  = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
-// $dirmpd $dirsystem $dirwebradio
-foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
-$dirbash = '/bin/sudo /srv/http/bash/';
+$format      = '%'.implode( '%^^%', $f ).'%';
+$format      = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
+$dirbash     = '/bin/sudo /srv/http/bash/';
+$dirmpd      = '/srv/http/data/mpd/';
+$dirsystem   = '/srv/http/data/system/';
+$filedisplay = $dirsystem.'display.json';
 
 switch( $CMD ) {
 
@@ -160,8 +161,7 @@ case 'home':
 	$htmlhome  = '';
 	$fileorder = $dirsystem.'order.json';
 	if ( file_exists( $fileorder ) ) {
-		$order = file_get_contents( $fileorder );
-		$order = json_decode( $order );
+		$order = json_decode( file_get_contents( $fileorder ) );
 		foreach( $order as $o ) $htmlhome.= $html[ $o ];
 	} else {
 		foreach( $html as $o => $h ) $htmlhome.= $h;
@@ -174,7 +174,7 @@ case 'home':
 case 'list':
 	$filemode = $dirmpd.$MODE;
 	if ( in_array( $MODE, [ 'album', 'latest' ] ) ) {
-		$display = json_decode( file_get_contents( $dirsystem.'display.json' ) );
+		$display = json_decode( file_get_contents( $filedisplay ) );
 		if ( $display->albumbyartist ) $filemode.= 'byartist';
 		if ( $display->albumyear ) $filemode.= '-year';
 	}
@@ -532,7 +532,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $dirbash, $f, $GMODE, $hash, $html, $search, $STRING, $tag;
+	global $dirbash, $f, $filedisplay, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -553,7 +553,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$file0 = dirname( $file_cue ).'/'.explode( '"', reset( $line ) )[ 1 ];
 	}
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
-	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
+	$hidecover  = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
 			$albumartist = $each0->albumartist;
@@ -581,7 +581,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, library, 'CMD ALBUM ARTIST TYPE' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, 'library', 'CMD ALBUM ARTIST TYPE' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';

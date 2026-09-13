@@ -288,11 +288,10 @@ var CONFIG       = {
 			return
 		}
 		
-		var list = [];
+		var list = [ [ '', 'Write permission:' ] ];
 		Object.keys( values ).forEach( k => list.push( [ '<gr>NAS/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {
 			  ...SW
-			, message      : '<wh>Write</wh> permission:'
 			, list         : list
 			, values       : values
 			, checkchanged : S.nfsserver
@@ -304,11 +303,10 @@ var CONFIG       = {
 		data.key ? UTIL.scrobble.player( data.values ) : UTIL.scrobble.key();
 	}
 	, smb          : values => {
-		var list = [];
+		var list = [ [ '', 'Write permission:' ] ];
 		Object.keys( values ).forEach( k => list.push( [ '<gr>/mnt/MPD/</gr>'+ k,   'checkbox' ] ) );
 		INFO( {
 			  ...SW
-			, message      : '<wh>Write</wh> permission:'
 			, list         : list
 			, values       : values
 			, checkchanged : S.smb
@@ -363,25 +361,18 @@ var CONFIG       = {
 		} else if ( spotifykey ) {
 			S.camilladsp ? UTIL.spotify.keys() : UTIL.spotify.output();
 		} else {
-			if ( navigator.userAgent.includes( 'Firefox' ) ) {
-				_INFO.warning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
-				$( '#spotifyd' ).prop( 'checked', false );
-				return
-			}
-
 			INFO( {
 				  ...SW
 				, list        : [
 					  [ 'ID',     'text' ]
 					, [ 'Secret', 'text' ]
+					, [ '',       'ID, Secret <gr>from Spotify private app</gr> '+ ICON( 'help help' ) ]
 				]
-				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ICON( 'help help' )
-				, footeralign : 'right'
 				, boxwidth    : 320
 				, checklength : { 0: 32, 1: 32 }
 				, beforeshow  : () => {
 					$( '#infoList .help' ).on( 'click', function() {
-						$( '.container .help' ).eq( 0 ).trigger( 'click' );
+						$( '#divspotifyd .helpblock' ).removeClass( 'hide' );
 						$( '#infoX' ).trigger( 'click' );
 					} );
 				}
@@ -407,7 +398,7 @@ var CONFIG       = {
 		INFO( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',            'number',   { updn: { step: 5, min: 5, max: 120 } } ]
+				  [ 'Minutes',            'number', { updn: { step: 5, min: 5, max: 120 } } ]
 				, [ 'Power off on stop',  'checkbox' ]
 				, [ 'Rerun on each play', 'checkbox' ]
 			]
@@ -478,6 +469,7 @@ var UTIL        = {
 		} else if ( error ) {
 			_INFO.warning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 		}
+		window.location.href = window.location.origin +'/settings.php?p=features';
 	}
 	, scrobble : {
 		  key    : () => {

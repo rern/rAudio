@@ -179,6 +179,11 @@ countRadio() {
 	echo "$counts"
 	echo -n "$list" > $dirmpd/radio
 }
+coverFileLimit() { # from status-coverart.sh, status-dab.sh
+	ls -t $dirshm/online/* 2> /dev/null \
+		| tail -n +11 \
+		| xargs rm -f --
+}
 dabDevice() {
 	script /dev/null -qc 'timeout 0.1 rtl_test -t' # force capture all std
 }
@@ -362,7 +367,7 @@ mkdirRW() {
 }
 mpcElapsed() {
 	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
-		echo false
+		echo 0
 	else
 		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 	fi

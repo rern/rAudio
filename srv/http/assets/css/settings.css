@@ -641,28 +641,15 @@ input.disabled + .switchlabel::after {
 	display: none;
 	color: var( --cw );
 }
-#infoList:has( svg ) {
-	padding: 10px 0 0 0;
-}
-#infoList svg {
-	width: 95%;
-}
-.infomessage:has( svg ) {
-	width: 100%;
-	padding: 0;
-	box-shadow: 0 5px 5px 0 #000;
-}
-#infoList:has( svg ) table {
-	margin-top: 5px;
-}
 .gpiopins {
 	margin-top: 0;
 	text-align: left;
 	line-height: 20px;
+	padding: 0 15px;
 }
 .gpiopin {
-	margin-bottom: 5px !important;
 	padding: 0 0 0 12px;
+	text-align: left;
 }
 .gpiopin span {
 	display: inline-block;
@@ -674,11 +661,11 @@ input.disabled + .switchlabel::after {
 	outline: 1px solid #000;
 }
 .gpiopin span.on {
-	outline: 4px solid red;
+	outline: 3px solid red;
 }
 circle.on {
 	stroke: red;
-	stroke-width: 4px;
+	stroke-width: 3px;
 }
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;

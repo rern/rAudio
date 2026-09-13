@@ -619,22 +619,27 @@ function INFO( json ) {
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
 	} else {
+		var is_chk_rad = type => [ 'checkbox', 'radio', '' ].includes( type );
 		htmls.list     = '';
+		var tr_padding = '<tr style="height: 5px"></tr>';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, disabled, kv, label, param, type;
-		var i          = 0; // for radio name
+		var chk_rad, colspan, disabled, kv, label, param, type;
 		I.list.forEach( ( l, i ) => {
-			label   = l[ 0 ];
-			type    = l[ 1 ];
-			param   = l[ 2 ] || {};
+			label    = l[ 0 ];
+			type     = l[ 1 ];
+			param    = l[ 2 ] || {};
 			if ( type === 'html' ) {
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
+			chk_rad  = is_chk_rad( type );
+			if ( chk_rad ) {
+				if ( ! colspan ) colspan = 2;
+				if ( i > 0 && ! is_chk_rad( I.list[ i - 1 ][ 1 ] ) ) htmls.list += tr_padding;
+			}
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
@@ -683,7 +688,7 @@ function INFO( json ) {
 						var k = isarray ? v : k;
 						if ( tr ) htmls.list += '<tr><td></td><td colspan="'+ colspan +'">';
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						if ( param.sameline === false ) { // default: true
+						if ( param.sameline === false ) { // radio default: true
 							tr          = true;
 							htmls.list += '</td></tr>';
 						} else {
@@ -691,7 +696,6 @@ function INFO( json ) {
 						}
 					} );
 					htmls.list += tr ? '' : '</td></tr>';
-					i++;
 					break;
 				case 'range':
 					I.range = true;
@@ -710,7 +714,7 @@ function INFO( json ) {
 					} else {
 						if ( param.sameline ) {
 							var lblnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += lblnext ? '<td style="padding: 0 5px; text-align: right;">'+ lblnext +'</td>' : '</td>';
+							htmls.list += lblnext ? '<td style="text-align: right;">'+ lblnext +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
@@ -721,8 +725,12 @@ function INFO( json ) {
 					break;
 				default: // string
 					if ( type ) htmls.list += type;
-					if ( 'suffix' in param ) htmls.list += '</td><td>'+ param.suffix;
-					htmls.list += param.sameline ? '</td>' : '</td></tr>';
+					htmls.list += '</td>';
+					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
+					htmls.list += param.sameline ? '' : '</tr>';
+			}
+			if ( chk_rad && i + 1 < I.list.length ) {
+				if ( ! is_chk_rad( I.list[ i + 1 ][ 1 ] ) ) htmls.list += tr_padding;
 			}
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
@@ -749,11 +757,6 @@ function INFO( json ) {
 		} );
 		// assign values
 		_INFO.setValues();
-		// set height shorter if checkbox / radio only
-		$( '#infoList tr' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
-		} );
 		// show
 		_INFO.toggle();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
@@ -1153,7 +1156,7 @@ var _INFO     = {
 			}
 			var allW     = $( '#infoList' ).width();
 			var labelW   = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
-			I.boxW       = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+			I.boxW       = ( widthmax ? allW - labelW - 40 : I.boxwidth );
 		} else {
 			I.boxW       = 230;
 		}
@@ -1480,12 +1483,12 @@ var COMMON    = {
 		INFO( {
 			  icon       : icon
 			, title      : title
-			, message    : message +'<hr>'
+			, message    : message
 			, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 			, footer     : '<label><input type="checkbox"><wh>Append new albums to Latest</wh></label>'
 			, values     : { ... values, ACTION: 'update', LATEST: false }
 			, beforeshow : () => {
-				$( '.infomessage' ).css( 'width', '100%' );
+				$( '.infomessage' ).css( { background: 'var( --cgd )', 'padding': '10px' } );
 				if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
 				if ( S.shareddata ) return
 				
