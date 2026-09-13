@@ -403,10 +403,7 @@ var UTIL          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, beforeshow : () => {
-				$( '#infoList' ).css( 'padding-top', '5px' );
-				$( '#infoList label' ).css( 'width', '70px' );
-			}
+			, beforeshow : () => $( '#infoList label' ).css( 'width', '70px' )
 			, cancel   : SWITCH.cancel
 			, ok       : () => {
 				COMMON.json.save( 'lcdchar', _INFO.val() );
@@ -608,10 +605,7 @@ var UTIL          = {
 				, boxwidth     : 70
 				, values       : values
 				, checkchanged : S.powerbutton
-				, beforeshow   : () => {
-					$( '#infoList' ).css( 'padding-top', '5px' );
-					$( '.pwr' ).removeClass( 'hide' );
-				}
+				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
 				, cancel       : SWITCH.cancel
 				, ok           : SWITCH.enable
 				, fileconf     : true
@@ -651,7 +645,6 @@ var UTIL          = {
 		}
 	, relays        : {
 		  css    : () => {
-			$( '#infoList' ).css( 'padding-top', '5px' );
 			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 			$( '#infoList td:first-child' ).remove();
 		}
