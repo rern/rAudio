@@ -60,7 +60,7 @@ STATUS=$( jq '
 				play      : .is_playing,
 				state     : (if .is_playing then "play" else "pause" end),
 				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
-				timestamp : ((now * 1000) | floor)               ,
+				timestamp : ((now * 1000) | round)               ,
 				Title     : (.item.name?                // "")
 			}' <<< $JSON )
 $dirbash/status-push.sh "$STATUS"
