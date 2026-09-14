@@ -139,13 +139,13 @@ with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, play, state, Time, timestamp, webradio
-    v = STATUS[ k ]
+    v = k in STATUS and STATUS[ k ] or ''
     if v:
         if cmA00: v = normalize( v )
         STATUS[ k ] = v[ :COLS ]
 locals().update( STATUS )
 
-if webradio:
+if 'webradio' in STATUS and webradio:
     if station:
         if not Album:  Album  = Artist and '('+ station +')' or file
         if not Artist: Artist = station
