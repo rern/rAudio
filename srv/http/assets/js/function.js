@@ -101,20 +101,20 @@ var BIO       = {
 				similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 			}
 			var biohtml = `
-	<div class="container" tabindex="0">
-	<div id="biocontent">
-		<p class="artist">${ ICON( 'close close-root' ) + name }</p>
-		<p class="genre">${ backhtml + ICON( 'genre' ) +'&ensp;'+ genre }</p>
-		${ similarhtml }
-		<p>${ content }</p>
-		<div style="clear: both;"></div>
-		<br><br>
-		<p id="biosource">
-			<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
-			<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
-		</p>
-	</div>
-	</div>`;
+<div class="container" tabindex="0">
+<div id="biocontent">
+	<p class="artist">${ ICON( 'close close-root' ) + name }</p>
+	<p class="genre">${ backhtml + ICON( 'genre' ) +'&ensp;'+ genre }</p>
+	${ similarhtml }
+	<p>${ content }</p>
+	<div style="clear: both;"></div>
+	<br><br>
+	<p id="biosource">
+		<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
+		<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
+	</p>
+</div>
+</div>`;
 			$( '#bio' ).html( biohtml ).promise().done( () => {
 				$( '#bio' )
 					.removeClass( 'hide' )

@@ -207,6 +207,7 @@ lyrics )
 	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
+		. $dirsystem/lyrics.conf
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
