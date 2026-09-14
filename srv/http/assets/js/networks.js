@@ -93,7 +93,7 @@ var EDIT   = {
 				var dhcp = values.DHCP
 				delete values.DHCP;
 			} else {
-				values   = { IP: S.ip ? S.ip.slice( 0, S.ip.lastIndexOf( '.' ) + 1 ) : '', DHCP: '' }
+				values   = { IP: S.ip ? COMMON.ipSub( S.ip ) : '', DHCP: '' }
 			}
 		}
 		var $li   = $( 'li.active' );

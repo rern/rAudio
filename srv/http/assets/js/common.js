@@ -1409,7 +1409,7 @@ var COMMON    = {
 		$( 'body' ).append( form );
 		form.submit();
 	}
-	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
+	, ipSub         : ip =>  ip.slice( 0, ip.lastIndexOf( '.' ) + 1 )
 	, json          : {
 		  clone     : json => JSON.parse( JSON.stringify( json ) )
 		, highlight : json => {
