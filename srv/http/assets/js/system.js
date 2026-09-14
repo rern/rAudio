@@ -376,7 +376,7 @@ var UTIL          = {
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
 				list.push( [ k, 'select', { kv: UTIL.board2bcm, sameline: i % 2 === 0 } ] );
 			} );
-			list.push( [ '', ' ' ], list0.slice( -1 )[ 0 ] ); // ' ' - placeholder
+			list.push( [ '', ' ' ], list0.at( -1 ) ); // ' ' - placeholder
 			INFO( {
 				  ...UTIL.lcdchar.json
 				, tab          : [ () => SETTING( 'lcdchar i2c', CONFIG.lcdchar ), '' ]
