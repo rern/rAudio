@@ -10,8 +10,9 @@
 # $VOLUME
 
 ##### start
-if ! playerActive spotify; then
-	echo spotify > /srv/http/data/shm/player
+file_player=/srv/http/data/shm/player
+if [[ $( < $file_player ) != spotify ]]; then
+	echo spotify > $file_player
 	/srv/http/bash/cmd.sh playerstart
 	exit
 # ------------------------------------------------------------------------------
