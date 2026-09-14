@@ -18,7 +18,6 @@ if [[ $( < $file_player ) != spotify ]]; then
 # ------------------------------------------------------------------------------
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
-[[ $PLAYER_EVENT != play && $PLAYER_EVENT != pause ]] && exit
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
