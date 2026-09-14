@@ -191,7 +191,7 @@ row            = rows - 1
 width          = COLS - 4
 lcd.cursor_pos = ( row, 0 )
 lcd.write_string( ICON[ 'play' ] )
-elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000000 )
+elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000 )
 time_mon       = time.monotonic()
 
 while True:
