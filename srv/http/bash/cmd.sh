@@ -186,7 +186,7 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
-	if [[ ! $ACTION && $( < $dirshm/player ) == mpd && $FILE =~ ^(USB|NAS|NVME|SATA|SD) ]]; then
+	if [[ ! $ACTION && $FILE == [NSU]* ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
 		if [[ -e $filelrc ]]; then
 			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '1,/^$/ d'

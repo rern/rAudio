@@ -385,7 +385,7 @@ $ACTION
 CMD ACTION"
 }
 mpcSkip() {
-	[[ $( < $dirshm/player ) != mpd ]] && return
+	! playerActive mpd && return
 	
 	local length pos songpos state
 	read length songpos state < <( mpc status '%length% %songpos% %state%' )

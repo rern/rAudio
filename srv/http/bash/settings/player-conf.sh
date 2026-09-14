@@ -233,7 +233,8 @@ if [[ $CAMILLADSP ]]; then
 	. $dirsettings/camilla-devices.sh
 elif [[ $EQUALIZER ]]; then
 	value=$( getVar current $dirsystem/equalizer.json )
-	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
+	player=$( < $dirshm/player )
+	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
 	$dirbash/cmd.sh "equalizer
 $value
 $user

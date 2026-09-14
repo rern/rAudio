@@ -7,7 +7,6 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-player=$( < $dirshm/player )
 # > status.json - for:
 #	1. refresh page: radio, spotify
 #	2. get: play, state
@@ -84,6 +83,7 @@ fi
 # ------------------------------------------------------------------------------
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # ------------------------------------------------------------------------------
+player=$( < $dirshm/player )
 if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
