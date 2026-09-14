@@ -26,15 +26,6 @@ if grep -q ^ExecStop $file; then
 	restart+=' mpd_oled'
 fi
 
-# 20260719
-. $dirshm/output
-if [[ $mixertype == hardware ]]; then
-	touch $dirshm/mixerhardware
-	$dirsettings/player-conf.sh
-elif [[ $mixertype == none ]]; then
-	touch $dirsystem/mixernone
-fi
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 
@@ -85,7 +76,3 @@ fi
 $dirbash/webradio-convert.sh
 
 installfinish
-
-# 20260717
-file=$dirmpdconf/bluetooth.conf
-[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh
