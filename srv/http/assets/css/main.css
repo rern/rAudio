@@ -369,6 +369,9 @@ div.pagerefresh {
 	white-space: nowrap;
 	overflow: hidden;
 }
+#artist.disabled {
+	color: var( --wh ) !important;
+}
 #title {
 	font-size: 30px;
 }
