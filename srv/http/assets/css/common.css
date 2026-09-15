@@ -791,6 +791,9 @@ hr {
 	padding-top: 10px;
 	border-spacing: 10px 0;
 }
+#infoList table:has( tr:first-child input[ type="checkbox" ], tr:first-child input[ type="radio" ] ) {
+	padding-top: 20px;
+}
 #infoList tr {
 	height: 42px;
 }
