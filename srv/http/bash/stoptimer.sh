@@ -26,7 +26,7 @@ rm $dirshm/pidstoptimer
 [[ ! $onplay ]] && rm $dirsystem/stoptimer
 volume=$( volumeGet )
 volumeToggle $volume 0
-$dirbash/cmd.sh playerstop
+playerStop
 sleep 1
 volumeToggle 0 $volume
 

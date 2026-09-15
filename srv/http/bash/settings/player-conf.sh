@@ -79,7 +79,7 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
-		$dirbash/cmd.sh playerstop
+		playerStop
 		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	fi
 	if [[ $CAMILLADSP ]]; then

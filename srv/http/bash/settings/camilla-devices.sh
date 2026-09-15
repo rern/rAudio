@@ -8,7 +8,7 @@ if [[ ! $dirbash ]]; then # if run directly
 	NAME=$name
 fi
 
-$dirbash/cmd.sh playerstop # must stop for aplay --dump-hw-params
+playerStop # must stop for aplay --dump-hw-params
 systemctl stop camilladsp
 if grep -q -m1 configs-bt /etc/default/camilladsp; then
 	DEVICES=( '{ "Bluez": "bluez" }' '{ "blueALSA": "bluealsa" }' )

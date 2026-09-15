@@ -462,7 +462,7 @@ pladdrandom )
 	plAddRandom
 	;;
 playerstart )
-	playerStart
+	playerStart $1
 	;;
 playerstop )
 	playerStop
@@ -517,9 +517,8 @@ screenoff )
 	;;
 shairport )
 	if ! playerActive airplay; then
-		echo airplay > $dirshm/player
+		playerStart airplay
 		pushStatus
-		playerStart
 	fi
 	systemctl start shairport
 	;;
@@ -543,8 +542,7 @@ titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
 upnpstart )
-	echo upnp > $dirshm/player
-	playerStart
+	playerStart upnp
 	;;
 volume )
 	volume

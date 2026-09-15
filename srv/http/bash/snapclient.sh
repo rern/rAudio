@@ -13,8 +13,8 @@
 . /srv/http/bash/common.sh
 
 if [[ $1 == stop ]]; then
+	playerStop
 	systemctl stop snapclient
-	$dirbash/cmd.sh playerstop
 	rm -f $dirshm/snapserverip
 else
 	echo $1 > $dirshm/snapserverip

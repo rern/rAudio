@@ -9,18 +9,15 @@
 # $DURATION_MS
 # $VOLUME
 
+. /srv/http/bash/common.sh
+
 ##### start
-file_player=/srv/http/data/shm/player
-if [[ $( < $file_player ) != spotify ]]; then
-	echo spotify > $file_player
-	/srv/http/bash/cmd.sh playerstart
+if ! playerActive spotify; then
+	playerStart spotify
 	start=1
-# ------------------------------------------------------------------------------
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
 # ------------------------------------------------------------------------------
-
-. /srv/http/bash/common.sh
 
 dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire

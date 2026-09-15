@@ -24,11 +24,8 @@ if [[ -e $filesharedip ]]; then
 fi
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
-if [[ -e $dirmpdconf/snapserver.conf ]]; then
-	$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
-else
-	$dirbash/cmd.sh playerstop
-fi
+playerStop
+$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 playerActive upnp && mpc -q clear
