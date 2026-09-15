@@ -25,7 +25,6 @@ fi
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
 playerStop
-$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 playerActive upnp && mpc -q clear

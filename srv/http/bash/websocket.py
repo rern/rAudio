@@ -25,10 +25,10 @@ result    = subprocess.run( [ DIR_BASH +'status', '-Bp' ], capture_output=True, 
 UDP_PORT  = result.stdout.strip()
 
 class UDPBridgeProtocol( asyncio.DatagramProtocol ):
-    def datagram_received( self, data, addr ): # from status wsBroadcast() to all hosts (udp)
+    def datagram_received( self, data, addr ): # from status wsBroadcast() to all servers (udp)
         try:
-            message = data.decode( 'utf-8' )
-            if CLIENTS: websockets.broadcast( CLIENTS, message ) # to connected clients only
+            args = data.decode( 'utf-8' )
+            if CLIENTS: websockets.broadcast( CLIENTS, args )
         except Exception as e:
             print( f"UDP Bridge Error: {e}" )
 
@@ -43,7 +43,7 @@ async def cmd( websocket ):
             elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
                 filesh = DIR_BASH + jargs[ 'filesh' ][ 0 ]
                 jargs[ 'filesh' ][ 0 ] = filesh
-                subprocess.Popen( jargs[ 'filesh' ] ) 
+                subprocess.Popen( jargs[ 'filesh' ] )
             elif 'json' in jargs:   # save to NAME.json and broadcast
                 jargsjson = jargs[ 'json' ]
                 jargsname = jargs[ 'name' ]

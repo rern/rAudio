@@ -281,7 +281,7 @@ backend = "pipe"\
 device = "/tmp/snapfifo"
 ' /etc/spotifyd.conf
 	else
-		$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
+		playerStop
 		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
 		for s in shairport-sync spotifyd; do
