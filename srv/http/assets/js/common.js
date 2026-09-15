@@ -619,26 +619,30 @@ function INFO( json ) {
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
 	} else {
-		var is_chk_rad = type => [ 'checkbox', 'radio', '' ].includes( type );
+		var tr_padding = type => {
+			if ( [ 'number', 'password', 'range', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
+				htmls.list += '<tr style="height: 5px"></tr>';
+			}
+		}
 		htmls.list     = '';
-		var tr_padding = '<tr style="height: 5px"></tr>';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var chk_rad, colspan, disabled, kv, label, param, type;
+		var chk_rad, colspan, disabled, kv, label, param, type, type_prev;
 		I.list.forEach( ( l, i ) => {
 			label    = l[ 0 ];
 			type     = l[ 1 ];
 			param    = l[ 2 ] || {};
-			if ( type === 'html' ) {
+			if ( type === 'html' ) { // from camilla.js
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
+			
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
-			chk_rad  = is_chk_rad( type );
+			chk_rad  = [ 'checkbox', 'radio', '' ].includes( type );
 			if ( chk_rad ) {
 				if ( ! colspan ) colspan = 2;
-				if ( i > 0 && ! is_chk_rad( I.list[ i - 1 ][ 1 ] ) ) htmls.list += tr_padding;
+				if ( type_prev ) tr_padding( type_prev );
 			}
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
@@ -713,8 +717,8 @@ function INFO( json ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
 						if ( param.sameline ) {
-							var lblnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += lblnext ? '<td style="text-align: right;">'+ lblnext +'</td>' : '</td>';
+							var lbl_next = I.list[ i + 1 ][ 0 ];
+							htmls.list += lbl_next ? '<td style="text-align: right;">'+ lbl_next +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
@@ -729,9 +733,8 @@ function INFO( json ) {
 					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
 					htmls.list += param.sameline ? '' : '</tr>';
 			}
-			if ( chk_rad && i + 1 < I.list.length ) {
-				if ( ! is_chk_rad( I.list[ i + 1 ][ 1 ] ) ) htmls.list += tr_padding;
-			}
+			if ( chk_rad && ! param.sameline && i + 1 < I.list.length ) tr_padding( I.list[ i + 1 ][ 1 ] );
+			type_prev = type;
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
