@@ -1579,52 +1579,35 @@ var PLAYBACK  = {
 			}
 		}
 		, set : () => {
-			var prev = {
-				  Artist : $( '#artist' ).text()
-				, Title  : $( '#title' ).text()
-				, Album  : $( '#album' ).text()
-			}
-			var artist = S.Artist;
-			var title  = S.Title;
-			var album  = S.Album;
-			$( '#artist' ).removeClass( 'disabled' );
+			var s    = {};
+			[ 'Artist', 'Title', 'Album' ].forEach( K => { s[ K.toLowerCase() ] = S[ K ] } );
 			if ( S.webradio ) {
 				if ( S.station ) {
-					if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
-					if ( ! artist ) artist = S.station;
+					if ( ! s.album )  s.album  = S.Artist ? '('+ S.station +')' : S.file;
+					if ( ! s.artist ) s.artist = S.station;
 				} else {
-					if ( ! album )  album  = S.file;
+					if ( ! s.album )  s.album  = S.file;
 				}
-			} else if ( ! title || ! album ) {
+			} else if ( ! s.title || ! s.album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();
-				if ( ! title ) title = file.replace( /\.[^/.]+$/, '' ); // filename
-				if ( ! album ) album = path.pop();                      // dir
+				if ( ! s.title ) s.title = file.replace( /\.[^/.]+$/, '' ); // filename
+				if ( ! s.album ) s.album = path.pop();                      // dir
 			}
-			$( '#artist' )
-				.html( artist || V.dots )
-				.toggleClass( 'disabled', S.Artist === '' );
-			$( '#title' )
-				.html(  title  || V.dots )
-				.toggleClass( 'disabled', S.Title === '' )
-				.toggleClass( 'gr', S.pause );
-			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
-			$( '#album' )
-				.html(  album  || V.dots )
-				.toggleClass( 'disabled', S.Album === '' );
-			$( '#composer' ).text( S.Composer );
-			$( '#conductor' ).text( S.Conductor );
-			$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
-			$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
-			var current = {
-				  Artist : $( '#artist' ).text()
-				, Title  : $( '#title' ).text()
-				, Album  : $( '#album' ).text()
-			}
-			var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
-				return prev[ k ] !== current[ k ]
+			$( '#title' ).toggleClass( 'gr', S.pause );
+			if ( S.booklet && s.album ) s.album += ' '+ ICON( 'booklet gr' );
+			[ 'Artist', 'Title', 'Album' ].forEach( K => {
+				var k = K.toLowerCase();
+				$( '#'+ k )
+					.toggleClass( 'disabled', S[ K ] === '' )
+					.html( s[ k ] || V.dots );
 			} );
-			if ( changed ) PLAYBACK.info.scroll();
+			[ 'Composer', 'Conductor' ].forEach( K => {
+				var k = K.toLowerCase();
+				$( '#'+ k ).text( S[ K ] );
+				$( '#div'+ k ).toggleClass( 'hide', ! D[ k +'name' ] || S[ K ] === '' );
+			} );
+			PLAYBACK.info.scroll();
 			$( '#sampling' ).html( S.sampling );
 			if ( S.icon ) {
 				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
