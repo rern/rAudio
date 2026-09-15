@@ -1579,8 +1579,9 @@ var PLAYBACK  = {
 			}
 		}
 		, set : () => {
+			var keys = [ 'Artist', 'Title', 'Album' ];
 			var s    = {};
-			[ 'Artist', 'Title', 'Album' ].forEach( K => { s[ K.toLowerCase() ] = S[ K ] } );
+			keys.forEach( K => { s[ K.toLowerCase() ] = S[ K ] } );
 			if ( S.webradio ) {
 				if ( S.station ) {
 					if ( ! s.album )  s.album  = S.Artist ? '('+ S.station +')' : S.file;
@@ -1594,32 +1595,22 @@ var PLAYBACK  = {
 				if ( ! s.title ) s.title = file.replace( /\.[^/.]+$/, '' ); // filename
 				if ( ! s.album ) s.album = path.pop();                      // dir
 			}
-			$( '#title' ).toggleClass( 'gr', S.pause );
 			if ( S.booklet && s.album ) s.album += ' '+ ICON( 'booklet gr' );
-			[ 'Artist', 'Title', 'Album' ].forEach( K => {
+			keys.forEach( K => {
 				var k = K.toLowerCase();
 				$( '#'+ k )
 					.toggleClass( 'disabled', S[ K ] === '' )
 					.html( s[ k ] || V.dots );
 			} );
+			$( '#title' ).toggleClass( 'gr', S.pause );
 			[ 'Composer', 'Conductor' ].forEach( K => {
 				var k = K.toLowerCase();
 				$( '#'+ k ).text( S[ K ] );
 				$( '#div'+ k ).toggleClass( 'hide', ! D[ k +'name' ] || S[ K ] === '' );
 			} );
 			PLAYBACK.info.scroll();
+			$( '#playericon' ).prop( 'class', 'i-'+ S.icon );
 			$( '#sampling' ).html( S.sampling );
-			if ( S.icon ) {
-				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
-					$( '#playericon' )
-						.removeAttr( 'class' )
-						.addClass( S.icon ? 'i-'+ S.icon : 'hide' );
-				}
-			} else {
-				$( '#playericon' )
-						.removeAttr( 'class' )
-						.addClass( 'hide' );
-			}
 		}
 	}
 	, main      : () => {
