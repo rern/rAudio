@@ -14,12 +14,12 @@ file_player=/srv/http/data/shm/player
 if [[ $( < $file_player ) != spotify ]]; then
 	echo spotify > $file_player
 	/srv/http/bash/cmd.sh playerstart
-	sleep 1
-	exit
+	start=1
 # ------------------------------------------------------------------------------
 fi
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
 # ------------------------------------------------------------------------------
+
 . /srv/http/bash/common.sh
 
 dirspotify=$dirshm/spotify
@@ -47,10 +47,18 @@ else
 	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
 # data
-JSON=$( curl -s -H "Authorization: Bearer $token" \
-			https://api.spotify.com/v1/me/player/currently-playing )
+metaData() {
+	curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing
+}
+
+JSON=$( metaData )
 ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
 # ------------------------------------------------------------------------------
+if [[ $start && $( jq .is_playing <<< $JSON ) == false ]]; then
+	sleep 0.5
+	JSON=$( metaData )
+fi
+
 STATUS=$( jq '
 			{
 				Album     : (.item.album.name?          // ""),
