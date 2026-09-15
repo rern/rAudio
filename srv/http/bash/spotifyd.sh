@@ -51,9 +51,12 @@ metaData() {
 JSON=$( metaData )
 ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
 # ------------------------------------------------------------------------------
-if [[ $start && $( jq .is_playing <<< $JSON ) == false ]]; then
-	sleep 0.5
-	JSON=$( metaData )
+if [[ $start ]]; then
+	for i in {0..5}; do
+		sleep 1
+		JSON=$( metaData )
+		[[ $( jq .is_playing <<< $JSON ) == true ]] && break
+	done
 fi
 
 STATUS=$( jq '
