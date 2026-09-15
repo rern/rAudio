@@ -1605,8 +1605,12 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'gr', S.pause );
 			[ 'Composer', 'Conductor' ].forEach( K => {
 				var k = K.toLowerCase();
-				$( '#'+ k ).text( S[ K ] );
-				$( '#div'+ k ).toggleClass( 'hide', ! D[ k +'name' ] || S[ K ] === '' );
+				if ( D[ k +'name' ] && S[ K ] ) 
+					$( '#'+ k ).text( S[ K ] );
+					$( '#div'+ k ).removeeClass( 'hide' );
+				} else {
+					$( '#div'+ k ).addClass( 'hide' );
+				}
 			} );
 			PLAYBACK.info.scroll();
 			$( '#playericon' ).prop( 'class', 'i-'+ S.icon );
