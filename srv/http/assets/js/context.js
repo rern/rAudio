@@ -337,6 +337,8 @@ var CONTEXT  = {
 				, values       : values
 				, checkchanged : true
 				, beforeshow   : () => {
+					var $labels = $( '#infoList td:first-child' ).find( 'gr, w' );
+					if ( V.wW < 400 ) $labels.addClass( 'hide' );
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' )
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
@@ -357,7 +359,7 @@ var CONTEXT  = {
 							if ( [ 'album', 'track', 'title' ].includes( mode ) ) return
 							
 							if ( mode === 'tag' ) {
-								$( '#infoList td:first-child' ).find( 'gr, w' ).toggleClass( 'hide' );
+								$labels.toggleClass( 'hide' );
 								return
 							}
 							var string = $this.next().find( 'input' ).val();
