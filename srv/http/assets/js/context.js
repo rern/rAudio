@@ -301,7 +301,7 @@ var CONTEXT  = {
 			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
-		list.push( [ '<g>Toggle </g>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>Click each label to search</gr>'+ various ] );
+		list.push( [ '<w>Toggle </w>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
 		var file   = V.list.path;
 		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
 		var CMD    = 'CMD FILE TAGS';
@@ -356,7 +356,7 @@ var CONTEXT  = {
 							if ( [ 'album', 'track', 'title' ].includes( mode ) ) return
 							
 							if ( mode === 'tag gr' ) {
-								$( '#infoList td:first-child' ).find( 'gr, g' ).toggleClass( 'hide' );
+								$( '#infoList td:first-child' ).find( 'gr, w' ).toggleClass( 'hide' );
 								return
 							}
 							var string = $this.next().find( 'input' ).val();
