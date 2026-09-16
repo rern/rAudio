@@ -542,6 +542,15 @@ pushWebsocket() {
 quoteEscape() { # backtick ` - no need to escape for json
 	echo "${@//\"/\\\"}"
 }
+radioStop() {
+	[[ ! -e $dirshm/radio ]] && return
+#...............................................................................
+	mpc -q stop
+	systemctl stop radio dab &> /dev/null
+	rm -f $dirshm/radio
+	pushStatus
+	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
+}
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD

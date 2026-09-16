@@ -86,15 +86,6 @@ pushSavedPlaylist() {
 		pushData playlists '{ "count": 0 }'
 	fi
 }
-radioStop() {
-	[[ ! -e $dirshm/radio ]] && return
-#...............................................................................
-	mpc -q stop
-	systemctl stop radio dab &> /dev/null
-	rm -f $dirshm/radio
-	pushStatus
-	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
-}
 savedPlCount() {
 	playlists=$( ls $dirplaylists | wc -l )
 	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
