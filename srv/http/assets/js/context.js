@@ -343,11 +343,6 @@ var CONTEXT  = {
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
 						var $this = $( this );
-						if ( $this.find( '.i-tag' ).length ) {
-							$( '#infoList td:first-child' ).find( 'gr, g' ).toggleClass( 'hide' );
-							return
-						}
-						
 						if ( $this.hasClass( 'infomessage' ) ) {
 							var string = $this.find( '.path' ).text();
 							var mode   = COMMON.path2mode( string );
@@ -358,9 +353,13 @@ var CONTEXT  = {
 								, gmode   : mode
 							}
 						} else {
-							var mode   = $this.find( 'i' ).prop( 'class' ).slice( 2 );
-							if ( [ 'track', 'title' ].includes( mode ) ) return
-
+							var mode  = $this.find( 'i' ).prop( 'class' ).slice( 2 );
+							if ( [ 'album', 'track', 'title' ].includes( mode ) ) return
+							
+							if ( mode === 'tag' ) {
+								$( '#infoList td:first-child' ).find( 'gr, g' ).toggleClass( 'hide' );
+								return
+							}
 							var string = $this.next().find( 'input' ).val();
 							if ( ! string ) return
 
