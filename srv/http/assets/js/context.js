@@ -301,7 +301,7 @@ var CONTEXT  = {
 			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
-		list.push( [ '<w>Toggle </w>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
+		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
 		var file   = V.list.path;
 		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
 		var CMD    = 'CMD FILE TAGS';
@@ -340,6 +340,7 @@ var CONTEXT  = {
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' )
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
+					$( '#infoList .i-tag' ).css( { border: '1px solid', 'border-radius': '50%', color: 'var( --cg60 )' } );
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
 						var $this = $( this );
@@ -355,7 +356,7 @@ var CONTEXT  = {
 							var mode  = $this.find( 'i' ).prop( 'class' ).slice( 2 );
 							if ( [ 'album', 'track', 'title' ].includes( mode ) ) return
 							
-							if ( mode === 'tag gr' ) {
+							if ( mode === 'tag' ) {
 								$( '#infoList td:first-child' ).find( 'gr, w' ).toggleClass( 'hide' );
 								return
 							}
