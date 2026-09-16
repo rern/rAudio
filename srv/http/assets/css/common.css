@@ -794,6 +794,7 @@ hr {
 #infoList table:not( :has( tr:first-child :is( input, select ) ) ) {
 	padding-top: 0;
 }
+#infoTab + #infoList table:has( tr:first-child select ),
 #infoList table:has( tr:first-child input:is( [ type=checkbox ], [ type=radio ] ) ) {
 	padding-top: 20px;
 }
