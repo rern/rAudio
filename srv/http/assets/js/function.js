@@ -1605,7 +1605,7 @@ var PLAYBACK  = {
 			$( '#title' ).toggleClass( 'gr', S.pause );
 			[ 'Composer', 'Conductor' ].forEach( K => {
 				var k = K.toLowerCase();
-				if ( D[ k +'name' ] && S[ K ] ) 
+				if ( D[ k +'name' ] && S[ K ] ) {
 					$( '#'+ k ).text( S[ K ] );
 					$( '#div'+ k ).removeeClass( 'hide' );
 				} else {
