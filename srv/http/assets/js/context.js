@@ -301,7 +301,7 @@ var CONTEXT  = {
 			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
-		list.push( [ ICON( 'tag gr', '', 'tabindex' ), '<gr>Toggle » click label to search</gr>'+ various ] );
+		list.push( [ '<gr>Toggle </gr>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>Click each label to search</gr>'+ various ] );
 		var file   = V.list.path;
 		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
 		var CMD    = 'CMD FILE TAGS';
@@ -338,6 +338,7 @@ var CONTEXT  = {
 				, checkchanged : true
 				, beforeshow   : () => {
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
+					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' )
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
