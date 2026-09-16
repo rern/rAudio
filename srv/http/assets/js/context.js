@@ -344,7 +344,7 @@ var CONTEXT  = {
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
 						var $this = $( this );
 						if ( $this.find( '.i-tag' ).length ) {
-							$( '#infoList td:first-child gr' ).toggleClass( 'hide' );
+							$( '#infoList td:first-child' ).find( 'gr, g' ).toggleClass( 'hide' );
 							return
 						}
 						
