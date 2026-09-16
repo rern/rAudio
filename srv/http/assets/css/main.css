@@ -1871,10 +1871,8 @@ li.active .li2 bl {
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
+	padding: 5px 10px 10px 10px;
 	cursor: pointer;
-}
-.tagmessage img {
-	margin: 5px 0 0 10px;
 }
 .tagmessage div {
 	margin-left: 10px;
