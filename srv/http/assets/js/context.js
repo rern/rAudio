@@ -298,8 +298,10 @@ var CONTEXT  = {
 		name[ 3 ]  = 'Album Artist';
 		var list   = [];
 		format.forEach( ( el, i ) => {
-			list.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
+			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
+		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
+		list.push( [ ICON( 'tag gr', '', 'tabindex' ), '<gr>Toggle » click label to search</gr>'+ various ] );
 		var file   = V.list.path;
 		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
 		var CMD    = 'CMD FILE TAGS';
@@ -324,34 +326,41 @@ var CONTEXT  = {
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
 			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
-			var footer  = '<span>'+ ICON( 'help gr', '', 'tabindex' ) +'Label » click to search</span>';
-			if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 				, message      : message
 				, messagealign : 'left'
 				, list         : list
-				, footer       : footer
 				, footeralign  : 'left'
 				, boxwidth     : 'max'
 				, values       : values
 				, checkchanged : true
 				, beforeshow   : () => {
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
-					$( '#infoList .infofooter' ).addClass( 'tagfooter' );
-					$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
-					$( '.infofooter span' ).on( 'click', () => $( '.taglabel' ).toggleClass( 'hide' ) );
-					$( '#infoList' ).on( 'click', '.infomessage, table i', function() {
-						var $this  = $( this );
-						if ( $this.hasClass( 'i-album' ) ) $this = $( '.infomessage' );
-						if ( $this.is( 'i' ) ) {
-							var mode   = $this.prop( 'class' ).replace( 'i-', '' );
+					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
+						var $this = $( this );
+						if ( $this.find( '.i-tag' ).length ) {
+							$( '#infoList td:first-child gr' ).toggleClass( 'hide' );
+							return
+						}
+						
+						if ( $this.hasClass( 'infomessage' ) ) {
+							var string = $this.find( '.path' ).text();
+							var mode   = COMMON.path2mode( string );
+							console.log(string, mode)
+							var query  = {
+								  library : 'ls'
+								, string  : string
+								, gmode   : mode
+							}
+						} else {
+							var mode   = $this.find( 'i' ).prop( 'class' ).slice( 2 );
 							if ( [ 'track', 'title' ].includes( mode ) ) return
 
-							var string = $this.parent().next().find( 'input' ).val();
+							var string = $this.next().find( 'input' ).val();
 							if ( ! string ) return
 
 							var query  = {
@@ -359,14 +368,6 @@ var CONTEXT  = {
 								, mode    : mode
 								, string  : string
 								, format  : [ 'album', 'artist' ]
-							}
-						} else {
-							var string = $this.find( '.path' ).text();
-							var mode   = COMMON.path2mode( string );
-							var query  = {
-								  library : 'ls'
-								, string  : string
-								, gmode   : mode
 							}
 						}
 						LIST( query, function( html ) {
