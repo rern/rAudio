@@ -346,7 +346,6 @@ var CONTEXT  = {
 						if ( $this.hasClass( 'infomessage' ) ) {
 							var string = $this.find( '.path' ).text();
 							var mode   = COMMON.path2mode( string );
-							console.log(string, mode)
 							var query  = {
 								  library : 'ls'
 								, string  : string
@@ -356,7 +355,7 @@ var CONTEXT  = {
 							var mode  = $this.find( 'i' ).prop( 'class' ).slice( 2 );
 							if ( [ 'album', 'track', 'title' ].includes( mode ) ) return
 							
-							if ( mode === 'tag' ) {
+							if ( mode === 'tag gr' ) {
 								$( '#infoList td:first-child' ).find( 'gr, g' ).toggleClass( 'hide' );
 								return
 							}
