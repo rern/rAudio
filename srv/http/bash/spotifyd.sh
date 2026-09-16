@@ -11,14 +11,17 @@
 
 . /srv/http/bash/common.sh
 
-##### start
-if ! playerActive spotify; then
-	playerStart spotify
-	start=1
-fi
+metaData() {
+	JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
+	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
+		notify spotify Metadata 'Not available'
+		exit
+# ------------------------------------------------------------------------------
+	fi
+}
+
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
 # ------------------------------------------------------------------------------
-
 dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire
 file_token=$dirspotify/token
@@ -43,22 +46,17 @@ else
 	echo $token > $file_token
 	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
-# data
-metaData() {
-	curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing
-}
-
-JSON=$( metaData )
-! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
-# ------------------------------------------------------------------------------
-if [[ $start ]]; then
+##### start
+if ! playerActive spotify; then
+	playerStart spotify
 	for i in {0..5}; do
 		sleep 1
-		JSON=$( metaData )
+		metaData
 		[[ $( jq .is_playing <<< $JSON ) == true ]] && break
 	done
 fi
-
+# data
+metaData
 STATUS=$( jq '
 			{
 				Album     : (.item.album.name?          // ""),
@@ -68,7 +66,7 @@ STATUS=$( jq '
 				play      : .is_playing,
 				state     : (if .is_playing then "play" else "pause" end),
 				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
-				timestamp : ((now * 1000) | round)               ,
+				timestamp : ((now * 1000) | round),
 				Title     : (.item.name?                // "")
 			}' <<< $JSON )
 $dirbash/status-push.sh "$STATUS"

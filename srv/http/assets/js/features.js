@@ -596,3 +596,7 @@ function renderPage() {
 	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
 	CONTENT();
 }
+
+$( '.i-copy' ).on( 'click', function() {
+	COMMON.dataCopy( $( this ).prev().text() );
+} );

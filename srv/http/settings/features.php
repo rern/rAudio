@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
+	  'buttons' => [ 'copy', 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  'Equalizer'     => 'equalizer'
 		, 'DSP'           => 'camilladsp'
@@ -100,7 +100,7 @@ To create Spotify private app:
 	» App description: <c>(any)</c>
 	» Website: <c>(any)</c>
 	» Redirect URI:
-		- <c>https://rern.github.io/raudio/spotify</c>
+		- <c>https://rern.github.io/raudio/spotify</c> $B->copy
 		- <btn>Add</btn>
 	» API/SDKs: Check all
 	<btn>Save</btn>

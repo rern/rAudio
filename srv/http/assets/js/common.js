@@ -1184,6 +1184,13 @@ var COMMON    = {
 	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (i+1) to end
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
+	, dataCopy      : data => { // copy2clipboard - for non https which cannot use clipboard API
+		$( 'body' ).prepend( '<textarea id="_copy">'+ data.replace( 'Copy{', '{' ) +'</textarea>' );
+		$( '#_copy' ).trigger( 'focus' ).select();
+		document.execCommand( 'copy' );
+		$( '#_copy' ).remove();
+		BANNER( 'copy', 'Data', 'Copied to clipboard.' );
+	}
 	, dataError     : ( msg, list ) => {
 		var pos   = msg.replace( /.* position /, '' );
 		if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
@@ -1200,17 +1207,10 @@ var COMMON    = {
 		$( '#data' )
 			.html( error )
 			.removeClass( 'hide' );
-		if ( $( '#data codered' ).length ) {
-			var fn = () => {
-				// copy2clipboard - for non https which cannot use clipboard API
-				$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-				$( '#error' ).trigger( 'focus' ).select();
-				document.execCommand( 'copy' );
-				$( '#error' ).remove();
-				BANNER( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-			}
-		} else {
-			var fn = () => {
+		$( '#data .infobtn' ).on( 'click', function() {
+			if ( $( '#data codered' ).length ) {
+				COMMON.dataCopy( $( '#data' ).text() );
+			} else {
 				if ( PAGE === 'player' ) {
 					var cmdsh = [ 'settings/player-conf.sh' ];
 					var title = 'MPD';
@@ -1221,8 +1221,7 @@ var COMMON    = {
 				BASH( cmdsh, REFRESHDATA );
 				NOTIFY( PAGE, title, 'Restart ...' );
 			}
-		}
-		$( '#data .infobtn' ).on( 'click', fn );
+		} );
 	}
 	, dabScan       : () => {
 		var icon  = 'dabradio';
