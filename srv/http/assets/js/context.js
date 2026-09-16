@@ -301,7 +301,7 @@ var CONTEXT  = {
 			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
-		list.push( [ '<gr>Toggle </gr>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>Click each label to search</gr>'+ various ] );
+		list.push( [ '<g>Toggle </g>'+ ICON( 'tag gr', '', 'tabindex' ), '<gr>Click each label to search</gr>'+ various ] );
 		var file   = V.list.path;
 		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
 		var CMD    = 'CMD FILE TAGS';
