@@ -791,6 +791,7 @@ hr {
 	padding-top: 10px;
 	border-spacing: 10px 0;
 }
+#infoList:has( img ) table,
 #infoList table:not( :has( tr:first-child :is( input, select ) ) ) {
 	padding-top: 0;
 }
