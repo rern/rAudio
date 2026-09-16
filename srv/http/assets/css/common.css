@@ -791,13 +791,16 @@ hr {
 	padding-top: 10px;
 	border-spacing: 10px 0;
 }
-#infoList table:has( tr:first-child input[ type="checkbox" ], tr:first-child input[ type="radio" ] ) {
+#infoList table:not( :has( tr:first-child :is( input, select ) ) ) {
+	padding-top: 0;
+}
+#infoList table:has( tr:first-child input:is( [ type=checkbox ], [ type=radio ] ) ) {
 	padding-top: 20px;
 }
 #infoList tr {
 	height: 42px;
 }
-#infoList tr:has(input[type=checkbox], input[type=radio]) {
+#infoList tr:has( input[ type=checkbox ], input[ type=radio ] ) {
 	height: 36px;
 }
 #infoList td {
