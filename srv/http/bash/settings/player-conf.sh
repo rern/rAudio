@@ -210,13 +210,12 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	hw0=$( getVar device $fileconf )
 	if [[ $hw0 != $hwspotifyd ]]; then
 #--------------->
-		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
+		CONF=$( grep -Ev '^device|^control' /etc/spotifyd.conf )
 		if [[ ! $EQUALIZER ]]; then
 			CONF+='
-device = "'$hwspotifyd'"
-control = "'$mixer'"'
+device = "'$hwspotifyd'"'
 			[[ ! $mixerno ]] && CONF+='
-mixer = "hw"'
+control = "'$mixer'"'
 		fi
 #---------------<
 ######## >
