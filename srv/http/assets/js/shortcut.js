@@ -81,7 +81,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		e.preventDefault();
 		var cmd = key === ' ' ? 'toggle' : KEY_MEDIA[ key ];
 		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-		$( '#'+ cmd ).trigger( 'click' );
+		if ( ! $( '#'+ cmd ).hasClass( 'disabled' ) ) $( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 	
