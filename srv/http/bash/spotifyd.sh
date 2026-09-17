@@ -6,7 +6,6 @@
 #	pause  : pause
 #	seek   : seeked
 #	volume : volumeset (auto set whith source device by spotifyd)
-[[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
 
 . /srv/http/bash/common.sh
 
@@ -42,7 +41,11 @@ sleep 0.5
 
 JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
 if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
-	notify spotify Metadata 'Not available'
+	if playerActive spotify; then
+	playerStop bysource
+	else
+		notify spotify Metadata 'Not available'
+	fi
 	exit
 # ------------------------------------------------------------------------------
 fi

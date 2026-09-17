@@ -477,7 +477,7 @@ playerStop() {
 			$dirbash/snapclient.sh stop
 			;;
 		spotify )
-			systemctl restart spotifyd
+			[[ ! $1 ]] && systemctl restart spotifyd # $1 disconnected by source device
 			;;
 		upnp )
 			systemctl stop upmpdcli
