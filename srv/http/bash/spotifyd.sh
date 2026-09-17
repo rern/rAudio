@@ -6,7 +6,7 @@
 #	pause  : pause
 #	seek   : seeked
 #	volume : volumeset (auto set whith source device by spotifyd)
-[[ $PLAYER_EVENT == volumeset ]] && exit
+[[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
 
 . /srv/http/bash/common.sh
 
