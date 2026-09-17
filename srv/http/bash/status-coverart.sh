@@ -30,11 +30,8 @@ getCoverart() {
 	fi
 }
 pushCoverart() {
-	if [[ $TYPE ]]; then # from library.php
-		pushData coverart '{ "type": "library" }'
-	else
-		pushData coverart '{ "cover": "'$1'" }'
-	fi
+	[[ $LIPATH ]] && lipath=', "lipath": "'$LIPATH'"' # from library.php
+	pushData coverart '{ "cover": "'$1'"'$lipath' }'
 }
 
 if [[ $ALBUM ]]; then

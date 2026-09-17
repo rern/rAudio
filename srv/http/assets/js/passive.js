@@ -9,6 +9,8 @@ W = {
 			var src = data.cover + COMMON.versionHash();
 			if ( V.playback ) {
 				$( '#coverart' ).attr( 'src', src );
+			} else if ( V.library && V.librarytrack && 'lipath' in data ) {
+				if ( $( '.licover .lipath' ).text() === data.lipath ) $( '#liimg' ).attr( 'src', src );
 			} else if ( V.playlist && V.playlisthome ) {
 				if ( S.webradio ) {
 					var $icon = $( '#pl-list li.active .li-icon' );

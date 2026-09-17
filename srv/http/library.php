@@ -578,10 +578,10 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
+		$coverart      = '';
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, 'library', 'CMD ALBUM ARTIST TYPE' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, $cue ? $file_cue : $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
