@@ -220,12 +220,8 @@ control = "'$mixer'"'
 #---------------<
 ######## >
 		echo "$CONF" > /etc/spotifyd.conf
-		touch $dirshm/spotifydrestart
 	fi
-	if [[ -e $dirshm/spotifydrestart ]]; then # this, features.sh spotifyoutput
-		rm -f $dirshm/spotifydrestart
-		systemctl try-restart spotifyd
-	fi
+	systemctl restart spotifyd
 fi
 
 if [[ $CAMILLADSP ]]; then
