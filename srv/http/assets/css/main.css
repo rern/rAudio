@@ -1600,7 +1600,7 @@ li.coverart {
 li.active .iconthumb {
 	outline: none;
 }
-#lib-list i {
+#lib-list i:not( .i-save ) {
 	background: none !important;
 }
 #indexcover,
