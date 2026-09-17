@@ -1607,7 +1607,7 @@ var PLAYBACK  = {
 				var k = K.toLowerCase();
 				if ( D[ k +'name' ] && S[ K ] ) {
 					$( '#'+ k ).text( S[ K ] );
-					$( '#div'+ k ).removeeClass( 'hide' );
+					$( '#div'+ k ).removeClass( 'hide' );
 				} else {
 					$( '#div'+ k ).addClass( 'hide' );
 				}
