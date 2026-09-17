@@ -1,31 +1,22 @@
 #!/bin/bash
 
-# spotifyd.conf > this:
-#    - spotifyd 'onevent' hook
-# $PLAYER_EVENT: play, pause, stop, change, start, preload, preloading, endoftrack, volumeset
-# $TRACK_ID
-# $PLAY_REQUEST_ID
-# $POSITION_MS
-# $DURATION_MS
-# $VOLUME
+# spotifyd.conf - onevent > this:
+# $PLAYER_EVENT:
+#	play   : start + volumeset
+#	pause  : pause
+#	seek   : seeked
+#	volume : volumeset (auto set whith source device by spotifyd)
+[[ $PLAYER_EVENT == volumeset ]] && exit
 
 . /srv/http/bash/common.sh
 
-metaData() {
-	JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
-	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
-		notify spotify Metadata 'Not available'
-		exit
-# ------------------------------------------------------------------------------
-	fi
-}
-
-[[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
-# ------------------------------------------------------------------------------
 dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire
 file_token=$dirspotify/token
 mkdirRW $dirspotify
+
+##### start
+! playerActive spotify && playerStart spotify
 
 # token
 if [[ -e $file_expire && $( < $file_expire ) > $( date +%s ) ]]; then
@@ -46,17 +37,15 @@ else
 	echo $token > $file_token
 	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
-##### start
-if ! playerActive spotify; then
-	playerStart spotify
-	for i in {0..5}; do
-		sleep 1
-		metaData
-		[[ $( jq .is_playing <<< $JSON ) == true ]] && break
-	done
+
+sleep 0.5
+
+JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
+if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
+	notify spotify Metadata 'Not available'
+	exit
+# ------------------------------------------------------------------------------
 fi
-# data
-metaData
 STATUS=$( jq '
 			{
 				Album     : (.item.album.name?          // ""),
