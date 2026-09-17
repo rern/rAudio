@@ -9,6 +9,15 @@
 
 . /srv/http/bash/common.sh
 
+case $PLAYER_EVENT in
+	change | pause | play | seeked | start | stop )
+		[[ $PLAYER_EVENT == stop ]] && notify spotify Spotify Disconnected
+		;;
+	* )
+		exit
+		;;
+esac
+
 dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire
 file_token=$dirspotify/token
@@ -42,7 +51,7 @@ sleep 0.5
 JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
 if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
 	if playerActive spotify; then
-	playerStop bysource
+		playerStop bysource
 	else
 		notify spotify Metadata 'Not available'
 	fi
