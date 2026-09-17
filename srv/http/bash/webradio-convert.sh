@@ -52,6 +52,15 @@ echo -n "$list" > $dirmpd/radio
 
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
+# bookmark
+while read file; do
+	[[ $file != http* || $file != rtsp* ]] && continue
+	
+	uri=${file//|/\/}
+	name=$( grep ^$uri $dirmpd/radio | sed 's|.*/||' )
+	echo $uri > "$dirbookmarks/$name"
+done < <( ls $dirbookmarks/* )
+
 # order
 file=$dirsystem/order.json
 [[ -e $file ]] && sed -i 's|".*/|"|' $file
