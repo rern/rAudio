@@ -45,7 +45,8 @@ if [[ -e $dirsystem/vumeter ]]; then
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
-playerActive mpd && player_mpd=1
+player=$( < $dirshm/player )
+[[ $player == mpd ]] && player_mpd=1
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
 	if [[ $webradio && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
@@ -53,7 +54,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
 # ------------------------------------------------------------------------------
 	fi
-	if [[ $player_mpd && $( jq .pllength <<< $status ) == 0 ]]; then
+	if [[ $player == airplay || ( $player_mpd && $( jq .pllength <<< $status ) == 0 ) ]]; then
 		$dirbash/lcdchar.py logo
 	else
 		systemctl restart lcdchar
@@ -85,7 +86,6 @@ fi
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # ------------------------------------------------------------------------------
 if [[ ! $player_mpd ]]; then
-	player=$( < $dirshm/player )
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
 	if [[ $state_play || $state == pause ]]; then # renderers prev/next
