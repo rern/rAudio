@@ -8,13 +8,9 @@
 ##### start
 ! playerActive airplay && playerStart airplay
 
-statusUpdate() {
-	[[ $1 == elapsed || $1 == start || $1 == Time ]] && arg=argjson || arg=arg
-	STATUS=$( jq --arg key $1 --$arg value "$2" '.[$key] = $value' <<< $STATUS | tee $dirshm/status.json )
-	$dirbash/status-push.sh
-}
-
-STATUS=$( jq '.coverart = "/data/shm/coverart" | .webradio = false' $dirshm/status.json )
+dirairplay=$dirshm/airplay
+mkdirRW $dirairplay
+elapsed=$( getContent $dirairplay/elapsed false )
 
 # ...
 # <item><type>636f7265</type><code>6173616c</code><length>18</length> # hex
@@ -51,28 +47,39 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	case $CODE in
 		state )
 			[[ $B64 == AQ== ]] && state=play || state=pause
+			[[ $elapsed == false ]] && state=stop
 			if [[ $prev_state != $state ]]; then
-				statusUpdate state $state
+				pushData mpdplayer '{ "state": "'$state'" }'
+				echo $state > $dirairplay/state
 				prev_state=$state
 			fi
 			;;
 		coverart )
-			base64 -d <<< $B64 > /srv/http/data/shm/coverart
+			base64 -d <<< $B64 > $dirairplay/coverart.jpg
+			pushData coverart '{ "cover": "/data/shm/airplay/coverart.jpg" }'
 			;;
 		progress ) # begin/current/end @44100/s (play current slips after pause - reset in a few seconds)
 			frame=$( base64 -d <<< $B64 2> /dev/null )
 			[[ $frame != */* ]] && CODE= && continue # skip single field
 #...............................................................................
 			read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $frame )
-			(( $elapsed < $Time )) && start=$(( start - elapsed )) # epoch for elapsed calc while play
-			statusUpdate elapsed $elapsed
-			statusUpdate start $start
-			statusUpdate Time $Time
+			if (( $elapsed <= 0 || $elapsed >= $Time )); then
+				elapsed=false
+				state=stop
+			else
+				start=$(( start - elapsed )) # epoch for elapsed calc while play
+				state=play
+			fi
+			pushData mpdplayer '{ "elapsed": '$elapsed', "state": "'$state'", "Time": '$Time' }'
+			for k in elapsed start state Time; do
+				echo ${!k} > $dirairplay/$k
+			done
 			;;
 		* )
 			value=$( base64 -d <<< $B64 2> /dev/null )
 			if [[ ${!CODE} != $value ]]; then
-				statusUpdate $CODE $value
+				echo $value > $dirairplay/$CODE
+				pushData mpdplayer '{ "'$CODE'": "'$( quoteEscape $value )'" }'
 				printf -v $CODE '%s' "$value"
 			fi
 			;;
