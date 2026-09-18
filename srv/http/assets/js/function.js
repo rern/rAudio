@@ -1623,7 +1623,10 @@ var PLAYBACK  = {
 		LOCAL();
 		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
-		if ( S.stop ) PROGRESS.set( 0 );
+		if ( S.stop ) {
+			UTIL.intervalClear( 'elapsed' );
+			PROGRESS.set( 0 );
+		}
 		VOLUME.set();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
