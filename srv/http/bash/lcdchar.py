@@ -151,7 +151,7 @@ if 'webradio' in STATUS and webradio:
         if not Artist: Artist = station
     else:
         if not Album:  Album  = file
-elif not Title or not Album:
+elif ( not Title or not Album ) and file:
     from pathlib import Path
     
     path = Path( file )
