@@ -15,7 +15,6 @@ case $PLAYER_EVENT in
 		;;
 	stop )
 		notify spotify Spotify Disconnected
-		sleep 0.5
 		playerStop bysource
 		exit
 		;;
