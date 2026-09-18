@@ -516,10 +516,6 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	if ! playerActive airplay; then
-		playerStart airplay
-		pushStatus
-	fi
 	systemctl start shairport
 	;;
 shareddataupdate )
@@ -546,6 +542,9 @@ upnpstart )
 	;;
 volume )
 	volume
+	;;
+volumepush )
+	volumeGet push
 	;;
 webradiodelete )
 	rm -rf "$DIR"

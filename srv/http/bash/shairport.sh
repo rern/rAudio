@@ -5,6 +5,9 @@
 
 . /srv/http/bash/common.sh
 
+##### start
+! playerActive airplay && playerStart airplay
+
 dirairplay=$dirshm/airplay
 mkdirRW $dirairplay
 elapsed=$( getContent $dirairplay/elapsed false )

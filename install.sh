@@ -5,6 +5,25 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260919
+file=/etc/shairport-sync.conf
+if grep -q shairportstop $file; then
+	name=$( getVar name $file )
+	cat << EOF > $file
+general = {
+	name = "$name";
+	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
+};
+sessioncontrol = {
+	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
+	run_this_after_play_ends = "/bin/sudo /srv/http/bash/cmd.sh playerstop";
+};
+alsa = {
+	output_device = "hw:0,0";
+	mixer_control_name = "PCM";
+}
+EOF
+fi
+
 sed -i -E '/^control|^mixer/ d' /etc/spotifyd.conf
 
 # 20260909

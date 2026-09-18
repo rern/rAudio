@@ -9,6 +9,9 @@
 
 . /srv/http/bash/common.sh
 
+##### start
+! playerActive spotify && playerStart spotify
+
 case $PLAYER_EVENT in
 	change | pause | seeked | start )
 		true
@@ -27,9 +30,6 @@ dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire
 file_token=$dirspotify/token
 mkdirRW $dirspotify
-
-##### start
-! playerActive spotify && playerStart spotify
 
 # token
 if [[ -e $file_expire && $( < $file_expire ) > $( date +%s ) ]]; then
