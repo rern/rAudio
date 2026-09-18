@@ -10,14 +10,14 @@
 
 dirairplay=$dirshm/airplay
 mkdirRW $dirairplay
-elapsed=$( getContent $dirairplay/elapsed false )
+elapsed=$( getContent $dirairplay/elapsed 0 )
 
 # ...
 # <item><type>636f7265</type><code>6173616c</code><length>18</length> # hex
 # <data encoding="base64">
 # U29uZ3Mgb2YgSW5ub2NlbmNl</data></item>                              # base64
 #...
-cat /tmp/shairport-sync-metadata | while read line; do
+while read line; do
 	[[ $line == '<data '* ]] && continue
 #...............................................................................
 	if [[ $line == *'type><code'* ]]; then
@@ -47,7 +47,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	case $CODE in
 		state )
 			[[ $B64 == AQ== ]] && state=play || state=pause
-			[[ $elapsed == false ]] && state=stop
+			[[ $elapsed == 0 ]] && state=stop
 			if [[ $prev_state != $state ]]; then
 				pushData mpdplayer '{ "state": "'$state'" }'
 				echo $state > $dirairplay/state
@@ -64,7 +64,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 #...............................................................................
 			read elapsed Time < <( awk -F'/' '{ printf "%0.f %0.f", ( $2 - $1 ) / 44100, ( $3 - $1 ) / 44100 }' <<< $frame )
 			if (( $elapsed <= 0 || $elapsed >= $Time )); then
-				elapsed=false
+				elapsed=0
 				state=stop
 			else
 				start=$(( start - elapsed )) # epoch for elapsed calc while play
@@ -85,4 +85,4 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			;;
 	esac
 	CODE=
-done
+done < /tmp/shairport-sync-metadata
