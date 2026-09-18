@@ -55,8 +55,8 @@ while read line; do
 			fi
 			;;
 		coverart )
-			base64 -d <<< $B64 > $dirairplay/coverart.jpg
-			pushData coverart '{ "cover": "/data/shm/airplay/coverart.jpg" }'
+			base64 -d <<< $B64 > $dirairplay/coverart
+			pushData coverart '{ "cover": "/data/shm/airplay/coverart" }'
 			;;
 		progress ) # begin/current/end @44100/s (play current slips after pause - reset in a few seconds)
 			frame=$( base64 -d <<< $B64 2> /dev/null )
