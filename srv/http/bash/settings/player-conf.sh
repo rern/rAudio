@@ -171,7 +171,7 @@ fi
 # renderers
 [[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
 
-if systemctl -q is-enabled shairport-sync && [[ ! -e $dirmpdconf/snapserver.conf ]]; then
+if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
@@ -187,11 +187,11 @@ alsa = {
 #---------------<
 ######## >
 		echo "$CONF" > /etc/shairport-sync.conf
-		systemctl restart shairport-sync
+		systemctl try-restart shairport-sync
 	fi
 fi
 
-if systemctl -q is-enabled snapclient; then
+if [[ -e /bin/snapclient ]]; then
 	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
 	pcm0=$( cut -d= -f3 /etc/default/snapclient | tr -d '"' )
 	if [[ $pcm0 != $pcm ]]; then
@@ -200,7 +200,7 @@ if systemctl -q is-enabled snapclient; then
 	fi
 fi
 
-if systemctl -q is-enabled spotifyd && [[ ! -e $dirmpdconf/snapserver.conf ]]; then
+if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
 		device=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else
@@ -211,7 +211,7 @@ if systemctl -q is-enabled spotifyd && [[ ! -e $dirmpdconf/snapserver.conf ]]; t
 	if [[ $device0 != $device ]]; then
 ######## >
 		sed -i -E 's/^(device = ").*/\1'$device'"/' $fileconf
-		systemctl restart spotifyd
+		systemctl try-restart spotifyd
 	fi
 fi
 
