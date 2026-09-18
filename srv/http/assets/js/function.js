@@ -1701,7 +1701,6 @@ var PLAYBACK  = {
 			$( '#elapsed' )
 				.text( V.timehms )
 				.addClass( 'gr' );
-			$
 		}
 	}
 	, vu        : () => {
