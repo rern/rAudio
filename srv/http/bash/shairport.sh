@@ -47,7 +47,6 @@ while read line; do
 	case $CODE in
 		state )
 			[[ $B64 == AQ== ]] && state=play || state=pause
-			[[ $elapsed == 0 ]] && state=stop
 			if [[ $prev_state != $state ]]; then
 				pushData mpdplayer '{ "state": "'$state'" }'
 				echo $state > $dirairplay/state
