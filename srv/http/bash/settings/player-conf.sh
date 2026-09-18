@@ -206,22 +206,8 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	else
 		hwspotifyd=hw:$card                        # hw=hw:N
 	fi
-	fileconf=/etc/spotifyd.conf
-	hw0=$( getVar device $fileconf )
-	if [[ $hw0 != $hwspotifyd ]]; then
-#--------------->
-		CONF=$( grep -Ev '^device|^control' /etc/spotifyd.conf )
-		if [[ ! $EQUALIZER ]]; then
-			CONF+='
-device = "'$hwspotifyd'"'
-			[[ ! $mixerno ]] && CONF+='
-control = "'$mixer'"'
-		fi
-#---------------<
-######## >
-		echo "$CONF" > /etc/spotifyd.conf
-	fi
-	systemctl restart spotifyd
+	sed -i -E 's/^(device = ").*/\1'$hwspotifyd'"/' /etc/spotifyd.conf
+	systemctl try-restart spotifyd
 fi
 
 if [[ $CAMILLADSP ]]; then

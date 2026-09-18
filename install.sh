@@ -5,8 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260919
-file=/etc/spotifyd.conf
-grep -q ^mixer $file && sed -i '/^mixer/ d' $file
+sed -i -E '/^control|^mixer/ d' /etc/spotifyd.conf
 
 # 20260909
 touch /root/{.bash,.php,.python}_history
