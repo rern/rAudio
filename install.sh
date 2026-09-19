@@ -5,13 +5,20 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260919
+file=/etc/systemd/system/shairport.service
+if ! grep -q status-shairport $file; then
+	sed -i 's|shairport.sh|status-&|' $file
+	restart+=' shairport'
+fi
+
 file=/etc/shairport-sync.conf
-if grep -q shairportstop $file; then
+if ! grep -q dbus $file; then
 	name=$( getVar name $file )
 	cat << EOF > $file
 general = {
 	name = "$name";
 	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
+	dbus_service_bus = "system";
 };
 sessioncontrol = {
 	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
