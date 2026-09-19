@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260919
+file=/etc/spotifyd.conf
+if ! grep -q status-spotifyd $file; then
+	sed -i 's|spotifyd.sh|status-&|' $file
+	restart+=' spotifyd'
+fi
+
 file=/etc/systemd/system/shairport.service
 if ! grep -q status-shairport $file; then
 	sed -i 's|shairport.sh|status-&|' $file
