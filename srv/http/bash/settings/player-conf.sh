@@ -182,7 +182,6 @@ if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 alsa = {
 	output_device = "'$hw'";
 	mixer_control_name = "'$mixer'";
-	output_rate = 44100;
 }'
 		[[ $mixerno ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
 #---------------<

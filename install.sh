@@ -12,7 +12,7 @@ if ! grep -q status-spotifyd $file; then
 fi
 
 file=/etc/shairport-sync.conf
-if ! grep -q output_rate $file; then
+if ! grep -q playerstop $file; then
 	name=$( getVar name $file )
 	output=$( getVar output_device $file )
 	mixer=$( getVar mixer_control_name $file )
@@ -29,7 +29,6 @@ sessioncontrol = {
 alsa = {
 	output_device = "$output";
 	mixer_control_name = "$mixer";
-	output_rate = 44100;
 }
 EOF
 	sed -i 's|/shairport.sh|/status-&|' /etc/systemd/system/shairport.service
