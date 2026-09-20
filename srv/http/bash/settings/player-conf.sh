@@ -98,7 +98,7 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	mixer_type     "'$mixertype'"'
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
-		hw=hw:$card,0
+		hw=hw:$card
 #---------------< normal
 		AUDIOOUTPUT='
 	name           "'$name'"
@@ -182,6 +182,7 @@ if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 alsa = {
 	output_device = "'$hw'";
 	mixer_control_name = "'$mixer'";
+	output_rate = 44100;
 }'
 		[[ $mixerno ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
 #---------------<

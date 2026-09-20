@@ -462,6 +462,7 @@ playerStop() {
 		airplay )
 			systemctl stop shairport # metadata
 			systemctl restart shairport-sync
+			rm -f $dirshm/{coverart,timestamp}
 			;;
 		bluetooth )
 			rm -f $dirshm/{bluetoothdest,bluetoothsink}

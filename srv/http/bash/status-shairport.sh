@@ -2,15 +2,57 @@
 
 # shairport.service > this:
 
+##### properties list #####
+#	busctl \
+#		--system \
+#		introspect \
+#		org.gnome.ShairportSync \
+#		/org/gnome/ShairportSync
+	
+##### monitor #####
+#	dbus-monitor \
+#		--system \
+#		"type=signal,
+#		interface=org.freedesktop.DBus.Properties,
+#		member=PropertiesChanged,
+#		path=/org/gnome/ShairportSync"
+
+# events:
+#	...
+# signal time=1789821420.049320 sender=:1.160 ....
+#	...
+#	string "Metadata"
+#	...
+# signal time=1789821430.049330 sender=:1.160 ....
+#	...
+#	string "PlayerState"
+#	variant             string "Playing"
+#	...
+# signal time=1789821430.049331 sender=:1.160 ....
+#	...
+#	string "ProgressString"
+#	variant             string "993079641/996629219/1004868385"
+#	...
+# signal time=1789821440.049340 sender=:1.160 ....
+#	...
+#	string "ProgressString"
+#	variant             string ""993079641/996630897/1004868385"
+#	...
+# signal time=1789821440.049341 sender=:1.160 ....
+#	...
+#	string "PlayerState"
+#	variant             string "Paused"
+#	...
+
 . /srv/http/bash/common.sh
 
 ##### start
 if ! playerActive airplay; then
 	playerStart airplay
-	sleep 1
-	date +%s > $dirshm/timestamp
-	$dirbash/status -p
+	date +%s%3N > $dirshm/timestamp
+	$dirbash/status-push.sh
 fi
+
 dbus-monitor \
 	--system \
 	"type=signal,
@@ -18,13 +60,20 @@ dbus-monitor \
 	member=PropertiesChanged,
 	path=/org/gnome/ShairportSync" 2>/dev/null |
 		while read line; do
-			if [[ $line == *PropertiesChanged ]]; then # signal time=1789821437.049377 sender=:1.160 ....
-				timestamp=$( awk -F'[= ]' '{print int($3 + 0.5)}' <<< $line )
-				continue
-#...............................................................................
-			fi
-			if [[ $line == *'"Metadata"'* ]]; then
-				echo $timestamp > $dirshm/timestamp
-				$dirbash/status -p
-			fi
+			case $line in
+				*PropertiesChanged )
+					signal_time=$line
+					;;
+				*'"Metadata"' | *variant*'"Paused"' | *variant*'"Playing"' )
+					$dirbash/status-push.sh
+					;;
+				*'"ProgressString"' )
+					sec=${signal_time:12:14}
+					echo ${sec/.} > $dirshm/timestamp
+					$dirbash/status-push.sh
+					;;
+				*variant*'"Stopped"' )
+					$dirbash/cmd.sh playerstop
+					;;
+			esac
 		done

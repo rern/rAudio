@@ -11,15 +11,11 @@ if ! grep -q status-spotifyd $file; then
 	restart+=' spotifyd'
 fi
 
-file=/etc/systemd/system/shairport.service
-if ! grep -q status-shairport $file; then
-	sed -i 's|shairport.sh|status-&|' $file
-	restart+=' shairport'
-fi
-
 file=/etc/shairport-sync.conf
-if ! grep -q dbus $file; then
+if ! grep -q output_rate $file; then
 	name=$( getVar name $file )
+	output=$( getVar output_device $file )
+	mixer=$( getVar mixer_control_name $file )
 	cat << EOF > $file
 general = {
 	name = "$name";
@@ -31,10 +27,13 @@ sessioncontrol = {
 	run_this_after_play_ends = "/bin/sudo /srv/http/bash/cmd.sh playerstop";
 };
 alsa = {
-	output_device = "hw:0,0";
-	mixer_control_name = "PCM";
+	output_device = "$output";
+	mixer_control_name = "$mixer";
+	output_rate = 44100;
 }
 EOF
+	sed -i 's|/shairport.sh|/status-&|' /etc/systemd/system/shairport.service
+	restart+=' shairport'
 fi
 
 sed -i -E '/^control|^mixer/ d' /etc/spotifyd.conf

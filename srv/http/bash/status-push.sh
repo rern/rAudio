@@ -54,7 +54,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
 # ------------------------------------------------------------------------------
 	fi
-	if [[ $player == airplay || ( $player_mpd && $( jq .pllength <<< $status ) == 0 ) ]]; then
+	if [[ $player_mpd && $( jq .pllength <<< $status ) == 0 ]]; then
 		$dirbash/lcdchar.py logo
 	else
 		systemctl restart lcdchar
