@@ -36,12 +36,17 @@ btsender )
 	;;
 device )
 	. <( grep ^card $dirshm/output )
-	cmd="aplay -D hw:$card /dev/zero --dump-hw-params"
-	data=$( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )
-	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
-	echo "\
-<bll># $cmd</bll>
-$data"
+	if statePlay; then
+		cmd="cat /proc/asound/card$card/pcm*p/sub*/hw_params"
+		echo "\
+<bll># $cmd</bll> <gr>(playing)</gr>
+$( $cmd )"
+	else
+		cmd="aplay -D hw:$card /dev/zero --dump-hw-params"
+		echo "\
+<bll># $cmd</bll> <gr>(stopped)</gr>
+$( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )"
+	fi
 	;;
 infobluetooth )
 	statusCmd "bluetoothctl info $2"

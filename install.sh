@@ -9,10 +9,15 @@ file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
 	sed -i 's|spotifyd.sh|status-&|' $file
 	restart+=' spotifyd'
+	sed -i -E '/^control|^mixer/ d' $file
 fi
 
-file=/etc/shairport-sync.conf
-if ! grep -q playerstop $file; then
+file=/etc/systemd/system/shairport.service
+if ! grep -q status-shairport $file; then
+	sed -i 's|shairport.sh|status-&|' $file
+	restart+=' shairport'
+	
+	file=/etc/shairport-sync.conf
 	name=$( getVar name $file )
 	output=$( getVar output_device $file )
 	mixer=$( getVar mixer_control_name $file )
@@ -31,11 +36,7 @@ alsa = {
 	mixer_control_name = "$mixer";
 }
 EOF
-	sed -i 's|/shairport.sh|/status-&|' /etc/systemd/system/shairport.service
-	restart+=' shairport'
 fi
-
-sed -i -E '/^control|^mixer/ d' /etc/spotifyd.conf
 
 # 20260909
 touch /root/{.bash,.php,.python}_history
