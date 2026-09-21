@@ -57,7 +57,15 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	if [[ $player_mpd && $( jq .pllength <<< $status ) == 0 ]]; then
 		$dirbash/lcdchar.py logo
 	else
-		systemctl restart lcdchar
+		if [[ $player != airplay ]]; then
+			systemctl restart lcdchar
+		else
+			if [[ ! -e $dirshm/lcdchar ]]; then
+				touch $dirshm/lcdchar
+				systemctl restart lcdchar
+				( sleep 2 && rm -f $dirshm/lcdchar ) & # debounce multiple events
+			fi
+		fi
 	fi
 fi
 if [[ -e $dirsystem/stoptimer ]]; then

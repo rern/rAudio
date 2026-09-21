@@ -198,6 +198,7 @@ while True:
     time_mon      += 1.0
     
     lcd.cursor_pos = ( row, 2 )
+    if elapsed > Time: elapsed = Time
     elapsed_hms    = second2hms( elapsed ) + time_hms
     lcd.write_string( elapsed_hms.ljust( width ) )
     elapsed       += 1
