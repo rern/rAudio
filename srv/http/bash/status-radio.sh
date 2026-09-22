@@ -135,7 +135,7 @@ metaData() {
 	timeleft=$( jq .timeleft <<< $STATUS )
 	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
 	STATUS+='
-, "elapsed"   : '$( mpcElapsed webradio )'
+, "elapsed"   : '$( mpcElapsed )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true
