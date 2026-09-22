@@ -133,10 +133,9 @@ metaData() {
 	[[ $( jq -jr $keys <<< $STATUS ) == $( jq -jr $keys $dirshm/status.json ) ]] && metaData 5 && return
 # ..............................................................................
 	timeleft=$( jq .timeleft <<< $STATUS )
-	grep -q -m1 radioelapsed.*false $dirsystem/display.json && elapsed=0 || elapsed=$( mpcElapsed )
 	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
 	STATUS+='
-, "elapsed"   : '$elapsed'
+, "elapsed"   : '$( mpcElapsed )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true
