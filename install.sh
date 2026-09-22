@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260919
+# 20260922
 file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
 	sed -i 's|spotifyd.sh|status-&|' $file
