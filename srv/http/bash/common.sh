@@ -366,11 +366,7 @@ mkdirRW() {
 	chmod 777 $1
 }
 mpcElapsed() {
-	if [[ $1 ]] && grep -q -m1 radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
-		echo 0
-	else
-		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
-	fi
+	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 mpcPlayback() {
 	! playerActive mpd && playerStop && exit

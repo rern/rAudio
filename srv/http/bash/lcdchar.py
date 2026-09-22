@@ -185,7 +185,7 @@ lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
 if BACKLIGHT and not play: backlightOff()
 
-if not play or not elapsed: sys.exit()
+if not play: sys.exit()
 # --------------------------------------------------------------------
 row            = rows - 1
 width          = COLS - 4
