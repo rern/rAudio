@@ -22,7 +22,6 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
 playerStop
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off

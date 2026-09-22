@@ -353,7 +353,10 @@ localBrowserOff() {
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
 logoLcdOled() {
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+	if [[ -e $dirsystem/lcdchar ]]; then
+		systemctl stop lcdchar
+		$dirbash/lcdchar.py logo
+	fi
 	if [[ -e $dirsystem/mpdoled ]]; then
 		. <( cat /etc/default/mpd_oled )
 		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
