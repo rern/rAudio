@@ -6,7 +6,7 @@ exec &> /dev/null # suppress stdout stderr
 
 args2var "$1"
 
-! playerActive mpd && $dirbash/cmd.sh playerstop
+! playerActive mpd && playerStop
 # config.txt
 config="\
 disable_overscan=1

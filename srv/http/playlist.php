@@ -212,7 +212,7 @@ foreach( $lists as $list ) {
 
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.icon(  'playlists savedlist' ).$name.'</span> <gr>·</gr>';
+	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.icon(  'file-playlist savedlist' ).$name.'</span> <gr>·</gr>';
 }
 if ( $count->song ) {
 	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.icon(  'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';

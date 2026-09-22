@@ -979,7 +979,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} );
 	}
 } ).on( 'click', '.coveredit',  function() {
-	if ( $this.hasClass( 'cover-save' ) ) {
+	if ( $( this ).hasClass( 'cover-save' ) ) {
 		COVERART.save();
 	} else {
 		COVERART.change();

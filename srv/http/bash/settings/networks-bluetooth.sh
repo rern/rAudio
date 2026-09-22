@@ -145,7 +145,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	fi
 fi
 blueAlsaMixer
-$dirbash/cmd.sh playerstop
+playerStop
 $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
 refreshPages

@@ -139,19 +139,19 @@ with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, play, state, Time, timestamp, webradio
-    v = STATUS[ k ]
+    v = k in STATUS and STATUS[ k ] or ''
     if v:
         if cmA00: v = normalize( v )
         STATUS[ k ] = v[ :COLS ]
 locals().update( STATUS )
 
-if webradio:
+if 'webradio' in STATUS and webradio:
     if station:
         if not Album:  Album  = Artist and '('+ station +')' or file
         if not Artist: Artist = station
     else:
         if not Album:  Album  = file
-elif not Title or not Album:
+elif ( not Title or not Album ) and file:
     from pathlib import Path
     
     path = Path( file )
@@ -191,13 +191,14 @@ row            = rows - 1
 width          = COLS - 4
 lcd.cursor_pos = ( row, 0 )
 lcd.write_string( ICON[ 'play' ] )
-elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000000 )
+elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000 )
 time_mon       = time.monotonic()
 
 while True:
     time_mon      += 1.0
     
     lcd.cursor_pos = ( row, 2 )
+    if elapsed > Time: elapsed = Time
     elapsed_hms    = second2hms( elapsed ) + time_hms
     lcd.write_string( elapsed_hms.ljust( width ) )
     elapsed       += 1

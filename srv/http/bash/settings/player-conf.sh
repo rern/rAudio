@@ -79,7 +79,7 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
-		$dirbash/cmd.sh playerstop
+		playerStop
 		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	fi
 	if [[ $CAMILLADSP ]]; then
@@ -98,7 +98,7 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	mixer_type     "'$mixertype'"'
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
-		hw=hw:$card,0
+		hw=hw:$card
 #---------------< normal
 		AUDIOOUTPUT='
 	name           "'$name'"
@@ -177,7 +177,7 @@ if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	mixer0=$( getVar mixer_control_name $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 #--------------->
-		CONF=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+		CONF=$( sed '/^alsa/,/}/ d' $fileconf )
 		CONF+='
 alsa = {
 	output_device = "'$hw'";
@@ -202,29 +202,15 @@ fi
 
 if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
-		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
+		device=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else
-		hwspotifyd=hw:$card                        # hw=hw:N
+		device=hw:$card                        # hw=hw:N
 	fi
 	fileconf=/etc/spotifyd.conf
-	hw0=$( getVar device $fileconf )
-	if [[ $hw0 != $hwspotifyd ]]; then
-#--------------->
-		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
-		if [[ ! $EQUALIZER ]]; then
-			CONF+='
-device = "'$hwspotifyd'"
-control = "'$mixer'"'
-			[[ ! $mixerno ]] && CONF+='
-mixer = "hw"'
-		fi
-#---------------<
+	device0=$( getVar device $fileconf )
+	if [[ $device0 != $device ]]; then
 ######## >
-		echo "$CONF" > /etc/spotifyd.conf
-		touch $dirshm/spotifydrestart
-	fi
-	if [[ -e $dirshm/spotifydrestart ]]; then # this, features.sh spotifyoutput
-		rm -f $dirshm/spotifydrestart
+		sed -i -E 's/^(device = ").*/\1'$device'"/' $fileconf
 		systemctl try-restart spotifyd
 	fi
 fi
@@ -233,7 +219,8 @@ if [[ $CAMILLADSP ]]; then
 	. $dirsettings/camilla-devices.sh
 elif [[ $EQUALIZER ]]; then
 	value=$( getVar current $dirsystem/equalizer.json )
-	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
+	player=$( < $dirshm/player )
+	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
 	$dirbash/cmd.sh "equalizer
 $value
 $user

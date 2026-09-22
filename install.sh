@@ -4,6 +4,40 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260922
+file=/etc/spotifyd.conf
+if ! grep -q status-spotifyd $file; then
+	sed -i 's|spotifyd.sh|status-&|' $file
+	restart+=' spotifyd'
+	sed -i -E '/^control|^mixer/ d' $file
+fi
+
+file=/etc/systemd/system/shairport.service
+if ! grep -q status-shairport $file; then
+	sed -i 's|shairport.sh|status-&|' $file
+	restart+=' shairport'
+	
+	file=/etc/shairport-sync.conf
+	name=$( getVar name $file )
+	output=$( getVar output_device $file )
+	mixer=$( getVar mixer_control_name $file )
+	cat << EOF > $file
+general = {
+	name = "$name";
+	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
+	dbus_service_bus = "system";
+};
+sessioncontrol = {
+	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
+	run_this_after_play_ends = "/bin/sudo /srv/http/bash/cmd.sh playerstop";
+};
+alsa = {
+	output_device = "$output";
+	mixer_control_name = "$mixer";
+}
+EOF
+fi
+
 # 20260909
 touch /root/{.bash,.php,.python}_history
 
@@ -24,15 +58,6 @@ file=/lib/systemd/system/mpd_oled.service
 if grep -q ^ExecStop $file; then
 	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
 	restart+=' mpd_oled'
-fi
-
-# 20260719
-. $dirshm/output
-if [[ $mixertype == hardware ]]; then
-	touch $dirshm/mixerhardware
-	$dirsettings/player-conf.sh
-elif [[ $mixertype == none ]]; then
-	touch $dirsystem/mixernone
 fi
 
 #-------------------------------------------------------------------------------
@@ -85,7 +110,3 @@ fi
 $dirbash/webradio-convert.sh
 
 installfinish
-
-# 20260717
-file=$dirmpdconf/bluetooth.conf
-[[ -e $file && ! -L $file ]] && $dirsettings/player-conf.sh

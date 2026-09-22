@@ -373,7 +373,7 @@ mpcElapsed() {
 	fi
 }
 mpcPlayback() {
-	! playerActive mpd && $dirbash/cmd.sh playerstop && exit
+	! playerActive mpd && playerStop && exit
 # --------------------------------------------------------------------
 	if [[ $1 ]]; then
 		ACTION=$1
@@ -385,7 +385,7 @@ $ACTION
 CMD ACTION"
 }
 mpcSkip() {
-	[[ $( < $dirshm/player ) != mpd ]] && return
+	! playerActive mpd && return
 	
 	local length pos songpos state
 	read length songpos state < <( mpc status '%length% %songpos% %state%' )
@@ -431,6 +431,66 @@ notify() { # icon title message delayms
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
+}
+playerStart() {
+	local player service
+	player=$1
+	echo $1 > $dirshm/player
+	radioStop
+	mpc -q stop
+	case $player in
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )
+					service=upmpdcli
+					touch $dirshm/upnp;;
+	esac
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
+}
+playerStop() {
+	local player
+	player=$( < $dirshm/player )
+	echo mpd > $dirshm/player
+	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
+	case $player in
+		airplay )
+			systemctl stop shairport # metadata
+			systemctl restart shairport-sync
+			rm -f $dirshm/{coverart,elapsed,timestamp}
+			;;
+		bluetooth )
+			rm -f $dirshm/{bluetoothdest,bluetoothsink}
+			systemctl restart bluetooth
+			;;
+		mpd )
+			radioStop
+			mpc -q stop
+			[[ -e $dirshm/skip ]] && return
+#...............................................................................
+			;;
+		snapcast )
+			$dirbash/snapclient.sh stop
+			;;
+		spotify )
+			[[ ! $1 ]] && systemctl restart spotifyd # $1 disconnected by source device
+			;;
+		upnp )
+			systemctl stop upmpdcli
+			mpc -q clear
+			rm -f $dirshm/upnp
+			systemctl start upmpdcli
+			;;
+	esac
+	$dirbash/status-push.sh
+	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
+		$dirbash/relays-timer.sh &> /dev/null &
+	fi
 }
 pushData() { # send to websocket.py (server)
 	local channel data dir
@@ -482,6 +542,15 @@ pushWebsocket() {
 }
 quoteEscape() { # backtick ` - no need to escape for json
 	echo "${@//\"/\\\"}"
+}
+radioStop() {
+	[[ ! -e $dirshm/radio ]] && return
+#...............................................................................
+	mpc -q stop
+	systemctl stop radio dab &> /dev/null
+	rm -f $dirshm/radio
+	pushStatus
+	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
 }
 serviceRestartEnable() {
 	systemctl restart $CMD

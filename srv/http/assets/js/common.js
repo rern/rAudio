@@ -619,26 +619,30 @@ function INFO( json ) {
 	if ( typeof I.list === 'string' ) {
 		htmls.list     = I.list;
 	} else {
-		var is_chk_rad = type => [ 'checkbox', 'radio', '' ].includes( type );
+		var tr_padding = type => {
+			if ( [ 'number', 'password', 'range', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
+				htmls.list += '<tr style="height: 5px"></tr>';
+			}
+		}
 		htmls.list     = '';
-		var tr_padding = '<tr style="height: 5px"></tr>';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var chk_rad, colspan, disabled, kv, label, param, type;
+		var chk_rad, colspan, disabled, kv, label, param, type, type_prev;
 		I.list.forEach( ( l, i ) => {
 			label    = l[ 0 ];
 			type     = l[ 1 ];
 			param    = l[ 2 ] || {};
-			if ( type === 'html' ) {
+			if ( type === 'html' ) { // from camilla.js
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
+			
 			colspan  = param.colspan || 0;
 			width    = param.width && type !== 'select' ? ' style="width: '+ param.width +'px"' : '';
-			chk_rad  = is_chk_rad( type );
+			chk_rad  = [ 'checkbox', 'radio', '' ].includes( type );
 			if ( chk_rad ) {
 				if ( ! colspan ) colspan = 2;
-				if ( i > 0 && ! is_chk_rad( I.list[ i - 1 ][ 1 ] ) ) htmls.list += tr_padding;
+				if ( type_prev ) tr_padding( type_prev );
 			}
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
@@ -713,8 +717,8 @@ function INFO( json ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
 						if ( param.sameline ) {
-							var lblnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += lblnext ? '<td style="text-align: right;">'+ lblnext +'</td>' : '</td>';
+							var lbl_next = I.list[ i + 1 ][ 0 ];
+							htmls.list += lbl_next ? '<td style="text-align: right;">'+ lbl_next +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
@@ -729,9 +733,8 @@ function INFO( json ) {
 					htmls.list += 'suffix' in param ? '<td>'+ param.suffix +'</td>' : '';
 					htmls.list += param.sameline ? '' : '</tr>';
 			}
-			if ( chk_rad && i + 1 < I.list.length ) {
-				if ( ! is_chk_rad( I.list[ i + 1 ][ 1 ] ) ) htmls.list += tr_padding;
-			}
+			if ( chk_rad && ! param.sameline && i + 1 < I.list.length ) tr_padding( I.list[ i + 1 ][ 1 ] );
+			type_prev = type;
 		} );
 		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
@@ -1181,6 +1184,13 @@ var COMMON    = {
 	, baseName      : path => path.slice( path.lastIndexOf( '/' ) + 1 ) // get after last '/' (i+1) to end
 	, capitalize    : str =>  str.replace( /\b\w/g, l => l.toUpperCase() )
 	, cmd_json2args : ( cmd, val ) => [ cmd, ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ]
+	, dataCopy      : data => { // copy2clipboard - for non https which cannot use clipboard API
+		$( 'body' ).prepend( '<textarea id="_copy">'+ data.replace( 'Copy{', '{' ) +'</textarea>' );
+		$( '#_copy' ).trigger( 'focus' ).select();
+		document.execCommand( 'copy' );
+		$( '#_copy' ).remove();
+		BANNER( 'copy', 'Data', 'Copied to clipboard.' );
+	}
 	, dataError     : ( msg, list ) => {
 		var pos   = msg.replace( /.* position /, '' );
 		if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
@@ -1197,17 +1207,10 @@ var COMMON    = {
 		$( '#data' )
 			.html( error )
 			.removeClass( 'hide' );
-		if ( $( '#data codered' ).length ) {
-			var fn = () => {
-				// copy2clipboard - for non https which cannot use clipboard API
-				$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-				$( '#error' ).trigger( 'focus' ).select();
-				document.execCommand( 'copy' );
-				$( '#error' ).remove();
-				BANNER( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-			}
-		} else {
-			var fn = () => {
+		$( '#data .infobtn' ).on( 'click', function() {
+			if ( $( '#data codered' ).length ) {
+				COMMON.dataCopy( $( '#data' ).text() );
+			} else {
 				if ( PAGE === 'player' ) {
 					var cmdsh = [ 'settings/player-conf.sh' ];
 					var title = 'MPD';
@@ -1218,8 +1221,7 @@ var COMMON    = {
 				BASH( cmdsh, REFRESHDATA );
 				NOTIFY( PAGE, title, 'Restart ...' );
 			}
-		}
-		$( '#data .infobtn' ).on( 'click', fn );
+		} );
 	}
 	, dabScan       : () => {
 		var icon  = 'dabradio';
@@ -1409,7 +1411,7 @@ var COMMON    = {
 		$( 'body' ).append( form );
 		form.submit();
 	}
-	, ipSub         : ip => ip.replace( /(.*\..*\..*\.).*/, '$1' )
+	, ipSub         : ip =>  ip.slice( 0, ip.lastIndexOf( '.' ) + 1 )
 	, json          : {
 		  clone     : json => JSON.parse( JSON.stringify( json ) )
 		, highlight : json => {

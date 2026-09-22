@@ -24,14 +24,10 @@ if [[ -e $filesharedip ]]; then
 fi
 touch $dirshm/power # maintain lcdchar/oled logo
 [[ $CMD == reboot ]] && reboot=1
-if [[ -e $dirmpdconf/snapserver.conf ]]; then
-	$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
-else
-	$dirbash/cmd.sh playerstop
-fi
+playerStop
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
-[[ $( < $dirshm/player ) == upnp ]] && mpc -q clear
+playerActive upnp && mpc -q clear
 if [[ $reboot ]]; then
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'

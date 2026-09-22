@@ -186,7 +186,7 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
-	if [[ ! $ACTION && $( < $dirshm/player ) == mpd && $FILE =~ ^(USB|NAS|NVME|SATA|SD) ]]; then
+	if [[ ! $ACTION && $FILE == [NSU]* ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
 		if [[ -e $filelrc ]]; then
 			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '1,/^$/ d'
@@ -207,6 +207,7 @@ lyrics )
 	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
+		. $dirsystem/lyrics.conf
 		lyricsGet() {
 			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
@@ -461,7 +462,7 @@ pladdrandom )
 	plAddRandom
 	;;
 playerstart )
-	playerStart
+	playerStart $1
 	;;
 playerstop )
 	playerStop
@@ -515,11 +516,6 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	if ! playerActive airplay; then
-		echo airplay > $dirshm/player
-		pushStatus
-		playerStart
-	fi
 	systemctl start shairport
 	;;
 shareddataupdate )
@@ -542,11 +538,13 @@ titlewithparen )
 	! grep -q "${TITLE//’/\'}" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
 upnpstart )
-	echo upnp > $dirshm/player
-	playerStart
+	playerStart upnp
 	;;
 volume )
 	volume
+	;;
+volumepush )
+	volumeGet push
 	;;
 webradiodelete )
 	rm -rf "$DIR"

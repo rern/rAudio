@@ -5,7 +5,7 @@
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
-			[[ $( < $dirshm/player ) == upnp ]] && volumeGet push
+			playerActive upnp && volumeGet push
 			;;
 		playlist )
 			[[ ! -e $dirshm/pushplaylist && $( mpc status %consume% ) == on ]] && $dirbash/cmd.sh playlistpush

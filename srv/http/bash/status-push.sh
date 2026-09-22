@@ -7,7 +7,6 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-player=$( < $dirshm/player )
 # > status.json - for:
 #	1. refresh page: radio, spotify
 #	2. get: play, state
@@ -46,6 +45,8 @@ if [[ -e $dirsystem/vumeter ]]; then
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
+player=$( < $dirshm/player )
+[[ $player == mpd ]] && player_mpd=1
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
 	if [[ $webradio && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
@@ -53,10 +54,18 @@ if [[ -e $dirsystem/lcdchar ]]; then
 		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
 # ------------------------------------------------------------------------------
 	fi
-	if (( $( jq .pllength <<< $status ) > 0 )); then 
-		systemctl restart lcdchar
-	else
+	if [[ $player_mpd && $( jq .pllength <<< $status ) == 0 ]]; then
 		$dirbash/lcdchar.py logo
+	else
+		if [[ $player != airplay ]]; then
+			systemctl restart lcdchar
+		else
+			if [[ ! -e $dirshm/lcdchar ]]; then
+				touch $dirshm/lcdchar
+				systemctl restart lcdchar
+				( sleep 2 && rm -f $dirshm/lcdchar ) & # debounce multiple events
+			fi
+		fi
 	fi
 fi
 if [[ -e $dirsystem/stoptimer ]]; then
@@ -84,7 +93,7 @@ fi
 # ------------------------------------------------------------------------------
 [[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 # ------------------------------------------------------------------------------
-if [[ $player != mpd ]]; then
+if [[ ! $player_mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 # ------------------------------------------------------------------------------
 	if [[ $state_play || $state == pause ]]; then # renderers prev/next

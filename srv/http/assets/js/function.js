@@ -101,20 +101,20 @@ var BIO       = {
 				similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 			}
 			var biohtml = `
-	<div class="container" tabindex="0">
-	<div id="biocontent">
-		<p class="artist">${ ICON( 'close close-root' ) + name }</p>
-		<p class="genre">${ backhtml + ICON( 'genre' ) +'&ensp;'+ genre }</p>
-		${ similarhtml }
-		<p>${ content }</p>
-		<div style="clear: both;"></div>
-		<br><br>
-		<p id="biosource">
-			<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
-			<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
-		</p>
-	</div>
-	</div>`;
+<div class="container" tabindex="0">
+<div id="biocontent">
+	<p class="artist">${ ICON( 'close close-root' ) + name }</p>
+	<p class="genre">${ backhtml + ICON( 'genre' ) +'&ensp;'+ genre }</p>
+	${ similarhtml }
+	<p>${ content }</p>
+	<div style="clear: both;"></div>
+	<br><br>
+	<p id="biosource">
+		<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
+		<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
+	</p>
+</div>
+</div>`;
 			$( '#bio' ).html( biohtml ).promise().done( () => {
 				$( '#bio' )
 					.removeClass( 'hide' )
@@ -1579,64 +1579,42 @@ var PLAYBACK  = {
 			}
 		}
 		, set : () => {
-			var prev = {
-				  Artist : $( '#artist' ).text()
-				, Title  : $( '#title' ).text()
-				, Album  : $( '#album' ).text()
-			}
-			var artist = S.Artist;
-			var title  = S.Title;
-			var album  = S.Album;
-			$( '#artist' ).removeClass( 'disabled' );
+			var keys = [ 'Artist', 'Title', 'Album' ];
+			var s    = {};
+			keys.forEach( K => { s[ K.toLowerCase() ] = S[ K ] } );
 			if ( S.webradio ) {
 				if ( S.station ) {
-					if ( ! album )  album  = S.Artist ? '('+ S.station +')' : S.file;
-					if ( ! artist ) artist = S.station;
+					if ( ! s.album )  s.album  = S.Artist ? '('+ S.station +')' : S.file;
+					if ( ! s.artist ) s.artist = S.station;
 				} else {
-					if ( ! album )  album  = S.file;
+					if ( ! s.album )  s.album  = S.file;
 				}
-			} else if ( ! title || ! album ) {
+			} else if ( ! s.title || ! s.album ) {
 				var path = S.file.split( '/' );
 				var file = path.pop();
-				if ( ! title ) title = file.replace( /\.[^/.]+$/, '' ); // filename
-				if ( ! album ) album = path.pop();                      // dir
+				if ( ! s.title ) s.title = file.replace( /\.[^/.]+$/, '' ); // filename
+				if ( ! s.album ) s.album = path.pop();                      // dir
 			}
-			$( '#artist' )
-				.html( artist || V.dots )
-				.toggleClass( 'disabled', S.Artist === '' );
-			$( '#title' )
-				.html(  title  || V.dots )
-				.toggleClass( 'disabled', S.Title === '' )
-				.toggleClass( 'gr', S.pause );
-			if ( S.booklet && album ) album += ' '+ ICON( 'booklet gr' );
-			$( '#album' )
-				.html(  album  || V.dots )
-				.toggleClass( 'disabled', S.Album === '' );
-			$( '#composer' ).text( S.Composer );
-			$( '#conductor' ).text( S.Conductor );
-			$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
-			$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
-			var current = {
-				  Artist : $( '#artist' ).text()
-				, Title  : $( '#title' ).text()
-				, Album  : $( '#album' ).text()
-			}
-			var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
-				return prev[ k ] !== current[ k ]
+			if ( S.booklet && s.album ) s.album += ' '+ ICON( 'booklet gr' );
+			keys.forEach( K => {
+				var k = K.toLowerCase();
+				$( '#'+ k )
+					.toggleClass( 'disabled', S[ K ] === '' )
+					.html( s[ k ] || V.dots );
 			} );
-			if ( changed ) PLAYBACK.info.scroll();
-			$( '#sampling' ).html( S.sampling );
-			if ( S.icon ) {
-				if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
-					$( '#playericon' )
-						.removeAttr( 'class' )
-						.addClass( S.icon ? 'i-'+ S.icon : 'hide' );
+			$( '#title' ).toggleClass( 'gr', S.pause );
+			[ 'Composer', 'Conductor' ].forEach( K => {
+				var k = K.toLowerCase();
+				if ( D[ k +'name' ] && S[ K ] ) {
+					$( '#'+ k ).text( S[ K ] );
+					$( '#div'+ k ).removeClass( 'hide' );
+				} else {
+					$( '#div'+ k ).addClass( 'hide' );
 				}
-			} else {
-				$( '#playericon' )
-						.removeAttr( 'class' )
-						.addClass( 'hide' );
-			}
+			} );
+			PLAYBACK.info.scroll();
+			$( '#playericon' ).prop( 'class', 'i-'+ S.icon );
+			$( '#sampling' ).html( S.sampling );
 		}
 	}
 	, main      : () => {
@@ -1645,7 +1623,10 @@ var PLAYBACK  = {
 		LOCAL();
 		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
-		if ( S.stop ) PROGRESS.set( 0 );
+		if ( S.stop ) {
+			UTIL.intervalClear( 'elapsed' );
+			PROGRESS.set( 0 );
+		}
 		VOLUME.set();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
@@ -1723,7 +1704,6 @@ var PLAYBACK  = {
 			$( '#elapsed' )
 				.text( V.timehms )
 				.addClass( 'gr' );
-			$
 		}
 	}
 	, vu        : () => {

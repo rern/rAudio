@@ -369,6 +369,9 @@ div.pagerefresh {
 	white-space: nowrap;
 	overflow: hidden;
 }
+#artist.disabled {
+	color: var( --wh ) !important;
+}
 #title {
 	font-size: 30px;
 }
@@ -1597,7 +1600,7 @@ li.coverart {
 li.active .iconthumb {
 	outline: none;
 }
-#lib-list i {
+#lib-list i:not( .i-save ) {
 	background: none !important;
 }
 #indexcover,
@@ -1868,26 +1871,12 @@ li.active .li2 bl {
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
+	padding: 5px 10px 10px 25px;
 	cursor: pointer;
-}
-.tagmessage img {
-	margin: 5px 0 0 10px;
 }
 .tagmessage div {
 	margin-left: 10px;
 	text-align: left;
-}
-.tagfooter {
-	padding: 8px 8px 0 8px;
-}
-.tagfooter div {
-	display: inline-block;
-}
-.tagfooter div:first-child {
-	float: left;
-}
-.tagfooter div:nth-child( 2 ) {
-	float: right;
 }
 /************************************************************************************/
 @media ( max-height: 768px ) {

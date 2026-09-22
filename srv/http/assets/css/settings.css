@@ -450,6 +450,9 @@ input[type=image] {
 	content: '• ';
 	color: var( --cg75 );
 }
+.list a[href$=".fr/"]::before {
+	content: '';
+}
 .list p {
 	margin: 0 0 0 12px;
 }

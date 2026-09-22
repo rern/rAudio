@@ -143,6 +143,7 @@ $name_ip"
 <gr>(Not available)</gr>'
 		fi
 	fi
+	note=' <gr>(active when connected only)</gr>'
 	;;
 snapserver )
 	PKG=snapcast
@@ -166,9 +167,8 @@ status="\
 $( systemctl status $SERVICE \
 		| grep -E -v "$skip" \
 		| statusColor )"
-
 echo "\
 $conf
 
-<bll># systemctl status $SERVICE</bll>
+<bll># systemctl status $SERVICE</bll>$note
 $status"

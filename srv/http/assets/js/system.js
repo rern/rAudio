@@ -371,12 +371,11 @@ var UTIL          = {
 	}
 	, lcdchar       : {
 		  gpio : data => {
-			var list0 = COMMON.json.clone( UTIL.lcdchar.list );
-			var list  = list0.slice( 0, 3 );
+			var list  = UTIL.lcdchar.list.slice( 0, 3 );
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
-				list.push( [ k, 'select', { kv: UTIL.board2bcm, sameline: i % 2 === 0 } ] );
+				list.push( [ k, 'select', { kv: UTIL.board2bcm, sameline: i % 2 == 0 && k !== 'D7' } ] );
 			} );
-			list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
+			list.push( UTIL.lcdchar.list.at( -1 ) );
 			INFO( {
 				  ...UTIL.lcdchar.json
 				, tab          : [ () => SETTING( 'lcdchar i2c', CONFIG.lcdchar ), '' ]

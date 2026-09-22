@@ -215,7 +215,7 @@ shairportsync | spotifyd | upmpdcli )
 			spotifyd )       player=spotify;;
 			upmpdcli )       player=upnp;;
 		esac
-		playerActive $player && $dirbash/cmd.sh playerstop
+		playerActive $player && playerStop
 		systemctl disable --now $CMD
 		if [[ ${CMD:0:1} == s && -e $dirsystem/snapclientserver ]]; then
 			for s in shairport-sync spotifyd; do
@@ -281,7 +281,7 @@ backend = "pipe"\
 device = "/tmp/snapfifo"
 ' /etc/spotifyd.conf
 	else
-		$dirbash/status -B '{ "filesh": [ "cmd.sh", "playerstop" ] }'
+		playerStop
 		rm -f $dirmpdconf/snapserver.conf $file_clientserver
 		systemctl disable --now snapserver
 		for s in shairport-sync spotifyd; do
@@ -299,7 +299,7 @@ spotifykey )
 spotifykeyremove )
 	notify 'spotify blink' 'Spotify Client Keys' "Remove ..."
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
-	$dirbash/cmd.sh playerstop
+	playerStop
 	systemctl disable --now spotifyd
 	pushRefresh
 	;;

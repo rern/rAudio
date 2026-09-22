@@ -1,25 +1,30 @@
 #!/bin/bash
 
-# spotifyd.conf > this:
-#    - spotifyd 'onevent' hook
-# $PLAYER_EVENT: play, pause, stop, change, start, preload, preloading, endoftrack, volumeset
-# $TRACK_ID
-# $PLAY_REQUEST_ID
-# $POSITION_MS
-# $DURATION_MS
-# $VOLUME
+# spotifyd.conf - onevent > this:
+# $PLAYER_EVENT:
+#	play   : start + volumeset
+#	pause  : pause
+#	seek   : seeked
+#	volume : volumeset (auto set whith source device by spotifyd)
+
+. /srv/http/bash/common.sh
 
 ##### start
-if ! playerActive spotify; then
-	echo spotify > /srv/http/data/shm/player
-	/srv/http/bash/cmd.sh playerstart
-	exit
-# ------------------------------------------------------------------------------
-fi
-[[ $PLAYER_EVENT == volumeset ]] && volumeGet push && exit
-[[ $PLAYER_EVENT != play && $PLAYER_EVENT != pause ]] && exit
-# ------------------------------------------------------------------------------
-. /srv/http/bash/common.sh
+! playerActive spotify && playerStart spotify
+
+case $PLAYER_EVENT in
+	change | pause | seeked | start )
+		true
+		;;
+	stop )
+		notify spotify Spotify Disconnected
+		playerStop bysource
+		exit
+		;;
+	* )
+		exit
+		;;
+esac
 
 dirspotify=$dirshm/spotify
 file_expire=$dirspotify/expire
@@ -45,11 +50,15 @@ else
 	echo $token > $file_token
 	echo $(( $( date +%s ) + 3550 )) > $file_expire # 10s before 3600s
 fi
-# data
-JSON=$( curl -s -H "Authorization: Bearer $token" \
-			https://api.spotify.com/v1/me/player/currently-playing )
-! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && exit
+
+sleep 0.5
+
+JSON=$( curl -s -H "Authorization: Bearer $token" https://api.spotify.com/v1/me/player/currently-playing )
+if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
+	notify spotify Metadata 'Not available'
+	exit
 # ------------------------------------------------------------------------------
+fi
 STATUS=$( jq '
 			{
 				Album     : (.item.album.name?          // ""),
@@ -59,7 +68,7 @@ STATUS=$( jq '
 				play      : .is_playing,
 				state     : (if .is_playing then "play" else "pause" end),
 				Time      : ((.item.duration_ms?        // 0) / 1000 | round),
-				timestamp : now * 1000,
+				timestamp : ((now * 1000) | round),
 				Title     : (.item.name?                // "")
 			}' <<< $JSON )
 $dirbash/status-push.sh "$STATUS"
