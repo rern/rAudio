@@ -26,6 +26,8 @@ general = {
 	name = "$name";
 	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
 	dbus_service_bus = "system";
+	volume_control_profile = "flat";
+	volume_range_db = 36;
 };
 sessioncontrol = {
 	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
