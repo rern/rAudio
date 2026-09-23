@@ -4,6 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260923
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
+	packages+=' mpd_oled'
+	file=/lib/systemd/system/mpd_oled.service
+	if grep -q ^ExecStop $file; then
+		sed -i '/^ExecStartPost\|^ExecStop/ d' $file
+		restart+=' mpd_oled'
+	fi
+fi
+
 # 20260922
 file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
@@ -53,14 +63,6 @@ chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 [[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
 
 [[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
-
-# 20260801
-[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && packages+=' mpd_oled'
-file=/lib/systemd/system/mpd_oled.service
-if grep -q ^ExecStop $file; then
-	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-	restart+=' mpd_oled'
-fi
 
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
