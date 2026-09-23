@@ -89,26 +89,18 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 	fi
 fi
 [[ ! $webradio && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
-[[ ! -e $dirsystem/scrobble || ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
+[[ ! -e $dirshm/scrobble ]] && exit
 # ------------------------------------------------------------------------------
-[[ $state == stop || $webradio || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
+readarray -t data < $dirshm/scrobble
+rm -f $dirshm/scrobble
+Artist=${data[0]}
+Title=${data[1]}
+Time=${data[2]}
+elapsed=${data[3]}
+[[ ! $Artist || ! $Title ]] && exit
 # ------------------------------------------------------------------------------
-if [[ ! $player_mpd ]]; then
-	! grep -q $player=true $dirsystem/scrobble.conf && exit
+(( $Time < 30 || $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 # ------------------------------------------------------------------------------
-	if [[ $state_play || $state == pause ]]; then # renderers prev/next
-		timestampnew=$( jq .timestamp $dirshm/status.json )
-		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
-		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
-	fi
-fi
-if [[ -e $dirshm/elapsed ]];then
-	elapsed=$( < $dirshm/elapsed )
-	rm $dirshm/elapsed
-	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-# ------------------------------------------------------------------------------
-fi
-# scrobble #############################
 $dirbash/scrobble.sh "cmd
 $Artist
 $Title

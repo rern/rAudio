@@ -456,7 +456,7 @@ playerStop() {
 	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
-	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
+	scrobbleElapsed
 	case $player in
 		airplay )
 			systemctl stop shairport # metadata
@@ -550,6 +550,17 @@ radioStop() {
 	rm -f $dirshm/radio
 	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
+}
+scrobbleElapsed() {
+	[[ ! -e $dirsystem/scrobble ]] && return
+	
+	player=$( < $dirshm/player )
+	[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && return
+	
+	status=$( $dirbash/status -s )
+	[[ $( jq .webradio <<< $status ) == true ]] && return
+	
+	jq -r .Artist,.Title,.Time,.elapsed <<< $status > $dirshm/scrobble
 }
 serviceRestartEnable() {
 	systemctl restart $CMD

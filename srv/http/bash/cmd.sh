@@ -316,7 +316,7 @@ mpcplayback )
 			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
 		fi
 	else
-		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
+		[[ $ACTION == stop ]] && scrobbleElapsed
 		mpc -q $ACTION
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
@@ -400,7 +400,7 @@ mpcskip )
 	radioStop
 	if statePlay; then
 		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
+		scrobbleElapsed
 	fi
 	mpc -q play $POS
 	[[ $ACTION != play ]] && mpc -q stop
