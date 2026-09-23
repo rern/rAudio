@@ -198,7 +198,7 @@ apikey=$apikeylastfm
 sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
-	pushRefresh
+	pushData refresh '{ "scrobblekey": true }'
 	;;
 scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
