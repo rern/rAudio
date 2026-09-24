@@ -165,7 +165,7 @@ gpio=25=op,dh"
 			aplay -l | grep -q wm5102 && $dirsettings/player-wm5102.sh "$OUTPUTTYPE"
 		else
 			rm -f $cirrusconf
-			[[ $APLAYNAME == wm8960-soundcard ]] && i2cset=1
+			[[ $APLAYNAME == wm8960-soundcard ]] && I2CSET=1
 		fi
 	else
 		ON= # for pushData reboot
@@ -177,7 +177,7 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	enableFlagSet
-	i2cset=1
+	I2CSET=1
 	configTxt
 	systemctl stop lcdchar
 	;;
@@ -214,16 +214,16 @@ dtoverlay=$MODEL:rotate=$ROTATE" >> $file_config
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		systemctl enable localbrowser
 	fi
-	i2cset=1
+	I2CSET=1
 	configTxt
 	;;
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
 		if [[ $CHIP == 1 || $CHIP == 7 ]]; then
-			spimpdoled=1
+			SPI=1
 		else
-			i2cmpdoled=1
+			I2C=1
 			baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 			[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		fi
@@ -236,7 +236,7 @@ mpdoled )
 		mpd_oled $opts -z # clear
 	fi
 	fifoToggle
-	i2cset=1
+	I2CSET=1
 	configTxt
 	;;
 ntp )

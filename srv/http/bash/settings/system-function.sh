@@ -8,7 +8,7 @@ configReboot() {
 	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip i2clcdchar module tft
+	local I2C_LCDCHAR module TFT
 	tmp_cmdline=/tmp/cmdline.txt
 	tmp_config=/tmp/config.txt
 	tmp_module=/tmp/raspberrypi.conf
@@ -19,25 +19,25 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 	fi
 	[[ ! $config ]] && config=$( < $file_config )
 	config=$( grep -Ev '^#|^\s*$' <<< $config )
-	if [[ $i2cset ]]; then
-		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
-		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
+	if [[ $I2CSET ]]; then
+		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && TFT=1
+		[[ -e $dirsystem/lcdchar ]] && I2C_LCDCHAR=1
 		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
-		# $spimpdoled / $i2cmpdoled - from mpdoled )
-		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
+		# $SPI / $I2C - from mpdoled )
+		[[ $TFT || $I2C_LCDCHAR || $I2C ]] && config+='
 dtparam=i2c_arm=on'
-		[[ $i2cmpdoled ]] && config+="
+		[[ $I2C ]] && config+="
 dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
-		[[ $tft || $spimpdoled ]] && config+='
+		[[ $TFT || $SPI ]] && config+='
 dtparam=spi=on'
 		
 		module=$( grep -Evs 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $file_module )
-		[[ $tft || $i2clcdchar ]] && module+='
+		[[ $TFT || $I2C_LCDCHAR ]] && module+='
 i2c-bcm2708'
-		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
+		if [[ $TFT || $I2C_LCDCHAR || $I2C ]]; then
 			module+='
 i2c-dev'
-			! compgen -G /dev/i2c* > /dev/null && reboot=1
+			! compgen -G /dev/i2c* > /dev/null && REBOOT=1
 		elif grep -q wm8960-soundcard <<< $config; then
 			module+='
 i2c-dev
@@ -54,15 +54,15 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
 	fi
 	awk NF <<< $config | sort -u > $file_config
 	pushRefresh
-	if [[ ! $reboot ]]; then
+	if [[ ! $REBOOT ]]; then
 		if ! cmp -s $tmp_config $file_config || ! cmp -s $tmp_cmdline $file_cmdline; then
-			reboot=1
+			REBOOT=1
 		elif [[ -e $tmp_module && -e $file_module ]]; then
 			count=$( ls $tmp_module $file_module | wc -l )
-			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
+			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && REBOOT=1
 		fi
 	fi
-	if [[ $reboot ]]; then
+	if [[ $REBOOT ]]; then
 		configReboot
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
