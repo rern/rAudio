@@ -219,9 +219,9 @@ shairportsync | spotifyd | upmpdcli )
 		systemctl disable --now $CMD
 		if [[ ${CMD:0:1} == s && -e $dirsystem/snapclientserver ]]; then
 			for s in shairport-sync spotifyd; do
-				systemctl -q is-enabled $s && enabled=1 && break
+				systemctl -q is-enabled $s && ENABLED=1 && break
 			done
-			[[ ! $enabled ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
+			[[ ! $ENABLED ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
 		fi
 	fi
 	pushRefresh

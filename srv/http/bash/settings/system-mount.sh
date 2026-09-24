@@ -30,11 +30,11 @@ else # server rAudio client
 	for i in {0..5}; do
 		shares=$( timeout 1 showmount --no-headers -e $IP | awk '{print $1}' )
 		if [[ $shares ]]; then
-			grep -q ^$dirnas <<< $shares && nfsserver=1
+			grep -q ^$dirnas <<< $shares && NFS_SERVER=1
 			break
 		fi
 	done
-	if [[ ! $nfsserver ]]; then
+	if [[ ! $NFS_SERVER ]]; then
 		echo '<i class="i-nfsserver"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	fi
@@ -47,18 +47,18 @@ else # server rAudio client
 	$dirbash/status -P $IP '{ "channel": "notify", "data": { '$data' } }'
 fi
 if [[ $SHAREDDATA ]]; then
-	[[ ! $nfsserver ]] && echo "$mountpoint" > $dirshareddata/source
+	[[ ! $NFS_SERVER ]] && echo "$mountpoint" > $dirshareddata/source
 	mpc -q clear
 	systemctl stop mpd
 	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
-		rescan=1
+		RESCAN=1
 		sharedDataCopy
 	fi
 	sharedDataLink
 	appendSortUnique $filesharedip $( ipAddress )
 	systemctl start mpd
-	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+	[[ $RESCAN ]] && $dirbash/cmd.sh "mpcupdate
 rescan
 
 CMD ACTION PATHMPD"

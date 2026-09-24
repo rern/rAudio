@@ -41,7 +41,7 @@ fi
 
 path="/mnt/MPD/$FILE"
 argslast=${args[@]: -1} # CMD ALBUM ALBUMARTIST ... FILE - omit unchanged
-[[ -f $path ]] && istrack=1
+[[ -f $path ]] && IS_TRACK=1
 
 if [[ $FILE != *.cue ]]; then
 	KEYS=( ${argslast:4:-5} ) # remove CMD and FILE
@@ -51,12 +51,12 @@ if [[ $FILE != *.cue ]]; then
 		[[ $v == '*' ]] && continue
 		
 		[[ $v ]] && v=$( quoteEscape $v )
-		[[ ! $istrack ]] && all='/*.*'
+		[[ ! $IS_TRACK ]] && all='/*.*'
 		kid3-cli -c "set $k \"$v\"" "$path"$all
 	done
-	[[ $istrack ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
+	[[ $IS_TRACK ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
 else
-	if [[ $istrack ]]; then
+	if [[ $IS_TRACK ]]; then
 		sed -i -E '/^\s+TRACK '$TRACK'/ {
 n; s/^(\s+TITLE).*/\1 "'$TITLE'"/
 n; s/^(\s+PERFORMER).*/\1 "'$ARTIST'"/

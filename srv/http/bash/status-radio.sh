@@ -45,7 +45,6 @@ case $id in
 esac
 
 if [[ $id < 4 || $id == 5 ]]; then
-	radioparadise=1
 	icon=radioparadise
 	FN_JSON=JSON.radioParadise
 	FN_STATUS=STATUS.radioParadise

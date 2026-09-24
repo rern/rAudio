@@ -221,29 +221,31 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
-fifoToggle() { # mpdoled vuled vumeter
+fifoToggle() { # MPD_OLED VU_LED VU_METER
 	local filefifo vumeter
 	filefifo=$dirmpdconf/fifo.conf
-	mpdoled_vuled_vumeter
-	[[ $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
-	if [[ $mpdoled || $vuled || $vumeter ]]; then
+	[[ -e $dirsystem/mpdoled ]] && MPD_OLED=1
+	[[ -e $dirsystem/vuled ]] && VU_LED=1
+	grep -q -m1 vumeter.*true $dirsystem/display.json && VU_METER=1
+	[[ $VU_METER ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
+	if [[ $MPD_OLED || $VU_LED || $VU_METER ]]; then
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
 		fi
 		if statePlay; then
-			[[ $mpdoled ]] && systemctl restart mpd_oled
-			[[ $vuled || $vumeter ]] && systemctl start cava
+			[[ $MPD_OLED ]] && systemctl restart mpd_oled
+			[[ $VU_LED || $VU_METER ]] && systemctl start cava
 		fi
 	else
 		if [[ -e $filefifo ]]; then
-			[[ $mpdoled || $vuled || $vumeter ]] && return
+			[[ $MPD_OLED || $VU_LED || $VU_METER ]] && return
 #...............................................................................
 			rm $filefifo
 			systemctl restart mpd
 		fi
-		[[ ! $mpdoled ]] && systemctl stop mpd_oled
-		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
+		[[ ! $MPD_OLED ]] && systemctl stop mpd_oled
+		[[ ! $VU_LED && ! $VU_METER ]] && systemctl stop cava
 	fi
 }
 fileExist() {
@@ -397,11 +399,6 @@ mpcSkip() {
 $pos
 ${state:0:4}
 CMD POS ACTION" # state: playing, paused, stopped
-}
-mpdoled_vuled_vumeter() {
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
-	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
-	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
 }
 mpdoledChip() {
 	if grep -q '\-o ' /etc/default/mpd_oled; then

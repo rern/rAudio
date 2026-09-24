@@ -22,12 +22,12 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-[[ $CMD == reboot ]] && reboot=1
+[[ $CMD == reboot ]] && REBOOT=1
 playerStop
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 playerActive upnp && mpc -q clear
-if [[ $reboot ]]; then
+if [[ $REBOOT ]]; then
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
 else
@@ -46,4 +46,4 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 fi
 logoLcdOled
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-[[ $reboot ]] && reboot || poweroff
+[[ $REBOOT ]] && reboot || poweroff

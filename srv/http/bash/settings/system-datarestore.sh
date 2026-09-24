@@ -4,7 +4,7 @@ exec &> /dev/null # suppress stdout stderr
 
 . /srv/http/bash/common.sh
 
-[[ $1 == true ]] && libraryonly=1
+[[ $1 == true ]] && LIBRARY_ONLY=1
 
 file_backup=$dirshm/backup.gz
 ! bsdtar tf $file_backup 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
@@ -15,7 +15,7 @@ playerStop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
 rm -rf $dirdata/{mpd,playlists,webradio}
-if [[ $libraryonly ]]; then
+if [[ $LIBRARY_ONLY ]]; then
 	bsdtar xpf $file_backup -C /srv/http data/{mpd,playlists,webradio}
 	systemctl restart mpd
 	exit

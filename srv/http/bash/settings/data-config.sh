@@ -66,9 +66,9 @@ lcdchar )
 	fileconf=$dirsystem/lcdchar.json
 	[[ -e $fileconf ]] && INF=$( jq -r .INF $fileconf )
 	if [[ $2 ]]; then
-		[[ $2 == $INF ]] && existing=1 || INF=$2
+		[[ $2 == $INF ]] && EXISTING=1 || INF=$2
 	else
-		[[ $INF ]] && existing=1 || INF=i2c
+		[[ $INF ]] && EXISTING=1 || INF=i2c
 	fi
 	if [[ $INF == i2c ]]; then
 		n=$( compgen -G /dev/i2c* | cut -d- -f2 )
@@ -85,16 +85,16 @@ lcdchar )
 		fi
 		address=', "address" : '$address
 	fi
-	if [[ $existing ]]; then
+	if [[ $EXISTING ]]; then
 		values=$( < $fileconf )
 		if [[ $INF == i2c ]]; then
 			if [[ $hex ]]; then
 				H=$( printf '%x\n' $( jq -r .ADDRESS $fileconf ) )
 				for h in $hex; do
-					[[ $h == $H ]] && addr_ok=1 && break
+					[[ $h == $H ]] && ADDR_OK=1 && break
 				done
 			fi
-			[[ ! $addr_ok ]] && values=$( jq '.ADDRESS = ""' <<< $values )
+			[[ ! $ADDR_OK ]] && values=$( jq '.ADDRESS = ""' <<< $values )
 		fi
 	else
 		values='{ "INF": "'$INF'", "COLS": 20, "CHARMAP": "A00"'

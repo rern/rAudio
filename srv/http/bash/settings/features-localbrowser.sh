@@ -5,10 +5,10 @@
 			sed -i -E 's/tty1.*/tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		! systemctl -q is-active localbrowser && restart=1
+		! systemctl -q is-active localbrowser && RESTART=1
 		. /tmp/localbrowser.conf
 		if [[ $ROTATE != $rotate ]]; then
-			restart=1
+			RESTART=1
 			file_config=/boot/config.txt
 			if grep -E -q 'waveshare|tft35a' $file_config; then # tft
 				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' $file_config
@@ -39,7 +39,7 @@
 			fi
 		fi
 		if [[ $ZOOM != $zoom ]]; then
-			restart=1
+			RESTART=1
 			scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
 			sed -i -E 's/(devPixelsPerPx": ").*(",*)/\1'$scale'\2/' /lib/firefox/distribution/policies.json
 		fi
@@ -47,8 +47,8 @@
 			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 			pushSubmenu screenoff $tf
 		fi
-		[[ $CURSOR != $cursor ]] && restart=1
-		if [[ $restart ]]; then
+		[[ $CURSOR != $cursor ]] && RESTART=1
+		if [[ $RESTART ]]; then
 			systemctl restart bootsplash localbrowser &> /dev/null
 			systemctl enable bootsplash localbrowser
 			sleep 1

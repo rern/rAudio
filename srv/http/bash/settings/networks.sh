@@ -11,9 +11,9 @@ netctlSwitch() {
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
 	for i in {0..20}; do
 		sleep 1
-		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
+		[[ $( iwgetid -r ) == $ESSID ]] && CONNECTED=1 && break
 	done
-	if [[ $connected ]]; then
+	if [[ $CONNECTED ]]; then
 		netctl enable "$ESSID" &> /dev/null
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh

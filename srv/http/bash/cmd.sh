@@ -33,19 +33,19 @@ bioimage )
 	;;
 bookmark )
 	file_order=$dirsystem/order.json
-	[[ -e $file_order ]] && order=1
+	[[ -e $file_order ]] && ORDER=1
 	if [[ $DIR ]]; then
 		echo "$DIR" > "$dirbookmarks/$NAME"
-		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
+		[[ $ORDER ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
 	elif [[ $NEWNAME ]]; then
 		mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-		if [[ $order ]]; then
+		if [[ $ORDER ]]; then
 			i=$( jq --arg name "$NAME" 'index($name)' $file_order )
 			json=$( jq --argjson i $i --arg newname "$NEWNAME" '.[$i] = $newname' $file_order )
 		fi
 	else
 		rm "$dirbookmarks/$NAME"
-		[[ order ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
+		[[ $ORDER ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
 	fi
 	[[ $json ]] && echo "$json" > $file_order
 	pushData coverart '{ "type": "thumbnail" }'
@@ -80,7 +80,7 @@ color )
 			HSL=( $( < $filecolor ) )
 		else
 			HSL=( $hslcd )
-			default=1
+			DEFAULT=1
 		fi
 	fi
 	h=${HSL[0]}
@@ -103,7 +103,7 @@ s/(--ml$m *: ).*/\1$L%;/"
 	color='{
   "cg"    : "hsl('$h',3%,75%)"
 , "cm"    : "hsl'$cm'"
-, "color" : '$( [[ $default ]] && echo false || echo true )'
+, "color" : '$( [[ $DEFAULT ]] && echo false || echo true )'
 , "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
 , "ml"    : [ '${ml:1}' ]
 }'
@@ -213,9 +213,9 @@ lyrics )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
 		}
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
-		[[ ${#artist} == 2 ]] && short=1 && artist+=band
+		[[ ${#artist} == 2 ]] && SHORT=1 && artist+=band
 		lyrics=$( lyricsGet )
-		if [[ ! $lyrics && $short ]]; then
+		if [[ ! $lyrics && $SHORT ]]; then
 			artist=${artist/band}
 			lyrics=$( lyricsGet )
 		fi
@@ -524,10 +524,10 @@ snapserverlist )
 	snapserverList
 	;;
 thumbnailreset )
-	[[ $DIR == http* || $DIR == rtsp* ]] && radio=1
+	[[ $DIR == http* || $DIR == rtsp* ]] && RADIO=1
 	DIR=$( dir2path "$DIR" )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	[[ $radio ]] && rm -f "$DIR/cover".*
+	[[ $RADIO ]] && rm -f "$DIR/cover".*
 	imageCacheBust $( date +%s )
 	pushData coverart '{ "type": "thumbnail" }'
 	;;
