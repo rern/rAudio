@@ -24,7 +24,6 @@ dtparam=audio=on"
 	;;
 bluetooth )
 	touch $dirshm/btonboard
-	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		rm -f $dirsystem/btdisable
 		btdiscoverable=$dirsystem/btdiscoverable
@@ -47,7 +46,7 @@ bluetooth )
 		systemctl stop bluetooth
 		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		[[ $bluealsa ]] && $dirsettings/player-conf.sh
+		inOutputConf device.*bluealsa && $dirsettings/player-conf.sh
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
@@ -252,7 +251,7 @@ powerbutton )
 		if [[ $SW ]]; then
 			serviceRestartEnable
 		else
-			poweraudiophonic=1
+			POWER_AUDIOPHONIC=1
 		fi
 	else
 		if systemctl -q is-active powerbutton; then
@@ -372,11 +371,11 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 	notify usb "$name" Ready
 	if [[ ! $( partprobe -ds /dev/$sdx ) ]]; then
-		unpartitioned=1
+		UNPARTITIONED=1
 	else
-		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && unformatted=1 # no fs
+		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && UNFORMATTED=1 # no fs
 	fi
-	if [[ $unpartitioned || $unformatted ]]; then
+	if [[ $UNPARTITIONED || $UNFORMATTED ]]; then
 		echo "$list" > $dirshm/usbvendormodel
 		pushStorage
 	fi

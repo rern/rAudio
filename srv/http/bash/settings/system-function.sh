@@ -45,7 +45,7 @@ snd-soc-wm8960'
 		fi
 		[[ $module ]] && sort -u <<< $module | awk NF > $file_module || rm -f $file_module
 	fi
-	if [[ $poweraudiophonic ]]; then
+	if [[ $POWER_AUDIOPHONIC ]]; then
 		config+='
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down'
