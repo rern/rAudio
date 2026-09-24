@@ -140,11 +140,11 @@ var CONFIG        = {
 	}
 	, mpdoled       : values => {
 		var chip       = {
-			  'SSD130x SP'  : 1
-			, 'SSD130x I²C' : 3
-			, 'Seeed I²C'   : 4
-			, 'SH1106 I²C'  : 6
+			  'SH1106 I²C'  : 6
 			, 'SH1106 SPI'  : 7
+			, 'SSD130x I²C' : 3
+			, 'SSD130x SPI' : 1
+			, 'Seeed I²C'   : 4
 		}
 		INFO( {
 			  ...SW
@@ -157,10 +157,9 @@ var CONFIG        = {
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
 			, beforeshow   : () => {
-				var $tr   = $( '#infoList tr' );
-				var $baud = $tr.eq( 1 )
+				var $baud = $( '#infoList tr' ).eq( 1 );
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$tr.eq( 0 ).on( 'input', function() {
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
