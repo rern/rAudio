@@ -350,13 +350,12 @@ mpcremove )
 	pushPlaylist
 	;;
 mpcseek )
-	if [[ $STATE == stop ]]; then
-		touch $dirshm/skip
-		mpc -q play
-		mpc -q pause
-		rm $dirshm/skip
-	fi
+	touch $dirshm/skip
+	[[ $STOP ]] && mpc -q play
 	mpc -q seek $ELAPSED
+	[[ $STOP ]] && mpc -q pause
+	$dirbash/status-push.sh
+	rm $dirshm/skip
 	;;
 mpcshuffle )
 	mpc -q shuffle

@@ -2182,7 +2182,7 @@ var PROGRESS  = {
 		}
 		$( '#time-bar' ).css( 'width', ( ratio * 100 ) +'%' );
 	}
-	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
+	, command : () => BASH( [ 'mpcseek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] )
 	, knob    : e => {
 		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%

@@ -87,5 +87,8 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 	fi
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
-# on track changed (on stop - scrobbleOnStop)
-[[ $STATE_PLAY && $scrobble ]] && scrobble $player "$scrobble"
+
+if [[ $STATE_PLAY && $scrobble && ! -e $dirshm/skip ]]; then # on track changed (on stop - scrobbleOnStop)
+	readarray -t data <<< $scrobble
+	[[ ${data[0]} != $Artist || ${data[1]} != $Title ]] && scrobble $player "$scrobble"
+fi

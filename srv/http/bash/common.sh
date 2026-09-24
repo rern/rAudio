@@ -551,7 +551,7 @@ radioStop() {
 scrobble() {
 	[[ $1 != mpd ]] && grep -q $1=false $dirsystem/scrobble.conf && return
 #...............................................................................
-	data=$2
+	readarray -t data <<< $2
 	Artist=${data[0]}
 	Title=${data[1]}
 	Time=${data[2]}
@@ -562,9 +562,9 @@ scrobble() {
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && return
 #...............................................................................
 	$dirbash/scrobble.sh "cmd
-	$Artist
-	$Title
-	CMD ARTIST TITLE" &> /dev/null &
+$Artist
+$Title
+CMD ARTIST TITLE" &> /dev/null &
 }
 scrobbleOnStop() {
 	[[ ! -e $dirsystem/scrobble ]] && return
