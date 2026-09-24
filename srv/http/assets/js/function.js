@@ -745,8 +745,6 @@ var DISPLAY   = {
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 		$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-		if ( ! D.count ) return
-		
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 			var $this = $( el );
 			var mode  = $this.find( '.name' ).text();
