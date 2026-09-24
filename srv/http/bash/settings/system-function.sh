@@ -8,7 +8,7 @@ configReboot() {
 	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip i2clcdchar i2cmpdoled module spimpdoled tft
+	local chip i2clcdchar module tft
 	tmp_cmdline=/tmp/cmdline.txt
 	tmp_config=/tmp/config.txt
 	tmp_module=/tmp/raspberrypi.conf
@@ -22,10 +22,6 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
 		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
-		if [[ -e $dirsystem/mpdoled ]]; then
-			chip=$( mpdoledChip )
-			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
-		fi
 		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
 		# $spimpdoled / $i2cmpdoled - from mpdoled )
 		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='

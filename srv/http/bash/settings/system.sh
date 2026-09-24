@@ -220,8 +220,13 @@ dtoverlay=$MODEL:rotate=$ROTATE" >> $file_config
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
-		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
-		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		if [[ $CHIP == 1 || $CHIP == 7 ]]; then
+			spimpdoled=1
+		else
+			i2cmpdoled=1
+			baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+			[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		fi
 		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. /etc/default/mpd_oled
