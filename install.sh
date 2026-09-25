@@ -5,6 +5,24 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260923
+file=/etc/systemd/system/startup-ready.service
+if [[ ! -e $file ]]; then
+	echo "\
+[Unit]
+Description=rAudio Startup - Ready
+Requires=startup.service
+After=startup.service
+
+[Service]
+ExecStart=/srv/http/bash/startup-ready.sh
+
+[Install]
+WantedBy=multi-user.target" > $file
+	sed -i '/^After/ a\
+BindsTo=startup-ready.service
+' /etc/systemd/system/startup.service
+fi
+
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	packages+=' mpd_oled'
 	file=/lib/systemd/system/mpd_oled.service
