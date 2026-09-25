@@ -160,7 +160,7 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
-pushStatus
+[[ -e $dirshm/startup ]] && pushStatus
 pushRefresh player
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )

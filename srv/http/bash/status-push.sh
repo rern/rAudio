@@ -7,8 +7,8 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ -e $dirsystem/scrobble && -e $dirshm/startup ]]; then
-	scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json )
+if [[ -e $dirsystem/scrobble ]]; then
+	scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
 fi
 if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
 	status=$1
