@@ -7,7 +7,7 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ -e $dirsystem/scrobble ]]; then
+if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
 	scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
 fi
 if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
@@ -88,7 +88,7 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 
-if [[ $STATE_PLAY && $scrobble && ! -e $dirshm/skip ]]; then # on track changed (on stop - scrobbleOnStop)
+if [[ $STATE_PLAY && $scrobble ]]; then # on track changed (on stop - scrobbleOnStop)
 	readarray -t data <<< $scrobble
 	[[ ${data[0]} != $Artist || ${data[1]} != $Title ]] && scrobble $player "$scrobble"
 fi
