@@ -5,7 +5,6 @@
 $dirsettings/player-conf.sh
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
-# after all sources connected -----------------------------------------------------
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
