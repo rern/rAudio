@@ -467,7 +467,7 @@ playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
-	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
+	[[ $PLAY || $REPLACE ]] && pushStatus
 	pushPlaylist
 	;;
 playlistpush )
