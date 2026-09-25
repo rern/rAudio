@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[[ -e /dev/shm/usbdac_rules ]] && exit # debounce usbdac.rules
+[[ -e /dev/shm/usbdac_rules || ! -e /dev/shm/startup ]] && exit # debounce usbdac.rules
 # ------------------------------------------------------------------------------
 . /srv/http/bash/common.sh
 

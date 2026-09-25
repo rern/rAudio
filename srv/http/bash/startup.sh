@@ -108,7 +108,10 @@ CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
 
-$dirsettings/player-conf.sh
+$dirsettings/player-conf.sh &> /dev/null
+touch $dirshm/startup
+pushStatus
+
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
@@ -119,7 +122,6 @@ else
 	touch $dirshm/updatedone
 fi
 
-touch $dirshm/startup
 pushData startup true
 
 if [[ -e $dirsystem/autoplay ]]; then

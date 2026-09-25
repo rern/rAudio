@@ -10,6 +10,7 @@ if pgrep mkfs &> /dev/null; then
 fi
 
 args2var "$1"
+
 playerStop
 
 if [[ -e $filesharedip ]]; then
