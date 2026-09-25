@@ -1535,15 +1535,6 @@ var PLAYBACK  = {
 
 			try {
 				var status = JSON.parse( list );
-				if ( S.file.startsWith( 'https://icecast.radiofrance' ) ) {
-					S.icon = 'radiofrance';
-				} else if ( S.file.startsWith( 'https://stream.radioparadise' ) ) {
-					S.icon = 'radioparadise';
-				} else if ( $.player === 'mpd' ) {
-					S.icon = '';
-				} else {
-					S.icon = S.player;
-				}
 			} catch( e ) {
 				COMMON.dataError( e.message, list );
 				return false
