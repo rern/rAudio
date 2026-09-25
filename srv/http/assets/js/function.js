@@ -1365,7 +1365,11 @@ var PLAYBACK  = {
 		COMMON.loaderHide();
 	}
 	, button    : {
-		  options  : () => {
+		  controls : () => {
+			$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
+			$( '#'+ S.state ).addClass( 'active' );
+		}
+		, options  : () => {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
@@ -1531,6 +1535,15 @@ var PLAYBACK  = {
 
 			try {
 				var status = JSON.parse( list );
+				if ( S.file.startsWith( 'https://icecast.radiofrance' ) ) {
+					S.icon = 'radiofrance';
+				} else if ( S.file.startsWith( 'https://stream.radioparadise' ) ) {
+					S.icon = 'radioparadise';
+				} else if ( $.player === 'mpd' ) {
+					S.icon = '';
+				} else {
+					S.icon = S.player;
+				}
 			} catch( e ) {
 				COMMON.dataError( e.message, list );
 				return false
@@ -1619,13 +1632,12 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 
 		LOCAL();
-		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
-		$( '#'+ S.state ).addClass( 'active' );
 		if ( S.stop ) {
 			UTIL.intervalClear( 'elapsed' );
 			PROGRESS.set( 0 );
 		}
 		VOLUME.set();
+		PLAYBACK.button.controls();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
 		if ( S.player === 'mpd' && S.stop && ! S.pllength ) { // empty queue
@@ -2182,7 +2194,6 @@ var PROGRESS  = {
 		}
 		$( '#time-bar' ).css( 'width', ( ratio * 100 ) +'%' );
 	}
-	, command : () => BASH( [ 'mpcseek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] )
 	, knob    : e => {
 		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
@@ -2195,6 +2206,13 @@ var PROGRESS  = {
 		if ( S.stop && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
+		}
+	}
+	, seek    : () => {
+		BASH( [ 'mpcseek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] );
+		if ( S.stop ) {
+			S.state = 'pause'; 
+			PLAYBACK.button.controls();
 		}
 	}
 	, set     : l => {

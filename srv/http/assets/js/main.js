@@ -265,10 +265,8 @@ $( '#artist, #info-bio' ).on( 'click', function() {
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( ! S.Title ) return
-
-	if ( S.lyrics
-		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
-	) {
+	
+	if ( S.lyrics && ( ! S.webradio || ( S.play && S.icon[ 0 ] == 'r' ) ) ) ) {
 		if ( S.Title.includes( '(' ) ) {
 			BASH( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
 				if ( paren == -1 ) {
@@ -356,7 +354,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 } ).on( 'touchend mouseup', function( e ) {
 	delete V.drag;
 	if ( V.time ) {
-		PROGRESS.command();
+		PROGRESS.seek();
 		delete V.time;
 	} else if ( V.volume ) {
 		if ( V.volume.type === 'knob' ) {
