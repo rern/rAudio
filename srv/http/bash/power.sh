@@ -10,6 +10,7 @@ if pgrep mkfs &> /dev/null; then
 fi
 
 args2var "$1"
+playerStop
 
 if [[ -e $filesharedip ]]; then
 	if nfsServerActive; then # server rAudio
@@ -22,8 +23,7 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-[[ $CMD == reboot ]] && REBOOT=1
-playerStop
+[[ $CMD == reboot || $1 == reboot ]] && REBOOT=1
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 playerActive upnp && mpc -q clear
