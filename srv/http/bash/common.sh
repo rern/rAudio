@@ -483,7 +483,7 @@ playerStop() {
 			systemctl start upmpdcli
 			;;
 	esac
-	$dirbash/status-push.sh
+	pushStatus
 	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	fi

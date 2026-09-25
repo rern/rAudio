@@ -56,7 +56,7 @@ plClear() {
 	radioStop
 	rm -f $dirsystem/librandom $dirshm/playlist*
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
-	$dirbash/status-push.sh
+	pushStatus
 }
 pushPlaylist() {
 	local b buffer data

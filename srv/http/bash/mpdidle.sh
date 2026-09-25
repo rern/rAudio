@@ -12,7 +12,7 @@ mpc idleloop | while read changed; do
 			;;
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip && ! -e $dirshm/cdstart ]]; then
-				$dirbash/status-push.sh & # run in background for snapcast
+				pushStatus & # run in background for snapcast
 			fi
 			;;
 		update )

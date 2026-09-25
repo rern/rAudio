@@ -354,7 +354,7 @@ mpcseek )
 	[[ $STOP ]] && mpc -q play
 	mpc -q seek $ELAPSED
 	[[ $STOP ]] && mpc -q pause
-	$dirbash/status-push.sh
+	pushStatus
 	rm $dirshm/skip
 	;;
 mpcshuffle )

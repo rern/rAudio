@@ -8,7 +8,7 @@
 if ! playerActive airplay; then
 	playerStart airplay
 	date +%s%3N > $dirshm/timestamp
-	$dirbash/status-push.sh
+	pushStatus
 fi
 
 signal_time2ms() {
@@ -28,17 +28,17 @@ dbus-monitor \
 					signal_time=$line
 					;;
 				*'"Metadata"' | *variant*'"Playing"' )
-					$dirbash/status-push.sh
+					pushStatus
 					;;
 				*variant*'"Paused"' ) # ProgressString not change on Paused - calculate for elapsed
 					ms_pause=$( signal_time2ms )
 					ms_prog=$( < $dirshm/timestamp )
 					echo $(( ( ms_pause - ms_prog + 500 ) / 1000 )) > $dirshm/elapsed # (s)
-					$dirbash/status-push.sh
+					pushStatus
 					;;
 				*'"ProgressString"' )
 					signal_time2ms > $dirshm/timestamp # epoch (ms)
-					$dirbash/status-push.sh
+					pushStatus
 					;;
 				*variant*'"Stopped"' )
 					$dirbash/cmd.sh playerstop
