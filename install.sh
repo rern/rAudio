@@ -14,10 +14,7 @@ Requires=startup.service
 After=startup.service
 
 [Service]
-ExecStart=/srv/http/bash/startup-ready.sh
-
-[Install]
-WantedBy=multi-user.target" > $file
+ExecStart=/srv/http/bash/startup-ready.sh" > $file
 	sed -i '/^After/ a\
 BindsTo=startup-ready.service
 ' /etc/systemd/system/startup.service
