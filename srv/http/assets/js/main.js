@@ -266,7 +266,7 @@ $( '#artist, #info-bio' ).on( 'click', function() {
 $( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( ! S.Title ) return
 	
-	if ( S.lyrics && ( ! S.webradio || ( S.play && S.icon[ 0 ] == 'r' ) ) ) ) {
+	if ( S.lyrics && ( ! S.webradio || ( S.play && S.icon[ 0 ] == 'r' ) ) ) {
 		if ( S.Title.includes( '(' ) ) {
 			BASH( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
 				if ( paren == -1 ) {
