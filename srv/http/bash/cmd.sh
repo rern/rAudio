@@ -297,8 +297,9 @@ mpcoption )
 mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
 # --------------------------------------------------------------------
-	[[ ! $ACTION ]] && mpcPlayback && exit
-# --------------------------------------------------------------------
+	if [[ ! $ACTION ]]; then
+		[[ $( mpc status %state% ) == stopped ]] && ACTION=play || ACTION=pause 
+	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q play $POS
