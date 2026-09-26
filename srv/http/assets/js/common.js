@@ -373,9 +373,10 @@ W             = {  // from websocket.py (server)
 		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
 		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
+			$( 'body' ).children().not( '#banner, #loader' ).remove();
 			setTimeout( () => {
-				$( '#loader svg' ).css( 'animation', 'unset' );
 				$( '#banner' ).addClass( 'hide' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
 			}, 12000 );
 		} else { // reconnect after reboot
 			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
