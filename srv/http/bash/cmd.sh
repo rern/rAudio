@@ -298,7 +298,7 @@ mpcplayback )
 	(( $( mpc status %length% ) == 0 )) && exit
 # --------------------------------------------------------------------
 	if [[ ! $ACTION ]]; then
-		[[ $( mpc status %state% ) == stopped ]] && ACTION=play || ACTION=pause 
+		[[ $( jq -r .state $dirshm/status.json ) == play ]] && ACTION=pause || ACTION=play 
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
