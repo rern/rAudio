@@ -391,16 +391,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 
 	VOLUME.upDown( $this.hasClass( 'up' ) );
 } ).press( {
-	  action : e => {
-		clearTimeout( V.volumebar );
-		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
-		var up = $( e.currentTarget ).hasClass( 'up' );
-		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
-	}
-	, end    : () => { // on end
-		clearInterval( V.interval.volume );
-		VOLUME.barHide();
-	}
+	  action : e => VOLUME.press( $( e.currentTarget ).hasClass( 'up' ) )
+	, end    : VOLUME.pressEnd
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
 	COVERART.save();

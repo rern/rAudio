@@ -1701,6 +1701,16 @@ var VOLUME    = {
 		}
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
+	, press   : up => {
+		clearTimeout( V.volumebar );
+		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
+		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 200 );
+	}
+	, pressEnd : up => {
+		clearInterval( V.interval.volume );
+		VOLUME.barHide();
+		V.local = false;
+	}
 	, push    : () => {
 		V.local = true;
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );

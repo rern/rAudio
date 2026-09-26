@@ -147,8 +147,14 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // arrow key -------------------------------------------------------
 	if ( V.playback ) {
 		if ( arrow ) {
-			$( '#'+ KEY_ARROW[ key ] ).trigger( 'click' );
-			return
+			if ( e.originalEvent.repeat ) {
+				if ( ! V.e_repeat ) {
+					V.e_repeat = true;
+					VOLUME.press( key.endsWith( 'Up' ) );
+				}
+			} else {
+				$( '#'+ KEY_ARROW[ key ] ).trigger( 'click' );
+			}
 		}
 	} else if ( V.library ) {
 		if ( ! $( '#lib-search' ).hasClass( 'hide' ) ) return
@@ -230,5 +236,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 					return
 			}
 		}
+	}
+} ).on( 'keyup', function( e ) {
+	if ( [ 'ArrowUp', 'ArrowDown', 'AudioVolumeUp', 'AudioVolumeDown' ].includes( e.key ) ) {
+		VOLUME.pressEnd();
+		V.e_repeat = false;
 	}
 } );
