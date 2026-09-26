@@ -95,7 +95,7 @@ mixer )
 	;;
 mixertype )
 	. $dirshm/output
-	mpc -q stop
+	playerStop
 	filemixertype="$dirsystem/mixertype-$name"
 	if [[ $MIXERTYPE == hardware ]]; then
 		rm -f "$filemixertype" $dirsystem/replaygain-hw
