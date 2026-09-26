@@ -87,7 +87,7 @@
 	margin: 0;
 	transform : rotate( -90deg );
 	transform-origin: top left;
-	translate: 10px 300px;
+	translate: 5px 300px;
 }
 #eq .vertical::before { /* flat line */
 	position: absolute;
