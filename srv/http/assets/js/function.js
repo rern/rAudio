@@ -498,7 +498,7 @@ var DISPLAY   = {
 	, guideHide  : () => {
 		if ( V.guide ) {
 			V.guide        = false;
-			var barvisible = UTIL.barVisible();;
+			var barvisible = UTIL.barVisible();
 			$( '#coverTR' ).toggleClass( 'empty', S.pllength === 0 && ! barvisible && S.player === 'mpd' );
 			$( '.divmap' ).removeClass( 'mapshow' );
 			$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -2332,8 +2332,8 @@ var UTIL      = {
 				$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );
 				$span.on( 'click', function() {
 					var values = _INFO.val();
-					var artist = values[ 0 ]
-					var title  = values[ 1 ]
+					var artist = values[ 0 ];
+					var title  = values[ 1 ];
 					var $this  = $( this );
 					var i      = $( this ).index();
 					if ( i === 0 ) {
@@ -2355,8 +2355,8 @@ var UTIL      = {
 		} );
 	}
 	, intervalClear   : elpased => {
-		if ( elapsed ) {
-			clearInterval( V.interval.elapsed );;
+		if ( typeof elapsed !== 'undefined' ) {
+			clearInterval( V.interval.elapsed );
 		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
 		}
