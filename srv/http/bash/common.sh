@@ -543,7 +543,9 @@ radioStop() {
 	[[ ! -e $dirshm/radio ]] && return
 #...............................................................................
 	mpc -q stop
-	systemctl stop radio dab &> /dev/null
+	notify mpd radioStop stop
+	systemctl stop radio
+	systemctl stop dab &> /dev/null
 	rm -f $dirshm/radio
 	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
