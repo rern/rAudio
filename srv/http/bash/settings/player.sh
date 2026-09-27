@@ -109,6 +109,7 @@ mixertype )
 	;;
 novolume )
 	amixer0dB
+	name=$( getContent $dirsystem/audio-output )
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
