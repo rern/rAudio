@@ -1584,6 +1584,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 		, cancel       : () => EQ.info( E )
 		, ok           : () => {
 			COMMON.json.save( 'equalizer', e );
+			if ( e.active === 'Flat' ) BASH( [ 'equalizer', EQ.flat.join( ' ' ), EQ.user, 'CMD VALUES USR' ] );
 			EQ.info( e );
 		}
 	} );
@@ -1606,6 +1607,8 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( this ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 } ).on( 'click', '#eqsave', function() {
 	EQ.save( $( '#eqname' ).val(), E.preset[ E.active ] );
+	$( '#eqback' ).trigger( 'click' );
+
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {

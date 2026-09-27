@@ -857,8 +857,9 @@ EQ            = {
 						$( '#eq .label.dn a' ).eq( i ).text( v - 62 );
 					}
 					, end   : () => {
+						var values = _INFO.val().slice( 0, 10 );
 						if ( E.active !== 'Flat' ) {
-							E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
+							E.preset[ E.active ] = values;
 							COMMON.json.save( 'equalizer', E );
 							return
 						}
@@ -867,7 +868,7 @@ EQ            = {
 							var name = 'New '+ i;
 							if ( ! ( name in E.preset ) ) break;
 						}
-						EQ.save( name, EQ.flat );
+						EQ.save( name, values );
 					}
 				} );
 				$( '#eq input' ).on( 'keydown', e => {
@@ -879,11 +880,9 @@ EQ            = {
 		} );
 	}
 	, save  : ( name, values ) => {
-		E.active         = name;
 		E.preset[ name ] = values;
-		E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
+		E.active         = name;
 		$( '#eqedit' ).removeClass( 'disabled' );
-		$( '#eqname' ).addClass( 'hide' );
 		$( '#eqpreset' )
 			.html( COMMON.select.option( Object.keys( E.preset ) ) )
 			.next().remove();
