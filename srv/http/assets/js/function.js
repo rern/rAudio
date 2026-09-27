@@ -193,7 +193,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy )
+				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy );
 			} else {
 				V.ctx.hsl.h += x;
 			}
