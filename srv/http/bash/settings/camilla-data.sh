@@ -8,6 +8,30 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
 fi
+if [[ $mixer ]]; then
+	volume=$( volumeGet )
+	volumemute=$( getContent $dirsystem/volumemute 0 )
+else
+	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
+	volume=$( echo $db | awk -v db="$db" -v min=-51 -v max=0 '
+							BEGIN {
+								min *= 100; max *= 100; db *= 100   # to centidB
+								range = max - min
+								if (range <= 2400) {                # <=24dB -> linear scale
+									norm = (db - min) / range
+								} else {
+									norm = 10 ^ ((db - max) / 6000.0)
+									min_norm = 10 ^ ((min - max) / 6000.0)
+									norm = (norm - min_norm) / (1 - min_norm)
+								}
+								if (norm < 0) norm = 0
+								if (norm > 1) norm = 1
+								p = norm * 100
+								printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
+							}' )
+	mute=$( websocat --text ws://127.0.0.1:1234 <<< '"GetMute"' | jq .GetMute.value )
+	[[ $mute == true ]] && volumemute=$volume || volumemute=0
+fi
 volumemax=$( volumeMaxGet )
 ##########
 data='
@@ -21,10 +45,10 @@ data='
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
-, "volume"      : '$( [[ $mixer ]] && volumeGet )'
+, "volume"      : '$volume'
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax'
-, "volumemute"  : '$( getContent $dirsystem/volumemute 0 )
+, "volumemute"  : '$volumemute
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d

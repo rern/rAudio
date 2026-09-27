@@ -114,6 +114,7 @@
 }
 #divvolume .col-l a {
 	max-width: calc( 100% - 25px );
+	vertical-align: 5px;
 }
 #divvolume .col-l i {
 	margin: 0 -15px 0 0;

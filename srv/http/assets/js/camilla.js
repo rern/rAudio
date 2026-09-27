@@ -1422,13 +1422,13 @@ var RENDER    = {
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
 		playbackIcon();
-		if ( S.volume !== false ) {
-			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#divvolume .control' ).text( S.control );
-			VOLUME.set();
-		} else {
-			$( '#divvolume' ).addClass( 'hide' );
+		if ( S.volume === -1 ) {
+			WSCAMILLA.send( '"ToggleMute"' );
+			WSCAMILLA.send( '"GetMute"' );
 		}
+		$( '#divvolume' ).removeClass( 'hide' );
+		$( '#divvolume .control' ).text( S.control );
+		VOLUME.set();
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );

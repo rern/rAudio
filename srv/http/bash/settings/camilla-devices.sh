@@ -28,11 +28,11 @@ for c in Loopback $CARD; do
 			S24_3LE )    f=S24_3_LE;;
 			S24_LE ) [[ -d /proc/asound/card$CARD/usbmixer ]] && f=S24_4_RJ_LE || f=S24_4_LJ_LE;;
 		esac
-		lbl="$f: ${f:1:2}bit "
-		lbl+='integer'
+		lbl="$f (${f:1:2}bit "
 		case ${f:4:1} in
-			3 ) lbl+='-packed';;
-			4 ) lbl+='-padded';;
+			3 ) lbl+='int-packed)';;
+			4 ) lbl+='int-padded)';;
+			* ) lbl+='integer)'
 		esac
 		list=$'\n, "'$lbl'": "'$f'"'
 		[[ $f == F* ]] && list_f+=$list || list_s+=$list
