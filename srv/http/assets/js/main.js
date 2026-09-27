@@ -1541,7 +1541,8 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' )
 		.css( 'display', 'inline-block' )
-		.val( E.active );
+		.val( E.active )
+		.trigger( 'focus' );
 } ).on( 'click', '#eqedit', function() {
 	var list    = [];
 	var values  = [];
