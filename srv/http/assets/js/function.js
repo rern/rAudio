@@ -853,8 +853,6 @@ EQ            = {
 						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
 					}
 					, input : ( i, v ) => {
-						if ( ! v ) return
-						
 						BASH( [ 'equalizerset', EQ.bands[ i ], v, EQ.user, 'CMD BAND VAL USR' ] );
 						$( '#eq .label.dn a' ).eq( i ).text( v - 62 );
 					}

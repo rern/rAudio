@@ -1314,6 +1314,8 @@ var COMMON    = {
 					if ( V.eqinput ) {
 						delete V.eqinput;
 					} else { // ios safari not fire input
+						if ( ! e.pageY ) return
+						
 						var $this = $( this );
 						var top   = $( '.inforange' ).offset().top + 10;
 						var diff  = Math.round( ( e.pageY - top ) / incr );
