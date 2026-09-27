@@ -127,6 +127,9 @@ audio_output {
 			, list         : [ '', 'radio', { kv: { 'DAC hardware <a class="helpmenu label">Mixer</a>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 			, values       : S.mixertype ? S.output.MIXERTYPE : 'hardware'
 			, checkchanged : S.mixertype
+			, beforeshow   : () => {
+				if ( ! S.mixers ) $( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
+			}
 			, cancel       : SWITCH.cancel
 			, ok           : () => UTIL.mixerSet( _INFO.val() )
 		} );
