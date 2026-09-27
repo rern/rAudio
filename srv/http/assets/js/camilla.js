@@ -1560,7 +1560,7 @@ var SETTING   = {
 				var $input = $( '#infoList input[type=number]' );
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
-				$input.css( 'width', '70px' );
+				$input.css( { width: '70px', 'margin-right': '5px' } );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
 					var file    = false;
