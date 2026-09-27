@@ -1801,7 +1801,7 @@ function pageInactive() {
 }
 
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
-	if ( ! I.active ) return
+	if ( ! I.active || $( '.inforange.vertical' ).length ) return
 
 	var key = e.key;
 	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
