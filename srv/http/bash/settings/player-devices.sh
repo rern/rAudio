@@ -23,7 +23,7 @@
 # name: bcm2835 Headphones
 # ...
 
-outputdevice=$( getContent $dirsystem/output-device )
+outputdevice=$( getContent $dirsystem/audio-output )
 proccardn=$( ls -d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 card=${proccardn: -1}
 card_usb=$( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null | wc -l )
