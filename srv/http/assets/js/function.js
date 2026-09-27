@@ -880,13 +880,13 @@ EQ            = {
 		} );
 	}
 	, save  : ( name, values ) => {
-		E.preset[ name ] = values;
 		E.active         = name;
+		E.preset[ name ] = values;
+		I.values         = [ ...values, name ];
 		$( '#eqedit' ).removeClass( 'disabled' );
 		$( '#eqpreset' )
 			.html( COMMON.select.option( Object.keys( E.preset ) ) )
 			.next().remove();
-		I.values = [ ...E.preset[ E.active ], E.active ];
 		_INFO.setValues();
 		COMMON.select.set();
 		COMMON.json.save( 'equalizer', E );
