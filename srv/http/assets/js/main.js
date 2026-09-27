@@ -1604,15 +1604,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	COMMON.json.save( 'equalizer', E );
 	$( this ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 } ).on( 'click', '#eqsave', function() {
-	var name         = $( '#eqname' ).val();
-	E.preset[ name ] = E.preset[ E.active ];
-	E.active         = name;
-	COMMON.json.save( 'equalizer', E );
-	$( '#eqback' ).trigger( 'click' );
-	$( '#eqpreset' )
-		.html( COMMON.select.option( Object.keys( E.preset ) ) )
-		.val( name )
-		.trigger( 'change' );
+	EQ.save( $( '#eqname' ).val(), E.preset[ E.active ] );
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {

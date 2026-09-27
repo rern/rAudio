@@ -867,23 +867,30 @@ EQ            = {
 							var name = 'New '+ i;
 							if ( ! ( name in E.preset ) ) break;
 						}
-						E.active         = name;
-						E.preset[ name ] = EQ.flat;
-						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
-						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' )
-							.html( COMMON.select.option( Object.keys( E.preset ) ) )
-							.next().remove();
-						I.values = [ ...E.preset[ E.active ], E.active ];
-						_INFO.setValues();
-						COMMON.select.set();
-						COMMON.json.save( 'equalizer', E );
+						EQ.save( name, EQ.flat );
 					}
+				} );
+				$( '#eq input' ).on( 'keydown', e => {
+					if ( e.key === 'Enter' ) $( '#eqsave' ).trigger( 'click' );
 				} );
 			}
 			, cancel     : () => E = {}
 			, okno       : true
 		} );
+	}
+	, save  : ( name, values ) => {
+		E.active         = name;
+		E.preset[ name ] = values;
+		E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
+		$( '#eqedit' ).removeClass( 'disabled' );
+		$( '#eqname' ).addClass( 'hide' );
+		$( '#eqpreset' )
+			.html( COMMON.select.option( Object.keys( E.preset ) ) )
+			.next().remove();
+		I.values = [ ...E.preset[ E.active ], E.active ];
+		_INFO.setValues();
+		COMMON.select.set();
+		COMMON.json.save( 'equalizer', E );
 	}
 }
 var FILEIMAGE = {
