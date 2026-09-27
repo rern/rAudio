@@ -854,14 +854,18 @@ EQ            = {
 						$( '#eq .label.dn a' ).eq( i ).text( v - 62 );
 					}
 					, end   : () => {
-						if ( E.active === 'Flat' ) {
-							for ( let i = 1; i < 10; i++ ) {
-								var name = 'New '+ i;
-								if ( ! ( name in E.preset ) ) break;
-							}
-							E.active         = name;
-							E.preset[ name ] = EQ.flat;
+						if ( E.active !== 'Flat' ) {
+							E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
+							COMMON.json.save( 'equalizer', E );
+							return
 						}
+						
+						for ( let i = 1; i < 10; i++ ) {
+							var name = 'New '+ i;
+							if ( ! ( name in E.preset ) ) break;
+						}
+						E.active         = name;
+						E.preset[ name ] = EQ.flat;
 						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
 						$( '#eqedit' ).removeClass( 'disabled' );
 						$( '#eqpreset' )
