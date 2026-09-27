@@ -1803,16 +1803,17 @@ function pageInactive() {
 }
 
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
-	if ( ! I.active || $( '.inforange.vertical' ).length ) return
+	if ( ! I.active ) return
 
 	var key = e.key;
+	if ( $( '.inforange.vertical' ).length && key.startsWith( 'Arrow' ) ) return
+	
 	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
 	switch ( key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
 			e.preventDefault();
-
 			COMMON.focusNext( COMMON.focusNextTabs(), 'focus', key );
 			break
 		case ' ':
