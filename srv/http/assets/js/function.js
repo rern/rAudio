@@ -864,7 +864,9 @@ EQ            = {
 						}
 						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
 						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' ).html( COMMON.select.option( Object.keys( E.preset ) ) );
+						$( '#eqpreset' )
+							.html( COMMON.select.option( Object.keys( E.preset ) ) )
+							.next().remove();
 						I.values = [ ...E.preset[ E.active ], E.active ];
 						_INFO.setValues();
 						COMMON.select.set();
