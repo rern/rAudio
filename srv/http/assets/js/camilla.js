@@ -2922,7 +2922,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
-			COMMON.eq.beforShow( {
+			COMMON.eq.beforeShow( {
 				  init  : () => {
 					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
 					flatButton();

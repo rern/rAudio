@@ -847,7 +847,7 @@ EQ            = {
 			, list       : COMMON.eq.html( 42, 82, EQ.freq, EQ.bottom.replace( 'PRESETS', opt ) )
 			, values     : [ ...E.preset[ E.active ], E.active ]
 			, beforeshow : () => {
-				COMMON.eq.beforShow( {
+				COMMON.eq.beforeShow( {
 					  init  : () => {
 						EQ.level();
 						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );

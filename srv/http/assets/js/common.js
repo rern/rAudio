@@ -1271,7 +1271,7 @@ var COMMON    = {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, eq            : {
-		  beforShow : fn => {
+		  beforeShow : fn => {
 			fn.init();
 			var eqH     = COMMON.bottom( $( '#eq .bottom' ) ) - $( '#eq .up' ).offset().top - 15;
 			$( '#eq' ).css( 'height', eqH +'px' );
@@ -1335,7 +1335,7 @@ var COMMON    = {
 				fn.end();
 			} );
 		}
-		, html : ( min, max, freq, bottom = '' ) => {
+		, html       : ( min, max, freq, bottom = '' ) => {
 			var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
 			var label  = '';
 			var slider = '';
