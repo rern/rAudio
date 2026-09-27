@@ -1602,6 +1602,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	_INFO.setValues();
 	EQ.level();
 	COMMON.json.save( 'equalizer', E );
+	$( this ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
 	E.preset[ name ] = E.preset[ E.active ];
