@@ -30,7 +30,12 @@ else
 								printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
 							}' )
 	mute=$( websocat --text ws://127.0.0.1:1234 <<< '"GetMute"' | jq .GetMute.value )
-	[[ $mute == true ]] && volumemute=$volume || volumemute=0
+	if [[ $mute == true ]]; then
+		volumemute=$volume
+		volume=0
+	else
+		volumemute=0
+	fi
 fi
 volumemax=$( volumeMaxGet )
 ##########
