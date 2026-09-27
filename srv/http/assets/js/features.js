@@ -144,7 +144,7 @@ var CONFIG       = {
 							, values      : data.brightness
 							, beforeshow  : () => {
 								$( '#infoList input' ).on( 'input', function() {
-									BASH( [ 'brightness', +this.value, 'CMD VAL' ] )
+									BASH( [ 'brightness', +this.value, 'CMD VAL' ] );
 								} );
 							}
 							, okno        : true

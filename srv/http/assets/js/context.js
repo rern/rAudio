@@ -240,7 +240,6 @@ var CONTEXT  = {
 			$LI.remove();
 		}
 		, rename     : () => {
-			console.log(9)
 			var name = V.list.name;
 			INFO( {
 				  icon         : 'playlists'
@@ -340,8 +339,8 @@ var CONTEXT  = {
 					var $labels = $( '#infoList td:first-child' ).find( 'gr, w' );
 					if ( V.wW < 400 ) $labels.addClass( 'hide' );
 					$( '#infoList .infomessage' ).addClass( 'tagmessage' );
-					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' )
-					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' )
+					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' );
+					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' );
 					$( '#infoList .i-tag' ).css( { border: '1px solid', 'border-radius': '50%', color: 'var( --cg60 )' } );
 					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {

@@ -950,7 +950,7 @@ var GRAPH     = {
 				var min = Math.min( ...data[ d ] );
 				var max = Math.max( ...data[ d ] );
 				max     = Math.max( max, minmax[ d ] );
-				min     = Math.min( min, -minmax[ d ] )
+				min     = Math.min( min, -minmax[ d ] );
 				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
 				if ( d === 'gain' ) {
 					dtick = abs < 10
@@ -1415,7 +1415,7 @@ var RENDER    = {
 			li += '<li data-name="'+ k +'">'+ ICON( 'processors liicon edit' )
 				 +'<div class="li1">'+ k +'</div>'
 				 +'<div class="li2">'+ v.type +' · '+ RENDER.json2string( param )+'</div>'
-				 +'</li>'
+				 +'</li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		RENDER.toggle();
@@ -1939,7 +1939,7 @@ var SETTING   = {
 			, beforeshow   : () => {
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = _INFO.val();
-					SETTING.processor( val.type, val.name, edit )
+					SETTING.processor( val.type, val.name, edit );
 				} );
 			}
 			, ok           : () => {
@@ -2288,7 +2288,7 @@ var UTIL      = {
 				.replace( 'samplerate',  'sample rate' )
 				.replace( /_/g,          ' ' )
 				.replace( 'freq',        'frequency' )
-				.slice( 1 )
+				.slice( 1 );
 		return str + key
 	}
 	, labels2array : array => {
@@ -2601,7 +2601,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
 	$li.addClass( 'active' );
 	$MENU.find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
-	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
+	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) );
 	$( '#menu .delete' ).toggleClass( 'gr', V.tab === 'config' && S.ls.configs.length === 1 );
 	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
 		$MENU.find( '.edit, .rename' ).toggleClass( 'hide' );
@@ -2859,7 +2859,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 } );
 $( '.entries' ).on( 'input', 'input[type=range]', function() {
 	SETTING.rangeGet( $( this ), 'input' );
-} )
+} );
 // filters --------------------------------------------------------------------------------
 $( '#filters' ).on( 'click', '.name', function( e ) {
 	e.stopPropagation();

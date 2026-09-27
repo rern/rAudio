@@ -1400,7 +1400,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 		if ( 'pladd' in V ) {
 			V.pladd.index = $LI.index();
 			V.pladd.track = $LI.find( '.li1 .name' ).text()
-							+'<br><gr>'+ $LI.find( '.li2 .name' ).text() +'</gr>';
+						  +'<br><gr>'+ $LI.find( '.li2 .name' ).text() +'</gr>';
 			PLAYLIST.insert.select();
 		} else {
 			var menu  = $target.data( 'menu' ) || $LI.find( '.li-icon' ).data ( 'menu' );

@@ -541,7 +541,7 @@ function INFO( json ) {
 					  +'<input type="file" class="hide" id="infoFileBox"'+ ( I.file.type ? ' accept="'+ I.file.type +'">' : '>' )
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 					  + ( I.file.label || ICON( 'folder-open' ) +' File' ) +'</a>';
-		$( '#infoButton' ).prepend( htmlfile )
+		$( '#infoButton' ).prepend( htmlfile );
 		$( '#infoOk' )
 			.html( I.file.oklabel )
 			.addClass( 'hide' );

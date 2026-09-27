@@ -22,7 +22,7 @@ function REFRESHDATA() {
 		} else {
 			var $lidir = $( '#mode-title .lidir' );
 			if ( $lidir.length ) {
-				$lidir.last().trigger( 'click' )
+				$lidir.last().trigger( 'click' );
 				return
 			}
 			
@@ -129,10 +129,12 @@ var BIO       = {
 						return
 					}
 
-					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' );
 					var imageshtml = '';
 					if ( data.artistthumb && data.artistthumb[ 0 ].url ) {
-						data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
+						data.artistthumb.forEach( el => {
+							imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
+						} );
 					}
 					BIO.image( imageshtml )
 					$( '#bio' ).scrollTop( 0 );
@@ -237,7 +239,8 @@ var COLOR     = {
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
-			$( '#hue' ).css( 'transform', 'rotate( '+ V.ctx.hsl.h +'deg )' )
+			$( '#hue' )
+				.css( 'transform', 'rotate( '+ V.ctx.hsl.h +'deg )' )
 				.find( 'div' ).css( 'background', 'hsl( '+ V.ctx.hsl.h +', 100%, 50% )' );
 		}
 		, sat      : ( x, y ) => {
@@ -572,7 +575,7 @@ var DISPLAY   = {
 					$el.albumbyartist.on( 'input', function() {
 						var enable = $( this ).prop( 'checked' );
 						if ( ! enable ) $el.albumyear.prop( 'checked', false );
-						$el.albumyear.prop( 'disabled', ! enable )
+						$el.albumyear.prop( 'disabled', ! enable );
 					} );
 					$el.tapaddplay.on( 'input', function() {
 						if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
@@ -1012,7 +1015,7 @@ var LIBRARY   = {
 	  addReplace : () => {
 		V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
 		V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
-		V.list.name = $LI.find( '.name' ).text()
+		V.list.name = $LI.find( '.name' ).text();
 		PLAYLIST.addCommand();
 	}
 	, coverart   : () => {
@@ -1196,9 +1199,9 @@ var LYRICS    = {
 		$( '#lyricsartist' ).text( V.lyricsartist );
 		$( '#lyricstext' ).html( lyricshtml );
 		if ( UTIL.barVisible() ) {
-			$( '#lyrics' ).css( { top: '', height: '' } )
+			$( '#lyrics' ).css( { top: '', height: '' } );
 		} else {
-			$( '#lyrics' ).css( { top: 0, height: '100vh' } )
+			$( '#lyrics' ).css( { top: 0, height: '100vh' } );
 		}
 		$( '#lyrics' ).removeClass( 'hide' );
 		$( '#lyricstext' ).scrollTop( 0 );
@@ -1802,8 +1805,8 @@ var PLAYLIST  = {
 			return
 		}
 
-		if ( $( '#pl-list' ).is( ':empty' ) ) {
-			if ( $( '#bar-top' ).hasClass( 'hide' ) ) NOTIFY( 'playlist', 'Playlist', 'Get ...' )
+		if ( $( '#pl-list' ).is( ':empty' ) && $( '#bar-top' ).hasClass( 'hide' ) ) {
+			NOTIFY( 'playlist', 'Playlist', 'Get ...' );
 		}
 		PLAYLIST.blink();
 		LIST( { playlist: 'current' }, data => {
@@ -2175,7 +2178,7 @@ var PROGRESS  = {
 	  animate : () => {
 		$( '#time path, #time-bar' ).css( 'transition-duration', V.progress.s +'s' );
 		if ( PROGRESS.visible() ) {
-			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( V.progress.l * 654 ) +', 654' )
+			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( V.progress.l * 654 ) +', 654' );
 		} else {
 			$( '#time-bar' ).css( 'width', ( V.progress.l * 100 ) +'%' );
 		}
