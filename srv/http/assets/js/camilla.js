@@ -2445,18 +2445,18 @@ var VOLUME    = {
 	}
 	, percent2db : () => {
 		var norm  = Math.min( 1, Math.max( 0, S.volume / 100 ) );
-		var minC  = -51 * 100; // centidB
+		var minC  = -60 * 100; // centidB
 		var maxC  = 0;
 		var range = maxC - minC;
 		var dbC;
-		if ( range <= 2400 ) {              // <=24dB -> linear scale
+		if ( range <= 2400 ) { // <=24dB -> linear scale
 			dbC         = minC + norm * range;
 		} else {
 			var minNorm = Math.pow( 10, ( minC - maxC ) / 6000.0 );
 			var scaled  = norm * ( 1 - minNorm ) + minNorm;
 			dbC         = maxC + 6000.0 * Math.log10( scaled );
 		}
-		return Math.round((dbC / 100) * 100) / 100; // dB, rounded to 2 decimals
+		return Math.round((dbC / 100) * 100) / 100; // rounded to 2 decimals
 	}
 	, set : () => {
 		var $level   = $( '#volume-level' );
