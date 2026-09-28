@@ -8,6 +8,8 @@ data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
+mixers=$( getContent $dirshm/mixers )
+[[ ! $mixers && $camilladsp ]] && mixers='[ "CamillaDSP" ]'
 volumemax=$( volumeMaxGet )
 ##########
 data+='
@@ -23,7 +25,7 @@ data+='
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 	, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }
-, "mixers"      : '$( getContent $dirshm/mixers )'
+, "mixers"      : '$mixers'
 , "mixertype"   : '$( ! grep -q mixertype=none $dirshm/output && echo true )'
 , "output"      : '$( conf2json $dirshm/output )'
 , "play"        : '$( jq .play $dirshm/status.json )'
