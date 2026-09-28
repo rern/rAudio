@@ -13,7 +13,7 @@ if [[ $mixer ]]; then
 	volumemute=$( getContent $dirsystem/volumemute 0 )
 else
 	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
-	volume=$( echo $db | awk -v db="$db" -v min=-51 -v max=0 '
+	volume=$( echo $db | awk -v db="$db" -v min=-60 -v max=0 '
 							BEGIN {
 								min *= 100; max *= 100; db *= 100   # to centidB
 								range = max - min

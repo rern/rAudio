@@ -5,6 +5,17 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20260924
+if [[ -e /bin/camilladsp ]]; then
+	file=/etc/default/camilladsp
+	if ! grep -q ^STATE $file; then
+		sed -i -E -e '$ a\STATE=/srv/http/data/camilladsp/state.yml
+' -e '/^GAIN|^MUTE/ d
+' -e 's/FILE//' $file
+		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
+		restart+=' camilladsp'
+	fi
+fi
+
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	packages+=' mpd_oled'
 	file=/lib/systemd/system/mpd_oled.service
