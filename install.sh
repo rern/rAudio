@@ -8,9 +8,10 @@ alias=r1
 if [[ -e /bin/camilladsp ]]; then
 	file=/etc/default/camilladsp
 	if ! grep -q ^STATE $file; then
-		sed -i -E -e '$ a\STATE=/srv/http/data/camilladsp/state.yml
-' -e '/^GAIN|^MUTE/ d
-' -e 's/FILE//' $file
+		sed -i -e 's/FILE//
+' -e '$ a\STATE=/srv/http/data/camilladsp/state.yml
+' -e '/^GAIN\|^MUTE/ d
+' $file
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
 		restart+=' camilladsp'
 	fi
