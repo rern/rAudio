@@ -91,6 +91,9 @@ camilladsp )
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF &> /dev/null &
+	[[ ! $ON || $( getVar mixer $dirshm/output ) ]] && exit
+# --------------------------------------------------------------------
+	sed -i '/^volume:/ {n; s/.*/- -29.3/}' $dircamilladsp/state.yml
 	;;
 dabradio )
 	enableFlagSet
