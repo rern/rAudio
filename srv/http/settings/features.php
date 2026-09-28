@@ -165,6 +165,8 @@ $body         = [
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: $M->camilladsp
+
+Note: Provide volume control when enabled without hardware mixer
 EOF
 	]
 	, [

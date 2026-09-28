@@ -96,8 +96,7 @@ Should be disabled for best sound quality
  · Use amplifier volume
 (The later in the signal chain the better quality.)
 
-No hardware mixer and $T->features $B->camilla enabled
- · Volume control available automactically
+$T->features $B->camilla Provide volume control when enabled without hardware mixer
 EOF
 	]
 	, [
