@@ -2509,7 +2509,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	up ? S.volume++ : S.volume--;
 	VOLUME.command();
 	VOLUME.set();
-} ).on( 'click', '.col-r .i-volume, #volume-level', function() {
+} ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
 	if ( S.control ) {
