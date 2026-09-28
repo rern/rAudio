@@ -99,7 +99,9 @@ camillaDSPstart() {
 	if systemctl -q is-active camilladsp; then
 		pushRefresh camilla
 	else
-		$dirsettings/features.sh camilladsp$'\n'OFF
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
 	fi
 }
 conf2json() {

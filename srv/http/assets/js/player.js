@@ -133,7 +133,7 @@ audio_output {
 				}
 			}
 			, cancel       : SWITCH.cancel
-			, ok           : () => UTIL.mixerSet( _INFO.val() )
+			, ok           : () => COMMON.mixerSet( _INFO.val() )
 		} );
 	}
 	, outputbuffer : values => {
@@ -216,18 +216,6 @@ var UTIL     = {
 					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ cmd0db ] );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
-			}
-		} );
-	}
-	, mixerSet  : mixertype => {
-		INFO( {
-			  ...SW
-			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
-			, values     : 30
-			, footer     : '(Should be low. Adjust later with GUI.)'
-			, ok         : () => {
-				NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
-				BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
 			}
 		} );
 	}

@@ -10,6 +10,7 @@ fi
 
 playerStop # must stop for aplay --dump-hw-params
 systemctl stop camilladsp
+modprobe snd_aloop
 if grep -q -m1 configs-bt /etc/default/camilladsp; then
 	DEVICES=( '{ "Bluez": "bluez" }' '{ "blueALSA": "bluealsa" }' )
 else
@@ -66,14 +67,14 @@ else
 	. <( grep ^CONFIG /etc/default/camilladsp )
 	[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
 	card=$( getVar playback.device "$CONFIG" )
-	[[ $card != hw:$CARD,0 ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$CARD,0/" $CONFIG
+	[[ $card != hw:$CARD ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$CARD,0/" $CONFIG
 	for dev in capture playback; do
 		format=$( getVar $dev.format "$CONFIG" )
-		formats=$( jq -r .$dev.formats.[] $dirshm/hwparams )
-		for f in $formats; do
-			[[ $f == $format ]] && f= && break
+		formats=( $( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null ) )
+		for f in ${formats[@]}; do
+			[[ $f == $format ]] && f= && break 2
 		done
-		[[ $f ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" $CONFIG
+		sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$${formats[0]}/" $CONFIG
 	done
 	camillaDSPstart
 fi

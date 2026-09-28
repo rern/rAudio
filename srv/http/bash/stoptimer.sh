@@ -2,15 +2,12 @@
 
 . /srv/http/bash/common.sh
 . $dirsystem/stoptimer.conf
-. <( grep -E '^card|^mixer' $dirshm/output )
 
 volumeToggle() {
 	$dirbash/cmd.sh "volume
 $1
 $2
-$mixer
-$card
-CMD CURRENT TARGET CONTROL CARD"
+CMD CURRENT TARGET"
 }
 
 killProcess stoptimer

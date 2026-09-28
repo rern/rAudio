@@ -392,10 +392,7 @@ $( '.switch' ).on( 'click', function() {
 		}
 	} else {
 		$setting.addClass( 'hide' );
-		if ( PAGE === 'camilla' ) {
-			DEV[ id ] = null;
-			SETTING.save( SW.title, 'Disable ...' );
-		} else if ( id in CONFIG._disable ) {
+		if ( id in CONFIG._disable ) {
 			CONFIG._disable[ id ]();
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );

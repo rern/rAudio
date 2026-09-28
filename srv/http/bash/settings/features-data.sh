@@ -8,10 +8,10 @@
 
 . /srv/http/bash/common.sh
 
-data+=$( settingsActive nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
+data+=$( settingsActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap audiocd autoplay camilladsp equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
+			$dirsystem ap audiocd autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
 if systemctl -q is-enabled localbrowser; then
 	systemctl -q is-active localbrowser && localbrowser=true || localbrowser=-1
@@ -21,6 +21,7 @@ data+='
 , "hostname"     : "'$( hostname )'"
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$localbrowser'
+, "mixers"       : '$( [[ $( getVar mixer $dirshm/output ) ]] && echo true )'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
 , "shareddata"   : '$( sharedData )'
 , "snapclient"   : '$( compgen -G $dirsystem/snapclient* > /dev/null && echo true  )'

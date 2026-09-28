@@ -35,8 +35,8 @@ while read path; do
 	[[ $name == Loopback* ]] && continue
 	
 	CARD=${path: -1}
-	if [[ $CARD == $lastcard && -e $dirsystem/audio-output ]]; then # last card - not on-board
-		NAME=$( < $dirsystem/audio-output )
+	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
+		NAME=$outputdevice
 	else
 		NAME=$name
 	fi
@@ -52,7 +52,7 @@ while read path; do
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
-	LISTDEVICE+=', "'$NAME'": "hw:'$CARD',0"'
+	LISTDEVICE+=', "'$NAME'": "hw:'$CARD'"'
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
@@ -99,7 +99,8 @@ if [[ $LISTMIXER ]]; then
 	MIXERTYPE=hardware
 else
 	rm -f $dirshm/{amixercontrol,mixers}
-	MIXERTYPE=none
+	file_mixer="$dirsystem/mixertype-$NAME"
+	[[ -e $file_mixer ]] && MIXERTYPE=$( < "$file_mixer" ) || MIXERTYPE=none
 fi
 mixertypefile="$dirsystem/mixertype-$NAME"
 [[ -e $mixertypefile ]] && MIXERTYPE=$( < "$mixertypefile" )

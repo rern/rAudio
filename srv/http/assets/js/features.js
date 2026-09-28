@@ -9,7 +9,7 @@ _disable       :        >> enable - info() >> disable (login mixertype novolume 
 */
 var CONFIG       = {
 	  _disable     : {
-		login : () => {
+		  login : () => {
 			INFO( {
 				  ...SW
 				, message    : 'Disable:'
@@ -594,6 +594,10 @@ function renderPage() {
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
+	if ( ! S.mixers ) {
+		CONFIG._prompt[ 'camilladsp' ]  = () => COMMON.mixerSet();
+		CONFIG._disable[ 'camilladsp' ] = () => COMMON.mixerSet();
+	}
 	CONTENT();
 }
 

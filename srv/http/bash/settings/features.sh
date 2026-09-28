@@ -76,7 +76,7 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	[[ $( getVar mixer $dirshm/output ) ]] && MIXER=1
+	playerStop
 	if [[ $ON ]]; then
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		if [[ ! $fileconf ]]; then
@@ -89,21 +89,22 @@ camilladsp )
 			exit
 # --------------------------------------------------------------------
 		fi
-		if [[ ! $MIXER ]]; then
-			if [[ ! -e $dircamilladsp/state.yml ]]; then
-				systemctl start camilladsp
-				systemctl stop camilladsp
-			fi
-			sed -i '/^volume:/ {n; s/.*/- -29.3/}' $dircamilladsp/state.yml # 25%
+		. $dirshm/output
+		if [[ $mixertype == software ]]; then
+			$dirsettings/player.sh "mixertype
+$( [[ $mixer ]] && echo hardware || echo none )
+CMD MIXERTYPE"
 		fi
 	else
-		[[ ! $MIXER ]] && $dirsettings/player.sh 'mixertype
+		$dirsettings/camilla.sh saveconfig
+		[[ $VOLUME ]] && $dirsettings/player.sh "mixertype
 software
-25
-CMD MIXERTYPE VOLUME'
+$VOLUME
+CMD MIXERTYPE VOLUME"
 	fi
 	enableFlagSet
-	pushRestartMpd camilladsp $TF &> /dev/null &
+	pushRestartMpd camilladsp $TF
+	[[ $ON && $VOLUME ]] && volumeCamilla $VOLUME
 	;;
 dabradio )
 	enableFlagSet

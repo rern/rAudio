@@ -1526,6 +1526,23 @@ var COMMON    = {
 
 		$( '#loader' ).addClass( 'hide' );
 	}
+	, mixerSet      : mixertype => {
+		INFO( {
+			  ...SW
+			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
+			, values     : 30
+			, footer     : '(Should be low. Adjust later with GUI.)'
+			, ok         : () => {
+				if ( SW.icon === 'mpd' ) {
+					NOTIFY_COMMON();
+					BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
+				} else {
+					NOTIFY_COMMON( false );
+					BASH( [ 'camilladsp', _INFO.val(), S.camilladsp ? 'OFF VOLUME' : 'CMD VOLUME' ] );
+				}
+			}
+		} );
+	}
 	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
 	, pageXY        : e => {
 		var x = e.pageX || e.changedTouches[ 0 ].pageX;

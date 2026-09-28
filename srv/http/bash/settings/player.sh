@@ -100,12 +100,15 @@ mixertype )
 	if [[ $MIXERTYPE == hardware ]]; then
 		rm -f "$filemixertype" $dirsystem/replaygain-hw
 	else
-		amixer0dB
+		[[ $mixer ]] && amixer0dB
 		echo $MIXERTYPE > "$filemixertype"
 	fi
 	$dirsettings/player-conf.sh
-	mpc -q volume $VOLUME
-	pushData display '{ "volumenone": false }'
+	[[ $MIXERTYPE == none ]] && tf=true || tf=false
+	pushData display '{ "volumenone": '$tf' }'
+	[[ $VOLUME ]] && $dirbash/cmd.sh "volume
+$VOLUME
+CMD TARGET"
 	;;
 novolume )
 	amixer0dB
