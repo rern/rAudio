@@ -349,7 +349,7 @@ function renderPage() {
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
 		$( '#novolume' )
 			.prop( 'checked', novolume )
-			.toggleClass( 'disabled', novolume || S.camilladsp );
+			.toggleClass( 'disabled', novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
