@@ -9,7 +9,7 @@ data+=$( settingsEnabled \
 			$dirmpdconf autoupdate.conf buffer.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
 mixers=$( getContent $dirshm/mixers )
-[[ ! $mixers && $camilladsp ]] && mixers='[ "CamillaDSP" ]'
+[[ ! $mixers && -e $dirsystem/camilladsp ]] && mixers='[ "CamillaDSP" ]'
 volumemax=$( volumeMaxGet )
 ##########
 data+='
