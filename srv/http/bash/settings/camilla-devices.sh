@@ -71,6 +71,7 @@ else
 	for dev in capture playback; do
 		format=$( getVar $dev.format "$CONFIG" )
 		formats=( $( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null ) )
+		F=
 		for f in ${formats[@]}; do
 			[[ $f == $format ]] && F=1 && break
 		done
