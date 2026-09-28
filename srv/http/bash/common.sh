@@ -737,15 +737,34 @@ volume() {
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # camilladsp only
+volumeAmixer() { # camilla with mixer control only
 	amixer -Mq sset "$2" $1
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
+volumeCamilla() { # camilla without mixer control
+	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
+			BEGIN {
+				min *= 100; max *= 100               # to centidB
+				norm = pct / 100
+				if (norm < 0) norm = 0
+				if (norm > 1) norm = 1
+				range = max - min
+				if (range <= 2400) {                 # <=24dB -> linear scale
+					db = min + norm * range
+				} else {
+					min_norm = 10 ^ ((min - max) / 6000.0)
+					scaled = norm * (1 - min_norm) + min_norm
+					db = max + 6000.0 * log(scaled) / log(10)
+				}
+				printf "%.1f\n", db / 100
+			}' ) # % > db
+	websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": '$db' }'
+}
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
-		echo volumeAmixer
+		[[ -e $dirsystem/mixernone ]] && echo volumeCamilla || echo volumeAmixer
 	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
 		echo volumeMpd
 	else

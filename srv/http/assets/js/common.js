@@ -1689,7 +1689,7 @@ var COMMON    = {
 	}
 }
 var VOLUME    = {
-	  command : type => { // type: mute / unmute
+	  command  : type => { // type: mute / unmute
 		if ( VOLUME.limit() ) return
 		
 		var vol_prev = +$( '#volume-level' ).text();
@@ -1701,14 +1701,14 @@ var VOLUME    = {
 		}
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
-	, limit   : () => {
+	, limit    : () => {
 		if ( S.volumelimit && S.volume > S.volumemax ) {
 			S.volume = S.volumemax;
 			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 			return true
 		}
 	}
-	, press   : up => {
+	, press    : up => {
 		clearTimeout( V.volumebar );
 		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
 		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 200 );
@@ -1718,11 +1718,11 @@ var VOLUME    = {
 		VOLUME.barHide();
 		V.local = false;
 	}
-	, push    : () => {
+	, push     : () => {
 		V.local = true;
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 	}
-	, toggle  : () => {
+	, toggle   : () => {
 		if ( S.volumemute ) {
 			S.volume     = S.volumemute;
 			S.volumemute = 0;

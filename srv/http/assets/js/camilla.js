@@ -2435,32 +2435,6 @@ var UTIL      = {
 }
 var VOLUME    = {
 	...VOLUME
-	, cmd        : () => {
-		if ( S.control ) {
-			VOLUME.command();
-		} else { // soundcard with no mixers
-			if ( VOLUME.limit() ) return
-			
-			WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db() +' }' );
-			VOLUME.push();
-		}
-		VOLUME.set();
-	}
-	, percent2db : () => {
-		var norm  = Math.min( 1, Math.max( 0, S.volume / 100 ) );
-		var minC  = -60 * 100; // centidB
-		var maxC  = 0;
-		var range = maxC - minC;
-		var dbC;
-		if ( range <= 2400 ) { // <=24dB -> linear scale
-			dbC         = minC + norm * range;
-		} else {
-			var minNorm = Math.pow( 10, ( minC - maxC ) / 6000.0 );
-			var scaled  = norm * ( 1 - minNorm ) + minNorm;
-			dbC         = maxC + 6000.0 * Math.log10( scaled );
-		}
-		return Math.round((dbC / 100) * 100) / 100; // rounded to 2 decimals
-	}
 	, set : () => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
@@ -2491,7 +2465,8 @@ var VOLUME    = {
 		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 		S.volume  = Math.round( posX / w * 100 );
-		VOLUME.cmd();
+		VOLUME.command();
+		VOLUME.set();
 	}
 }
 
@@ -2532,7 +2507,8 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
-	VOLUME.cmd();
+	VOLUME.command();
+	VOLUME.set();
 } ).on( 'click', '.col-r .i-volume, #volume-level', function() {
 	if ( V.animate ) return
 	
