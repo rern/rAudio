@@ -65,7 +65,7 @@ elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
 		CARD=${c_n/^*}
 		NAME=$outputdevice
 	else
-		rm $dirsystem/output-device # remove if not exist any more
+		rm -f $dirsystem/output-device # remove if not exist any more
 	fi
 fi
 
