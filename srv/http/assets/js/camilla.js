@@ -2439,7 +2439,10 @@ var VOLUME    = {
 		if ( S.control ) {
 			VOLUME.command();
 		} else { // soundcard with no mixers
+			if ( VOLUME.limit() ) return
+			
 			WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db() +' }' );
+			VOLUME.push();
 		}
 		VOLUME.set();
 	}

@@ -1690,10 +1690,8 @@ var COMMON    = {
 }
 var VOLUME    = {
 	  command : type => { // type: mute / unmute
-		if ( S.volumelimit && S.volume > S.volumemax ) {
-			S.volume = S.volumemax;
-			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
-		}
+		if ( VOLUME.limit() ) return
+		
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 
@@ -1702,6 +1700,13 @@ var VOLUME    = {
 			VOLUME.push();
 		}
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
+	}
+	, limit   : () => {
+		if ( S.volumelimit && S.volume > S.volumemax ) {
+			S.volume = S.volumemax;
+			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+			return true
+		}
 	}
 	, press   : up => {
 		clearTimeout( V.volumebar );
