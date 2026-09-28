@@ -72,9 +72,9 @@ else
 		format=$( getVar $dev.format "$CONFIG" )
 		formats=( $( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null ) )
 		for f in ${formats[@]}; do
-			[[ $f == $format ]] && f= && break 2
+			[[ $f == $format ]] && F=1 && break
 		done
-		sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$${formats[0]}/" $CONFIG
+		[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1${formats[0]}/" $CONFIG
 	done
 	camillaDSPstart
 fi
