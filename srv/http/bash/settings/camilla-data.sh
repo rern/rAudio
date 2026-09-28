@@ -12,23 +12,7 @@ if [[ $mixer ]]; then
 	volume=$( volumeGet )
 	volumemute=$( getContent $dirsystem/volumemute 0 )
 else
-	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
-	volume=$( awk -v db=$db -v min=-60 -v max=0 '
-				BEGIN {
-					min *= 100; max *= 100; db *= 100   # to centidB
-					range = max - min
-					if (range <= 2400) {                # <=24dB -> linear scale
-						norm = (db - min) / range
-					} else {
-						norm = 10 ^ ((db - max) / 6000.0)
-						min_norm = 10 ^ ((min - max) / 6000.0)
-						norm = (norm - min_norm) / (1 - min_norm)
-					}
-					if (norm < 0) norm = 0
-					if (norm > 1) norm = 1
-					p = norm * 100
-					printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
-				}' ) # db > %
+	volume=$( volumeGetCamilla )
 	mute=$( websocat --text ws://127.0.0.1:1234 <<< '"GetMute"' | jq .GetMute.value )
 	if [[ $mute == true ]]; then
 		volumemute=$volume

@@ -772,22 +772,20 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card db mixer mixertype name val val_db volume
-	. $dirshm/output
-	if [[ $2 == hw ]]; then
-		read val db < <( volumeGetAmixer "$mixer" $card )
-	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-		read val db < <( volumeGetAmixer bluealsa )
-	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
-		true
-	elif [[ $mixertype == software ]] && playerActive mpd; then
-		val="$( mpc status %volume% | tr -d % )"
-	else
-		for i in {1..5}; do # some usb might not be ready
-			read val db < <( volumeGetAmixer "$mixer" $card )
-			[[ $val ]] && break || sleep 1
-		done
-	fi
+	local card db mixer val
+	fn_volume=$( volumeFunction )
+	case $fn_volume in
+		volumeAmixer )
+			. $dirshm/output
+			for i in {1..5}; do # some usb might not be ready
+				read val db < <( volumeGetAmixer "$mixer" $card )
+				[[ $val ]] && break || sleep 1
+			done
+			;;
+		volumeBlueAlsa ) read val db < <( volumeGetAmixer bluealsa );;
+		volumeCamilla )  val=$( volumeGetCamilla );;
+		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
+	esac
 	[[ ! $val ]] && val=0
 	[[ ! $db ]] && db=0
 	case $1 in
@@ -810,6 +808,25 @@ volumeGetAmixer() {
 		val_db=$( amixer -c $2 -M sget "$1" 2> /dev/null ) # $2-card, $1-scontrol
 	fi
 	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
+}
+volumeGetCamilla() {
+	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
+	awk -v db=$db -v min=-60 -v max=0 '
+		BEGIN {
+			min *= 100; max *= 100; db *= 100   # to centidB
+			range = max - min
+			if (range <= 2400) {                # <=24dB -> linear scale
+				norm = (db - min) / range
+			} else {
+				norm = 10 ^ ((db - max) / 6000.0)
+				min_norm = 10 ^ ((min - max) / 6000.0)
+				norm = (norm - min_norm) / (1 - min_norm)
+			}
+			if (norm < 0) norm = 0
+			if (norm > 1) norm = 1
+			p = norm * 100
+			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
+		}' # db > %
 }
 volumeMaxGet() {
 	local max
