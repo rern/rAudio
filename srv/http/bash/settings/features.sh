@@ -373,8 +373,5 @@ volumelimit )
 	(( $( volumeGet ) > $MAX )) && volumeLimit max
 	pushRefresh
 	;;
-volumeget )
-	volumeGet
-	;;
 
 esac

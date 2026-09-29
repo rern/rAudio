@@ -1527,7 +1527,8 @@ var COMMON    = {
 		$( '#loader' ).addClass( 'hide' );
 	}
 	, mixerSet      : mixertype => {
-		BASH( [ 'volumeget' ], volume => {
+		BASH( 'data-config.sh volume', volume => {
+			if ( volume == -1 ) volume = 20;
 			INFO( {
 				  ...SW
 				, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]

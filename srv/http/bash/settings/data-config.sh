@@ -324,6 +324,9 @@ templimit )
 timezonelist )
 	cat /srv/http/assets/data/timezone.json
 	;;
+volume )
+	volumeGet
+	;;
 vuled )
 	file=$dirsystem/vuled.conf
 	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
