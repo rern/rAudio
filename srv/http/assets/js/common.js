@@ -1533,7 +1533,6 @@ var COMMON    = {
 				  ...SW
 				, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
 				, values     : volume
-				, footer     : '(Should be low and adjust later)'
 				, ok         : () => {
 					if ( SW.icon === 'mpd' ) {
 						NOTIFY_COMMON();

@@ -122,6 +122,11 @@ audio_output {
 		UTIL.mixer( values );
 	}
 	, mixertype    : () => {
+		if ( ! S.mixers ) {
+			COMMON.mixerSet( 'software' );
+			return
+		}
+		
 		INFO( {
 			  ...SW
 			, list         : [ '', 'radio', { kv: { 'DAC hardware <a class="helpmenu label">Mixer</a>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
@@ -347,6 +352,7 @@ function renderPage() {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
 		$( '#novolume' )
 			.prop( 'checked', novolume )
 			.toggleClass( 'disabled', novolume );
