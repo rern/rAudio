@@ -89,12 +89,6 @@ camilladsp )
 			exit
 # --------------------------------------------------------------------
 		fi
-		. $dirshm/output
-		if [[ $mixertype == software ]]; then
-			$dirsettings/player.sh "mixertype
-$( [[ $mixer ]] && echo hardware || echo none )
-CMD MIXERTYPE"
-		fi
 	else
 		$dirsettings/camilla.sh saveconfig
 		[[ $VOLUME ]] && $dirsettings/player.sh "mixertype
