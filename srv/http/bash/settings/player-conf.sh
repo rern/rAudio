@@ -215,9 +215,7 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fi
 fi
 
-if [[ $CAMILLADSP ]]; then
-	. $dirsettings/camilla-devices.sh
-elif [[ $EQUALIZER ]]; then
+if [[ $EQUALIZER ]]; then
 	value=$( getVar current $dirsystem/equalizer.json )
 	player=$( < $dirshm/player )
 	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd

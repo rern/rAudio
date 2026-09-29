@@ -179,6 +179,9 @@ W.refresh   = data => { // except camilla
 		COMMON.statusToggle( 'refresh' );
 	}, 300 );
 }
+W.error     = data => {
+	_INFO.warning( SW.id, SW.title, data.msg, CONFIG[ SW.id ] );
+}
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function playbackIcon() {
 		$( '.playback' )
