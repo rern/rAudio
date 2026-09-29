@@ -1630,7 +1630,9 @@ var PLAYBACK  = {
 				}
 			} );
 			PLAYBACK.info.scroll();
-			$( '#playericon' ).prop( 'class', 'i-'+ S.icon );
+			$( '#playericon' )
+				.prop( 'class', 'i-'+ S.icon )
+				.toggleClass( 'hide', S.icon === '' );
 			$( '#sampling' ).html( S.sampling );
 		}
 	}
