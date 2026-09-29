@@ -81,7 +81,7 @@ camilladsp )
 		$dirsettings/camilla-devices.sh
 	else
 		$dirsettings/camilla.sh saveconfig
-		. <( getVar mixer $dirshm/output )
+		. $dirshm/output
 		[[ ! $mixer ]] && echo software > "$dirsystem/mixertype-$name" # no mixers
 	fi
 	enableFlagSet
