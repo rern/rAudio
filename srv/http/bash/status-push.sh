@@ -7,17 +7,12 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
-	data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
-fi
 if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
 	status=$1
 else
 	status=$( $dirbash/status -s | jq '{Album,Artist,coverart,elapsed,file,play,pllength,
 										state,station,Time,timestamp,Title,webradio}' )
 fi
-echo "$status" > $dirshm/status.json
-
 readarray -t lines < <( jq -r .Artist,.Title,.Album,.coverart,.state,.webradio <<< ${status//\`/\'} )
 Artist=${lines[0]}
 Title=${lines[1]}
@@ -26,6 +21,13 @@ coverart=${lines[3]}
 state=${lines[4]}
 [[ ${lines[5]} == true ]] && WEBRADIO=1
 
+if [[ ! $PLAY || ( $PLAY && $Album$Artist$Title ) ]]; then # no data on init change to webradio
+	NEW_STATUS=1
+	if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
+		data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
+	fi
+	echo "$status" > $dirshm/status.json
+fi
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -b || $dirbash/status -p
 # coverart #############################
@@ -51,7 +53,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 		$dirbash/lcdchar.py logo
 	else
 		if [[ $player != airplay ]]; then
-			[[ ! $PLAY || ( $PLAY && $Album$Artist$Title ) ]] && systemctl restart lcdchar # on change to webradio
+			[[ $NEW_STATUS ]] && systemctl restart lcdchar
 		else
 			if [[ ! -e $dirshm/lcdchar ]]; then
 				touch $dirshm/lcdchar
