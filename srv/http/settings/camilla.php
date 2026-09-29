@@ -154,7 +154,7 @@ $body     = [
 	, htmlSectionStatus(
 		  'state'
 		, '
-Processing Load
+Processing load
 <span class="rateadjust"><br>Buffer</span>
 <br>Sample/s<span class="rateadjust wide"> · Adjust</span>
 <span class="divclipped hide"><br>Clipped</span>'
