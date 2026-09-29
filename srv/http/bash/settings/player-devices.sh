@@ -112,4 +112,4 @@ EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
 file=$dirsystem/mixernone
-[[ $MIXERTYPE == none ]] && touch $file || rm -f $file
+[[ ! $MIXER || $MIXERTYPE == none ]] && touch $file || rm -f $file

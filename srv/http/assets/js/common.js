@@ -1540,7 +1540,7 @@ var COMMON    = {
 						BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
 					} else {
 						NOTIFY_COMMON( ! S.camilladsp );
-						BASH( [ 'camilladsp', _INFO.val(), 'CMD VOLUME', S.camilladsp ? 'OFF' : '' ] );
+						BASH( [ 'camilladsp', _INFO.val(), ! S.camilladsp, 'CMD VOLUME ON' ] );
 					}
 				}
 			} );
