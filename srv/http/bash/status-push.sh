@@ -12,12 +12,9 @@ if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
 fi
 if [[ $1 ]]; then # from status-radio.sh, status-dab.sh, spotifyd.sh
 	status=$1
-	echo "$status" > $dirshm/status.json
 else
-	keys='{Album,Artist,coverart,elapsed,file,play,pllength,state,station,Time,timestamp,Title,webradio}'
-	status=$( $dirbash/status -s \
-				| jq $keys \
-				| tee $dirshm/status.json )
+	status=$( $dirbash/status -s | jq '{Album,Artist,coverart,elapsed,file,play,pllength,
+										state,station,Time,timestamp,Title,webradio}' )
 fi
 readarray -t lines < <( jq -r .Artist,.Title,.Album,.coverart,.state,.webradio <<< ${status//\`/\'} )
 Artist=${lines[0]}
@@ -25,6 +22,9 @@ Title=${lines[1]}
 Album=${lines[2]}
 coverart=${lines[3]}
 state=${lines[4]}
+[[ ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
+# ------------------------------------------------------------------------------
+echo "$status" > $dirshm/status.json
 [[ ${lines[5]} == true ]] && WEBRADIO=1
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -b || $dirbash/status -p
@@ -47,11 +47,6 @@ fi
 player=$( < $dirshm/player )
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ $WEBRADIO && $state == play && ! $( jq -r .Title <<< $status ) ]]; then
-		file=$( jq -r .file <<< $status )
-		[[ $file == *radioparadise* || $file == *radiofrance* ]] && exit # suppress before 1st radio push
-# ------------------------------------------------------------------------------
-	fi
 	if [[ $player == mpd && $( jq .pllength <<< $status ) == 0 ]]; then
 		$dirbash/lcdchar.py logo
 	else
