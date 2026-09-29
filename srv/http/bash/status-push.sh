@@ -7,7 +7,6 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json >> $dirshm/x
 if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
 	data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
 fi
