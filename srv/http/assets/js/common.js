@@ -1730,7 +1730,7 @@ var VOLUME    = {
 	, press    : up => {
 		clearTimeout( V.volumebar );
 		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
-		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 200 );
+		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 300 );
 	}
 	, pressEnd : up => {
 		clearInterval( V.interval.volume );
