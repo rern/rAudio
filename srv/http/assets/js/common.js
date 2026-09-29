@@ -1527,21 +1527,23 @@ var COMMON    = {
 		$( '#loader' ).addClass( 'hide' );
 	}
 	, mixerSet      : mixertype => {
-		INFO( {
-			  ...SW
-			, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
-			, values     : 20
-			, footer     : '(Should be low and adjust later)'
-			, ok         : () => {
-				if ( SW.icon === 'mpd' ) {
-					NOTIFY_COMMON();
-					BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
-				} else {
-					NOTIFY_COMMON( false );
-					BASH( [ 'camilladsp', _INFO.val(), S.camilladsp ? 'OFF VOLUME' : 'CMD VOLUME' ] );
+		BASH( [ 'volumeget' ], volume => {
+			INFO( {
+				  ...SW
+				, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
+				, values     : volume
+				, footer     : '(Should be low and adjust later)'
+				, ok         : () => {
+					if ( SW.icon === 'mpd' ) {
+						NOTIFY_COMMON();
+						BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
+					} else {
+						NOTIFY_COMMON( ! S.camilladsp );
+						BASH( [ 'camilladsp', _INFO.val(), 'CMD VOLUME', S.camilladsp ? 'OFF' : '' ] );
+					}
 				}
-			}
-		} );
+			} );
+		}, 'json' );
 	}
 	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
 	, pageXY        : e => {

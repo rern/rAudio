@@ -174,5 +174,8 @@ volume0dbbt )
 	volumeBlueAlsa 0dB "$btmixer"
 	volumeGet push
 	;;
+volumeget )
+	volumeGet
+	;;
 	
 esac
