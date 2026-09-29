@@ -91,14 +91,19 @@ camilladsp )
 		fi
 	else
 		$dirsettings/camilla.sh saveconfig
-		[[ $VOLUME ]] && $dirsettings/player.sh "mixertype
-software
-$VOLUME
-CMD MIXERTYPE VOLUME"
+		[[ $VOLUME ]] && echo software > "$dirsystem/mixertype-$( getVar name $dirshm/output )" # no mixers
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	[[ $ON && $VOLUME ]] && volumeCamilla $VOLUME
+	[[ ! $VOLUME ]] && exit
+# --------------------------------------------------------------------
+	if [[ $ON ]]; then
+		volumeCamilla $VOLUME
+	else
+		$dirbash/cmd.sh "volume
+$VOLUME
+CMD TARGET"
+	fi
 	;;
 dabradio )
 	enableFlagSet

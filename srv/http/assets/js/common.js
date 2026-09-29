@@ -1529,9 +1529,9 @@ var COMMON    = {
 	, mixerSet      : mixertype => {
 		INFO( {
 			  ...SW
-			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
-			, values     : 30
-			, footer     : '(Should be low. Adjust later with GUI.)'
+			, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
+			, values     : 25
+			, footer     : '(Should be low and adjust later)'
 			, ok         : () => {
 				if ( SW.icon === 'mpd' ) {
 					NOTIFY_COMMON();

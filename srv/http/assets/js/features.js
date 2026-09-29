@@ -595,8 +595,8 @@ function renderPage() {
 	}
 	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
 	if ( ! S.mixers ) {
-		CONFIG._prompt[ 'camilladsp' ]  = () => COMMON.mixerSet();
-		CONFIG._disable[ 'camilladsp' ] = () => COMMON.mixerSet();
+		CONFIG._prompt[ 'camilladsp' ]  = () => COMMON.mixerSet( 'software' );
+		CONFIG._disable[ 'camilladsp' ] = () => COMMON.mixerSet( 'software' );
 	}
 	CONTENT();
 }
