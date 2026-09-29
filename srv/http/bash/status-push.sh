@@ -17,6 +17,8 @@ else
 	status=$( $dirbash/status -s | jq '{Album,Artist,coverart,elapsed,file,play,pllength,
 										state,station,Time,timestamp,Title,webradio}' )
 fi
+echo "$status" > $dirshm/status.json
+
 readarray -t lines < <( jq -r .Artist,.Title,.Album,.coverart,.state,.webradio <<< ${status//\`/\'} )
 Artist=${lines[0]}
 Title=${lines[1]}
@@ -25,9 +27,6 @@ coverart=${lines[3]}
 state=${lines[4]}
 [[ ${lines[5]} == true ]] && WEBRADIO=1
 
-#[[ $WEBRADIO && ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
-# ------------------------------------------------------------------------------
-echo "$status" > $dirshm/status.json
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -b || $dirbash/status -p
 # coverart #############################
