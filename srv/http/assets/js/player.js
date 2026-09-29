@@ -339,7 +339,7 @@ function renderPage() {
 			.val( S.output.NAME );
 		if ( ! devicehide && S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', novolume );
+			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ( S.mixers && S.camilladsp ) );
 			$( '#divmixer' ).removeClass( 'hide' );
 			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
 			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
