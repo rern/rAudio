@@ -7,6 +7,7 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
+jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json >> $dirshm/x
 if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
 	data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
 fi
@@ -24,7 +25,7 @@ coverart=${lines[3]}
 state=${lines[4]}
 [[ ${lines[5]} == true ]] && WEBRADIO=1
 
-[[ $WEBRADIO && ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
+#[[ $WEBRADIO && ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
 # ------------------------------------------------------------------------------
 echo "$status" > $dirshm/status.json
 ########
@@ -37,10 +38,10 @@ $Artist
 $Title
 CMD ALBUM ARTIST TITLE" &> /dev/null &
 fi
-[[ $state == play ]] && STATE_PLAY=1
-[[ $STATE_PLAY ]] && start_stop=start || start_stop=stop
+[[ $state == play ]] && PLAY=1
+[[ $PLAY ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
-	[[ ! $STATE_PLAY ]] && pushData vumeter '{ "val": 0 }'
+	[[ ! $PLAY ]] && pushData vumeter '{ "val": 0 }'
 	systemctl $start_stop cava
 fi
 [[ -e $dirshm/power ]] && exit
@@ -52,7 +53,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 		$dirbash/lcdchar.py logo
 	else
 		if [[ $player != airplay ]]; then
-			systemctl restart lcdchar
+			[[ ! $PLAY || ( $PLAY && $Album$Artist$Title ) ]] && systemctl restart lcdchar # on change to webradio
 		else
 			if [[ ! -e $dirshm/lcdchar ]]; then
 				touch $dirshm/lcdchar
@@ -63,7 +64,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	fi
 fi
 if [[ -e $dirsystem/stoptimer ]]; then
-	if [[ $STATE_PLAY ]]; then
+	if [[ $PLAY ]]; then
 		[[ ! -e $dirshm/pidstoptimer ]] && $dirbash/stoptimer.sh &> /dev/null &
 	elif [[ -e $dirshm/pidstoptimer ]]; then
 		killProcess stoptimer
@@ -75,7 +76,7 @@ if [[ -e $dirsystem/stoptimer ]]; then
 fi
 if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 	export DISPLAY=:0
-	if [[ $STATE_PLAY ]]; then
+	if [[ $PLAY ]]; then
 		sudo xset dpms force on
 		sudo xset -dpms
 	else
@@ -84,7 +85,7 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 
-if [[ $STATE_PLAY && $data_scrobble ]]; then # on track changed (on stop - scrobbleOnStop)
+if [[ $PLAY && $data_scrobble ]]; then # on track changed (on stop - scrobbleOnStop)
 	readarray -t data <<< $data_scrobble
 	[[ ${data[0]} != $Artist || ${data[1]} != $Title ]] && scrobble $player "$data_scrobble"
 fi
