@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### included by <<< player-conf.sh
+### included by <<< features.sh
 if [[ ! $dirbash ]]; then # if run directly
 	. /srv/http/bash/common.sh 
 	. $dirshm/output
