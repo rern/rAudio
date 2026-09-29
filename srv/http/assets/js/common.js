@@ -1530,7 +1530,7 @@ var COMMON    = {
 		INFO( {
 			  ...SW
 			, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
-			, values     : 25
+			, values     : 20
 			, footer     : '(Should be low and adjust later)'
 			, ok         : () => {
 				if ( SW.icon === 'mpd' ) {
