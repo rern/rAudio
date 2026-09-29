@@ -22,10 +22,11 @@ Title=${lines[1]}
 Album=${lines[2]}
 coverart=${lines[3]}
 state=${lines[4]}
-[[ ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
+[[ ${lines[5]} == true ]] && WEBRADIO=1
+
+[[ $WEBRADIO && ! $Album && ! $Artist && ! $Title ]] && exit # on change to webradio
 # ------------------------------------------------------------------------------
 echo "$status" > $dirshm/status.json
-[[ ${lines[5]} == true ]] && WEBRADIO=1
 ########
 [[ -e $dirmpdconf/snapserver.conf ]] && $dirbash/status -b || $dirbash/status -p
 # coverart #############################
