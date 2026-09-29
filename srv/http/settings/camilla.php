@@ -115,6 +115,8 @@ foreach( $id_tab as $id => $data ) {
 	$htmltab[ $id ] = $html.'</div>';
 }
 //////////////////////////////////
+$desc     = 'A powerful and flexible audio processing tool, designed for applications like active crossovers,'
+		   .'room correction, and advanced audio filtering.';
 $head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
@@ -122,7 +124,7 @@ $head     = [
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 
-<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - ${desc}
 EOF
 ];
 $body     = [
