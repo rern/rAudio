@@ -168,7 +168,7 @@ Processing Load
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
 <span class="helpblock hide">'.$B->volume.$B->mute.' Mute · Unmute
-'.$B->set0.' Reset clipped count (if any)
+'.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
 	)
 	, [
