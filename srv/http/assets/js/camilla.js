@@ -2550,9 +2550,22 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 $( '#divvolume' ).on( 'keydown', function( e ) {
 	var key = e.key;
 	if ( [ '-', '+', 'ArrowLeft', 'ArrowRight' ].includes( key ) ) {
-		var updn = key === '-' || key === 'ArrowLeft' ? '.i-minus' : '.i-plus';
-		$( this ).find( updn ).trigger( 'click' );
+		var updn  = key === '-' || key === 'ArrowLeft' ? '.i-minus' : '.i-plus';
+		var $updn = $( this ).find( updn );
+		if ( e.originalEvent.repeat ) {
+			if ( ! V.e_repeat ) {
+				V.e_repeat = true;
+				V.intervalvolume = setInterval( () => {
+					$updn.trigger( 'click' );
+				}, 200 );
+			}
+		} else {
+			$updn.trigger( 'click' );
+		}
 	}
+} ).on( 'keyup', function() {
+	clearInterval( V.intervalvolume );
+	V.e_repeat = false;
 } );
 $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
 	var key = e.key;
