@@ -13,6 +13,7 @@ W.refresh     = data => {
 V             = {
 	   ...V
 	, clipped    : false
+	, interval   : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }
@@ -1461,8 +1462,8 @@ var RENDER    = {
 		if ( ! ( 'intervalvu' in V ) ) return
 		
 		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
+		clearInterval( V.interval.vu );
+		delete V.interval.vu;
 		RENDER.vuBarToggle();
 		$( '#buffer, #load' ).css( 'width', 0 );
 		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
@@ -2083,7 +2084,7 @@ var SETTING   = {
 		if ( input ) {
 			SETTING.rangeSet();
 		} else if ( type === 'press' ) {
-			V.intervalgain = setInterval( () => {
+			V.interval.gain = setInterval( () => {
 				R.up ? R.val++ : R.val--;
 				SETTING.rangeSet();
 			}, 100 );
@@ -2310,7 +2311,7 @@ var UTIL      = {
 					clearTimeout( interval );
 					UTIL.wsGetState();
 					UTIL.wsGetConfig();
-					V.intervalstatus = setInterval( () => {
+					V.interval.status = setInterval( () => {
 						if ( V.local ) return
 						
 						UTIL.wsGetState();
@@ -2386,7 +2387,7 @@ var UTIL      = {
 							V.signal = true;
 							RENDER.vuBarToggle();
 						}
-						V.intervalvu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
+						V.interval.vu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
 					}
 					break;
 				case 'GetConfigJson':
@@ -2534,16 +2535,16 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	  delegate : '.col-l i, .i-plus'
 	, action   : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
-		V.intervalvolume = setInterval( () => {
+		V.interval.volume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
 			VOLUME.command();
 			VOLUME.set();
 			$( '#volume-level' ).text( S.volume );
-			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
-		}, 100 );
+			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.interval.volume );
+		}, 300 );
 	}
 	, end     : () => {
-		clearInterval( V.intervalvolume );
+		clearInterval( V.interval.volume );
 		VOLUME.push();
 	}
 } );
@@ -2555,16 +2556,16 @@ $( '#divvolume' ).on( 'keydown', function( e ) {
 		if ( e.originalEvent.repeat ) {
 			if ( ! V.e_repeat ) {
 				V.e_repeat = true;
-				V.intervalvolume = setInterval( () => {
+				V.interval.volume = setInterval( () => {
 					$updn.trigger( 'click' );
-				}, 200 );
+				}, 300 );
 			}
 		} else {
 			$updn.trigger( 'click' );
 		}
 	}
 } ).on( 'keyup', function() {
-	clearInterval( V.intervalvolume );
+	clearInterval( V.interval.volume );
 	V.e_repeat = false;
 } );
 $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
@@ -2584,7 +2585,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 } ).press( {
 	  delegate : '.i-minus, .i-plus'
 	, action   :  e => SETTING.rangeGet( $( e.currentTarget ), 'press' )
-	, end      : () => clearInterval( V.intervalgain ) // on end
+	, end      : () => clearInterval( V.interval.gain ) // on end
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	LOCAL( 2000 );
