@@ -552,17 +552,15 @@ radioStop() {
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
 }
 scrobble() {
-	[[ $1 != mpd ]] && grep -q $1=false $dirsystem/scrobble.conf && return
-#...............................................................................
 	readarray -t data <<< $2
 	Artist=${data[0]}
 	Title=${data[1]}
 	Time=${data[2]}
 	elapsed=${data[3]}
 	webradio=${data[4]}
-	[[ ! $Artist || ! $Title || $webradio == true || $Time -lt 30 ]] && return
+	[[ ! $Artist || ! $Title || $webradio == true || "$( < $dirshm/scrobbled )" == "$Artist$Title" ]] && return
 #...............................................................................
-	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && return
+	(( $Time < 30 || ( $elapsed < 240 && $elapsed < $(( Time / 2 )) ) )) && return
 #...............................................................................
 	$dirbash/scrobble.sh "cmd
 $Artist

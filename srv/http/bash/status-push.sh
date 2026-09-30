@@ -19,12 +19,17 @@ Title=${lines[1]}
 Album=${lines[2]}
 coverart=${lines[3]}
 state=${lines[4]}
+[[ $state == play ]] && PLAY=1
 [[ ${lines[5]} == true ]] && WEBRADIO=1
+player=$( < $dirshm/player )
+[[ $player == mpd ]] && MPD=1
 
-if [[ ! $PLAY || ( $PLAY && $Album$Artist$Title ) ]]; then # no data on init change to webradio
+if [[ ! $PLAY || $Album$Artist$Title ]]; then # no data on init change to webradio
 	NEW_STATUS=1
 	if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
-		data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json 2> /dev/null )
+		if [[ $MPD ]] || grep -q $player=true $dirsystem/scrobble.conf; then
+			data_scrobble=$( jq -r .Artist,.Title,.Time,.elapsed,.webradio $dirshm/status.json )
+		fi
 	fi
 	echo "$status" > $dirshm/status.json
 fi
@@ -38,7 +43,6 @@ $Artist
 $Title
 CMD ALBUM ARTIST TITLE" &> /dev/null &
 fi
-[[ $state == play ]] && PLAY=1
 [[ $PLAY ]] && start_stop=start || start_stop=stop
 if [[ -e $dirsystem/vumeter ]]; then
 	[[ ! $PLAY ]] && pushData vumeter '{ "val": 0 }'
@@ -46,10 +50,9 @@ if [[ -e $dirsystem/vumeter ]]; then
 fi
 [[ -e $dirshm/power ]] && exit
 # ------------------------------------------------------------------------------
-player=$( < $dirshm/player )
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
 if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ $player == mpd && $( jq .pllength <<< $status ) == 0 ]]; then
+	if [[ $MPD && $( jq .pllength <<< $status ) == 0 ]]; then
 		$dirbash/lcdchar.py logo
 	else
 		if [[ $player != airplay ]]; then
@@ -85,7 +88,4 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 
-if [[ $PLAY && $data_scrobble ]]; then # on track changed (on stop - scrobbleOnStop)
-	readarray -t data <<< $data_scrobble
-	[[ ${data[0]} != $Artist || ${data[1]} != $Title ]] && scrobble $player "$data_scrobble"
-fi
+[[ $PLAY && $data_scrobble ]] && scrobble $player "$data_scrobble" # play only (stop: scrobbleOnStop)
