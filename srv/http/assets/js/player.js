@@ -294,7 +294,7 @@ var UTIL     = {
 		var db     = values.db;
 		$( '.inforange .value' ).text( val );
 		$( '.inforange input' ).val( val );
-		$( '.inforange .sub' ).text( db +' dB' );
+		if ( db ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}

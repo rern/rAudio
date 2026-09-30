@@ -163,8 +163,7 @@ $data
 	;;
 volume )
 	volume
-	[[ $CARD != bluealsa ]] && hw=hw
-	volumeGet push $hw
+	volumeGet push
 	;;
 volume0db )
 	amixer0dB

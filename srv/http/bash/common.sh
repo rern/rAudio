@@ -774,17 +774,20 @@ volumeFunction() {
 volumeGet() {
 	local card db mixer val
 	fn_volume=$( volumeFunction )
+	if [[ $fn_volume == volumeMpd ]]; then
+		[[ $( getVar mixertype $dirshm/output ) != software ]] && fn_volume=
+	fi
 	case $fn_volume in
-		volumeAmixer )
+		volumeBlueAlsa ) read val db < <( volumeGetAmixer bluealsa );;
+		volumeCamilla )  val=$( volumeGetCamilla );;
+		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
+		* )
 			. $dirshm/output
 			for i in {1..5}; do # some usb might not be ready
 				read val db < <( volumeGetAmixer "$mixer" $card )
 				[[ $val ]] && break || sleep 1
 			done
 			;;
-		volumeBlueAlsa ) read val db < <( volumeGetAmixer bluealsa );;
-		volumeCamilla )  val=$( volumeGetCamilla );;
-		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
 	esac
 	[[ ! $val ]] && val=0
 	[[ ! $db ]] && db=0
@@ -795,7 +798,6 @@ volumeGet() {
 			;;
 		valdb ) echo $val $db;;
 		json )  echo '{ "val": '$val', "db": '$db' }';;
-		db )    echo $db;;
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
