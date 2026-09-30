@@ -1528,22 +1528,26 @@ var COMMON    = {
 	}
 	, mixerSet      : mixertype => {
 		BASH( 'data-config.sh volume', volume => {
-			if ( volume == -1 ) volume = 20;
-			INFO( {
-				  ...SW
-				, list       : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
-				, values     : volume
-				, ok         : () => {
-					if ( SW.icon === 'mpd' ) {
-						NOTIFY_COMMON();
-						BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
-					} else {
-						NOTIFY_COMMON( ! S.camilladsp );
-						BASH( [ 'camilladsp', _INFO.val(), ! S.camilladsp, 'CMD VOLUME ON' ] );
-					}
-				}
-			} );
+			if ( volume == -1 ) {
+				INFO( {
+					  ...SW
+					, list   : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
+					, values : 20
+					, ok     : () => COMMON.mixerVolume( mixertype, _INFO.val() )
+				} );
+			} else {
+				COMMON.mixerVolume( mixertype, volume );
+			}
 		}, 'json' );
+	}
+	, mixerVolume   : ( type, volume ) => {
+		if ( SW.icon === 'mpd' ) {
+			NOTIFY_COMMON();
+			BASH( [ 'mixertype', type, volume, 'CMD MIXERTYPE VOLUME' ] );
+		} else {
+			NOTIFY_COMMON( ! S.camilladsp );
+			BASH( [ 'camilladsp', volume, ! S.camilladsp, 'CMD VOLUME ON' ] );
+		}
 	}
 	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
 	, pageXY        : e => {
