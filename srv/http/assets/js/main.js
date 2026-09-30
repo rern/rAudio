@@ -6,10 +6,10 @@ V = {  // global var
 	, apikeylastfm : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot     : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
-	, coverart     : '/assets/img/coverart.svg'
+	, coverart     : '/assets/img/coverart.svg?v=1788510000'
 	, covervu      : '/assets/img/vu.svg'
 	, dots         : '·&ensp;·&ensp;·'
-	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg">'
+	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg?v=1788510000">'
 	, icoversave   : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
 	, page         : 'playback'
 	, progress     : {}
@@ -956,7 +956,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, message      : $this.find( 'img' )[ 0 ].outerHTML
 							+'<br><wh>'+ c1 +'</wh>'
 							+'<br>'+ c2
-			, messagealign : 'left'
 			, footer       : '<wh>Exclude this album from'+ ICON( V.mode +' gr' ) + COMMON.capitalize( V.mode ) +' list?</wh>'
 							+'<br>(Still available in'+ ICON( mode +' gr' ) + mode.toUpperCase() +')'
 			, okcolor      : V.orange
