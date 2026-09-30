@@ -6,6 +6,7 @@ alias=r1
 
 # 20260924
 if [[ -e /bin/camilladsp ]]; then
+	systemctl stop camilladsp
 	file=/etc/default/camilladsp
 	if ! grep -q ^STATE $file; then
 		sed -i -e 's/FILE//
@@ -15,6 +16,8 @@ if [[ -e /bin/camilladsp ]]; then
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
 		restart+=' camilladsp'
 	fi
+	file=$dircamilladsp/configs/camilladsp.yml
+	grep -q 'volume_ramp_time: 400' $file && sed -i -E 's/(volume_ramp_time: ).*/\10.0/' $file
 fi
 
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
@@ -123,6 +126,11 @@ if [[ $restart ]]; then
 fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-$dirbash/webradio-convert.sh # 20260909
+
+# 20260909
+$dirbash/webradio-convert.sh
+
+# 20260929
+[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp
 
 installfinish

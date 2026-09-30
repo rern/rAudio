@@ -382,7 +382,7 @@ var D         = {
 		, [ 'Silence Threshold', 'number' ]
 		, [ 'Silence Timeout',   'number' ]
 		, [ 'Volume limit',      'number' ]
-		, [ 'Volume ramp time',  'number' ]
+		, [ 'Volume ramp time',  'hidden' ]
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
@@ -1139,7 +1139,7 @@ var CONFIG    = {
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
-		var v    = [ 400, 50, 1, false ];
+		var v    = [ 0, 50, 1, false ];
 		[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
 			if ( DEV[ k ] === null ) DEV[ k ] = v[ i ];
 		} );
@@ -2435,11 +2435,21 @@ var UTIL      = {
 }
 var VOLUME    = {
 	...VOLUME
-	, cmd : () => {
-		WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( S.volume ) +' }' );
-		VOLUME.set();
+	, cmd       : target => {
+		var sleep = ms => new Promise( resolve => setTimeout( resolve, ms ) );
+		async function run() {
+			while ( S.volume !== target ) {
+				var diff  = target - S.volume;
+				S.volume += Math.sign( diff ) * Math.min( 5, Math.abs( diff ) ); // step 5, never overshoot
+				VOLUME.volume( S.volume );
+				VOLUME.set();
+				if ( S.volume === target ) break; // no trailing sleep
+				await sleep( 200 );
+			}
+		}
+		run();
 	}
-	, set : () => {
+	, set       : () => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute !== 0;
@@ -2464,12 +2474,12 @@ var VOLUME    = {
 			, left                  : S.volume +'%'
 		} );
 	}
-	, xy  : e => {
+	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
+	, xy        : e => {
 		var posX  = COMMON.pageX( e ) - V.volume.x;
 		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
-		S.volume  = Math.round( posX / w * 100 );
-		VOLUME.cmd();
+		VOLUME.cmd( Math.round( posX / w * 100 ) );
 	}
 }
 
@@ -2499,8 +2509,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	if ( V.animate ) return
 	
-	S.volume = this.id === 'volume-0' ? 0 : 100;
-	VOLUME.cmd();
+	VOLUME.cmd( this.id === 'volume-0' ? 0 : 100 );
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	if ( V.animate ) return
@@ -2508,8 +2517,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
-	up ? S.volume++ : S.volume--;
-	VOLUME.cmd();
+	VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
 } ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
