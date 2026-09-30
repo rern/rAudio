@@ -217,6 +217,7 @@ var UTIL     = {
 				var cmd0db = bt ? 'volume0dbbt' : 'volume0db';
 				if ( values.db > -2 ) {
 					BASH( [ cmd0db ] );
+					$( '.inforange .sub' ).text( '0 dB' );
 				} else {
 					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ cmd0db ] );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
@@ -294,7 +295,7 @@ var UTIL     = {
 		var db     = values.db;
 		$( '.inforange .value' ).text( val );
 		$( '.inforange input' ).val( val );
-		if ( db ) $( '.inforange .sub' ).text( db +' dB' );
+		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
@@ -344,7 +345,7 @@ function renderPage() {
 			.val( S.output.NAME );
 		if ( ! devicehide && S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ( S.mixers && S.camilladsp ) );
+			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
 			$( '#divmixer' ).removeClass( 'hide' );
 			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
 			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );

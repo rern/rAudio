@@ -10,7 +10,7 @@ linkConf() {
 amixer0dB() {
 	if [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
-		volumeAmixer 0dB "$mixer" $card
+		amixer -q sset "$mixer" 0dB
 		volumeGet push
 	fi
 }
