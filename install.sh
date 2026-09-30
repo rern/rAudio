@@ -123,6 +123,6 @@ if [[ $restart ]]; then
 fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
-$dirbash/webradio-convert.sh
+$dirbash/webradio-convert.sh # 20260909
 
 installfinish

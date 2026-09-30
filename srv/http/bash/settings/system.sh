@@ -173,6 +173,10 @@ dtparam=audio=on"
 		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf
 	fi
 	configTxt
+	if [[ ! $ON ]]; then
+		notify audio 'Onboard Audio' 'Reboot required' 5000
+		appendSortUnique $dirshm/reboot ', "audio": "On-board Audio"'
+	fi
 	;;
 lcdchar )
 	enableFlagSet
