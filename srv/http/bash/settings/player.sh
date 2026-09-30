@@ -170,7 +170,7 @@ volume0db )
 	;;
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
-	volumeBlueAlsa 0dB "$btmixer"
+	amixer -qD bluealsa sset "$btmixer" 0dB
 	volumeGet push
 	;;
 	
