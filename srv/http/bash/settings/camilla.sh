@@ -45,9 +45,6 @@ restart )
 saveconfig )
 	saveConfig
 	;;
-volume )
-	volume
-	;;
 	
 esac
 [[ ${CMD:0:1} == c ]] && pushRefresh

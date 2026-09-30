@@ -115,7 +115,13 @@ localbrowser )
 	cp $dirsystem/localbrowser.conf /tmp
 	;;
 mixer )
-	volumeGet json
+	. $dirshm/output
+	amixer -M sget "$mixer" | awk -F'[][]' '/%\]/ {
+									v=$2; sub(/%/,"",v)
+									d=$4; sub(/dB/,"",d)
+									printf "{ \"val\": %d, \"db\": %.2f }\n", v, d
+									exit
+								}'
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then

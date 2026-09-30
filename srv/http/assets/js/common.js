@@ -1731,6 +1731,22 @@ var VOLUME    = {
 			return true
 		}
 	}
+	, percent2db : pct => {
+		var min  = -60 * 100;              // to centidB
+		var max  = 0;
+		var norm = pct / 100;
+		if (norm < 0) norm = 0;
+		if (norm > 1) norm = 1;
+		var range = max - min;
+		if (range <= 2400) {                  // <= 24 dB -> linear scale
+			var db = min + norm * range;
+		} else {
+			var minNorm = Math.pow(10, (min - max) / 6000);
+			var scaled = norm * (1 - minNorm) + minNorm;
+			var db = max + 6000 * Math.log10(scaled);
+		}
+		return Math.round(db / 100 * 10) / 10;
+	}
 	, press    : up => {
 		clearTimeout( V.volumebar );
 		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );

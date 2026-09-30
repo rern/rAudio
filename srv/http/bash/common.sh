@@ -764,7 +764,7 @@ volumeCamilla() { # camilla without mixer control
 }
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
-		[[ -e $dirsystem/mixernone ]] && echo volumeCamilla || echo volumeAmixer
+		echo volumeCamilla
 	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
 		echo volumeMpd
 	else
@@ -797,7 +797,6 @@ volumeGet() {
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
 		valdb ) echo $val $db;;
-		json )  echo '{ "val": '$val', "db": '$db' }';;
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
