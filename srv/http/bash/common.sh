@@ -455,7 +455,7 @@ playerStop() {
 	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
-	scrobbleOnStop
+	scrobbleOnStop $player
 	case $player in
 		airplay )
 			systemctl stop shairport # metadata
@@ -552,7 +552,7 @@ radioStop() {
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
 }
 scrobble() {
-	readarray -t data <<< $2
+	readarray -t data <<< $1
 	Artist=${data[0]}
 	Title=${data[1]}
 	Time=${data[2]}
@@ -570,9 +570,9 @@ CMD ARTIST TITLE" &> /dev/null &
 scrobbleOnStop() {
 	[[ ! -e $dirsystem/scrobble ]] && return
 	
-	player=$( < $dirshm/player )
-	data=$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )
-	scrobble $player "$data"
+	[[ $1 != mpd ]] && grep -q $1=$ $dirsystem/scrobble.conf && return
+	
+	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
 }
 serviceRestartEnable() {
 	systemctl restart $CMD

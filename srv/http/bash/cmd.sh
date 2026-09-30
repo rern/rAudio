@@ -317,7 +317,7 @@ mpcplayback )
 			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
 		fi
 	else
-		[[ $ACTION == stop ]] && scrobbleOnStop
+		[[ $ACTION == stop ]] && scrobbleOnStop mpd
 		mpc -q $ACTION
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit

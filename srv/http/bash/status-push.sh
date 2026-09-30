@@ -88,4 +88,4 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && $dirbash/cmd.sh pladdrandom &
 
-[[ $PLAY && $data_scrobble ]] && scrobble $player "$data_scrobble" # play only (stop: scrobbleOnStop)
+[[ $PLAY && $data_scrobble ]] && scrobble "$data_scrobble" # play only (stop: scrobbleOnStop)
