@@ -24,7 +24,7 @@ state=${lines[4]}
 player=$( < $dirshm/player )
 [[ $player == mpd ]] && MPD=1
 
-if [[ ! $PLAY || $Album$Artist$Title ]]; then # no data on init change to webradio
+if [[ ! $PLAY || $Album$Artist$Title ]]; then # no data on init start webradio
 	NEW_STATUS=1
 	if [[ -e $dirsystem/scrobble && ! -e $dirshm/skip ]]; then
 		if [[ $MPD ]] || grep -q $player=true $dirsystem/scrobble.conf; then
