@@ -76,12 +76,12 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
+	. $dirshm/output
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	if [[ $ON ]]; then
 		$dirsettings/camilla-devices.sh
 	else
 		$dirsettings/camilla.sh saveconfig
-		. $dirshm/output
 		[[ ! $mixer ]] && echo software > "$dirsystem/mixertype-$name" # no mixers
 	fi
 	enableFlagSet
@@ -89,7 +89,11 @@ camilladsp )
 	[[ ! $VOLUME ]] && exit
 # --------------------------------------------------------------------
 	if [[ $ON ]]; then
-		volumeCamilla $VOLUME
+		if [[ $mixer ]]; then
+			websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": 0 }'
+		else
+			volumeCamilla $VOLUME
+		fi
 	else
 		$dirbash/cmd.sh "volume
 $VOLUME
