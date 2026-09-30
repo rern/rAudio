@@ -1428,9 +1428,6 @@ var RENDER    = {
 			WSCAMILLA.send( '"GetMute"' );
 		}
 		$( '#divvolume' ).removeClass( 'hide' );
-		$( '#divvolume .control' )
-			.text( S.control )
-			.toggleClass( 'hide', S.control === '' );
 		VOLUME.set();
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {

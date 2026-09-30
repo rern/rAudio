@@ -112,11 +112,7 @@
 	float: left;
 	width: 230px;
 }
-#divvolume .col-l a {
-	max-width: calc( 100% - 25px );
-	vertical-align: -2px;
-}
-#divvolume .col-l a:has( .control.hide ) {
+#divvolume .col-l span {
 	vertical-align: 8px;
 }
 #divvolume .col-l i {

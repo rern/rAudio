@@ -142,8 +142,7 @@ $body     = [
 	, htmlSectionStatus(
 		  'volume'
 		, '
-<a><span class="label">Master</span>
-<gr class="control"></gr></a>'.icon(  'minus' )
+<span class="label">Master</span>'.icon(  'minus' )
 		, '
 <div id="volume" class="slider">
 	<div class="track"></div>
