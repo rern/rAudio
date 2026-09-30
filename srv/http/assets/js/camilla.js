@@ -2549,7 +2549,10 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 } );
 $( '#divvolume' ).on( 'keydown', function( e ) {
 	var key = e.key;
-	if ( [ '-', '+' ].includes( key ) ) $( this ).find( key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
+	if ( [ '-', '+', 'ArrowLeft', 'ArrowRight' ].includes( key ) ) {
+		var updn = key === '-' || key === 'ArrowLeft' ? '.i-minus' : '.i-plus';
+		$( this ).find( updn ).trigger( 'click' );
+	}
 } );
 $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
 	var key = e.key;
