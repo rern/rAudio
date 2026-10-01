@@ -1423,12 +1423,8 @@ var RENDER    = {
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
 		playbackIcon();
-		if ( S.volume === -1 ) {
-			WSCAMILLA.send( '"ToggleMute"' );
-			WSCAMILLA.send( '"GetMute"' );
-		}
 		$( '#divvolume' ).removeClass( 'hide' );
-		VOLUME.set();
+		VOLUME.set( S.volume );
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
@@ -2436,42 +2432,43 @@ var UTIL      = {
 var VOLUME    = {
 	...VOLUME
 	, cmd       : target => {
+		VOLUME.set( target );
 		var sleep = ms => new Promise( resolve => setTimeout( resolve, ms ) );
 		async function run() {
 			while ( S.volume !== target ) {
 				var diff  = target - S.volume;
 				S.volume += Math.sign( diff ) * Math.min( 5, Math.abs( diff ) ); // step 5, never overshoot
 				VOLUME.volume( S.volume );
-				VOLUME.set();
 				if ( S.volume === target ) break; // no trailing sleep
 				await sleep( 200 );
 			}
 		}
 		run();
 	}
-	, set       : () => {
+	, mute      : () => WSCAMILLA.send( '"ToggleMute"' )
+	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute !== 0;
 		$level
-			.text( S.volume )
+			.text( target )
 			.toggleClass( 'hide', mute );
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute', mute );
-		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
-		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
+		$( '#divvolume .i-minus' ).toggleClass( 'disabled', target === 0 );
+		$( '#divvolume .i-plus' ).toggleClass( 'disabled', target === 100 );
 		if ( V.drag || vol_prev === '' ) { // onload - empty
 			var ms   = 0;
 		} else {
-			var ms    = Math.abs( S.volume - vol_prev ) * 40;
+			var ms    = Math.abs( target - vol_prev ) * 40;
 			V.animate = true;
 			setTimeout( () => delete V.animate, ms );
 		}
 		$( '#volume .thumb' ).css( {
 			  'transition-duration' : ms +'ms'
-			, left                  : S.volume +'%'
+			, left                  : target +'%'
 		} );
 	}
 	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
@@ -2502,6 +2499,10 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
+	if ( S.volumemute ) {
+		S.volumemute = 0;
+		VOLUME.mute();
+	}
 	VOLUME.xy( e );
 	delete V.drag;
 	delete V.volume;
@@ -2521,15 +2522,15 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 } ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
-	WSCAMILLA.send( '"ToggleMute"' );
+	VOLUME.mute();
 	if ( S.volumemute ) {
-		S.volume     = S.volumemute;
+		target       = S.volumemute;
 		S.volumemute = 0;
 	} else {
 		S.volumemute = S.volume;
-		S.volume     = 0;
+		target       = 0;
 	}
-	VOLUME.set();
+	VOLUME.set( target );
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
@@ -2538,10 +2539,10 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	, action   : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.interval.volume = setInterval( () => {
-			VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
-			VOLUME.set();
-			$( '#volume-level' ).text( S.volume );
-			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.interval.volume );
+			var target = up ? S.volume + 1 : S.volume - 1;
+			VOLUME.cmd( target );
+			VOLUME.set( target );
+			if ( target === 0 || target === 100 ) clearInterval( V.interval.volume );
 		}, 300 );
 	}
 	, end     : () => {
