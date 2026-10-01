@@ -80,7 +80,7 @@ else
 		done
 		[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" "$file_config"
 	done
-	errors=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
+	errors=$( camilladsp -c "$file_config" 2>&1 | grep ^error )
 	if [[ $errors ]]; then
 		errors=$( sed 's/$/<br>/' <<< $error )
 		pushData error '{ "page": "features", "msg": "'$errors'" }'
