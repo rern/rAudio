@@ -2445,7 +2445,7 @@ var VOLUME    = {
 		}
 		run();
 	}
-	, mute      : () => BASH( [ 'mute', S.volume, 'CMD VOLUME' ] )
+	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
 	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
@@ -2470,7 +2470,7 @@ var VOLUME    = {
 			  'transition-duration' : ms +'ms'
 			, left                  : target +'%'
 		} );
-		if ( ! mute ) VOLUME.mute();
+		if ( ! mute ) VOLUME.mute( 0 );
 	}
 	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
 	, xy        : e => {
@@ -2502,7 +2502,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	if ( S.volumemute ) {
 		S.volumemute = 0;
-		VOLUME.mute();
+		VOLUME.mute( 0 );
 	}
 	VOLUME.xy( e );
 	delete V.drag;
@@ -2523,7 +2523,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 } ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
-	VOLUME.mute();
+	VOLUME.mute( S.volume );
 	if ( S.volumemute ) {
 		target       = S.volumemute;
 		S.volumemute = 0;

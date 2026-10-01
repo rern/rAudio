@@ -94,9 +94,7 @@ Note:
 Should be disabled for best sound quality
  · GUI knob hidden
  · Use amplifier volume
-(The later in the signal chain the better quality.)
-
-$T->features $B->camilla Provide volume control when enabled without hardware mixer
+  (The later in the signal chain the better quality.)
 EOF
 	]
 	, [
