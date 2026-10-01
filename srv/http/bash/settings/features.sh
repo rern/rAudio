@@ -80,25 +80,16 @@ camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	if [[ $ON ]]; then
 		$dirsettings/camilla-devices.sh
+		[[ $mixer ]] && amixer0dB
 	else
 		$dirsettings/camilla.sh saveconfig
 		[[ ! $mixer ]] && echo software > "$dirsystem/mixertype-$name" # no mixers
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	[[ ! $VOLUME ]] && exit
-# --------------------------------------------------------------------
-	if [[ $ON ]]; then
-		if [[ $mixer ]]; then
-			websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": 0 }'
-		else
-			volumeCamilla $VOLUME
-		fi
-	else
-		$dirbash/cmd.sh "volume
+	[[ $VOLUME ]] && $dirbash/cmd.sh "volume
 $VOLUME
 CMD TARGET"
-	fi
 	;;
 dabradio )
 	enableFlagSet
