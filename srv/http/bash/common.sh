@@ -704,7 +704,7 @@ volume() {
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then
-		if [[ $TYPE == mute ]]; then
+		if [[ $TYPE == mute && $TARGET == 0 ]]; then
 			val=$CURRENT
 			type=mute
 		else
@@ -777,22 +777,21 @@ volumeGet() {
 	case $fn_volume in
 		volumeCamilla )  val=$( volumeGetCamilla );;
 		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
+		volumeBlueAlsa )
+			lines=$( amixer -MD bluealsa 2> /dev/null )
+			val=$( volumeLines2val $lines )
+			;;
 		* )
-			if [[ $fn_volume == volumeBlueAlsa ]]; then
-				lines=$( amixer -MD bluealsa 2> /dev/null )
-			else
-				. $dirshm/output
-				for i in {1..5}; do # some usb might not be ready
-					lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
-					[[ $lines ]] && break || sleep 1
-				done
-			fi
-			val=${lines#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
-			val=${val%%\%*}
+			. $dirshm/output
+			for i in {1..5}; do # some usb might not be ready
+				lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
+				[[ $lines ]] && break || sleep 1
+			done
+			val=$( volumeLines2val $lines )
 			;;
 	esac
 	if [[ $1 == push ]]; then
-		pushData volume '{ "val": '$val', "type": "'$TYPE'" }'
+		pushData volume '{ "val": '$val' }'
 	else
 		echo $val
 	fi
@@ -816,6 +815,10 @@ volumeGetCamilla() {
 			p = norm * 100
 			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
 		}' # db > %
+}
+volumeLines2val() {
+	val=${1#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
+	val=${val%%\%*}
 }
 volumeMaxGet() {
 	local max
