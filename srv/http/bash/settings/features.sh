@@ -78,6 +78,7 @@ brightness )
 camilladsp )
 	. $dirshm/output
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
+	volume=$( volumeGet )
 	if [[ $ON ]]; then
 		$dirsettings/camilla-devices.sh
 		[[ $mixer ]] && amixer0dB
@@ -87,8 +88,8 @@ camilladsp )
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	[[ $VOLUME ]] && $dirbash/cmd.sh "volume
-$VOLUME
+	$dirbash/cmd.sh "volume
+$volume
 CMD TARGET"
 	;;
 dabradio )
