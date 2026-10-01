@@ -2445,14 +2445,11 @@ var VOLUME    = {
 		}
 		run();
 	}
-	, mute      : () => {
-		BASH( [ 'mute', S.volume, 'CMD VOLUME' ] );
-		WSCAMILLA.send( '"ToggleMute"' );
-	}
+	, mute      : () => BASH( [ 'mute', S.volume, 'CMD VOLUME' ] )
 	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
-		var mute     = S.volumemute !== 0;
+		var mute     = S.volumemute > 0;
 		$level
 			.text( target )
 			.toggleClass( 'hide', mute );
@@ -2473,6 +2470,7 @@ var VOLUME    = {
 			  'transition-duration' : ms +'ms'
 			, left                  : target +'%'
 		} );
+		if ( ! mute ) VOLUME.mute();
 	}
 	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
 	, xy        : e => {

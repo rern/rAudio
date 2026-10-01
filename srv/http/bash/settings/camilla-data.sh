@@ -8,12 +8,12 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
 fi
-volume=$( volumeGetCamilla )
-mute=$( websocat --text ws://127.0.0.1:1234 <<< '"GetMute"' | jq .GetMute.value )
-if [[ $mute == true ]]; then
-	volumemute=$volume
+file_volumemute=$dirsystem/volumemute
+if [[ -e $file_volumemute ]]; then
 	volume=0
+	volumemute=$( < $file_volumemute )
 else
+	volume=$( volumeGetCamilla )
 	volumemute=0
 fi
 volumemax=$( volumeMaxGet )

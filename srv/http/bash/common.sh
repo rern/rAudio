@@ -703,14 +703,15 @@ volume() {
 	local diff file_volumemute fn_volume type val values
 	file_volumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
-	if [[ $TYPE != dragpress ]]; then
+	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
+	if [[ ! $DRAG_PRESS ]]; then
 		if [[ $TYPE == mute && $TARGET == 0 ]]; then
 			val=$CURRENT
 			type=mute
 			echo $CURRENT > $file_volumemute
 		else
 			val=$TARGET
-			type=unmute
+			[[ -e $file_volumemute ]] && type=unmute
 			rm -f $file_volumemute
 		fi
 		pushData volume '{ "type": "'$type'", "val": '$val' }'
@@ -720,7 +721,7 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		[[ $TYPE != dragpress ]] && volumeGet push
+		[[ ! $DRAG_PRESS ]] && volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
@@ -733,12 +734,6 @@ volume() {
 		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
-	if [[ -e $dirsystem/camilladsp ]]; then
-		mute=$( websocat --text ws://127.0.0.1:1234 <<< '"GetMute"' | jq .GetMute.value )
-		[[ ( $type == mute && $mute == true ) || ( $type != mute && $mute == false ) ]] && return
-#...............................................................................
-		websocat --text ws://127.0.0.1:1234 <<< '"ToggleMute"'
-	fi
 }
 volumeAmixer() { # camilla with mixer control only
 	amixer -Mq sset "$2" $1
