@@ -733,7 +733,7 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		volumeGet push
+		[[ $TYPE != dragpress ]] && volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
