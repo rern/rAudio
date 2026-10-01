@@ -2538,8 +2538,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	, action   : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.interval.volume = setInterval( () => {
-			up ? S.volume++ : S.volume--;
-			VOLUME.command();
+			VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
 			VOLUME.set();
 			$( '#volume-level' ).text( S.volume );
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.interval.volume );

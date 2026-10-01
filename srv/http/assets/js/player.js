@@ -191,11 +191,8 @@ var UTIL     = {
 				var $range  = $( '#infoList input' );
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
-				var volume  = bt ? 'volumebt' : 'volume';
-				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', val ] : [ 'volume', S.output.MIXER, S.output.CARD, val ];
 				$range.on( 'input', function() {
-					var target      = +this.value;
-					BASH( [ ...cmd, target, 'CMD CONTROL CARD CURRENT TARGET' ] );
+					BASH( [ 'volume', +this.value, bt ? S.btmixer : S.output.MIXER, 'set', 'CMD TARGET CONTROL TYPE' ] );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
 					$range
@@ -214,12 +211,11 @@ var UTIL     = {
 			, oklabel    : ICON( 'set0' ) +'0dB'
 			, oknoreset  : true
 			, ok         : () => {
-				var cmd0db = bt ? 'volume0dbbt' : 'volume0db';
 				if ( values.db > -2 ) {
-					BASH( [ cmd0db ] );
+					BASH( [ 'volume0db' ] );
 					$( '.inforange .sub' ).text( '0 dB' );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ cmd0db ] );
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ 'volume0db' ] );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
 			}

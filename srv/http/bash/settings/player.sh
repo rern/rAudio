@@ -7,13 +7,6 @@ args2var "$1"
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
-amixer0dB() {
-	if [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output
-		amixer -q sset "$mixer" 0dB
-		volumeGet push
-	fi
-}
 
 case $CMD in
 
@@ -167,11 +160,6 @@ volume )
 	;;
 volume0db )
 	amixer0dB
-	;;
-volume0dbbt )
-	btmixer=$( < $dirshm/btmixer )
-	amixer -qD bluealsa sset "$btmixer" 0dB
-	volumeGet push
 	;;
 	
 esac

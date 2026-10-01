@@ -35,6 +35,14 @@ https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
+amixer0dB() {
+	if [[ -e $dirshm/amixercontrol ]]; then
+		amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
+	elif [[ -e $dirshm/btmixer ]]; then
+		amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+	fi
+	volumeGet push
+}
 appendSortUnique() {
 	local data file lines
 	file=$1
