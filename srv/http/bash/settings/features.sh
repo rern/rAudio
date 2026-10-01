@@ -84,13 +84,16 @@ camilladsp )
 		[[ -e $dirshm/btmixer ]] && amixer0dB bluealsa
 	else
 		$dirsettings/camilla.sh saveconfig
-		[[ ! $mixer ]] && echo software > "$dirsystem/mixertype-$name" # no mixers
+		if [[ $mixer ]]; then
+			volumeAmixer $VOLUME% "$mixer"
+		else
+			echo software > "$dirsystem/mixertype-$name" # no mixers
+		fi
+		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmier )"
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	$dirbash/cmd.sh "volume
-$VOLUME
-CMD TARGET"
+	[[ $ON ]] && volumeCamilla $VOLUME # after camilladsp started
 	;;
 dabradio )
 	enableFlagSet
