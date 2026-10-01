@@ -79,10 +79,7 @@ camilladsp )
 	. $dirshm/output
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
-	if [[ $ON ]]; then
-		[[ $mixer ]] && amixer0dB
-		[[ -e $dirshm/btmixer ]] && amixer0dB bluealsa
-	else
+	if [[ ! $ON ]]; then
 		$dirsettings/camilla.sh saveconfig
 		if [[ $mixer ]]; then
 			volumeAmixer $VOLUME% "$mixer"

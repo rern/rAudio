@@ -158,6 +158,7 @@ if [[ -e $dirsystem/mpcupdate.conf ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
+[[ $CAMILLADSP ]] && $dirsettings/player.sh amixer0db
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
 pushStatus

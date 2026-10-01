@@ -35,16 +35,6 @@ https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
-amixer0dB() {
-	if [[ $1 ]]; then # bluealsa
-		amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-		type=volumeBlueAlsa
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-		type=volumeAmixer
-	fi
-	pushData volume "$( volumeGet $type )"
-}
 appendSortUnique() {
 	local data file lines
 	file=$1
@@ -782,39 +772,30 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card db mixer val
-	if [[ $1 == volume* ]]; then # from player.sh volume
-		fn_volume=$1
-	else
-		fn_volume=$( volumeFunction )
-		if [[ $fn_volume == volumeMpd ]]; then
-			[[ $( getVar mixertype $dirshm/output ) != software ]] && fn_volume=
-		fi
-	fi
+	local card db fn_volume lines mixer val
+	fn_volume=$( volumeFunction )
 	case $fn_volume in
 		volumeCamilla )  val=$( volumeGetCamilla );;
 		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
 		* )
 			if [[ $fn_volume == volumeBlueAlsa ]]; then
-				val_db=$( amixer -MD bluealsa 2> /dev/null )
+				lines=$( amixer -MD bluealsa 2> /dev/null )
 			else
 				. $dirshm/output
 				for i in {1..5}; do # some usb might not be ready
-					val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
-					[[ $val_db ]] && break || sleep 1
+					lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
+					[[ $lines ]] && break || sleep 1
 				done
 			fi
-			read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
+			val=${lines#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
+			val=${val%%\%*}
 			;;
 	esac
 	if [[ $1 == push ]]; then
-		pushData volume '{ "type": "push", "val": '$val', "db": '$db' }'
-	elif [[ $1 == volume* ]]; then
-		echo '{ "val": '$val', "db": '$db' }'
+		pushData volume '{ "val": '$val', "type": "'$TYPE'" }'
 	else
 		echo $val
 	fi
-	(( $val > 0 )) && rm -rf $dirsystem/volumemute
 	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }
 volumeGetCamilla() {

@@ -4,12 +4,29 @@
 
 args2var "$1"
 
+amixer0dB() {
+	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
+}
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
+}
+volumeGetDb() {
+	if [[ $1 == bt* || $1 == *bluealsa ]]; then # btmixer || 'D bluealsa'
+		val_db=$( amixer -MD bluealsa )
+	else
+		. $dirshm/output
+		val_db=$( amixer -c $card -M sget "$mixer" )
+	fi
+	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
+	echo '{ "val": '$val', "db": '$db' }'
 }
 
 case $CMD in
 
+amixer0db )
+	amixer0dB
+	;;
 autoupdate | normalization )
 	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd
@@ -93,7 +110,7 @@ mixertype )
 	if [[ $MIXERTYPE == hardware ]]; then
 		rm -f "$filemixertype" $dirsystem/replaygain-hw
 	else
-		[[ $mixer ]] && amixer0dB
+		amixer0dB
 		echo $MIXERTYPE > "$filemixertype"
 	fi
 	$dirsettings/player-conf.sh
@@ -155,11 +172,11 @@ $data
 	pushRefresh
 	;;
 volume )
-	amixer -Mq$BT sset "$CONTROL" $TARGET% # BT='D bluealsa'
-	pushData volume "$( volumeGet volumeAmixer )"
+	amixer -Mq$BT sset "$CONTROL" $TARGET # BT='D bluealsa'
+	volumeGetDb "$BT"
 	;;
-volume0db )
-	amixer0dB $BT
+volumegetdb )
+	volumeGetDb $ID
 	;;
 	
 esac

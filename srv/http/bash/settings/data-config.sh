@@ -26,8 +26,10 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
-btsender )
-	volumeGet volumeBlueAlsa
+btsender | mixer | volume )
+	$dirsettings/player.sh "volumegetdb
+$ID
+CMD ID"
 	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
@@ -113,9 +115,6 @@ localbrowser )
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
 	cp $dirsystem/localbrowser.conf /tmp
-	;;
-mixer )
-	volumeGet volumeAmixer
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then
@@ -323,9 +322,6 @@ templimit )
 	;;
 timezonelist )
 	cat /srv/http/assets/data/timezone.json
-	;;
-volume )
-	volumeGet volumeAmixer
 	;;
 vuled )
 	file=$dirsystem/vuled.conf

@@ -1,13 +1,3 @@
-W.volume     = data => {
-	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoOk' ).text() !== '0dB' ) return
-	
-	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
-	$( '#infoList' ).removeClass( 'hide' );
-	$( '.confirm' ).addClass( 'hide' );
-	V.local = true;
-	UTIL.volumeSet( data );
-}
-
 var CONFIG   = {
 	  _disable     : {
 		  mixertype : () => {
@@ -177,12 +167,12 @@ audio_output {
 }
 var UTIL     = {
 	  mixer        : values => {
-		var bt  = SW.id === 'btsender';
+		V.bt  = SW.id === 'btsender';
 		var val = values.val;
 		INFO( {
-			  icon       : bt ? 'btsender' : 'volume'
-			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
+			  icon       : V.bt ? 'btsender' : 'volume'
+			, title      : ( V.bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
+			, list       : [ V.bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
 			, footer     : '<br>'+ UTIL.warning
 			, values     : val
 			, beforeshow : () => {
@@ -192,8 +182,7 @@ var UTIL     = {
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				$range.on( 'input', function() {
-					var args = bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
-					BASH( [ 'volume', +this.value, ...args, 'CMD TARGET CONTROL BLUEALSA' ] );
+					UTIL.volume( this.value +'%' );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
 					$range
@@ -213,9 +202,9 @@ var UTIL     = {
 			, oknoreset  : true
 			, ok         : () => {
 				if ( values.db > -2 ) {
-					BASH( [ 'volume0db', bt, 'CMD BT' ] );
+					UTIL.volume( '0dB' );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ 'volume0db', bt, 'CMD BT' ] );
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) UTIL.volume( '0dB' );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
 				$( '.inforange .sub' ).text( '0 dB' );
@@ -285,11 +274,19 @@ var UTIL     = {
 			} );
 		}
 	}
+	, volume    : value => {
+		var args = V.bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
+		BASH( [ 'volume', value, ...args, 'CMD TARGET CONTROL BLUEALSA' ], data => {
+			UTIL.volumeSet( data );
+		}, 'json' );
+	}
 	, volumeSet : values => {
 		V.local    = false;
 		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
 		var val    = values.val;
 		var db     = values.db;
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
 		$( '.inforange .value' ).text( val );
 		$( '.inforange input' ).val( val );
 		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
