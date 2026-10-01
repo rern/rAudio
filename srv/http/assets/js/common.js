@@ -1718,10 +1718,7 @@ var VOLUME    = {
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 
-		if ( V.drag || V.press ) {
-			type = 'dragpress';
-			VOLUME.push();
-		}
+		if ( V.drag || V.press ) type = 'dragpress';
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
 	, limit    : () => {

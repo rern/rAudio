@@ -362,6 +362,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		} else {
 			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow( 'hide' ) : VOLUME.bar( e );
 		}
+		VOLUME.push();
 		delete V.volume;
 	}
 } );
