@@ -192,7 +192,8 @@ var UTIL     = {
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				$range.on( 'input', function() {
-					BASH( [ 'volume', +this.value, bt ? S.btmixer : S.output.MIXER, 'set', 'CMD TARGET CONTROL TYPE' ] );
+					var args = bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
+					BASH( [ 'volume', +this.value, ...args, 'CMD TARGET CONTROL BLUEALSA' ] );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
 					$range
@@ -213,11 +214,11 @@ var UTIL     = {
 			, ok         : () => {
 				if ( values.db > -2 ) {
 					BASH( [ 'volume0db' ] );
-					$( '.inforange .sub' ).text( '0 dB' );
 				} else {
 					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ 'volume0db' ] );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
+				$( '.inforange .sub' ).text( '0 dB' );
 			}
 		} );
 	}

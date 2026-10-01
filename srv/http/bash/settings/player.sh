@@ -155,7 +155,7 @@ $data
 	pushRefresh
 	;;
 volume )
-	volume
+	amixer -Mq$BT sset "$CONTROL" $TARGET% # BT='D bluealsa'
 	volumeGet push
 	;;
 volume0db )
