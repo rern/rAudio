@@ -2445,7 +2445,10 @@ var VOLUME    = {
 		}
 		run();
 	}
-	, mute      : () => WSCAMILLA.send( '"ToggleMute"' )
+	, mute      : () => {
+		BASH( [ 'mute', S.volume, 'CMD VOLUME' ] );
+		WSCAMILLA.send( '"ToggleMute"' );
+	}
 	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();

@@ -39,6 +39,10 @@ confswitch )
 	saveConfig
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
+mute )
+	file_volumemute=$dirsystem/volumemute
+	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
+	;;
 restart )
 	systemctl restart camilladsp
 	;;
