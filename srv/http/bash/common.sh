@@ -781,42 +781,39 @@ volumeFunction() {
 }
 volumeGet() {
 	local card db mixer val
-	fn_volume=$( volumeFunction )
-	if [[ $fn_volume == volumeMpd ]]; then
-		[[ $( getVar mixertype $dirshm/output ) != software ]] && fn_volume=
+	if [[ $1 ]]; then # from player.sh volume
+		fn_volume=$1
+	else
+		fn_volume=$( volumeFunction )
+		if [[ $fn_volume == volumeMpd ]]; then
+			[[ $( getVar mixertype $dirshm/output ) != software ]] && fn_volume=
+		fi
 	fi
 	case $fn_volume in
-		volumeBlueAlsa ) read val db < <( volumeGetAmixer bluealsa );;
 		volumeCamilla )  val=$( volumeGetCamilla );;
 		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
 		* )
-			. $dirshm/output
-			for i in {1..5}; do # some usb might not be ready
-				read val db < <( volumeGetAmixer "$mixer" $card )
-				[[ $val ]] && break || sleep 1
-			done
+			if [[ $fn_volume == volumeBlueAlsa ]]; then
+				val_db=$( amixer -MD bluealsa 2> /dev/null )
+			else
+				. $dirshm/output
+				for i in {1..5}; do # some usb might not be ready
+					val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
+					[[ $val_db ]] && break || sleep 1
+				done
+			fi
+			read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 			;;
 	esac
-	[[ ! $val ]] && val=0
-	[[ ! $db ]] && db=0
-	case $1 in
-		push )
-			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
-			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
-			;;
-		valdb ) echo $val $db;;
-		* )     echo $val;;
-	esac
-	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
-}
-volumeGetAmixer() {
-	local val_db
-	if [[ $1 == bluealsa ]]; then
-		val_db=$( amixer -MD bluealsa 2> /dev/null )
+	if [[ $1 == push ]]; then
+		pushData volume '{ "type": "push", "val": '$val', "db": '$db' }'
+	elif [[ $1 ]]; then
+		echo '{ "val": '$val', "db": '$db' }'
 	else
-		val_db=$( amixer -c $2 -M sget "$1" 2> /dev/null ) # $2-card, $1-scontrol
+		echo $val
 	fi
-	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
+	(( $val > 0 )) && rm -rf $dirsystem/volumemute
+	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }
 volumeGetCamilla() {
 	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )

@@ -27,7 +27,7 @@ bluetooth )
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
 btsender )
-	volumeGet json
+	volumeGet volumeBlueAlsa
 	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
@@ -115,13 +115,7 @@ localbrowser )
 	cp $dirsystem/localbrowser.conf /tmp
 	;;
 mixer )
-	. $dirshm/output
-	amixer -M sget "$mixer" | awk -F'[][]' '/%\]/ {
-									v=$2; sub(/%/,"",v)
-									d=$4; sub(/dB/,"",d)
-									printf "{ \"val\": %d, \"db\": %.2f }\n", v, d
-									exit
-								}'
+	volumeGet volumeAmixer
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then
@@ -331,7 +325,7 @@ timezonelist )
 	cat /srv/http/assets/data/timezone.json
 	;;
 volume )
-	volumeGet
+	volumeGet volumeAmixer
 	;;
 vuled )
 	file=$dirsystem/vuled.conf

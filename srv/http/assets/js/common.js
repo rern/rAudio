@@ -1528,7 +1528,7 @@ var COMMON    = {
 	}
 	, mixerSet      : mixertype => {
 		BASH( 'data-config.sh volume', volume => {
-			if ( volume == -1 ) {
+			if ( volume == -1 ) { // no mixers
 				INFO( {
 					  ...SW
 					, list   : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
