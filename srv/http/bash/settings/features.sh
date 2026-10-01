@@ -78,10 +78,11 @@ brightness )
 camilladsp )
 	. $dirshm/output
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
-	volume=$( volumeGet )
+	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	if [[ $ON ]]; then
 		$dirsettings/camilla-devices.sh
 		[[ $mixer ]] && amixer0dB
+		[[ -e $dirshm/btmixer ]] && amixer0dB bluealsa
 	else
 		$dirsettings/camilla.sh saveconfig
 		[[ ! $mixer ]] && echo software > "$dirsystem/mixertype-$name" # no mixers
@@ -89,7 +90,7 @@ camilladsp )
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
 	$dirbash/cmd.sh "volume
-$volume
+$VOLUME
 CMD TARGET"
 	;;
 dabradio )

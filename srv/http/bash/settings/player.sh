@@ -156,10 +156,10 @@ $data
 	;;
 volume )
 	amixer -Mq$BT sset "$CONTROL" $TARGET% # BT='D bluealsa'
-	volumeGet push
+	pushData volume "$( volumeGet volumeAmixer )"
 	;;
 volume0db )
-	amixer0dB
+	amixer0dB $BT
 	;;
 	
 esac

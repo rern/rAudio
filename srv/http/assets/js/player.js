@@ -213,9 +213,9 @@ var UTIL     = {
 			, oknoreset  : true
 			, ok         : () => {
 				if ( values.db > -2 ) {
-					BASH( [ 'volume0db' ] );
+					BASH( [ 'volume0db', bt, 'CMD BT' ] );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ 'volume0db' ] );
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ 'volume0db', bt, 'CMD BT' ] );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
 				$( '.inforange .sub' ).text( '0 dB' );

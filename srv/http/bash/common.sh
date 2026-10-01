@@ -36,12 +36,14 @@ alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
 amixer0dB() {
-	if [[ -e $dirshm/amixercontrol ]]; then
-		amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-	elif [[ -e $dirshm/btmixer ]]; then
+	if [[ $1 ]]; then # bluealsa
 		amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+		type=volumeBlueAlsa
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
+		type=volumeAmixer
 	fi
-	volumeGet push
+	pushData volume "$( volumeGet $type )"
 }
 appendSortUnique() {
 	local data file lines
@@ -781,7 +783,7 @@ volumeFunction() {
 }
 volumeGet() {
 	local card db mixer val
-	if [[ $1 ]]; then # from player.sh volume
+	if [[ $1 == volume* ]]; then # from player.sh volume
 		fn_volume=$1
 	else
 		fn_volume=$( volumeFunction )
@@ -807,7 +809,7 @@ volumeGet() {
 	esac
 	if [[ $1 == push ]]; then
 		pushData volume '{ "type": "push", "val": '$val', "db": '$db' }'
-	elif [[ $1 ]]; then
+	elif [[ $1 == volume* ]]; then
 		echo '{ "val": '$val', "db": '$db' }'
 	else
 		echo $val
