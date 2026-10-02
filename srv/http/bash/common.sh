@@ -552,10 +552,10 @@ statePlay() {
 }
 volume() {
 	local diff file_volumemute fn_volume type val values
-	file_volumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
 	if [[ ! $DRAG_PRESS ]]; then
+		file_volumemute=$dirsystem/volumemute
 		if [[ $TYPE == mute && $TARGET == 0 ]]; then
 			val=$CURRENT
 			type=mute
@@ -614,7 +614,7 @@ volumeCamilla() { # camilla without mixer control
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
 		echo volumeCamilla
-	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
+	elif [[ ! -e $dirshm/btmixer || -e $dirsystem/devicewithbt ]]; then
 		echo volumeMpd
 	else
 		echo volumeBlueAlsa
