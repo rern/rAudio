@@ -614,10 +614,10 @@ volumeCamilla() { # camilla without mixer control
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
 		echo volumeCamilla
-	elif [[ ! -e $dirshm/btmixer || -e $dirsystem/devicewithbt ]]; then
-		echo volumeMpd
-	else
+	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
 		echo volumeBlueAlsa
+	else
+		echo volumeMpd
 	fi
 }
 volumeGet() {
