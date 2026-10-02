@@ -2531,7 +2531,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		S.volumemute = S.volume;
 		target       = 0;
 	}
-	VOLUME.set( target );
+	VOLUME.cmd( target );
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
