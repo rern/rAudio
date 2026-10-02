@@ -462,6 +462,9 @@ titlewithparen )
 upnpstart )
 	playerStart upnp
 	;;
+volume )
+	volume
+	;;
 volumepush )
 	volumeGet push
 	;;
