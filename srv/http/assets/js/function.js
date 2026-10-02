@@ -136,7 +136,7 @@ var BIO       = {
 							imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 						} );
 					}
-					BIO.image( imageshtml )
+					BIO.image( imageshtml );
 					$( '#bio' ).scrollTop( 0 );
 				}, 'json' );
 			} );
@@ -1067,7 +1067,7 @@ var LIBRARY   = {
 			COMMON.draggable( 'lib-mode-list' );
 		} );
 		$( '#lib-home-title' ).html( title );
-		$( '#lib-path, #mode-title' ).empty()
+		$( '#lib-path, #mode-title' ).empty();
 		$( '#lib-home-title, #button-lib-search' ).removeClass( 'hide' );
 		$( '#button-lib-update' ).toggleClass( 'hide', D.bars );
 		$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
