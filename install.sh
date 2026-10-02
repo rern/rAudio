@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20260924
+# 20261002
 if [[ -e /bin/camilladsp ]]; then
 	systemctl stop camilladsp
 	file=/etc/default/camilladsp
