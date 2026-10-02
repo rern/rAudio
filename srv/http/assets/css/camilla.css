@@ -190,7 +190,7 @@
 	height: auto;
 	min-height: 50px;
 }
-.tab li i {
+.tab li:not( :has( .graphclose ) ) i {
 	margin: 0 !important;
 	min-width: 40px;
 }
@@ -337,7 +337,7 @@ i.disabled {
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
-	top: -10px !important;
+	top: -5px !important;
 	right: -10px;
 }
 .overplot .lines path {
@@ -442,9 +442,6 @@ cp {
 	}
 	.tab li:not( :focus-visible ):hover {
 		background: var( --cgd );
-	}
-	.tab li:has( .divgraph ):hover {
-		background: none;
 	}
 	li:focus-visible input[ type=range ] {
 		--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
