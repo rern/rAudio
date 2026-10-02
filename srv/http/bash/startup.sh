@@ -112,7 +112,7 @@ CMD ACTION MAC"
 fi
 
 $dirsettings/player-conf.sh &> /dev/null
-touch $dirshm/startup
+touch $dirshm/{startup,status.json}
 pushStatus
 
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
