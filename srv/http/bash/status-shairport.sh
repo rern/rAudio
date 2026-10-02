@@ -41,7 +41,7 @@ dbus-monitor \
 					pushStatus
 					;;
 				*variant*'"Stopped"' )
-					$dirbash/cmd.sh playerstop
+					playerStop
 					;;
 			esac
 		done

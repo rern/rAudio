@@ -65,4 +65,4 @@ if [[ $trackcd ]]; then
 	mpc -q play $trackcd
 	mpc -q stop
 fi
-$dirbash/cmd.sh playlistpush
+pushPlaylist

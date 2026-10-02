@@ -135,7 +135,7 @@ hostname )
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	nameprev=$( ls /var/lib/iwd/ap | head -n 1 )
 	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
-	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
+	[[ -e $dirsystem/ap ]] && iwctlAP
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
 i2seeprom )

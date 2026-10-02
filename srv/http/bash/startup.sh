@@ -95,7 +95,7 @@ else # if no connections, start accesspoint
 		fi
 	fi
 fi
-[[ $AP ]] && $dirsettings/features.sh iwctlap
+[[ $AP ]] && iwctlAP
 if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'

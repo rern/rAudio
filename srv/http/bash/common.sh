@@ -90,7 +90,7 @@ audioCDplClear() {
 	if [[ $cdtracks ]]; then
 		notify audiocd Playlist 'CD tracks removed.'
 		mpc -q del $cdtracks
-		$dirbash/cmd.sh playlistpush
+		pushPlaylist
 	fi
 }
 countMnt() {
@@ -333,6 +333,24 @@ EOF
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
+pushPlaylist() {
+	local b buffer data
+	[[ -e $dirshm/pushplaylist ]] && exit
+# --------------------------------------------------------------------
+	touch $dirshm/pushplaylist
+	pushData playlist '{ "blink": true }'
+	rm -f $dirshm/playlist*
+	if [[ $( mpc status %length% ) == 0 ]]; then
+		pushData playlist '{ "blank": true }'
+	else
+		data=$( php /srv/http/playlist.php current )
+		data=$( pushDataSet playlist "$data" )
+		bytes=$( printf '%s' "$data" | wc -c )
+		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
+	fi
+	( sleep 1 && rm -f $dirshm/pushplaylist ) &
+}
 pushRefresh() {
 	local page push
 	page=${1:-$( basename $0 .sh )}
@@ -384,16 +402,6 @@ scrobbleOnStop() {
 	[[ $1 != mpd ]] && grep -q $1=$ $dirsystem/scrobble.conf && return
 	
 	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
-}
-snapserverList() {
-	local name_ip
-	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
-	if [[ $name_ip ]] ; then
-		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
-		echo '[ '${name_ip:1}' ]'
-	else
-		echo '[]'
-	fi
 }
 splashRotate() {
 	local dirimg rotate

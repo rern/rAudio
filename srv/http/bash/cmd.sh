@@ -459,9 +459,6 @@ password )
 	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
-pladdrandom )
-	plAddRandom
-	;;
 playerstart )
 	playerStart $1
 	;;
@@ -473,9 +470,6 @@ playlist )
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && pushStatus
-	pushPlaylist
-	;;
-playlistpush )
 	pushPlaylist
 	;;
 remount )
@@ -525,6 +519,7 @@ shareddataupdate )
 	pushStatus
 	;;
 snapserverlist )
+	. $dirsettings/common.sh
 	snapserverList
 	;;
 thumbnailreset )

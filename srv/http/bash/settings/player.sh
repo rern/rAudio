@@ -4,19 +4,12 @@
 
 args2var "$1"
 
-amixer0dB() {
-	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-}
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
 
 case $CMD in
 
-amixer0db )
-	amixer0dB
-	;;
 autoupdate | normalization )
 	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd

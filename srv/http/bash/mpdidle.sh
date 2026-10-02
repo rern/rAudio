@@ -8,7 +8,7 @@ mpc idleloop | while read changed; do
 			playerActive upnp && volumeGet push
 			;;
 		playlist )
-			[[ ! -e $dirshm/pushplaylist && $( mpc status %consume% ) == on ]] && $dirbash/cmd.sh playlistpush
+			[[ ! -e $dirshm/pushplaylist && $( mpc status %consume% ) == on ]] && pushPlaylist
 			;;
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip && ! -e $dirshm/cdstart ]]; then

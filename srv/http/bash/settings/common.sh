@@ -1,5 +1,9 @@
 #!/bin/bash
 
+amixer0dB() {
+	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
+}
 camillaDSPstart() {
 	systemctl start camilladsp
 	if systemctl -q is-active camilladsp; then
@@ -156,6 +160,36 @@ getVar() { # var=value
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
+iwctlAP() {
+	wlanDisable # on-board wlan - force rmmod for ap to start
+	wlandev=$( netDevice w )
+	if ! rfkill | grep -q wlan; then
+		modprobe brcmfmac
+	else
+		ip link set $wlandev down
+	fi
+	ip link set $wlandev up
+	systemctl restart iwd
+	sleep 1
+	hostname=$( hostname )
+	iwctl device $wlandev set-property Mode ap
+	iwctl ap $wlandev start-profile $hostname
+	if iwctl ap list | grep -q "$wlandev.*yes"; then
+		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+		echo '{
+  "ip"         : "'$Address'"
+, "passphrase" : "'$Passphrase'"
+, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
+, "ssid"       : "'$hostname'"
+}' > $dirsystem/ap.conf
+		avahi-daemon --kill
+		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
+		iw $wlandev set power_save off
+	else
+		rm -f $dirsystem/{ap,ap.conf}
+		systemctl stop iwd
+	fi
+}
 line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
@@ -227,6 +261,16 @@ sharedDataReset() {
 	mv -f $dirbackup/* $dirdata
 	rm -rf $dirbackup
 }
+snapserverList() {
+	local name_ip
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
+	if [[ $name_ip ]] ; then
+		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
+		echo '[ '${name_ip:1}' ]'
+	else
+		echo '[]'
+	fi
+}
 statusUpdating() {
 	if mpc | grep -q ^Updating; then
 		echo true
@@ -290,5 +334,3 @@ wlanOnboardDisable() {
 	lsmod | grep -q brcmfmac_cyw && mod=cyw || mod=wcc
 	rmmod brcmfmac_$mod brcmfmac &> /dev/null
 }
-
-[[ $1 == ]] && fifoToggle

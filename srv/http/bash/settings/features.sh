@@ -4,36 +4,6 @@
 
 args2var "$1"
 
-iwctlAP() {
-	wlanDisable # on-board wlan - force rmmod for ap to start
-	wlandev=$( netDevice w )
-	if ! rfkill | grep -q wlan; then
-		modprobe brcmfmac
-	else
-		ip link set $wlandev down
-	fi
-	ip link set $wlandev up
-	systemctl restart iwd
-	sleep 1
-	hostname=$( hostname )
-	iwctl device $wlandev set-property Mode ap
-	iwctl ap $wlandev start-profile $hostname
-	if iwctl ap list | grep -q "$wlandev.*yes"; then
-		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
-		echo '{
-  "ip"         : "'$Address'"
-, "passphrase" : "'$Passphrase'"
-, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
-, "ssid"       : "'$hostname'"
-}' > $dirsystem/ap.conf
-		avahi-daemon --kill
-		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
-		iw $wlandev set power_save off
-	else
-		rm -f $dirsystem/{ap,ap.conf}
-		systemctl stop iwd
-	fi
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -80,7 +50,6 @@ camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	if [[ ! $ON ]]; then
-		$dirsettings/camilla.sh saveconfig
 		if [[ $mixer ]]; then
 			volumeAmixer $VOLUME% "$mixer"
 		else
@@ -120,9 +89,6 @@ httpd )
 	systemctl restart mpd
 	pushRefresh
 	pushRefresh player
-	;;
-iwctlap )
-	iwctlAP
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
