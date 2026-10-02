@@ -1,10 +1,11 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. /srv/http/bash/settings/common.sh
 
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
-	expand=1
+	EXPAND=1
 	partition=$( lsblk -no path,mountpoint | awk '/\/$/ {print $1}' )
 	[[ $partition == /dev/sd* ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	parted -s $dev resizepart 2 100%
@@ -17,7 +18,9 @@ if [[ -e /boot/expand ]]; then # run once
 	id1=$( < /etc/machine-id )
 	mv -f /var/log/journal/{$id0,$id1}
 	usbMaxCurrent
-	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
+	if [[ -e /bin/firefox ]]; then
+		grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
+	fi
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -n 1 )
@@ -62,7 +65,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 
 netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
-	ap=1
+	AP=1
 else # if no connections, start accesspoint
 	[[ $netctllist ]] && sec=30 || sec=5
 	for (( i=0; i < $sec; i++ )); do # wait for connection
@@ -84,15 +87,15 @@ else # if no connections, start accesspoint
 	else
 		if [[ -e $dirshm/wlan ]]; then
 			if [[ $netctllist ]]; then
-				[[ ! -e $dirsystem/wlannoap ]] && ap=1
+				[[ ! -e $dirsystem/wlannoap ]] && AP=1
 			else
-				ap=1
+				AP=1
 			fi
-			[[ $ap ]] && touch $dirshm/apstartup
+			[[ $AP ]] && touch $dirshm/apstartup
 		fi
 	fi
 fi
-[[ $ap ]] && $dirsettings/features.sh iwctlap
+[[ $AP ]] && iwctlAP
 if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip || wlan > 1
 	wlanOnboardDisable
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
@@ -107,30 +110,32 @@ $mac
 CMD ACTION MAC"
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
-$dirsettings/player-conf.sh
+
+$dirsettings/player-conf.sh &> /dev/null
+touch $dirshm/{startup,status.json}
+pushStatus
+
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
-# after all sources connected -----------------------------------------------------
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
-	$dirbash/cmd.sh mpcupdate
+	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 else
 	touch $dirshm/updatedone
 fi
 
-touch $dirshm/startup
 pushData startup true
 
 if [[ -e $dirsystem/autoplay ]]; then
-	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
+	grep -q startup $dirsystem/autoplay.conf && playback play
 fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
 if [[ ! -e $diraddons/update ]] && ipOnline 8.8.8.8; then
-	[[ $expand ]] && timezoneAuto
+	[[ $EXPAND ]] && timezoneAuto
 	data=$( curl -sL $https_addonslist )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json

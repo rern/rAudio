@@ -48,7 +48,7 @@ function menuLi( $list ) {
 	if ( $icon[ 0 ] !== '<' ) $icon = icon(  $icon );
 	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.$icon.$label.'</a>'.$submenu;
 }
-$coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
+$coverart    = '<img class="icoverart" src="/assets/img/coverart.svg?v=1788510000">';
 $thumbupdate = $coverart.icon(  'refresh-overlay' );
 $kid3        = file_exists( '/bin/kid3-cli' );
 $menu        = '';

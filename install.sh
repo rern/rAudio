@@ -4,6 +4,31 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20260924
+if [[ -e /bin/camilladsp ]]; then
+	systemctl stop camilladsp
+	file=/etc/default/camilladsp
+	if ! grep -q ^STATE $file; then
+		sed -i -e 's/FILE//
+' -e '$ a\STATE=/srv/http/data/camilladsp/state.yml
+' -e '/^GAIN\|^MUTE/ d
+' $file
+		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
+		restart+=' camilladsp'
+	fi
+	file=$dircamilladsp/configs/camilladsp.yml
+	grep -q 'volume_ramp_time: 400' $file && sed -i -E 's/(volume_ramp_time: ).*/\10.0/' $file
+fi
+
+if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
+	packages+=' mpd_oled'
+	file=/lib/systemd/system/mpd_oled.service
+	if grep -q ^ExecStop $file; then
+		sed -i '/^ExecStartPost\|^ExecStop/ d' $file
+		restart+=' mpd_oled'
+	fi
+fi
+
 # 20260922
 file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
@@ -54,14 +79,6 @@ chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
 [[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
 
-# 20260801
-[[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.03-3' ]] && packages+=' mpd_oled'
-file=/lib/systemd/system/mpd_oled.service
-if grep -q ^ExecStop $file; then
-	sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-	restart+=' mpd_oled'
-fi
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 
@@ -109,6 +126,11 @@ if [[ $restart ]]; then
 fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
+
+# 20260909
 $dirbash/webradio-convert.sh
+
+# 20260929
+[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp
 
 installfinish

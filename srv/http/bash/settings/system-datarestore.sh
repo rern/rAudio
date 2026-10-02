@@ -4,7 +4,7 @@ exec &> /dev/null # suppress stdout stderr
 
 . /srv/http/bash/common.sh
 
-[[ $1 == true ]] && libraryonly=1
+[[ $1 == true ]] && LIBRARY_ONLY=1
 
 file_backup=$dirshm/backup.gz
 ! bsdtar tf $file_backup 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
@@ -15,7 +15,7 @@ playerStop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
 rm -rf $dirdata/{mpd,playlists,webradio}
-if [[ $libraryonly ]]; then
+if [[ $LIBRARY_ONLY ]]; then
 	bsdtar xpf $file_backup -C /srv/http data/{mpd,playlists,webradio}
 	systemctl restart mpd
 	exit
@@ -23,7 +23,7 @@ if [[ $libraryonly ]]; then
 fi
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 bsdtar xpf $file_backup -C /srv/http
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ -e $dirsystem/color ]] && color
 partuuid=$( grep -m1 ^PARTUUID /etc/fstab | cut -d- -f1 )
 for file in boot/cmdline.txt etc/fstab; do
 	sed -i "s/PARTUUID=.*-/$partuuid-/" $dir_config/$file

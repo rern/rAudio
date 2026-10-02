@@ -8,6 +8,14 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
 fi
+file_volumemute=$dirsystem/volumemute
+if [[ -e $file_volumemute ]]; then
+	volume=0
+	volumemute=$( < $file_volumemute )
+else
+	volume=$( volumeGetCamilla )
+	volumemute=0
+fi
 volumemax=$( volumeMaxGet )
 ##########
 data='
@@ -21,10 +29,10 @@ data='
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
-, "volume"      : '$( [[ $mixer ]] && volumeGet )'
+, "volume"      : '$volume'
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax'
-, "volumemute"  : '$( getContent $dirsystem/volumemute 0 )
+, "volumemute"  : '$volumemute
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d

@@ -21,18 +21,26 @@ for dt in gpio-key rotary-encoder; do
 done
 
 fn_volume=$( volumeFunction )
-if [[ $fn_volume == volumeMpd ]]; then
-	dn=-$step # 1 or 2
-	up=+$step
-else
-	dn=$step%-
-	up=$step%+
-	if [[ $fn_volume == volumeAmixer ]]; then
-		mixer=$( < $dirshm/amixercontrol )
-	else
-		mixer=$( < $dirshm/btmixer )
-	fi
-fi
+case $fn_volume in
+	volumeMpd )
+		dn=-$step # 1 or 2
+		up=+$step
+		;;
+	volumeCamilla )
+		CAMILLA=1
+		dn=-$step
+		up=+$step
+		;;
+	* )
+		dn=$step%-
+		up=$step%+
+		if [[ $fn_volume == volumeAmixer ]]; then
+			mixer=$( < $dirshm/amixercontrol )
+		else
+			mixer=$( < $dirshm/btmixer )
+		fi
+		;;
+esac
 
 file_dn=$dirshm/rotary_dn
 file_up=$dirshm/rotary_up
@@ -41,7 +49,7 @@ action() {
 	[[ ! -e $file_dn ]] && return
 	
 	rm -f $file_up $file_dn
-	[[ $1 == click ]] && mpcPlayback || mpcSkip
+	[[ $1 == click ]] && playback || skip
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
@@ -61,7 +69,7 @@ evtest ${dev[button]} | while read line; do
 			( sleep 0.4 && action click ) &    ##2## CLICK        > before 1s   > OFF ##1##
 		else                            #####3 SET 2nd up
 			rm -f $file_up $file_dn
-			mpcSkip PREVIOUS                   ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
+			skip PREVIOUS                      ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
 		fi
 	fi
 done &
@@ -72,6 +80,11 @@ evtest ${dev[rotary]} | while read line; do
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
 	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
-	$fn_volume $updn "$mixer"
+	if [[ $CAMILLA ]]; then
+		val=$( volumeGetCamilla )
+		volumeCamilla $(( val + updn ))
+	else
+		$fn_volume $updn "$mixer"
+	fi
 	volumeGet push
 done

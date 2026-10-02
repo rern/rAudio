@@ -13,7 +13,7 @@ var E          = {
 };
 var n          = 1;
 [ 'close', 'library', 'playback', 'playlist', 'settings', 'prev', 'next' ].forEach( id => {
-	E[ id ] = document.getElementById( id )
+	E[ id ] = document.getElementById( id );
 	E[ id ].addEventListener( 'click', function() {
 		var tabactive = document.querySelector( 'div.active' );
 		if ( this === tabactive ) return

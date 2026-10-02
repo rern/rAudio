@@ -45,7 +45,6 @@ case $id in
 esac
 
 if [[ $id < 4 || $id == 5 ]]; then
-	radioparadise=1
 	icon=radioparadise
 	FN_JSON=JSON.radioParadise
 	FN_STATUS=STATUS.radioParadise
@@ -135,7 +134,7 @@ metaData() {
 	timeleft=$( jq .timeleft <<< $STATUS )
 	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
 	STATUS+='
-, "elapsed"   : '$( mpcElapsed )'
+, "elapsed"   : '$( mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}' )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true

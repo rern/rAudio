@@ -22,7 +22,7 @@ function REFRESHDATA() {
 		} else {
 			var $lidir = $( '#mode-title .lidir' );
 			if ( $lidir.length ) {
-				$lidir.last().trigger( 'click' )
+				$lidir.last().trigger( 'click' );
 				return
 			}
 			
@@ -129,10 +129,12 @@ var BIO       = {
 						return
 					}
 
-					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+					if ( data.musicbanner && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' );
 					var imageshtml = '';
 					if ( data.artistthumb && data.artistthumb[ 0 ].url ) {
-						data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
+						data.artistthumb.forEach( el => {
+							imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
+						} );
 					}
 					BIO.image( imageshtml )
 					$( '#bio' ).scrollTop( 0 );
@@ -193,7 +195,7 @@ var COLOR     = {
 		}
 		, hue      : ( x, y ) => {
 			if ( y ) {
-				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy )
+				V.ctx.hsl.h = UTIL.xy.degree( x, y, V.ctx.wheel.cx, V.ctx.wheel.cy );
 			} else {
 				V.ctx.hsl.h += x;
 			}
@@ -237,7 +239,8 @@ var COLOR     = {
 				.removeClass( 'hide' );
 		}
 		, rotate   : () => {
-			$( '#hue' ).css( 'transform', 'rotate( '+ V.ctx.hsl.h +'deg )' )
+			$( '#hue' )
+				.css( 'transform', 'rotate( '+ V.ctx.hsl.h +'deg )' )
 				.find( 'div' ).css( 'background', 'hsl( '+ V.ctx.hsl.h +', 100%, 50% )' );
 		}
 		, sat      : ( x, y ) => {
@@ -498,7 +501,7 @@ var DISPLAY   = {
 	, guideHide  : () => {
 		if ( V.guide ) {
 			V.guide        = false;
-			var barvisible = UTIL.barVisible();;
+			var barvisible = UTIL.barVisible();
 			$( '#coverTR' ).toggleClass( 'empty', S.pllength === 0 && ! barvisible && S.player === 'mpd' );
 			$( '.divmap' ).removeClass( 'mapshow' );
 			$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -572,7 +575,7 @@ var DISPLAY   = {
 					$el.albumbyartist.on( 'input', function() {
 						var enable = $( this ).prop( 'checked' );
 						if ( ! enable ) $el.albumyear.prop( 'checked', false );
-						$el.albumyear.prop( 'disabled', ! enable )
+						$el.albumyear.prop( 'disabled', ! enable );
 					} );
 					$el.tapaddplay.on( 'input', function() {
 						if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
@@ -745,8 +748,6 @@ var DISPLAY   = {
 		$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 		$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 		$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-		if ( ! D.count ) return
-		
 		$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 			var $this = $( el );
 			var mode  = $this.find( '.name' ).text();
@@ -846,7 +847,7 @@ EQ            = {
 			, list       : COMMON.eq.html( 42, 82, EQ.freq, EQ.bottom.replace( 'PRESETS', opt ) )
 			, values     : [ ...E.preset[ E.active ], E.active ]
 			, beforeshow : () => {
-				COMMON.eq.beforShow( {
+				COMMON.eq.beforeShow( {
 					  init  : () => {
 						EQ.level();
 						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
@@ -856,27 +857,39 @@ EQ            = {
 						$( '#eq .label.dn a' ).eq( i ).text( v - 62 );
 					}
 					, end   : () => {
-						if ( E.active === 'Flat' ) {
-							for ( let i = 1; i < 10; i++ ) {
-								var name = 'New '+ i;
-								if ( ! ( name in E.preset ) ) break;
-							}
-							E.active         = name;
-							E.preset[ name ] = EQ.flat;
+						var values = _INFO.val().slice( 0, 10 );
+						if ( E.active !== 'Flat' ) {
+							E.preset[ E.active ] = values;
+							COMMON.json.save( 'equalizer', E );
+							return
 						}
-						E.preset[ E.active ] = _INFO.val().slice( 0, 10 );
-						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' ).html( COMMON.select.option( Object.keys( E.preset ) ) );
-						I.values = [ ...E.preset[ E.active ], E.active ];
-						_INFO.setValues();
-						COMMON.select.set();
-						COMMON.json.save( 'equalizer', E );
+						
+						for ( let i = 1; i < 10; i++ ) {
+							var name = 'New '+ i;
+							if ( ! ( name in E.preset ) ) break;
+						}
+						EQ.save( name, values );
 					}
+				} );
+				$( '#eq input' ).on( 'keydown', e => {
+					if ( e.key === 'Enter' ) $( '#eqsave' ).trigger( 'click' );
 				} );
 			}
 			, cancel     : () => E = {}
 			, okno       : true
 		} );
+	}
+	, save  : ( name, values ) => {
+		E.active         = name;
+		E.preset[ name ] = values;
+		I.values         = [ ...values, name ];
+		$( '#eqedit' ).removeClass( 'disabled' );
+		$( '#eqpreset' )
+			.html( COMMON.select.option( Object.keys( E.preset ) ) )
+			.next().remove();
+		_INFO.setValues();
+		COMMON.select.set();
+		COMMON.json.save( 'equalizer', E );
 	}
 }
 var FILEIMAGE = {
@@ -1008,7 +1021,7 @@ var LIBRARY   = {
 	  addReplace : () => {
 		V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
 		V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
-		V.list.name = $LI.find( '.name' ).text()
+		V.list.name = $LI.find( '.name' ).text();
 		PLAYLIST.addCommand();
 	}
 	, coverart   : () => {
@@ -1192,9 +1205,9 @@ var LYRICS    = {
 		$( '#lyricsartist' ).text( V.lyricsartist );
 		$( '#lyricstext' ).html( lyricshtml );
 		if ( UTIL.barVisible() ) {
-			$( '#lyrics' ).css( { top: '', height: '' } )
+			$( '#lyrics' ).css( { top: '', height: '' } );
 		} else {
-			$( '#lyrics' ).css( { top: 0, height: '100vh' } )
+			$( '#lyrics' ).css( { top: 0, height: '100vh' } );
 		}
 		$( '#lyrics' ).removeClass( 'hide' );
 		$( '#lyricstext' ).scrollTop( 0 );
@@ -1367,7 +1380,11 @@ var PLAYBACK  = {
 		COMMON.loaderHide();
 	}
 	, button    : {
-		  options  : () => {
+		  controls : () => {
+			$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
+			$( '#'+ S.state ).addClass( 'active' );
+		}
+		, options  : () => {
 			$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
@@ -1613,7 +1630,9 @@ var PLAYBACK  = {
 				}
 			} );
 			PLAYBACK.info.scroll();
-			$( '#playericon' ).prop( 'class', 'i-'+ S.icon );
+			$( '#playericon' )
+				.prop( 'class', 'i-'+ S.icon )
+				.toggleClass( 'hide', S.icon === '' );
 			$( '#sampling' ).html( S.sampling );
 		}
 	}
@@ -1621,13 +1640,12 @@ var PLAYBACK  = {
 		if ( ! S.state ) return // suppress on reboot
 
 		LOCAL();
-		$( '#play, #pause, #stop' ).not( '#'+ S.state ).removeClass( 'active' );
-		$( '#'+ S.state ).addClass( 'active' );
 		if ( S.stop ) {
 			UTIL.intervalClear( 'elapsed' );
 			PROGRESS.set( 0 );
 		}
 		VOLUME.set();
+		PLAYBACK.button.controls();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
 		if ( S.player === 'mpd' && S.stop && ! S.pllength ) { // empty queue
@@ -1795,8 +1813,8 @@ var PLAYLIST  = {
 			return
 		}
 
-		if ( $( '#pl-list' ).is( ':empty' ) ) {
-			if ( $( '#bar-top' ).hasClass( 'hide' ) ) NOTIFY( 'playlist', 'Playlist', 'Get ...' )
+		if ( $( '#pl-list' ).is( ':empty' ) && $( '#bar-top' ).hasClass( 'hide' ) ) {
+			NOTIFY( 'playlist', 'Playlist', 'Get ...' );
 		}
 		PLAYLIST.blink();
 		LIST( { playlist: 'current' }, data => {
@@ -2168,7 +2186,7 @@ var PROGRESS  = {
 	  animate : () => {
 		$( '#time path, #time-bar' ).css( 'transition-duration', V.progress.s +'s' );
 		if ( PROGRESS.visible() ) {
-			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( V.progress.l * 654 ) +', 654' )
+			$TIME_ARC.css( 'stroke-dasharray', '0, 0, '+ ( V.progress.l * 654 ) +', 654' );
 		} else {
 			$( '#time-bar' ).css( 'width', ( V.progress.l * 100 ) +'%' );
 		}
@@ -2184,7 +2202,6 @@ var PROGRESS  = {
 		}
 		$( '#time-bar' ).css( 'width', ( ratio * 100 ) +'%' );
 	}
-	, command : () => BASH( [ 'mpcseek', S.elapsed, S.state, 'CMD ELAPSED STATE' ] )
 	, knob    : e => {
 		var deg   = UTIL.xy.e2deg( e, 'time' );
 		deg       = ( deg + 90 ) % 360; // (east: 0°) 270°@0%---180°@50%---270°@100%
@@ -2197,6 +2214,13 @@ var PROGRESS  = {
 		if ( S.stop && UTIL.barVisible() ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
+		}
+	}
+	, seek    : () => {
+		BASH( [ 'mpcseek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] );
+		if ( S.stop ) {
+			S.state = 'pause'; 
+			PLAYBACK.button.controls();
 		}
 	}
 	, set     : l => {
@@ -2325,8 +2349,8 @@ var UTIL      = {
 				$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );
 				$span.on( 'click', function() {
 					var values = _INFO.val();
-					var artist = values[ 0 ]
-					var title  = values[ 1 ]
+					var artist = values[ 0 ];
+					var title  = values[ 1 ];
 					var $this  = $( this );
 					var i      = $( this ).index();
 					if ( i === 0 ) {
@@ -2348,8 +2372,8 @@ var UTIL      = {
 		} );
 	}
 	, intervalClear   : elpased => {
-		if ( elapsed ) {
-			clearInterval( V.interval.elapsed );;
+		if ( typeof elapsed !== 'undefined' ) {
+			clearInterval( V.interval.elapsed );
 		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
 		}
@@ -2520,7 +2544,7 @@ var VOLUME    = {
 		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
 			var ms    = 0;
 		} else {
-			var ms    = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			var ms    = Math.abs( S.volume - vol_prev ) * 50; // 1%:50ms
 			V.animate = true;
 			setTimeout( () => delete V.animate, ms );
 			if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received

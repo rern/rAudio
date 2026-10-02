@@ -1,13 +1,3 @@
-W.volume     = data => {
-	if ( S.output.MIXERTYPE !== 'hardware' || $( '#infoOk' ).text() !== '0dB' ) return
-	
-	var volume      = SW.id === 'mixer' ? 'volume' : 'volumebt';
-	$( '#infoList' ).removeClass( 'hide' );
-	$( '.confirm' ).addClass( 'hide' );
-	V.local = true;
-	UTIL.volumeSet( data );
-}
-
 var CONFIG   = {
 	  _disable     : {
 		  mixertype : () => {
@@ -122,13 +112,23 @@ audio_output {
 		UTIL.mixer( values );
 	}
 	, mixertype    : () => {
+		if ( ! S.mixers ) {
+			COMMON.mixerSet( 'software' );
+			return
+		}
+		
 		INFO( {
 			  ...SW
 			, list         : [ '', 'radio', { kv: { 'DAC hardware <a class="helpmenu label">Mixer</a>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-			, values       : S.mixertype ? S.output.MIXERTYPE : 'hardware'
+			, values       : S.mixers ? ( S.mixertype ? S.output.MIXERTYPE : 'hardware' ) : 'software'
 			, checkchanged : S.mixertype
+			, beforeshow   : () => {
+				if ( ! S.mixers ) {
+					$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
+				}
+			}
 			, cancel       : SWITCH.cancel
-			, ok           : () => UTIL.mixerSet( _INFO.val() )
+			, ok           : () => COMMON.mixerSet( _INFO.val() )
 		} );
 	}
 	, outputbuffer : values => {
@@ -167,12 +167,12 @@ audio_output {
 }
 var UTIL     = {
 	  mixer        : values => {
-		var bt  = SW.id === 'btsender';
+		V.bt  = SW.id === 'btsender';
 		var val = values.val;
 		INFO( {
-			  icon       : bt ? 'btsender' : 'volume'
-			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
+			  icon       : V.bt ? 'btsender' : 'volume'
+			, title      : ( V.bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
+			, list       : [ V.bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
 			, footer     : '<br>'+ UTIL.warning
 			, values     : val
 			, beforeshow : () => {
@@ -181,11 +181,8 @@ var UTIL     = {
 				var $range  = $( '#infoList input' );
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
-				var volume  = bt ? 'volumebt' : 'volume';
-				var cmd     = bt ? [ 'volume', S.btmixer, 'bluealsa', val ] : [ 'volume', S.output.MIXER, S.output.CARD, val ];
 				$range.on( 'input', function() {
-					var target      = +this.value;
-					BASH( [ ...cmd, target, 'CMD CONTROL CARD CURRENT TARGET' ] );
+					UTIL.volume( this.value +'%' );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
 					$range
@@ -204,25 +201,13 @@ var UTIL     = {
 			, oklabel    : ICON( 'set0' ) +'0dB'
 			, oknoreset  : true
 			, ok         : () => {
-				var cmd0db = bt ? 'volume0dbbt' : 'volume0db';
 				if ( values.db > -2 ) {
-					BASH( [ cmd0db ] );
+					UTIL.volume( '0dB' );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) BASH( [ cmd0db ] );
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) UTIL.volume( '0dB' );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
-			}
-		} );
-	}
-	, mixerSet  : mixertype => {
-		INFO( {
-			  ...SW
-			, list       : [ 'MPD '+ mixertype +' volume', 'range' ]
-			, values     : 30
-			, footer     : '(Should be low. Adjust later with GUI.)'
-			, ok         : () => {
-				NOTIFY( 'mpd', 'Mixer Control', 'Change ...' );
-				BASH( [ 'mixertype', mixertype, _INFO.val(), 'CMD MIXERTYPE VOLUME' ] );
+				$( '.inforange .sub' ).text( '0 dB' );
 			}
 		} );
 	}
@@ -289,14 +274,22 @@ var UTIL     = {
 			} );
 		}
 	}
+	, volume    : value => {
+		var args = V.bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
+		BASH( [ 'volume', value, ...args, 'CMD TARGET CONTROL BLUEALSA' ], data => {
+			UTIL.volumeSet( data );
+		}, 'json' );
+	}
 	, volumeSet : values => {
 		V.local    = false;
 		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
 		var val    = values.val;
 		var db     = values.db;
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
 		$( '.inforange .value' ).text( val );
 		$( '.inforange input' ).val( val );
-		$( '.inforange .sub' ).text( db +' dB' );
+		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
@@ -346,7 +339,7 @@ function renderPage() {
 			.val( S.output.NAME );
 		if ( ! devicehide && S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', novolume );
+			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
 			$( '#divmixer' ).removeClass( 'hide' );
 			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
 			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
@@ -354,6 +347,7 @@ function renderPage() {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
 		$( '#novolume' )
 			.prop( 'checked', novolume )
 			.toggleClass( 'disabled', novolume );

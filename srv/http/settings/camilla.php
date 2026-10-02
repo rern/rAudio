@@ -115,6 +115,8 @@ foreach( $id_tab as $id => $data ) {
 	$htmltab[ $id ] = $html.'</div>';
 }
 //////////////////////////////////
+$desc     = 'A powerful and flexible audio processing tool, designed for applications like active crossovers,'
+		   .'room correction, and advanced audio filtering.';
 $head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
@@ -122,7 +124,7 @@ $head     = [
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 
-<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - ${desc}
 EOF
 ];
 $body     = [
@@ -140,8 +142,7 @@ $body     = [
 	, htmlSectionStatus(
 		  'volume'
 		, '
-<a><span class="label">Master</span>
-<gr class="control"></gr></a>'.icon(  'minus' )
+<span class="label">Master</span>'.icon(  'minus' )
 		, '
 <div id="volume" class="slider">
 	<div class="track"></div>
@@ -152,9 +153,9 @@ $body     = [
 	, htmlSectionStatus(
 		  'state'
 		, '
-Processing Load
+Processing load
 <span class="rateadjust"><br>Buffer</span>
-<br>Sampling<span class="rateadjust wide"> · Adjust</span>
+<br>Sample/s<span class="rateadjust wide"> · Adjust</span>
 <span class="divclipped hide"><br>Clipped</span>'
 		, '
 <div id="statusbar">
@@ -168,7 +169,7 @@ Processing Load
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
 <span class="helpblock hide">'.$B->volume.$B->mute.' Mute · Unmute
-'.$B->set0.' Reset clipped count (if any)
+'.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
 	)
 	, [

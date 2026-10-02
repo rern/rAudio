@@ -90,10 +90,11 @@ $B->gear Type:
  · DAC hardware $L->mixer : Good (if available)
  · MPD software: Basic
  
-Note: Should be disabled for best sound quality
+Note:
+Should be disabled for best sound quality
  · GUI knob hidden
  · Use amplifier volume
-(The later in the signal chain the better quality.)
+  (The later in the signal chain the better quality.)
 EOF
 	]
 	, [

@@ -783,6 +783,9 @@ hr {
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
+#infoList:has( .inforange.vertical ) {
+	padding: 15px;
+}
 #infoList:has( svg ) {
 	padding-top: 5px;
 }

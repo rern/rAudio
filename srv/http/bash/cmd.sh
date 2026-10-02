@@ -33,19 +33,19 @@ bioimage )
 	;;
 bookmark )
 	file_order=$dirsystem/order.json
-	[[ -e $file_order ]] && order=1
+	[[ -e $file_order ]] && ORDER=1
 	if [[ $DIR ]]; then
 		echo "$DIR" > "$dirbookmarks/$NAME"
-		[[ $order ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
+		[[ $ORDER ]] && json=$( jq --arg name "$NAME" '. += [$name]' $file_order )
 	elif [[ $NEWNAME ]]; then
 		mv -f $dirbookmarks/{"$NAME","$NEWNAME"}
-		if [[ $order ]]; then
+		if [[ $ORDER ]]; then
 			i=$( jq --arg name "$NAME" 'index($name)' $file_order )
 			json=$( jq --argjson i $i --arg newname "$NEWNAME" '.[$i] = $newname' $file_order )
 		fi
 	else
 		rm "$dirbookmarks/$NAME"
-		[[ order ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
+		[[ $ORDER ]] && json=$( jq --arg name "$NAME" 'map(select(. != $name))' $file_order )
 	fi
 	[[ $json ]] && echo "$json" > $file_order
 	pushData coverart '{ "type": "thumbnail" }'
@@ -59,57 +59,7 @@ bookmarksubdir )
 	echo "[ ${subdir:1} ]"
 	;;
 color )
-	filecss=/srv/http/assets/css/colors.css
-	css=$( < $filecss )
-	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
-	cd=( $hslcd )
-	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
-	[[ $LIST ]] && echo '{
-  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "custom" : '$( exists $dirsystem/color )'
-, "ml"     : [ '${ml:1}' ]
-}' && exit
-# --------------------------------------------------------------------
-	filecolor=$dirsystem/color
-	if [[ $HSL ]]; then
-		echo $HSL > $filecolor
-		HSL=( $HSL )
-	else
-		[[ $RESET ]] && rm -f $filecolor
-		if [[ -e $filecolor ]]; then
-			HSL=( $( < $filecolor ) )
-		else
-			HSL=( $hslcd )
-			default=1
-		fi
-	fi
-	h=${HSL[0]}
-	s=${HSL[1]}
-	l=${HSL[2]}
-	regex="\
-s/(--h *: ).*/\1$h;/
-s/(--s *: ).*/\1$s%;/"
-	for m in ${ml//,/ }; do
-		L=$(( l + m - 35 ))
-		regex+="
-s/(--ml$m *: ).*/\1$L%;/"
-	done
-	sed -E "$regex" <<< $css > $filecss
-	iconsvg=/srv/http/assets/img/icon.svg
-	cm="($h,$s%,$l%)"
-	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
-	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
-	[[ ! $color ]] && color=true
-	color='{
-  "cg"    : "hsl('$h',3%,75%)"
-, "cm"    : "hsl'$cm'"
-, "color" : '$( [[ $default ]] && echo false || echo true )'
-, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
-, "ml"    : [ '${ml:1}' ]
-}'
-	pushData color "$color"
-	splashRotate
-	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
+	color
 	;;
 countmnt )
 	counts=$( countMnt )
@@ -127,7 +77,7 @@ cssjsbust )
 	fi
 	;;
 dirdelete )
-	if fileExist "$DIR"/*; then
+	if compgen -G "$DIR/*" > /dev/null; then
 		[[ ! $CONFIRM ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
@@ -148,16 +98,11 @@ dirrename )
 display )
 	pushStatus
 	systemctl try-restart radio
+	. $dirsettings/common.sh
 	fifoToggle
 	;;
-equalizer ) # shell mixer: sudo -u [mpd|root] alsamixer -D equal
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	v=( $VALUES )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band=( "0$i. ${freq[i]} $unit" )
-		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
-	done
+equalizer )
+	equalizer
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
@@ -213,9 +158,9 @@ lyrics )
 			curl -sL -A firefox $url/$query.html | sed -n "/$start/,\|$end| p"
 		}
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
-		[[ ${#artist} == 2 ]] && short=1 && artist+=band
+		[[ ${#artist} == 2 ]] && SHORT=1 && artist+=band
 		lyrics=$( lyricsGet )
-		if [[ ! $lyrics && $short ]]; then
+		if [[ ! $lyrics && $SHORT ]]; then
 			artist=${artist/band}
 			lyrics=$( lyricsGet )
 		fi
@@ -295,40 +240,7 @@ mpcoption )
 	pushData option '{ "'$OPTION'": '$TF' }'
 	;;
 mpcplayback )
-	(( $( mpc status %length% ) == 0 )) && exit
-# --------------------------------------------------------------------
-	[[ ! $ACTION ]] && mpcPlayback && exit
-# --------------------------------------------------------------------
-	radioStop
-	if [[ $ACTION == play ]]; then
-		mpc -q play $POS
-		if audioCDtrack; then
-			touch $dirshm/cdstart
-			( sleep 20 && rm -f $dirshm/cdstart ) &
-			notify 'audiocd blink' 'Audio CD' 'Start play ...'
-			for i in {0..20}; do
-				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
-			done
-			rm -f $dirshm/cdstart
-			pushStatus
-		fi
-		if [[ -e $dirshm/relayson ]]; then
-			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
-		fi
-	else
-		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
-		mpc -q $ACTION
-	fi
-	[[ ! -e $dirsystem/snapclientserver ]] && exit
-# --------------------------------------------------------------------
-	# snapclient
-	if [[ $ACTION == play ]]; then
-		sleep 2 # fix stutter
-		action=start
-		systemctl start snapclient
-	else
-		systemctl stop snapclient
-	fi
+	mpcPlayback
 	;;
 mpcremove )
 	[[ ! $POS ]] && plClear && exit
@@ -350,13 +262,12 @@ mpcremove )
 	pushPlaylist
 	;;
 mpcseek )
-	if [[ $STATE == stop ]]; then
-		touch $dirshm/skip
-		mpc -q play
-		mpc -q pause
-		rm $dirshm/skip
-	fi
+	touch $dirshm/skip
+	[[ $STOP ]] && mpc -q play
 	mpc -q seek $ELAPSED
+	[[ $STOP ]] && mpc -q pause
+	pushStatus
+	rm $dirshm/skip
 	;;
 mpcshuffle )
 	mpc -q shuffle
@@ -397,32 +308,11 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	radioStop
-	if statePlay; then
-		[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-	fi
-	mpc -q play $POS
-	[[ $ACTION != play ]] && mpc -q stop
-	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-	[[ $consume == on ]] && mpc -q del $songpos
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
+	mpcSkip
 	;;
 mpcupdate )
-	rm -f $dirshm/updatedone
-	date +%s > $dirmpd/updatestart
-	pushData mpdupdate '{ "updating": true }'
-	if [[ ! $ACTION ]]; then
-		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
-			. <( cat $dirsystem/mpcupdate.conf )
-			ACTION=$action
-			PATHMPD=$pathmpd
-		else
-			ACTION=rescan
-		fi
-	fi
-	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
-	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
+	[[ $LATEST ]] && touch $dirshm/latest || rm -f $dirshm/latest
+	mpcUpdate
 	;;
 mpcupdatestop )
 	notify 'refresh-library blink' 'Library Update' 'Cancel ...' -1
@@ -455,11 +345,11 @@ multiraudiolist )
 password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
-	[[ $HEADLESS ]] && localBrowserOff
+	if [[ $HEADLESS ]]; then
+		. $dirsettings/common.sh
+		localBrowserOff
+	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
-	;;
-pladdrandom )
-	plAddRandom
 	;;
 playerstart )
 	playerStart $1
@@ -471,10 +361,7 @@ playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
-	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
-	pushPlaylist
-	;;
-playlistpush )
+	[[ $PLAY || $REPLACE ]] && pushStatus
 	pushPlaylist
 	;;
 remount )
@@ -524,13 +411,14 @@ shareddataupdate )
 	pushStatus
 	;;
 snapserverlist )
+	. $dirsettings/common.sh
 	snapserverList
 	;;
 thumbnailreset )
-	[[ $DIR == http* || $DIR == rtsp* ]] && radio=1
+	[[ $DIR == http* || $DIR == rtsp* ]] && RADIO=1
 	DIR=$( dir2path "$DIR" )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	[[ $radio ]] && rm -f "$DIR/cover".*
+	[[ $RADIO ]] && rm -f "$DIR/cover".*
 	imageCacheBust $( date +%s )
 	pushData coverart '{ "type": "thumbnail" }'
 	;;
@@ -588,7 +476,7 @@ webradioedit )
 		[[ ! $sample_rate ]] && echo "No audio stream found in:<br>$URL$charset" && exit
 # --------------------------------------------------------------------
 		[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
-		(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
+		(( $sample_rate > 0 )) && sampling+="$( printf '%.1f kHz' "$(( sample_rate / 100 ))e-1" )"
 	else
 		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
 	fi

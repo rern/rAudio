@@ -111,7 +111,6 @@ if argvL == 2: # 1 argument
     lcd.close()
     sys.exit()
 # --------------------------------------------------------------------
-import math
 import time
 
 if cmA00:
@@ -136,6 +135,7 @@ def second2hms( sec ):
     return f"{s}"
     
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
+
 if 'station' not in STATUS: STATUS[ 'station' ] = ''
 
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]: # no v[ :COLS ] - elapsed, play, state, Time, timestamp, webradio
@@ -169,7 +169,7 @@ else:
 
 if Time:
     slash    = COLS > 16 and ' / ' or '/'
-    time_hms = second2hms( round( float( Time ) ) )
+    time_hms = second2hms( Time )
 else:
     slash    = ''
     time_hms = ''
@@ -191,7 +191,7 @@ row            = rows - 1
 width          = COLS - 4
 lcd.cursor_pos = ( row, 0 )
 lcd.write_string( ICON[ 'play' ] )
-elapsed       += math.ceil( ( time.time() * 1000 - timestamp ) / 1000 )
+elapsed       += round( ( time.time() * 1000 - timestamp ) / 1000 )
 time_mon       = time.monotonic()
 
 while True:

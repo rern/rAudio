@@ -24,7 +24,6 @@ dtparam=audio=on"
 	;;
 bluetooth )
 	touch $dirshm/btonboard
-	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		rm -f $dirsystem/btdisable
 		btdiscoverable=$dirsystem/btdiscoverable
@@ -47,7 +46,9 @@ bluetooth )
 		systemctl stop bluetooth
 		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		[[ $bluealsa ]] && $dirsettings/player-conf.sh
+		if [[ -e $dirmpdconf/output.conf ]]; then
+			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+		fi
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
@@ -94,10 +95,7 @@ forget | mount | unmount )
 		rmdir "$MOUNTPOINT" &> /dev/null
 		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
 		fstabColumnReload "$fstab"
-		$dirbash/cmd.sh "mpcupdate
-update
-NAS
-CMD ACTION PATHMPD"
+		mpcUpdate update NAS
 	fi
 	pushStorage
 	;;
@@ -134,7 +132,7 @@ hostname )
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	nameprev=$( ls /var/lib/iwd/ap | head -n 1 )
 	mv -f /var/lib/iwd/ap/{$nameprev,$NAME.ap}
-	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
+	[[ -e $dirsystem/ap ]] && iwctlAP
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
 i2seeprom )
@@ -165,7 +163,7 @@ gpio=25=op,dh"
 			aplay -l | grep -q wm5102 && $dirsettings/player-wm5102.sh "$OUTPUTTYPE"
 		else
 			rm -f $cirrusconf
-			[[ $APLAYNAME == wm8960-soundcard ]] && i2cset=1
+			[[ $APLAYNAME == wm8960-soundcard ]] && I2CSET=1
 		fi
 	else
 		ON= # for pushData reboot
@@ -174,10 +172,14 @@ dtparam=audio=on"
 		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf
 	fi
 	configTxt
+	if [[ ! $ON ]]; then
+		notify audio 'Onboard Audio' 'Reboot required' 5000
+		appendSortUnique $dirshm/reboot ', "audio": "On-board Audio"'
+	fi
 	;;
 lcdchar )
 	enableFlagSet
-	i2cset=1
+	I2CSET=1
 	configTxt
 	systemctl stop lcdchar
 	;;
@@ -214,14 +216,19 @@ dtoverlay=$MODEL:rotate=$ROTATE" >> $file_config
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		systemctl enable localbrowser
 	fi
-	i2cset=1
+	I2CSET=1
 	configTxt
 	;;
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
-		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
-		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		if [[ $CHIP == 1 || $CHIP == 7 ]]; then
+			SPI=1
+		else
+			I2C=1
+			baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+			[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		fi
 		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
 		[[ ! $SPECTRUM ]] && opts+=" -X"
 		. /etc/default/mpd_oled
@@ -231,7 +238,7 @@ mpdoled )
 		mpd_oled $opts -z # clear
 	fi
 	fifoToggle
-	i2cset=1
+	I2CSET=1
 	configTxt
 	;;
 ntp )
@@ -247,7 +254,7 @@ powerbutton )
 		if [[ $SW ]]; then
 			serviceRestartEnable
 		else
-			poweraudiophonic=1
+			POWER_AUDIOPHONIC=1
 		fi
 	else
 		if systemctl -q is-active powerbutton; then
@@ -293,7 +300,7 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddatadisable )
-	$dirbash/cmd.sh mpcremove
+	plClear
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	if grep -q " $dirnas " /etc/fstab; then # server rAudio
@@ -367,11 +374,11 @@ usbadd ) # /etc/udev/rules.d/usbstorage.rules
 	name=$( sed '/^.dev.'$sdx'/ s/^[^ ]* *//' <<< $list )
 	notify usb "$name" Ready
 	if [[ ! $( partprobe -ds /dev/$sdx ) ]]; then
-		unpartitioned=1
+		UNPARTITIONED=1
 	else
-		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && unformatted=1 # no fs
+		[[ ! $( blkid -o value -s TYPE /dev/${sdx}1 ) ]] && UNFORMATTED=1 # no fs
 	fi
-	if [[ $unpartitioned || $unformatted ]]; then
+	if [[ $UNPARTITIONED || $UNFORMATTED ]]; then
 		echo "$list" > $dirshm/usbvendormodel
 		pushStorage
 	fi

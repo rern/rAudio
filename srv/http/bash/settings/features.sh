@@ -4,36 +4,6 @@
 
 args2var "$1"
 
-iwctlAP() {
-	wlanDisable # on-board wlan - force rmmod for ap to start
-	wlandev=$( netDevice w )
-	if ! rfkill | grep -q wlan; then
-		modprobe brcmfmac
-	else
-		ip link set $wlandev down
-	fi
-	ip link set $wlandev up
-	systemctl restart iwd
-	sleep 1
-	hostname=$( hostname )
-	iwctl device $wlandev set-property Mode ap
-	iwctl ap $wlandev start-profile $hostname
-	if iwctl ap list | grep -q "$wlandev.*yes"; then
-		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
-		echo '{
-  "ip"         : "'$Address'"
-, "passphrase" : "'$Passphrase'"
-, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
-, "ssid"       : "'$hostname'"
-}' > $dirsystem/ap.conf
-		avahi-daemon --kill
-		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
-		iw $wlandev set power_save off
-	else
-		rm -f $dirsystem/{ap,ap.conf}
-		systemctl stop iwd
-	fi
-}
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
@@ -76,21 +46,20 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	if [[ $ON ]]; then
-		fileconf=$( getVar CONFIG /etc/default/camilladsp )
-		if [[ ! $fileconf ]]; then
-			fileconf=$dircamilladsp/configs/camilladsp.yml
-			sed -i -E "s|^(CONFIG=)|\1$fileconf|" /etc/default/camilladsp
+	. $dirshm/output
+	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
+	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
+	if [[ ! $ON ]]; then
+		if [[ $mixer ]]; then
+			volumeAmixer $VOLUME% "$mixer"
+		else
+			echo software > "$dirsystem/mixertype-$name" # no mixers
 		fi
-		error=$( camilladsp -c "$fileconf" 2>&1 | grep ^error )
-		if [[ $error ]]; then
-			notify 'warning yl blink' CamillaDSP "$( sed 's/$/<br>/' <<< $error )"
-			exit
-# --------------------------------------------------------------------
-		fi
+		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmier )"
 	fi
 	enableFlagSet
-	pushRestartMpd camilladsp $TF &> /dev/null &
+	pushRestartMpd camilladsp $TF
+	[[ $ON ]] && volumeCamilla $VOLUME # after camilladsp started
 	;;
 dabradio )
 	enableFlagSet
@@ -120,9 +89,6 @@ httpd )
 	systemctl restart mpd
 	pushRefresh
 	pushRefresh player
-	;;
-iwctlap )
-	iwctlAP
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
@@ -198,7 +164,7 @@ apikey=$apikeylastfm
 sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
-	pushRefresh
+	pushData refresh '{ "scrobblekey": true }'
 	;;
 scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
@@ -219,9 +185,9 @@ shairportsync | spotifyd | upmpdcli )
 		systemctl disable --now $CMD
 		if [[ ${CMD:0:1} == s && -e $dirsystem/snapclientserver ]]; then
 			for s in shairport-sync spotifyd; do
-				systemctl -q is-enabled $s && enabled=1 && break
+				systemctl -q is-enabled $s && ENABLED=1 && break
 			done
-			[[ ! $enabled ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
+			[[ ! $ENABLED ]] && notify snapcast SnapClient 'Still enabled - Disable if not needed.' 9000
 		fi
 	fi
 	pushRefresh

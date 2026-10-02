@@ -16,12 +16,12 @@ else
 	systemctl stop bluetoothbutton
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
-	modprobe snd_aloop
 	. <( grep ^CONFIG /etc/default/camilladsp )
 	channels=$( getVar capture.channels "$CONFIG" )
 	format=$( getVar capture.format "$CONFIG" )
 	rate=$( getVar devices.samplerate "$CONFIG" )
 	CAMILLADSP=1
+	$dirsettings/camilla-devices.sh
 ########
 	ASOUNDCONF='
 pcm.!default { 

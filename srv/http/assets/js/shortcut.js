@@ -122,7 +122,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( menu ) {
 		var $menu = $( '.menu:not( .hide )' );
 		if ( arrow ) {
-			COMMON.focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+			COMMON.focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key );
 		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
 			$menu.find( '.active' ).trigger( 'click' );
 		}
@@ -147,8 +147,14 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // arrow key -------------------------------------------------------
 	if ( V.playback ) {
 		if ( arrow ) {
-			$( '#'+ KEY_ARROW[ key ] ).trigger( 'click' );
-			return
+			if ( e.originalEvent.repeat ) {
+				if ( ! V.e_repeat ) {
+					V.e_repeat = true;
+					VOLUME.press( key.endsWith( 'Up' ) );
+				}
+			} else {
+				$( '#'+ KEY_ARROW[ key ] ).trigger( 'click' );
+			}
 		}
 	} else if ( V.library ) {
 		if ( ! $( '#lib-search' ).hasClass( 'hide' ) ) return
@@ -165,7 +171,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		
 		if ( V.albumlist && ! V.librarytrack ) { // album
 			if ( arrow ) {
-				COMMON.focusNext( $( '#lib-list .coverart' ), 'active', key )
+				COMMON.focusNext( $( '#lib-list .coverart' ), 'active', key );
 			} else if ( key === 'Enter' ) {
 				var $active = $( '#lib-list .coverart.active' );
 				V.iactive   = $active.index();
@@ -230,5 +236,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 					return
 			}
 		}
+	}
+} ).on( 'keyup', function( e ) {
+	if ( [ 'ArrowUp', 'ArrowDown', 'AudioVolumeUp', 'AudioVolumeDown' ].includes( e.key ) ) {
+		VOLUME.pressEnd();
+		V.e_repeat = false;
 	}
 } );

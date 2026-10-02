@@ -6,13 +6,6 @@ dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 [[ $BT == true ]] && dirconfig+=-bt
 
-saveConfig() {
-	. <( grep ^CONFIG /etc/default/camilladsp )
-	[[ ! $CONFIG ]] && CONFIG=$dircamilladsp/configs/camilladsp.yml
-	config=$( echo '"GetConfig"' | websocat --text ws://127.0.0.1:1234 )
-	echo -e "$config " | sed '1 s/.*/---/; $d; s/\\"/"/g' > "$CONFIG"
-}
-
 args2var "$1"
 
 case $CMD in
@@ -36,17 +29,11 @@ confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	;;
 confswitch )
-	saveConfig
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
-restart )
-	systemctl restart camilladsp
-	;;
-saveconfig )
-	saveConfig
-	;;
-volume )
-	volume
+mute )
+	file_volumemute=$dirsystem/volumemute
+	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 	
 esac

@@ -373,9 +373,10 @@ W             = {  // from websocket.py (server)
 		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
 		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
+			$( 'body' ).children().not( '#banner, #loader' ).remove();
 			setTimeout( () => {
-				$( '#loader svg' ).css( 'animation', 'unset' );
 				$( '#banner' ).addClass( 'hide' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
 			}, 12000 );
 		} else { // reconnect after reboot
 			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
@@ -540,7 +541,7 @@ function INFO( json ) {
 					  +'<input type="file" class="hide" id="infoFileBox"'+ ( I.file.type ? ' accept="'+ I.file.type +'">' : '>' )
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 					  + ( I.file.label || ICON( 'folder-open' ) +' File' ) +'</a>';
-		$( '#infoButton' ).prepend( htmlfile )
+		$( '#infoButton' ).prepend( htmlfile );
 		$( '#infoOk' )
 			.html( I.file.oklabel )
 			.addClass( 'hide' );
@@ -1270,7 +1271,7 @@ var COMMON    = {
 		if ( ! V.touch ) $( '#'+ el ).find( 'li' ).prop( 'draggable', true );
 	}
 	, eq            : {
-		  beforShow : fn => {
+		  beforeShow : fn => {
 			fn.init();
 			var eqH     = COMMON.bottom( $( '#eq .bottom' ) ) - $( '#eq .up' ).offset().top - 15;
 			$( '#eq' ).css( 'height', eqH +'px' );
@@ -1313,6 +1314,8 @@ var COMMON    = {
 					if ( V.eqinput ) {
 						delete V.eqinput;
 					} else { // ios safari not fire input
+						if ( ! e.pageY ) return
+						
 						var $this = $( this );
 						var top   = $( '.inforange' ).offset().top + 10;
 						var diff  = Math.round( ( e.pageY - top ) / incr );
@@ -1334,7 +1337,7 @@ var COMMON    = {
 				fn.end();
 			} );
 		}
-		, html : ( min, max, freq, bottom = '' ) => {
+		, html       : ( min, max, freq, bottom = '' ) => {
 			var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
 			var label  = '';
 			var slider = '';
@@ -1523,6 +1526,29 @@ var COMMON    = {
 
 		$( '#loader' ).addClass( 'hide' );
 	}
+	, mixerSet      : mixertype => {
+		BASH( 'data-config.sh volume', volume => {
+			if ( volume == -1 ) { // no mixers
+				INFO( {
+					  ...SW
+					, list   : [ COMMON.capitalize( mixertype ) +' volume', 'range' ]
+					, values : 20
+					, ok     : () => COMMON.mixerVolume( mixertype, _INFO.val() )
+				} );
+			} else {
+				COMMON.mixerVolume( mixertype, volume );
+			}
+		}, 'json' );
+	}
+	, mixerVolume   : ( type, volume ) => {
+		if ( SW.icon === 'mpd' ) {
+			NOTIFY_COMMON();
+			BASH( [ 'mixertype', type, volume, 'CMD MIXERTYPE TARGET' ] );
+		} else {
+			NOTIFY_COMMON( ! S.camilladsp );
+			BASH( [ 'camilladsp', volume, ! S.camilladsp, 'CMD VOLUME ON' ] );
+		}
+	}
 	, pageX         : e => e.pageX || e.changedTouches[ 0 ].pageX
 	, pageXY        : e => {
 		var x = e.pageX || e.changedTouches[ 0 ].pageX;
@@ -1686,25 +1712,54 @@ var COMMON    = {
 	}
 }
 var VOLUME    = {
-	  command : type => { // type: mute / unmute
-		if ( S.volumelimit && S.volume > S.volumemax ) {
-			S.volume = S.volumemax;
-			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
-		}
+	  command  : type => { // type: mute / unmute
+		if ( VOLUME.limit() ) return
+		
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 
-		if ( V.drag || V.press ) {
-			type = 'dragpress';
-			VOLUME.push();
-		}
+		if ( S.volume ) S.volumemute = 0
+		if ( V.drag || V.press ) type = 'dragpress';
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
 	}
-	, push    : () => {
+	, limit    : () => {
+		if ( S.volumelimit && S.volume > S.volumemax ) {
+			S.volume = S.volumemax;
+			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+			return true
+		}
+	}
+	, percent2db : pct => {
+		var min  = -60 * 100;              // to centidB
+		var max  = 0;
+		var norm = pct / 100;
+		if (norm < 0) norm = 0;
+		if (norm > 1) norm = 1;
+		var range = max - min;
+		if (range <= 2400) {                  // <= 24 dB -> linear scale
+			var db = min + norm * range;
+		} else {
+			var minNorm = Math.pow(10, (min - max) / 6000);
+			var scaled = norm * (1 - minNorm) + minNorm;
+			var db = max + 6000 * Math.log10(scaled);
+		}
+		return Math.round(db / 100 * 10) / 10;
+	}
+	, press    : up => {
+		clearTimeout( V.volumebar );
+		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
+		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 300 );
+	}
+	, pressEnd : up => {
+		clearInterval( V.interval.volume );
+		VOLUME.barHide();
+		V.local = false;
+	}
+	, push     : () => {
 		V.local = true;
 		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 	}
-	, toggle  : () => {
+	, toggle   : () => {
 		if ( S.volumemute ) {
 			S.volume     = S.volumemute;
 			S.volumemute = 0;
@@ -1793,13 +1848,14 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 
 	var key = e.key;
+	if ( $( '.inforange.vertical' ).length && key.startsWith( 'Arrow' ) ) return
+	
 	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
 	switch ( key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
 			e.preventDefault();
-
 			COMMON.focusNext( COMMON.focusNextTabs(), 'focus', key );
 			break
 		case ' ':

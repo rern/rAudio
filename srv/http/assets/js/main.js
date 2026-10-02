@@ -6,10 +6,10 @@ V = {  // global var
 	, apikeylastfm : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot     : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
-	, coverart     : '/assets/img/coverart.svg'
+	, coverart     : '/assets/img/coverart.svg?v=1788510000'
 	, covervu      : '/assets/img/vu.svg'
 	, dots         : '·&ensp;·&ensp;·'
-	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg">'
+	, icoverart    : '<img class="icoverart" src="/assets/img/coverart.svg?v=1788510000">'
 	, icoversave   : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
 	, page         : 'playback'
 	, progress     : {}
@@ -265,10 +265,8 @@ $( '#artist, #info-bio' ).on( 'click', function() {
 } );
 $( '#title, #info-lyrics' ).on( 'click', function() {
 	if ( ! S.Title ) return
-
-	if ( S.lyrics
-		&& ( ! S.webradio || ( S.play && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
-	) {
+	
+	if ( S.lyrics && ( ! S.webradio || ( S.play && S.icon[ 0 ] == 'r' ) ) ) {
 		if ( S.Title.includes( '(' ) ) {
 			BASH( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
 				if ( paren == -1 ) {
@@ -356,7 +354,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 } ).on( 'touchend mouseup', function( e ) {
 	delete V.drag;
 	if ( V.time ) {
-		PROGRESS.command();
+		PROGRESS.seek();
 		delete V.time;
 	} else if ( V.volume ) {
 		if ( V.volume.type === 'knob' ) {
@@ -364,6 +362,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		} else {
 			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow( 'hide' ) : VOLUME.bar( e );
 		}
+		VOLUME.push();
 		delete V.volume;
 	}
 } );
@@ -393,16 +392,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 
 	VOLUME.upDown( $this.hasClass( 'up' ) );
 } ).press( {
-	  action : e => {
-		clearTimeout( V.volumebar );
-		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
-		var up = $( e.currentTarget ).hasClass( 'up' );
-		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
-	}
-	, end    : () => { // on end
-		clearInterval( V.interval.volume );
-		VOLUME.barHide();
-	}
+	  action : e => VOLUME.press( $( e.currentTarget ).hasClass( 'up' ) )
+	, end    : VOLUME.pressEnd
 } );
 $( '#divcover' ).on( 'click', '.cover-save', function() {
 	COVERART.save();
@@ -966,7 +957,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, message      : $this.find( 'img' )[ 0 ].outerHTML
 							+'<br><wh>'+ c1 +'</wh>'
 							+'<br>'+ c2
-			, messagealign : 'left'
 			, footer       : '<wh>Exclude this album from'+ ICON( V.mode +' gr' ) + COMMON.capitalize( V.mode ) +' list?</wh>'
 							+'<br>(Still available in'+ ICON( mode +' gr' ) + mode.toUpperCase() +')'
 			, okcolor      : V.orange
@@ -1410,7 +1400,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 		if ( 'pladd' in V ) {
 			V.pladd.index = $LI.index();
 			V.pladd.track = $LI.find( '.li1 .name' ).text()
-							+'<br><gr>'+ $LI.find( '.li2 .name' ).text() +'</gr>';
+						  +'<br><gr>'+ $LI.find( '.li2 .name' ).text() +'</gr>';
 			PLAYLIST.insert.select();
 		} else {
 			var menu  = $target.data( 'menu' ) || $LI.find( '.li-icon' ).data ( 'menu' );
@@ -1551,7 +1541,8 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' )
 		.css( 'display', 'inline-block' )
-		.val( E.active );
+		.val( E.active )
+		.trigger( 'focus' );
 } ).on( 'click', '#eqedit', function() {
 	var list    = [];
 	var values  = [];
@@ -1593,6 +1584,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 		, cancel       : () => EQ.info( E )
 		, ok           : () => {
 			COMMON.json.save( 'equalizer', e );
+			if ( e.active === 'Flat' ) BASH( [ 'equalizer', EQ.flat.join( ' ' ), EQ.user, 'CMD VALUES USR' ] );
 			EQ.info( e );
 		}
 	} );
@@ -1612,16 +1604,11 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	_INFO.setValues();
 	EQ.level();
 	COMMON.json.save( 'equalizer', E );
+	$( this ).html( COMMON.select.option( Object.keys( E.preset ) ) );
 } ).on( 'click', '#eqsave', function() {
-	var name         = $( '#eqname' ).val();
-	E.preset[ name ] = E.preset[ E.active ];
-	E.active         = name;
-	COMMON.json.save( 'equalizer', E );
+	EQ.save( $( '#eqname' ).val(), E.preset[ E.active ] );
 	$( '#eqback' ).trigger( 'click' );
-	$( '#eqpreset' )
-		.html( COMMON.select.option( Object.keys( E.preset ) ) )
-		.val( name )
-		.trigger( 'change' );
+
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {

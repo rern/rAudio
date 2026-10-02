@@ -164,6 +164,11 @@ var SWITCH  = {
 }
 W.refresh   = data => { // except camilla
 	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
+	
+	if ( 'scrobblekey' in data ) {
+		$( '#scrobble' ).trigger( 'click' );
+		return
+	}
 
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
@@ -173,6 +178,9 @@ W.refresh   = data => { // except camilla
 		$( '.col-r' ).css( 'pointer-events', '' );
 		COMMON.statusToggle( 'refresh' );
 	}, 300 );
+}
+W.error     = data => {
+	_INFO.warning( SW.id, SW.title, data.msg, CONFIG[ SW.id ] );
 }
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function playbackIcon() {
@@ -387,10 +395,7 @@ $( '.switch' ).on( 'click', function() {
 		}
 	} else {
 		$setting.addClass( 'hide' );
-		if ( PAGE === 'camilla' ) {
-			DEV[ id ] = null;
-			SETTING.save( SW.title, 'Disable ...' );
-		} else if ( id in CONFIG._disable ) {
+		if ( id in CONFIG._disable ) {
 			CONFIG._disable[ id ]();
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );

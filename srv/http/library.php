@@ -580,7 +580,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$totaltime     = second2HMS( $seconds );
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
-			$coverart = '/assets/img/coverart.svg';
+			$coverart = '/assets/img/coverart.svg?v=1788510000';
 			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, $cue ? $file_cue : $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}

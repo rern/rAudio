@@ -50,9 +50,11 @@ updateDone() {
 }
 
 touch $dirmpd/listing
-grep -qs ^latest=true $dirsystem/mpcupdate.conf && latestappend=1
+if [[ -e $dirshm/latest ]] || grep -qs ^latest=true $dirsystem/mpcupdate.conf &> /dev/null; then
+	LATEST_APPEND=1
+fi
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf
+rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf $dirshm/latest
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
@@ -122,7 +124,7 @@ if [[ $albumlist ]]; then
 		sed -i 's/^...//' $file_album  # remove I^^ leading index for compare
 		latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
 					 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
-		if [[ -e $file_latest && ( ! $latest || $latestappend ) ]]; then
+		if [[ -e $file_latest && ( ! $latest || $LATEST_APPEND ) ]]; then
 			sed -i 's/^...//' $file_latest
 			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # previous latest - omit removed albums
 							 # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest

@@ -56,7 +56,7 @@ fi
 # outputs -----------------------------------------------------------------------------
 if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
-	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
+	[[ ! -e $dirsystem/devicewithbt ]] && BT_ONLY=1
 	hw=bluealsa
 	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
@@ -75,7 +75,7 @@ if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
 	[[ $usbdac == remove ]] && pushVolumeNone true
-elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
+elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
@@ -140,7 +140,7 @@ $( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 fi
 
 if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
-		( ! $AUDIOOUTPUT && ! $btoutputonly && ! $CAMILLADSP && ! -e $dirsystem/snapclientserver ) ]]; then
+		( ! $AUDIOOUTPUT && ! $BT_ONLY && ! $CAMILLADSP && ! -e $dirsystem/snapclientserver ) ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 fi
 
@@ -154,10 +154,11 @@ for pid in $( pgrep mpd ); do # set priority
 done
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
-	$dirbash/cmd.sh mpcupdate
+	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
+[[ $CAMILLADSP ]] && amixer0db
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
 pushStatus
@@ -169,7 +170,7 @@ fi
 [[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
 # renderers
-[[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
+[[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && MIXER_NO=1
 
 if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf
@@ -183,7 +184,7 @@ alsa = {
 	output_device = "'$hw'";
 	mixer_control_name = "'$mixer'";
 }'
-		[[ $mixerno ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
+		[[ $MIXER_NO ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
 #---------------<
 ######## >
 		echo "$CONF" > /etc/shairport-sync.conf
@@ -215,14 +216,8 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fi
 fi
 
-if [[ $CAMILLADSP ]]; then
-	. $dirsettings/camilla-devices.sh
-elif [[ $EQUALIZER ]]; then
-	value=$( getVar current $dirsystem/equalizer.json )
+if [[ $EQUALIZER ]]; then
+	VALUE=$( getVar current $dirsystem/equalizer.json )
 	player=$( < $dirshm/player )
-	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
-	$dirbash/cmd.sh "equalizer
-$value
-$user
-CMD VALUE USR"
-fi
+	[[ $player == airplay || $player == spotify ]] && USER=root || USER=mpd
+	equalizer

@@ -13,6 +13,7 @@ W.refresh     = data => {
 V             = {
 	   ...V
 	, clipped    : false
+	, interval   : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }
@@ -381,7 +382,7 @@ var D         = {
 		, [ 'Silence Threshold', 'number' ]
 		, [ 'Silence Timeout',   'number' ]
 		, [ 'Volume limit',      'number' ]
-		, [ 'Volume ramp time',  'number' ]
+		, [ 'Volume ramp time',  'hidden' ]
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
@@ -950,7 +951,7 @@ var GRAPH     = {
 				var min = Math.min( ...data[ d ] );
 				var max = Math.max( ...data[ d ] );
 				max     = Math.max( max, minmax[ d ] );
-				min     = Math.min( min, -minmax[ d ] )
+				min     = Math.min( min, -minmax[ d ] );
 				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
 				if ( d === 'gain' ) {
 					dtick = abs < 10
@@ -1138,7 +1139,7 @@ var CONFIG    = {
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
-		var v    = [ 400, 50, 1, false ];
+		var v    = [ 0, 50, 1, false ];
 		[ 'volume_ramp_time', 'volume_limit', 'worker_threads', 'multithreaded' ].forEach( ( k, i ) => {
 			if ( DEV[ k ] === null ) DEV[ k ] = v[ i ];
 		} );
@@ -1415,20 +1416,15 @@ var RENDER    = {
 			li += '<li data-name="'+ k +'">'+ ICON( 'processors liicon edit' )
 				 +'<div class="li1">'+ k +'</div>'
 				 +'<div class="li2">'+ v.type +' · '+ RENDER.json2string( param )+'</div>'
-				 +'</li>'
+				 +'</li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		RENDER.toggle();
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
 		playbackIcon();
-		if ( S.volume !== false ) {
-			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#divvolume .control' ).text( S.control );
-			VOLUME.set();
-		} else {
-			$( '#divvolume' ).addClass( 'hide' );
-		}
+		$( '#divvolume' ).removeClass( 'hide' );
+		VOLUME.set( S.volume );
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
@@ -1456,11 +1452,11 @@ var RENDER    = {
 		if ( V.localhost ) $( '.bar' ).addClass( 'local' );
 	}
 	, statusStop  : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
+		if ( ! ( 'vu' in V.interval ) ) return
 		
 		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
+		clearInterval( V.interval.vu );
+		delete V.interval.vu;
 		RENDER.vuBarToggle();
 		$( '#buffer, #load' ).css( 'width', 0 );
 		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
@@ -1560,7 +1556,7 @@ var SETTING   = {
 				var $input = $( '#infoList input[type=number]' );
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
-				$input.css( 'width', '70px' );
+				$input.css( { width: '70px', 'margin-right': '5px' } );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
 					var file    = false;
@@ -1939,7 +1935,7 @@ var SETTING   = {
 			, beforeshow   : () => {
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = _INFO.val();
-					SETTING.processor( val.type, val.name, edit )
+					SETTING.processor( val.type, val.name, edit );
 				} );
 			}
 			, ok           : () => {
@@ -2081,7 +2077,7 @@ var SETTING   = {
 		if ( input ) {
 			SETTING.rangeSet();
 		} else if ( type === 'press' ) {
-			V.intervalgain = setInterval( () => {
+			V.interval.gain = setInterval( () => {
 				R.up ? R.val++ : R.val--;
 				SETTING.rangeSet();
 			}, 100 );
@@ -2288,7 +2284,7 @@ var UTIL      = {
 				.replace( 'samplerate',  'sample rate' )
 				.replace( /_/g,          ' ' )
 				.replace( 'freq',        'frequency' )
-				.slice( 1 )
+				.slice( 1 );
 		return str + key
 	}
 	, labels2array : array => {
@@ -2308,7 +2304,7 @@ var UTIL      = {
 					clearTimeout( interval );
 					UTIL.wsGetState();
 					UTIL.wsGetConfig();
-					V.intervalstatus = setInterval( () => {
+					V.interval.status = setInterval( () => {
 						if ( V.local ) return
 						
 						UTIL.wsGetState();
@@ -2319,7 +2315,7 @@ var UTIL      = {
 		}
 		WSCAMILLA.onclose   = () => {
 			WSCAMILLA = null;
-			[ 'intervalstatus', 'intervalvu' ].forEach( k => clearInterval( V[ k ] ) );
+			[ 'status', 'vu' ].forEach( k => clearInterval( V.interval[ k ] ) );
 			RENDER.statusStop();
 		}
 		WSCAMILLA.onmessage = response => {
@@ -2377,14 +2373,14 @@ var UTIL      = {
 					}
 					break;
 				case 'GetState':
-					if ( 'intervalvu' in V ) {
+					if ( 'vu' in V.interval ) {
 						if ( ! S.play ) RENDER.statusStop();
 					} else {
 						if ( ! V.signal ) { // restore after 1st set
 							V.signal = true;
 							RENDER.vuBarToggle();
 						}
-						V.intervalvu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
+						V.interval.vu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
 					}
 					break;
 				case 'GetConfigJson':
@@ -2435,38 +2431,53 @@ var UTIL      = {
 }
 var VOLUME    = {
 	...VOLUME
-	, set : () => {
+	, cmd       : target => {
+		VOLUME.set( target );
+		var sleep = ms => new Promise( resolve => setTimeout( resolve, ms ) );
+		async function run() {
+			while ( S.volume !== target ) {
+				var diff  = target - S.volume;
+				S.volume += Math.sign( diff ) * Math.min( 5, Math.abs( diff ) ); // step 5, never overshoot
+				VOLUME.volume( S.volume );
+				if ( S.volume === target ) break; // no trailing sleep
+				await sleep( 200 );
+			}
+		}
+		run();
+	}
+	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
+	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
-		var mute     = S.volumemute !== 0;
+		var mute     = S.volumemute > 0;
 		$level
-			.text( S.volume )
+			.text( target )
 			.toggleClass( 'hide', mute );
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute', mute );
-		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
-		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
+		$( '#divvolume .i-minus' ).toggleClass( 'disabled', target === 0 );
+		$( '#divvolume .i-plus' ).toggleClass( 'disabled', target === 100 );
 		if ( V.drag || vol_prev === '' ) { // onload - empty
 			var ms   = 0;
 		} else {
-			var ms    = Math.abs( S.volume - vol_prev ) * 40;
+			var ms    = Math.abs( target - vol_prev ) * 40;
 			V.animate = true;
 			setTimeout( () => delete V.animate, ms );
 		}
 		$( '#volume .thumb' ).css( {
 			  'transition-duration' : ms +'ms'
-			, left                  : S.volume +'%'
+			, left                  : target +'%'
 		} );
+		if ( ! mute ) VOLUME.mute( 0 );
 	}
-	, xy  : e => {
+	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
+	, xy        : e => {
 		var posX  = COMMON.pageX( e ) - V.volume.x;
 		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
-		S.volume  = Math.round( posX / w * 100 );
-		VOLUME.command();
-		VOLUME.set();
+		VOLUME.cmd( Math.round( posX / w * 100 ) );
 	}
 }
 
@@ -2489,6 +2500,10 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
+	if ( S.volumemute ) {
+		S.volumemute = 0;
+		VOLUME.mute( 0 );
+	}
 	VOLUME.xy( e );
 	delete V.drag;
 	delete V.volume;
@@ -2496,9 +2511,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	if ( V.animate ) return
 	
-	S.volume = this.id === 'volume-0' ? 0 : 100;
-	VOLUME.command();
-	VOLUME.set();
+	VOLUME.cmd( this.id === 'volume-0' ? 0 : 100 );
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	if ( V.animate ) return
@@ -2506,13 +2519,19 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
-	up ? S.volume++ : S.volume--;
-	VOLUME.command();
-	VOLUME.set();
-} ).on( 'click', '.col-r .i-volume, #volume-level', function() {
+	VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
+} ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
-	VOLUME.toggle();
+	VOLUME.mute( S.volume );
+	if ( S.volumemute ) {
+		target       = S.volumemute;
+		S.volumemute = 0;
+	} else {
+		S.volumemute = S.volume;
+		target       = 0;
+	}
+	VOLUME.cmd( target );
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
@@ -2520,22 +2539,37 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	  delegate : '.col-l i, .i-plus'
 	, action   : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
-		V.intervalvolume = setInterval( () => {
-			up ? S.volume++ : S.volume--;
-			VOLUME.command();
-			VOLUME.set();
-			$( '#volume-level' ).text( S.volume );
-			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
-		}, 100 );
+		V.interval.volume = setInterval( () => {
+			var target = up ? S.volume + 1 : S.volume - 1;
+			VOLUME.cmd( target );
+			VOLUME.set( target );
+			if ( target === 0 || target === 100 ) clearInterval( V.interval.volume );
+		}, 300 );
 	}
 	, end     : () => {
-		clearInterval( V.intervalvolume );
+		clearInterval( V.interval.volume );
 		VOLUME.push();
 	}
 } );
 $( '#divvolume' ).on( 'keydown', function( e ) {
 	var key = e.key;
-	if ( [ '-', '+' ].includes( key ) ) $( this ).find( key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
+	if ( [ '-', '+', 'ArrowLeft', 'ArrowRight' ].includes( key ) ) {
+		var updn  = key === '-' || key === 'ArrowLeft' ? '.i-minus' : '.i-plus';
+		var $updn = $( this ).find( updn );
+		if ( e.originalEvent.repeat ) {
+			if ( ! V.e_repeat ) {
+				V.e_repeat = true;
+				V.interval.volume = setInterval( () => {
+					$updn.trigger( 'click' );
+				}, 300 );
+			}
+		} else {
+			$updn.trigger( 'click' );
+		}
+	}
+} ).on( 'keyup', function() {
+	clearInterval( V.interval.volume );
+	V.e_repeat = false;
 } );
 $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
 	var key = e.key;
@@ -2554,7 +2588,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 } ).press( {
 	  delegate : '.i-minus, .i-plus'
 	, action   :  e => SETTING.rangeGet( $( e.currentTarget ), 'press' )
-	, end      : () => clearInterval( V.intervalgain ) // on end
+	, end      : () => clearInterval( V.interval.gain ) // on end
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	LOCAL( 2000 );
@@ -2601,7 +2635,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
 	$li.addClass( 'active' );
 	$MENU.find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
-	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
+	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) );
 	$( '#menu .delete' ).toggleClass( 'gr', V.tab === 'config' && S.ls.configs.length === 1 );
 	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
 		$MENU.find( '.edit, .rename' ).toggleClass( 'hide' );
@@ -2859,7 +2893,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 } );
 $( '.entries' ).on( 'input', 'input[type=range]', function() {
 	SETTING.rangeGet( $( this ), 'input' );
-} )
+} );
 // filters --------------------------------------------------------------------------------
 $( '#filters' ).on( 'click', '.name', function( e ) {
 	e.stopPropagation();
@@ -2922,7 +2956,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
-			COMMON.eq.beforShow( {
+			COMMON.eq.beforeShow( {
 				  init  : () => {
 					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
 					flatButton();

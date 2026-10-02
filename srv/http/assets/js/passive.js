@@ -79,10 +79,8 @@ W = {
 		LIBRARY.home( data.html );
 		DISPLAY.library();
 	}
-	, mpdplayer : data => { // play/stop
+	, mpdplayer : data => {
 		if ( 'snapserverip' in data && data.snapserverip !== S.snapserverip ) return
-		
-		if ( V.library || 'off' in V || 'reboot' in V ) return
 		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {

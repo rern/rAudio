@@ -52,7 +52,7 @@ while read dir; do
 	echo $percent'% <a class="gr">'$( hhmmss $sec )/$( hhmmss $total )'</a>'
 	echo $i/$count $( tagColor $dir )
 
-	if [[ ! $OVERWRITE ]] && fileExist "$dir/coverart.*"; then
+	if [[ ! $OVERWRITE ]] && compgen -G "$dir/coverart.*" > /dev/null; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi
@@ -68,17 +68,17 @@ while read dir; do
 	coverfile=$( $dirbash/status -C "$file0" ) # find in parent dir then embedded
 	[[ ! $coverfile ]] && echo "   $padgr No coverart found." && continue
 	
-	error=
+	ERROR=
 	ext=${coverfile: -3}
 	if [[ $ext == gif ]]; then
 		[[ $( gifsicle -I "$coverfile" | awk 'NR==1 {print $NF}' ) == images ]] && echo "     Resize aninated GIF ..."
 		gifsicle -O3 --resize-fit 200x200 "$coverfile" > "$dir/coverart.gif"
-		[[ $? == 0 ]] && gifsicle -O3 --resize-fit 80x80 "$coverfile" > "$dir/thumb.gif" || error=1
+		[[ $? == 0 ]] && gifsicle -O3 --resize-fit 80x80 "$coverfile" > "$dir/thumb.gif" || ERROR=1
 	else
 		magick "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
-		[[ $? == 0 ]] && magick "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || error=1
+		[[ $? == 0 ]] && magick "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || ERROR=1
 	fi
-	if [[ $error ]]; then
+	if [[ $ERROR ]]; then
 		if [[ ! -w "$dir" ]]; then
 			warningWrite
 			errorwrite+="

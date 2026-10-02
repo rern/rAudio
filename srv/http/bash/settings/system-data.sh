@@ -2,10 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-mhz2ghz() {
-	(( $1 < 1000 )) && echo $1 MHz || echo $( calc 2 $1/1000 ) GHz
-}
-
 [[ ! -e /tmp/cmdline.txt ]] && cp /boot/{cmdline,config}.txt /tmp
 file_tmp=/tmp/raspberrypi.conf
 if [[ ! -e $file_tmp ]]; then
@@ -91,14 +87,16 @@ else
 	readarray -t lscpu < <( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
 	cores=${lscpu[0]}
 	cpus=${lscpu[@]:1:2}
+	speed=${lscpu[3]/.*}
 	(( $cores > 1 )) && cpus+=" x $cores"
+	(( $mhz < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
 $( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
 $( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
 $soc $dot $( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )<br>\
-$cpus @ $( mhz2ghz ${lscpu[3]/.*} )"
+$cpus @ $speed"
 	echo $system > $dirshm/system
 fi
 # i2smodule

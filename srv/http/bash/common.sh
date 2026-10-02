@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ $0 == *settings* ]] && . /srv/http/bash/settings/common.sh
+
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
@@ -88,55 +90,61 @@ audioCDplClear() {
 	if [[ $cdtracks ]]; then
 		notify audiocd Playlist 'CD tracks removed.'
 		mpc -q del $cdtracks
-		$dirbash/cmd.sh playlistpush
+		pushPlaylist
 	fi
 }
-calc() { # $1 - decimal precision, $2 - math
-	awk 'BEGIN { printf "%.'$1'f", '"$2"' }'
-}
-camillaDSPstart() {
-	systemctl start camilladsp
-	if systemctl -q is-active camilladsp; then
-		pushRefresh camilla
+color() {
+	filecss=/srv/http/assets/css/colors.css
+	css=$( < $filecss )
+	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
+	cd=( $hslcd )
+	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
+	[[ $LIST ]] && echo '{
+  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "custom" : '$( exists $dirsystem/color )'
+, "ml"     : [ '${ml:1}' ]
+}' && exit
+# --------------------------------------------------------------------
+	filecolor=$dirsystem/color
+	if [[ $HSL ]]; then
+		echo $HSL > $filecolor
+		HSL=( $HSL )
 	else
-		$dirsettings/features.sh camilladsp$'\n'OFF
-	fi
-}
-conf2json() {
-	local file json k keys only l lines v
-	file=$1
-	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
-	[[ ! -e $file ]] && echo false && return
-#...............................................................................
-	# omit lines  blank, comment / group [xxx]
-	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
-	[[ ! $lines ]] && echo false && return
-#...............................................................................
-	if [[ $2 ]]; then # $2 - specific keys
-		shift
-		keys=$@
-		only="^\s*${keys// /|^\\s*}"
-		lines=$( grep -E "$only" <<< $lines )
-	fi
-	[[ ! $lines ]] && echo false && return
-#...............................................................................
-	[[ $( head -n 1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
-	while read line; do
-		k=${line/=*}
-		v=${line/*=}
-		if [[ $v ]]; then
-			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-						-e 's/^(True|yes)$/true/
-							s/^(False|no|"")$/false/' <<< $v )
-			if [[ ${v:0:1} != '[' && ! $v =~ ^true$|^false$ && ! $v =~ ^-*[0-9]*\.*[0-9]+$ ]]; then
-				v='"'$( quoteEscape $v )'"' # quote and escape string
-			fi
+		[[ $RESET ]] && rm -f $filecolor
+		if [[ -e $filecolor ]]; then
+			HSL=( $( < $filecolor ) )
 		else
-			v=false
+			HSL=( $hslcd )
+			DEFAULT=1
 		fi
-		json+=', "'${k^^}'": '$v
-	done <<< $lines
-	echo { ${json:1} }
+	fi
+	h=${HSL[0]}
+	s=${HSL[1]}
+	l=${HSL[2]}
+	regex="\
+s/(--h *: ).*/\1$h;/
+s/(--s *: ).*/\1$s%;/"
+	for m in ${ml//,/ }; do
+		L=$(( l + m - 35 ))
+		regex+="
+s/(--ml$m *: ).*/\1$L%;/"
+	done
+	sed -E "$regex" <<< $css > $filecss
+	iconsvg=/srv/http/assets/img/icon.svg
+	cm="($h,$s%,$l%)"
+	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
+	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
+	[[ ! $color ]] && color=true
+	color='{
+  "cg"    : "hsl('$h',3%,75%)"
+, "cm"    : "hsl'$cm'"
+, "color" : '$( [[ $DEFAULT ]] && echo false || echo true )'
+, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
+, "ml"    : [ '${ml:1}' ]
+}'
+	pushData color "$color"
+	splashRotate
+	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
 }
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
@@ -202,113 +210,14 @@ data2json() {
 		echo "$json"
 	fi
 }
-data2jsonPatch() {
-	sed '
-		s/:\s*$/: false/;    # "k": \n    > "k": false
-		s/:\s*}$/: false }/; # "k": }\n   > "k": false }
-		s/{\s*,/{ /;         # { , ...    > { ...
-		s/^,\s*$/, false/;   # , \n       > , false
-		s/\[\s*,/[ false,/g; # [ ,        > [ false,
-		s/,\s*,/, false,/g;  # ..., , ... > , false,
-		s/,\s*]/, false ]/g  # ..., ]     > , false ]
-	' <<< $1
-}
-enableFlagSet() {
-	local file
-	file=$dirsystem/$CMD
-	[[ $ON ]] && touch $file || rm -f $file
-}
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
-fifoToggle() { # mpdoled vuled vumeter
-	local filefifo vumeter
-	filefifo=$dirmpdconf/fifo.conf
-	mpdoled_vuled_vumeter
-	[[ $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
-	if [[ $mpdoled || $vuled || $vumeter ]]; then
-		if [[ ! -e $filefifo ]]; then
-			ln -s $dirmpdconf/{conf/,}fifo.conf
-			systemctl restart mpd
-		fi
-		if statePlay; then
-			[[ $mpdoled ]] && systemctl restart mpd_oled
-			[[ $vuled || $vumeter ]] && systemctl start cava
-		fi
-	else
-		if [[ -e $filefifo ]]; then
-			[[ $mpdoled || $vuled || $vumeter ]] && return
-#...............................................................................
-			rm $filefifo
-			systemctl restart mpd
-		fi
-		[[ ! $mpdoled ]] && systemctl stop mpd_oled
-		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
-	fi
-}
-fileExist() {
-	compgen -G "$1" > /dev/null && return 0
-}
-fstabColumnReload() {
-	column -t <<< $1 > /etc/fstab
-	systemctl daemon-reload
-	mount -a &> /dev/null && return 0
-}
-fstabSet() {
-	local fstab std
-	umount -ql "$1"
-	mkdir -p "$1"
-	chown mpd:audio "$1"
-	cp -f /etc/fstab /tmp
-	fstab="\
-$( < /etc/fstab )
-$2"
-	fstabColumnReload "$fstab"
-	if [[ $? == 0 ]]; then
-		for i in {1..10}; do
-			sleep 1
-			mountpoint -q "$1" && break
-		done
-	else
-		mv -f /tmp/fstab /etc
-		rmdir "$1"
-		systemctl daemon-reload
-		sed 's/$/<br>/' <<< $std
-	fi
-}
-getContent() {
-	if [[ -e $1 ]]; then
-		cat "$1"
-	elif [[ $2 ]]; then
-		echo $2
-	fi
-}
-getVar() { # var=value
-	[[ ! -e $2 ]] && echo false && return
-#...............................................................................
-	case ${2: -4} in
-		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
-		.yml )
-			if [[ $1 != *.* ]]; then
-				sed -n '/^\s*'$1':/ {s/^.*: \+//; p}' "$2"                        # /var: value/ > value
-			else
-				local a b
-				a=${1/.*}
-				b=${1/*.}
-				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p}' "$2" # /var1:/,/var2: value/ > value
-			fi
-			;;
-		* )
-			local data line var
-			data=$( < "$2" )
-			line=$( grep ^$1= <<< $data )                                    # var=
-			[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
-			[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
-			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
-			[[ $var ]] && quoteEscape $var || echo $3
-			;;
-	esac
+equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	v=( $VALUES )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band=( "0$i. ${freq[i]} $unit" )
+		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
+	done
 }
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
@@ -316,16 +225,8 @@ grepr() {
 imageCacheBust() {
 	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
 }
-inOutputConf() {
-	local file
-	file=$dirmpdconf/output.conf
-	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
-}
 ipAddress() {
 	$dirbash/status -I $1
-}
-ipOnline() {
-	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 ipSharedData() {
 	local self
@@ -343,17 +244,11 @@ killProcess() {
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
-line2array() {
-	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
-}
-localBrowserOff() {
-	systemctl disable --now bootsplash localbrowser
-	systemctl enable --now getty@tty1
-	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
-}
 logoLcdOled() {
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+	if [[ -e $dirsystem/lcdchar ]]; then
+		systemctl stop lcdchar
+		$dirbash/lcdchar.py logo
+	fi
 	if [[ -e $dirsystem/mpdoled ]]; then
 		. <( cat /etc/default/mpd_oled )
 		timeout 1 mpd_oled $OPTS -x # timeout - if unresponsive
@@ -365,47 +260,67 @@ mkdirRW() {
 	mkdir $1
 	chmod 777 $1
 }
-mpcElapsed() {
-	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
-}
 mpcPlayback() {
-	! playerActive mpd && playerStop && exit
-# --------------------------------------------------------------------
-	if [[ $1 ]]; then
-		ACTION=$1
-	else
-		statePlay && ACTION=pause || ACTION=play
+	if [[ ! $ACTION ]]; then
+		[[ $( jq -r .state $dirshm/status.json ) == play ]] && ACTION=pause || ACTION=play 
 	fi
-	$dirbash/cmd.sh "mpcplayback
-$ACTION
-CMD ACTION"
+	radioStop
+	if [[ $ACTION == play ]]; then
+		mpc -q play $POS
+		if audioCDtrack; then
+			touch $dirshm/cdstart
+			( sleep 20 && rm -f $dirshm/cdstart ) &
+			notify 'audiocd blink' 'Audio CD' 'Start play ...'
+			for i in {0..20}; do
+				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
+			done
+			rm -f $dirshm/cdstart
+			pushStatus
+		fi
+		if [[ -e $dirshm/relayson ]]; then
+			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
+		fi
+	else
+		[[ $ACTION == stop ]] && scrobbleOnStop mpd
+		mpc -q $ACTION
+	fi
+	[[ ! -e $dirsystem/snapclientserver ]] && exit
+# --------------------------------------------------------------------
+	# snapclient
+	if [[ $ACTION == play ]]; then
+		sleep 2 # fix stutter
+		action=start
+		systemctl start snapclient
+	else
+		systemctl stop snapclient
+	fi
 }
 mpcSkip() {
-	! playerActive mpd && return
-	
-	local length pos songpos state
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
-	if [[ $1 == PREVIOUS ]]; then
-		(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
-	else
-		(( $songpos == $length )) && pos=1 || pos=$(( songpos + 1 ))
-	fi
-	$dirbash/cmd.sh "mpcskip
-$pos
-${state:0:4}
-CMD POS ACTION" # state: playing, paused, stopped
+	radioStop
+	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+	mpc -q play $POS
+	[[ $ACTION != play ]] && mpc -q stop
+	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
+	[[ $consume == on ]] && mpc -q del $songpos
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 }
-mpdoled_vuled_vumeter() {
-	[[ -e $dirsystem/mpdoled ]] && mpdoled=1 || mpdoled=
-	[[ -e $dirsystem/vuled ]] && vuled=1 || vuled=
-	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
-}
-mpdoledChip() {
-	if grep -q '\-o ' /etc/default/mpd_oled; then
-		sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled
-	else
-		echo 6
+mpcUpdate() {
+	[[ $1 ]] && ACTION=$1
+	[[ $2 ]] && PATHMPD=$2
+	rm -f $dirshm/updatedone
+	date +%s > $dirmpd/updatestart
+	pushData mpdupdate '{ "updating": true }'
+	if [[ ! $ACTION ]]; then
+		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
+			. <( cat $dirsystem/mpcupdate.conf )
+			ACTION=$action
+			PATHMPD=$pathmpd
+		else
+			ACTION=rescan
+		fi
 	fi
+	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
+	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 }
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
@@ -424,6 +339,18 @@ notify() { # icon title message delayms
 	title=$( quoteEscape $2 )
 	message=$( quoteEscape $3 )
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+}
+playback() {
+	! playerActive mpd && playerStop && exit
+# --------------------------------------------------------------------
+	(( $( mpc status %length% ) == 0 )) && exit
+# --------------------------------------------------------------------
+	if [[ $1 ]]; then
+		ACTION=$1
+	else
+		statePlay && ACTION=pause || ACTION=play
+	fi
+	mpcPlayback
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
@@ -453,7 +380,7 @@ playerStop() {
 	local player
 	player=$( < $dirshm/player )
 	echo mpd > $dirshm/player
-	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
+	scrobbleOnStop $player
 	case $player in
 		airplay )
 			systemctl stop shairport # metadata
@@ -483,10 +410,17 @@ playerStop() {
 			systemctl start upmpdcli
 			;;
 	esac
-	$dirbash/status-push.sh
+	pushStatus
 	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	fi
+}
+plClear() {
+	radioStop
+	mpc -q clear
+	rm -f $dirsystem/librandom $dirshm/playlist*
+	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
+	pushStatus
 }
 pushData() { # send to websocket.py (server)
 	local channel data dir
@@ -512,13 +446,26 @@ pushDataSet() {
 { "channel": "$1", "data": $2 }
 EOF
 }
-pushDirCounts() {
-	local tf
-	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
-	pushData counts '{ "'$1'": '$tf' }'
-}
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
+}
+pushPlaylist() {
+	local b buffer data
+	[[ -e $dirshm/pushplaylist ]] && exit
+# --------------------------------------------------------------------
+	touch $dirshm/pushplaylist
+	pushData playlist '{ "blink": true }'
+	rm -f $dirshm/playlist*
+	if [[ $( mpc status %length% ) == 0 ]]; then
+		pushData playlist '{ "blank": true }'
+	else
+		data=$( php /srv/http/playlist.php current )
+		data=$( pushDataSet playlist "$data" )
+		bytes=$( printf '%s' "$data" | wc -c )
+		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
+	fi
+	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRefresh() {
 	local page push
@@ -543,85 +490,47 @@ radioStop() {
 	[[ ! -e $dirshm/radio ]] && return
 #...............................................................................
 	mpc -q stop
-	systemctl stop radio dab &> /dev/null
+	systemctl stop radio
+	systemctl stop dab &> /dev/null
 	rm -f $dirshm/radio
 	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
 }
-serviceRestartEnable() {
-	systemctl restart $CMD
-	systemctl -q is-active $CMD && systemctl enable $CMD
-}
-settingsActive() {
-	local data pkg
-	for pkg in $@; do
-		data+='
-, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
-	done
-	echo "$data"
-}
-settingsConf() {
-	local data file
-	for file in $@; do
-		data+='
-, "'$file'conf" : '$( conf2json $file.conf )
-	done
-	echo "$data"
-}
-settingsEnabled() {
-	local data dir file
-	for file in $@; do
-		[[ ${file:0:1} == / ]] && dir=$file && continue
-
-		data+='
-, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
-	done
-	echo "$data"
-}
-sharedData() {
-	[[ ! -e $filesharedip ]] && echo false && return
+scrobble() {
+	readarray -t data <<< $1
+	Artist=${data[0]}
+	Title=${data[1]}
+	Time=${data[2]}
+	elapsed=${data[3]}
+	webradio=${data[4]}
+	[[ ! $Artist || ! $Title || $webradio == true || "$( < $dirshm/scrobbled )" == "$Artist$Title" ]] && return
 #...............................................................................
-	nfsServerActive && echo false || echo true
+	(( $Time < 30 || ( $elapsed < 240 && $elapsed < $(( Time / 2 )) ) )) && return
+#...............................................................................
+	$dirbash/scrobble.sh "cmd
+$Artist
+$Title
+CMD ARTIST TITLE" &> /dev/null &
 }
-sharedDataCopy() {
-	rm -f $dirmpd/{listing,updating}
-	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
-	file_order=$dirsystem/order.json
-	[[ ! -e $file_order ]] && file_order=
-	cp -f $dirsystem/display.json $file_order $dirshareddata
-	touch $dirshareddata/order.json # if not exist
+scrobbleOnStop() {
+	[[ ! -e $dirsystem/scrobble ]] && return
+	
+	[[ $1 != mpd ]] && grep -q $1=$ $dirsystem/scrobble.conf && return
+	
+	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
 }
-sharedDataLink() {
-	local ip_share s
-	mkdir -p $dirbackup
-	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
-	file_order=$dirsystem/order.json
-	[[ ! -e $file_order ]] && file_order=
-	mv -f $dirsystem/display.json $file_order $dirbackup
-	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
-	ln -s $dirshareddata/{display,order}.json $dirsystem
-	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
-	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	echo data > $dirnas/.mpdignore
-}
-sharedDataReset() {
-	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
-	rm -f $dirsystem/{display,order}.json $dirnas/.mpdignore
-	file_order=$dirbackup/order.json
-	[[ ! -s $file_order ]] && file_order=
-	mv -f $dirbackup/display.json $file_order $dirsystem
-	mv -f $dirbackup/* $dirdata
-	rm -rf $dirbackup
-}
-snapserverList() {
-	local name_ip
-	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/IPv4.*1704;$/&&!/^=;l/ {print $7, $8}' )
-	if [[ $name_ip ]] ; then
-		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
-		echo '[ '${name_ip:1}' ]'
+skip() {
+	! playerActive mpd && return
+	
+	local length songpos
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	ACTION=${state:0:4} # state: playing, paused, stopped
+	if [[ $1 == PREVIOUS ]]; then
+		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
 	else
-		echo '[]'
+		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
 	fi
+	mpcSkip
 }
 splashRotate() {
 	local dirimg rotate
@@ -641,63 +550,29 @@ splashRotate() {
 statePlay() {
 	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
 }
-statusColor() {
-	sed -E  -e 's|●|<grn>&</grn>|
-					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
-										 s|(enabled)|<grn>\1</grn>|g}
-					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
-										 s|inactive|<ora>&</ora>|
-										 s|(failed)|<red>\1</red>|ig}
-					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
-}
-statusUpdating() {
-	mpc | grep -q ^Updating && echo true && return
-#...............................................................................
-	[[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]] && echo true || echo false
-}
-timezoneAuto() {
-	local tz
-	tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )
-	[[ ! $tz ]] && tz=$( curl -s -m 2 http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
-	[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
-	[[ ! $tz ]] && tz=UTC
-	timedatectl set-timezone $tz
-}
-usbMaxCurrent() {
-	local BB revision
-	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	if [[ $BB != 17 ]]; then
-		sed -i '/usb_max_current/ d' /boot/config.txt
-	elif [[ $BB != 03 || $BB = 04 ]]; then
-		sed -i '/max_usb_current/ d' /boot/config.txt
-	fi
-}
 volume() {
-	local diff filevolumemute fn_volume type val values
-	filevolumemute=$dirsystem/volumemute
+	local diff file_volumemute fn_volume type val values
+	file_volumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
-	if [[ $TYPE != dragpress ]]; then
-		if [[ $TYPE == mute ]]; then
+	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
+	if [[ ! $DRAG_PRESS ]]; then
+		if [[ $TYPE == mute && $TARGET == 0 ]]; then
 			val=$CURRENT
 			type=mute
+			echo $CURRENT > $file_volumemute
 		else
 			val=$TARGET
-			[[ -e $filevolumemute ]] && type=unmute
+			[[ -e $file_volumemute ]] && type=unmute
+			rm -f $file_volumemute
 		fi
 		pushData volume '{ "type": "'$type'", "val": '$val' }'
-	fi
-	if [[ $TYPE == mute ]]; then
-		echo $CURRENT > $filevolumemute
-	else
-		rm -f $filevolumemute
 	fi
 	fn_volume=$( volumeFunction )
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$fn_volume $TARGET% "$CONTROL"
-		volumeGet push
+		[[ ! $DRAG_PRESS ]] && volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
@@ -711,15 +586,34 @@ volume() {
 	fi
 	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # camilladsp only
+volumeAmixer() { # camilla with mixer control only
 	amixer -Mq sset "$2" $1
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
 }
+volumeCamilla() { # camilla without mixer control
+	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
+			BEGIN {
+				min *= 100; max *= 100               # to centidB
+				norm = pct / 100
+				if (norm < 0) norm = 0
+				if (norm > 1) norm = 1
+				range = max - min
+				if (range <= 2400) {                 # <=24dB -> linear scale
+					db = min + norm * range
+				} else {
+					min_norm = 10 ^ ((min - max) / 6000.0)
+					scaled = norm * (1 - min_norm) + min_norm
+					db = max + 6000.0 * log(scaled) / log(10)
+				}
+				printf "%.1f\n", db / 100
+			}' ) # % > db
+	websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": '$db' }' &> /dev/null
+}
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
-		echo volumeAmixer
+		echo volumeCamilla
 	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
 		echo volumeMpd
 	else
@@ -727,70 +621,54 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card db mixer mixertype name val val_db volume
-	. $dirshm/output
-	if [[ $2 == hw ]]; then
-		read val db < <( volumeGetAmixer "$mixer" $card )
-	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
-		read val db < <( volumeGetAmixer bluealsa )
-	elif [[ -e $dirshm/nosound || $mixertype == none ]]; then
-		true
-	elif [[ $mixertype == software ]] && playerActive mpd; then
-		val="$( mpc status %volume% | tr -d % )"
-	else
-		for i in {1..5}; do # some usb might not be ready
-			read val db < <( volumeGetAmixer "$mixer" $card )
-			[[ $val ]] && break || sleep 1
-		done
-	fi
-	[[ ! $val ]] && val=0
-	[[ ! $db ]] && db=0
-	case $1 in
-		push )
-			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
-			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+	local card db fn_volume lines mixer val
+	fn_volume=$( volumeFunction )
+	case $fn_volume in
+		volumeCamilla )  val=$( volumeGetCamilla );;
+		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
+		volumeBlueAlsa )
+			lines=$( amixer -MD bluealsa 2> /dev/null )
+			val=$( volumeLines2val $lines )
 			;;
-		valdb ) echo $val $db;;
-		json )  echo '{ "val": '$val', "db": '$db' }';;
-		db )    echo $db;;
-		* )     echo $val;;
+		* )
+			. $dirshm/output
+			for i in {1..5}; do # some usb might not be ready
+				lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
+				[[ $lines ]] && break || sleep 1
+			done
+			val=$( volumeLines2val $lines )
+			;;
 	esac
-	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
-}
-volumeGetAmixer() {
-	local val_db
-	if [[ $1 == bluealsa ]]; then
-		val_db=$( amixer -MD bluealsa 2> /dev/null )
+	if [[ $1 == push ]]; then
+		pushData volume '{ "val": '$val' }'
 	else
-		val_db=$( amixer -c $2 -M sget "$1" 2> /dev/null ) # $2-card, $1-scontrol
+		echo $val
 	fi
-	awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB'
+	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }
-volumeMaxGet() {
-	local max
-	if [[ -e  $dirsystem/volumelimit ]]; then
-		. <( grep ^max $dirsystem/volumelimit.conf )
-	else
-		max=100
-	fi
-	echo $max
+volumeGetCamilla() {
+	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
+	awk -v db=$db -v min=-60 -v max=0 '
+		BEGIN {
+			min *= 100; max *= 100; db *= 100   # to centidB
+			range = max - min
+			if (range <= 2400) {                # <=24dB -> linear scale
+				norm = (db - min) / range
+			} else {
+				norm = 10 ^ ((db - max) / 6000.0)
+				min_norm = 10 ^ ((min - max) / 6000.0)
+				norm = (norm - min_norm) / (1 - min_norm)
+			}
+			if (norm < 0) norm = 0
+			if (norm > 1) norm = 1
+			p = norm * 100
+			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
+		}' # db > %
+}
+volumeLines2val() {
+	val=${1#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
+	val=${val%%\%*}
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}
-}
-volumeLimit() {
-	local fn_volume mixer val
-	val=$( getVar $1 $dirsystem/volumelimit.conf )
-	if [[ -e $dirshm/btmixer ]]; then
-		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output
-	fi
-	fn_volume=$( volumeFunction )
-	$fn_volume $val% "$mixer" $card
-}
-wlanOnboardDisable() {
-	local mod
-	lsmod | grep -q brcmfmac_cyw && mod=cyw || mod=wcc
-	rmmod brcmfmac_$mod brcmfmac &> /dev/null
 }

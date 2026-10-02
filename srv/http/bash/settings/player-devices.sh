@@ -23,20 +23,18 @@
 # name: bcm2835 Headphones
 # ...
 
-outputdevice=$( getContent $dirsystem/output-device )
-proccardn=$( ls -d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
+outputdevice=$( getContent $dirsystem/audio-output )
+proccardn=$( grep -Li loopback /proc/asound/card[0-9]/id | xargs -r -n1 dirname ) # not depend on /etc/asound.conf which might be broken from bad script
 card=${proccardn: -1}
-usbdac=$( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null | wc -l )
-lastcard=$(( card - usbdac )) # last card - not usb
+card_usb=$( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null | wc -l )
+lastcard=$(( card - card_usb )) # last card - not usb
 while read path; do
 	info=$( sed 's/bcm2835/On-board/' $path/*/info )
 	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
 	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
-	[[ $name == Loopback* ]] && continue
-	
 	CARD=${path: -1}
-	if [[ $CARD == $lastcard && -e $dirsystem/audio-output ]]; then # last card - not on-board
-		NAME=$( < $dirsystem/audio-output )
+	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
+		NAME=$outputdevice
 	else
 		NAME=$name
 	fi
@@ -52,7 +50,7 @@ while read path; do
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
-	LISTDEVICE+=', "'$NAME'": "hw:'$CARD',0"'
+	LISTDEVICE+=', "'$NAME'": "hw:'$CARD'"'
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
@@ -65,7 +63,7 @@ elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
 		CARD=${c_n/^*}
 		NAME=$outputdevice
 	else
-		rm $dirsystem/output-device # remove if not exist any more
+		rm -f $dirsystem/output-device # remove if not exist any more
 	fi
 fi
 
@@ -99,7 +97,8 @@ if [[ $LISTMIXER ]]; then
 	MIXERTYPE=hardware
 else
 	rm -f $dirshm/{amixercontrol,mixers}
-	MIXERTYPE=none
+	file_mixer="$dirsystem/mixertype-$NAME"
+	[[ -e $file_mixer ]] && MIXERTYPE=$( < "$file_mixer" ) || MIXERTYPE=none
 fi
 mixertypefile="$dirsystem/mixertype-$NAME"
 [[ -e $mixertypefile ]] && MIXERTYPE=$( < "$mixertypefile" )
@@ -113,4 +112,4 @@ EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
 file=$dirsystem/mixernone
-[[ $MIXERTYPE == none ]] && touch $file || rm -f $file
+[[ $MIXERTYPE == none || ( ! $MIXER && -e $dirsystem/camilladsp ) ]] && touch $file || rm -f $file

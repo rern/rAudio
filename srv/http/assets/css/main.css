@@ -600,9 +600,6 @@ div.pagerefresh {
 #qr svg {
 	margin: 10px auto;
 }
-#coverart svg .text {
-	fill: var( --cw ) !important;
-}
 #coverart,
 #vu,
 #biotitleimg,

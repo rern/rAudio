@@ -81,7 +81,7 @@ infowlan )
 	if [[ $2 ]]; then
 		wlandev=$( netDevice w )
 		if ip addr show $wlandev | grep -q 'state DOWN'; then
-			down=1
+			DOWN=1
 			ip link set $wlandev up
 		fi
 		cmd="iw dev $wlandev scan ssid \"$2\""
@@ -90,7 +90,7 @@ infowlan )
 		echo "\
 <bll># $cmd</bll>
 $data"
-		[[ $down ]] && ip link set $wlandev down
+		[[ $DOWN ]] && ip link set $wlandev down
 	else
 		$dirsettings/data-service.sh ap nostatus
 	fi

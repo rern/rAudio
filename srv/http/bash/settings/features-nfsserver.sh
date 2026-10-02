@@ -21,7 +21,7 @@ fi
 dirshared=$dirdata/mpdshared
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 rm -f $dirmpd/{listing,updating}
-$dirbash/cmd.sh mpcremove
+plClear
 systemctl stop mpd
 if [[ $ON ]]; then
 	mv -f /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null
@@ -41,17 +41,12 @@ if [[ $ON ]]; then
 		action=update
 		cp -f $dirshared/* $dirmpd
 		rm -rf $dirshared
-	else
-		action=rescan
 	fi
 	systemctl start mpd
 	while read file; do
 		sed -E -i '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
 	done < <( ls $dirbookmarks/* $dirplaylists/* )
-	$dirbash/cmd.sh "mpcupdate
-$action
-
-CMD ACTION PATHMPD"
+	mpcUpdate $action
 else
 	mkdir -p $dirshared
 	cp $dirmpd/* $dirshared

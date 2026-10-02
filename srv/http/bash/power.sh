@@ -3,13 +3,15 @@
 . /srv/http/bash/common.sh
 
 if pgrep mkfs &> /dev/null; then
-	name=$( getContent $dirshm/formatting 'Local Storage' )
+	[[ -e $dirshm/formatting ]] && name=$( < $dirshm/formatting ) || name='Local Storage'
 	echo "Currently formatting <wh>$name</wh>"
 	exit
 # --------------------------------------------------------------------
 fi
 
 args2var "$1"
+
+playerStop
 
 if [[ -e $filesharedip ]]; then
 	if nfsServerActive; then # server rAudio
@@ -22,13 +24,11 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-touch $dirshm/power # maintain lcdchar/oled logo
-[[ $CMD == reboot ]] && reboot=1
-playerStop
+[[ $CMD == reboot || $1 == reboot ]] && REBOOT=1
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
 playerActive upnp && mpc -q clear
-if [[ $reboot ]]; then
+if [[ $REBOOT ]]; then
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
 else
@@ -47,4 +47,4 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 fi
 logoLcdOled
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-[[ $reboot ]] && reboot || poweroff
+[[ $REBOOT ]] && reboot || poweroff

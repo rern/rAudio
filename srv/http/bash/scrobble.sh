@@ -25,6 +25,7 @@ response=$( curl -sfX POST \
 	http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 ]]; then
 	[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$TITLE
+	echo "$ARTIST$TITLE" > $dirshm/scrobbled
 else
 	msg='Server not reachable.'
 fi

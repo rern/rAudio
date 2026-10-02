@@ -51,31 +51,6 @@ plAddRandom() {
 	fi
 	plAddRandom
 }
-plClear() {
-	mpc -q clear
-	radioStop
-	rm -f $dirsystem/librandom $dirshm/playlist*
-	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
-	$dirbash/status-push.sh
-}
-pushPlaylist() {
-	local b buffer data
-	[[ -e $dirshm/pushplaylist ]] && exit
-# --------------------------------------------------------------------
-	touch $dirshm/pushplaylist
-	pushData playlist '{ "blink": true }'
-	rm -f $dirshm/playlist*
-	if [[ $( mpc status %length% ) == 0 ]]; then
-		pushData playlist '{ "blank": true }'
-	else
-		data=$( php /srv/http/playlist.php current )
-		data=$( pushDataSet playlist "$data" )
-		bytes=$( printf '%s' "$data" | wc -c )
-		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
-		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
-	fi
-	( sleep 1 && rm -f $dirshm/pushplaylist ) &
-}
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }

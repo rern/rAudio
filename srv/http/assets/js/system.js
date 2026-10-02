@@ -140,11 +140,11 @@ var CONFIG        = {
 	}
 	, mpdoled       : values => {
 		var chip       = {
-			  'SSD130x SP'  : 1
-			, 'SSD130x I²C' : 3
-			, 'Seeed I²C'   : 4
-			, 'SH1106 I²C'  : 6
+			  'SH1106 I²C'  : 6
 			, 'SH1106 SPI'  : 7
+			, 'SSD130x I²C' : 3
+			, 'SSD130x SPI' : 1
+			, 'Seeed I²C'   : 4
 		}
 		INFO( {
 			  ...SW
@@ -157,10 +157,9 @@ var CONFIG        = {
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
 			, beforeshow   : () => {
-				var $tr   = $( '#infoList tr' );
-				var $baud = $tr.eq( 1 )
+				var $baud = $( '#infoList tr' ).eq( 1 );
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$tr.eq( 0 ).on( 'input', function() {
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
@@ -633,7 +632,7 @@ var UTIL          = {
 			return
 		}
 
-		$this.addClass( 'blink wh' )
+		$this.addClass( 'blink wh' );
 		V.intstatus = setInterval( () => {
 			BASH( 'system-data.sh status', data => {
 				$( '#divstatus .value' ).html( data );
@@ -730,7 +729,7 @@ var UTIL          = {
 				, beforeshow   : () => {
 					UTIL.relays.css();
 					var $tdtimer = $( '#infoList tr:last td' );
-					var $timer   = $tdtimer.slice( 1 )
+					var $timer   = $tdtimer.slice( 1 );
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
 					$timer.toggleClass( 'hide', ! pin.TIMERON );
 					$( '#infoList' ).on( 'input', 'select', function() {
@@ -741,7 +740,9 @@ var UTIL          = {
 							var ar = i % 2 ? von : voff;
 							ar.push( $( el ).val() );
 						} );
-						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) BANNER( SW.icon, SW.title, 'Duplicate devices', 6000 )
+						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) {
+							BANNER( SW.icon, SW.title, 'Duplicate devices', 6000 );
+						}
 					} );
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
@@ -1072,9 +1073,6 @@ $( '.img' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#infoList' ).on( 'load', 'svg', function() {
-	console.log(9)
-} );
 $( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {
 	if ( S.formatting ) {
@@ -1105,7 +1103,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var c = {};
 		[ 'mounted', 'networks', 'server', 'shareddata', 'unformat', 'usb' ].forEach( k => {
-			c[ k ] = $li.hasClass( k )
+			c[ k ] = $li.hasClass( k );
 		} );
 		$( '#menu .info' ).toggleClass( 'hide', c.networks );
 		$( '#menu .forget' ).toggleClass( 'hide', c.usb || c.unformat );
@@ -1175,7 +1173,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		} );
 	} else {
 		$this.toggleClass( 'active' );
-		$list.toggleClass( 'hide' )
+		$list.toggleClass( 'hide' );
 		if ( V.localhost ) $( '.list a' ).remove();
 	}
 } );
