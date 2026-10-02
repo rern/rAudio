@@ -1543,7 +1543,7 @@ var COMMON    = {
 	, mixerVolume   : ( type, volume ) => {
 		if ( SW.icon === 'mpd' ) {
 			NOTIFY_COMMON();
-			BASH( [ 'mixertype', type, volume, 'CMD MIXERTYPE VOLUME' ] );
+			BASH( [ 'mixertype', type, volume, 'CMD MIXERTYPE TARGET' ] );
 		} else {
 			NOTIFY_COMMON( ! S.camilladsp );
 			BASH( [ 'camilladsp', volume, ! S.camilladsp, 'CMD VOLUME ON' ] );

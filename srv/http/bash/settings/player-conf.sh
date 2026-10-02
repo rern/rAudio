@@ -154,7 +154,7 @@ for pid in $( pgrep mpd ); do # set priority
 done
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
-	$dirbash/cmd.sh mpcupdate
+	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi

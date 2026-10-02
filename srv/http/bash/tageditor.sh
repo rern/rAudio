@@ -78,7 +78,4 @@ $( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path
 	dirupdate=$( dirname "$FILE" )
 fi
 
-$dirbash/cmd.sh "mpcupdate
-update
-$dirupdate
-CMD ACTION PATHMPD"
+mpcUpdate update "$dirupdate"

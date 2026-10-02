@@ -99,9 +99,7 @@ mixertype )
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && tf=true || tf=false
 	pushData display '{ "volumenone": '$tf' }'
-	[[ $VOLUME ]] && $dirbash/cmd.sh "volume
-$VOLUME
-CMD TARGET"
+	[[ $TARGET ]] && volume
 	;;
 novolume )
 	amixer0dB

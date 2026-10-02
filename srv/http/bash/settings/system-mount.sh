@@ -58,10 +58,7 @@ if [[ $SHAREDDATA ]]; then
 	sharedDataLink
 	appendSortUnique $filesharedip $( ipAddress )
 	systemctl start mpd
-	[[ $RESCAN ]] && $dirbash/cmd.sh "mpcupdate
-rescan
-
-CMD ACTION PATHMPD"
+	[[ $RESCAN ]] && mpcUpdate
 	pushData refresh '{ "page": "features", "shareddata": true }'
 fi
 pushRefresh system

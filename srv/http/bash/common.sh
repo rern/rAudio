@@ -225,6 +225,24 @@ $pos
 ${state:0:4}
 CMD POS ACTION" # state: playing, paused, stopped
 }
+mpcUpdate() {
+	[[ $1 ]] && ACTION=$1
+	[[ $2 ]] && PATHMPD=$2
+	rm -f $dirshm/updatedone
+	date +%s > $dirmpd/updatestart
+	pushData mpdupdate '{ "updating": true }'
+	if [[ ! $ACTION ]]; then
+		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
+			. <( cat $dirsystem/mpcupdate.conf )
+			ACTION=$action
+			PATHMPD=$pathmpd
+		else
+			ACTION=rescan
+		fi
+	fi
+	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
+	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
+}
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
 }
@@ -480,7 +498,7 @@ volumeCamilla() { # camilla without mixer control
 				}
 				printf "%.1f\n", db / 100
 			}' ) # % > db
-	websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": '$db' }'
+	websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": '$db' }' &> /dev/null
 }
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then

@@ -59,7 +59,7 @@ camilladsp )
 	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	[[ $ON ]] && volumeCamilla $VOLUME &> /dev/null # after camilladsp started
+	[[ $ON ]] && volumeCamilla $VOLUME # after camilladsp started
 	;;
 dabradio )
 	enableFlagSet

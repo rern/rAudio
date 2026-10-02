@@ -95,10 +95,7 @@ forget | mount | unmount )
 		rmdir "$MOUNTPOINT" &> /dev/null
 		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
 		fstabColumnReload "$fstab"
-		$dirbash/cmd.sh "mpcupdate
-update
-NAS
-CMD ACTION PATHMPD"
+		mpcUpdate update NAS
 	fi
 	pushStorage
 	;;

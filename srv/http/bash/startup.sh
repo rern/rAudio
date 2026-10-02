@@ -118,7 +118,7 @@ pushStatus
 [[ -e $dirsystem/volumelimit ]] && volumeLimit startup
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
-	$dirbash/cmd.sh mpcupdate
+	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 else
