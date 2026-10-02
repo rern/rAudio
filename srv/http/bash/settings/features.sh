@@ -49,7 +49,9 @@ camilladsp )
 	. $dirshm/output
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
-	if [[ ! $ON ]]; then
+	if [[ $ON ]]; then
+		amixer0dB
+	else
 		if [[ $mixer ]]; then
 			volumeAmixer $VOLUME% "$mixer"
 		else

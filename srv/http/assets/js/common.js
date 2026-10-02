@@ -569,7 +569,7 @@ function INFO( json ) {
 				$( '#infoList' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
 										 +'<tr><td>File not :</td><td><c>'+ I.file.type +'</c></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
-				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
+				$( '.infobtn.file' ).addClass( 'infobtn-primary' );
 				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButton' ).one( 'click', '.btntemp', function() {
 					$( '#infoList' ).html( htmlprev );
@@ -583,7 +583,7 @@ function INFO( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
-				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
+				$( '.infobtn.file' ).removeClass( 'infobtn-primary' );
 				if ( typeimage ) FILEIMAGE.get();
 			}
 		} );
@@ -1508,7 +1508,7 @@ var COMMON    = {
 					var key;
 					var path = [];
 					modes.forEach( k => {
-						key = k.toUpperCase()
+						key = k.toUpperCase();
 						if ( val[ key ] ) path.push( key );
 					} );
 					if ( path.length < 3 ) pathmpd = path.join( ' ' );
