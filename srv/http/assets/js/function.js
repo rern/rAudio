@@ -2544,7 +2544,7 @@ var VOLUME    = {
 		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
 			var ms    = 0;
 		} else {
-			var ms    = Math.abs( S.volume - vol_prev ) * 40; // 1%:40ms
+			var ms    = Math.abs( S.volume - vol_prev ) * 50; // 1%:50ms
 			V.animate = true;
 			setTimeout( () => delete V.animate, ms );
 			if ( ! $bar.hasClass( 'hide' ) ) { // suppress on push received
