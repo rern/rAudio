@@ -150,5 +150,5 @@ $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
 refreshPages
 if [[ $connected ]]; then
-	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
+	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi

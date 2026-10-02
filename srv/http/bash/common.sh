@@ -93,6 +93,59 @@ audioCDplClear() {
 		pushPlaylist
 	fi
 }
+color() {
+	filecss=/srv/http/assets/css/colors.css
+	css=$( < $filecss )
+	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
+	cd=( $hslcd )
+	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
+	[[ $LIST ]] && echo '{
+  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
+, "custom" : '$( exists $dirsystem/color )'
+, "ml"     : [ '${ml:1}' ]
+}' && exit
+# --------------------------------------------------------------------
+	filecolor=$dirsystem/color
+	if [[ $HSL ]]; then
+		echo $HSL > $filecolor
+		HSL=( $HSL )
+	else
+		[[ $RESET ]] && rm -f $filecolor
+		if [[ -e $filecolor ]]; then
+			HSL=( $( < $filecolor ) )
+		else
+			HSL=( $hslcd )
+			DEFAULT=1
+		fi
+	fi
+	h=${HSL[0]}
+	s=${HSL[1]}
+	l=${HSL[2]}
+	regex="\
+s/(--h *: ).*/\1$h;/
+s/(--s *: ).*/\1$s%;/"
+	for m in ${ml//,/ }; do
+		L=$(( l + m - 35 ))
+		regex+="
+s/(--ml$m *: ).*/\1$L%;/"
+	done
+	sed -E "$regex" <<< $css > $filecss
+	iconsvg=/srv/http/assets/img/icon.svg
+	cm="($h,$s%,$l%)"
+	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
+	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
+	[[ ! $color ]] && color=true
+	color='{
+  "cg"    : "hsl('$h',3%,75%)"
+, "cm"    : "hsl'$cm'"
+, "color" : '$( [[ $DEFAULT ]] && echo false || echo true )'
+, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
+, "ml"    : [ '${ml:1}' ]
+}'
+	pushData color "$color"
+	splashRotate
+	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
+}
 countMnt() {
 	local counts d dir dirL list lsdir mpdignore path
 	for dir in NAS NVME SATA SD USB; do
@@ -157,6 +210,15 @@ data2json() {
 		echo "$json"
 	fi
 }
+equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	v=( $VALUES )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band=( "0$i. ${freq[i]} $unit" )
+		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
+	done
+}
 grepr() {
 	grep --color --exclude-dir plugin -Inr "$@" /srv
 }
@@ -198,32 +260,14 @@ mkdirRW() {
 	mkdir $1
 	chmod 777 $1
 }
-mpcPlayback() {
-	! playerActive mpd && playerStop && exit
-# --------------------------------------------------------------------
-	if [[ $1 ]]; then
-		ACTION=$1
-	else
-		statePlay && ACTION=pause || ACTION=play
-	fi
-	$dirbash/cmd.sh "mpcplayback
-$ACTION
-CMD ACTION"
-}
 mpcSkip() {
-	! playerActive mpd && return
-	
-	local length pos songpos state
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
-	if [[ $1 == PREVIOUS ]]; then
-		(( $songpos == 1 )) && pos=$length || pos=$(( songpos - 1 ))
-	else
-		(( $songpos == $length )) && pos=1 || pos=$(( songpos + 1 ))
-	fi
-	$dirbash/cmd.sh "mpcskip
-$pos
-${state:0:4}
-CMD POS ACTION" # state: playing, paused, stopped
+	radioStop
+	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+	mpc -q play $POS
+	[[ $ACTION != play ]] && mpc -q stop
+	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
+	[[ $consume == on ]] && mpc -q del $songpos
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 }
 mpcUpdate() {
 	[[ $1 ]] && ACTION=$1
@@ -260,6 +304,18 @@ notify() { # icon title message delayms
 	title=$( quoteEscape $2 )
 	message=$( quoteEscape $3 )
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+}
+playback() {
+	! playerActive mpd && playerStop && exit
+# --------------------------------------------------------------------
+	if [[ $1 ]]; then
+		ACTION=$1
+	else
+		statePlay && ACTION=pause || ACTION=play
+	fi
+	$dirbash/cmd.sh "mpcplayback
+$ACTION
+CMD ACTION"
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
@@ -323,6 +379,13 @@ playerStop() {
 	if [[ -e $dirshm/relayson ]] && grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	fi
+}
+plClear() {
+	radioStop
+	mpc -q clear
+	rm -f $dirsystem/librandom $dirshm/playlist*
+	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
+	pushStatus
 }
 pushData() { # send to websocket.py (server)
 	local channel data dir
@@ -420,6 +483,19 @@ scrobbleOnStop() {
 	[[ $1 != mpd ]] && grep -q $1=$ $dirsystem/scrobble.conf && return
 	
 	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
+}
+skip() {
+	! playerActive mpd && return
+	
+	local length songpos
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	ACTION=${state:0:4} # state: playing, paused, stopped
+	if [[ $1 == PREVIOUS ]]; then
+		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
+	else
+		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
+	fi
+	mpcSkip
 }
 splashRotate() {
 	local dirimg rotate

@@ -128,7 +128,7 @@ fi
 pushData startup true
 
 if [[ -e $dirsystem/autoplay ]]; then
-	grep -q startup $dirsystem/autoplay.conf && mpcPlayback play
+	grep -q startup $dirsystem/autoplay.conf && playback play
 fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 

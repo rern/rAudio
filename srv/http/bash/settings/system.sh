@@ -300,7 +300,7 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddatadisable )
-	$dirbash/cmd.sh mpcremove
+	plClear
 	systemctl stop mpd
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	if grep -q " $dirnas " /etc/fstab; then # server rAudio

@@ -18,13 +18,13 @@ evtest /dev/input/$event | while read line; do
 	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//' <<< $line )
 	case $key in
 		PLAY | PAUSE )
-			mpcPlayback
+			playback
 			;;
 		STOP )
-			mpcPlayback stop
+			playback stop
 			;;
 		NEXT | PREVIOUS )
-			mpcSkip $key
+			skip $key
 			;;
 	esac
 done

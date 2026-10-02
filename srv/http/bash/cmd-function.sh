@@ -51,13 +51,6 @@ plAddRandom() {
 	fi
 	plAddRandom
 }
-plClear() {
-	mpc -q clear
-	radioStop
-	rm -f $dirsystem/librandom $dirshm/playlist*
-	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
-	pushStatus
-}
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }

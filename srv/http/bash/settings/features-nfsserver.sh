@@ -21,7 +21,7 @@ fi
 dirshared=$dirdata/mpdshared
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 rm -f $dirmpd/{listing,updating}
-$dirbash/cmd.sh mpcremove
+plClear
 systemctl stop mpd
 if [[ $ON ]]; then
 	mv -f /mnt/MPD/{NVME,SATA,SD,USB} $dirnas &> /dev/null

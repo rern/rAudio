@@ -36,10 +36,7 @@ sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
 ' /var/lib/iwd/ap/rAudio.ap
 # css color
-if [[ -e $dirsystem/color ]]; then
-	rm $dirsystem/color
-	$dirbash/cmd.sh color
-fi
+[[ -e $dirsystem/color ]] && rm $dirsystem/color && color
 # nas
 dirs=$( find -L $dirnas -mindepth 1 -maxdepth 1 -type d )
 if [[ $dirs ]]; then

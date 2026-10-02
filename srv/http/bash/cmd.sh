@@ -59,57 +59,7 @@ bookmarksubdir )
 	echo "[ ${subdir:1} ]"
 	;;
 color )
-	filecss=/srv/http/assets/css/colors.css
-	css=$( < $filecss )
-	hslcd=$( sed -n '/^\t*--cd/ {s/.*(//; s/[^0-9,]//g; s/,/ /g; p}' <<< $css )
-	cd=( $hslcd )
-	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
-	[[ $LIST ]] && echo '{
-  "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "custom" : '$( exists $dirsystem/color )'
-, "ml"     : [ '${ml:1}' ]
-}' && exit
-# --------------------------------------------------------------------
-	filecolor=$dirsystem/color
-	if [[ $HSL ]]; then
-		echo $HSL > $filecolor
-		HSL=( $HSL )
-	else
-		[[ $RESET ]] && rm -f $filecolor
-		if [[ -e $filecolor ]]; then
-			HSL=( $( < $filecolor ) )
-		else
-			HSL=( $hslcd )
-			DEFAULT=1
-		fi
-	fi
-	h=${HSL[0]}
-	s=${HSL[1]}
-	l=${HSL[2]}
-	regex="\
-s/(--h *: ).*/\1$h;/
-s/(--s *: ).*/\1$s%;/"
-	for m in ${ml//,/ }; do
-		L=$(( l + m - 35 ))
-		regex+="
-s/(--ml$m *: ).*/\1$L%;/"
-	done
-	sed -E "$regex" <<< $css > $filecss
-	iconsvg=/srv/http/assets/img/icon.svg
-	cm="($h,$s%,$l%)"
-	sed -i -E "s|(rect.*hsl).*;|\1$cm;|; s|(path.*hsl)[^,]*|\1($h|" $iconsvg
-	sed -E 's/(path.*)75%/\190%/' $iconsvg | magick -density 96 -background none - ${iconsvg/svg/png}
-	[[ ! $color ]] && color=true
-	color='{
-  "cg"    : "hsl('$h',3%,75%)"
-, "cm"    : "hsl'$cm'"
-, "color" : '$( [[ $DEFAULT ]] && echo false || echo true )'
-, "hsl"   : { "h": '$h', "s": '$s', "l": '$l' }
-, "ml"    : [ '${ml:1}' ]
-}'
-	pushData color "$color"
-	splashRotate
-	sed -i -E "s/^(.hreficon.*v=).*(.';)/\1$( date +%s )\2/" /srv/http/common.php
+	color
 	;;
 countmnt )
 	counts=$( countMnt )
@@ -151,14 +101,8 @@ display )
 	. $dirsettings/common.sh
 	fifoToggle
 	;;
-equalizer ) # shell mixer: sudo -u [mpd|root] alsamixer -D equal
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	v=( $VALUES )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band=( "0$i. ${freq[i]} $unit" )
-		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
-	done
+equalizer )
+	equalizer
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
@@ -398,13 +342,7 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	radioStop
-	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-	mpc -q play $POS
-	[[ $ACTION != play ]] && mpc -q stop
-	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-	[[ $consume == on ]] && mpc -q del $songpos
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
+	mpcSkip
 	;;
 mpcupdate )
 	[[ $LATEST ]] && touch $dirshm/latest || rm -f $dirshm/latest

@@ -217,11 +217,7 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 fi
 
 if [[ $EQUALIZER ]]; then
-	value=$( getVar current $dirsystem/equalizer.json )
+	VALUE=$( getVar current $dirsystem/equalizer.json )
 	player=$( < $dirshm/player )
-	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
-	$dirbash/cmd.sh "equalizer
-$value
-$user
-CMD VALUE USR"
-fi
+	[[ $player == airplay || $player == spotify ]] && USER=root || USER=mpd
+	equalizer
