@@ -240,41 +240,7 @@ mpcoption )
 	pushData option '{ "'$OPTION'": '$TF' }'
 	;;
 mpcplayback )
-	(( $( mpc status %length% ) == 0 )) && exit
-# --------------------------------------------------------------------
-	if [[ ! $ACTION ]]; then
-		[[ $( jq -r .state $dirshm/status.json ) == play ]] && ACTION=pause || ACTION=play 
-	fi
-	radioStop
-	if [[ $ACTION == play ]]; then
-		mpc -q play $POS
-		if audioCDtrack; then
-			touch $dirshm/cdstart
-			( sleep 20 && rm -f $dirshm/cdstart ) &
-			notify 'audiocd blink' 'Audio CD' 'Start play ...'
-			for i in {0..20}; do
-				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
-			done
-			rm -f $dirshm/cdstart
-			pushStatus
-		fi
-		if [[ -e $dirshm/relayson ]]; then
-			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
-		fi
-	else
-		[[ $ACTION == stop ]] && scrobbleOnStop mpd
-		mpc -q $ACTION
-	fi
-	[[ ! -e $dirsystem/snapclientserver ]] && exit
-# --------------------------------------------------------------------
-	# snapclient
-	if [[ $ACTION == play ]]; then
-		sleep 2 # fix stutter
-		action=start
-		systemctl start snapclient
-	else
-		systemctl stop snapclient
-	fi
+	mpcPlayback
 	;;
 mpcremove )
 	[[ ! $POS ]] && plClear && exit
