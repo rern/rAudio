@@ -127,7 +127,7 @@ cssjsbust )
 	fi
 	;;
 dirdelete )
-	if fileExist "$DIR"/*; then
+	if compgen -G "$DIR/*" > /dev/null; then
 		[[ ! $CONFIRM ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
@@ -148,6 +148,7 @@ dirrename )
 display )
 	pushStatus
 	systemctl try-restart radio
+	. $dirsettings/common.sh
 	fifoToggle
 	;;
 equalizer ) # shell mixer: sudo -u [mpd|root] alsamixer -D equal
@@ -452,7 +453,10 @@ multiraudiolist )
 password )
 	rm -f /boot/password
 	chpasswd <<< root:$PASSWORD
-	[[ $HEADLESS ]] && localBrowserOff
+	if [[ $HEADLESS ]]; then
+		. $dirsettings/common.sh
+		localBrowserOff
+	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
 pladdrandom )
@@ -585,7 +589,7 @@ webradioedit )
 		[[ ! $sample_rate ]] && echo "No audio stream found in:<br>$URL$charset" && exit
 # --------------------------------------------------------------------
 		[[ $bits_per_raw_sample != N/A && $bits_per_raw_sample -gt 0 ]] && sampling="$bits_per_raw_sample bit "
-		(( $sample_rate > 0 )) && sampling+="$( calc 1 $sample_rate/1000 ) kHz"
+		(( $sample_rate > 0 )) && sampling+="$( printf '%.1f kHz' "$(( sample_rate / 100 ))e-1" )"
 	else
 		sampling=$( sed -n 2p "$DIR/$OLDNAME/data" )
 	fi

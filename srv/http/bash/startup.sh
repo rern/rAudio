@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. /srv/http/bash/settings/common.sh
 
 # pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -17,7 +18,9 @@ if [[ -e /boot/expand ]]; then # run once
 	id1=$( < /etc/machine-id )
 	mv -f /var/log/journal/{$id0,$id1}
 	usbMaxCurrent
-	[[ -e /bin/firefox ]] && grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
+	if [[ -e /bin/firefox ]]; then
+		grep -q '^Revision.*12.$' /proc/cpuinfo && localBrowserOff # zero 2
+	fi
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -n 1 )

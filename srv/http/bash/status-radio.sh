@@ -134,7 +134,7 @@ metaData() {
 	timeleft=$( jq .timeleft <<< $STATUS )
 	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
 	STATUS+='
-, "elapsed"   : '$( mpcElapsed )'
+, "elapsed"   : '$( mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}' )'
 , "file"      : "'$file'"
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true

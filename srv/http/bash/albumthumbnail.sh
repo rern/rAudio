@@ -52,7 +52,7 @@ while read dir; do
 	echo $percent'% <a class="gr">'$( hhmmss $sec )/$( hhmmss $total )'</a>'
 	echo $i/$count $( tagColor $dir )
 
-	if [[ ! $OVERWRITE ]] && fileExist "$dir/coverart.*"; then
+	if [[ ! $OVERWRITE ]] && compgen -G "$dir/coverart.*" > /dev/null; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi

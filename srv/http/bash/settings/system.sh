@@ -46,7 +46,9 @@ bluetooth )
 		systemctl stop bluetooth
 		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		inOutputConf device.*bluealsa && $dirsettings/player-conf.sh
+		if [[ -e $dirmpdconf/output.conf ]]; then
+			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+		fi
 	fi
 	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
 	pushData refresh '{ "page": "networks", "activebt": '$tf' }'

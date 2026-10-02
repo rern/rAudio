@@ -27,9 +27,7 @@ bluetooth )
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
 btsender | mixer | volume )
-	$dirsettings/player.sh "volumegetdb
-$ID
-CMD ID"
+	volumeGetDb $ID
 	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
@@ -125,7 +123,11 @@ monitor )
 	echo '{ "MODEL": "'$model'" }'
 	;;
 mpdoled )
-	chip=$( mpdoledChip )
+	if grep -q '\-o ' /etc/default/mpd_oled; then
+		chip=$( sed -E 's/.*-o (.).*/\1/' /etc/default/mpd_oled )
+	else
+		chip=6
+	fi
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' $file_config )
 	grep -q '\-X' /etc/default/mpd_oled && spectrum=false || spectrum=true
 	[[ ! $baud ]] && baud=800000

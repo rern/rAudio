@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 if pgrep mkfs &> /dev/null; then
-	name=$( getContent $dirshm/formatting 'Local Storage' )
+	[[ -e $dirshm/formatting ]] && name=$( < $dirshm/formatting ) || name='Local Storage'
 	echo "Currently formatting <wh>$name</wh>"
 	exit
 # --------------------------------------------------------------------

@@ -22,7 +22,7 @@ data+='
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$localbrowser'
 , "mixers"       : '$( [[ $( getVar mixer $dirshm/output ) ]] && echo true )'
-, "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "nfsconnected" : '$( (( $( lineCount $filesharedip ) > 1 )) && echo true )'
 , "shareddata"   : '$( sharedData )'
 , "snapclient"   : '$( compgen -G $dirsystem/snapclient* > /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
