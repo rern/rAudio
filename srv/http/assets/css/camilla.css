@@ -443,7 +443,7 @@ cp {
 	.tab li:not( :focus-visible ):hover {
 		background: var( --cgd );
 	}
-	.tab li.graph:hover {
+	.tab li:has( .divgraph ):hover {
 		background: none;
 	}
 	li:focus-visible input[ type=range ] {
