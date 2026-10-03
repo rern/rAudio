@@ -35,6 +35,11 @@ mute )
 	file_volumemute=$dirsystem/volumemute
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
+volume | volumeBt | volumeGetDb ) # player.sh, camilla.sh
+	. $dirsettings/common.sh
+	$CMD
+	;;
 	
 esac
+
 [[ ${CMD:0:1} == c ]] && pushRefresh

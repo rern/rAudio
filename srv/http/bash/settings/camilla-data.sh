@@ -5,8 +5,9 @@
 . /srv/http/bash/common.sh
 . $dirshm/output
 if grep -q configs-bt /etc/default/camilladsp; then
-	bluetooth=true
-	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
+	btmixer=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
+else
+	mixer=$( getVar mixer $dirshm/output )
 fi
 file_volumemute=$dirsystem/volumemute
 if [[ -e $file_volumemute ]]; then
@@ -19,12 +20,11 @@ fi
 volumemax=$( volumeMaxGet )
 ##########
 data='
-, "bluetooth"   : '$bluetooth'
-, "btreceiver"  : '$( exists $dirshm/btmixer )'
-, "cardname"    : "'$name'"
+, "btmixer"     : "'$btmixer'"
 , "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"     : "'$mixer'"
 , "devices"     : '$( < $dirshm/hwparams )'
+, "mixer"       : "'$mixer'"
 , "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'

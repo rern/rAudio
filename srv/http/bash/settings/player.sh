@@ -152,16 +152,9 @@ $data
 	systemctl restart mpd
 	pushRefresh
 	;;
-volume )
-	amixer -Mq sset "$CONTROL" $TARGET
-	;;
-volumebt )
-	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	;;
-volumegetdb )
-	volumeGetDb $ID
-	rm -f $dirsystem/volumemute
-	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
+volume | volumeBt | volumeGetDb ) # player.sh, camilla.sh
+	. $dirsettings/common.sh
+	$CMD
 	;;
 	
 esac

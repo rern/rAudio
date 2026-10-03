@@ -125,6 +125,78 @@ function STATUS( id, arg, info ) {
 		delete V.statusclick;
 	} );
 }
+var MIXER = { // player.js, camilla.js
+	  btmixer : val => {
+		BASH( [ 'volumeBt', val, S.btmixer, id, 'CMD TARGET CONTROL ID' ], values => {
+			if ( values ) MIXER.set( values );
+		}, 'json' );
+	}
+	, mixer   : val => {
+		BASH( [ 'volume', val, S.mixer || S.output.MIXER, 'CMD TARGET CONTROL' ], values => {
+			if ( values ) MIXER.set( values );
+		}, 'json' );
+	}
+	, set     : values => {
+		var val = values.val;
+		var db  = values.db;
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
+		$( '.inforange .value' ).text( val );
+		$( '.inforange input' ).val( val );
+		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
+		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
+	}
+	, volume  : ( values, id ) => {
+		var bt = id === 'btmixer';
+		INFO( {
+			  icon       : id
+			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
+			, list       : [ bt ? 'BlueALSA' : ( S.mixer || S.output.MIXER ), 'range' ]
+			, footer     : '<br>'+ MIXER.warning
+			, beforeshow : () => {
+				$( '.inforange' ).append( '<div class="sub gr"></div>' );
+				MIXER.set( values );
+				$( '.infofooter' ).addClass( 'hide' );
+				$( '#infoList' ).css( 'height', '160px' );
+				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
+				$( '#infoList input' ).on( 'input', function() {
+					MIXER[ id ]( this.value +'%' );
+				} ).on( 'touchend, mouseup', function() {
+					BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
+						MIXER.set( values );
+					}, 'json' );
+				} );
+				$( '.inforange i' ).on( 'click', function() {
+					$( '#infoList input' )
+						.trigger( 'input' )
+						.trigger( 'keyup' );
+				} );
+			}
+			, cancel     : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
+					LOCAL();
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+					setTimeout( () => I.oknoreset = true, 300 );
+				}
+			}
+			, oklabel    : ICON( 'set0' ) +'0dB'
+			, oknoreset  : true
+			, ok         : () => {
+				if ( values.db > -2 ) {
+					MIXER[ id ]( '0dB' );
+				} else {
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) MIXER[ id ]( '0dB' );
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+				}
+				$( '.inforange .sub' ).text( '0 dB' );
+			}
+		} );
+	}
+	, warning : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
+				+'<gr>Output will be at original level <c>0dB</c>.<br>'
+				+'Volume controlled via amplifier only.</gr><br>'
+				+'Beware of too high volume.</wh>'
+}
 var SWITCH  = {
 	  cancel : () => {
 		$( '#'+ SW.id )

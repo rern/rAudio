@@ -1173,7 +1173,7 @@ var RENDER    = {
 			var dev = DEV[ d ];
 			var data = COMMON.json.clone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
+			if ( d === 'playback' ) device += ' - '+ ( S.btmixer || S.mixer );
 			if ( data.format === null ) data.format = '(auto)';
 			[ 'device', 'labels', 'link_mute_control', 'link_volume_control', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ICON( d === 'capture' ? 'input' : 'output' )
@@ -2520,7 +2520,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
-} ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
+} ).on( 'click', '#volume-level, #volume-mute', function() {
 	if ( V.animate ) return
 	
 	VOLUME.mute( S.volume );
@@ -2535,6 +2535,11 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
+} ).on( 'click', '.col-r .i-volume', function() {
+	var id = S.btmixer ? 'btmixer' : 'mixer';
+	BASH( 'data-config.sh mixer', values => {
+		MIXER.volume( values, id )
+	}, 'json' );
 } ).press( {
 	  delegate : '.col-l i, .i-plus'
 	, action   : e => {
