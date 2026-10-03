@@ -153,8 +153,15 @@ $data
 	pushRefresh
 	;;
 volume )
-	amixer -Mq$BT sset "$CONTROL" $TARGET # BT='D bluealsa'
-	volumeGetDb "$BT"
+	amixer -Mq sset "$CONTROL" $TARGET
+	;;
+volumebt )
+	amixer -MqD bluealsa sset "$CONTROL" $TARGET
+	;;
+volumegetdb )
+	volumeGetDb $ID
+	rm -f $dirsystem/volumemute
+	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
 	;;
 	
 esac

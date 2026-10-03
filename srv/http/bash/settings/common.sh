@@ -298,9 +298,8 @@ usbMaxCurrent() {
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
 }
-
 volumeGetDb() {
-	if [[ $1 == bt* || $1 == *bluealsa ]]; then # btmixer || 'D bluealsa'
+	if [[ $1 == btmixer ]]; then
 		val_db=$( amixer -MD bluealsa )
 	else
 		. $dirshm/output

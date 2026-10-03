@@ -28,7 +28,7 @@ var CONFIG   = {
 		}
 	}
 	, btsender      : values => {
-		UTIL.mixer( values );
+		CONFIG.mixer( values );
 	}
 	, buffer       : values => {
 		INFO( {
@@ -109,7 +109,50 @@ audio_output {
 		} );
 	}
 	, mixer        : values => {
-		UTIL.mixer( values );
+		var bt = SW.id === 'btsender';
+		INFO( {
+			  icon       : SW.id
+			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
+			, list       : [ bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
+			, footer     : '<br>'+ UTIL.warning
+			, beforeshow : () => {
+				$( '.inforange' ).append( '<div class="sub gr"></div>' );
+				VOLUME.set( values );
+				$( '.infofooter' ).addClass( 'hide' );
+				$( '#infoList' ).css( 'height', '160px' );
+				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
+				$( '#infoList input' ).on( 'input', function() {
+					VOLUME[ SW.id ]( this.value +'%' );
+				} ).on( 'touchend, mouseup', function() {
+					BASH( [ 'volumegetdb', SW.id, 'CMD ID' ], data => {
+						VOLUME.set( data );
+					}, 'json' );
+				} );
+				$( '.inforange i' ).on( 'click', function() {
+					$( '#infoList input' )
+						.trigger( 'input' )
+						.trigger( 'keyup' );
+				} );
+			}
+			, cancel     : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
+					LOCAL();
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+					setTimeout( () => I.oknoreset = true, 300 );
+				}
+			}
+			, oklabel    : ICON( 'set0' ) +'0dB'
+			, oknoreset  : true
+			, ok         : () => {
+				if ( values.db > -2 ) {
+					VOLUME[ SW.id ]( '0dB' );
+				} else {
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) VOLUME[ SW.id ]( '0dB' );
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+				}
+				$( '.inforange .sub' ).text( '0 dB' );
+			}
+		} );
 	}
 	, mixertype    : () => {
 		if ( ! S.mixers ) {
@@ -166,52 +209,7 @@ audio_output {
 	}
 }
 var UTIL     = {
-	  mixer        : values => {
-		V.bt  = SW.id === 'btsender';
-		var val = values.val;
-		INFO( {
-			  icon       : V.bt ? 'btsender' : 'volume'
-			, title      : ( V.bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ V.bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
-			, footer     : '<br>'+ UTIL.warning
-			, values     : val
-			, beforeshow : () => {
-				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
-				$( '.infofooter' ).addClass( 'hide' );
-				var $range  = $( '#infoList input' );
-				$( '#infoList' ).css( 'height', '160px' );
-				$( '.inforange' ).append( '<div class="sub gr"></div>' );
-				$range.on( 'input', function() {
-					UTIL.volume( this.value +'%' );
-				} );
-				$( '.inforange i' ).on( 'click', function() {
-					$range
-						.trigger( 'input' )
-						.trigger( 'keyup' );
-				} );
-				UTIL.volumeSet( values );
-			}
-			, cancel     : () => {
-				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
-					LOCAL();
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-					setTimeout( () => I.oknoreset = true, 300 );
-				}
-			}
-			, oklabel    : ICON( 'set0' ) +'0dB'
-			, oknoreset  : true
-			, ok         : () => {
-				if ( values.db > -2 ) {
-					UTIL.volume( '0dB' );
-				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) UTIL.volume( '0dB' );
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-				}
-				$( '.inforange .sub' ).text( '0 dB' );
-			}
-		} );
-	}
-	, novolume  : {
+	  novolume  : {
 		  warning : () => {
 			INFO( {
 				  ...SW
@@ -274,17 +272,17 @@ var UTIL     = {
 			} );
 		}
 	}
-	, volume    : value => {
-		var args = V.bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
-		BASH( [ 'volume', value, ...args, 'CMD TARGET CONTROL BLUEALSA' ], data => {
-			UTIL.volumeSet( data );
-		}, 'json' );
-	}
-	, volumeSet : values => {
-		V.local    = false;
-		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
-		var val    = values.val;
-		var db     = values.db;
+	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
+				 +'<gr>Output will be at original level <c>0dB</c>.<br>'
+				 +'Volume controlled via amplifier only.</gr><br>'
+				 +'Beware of too high volume.</wh>'
+}
+var VOLUME   = {
+	  btmixer : val => BASH( [ 'volumebt', val, S.btmixer, 'CMD TARGET CONTROL' ] )
+	, mixer   : val => BASH( [ 'volume', val, S.output.MIXER, 'CMD TARGET CONTROL' ] )
+	, set     : values => {
+		var val = values.val;
+		var db  = values.db;
 		$( '#infoList' ).removeClass( 'hide' );
 		$( '.confirm' ).addClass( 'hide' );
 		$( '.inforange .value' ).text( val );
@@ -293,10 +291,6 @@ var UTIL     = {
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
 	}
-	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
-				 +'<gr>Output will be at original level <c>0dB</c>.<br>'
-				 +'Volume controlled via amplifier only.</gr><br>'
-				 +'Beware of too high volume.</wh>'
 }
 
 function renderPage() {
