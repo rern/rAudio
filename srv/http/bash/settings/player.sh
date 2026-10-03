@@ -153,7 +153,6 @@ $data
 	pushRefresh
 	;;
 volume* ) # player.sh, camilla.sh
-	. $dirsettings/common-volume.sh
 	$CMD
 	;;
 	
