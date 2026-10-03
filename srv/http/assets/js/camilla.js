@@ -1424,6 +1424,7 @@ var RENDER    = {
 	, status      : () => { // onload only
 		playbackIcon();
 		$( '#divvolume' ).removeClass( 'hide' );
+		$( '#divvolume .i-volume' ).toggleClass( 'hide', S.mixer === '' && S.btmixer === '' );
 		VOLUME.set( S.volume );
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
@@ -2535,7 +2536,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
-} ).on( 'click', '.col-r .i-volume', function() {
+} ).on( 'click', '.i-volume', function() {
 	var id = S.btmixer ? 'btmixer' : 'mixer';
 	BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
 		MIXER.volume( values, id );
