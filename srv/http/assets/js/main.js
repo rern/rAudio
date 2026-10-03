@@ -370,7 +370,7 @@ $( '#volume, #map-volume' ).on( 'wheel', e => {
 	V.drag = true; // suppress on push received
 	clearTimeout( V.timeoutwheel );
 	V.timeoutwheel = setTimeout( () => delete V.drag, 300 );
-	$( e.originalEvent.deltaY > 0 ? '#volup' : '#voldn' ).trigger( 'click' );
+	$( e.originalEvent.deltaY > 0 ? '#voldn' : '#volup' ).trigger( 'click' );
 
 } );
 $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
