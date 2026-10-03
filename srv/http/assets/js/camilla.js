@@ -2550,7 +2550,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 			VOLUME.cmd( target );
 			VOLUME.set( target );
 			if ( target === 0 || target === 100 ) clearInterval( V.interval.volume );
-		}, 300 );
+		}, 100 );
 	}
 	, end     : () => {
 		clearInterval( V.interval.volume );

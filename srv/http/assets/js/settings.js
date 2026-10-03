@@ -136,6 +136,11 @@ var MIXER = { // player.js, camilla.js
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
+	, refresh : id => {
+		BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
+			MIXER.set( values );
+		}, 'json' );
+	}
 	, set     : values => {
 		var val = values.val;
 		var db  = values.db;
@@ -159,17 +164,33 @@ var MIXER = { // player.js, camilla.js
 				$( '.infofooter' ).addClass( 'hide' );
 				$( '#infoList' ).css( 'height', '160px' );
 				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
-				$( '#infoList input' ).on( 'input', function() {
-					MIXER[ id ]( this.value +'%' );
-				} ).on( 'touchend, mouseup', function() {
-					BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
-						MIXER.set( values );
-					}, 'json' );
+				var $range    = $( '.inforange input' );
+				var $rangeval = $( '.inforange .value' );
+				$range.on( 'input', function() {
+					var val = this.value;
+					MIXER[ id ]( val +'%' );
+					$rangeval.text( val );
+					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
+					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
+				} ).on( 'touchend, mouseup keyup', function() {
+					MIXER.refresh( id );
 				} );
-				$( '.inforange i' ).on( 'click', function() {
-					$( '#infoList input' )
-						.trigger( 'input' )
-						.trigger( 'keyup' );
+				function rangeSet( up ) {
+					var val = +$range.val();
+					if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
+
+					up ? val++ : val--;
+					MIXER[ id ]( val +'%' );
+					$range.val( val );
+					$rangeval.text( val );
+				}
+				$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
+					clearTimeout( I.timeout.range );
+					if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
+					MIXER.refresh( id );
+				} ).press( e => {
+					var up = $( e.target ).hasClass( 'up' );
+					I.timeout.range = setInterval( () => rangeSet( up ), 100 );
 				} );
 			}
 			, cancel     : () => {

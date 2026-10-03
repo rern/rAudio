@@ -785,37 +785,6 @@ function INFO( json ) {
 		I.notchange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
 		_INFO.check.set();
-		if ( I.range ) {
-			var $range    = $( '.inforange input' );
-			var $rangeval = $( '.inforange .value' );
-			var $up       = $( '.inforange .up' );
-			var $dn       = $( '.inforange .dn' );
-			var min       = +$( '.inforange input' ).prop( 'min' );
-			var max       = +$( '.inforange input' ).prop( 'max' );
-			$range.on( 'input', function() {
-				var $this = $( this );
-				var val   = +$this.val();
-				$rangeval.text( val );
-				$up.toggleClass( 'disabled', val === max );
-				$dn.toggleClass( 'disabled', val === min );
-			} );
-			$range.trigger( 'input' );
-			var rangeSet = up => {
-				var val = +$range.val();
-				if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
-
-				up ? val++ : val--;
-				$range.val( val );
-				$rangeval.text( val );
-			}
-			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( I.timeout.range );
-				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
-			} ).press( e => {
-				var up = $( e.target ).hasClass( 'up' );
-				I.timeout.range = setInterval( () => rangeSet( up ), 100 );
-			} );
-		}
 		if ( I.updn.length ) {
 			var max = [];
 			var min = [];
@@ -1748,7 +1717,7 @@ var VOLUME    = {
 	, press    : up => {
 		clearTimeout( V.volumebar );
 		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
-		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 300 );
+		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
 	}
 	, pressEnd : up => {
 		clearInterval( V.interval.volume );
