@@ -127,7 +127,7 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  btmixer : val => {
-		BASH( [ 'volumeBt', val, S.btmixer, id, 'CMD TARGET CONTROL ID' ], values => {
+		BASH( [ 'volumeBt', val, S.btmixer, 'btmixer', 'CMD TARGET CONTROL ID' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}

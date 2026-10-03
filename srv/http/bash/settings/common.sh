@@ -304,7 +304,7 @@ volume() {
 }
 volumeBt() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && volumeGetDb btmixer
+	[[ $TARGET == 0dB ]] && volumeGetDb
 }
 volumeGetDb() {
 	if [[ $ID == btmixer ]]; then
