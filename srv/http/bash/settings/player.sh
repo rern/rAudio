@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. $dirsettings/common-volume.sh
 
 args2var "$1"
 
@@ -153,7 +154,6 @@ $data
 	pushRefresh
 	;;
 volume* ) # player.sh, camilla.sh
-	. $dirsettings/common.sh
 	$CMD
 	;;
 	

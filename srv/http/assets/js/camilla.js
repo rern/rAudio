@@ -2536,8 +2536,9 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
 } ).on( 'click', '.col-r .i-volume', function() {
-	BASH( 'data-config.sh mixer', values => {
-		MIXER.volume( values, S.btmixer ? 'btmixer' : 'mixer' )
+	var id = S.btmixer ? 'btmixer' : 'mixer';
+	BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
+		MIXER.volume( values, id );
 	}, 'json' );
 } ).press( {
 	  delegate : '.col-l i, .i-plus'

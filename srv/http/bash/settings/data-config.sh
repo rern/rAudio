@@ -27,6 +27,7 @@ bluetooth )
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
 btsender | mixer | volume )
+	. $dirsettings/common-volume.sh
 	volumeGetDb $ID
 	;;
 buffer|outputbuffer )

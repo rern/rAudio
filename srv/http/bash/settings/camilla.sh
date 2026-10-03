@@ -1,6 +1,8 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. $dirsettings/common-volume.sh
+
 
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
@@ -36,7 +38,6 @@ mute )
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 volume* ) # player.sh, camilla.sh
-	. $dirsettings/common.sh
 	$CMD
 	;;
 	
