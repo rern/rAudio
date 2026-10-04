@@ -122,7 +122,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
 	fi
-	! btInfo Trusted && btAction trust
+	btAction trust
 	notifyACTION
 	btConnect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
