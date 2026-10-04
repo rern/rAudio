@@ -300,11 +300,11 @@ usbMaxCurrent() {
 }
 volume.alsa() {
 	amixer -Mq sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && volumeGetDb
+	[[ $TARGET == 0dB ]] && volume.get
 }
 volume.bluealsa() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && volumeGetDb
+	[[ $TARGET == 0dB ]] && volume.get
 }
 volume.get() {
 	if [[ $ID == btmixer ]]; then
