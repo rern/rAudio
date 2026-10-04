@@ -49,6 +49,11 @@ $( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )"
 	fi
 	;;
 infobluetooth )
+	dbuspath=$( bluealsa-cli list-pcms | grep ${2//:/_} )
+	if [[ $dbuspath ]]; then
+		statusCmd "bluealsa-cli info $dbuspath"
+		echo
+	fi
 	statusCmd "bluetoothctl info $2"
 	;;
 infocamilla | configuration )
