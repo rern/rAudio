@@ -219,9 +219,6 @@ equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
 }
-grepr() {
-	grep --color --exclude-dir plugin -Inr "$@" /srv
-}
 imageCacheBust() {
 	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
 }
