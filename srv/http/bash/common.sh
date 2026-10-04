@@ -551,7 +551,7 @@ statePlay() {
 	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
 }
 volume() {
-	local diff file_volumemute fn_volume type val values
+	local diff file_volumemute type val values
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
 	if [[ ! $DRAG_PRESS ]]; then
@@ -567,11 +567,10 @@ volume() {
 		fi
 		pushData volume '{ "type": "'$type'", "val": '$val' }'
 	fi
-	fn_volume=$( volumeFunction )
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$fn_volume $TARGET% "$CONTROL"
+		$FN_VOLUME $TARGET% "$CONTROL"
 		[[ ! $DRAG_PRESS ]] && volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
@@ -579,12 +578,12 @@ volume() {
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$fn_volume $val% "$CONTROL"
+			$FN_VOLUME $val% "$CONTROL"
 			sleep 0.2
 		done
-		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
+		[[ $TYPE != mute && $FN_VOLUME == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
-	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
+	[[ $FN_VOLUME == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeAmixer() { # camilla with mixer control only
 	amixer -Mq sset "$2" $1
@@ -621,11 +620,11 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card db fn_volume lines mixer val
-	fn_volume=$( volumeFunction )
-	case $fn_volume in
+	local card lines mixer val
+	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
+	case $FN_VOLUME in
 		volumeCamilla )  val=$( volumeGetCamilla );;
-		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
+		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
 		volumeBlueAlsa )
 			lines=$( amixer -MD bluealsa 2> /dev/null )
 			val=$( volumeLines2val $lines )

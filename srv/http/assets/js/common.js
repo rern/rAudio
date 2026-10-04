@@ -1689,7 +1689,8 @@ var VOLUME    = {
 
 		if ( S.volume ) S.volumemute = 0
 		if ( V.drag || V.press ) type = 'dragpress';
-		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
+		BASH( [ 'volume', vol_prev, S.volume, S.control, type, S.fnvolume
+			  , 'CMD CURRENT TARGET CONTROL TYPE FN_VOLUME' ] );
 	}
 	, limit    : () => {
 		if ( S.volumelimit && S.volume > S.volumemax ) {

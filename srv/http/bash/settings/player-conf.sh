@@ -160,7 +160,7 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 [[ $CAMILLADSP ]] && amixer0db
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
-
+volumeFunction > $dirshm/fn_volume
 pushStatus
 pushRefresh player
 if [[ ! -e $dirshm/btonboard ]]; then
