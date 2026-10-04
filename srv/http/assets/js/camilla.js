@@ -1513,7 +1513,7 @@ var RENDER    = {
 		} else {
 			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
 			width     = ( width - 100 ) * 2;
-			var left  = width - 2;
+			var left  = width - 3;
 		}
 		if ( rms ) {
 			$( '.rms.'+ cpi ).css( 'width', width +'px' );
