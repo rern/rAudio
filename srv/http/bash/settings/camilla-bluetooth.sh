@@ -18,11 +18,18 @@ filedefault=/etc/default/camilladsp
 sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $filedefault
 [[ -e $filedevice ]] && camillaDSPstart && exit
 # --------------------------------------------------------------------
-read format channels samplerate < <( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3, $4, $6}' )
+dbuspath=$( bluealsa-cli list-pcms | grep ${mac//:/_} )
+readarray -t data < <( bluealsa-cli info $dbuspath \
+							| grep -E '^Format|^Channels|^Sampling' \
+							| cut -d' ' -f2 )
+format=${data[0]}
+channels=${data[1]}
+samplerate=${data[2]}
 case $format in
 	S24_3LE ) format=S24_3_LE;;
 	S24_LE )  format=S24_4_LE;;
 esac
+
 if [[ $type == btreceiver ]]; then
 	sed -E -e '/playback:$/,/format:/ {
 s/(device: ).*/\1bluealsa/
@@ -30,7 +37,6 @@ s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
 }' "$CONFIG" > "$filedevice"
 else # btsender
-	dbuspath=$( bluealsa-cli list-pcms | ${mac//:/_} ) # /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
 	sed -E -e 's/(samplerate: ).*/\1'$samplerate'/
 s/(chunksize: ).*/\14096/
 s/(enable_rate_adjust: )/\1true/
