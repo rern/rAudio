@@ -31,12 +31,12 @@ confrename )
 confswitch )
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
+mixer.* ) # hw volume
+	$CMD
+	;;
 mute )
 	file_volumemute=$dirsystem/volumemute
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
-	;;
-volume.* ) # player.sh, camilla.sh
-	$CMD
 	;;
 	
 esac

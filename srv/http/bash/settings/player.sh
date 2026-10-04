@@ -82,6 +82,9 @@ dop )
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh
 	;;
+mixer.* ) # hw volume
+	$CMD
+	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
 	$dirsettings/player-conf.sh
@@ -151,9 +154,6 @@ $data
 	fi
 	systemctl restart mpd
 	pushRefresh
-	;;
-volume.* ) # player.sh, camilla.sh
-	$CMD
 	;;
 	
 esac

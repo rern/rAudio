@@ -199,6 +199,26 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
+mixer.alsa() {
+	amixer -Mq sset "$CONTROL" $TARGET
+	[[ $TARGET == 0dB ]] && mixer.get
+}
+mixer.bluealsa() {
+	amixer -MqD bluealsa sset "$CONTROL" $TARGET
+	[[ $TARGET == 0dB ]] && mixer.get
+}
+mixer.get() {
+	if [[ $ID == btmixer ]]; then
+		val_db=$( amixer -MD bluealsa )
+	else
+		. $dirshm/output
+		val_db=$( amixer -c $card -M sget "$mixer" )
+	fi
+	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
+	echo '{ "val": '$val', "db": '$db' }'
+	rm -f $dirsystem/volumemute
+	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
+}
 pushDirCounts() {
 	local tf
 	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
@@ -297,26 +317,6 @@ usbMaxCurrent() {
 	elif [[ $BB != 03 || $BB = 04 ]]; then
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
-}
-volume.alsa() {
-	amixer -Mq sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && volume.get
-}
-volume.bluealsa() {
-	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && volume.get
-}
-volume.get() {
-	if [[ $ID == btmixer ]]; then
-		val_db=$( amixer -MD bluealsa )
-	else
-		. $dirshm/output
-		val_db=$( amixer -c $card -M sget "$mixer" )
-	fi
-	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
-	echo '{ "val": '$val', "db": '$db' }'
-	rm -f $dirsystem/volumemute
-	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
 }
 volumeLimit() {
 	local fn_volume mixer val
