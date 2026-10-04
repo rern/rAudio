@@ -221,3 +221,4 @@ if [[ $EQUALIZER ]]; then
 	player=$( < $dirshm/player )
 	[[ $player == airplay || $player == spotify ]] && USER=root || USER=mpd
 	equalizer
+fi
