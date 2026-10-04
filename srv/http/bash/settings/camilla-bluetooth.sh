@@ -3,8 +3,9 @@
 . /srv/http/bash/common.sh
 
 type=$1
+mac=$2
 
-filemac=$dircamilladsp/$2
+filemac=$dircamilladsp/$mac
 if [[ -e $filemac ]]; then
 	filedevice=$( < $filemac )
 else
@@ -29,7 +30,7 @@ s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
 }' "$CONFIG" > "$filedevice"
 else # btsender
-	dbuspath=$( bluealsa-cli list-pcms | head -n 1 ) # /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
+	dbuspath=$( bluealsa-cli list-pcms | ${mac//:/_} ) # /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
 	sed -E -e 's/(samplerate: ).*/\1'$samplerate'/
 s/(chunksize: ).*/\14096/
 s/(enable_rate_adjust: )/\1true/
