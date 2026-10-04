@@ -127,17 +127,17 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  btmixer : val => {
-		BASH( [ 'volumeBt', val, S.btmixer, 'btmixer', 'CMD TARGET CONTROL ID' ], values => {
+		BASH( [ 'volume.bluealsa', val, S.btmixer, 'btmixer', 'CMD TARGET CONTROL ID' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
 	, mixer   : val => {
-		BASH( [ 'volume', val, S.mixer || S.output.MIXER, 'CMD TARGET CONTROL' ], values => {
+		BASH( [ 'volume.alsa', val, S.mixer || S.output.MIXER, 'CMD TARGET CONTROL' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
 	, refresh : id => {
-		BASH( [ 'volumeGetDb', id, 'CMD ID' ], values => {
+		BASH( [ 'volume.get', id, 'CMD ID' ], values => {
 			MIXER.set( values );
 		}, 'json' );
 	}

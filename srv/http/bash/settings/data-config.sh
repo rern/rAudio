@@ -27,7 +27,7 @@ bluetooth )
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
 btsender | mixer | volume )
-	volumeGetDb $ID
+	volume.get $ID
 	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf

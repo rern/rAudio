@@ -4,7 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261002
+# 20261010
+[[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume
+
+# 20261003
 if [[ -e /bin/camilladsp ]]; then
 	systemctl stop camilladsp
 	file=/etc/default/camilladsp

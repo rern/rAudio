@@ -152,7 +152,7 @@ $data
 	systemctl restart mpd
 	pushRefresh
 	;;
-volume* ) # player.sh, camilla.sh
+volume.* ) # player.sh, camilla.sh
 	$CMD
 	;;
 	

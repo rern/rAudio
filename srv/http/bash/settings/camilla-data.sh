@@ -4,6 +4,7 @@
 
 . /srv/http/bash/common.sh
 . $dirshm/output
+
 if grep -q configs-bt /etc/default/camilladsp; then
 	btmixer=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
 else

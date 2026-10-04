@@ -298,15 +298,15 @@ usbMaxCurrent() {
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
 }
-volume() {
+volume.alsa() {
 	amixer -Mq sset "$CONTROL" $TARGET
 	[[ $TARGET == 0dB ]] && volumeGetDb
 }
-volumeBt() {
+volume.bluealsa() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
 	[[ $TARGET == 0dB ]] && volumeGetDb
 }
-volumeGetDb() {
+volume.get() {
 	if [[ $ID == btmixer ]]; then
 		val_db=$( amixer -MD bluealsa )
 	else
