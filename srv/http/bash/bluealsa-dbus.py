@@ -22,15 +22,15 @@ def statusPush():
 
 def property_changed( interface, changed, invalidated, path ):
     for name, value in changed.items():
-        # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
-        # Connected : 1 | 0                                         (use udev rules instead)
-        # Position  : elapsed
+        # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX >>> on connect (sink not emit this data)
+        # Connected : 1 | 0 (udev rules)
+        # Position  : elapsed                                       >>> status change
         # State     : active | idle | pending
-        # Status    : paused | playing | stopped
-        # Track     : metadata
+        # Status    : paused | playing | stopped                    >>> state change
+        # Track     : metadata                                      >>> status change
         # Type      : dest playerX
         if name == 'Player':
-            with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
+            open( '/srv/http/data/shm/btc_sender', 'w').close() 
         elif name == 'Position' or name == 'Track':
             statusPush()
         elif name == 'Status':

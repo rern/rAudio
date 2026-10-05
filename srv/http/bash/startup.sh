@@ -101,9 +101,10 @@ if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 [[ $( ipAddress w ) ]] && iw $( netDevice w ) set power_save off
-if [[ -e $dirsystem/btreceiver ]]; then
-	mac=$( < $dirsystem/btreceiver )
-	rm $dirsystem/btreceiver
+file_btc_receiver=$dirsystem/btc_receiver
+if [[ -e $file_btc_receiver ]]; then
+	mac=$( < $file_btc_receiver )
+	rm $file_btc_receiver
 	$dirsettings/networks-bluetooth.sh "cmd
 connect
 $mac

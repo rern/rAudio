@@ -6,27 +6,28 @@ blueAlsaMixer() {
 	rm -f $dirshm/btmixer
 	[[ $ACTION != connect ]] && return
 #...............................................................................
-	if [[ ! -e $dirshm/bluetoothdest ]]; then
-		for i in {1..3}; do
-			sleep 1
-			btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-			[[ $btmixer ]] && break
-		done
+	for i in {1..3}; do
+		sleep 1
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		[[ $btmixer ]] && break
+	done
+	if [[ ! $btmixer ]]; then
+		if [[ ! $retry ]]; then # some might be broken on 1st connect
+			notify "$TYPE blink" "$NAME" 'Mixer ...'
+			retry=1
+			connected=
+			touch $dirshm/btretry
+			btAction disconnect
+			btConnect
+		else
+			notifyState 'Failed: Mixer'
+			exit
+# ------------------------------------------------------------------------------
+		fi
 	fi
-	if [[ $btmixer ]]; then
+	if [[ $( bluealsa-cli list-pcms ) == *sink ]]; then
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
-	elif [[ ! $retry ]]; then # some might be broken on 1st connect
-		notify "$TYPE blink" "$NAME" 'Mixer ...'
-		retry=1
-		connected=
-		touch $dirshm/btretry
-		btAction disconnect
-		btConnect
-	else
-		notifyState 'Failed: Mixer'
-		exit
-# ------------------------------------------------------------------------------
 	fi
 }
 btAction() {

@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
+[[ -e $dirshm/bluetoothdest ]] && mv $dirshm/{bluetoothdest,btc_sender}
 [[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume
 
 # 20261003
