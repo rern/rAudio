@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
+[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 [[ -e $dirshm/bluetoothdest ]] && touch $dirshm/btc_sender
 [[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume
 

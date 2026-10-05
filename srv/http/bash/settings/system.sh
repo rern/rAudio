@@ -23,9 +23,9 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
+	enableFlagSet
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
-		rm -f $dirsystem/btdisable
 		btdiscoverable=$dirsystem/btdiscoverable
 		if [[ $DISCOVERABLE ]]; then
 			[[ ! -e $btdiscoverable ]] && discov=yes && touch $btdiscoverable
@@ -42,7 +42,6 @@ bluetooth )
 			systemctl start bluetooth
 		fi
 	else
-		touch $dirsystem/btdisable
 		systemctl stop bluetooth
 		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
