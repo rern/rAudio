@@ -108,7 +108,6 @@ if [[ -e $dirsystem/btreceiver ]]; then
 connect
 $mac
 CMD ACTION MAC"
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
 fi
 
 $dirsettings/player-conf.sh &> /dev/null

@@ -30,13 +30,13 @@ case $format in
 	S24_LE )  format=S24_4_LE;;
 esac
 
-if [[ $type == btreceiver ]]; then
+if [[ $type == btsender ]]; then
 	sed -E -e '/playback:$/,/format:/ {
 s/(device: ).*/\1bluealsa/
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
 }' "$CONFIG" > "$filedevice"
-else # btsender
+else # btreceiver
 	sed -E -e 's/(samplerate: ).*/\1'$samplerate'/
 s/(chunksize: ).*/\14096/
 s/(enable_rate_adjust: )/\1true/

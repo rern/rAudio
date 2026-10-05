@@ -24,6 +24,7 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
+[[ -e $dirshm/btmixer ]] && bluetoothctl devices Connected | cut -d' ' -f2 > $dirsystem/btreceiver
 [[ $CMD == reboot || $1 == reboot ]] && REBOOT=1
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear

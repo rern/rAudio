@@ -385,7 +385,7 @@ playerStop() {
 			rm -f $dirshm/{coverart,elapsed,timestamp}
 			;;
 		bluetooth )
-			rm -f $dirshm/{bluetoothdest,bluetoothsink}
+			rm -f $dirshm/bluetoothdest
 			systemctl restart bluetooth
 			;;
 		mpd )

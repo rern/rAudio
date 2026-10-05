@@ -27,10 +27,6 @@ bluetooth )
 	echo
 	statusCmd 'bluetoothctl show'
 	;;
-btreceiver )
-	pcm=$( bluealsa-cli list-pcms )
-	statusCmd "bluealsa-cli info $pcm"
-	;;
 btsender )
 	statusCmd 'amixer -MD bluealsa'
 	;;

@@ -243,11 +243,10 @@ function renderPage() {
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	var bluetooth = S.btmixer !== false;
 	if ( bluetooth ) {
-		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
 		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
+		$( '#divbtsender' ).removeClass( 'hide' );
 	} else {
-		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
+		$( '#divbtsender' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {

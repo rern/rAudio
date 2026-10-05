@@ -41,13 +41,6 @@ $B->camilla$B->equalizer $T->features$L->signalprocessors enabled
 EOF];
 $body      = [
 	[
-		  'id'       => 'btreceiver'
-		, 'label'    => 'Bluetooth'
-		, 'sub'      => 'bluealsa-cli'
-		, 'status'   => true
-		, 'input'    => 'btreceiver'
-	]
-	, [
 		  'id'       => 'btsender'
 		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'

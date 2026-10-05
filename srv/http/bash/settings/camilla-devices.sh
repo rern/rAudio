@@ -61,7 +61,7 @@ data='
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 if [[ -e $dirshm/btmixer ]]; then
-	$dirsettings/camilla-bluetooth.sh btreceiver
+	$dirsettings/camilla-bluetooth.sh btsender
 else
 	file_config=$( getVar CONFIG /etc/default/camilladsp )
 	if [[ ! $file_config ]]; then

@@ -16,7 +16,7 @@ from subprocess import Popen
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path            = '/test/autoagent'
-filesink        = '/srv/http/data/shm/bluetoothsink'
+active          True
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
@@ -35,9 +35,7 @@ def property_changed( interface, changed, invalidated, path ):
         elif name == 'Position' or name == 'Track':
             statusPush()
         elif name == 'Status':
-            if value == 'playing' and not os.path.isfile( filesink ):
-                open( filesink, 'a' )
-                Popen( [ '/srv/http/bash/cmd.sh', 'playerbluetooth' ] )
+            if not active and value == 'playing': Popen( [ '/srv/http/bash/cmd.sh', 'playerbluetooth' ] )
             statusPush()
 
 if __name__ == '__main__':
