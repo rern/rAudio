@@ -35,15 +35,15 @@ bluetooth )
 		if systemctl -q is-active bluetooth; then
 			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
 		else
-			modprobe -a bluetooth bnep btbcm hci_uart
-			lsmod | grep -q -m1 ^hci_uart && configReboot && exit # fix: bluez not reinit hci0
-# --------------------------------------------------------------------
-			sleep 1
+			modprobe hci_uart
+			for i in {0..3}; do
+				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
+			done
 			systemctl start bluetooth
 		fi
 	else
 		systemctl stop bluetooth
-		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
+		rmmod hci_uart 2> /dev/null
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		if [[ -e $dirmpdconf/output.conf ]]; then
 			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
