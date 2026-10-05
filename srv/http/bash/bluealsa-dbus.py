@@ -14,7 +14,7 @@ import os
 from gi.repository import GLib
 from subprocess import Popen
 
-active          True
+active          = True
 path            = '/test/autoagent'
 
 def statusPush():
