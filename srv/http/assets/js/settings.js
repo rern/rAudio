@@ -126,22 +126,22 @@ function STATUS( id, arg, info ) {
 	} );
 }
 var MIXER = { // player.js, camilla.js
-	  btmixer : val => {
+	  btsender : val => {
 		BASH( [ 'mixer.bluealsa', val, S.btmixer, 'btmixer', 'CMD TARGET CONTROL ID' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
-	, mixer   : val => {
+	, mixer    : val => {
 		BASH( [ 'mixer.alsa', val, S.mixer || S.output.MIXER, 'CMD TARGET CONTROL' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
-	, refresh : id => {
+	, refresh  : id => {
 		BASH( [ 'mixer.get', id, 'CMD ID' ], values => {
 			MIXER.set( values );
 		}, 'json' );
 	}
-	, set     : values => {
+	, set      : values => {
 		var val = values.val;
 		var db  = values.db;
 		$( '#infoList' ).removeClass( 'hide' );
@@ -151,8 +151,8 @@ var MIXER = { // player.js, camilla.js
 		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
-	, volume  : ( values, id ) => {
-		var bt = id === 'btmixer';
+	, volume   : ( values, id ) => {
+		var bt = id === 'btsender';
 		INFO( {
 			  icon       : id
 			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
@@ -213,7 +213,7 @@ var MIXER = { // player.js, camilla.js
 			}
 		} );
 	}
-	, warning : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
+	, warning  : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
 				+'<gr>Output will be at original level <c>0dB</c>.<br>'
 				+'Volume controlled via amplifier only.</gr><br>'
 				+'Beware of too high volume.</wh>'

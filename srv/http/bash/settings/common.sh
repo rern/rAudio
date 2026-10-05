@@ -208,11 +208,11 @@ mixer.bluealsa() {
 	[[ $TARGET == 0dB ]] && mixer.get
 }
 mixer.get() {
-	if [[ $ID == btmixer ]]; then
-		val_db=$( amixer -MD bluealsa )
-	else
+	if [[ $ID == mixer ]]; then
 		. $dirshm/output
 		val_db=$( amixer -c $card -M sget "$mixer" )
+	else
+		val_db=$( amixer -MD bluealsa )
 	fi
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
