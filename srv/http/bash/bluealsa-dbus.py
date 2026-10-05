@@ -14,9 +14,8 @@ import os
 from gi.repository import GLib
 from subprocess import Popen
 
-AGENT_INTERFACE = 'org.bluez.Agent1'
-path            = '/test/autoagent'
 active          True
+path            = '/test/autoagent'
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
