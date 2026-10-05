@@ -37,7 +37,7 @@ def property_changed( interface, changed, invalidated, path ):
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( filesink ):
                 open( filesink, 'a' )
-                Popen( [ '/srv/http/bash/cmd.sh', 'playerstart', 'bluetooth' ] )
+                Popen( [ '/srv/http/bash/cmd.sh', 'playerbluetooth' ] )
             statusPush()
 
 if __name__ == '__main__':

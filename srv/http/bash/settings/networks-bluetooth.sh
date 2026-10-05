@@ -6,11 +6,13 @@ blueAlsaMixer() {
 	rm -f $dirshm/btmixer
 	[[ $ACTION != connect ]] && return
 #...............................................................................
-	for i in {1..3}; do
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
-	done
+	if [[ ! -e $dirshm/bluetoothdest ]]; then
+		for i in {1..3}; do
+			sleep 1
+			btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+			[[ $btmixer ]] && break
+		done
+	fi
 	if [[ $btmixer ]]; then
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
