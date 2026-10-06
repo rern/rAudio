@@ -46,15 +46,15 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
+	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
 	if [[ $ON ]]; then
 		amixer0dB
 		volumeCamilla $VOLUME
 	else
-		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa "$( < $dirshm/btmixer )" $VOLUME%
+		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
 	fi
 	;;
