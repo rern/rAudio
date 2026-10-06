@@ -126,18 +126,13 @@ function STATUS( id, arg, info ) {
 	} );
 }
 var MIXER = { // player.js, camilla.js
-	  btsender : val => {
-		BASH( [ 'mixer.bluealsa', val, S.btmixer, 'btmixer', 'CMD TARGET CONTROL ID' ], values => {
+	  command  : val => {
+		BASH( [ 'mixer.'+ V.id, val, V.control, V.id, 'CMD TARGET CONTROL ID' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
-	, mixer    : val => {
-		BASH( [ 'mixer.alsa', val, S.mixer || S.output.MIXER, 'CMD TARGET CONTROL' ], values => {
-			if ( values ) MIXER.set( values );
-		}, 'json' );
-	}
-	, refresh  : id => {
-		BASH( [ 'mixer.get', id, 'CMD ID' ], values => {
+	, refresh  : () => {
+		BASH( [ 'mixer.get', V.id, 'CMD ID' ], values => {
 			MIXER.set( values );
 		}, 'json' );
 	}
@@ -151,8 +146,10 @@ var MIXER = { // player.js, camilla.js
 		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
-	, volume   : ( values, id ) => {
-		var bt = id === 'btsender';
+	, volume   : ( id, values ) => {
+		V.id      = id;
+		V.control = bt ? S.btmixer : S.mixer || S.output.MIXER;
+		var bt    = id === 'btsender';
 		INFO( {
 			  icon       : id
 			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
@@ -168,7 +165,7 @@ var MIXER = { // player.js, camilla.js
 				var $rangeval = $( '.inforange .value' );
 				$range.on( 'input', function() {
 					var val = this.value;
-					MIXER[ id ]( val +'%' );
+					MIXER.command( val +'%' );
 					$rangeval.text( val );
 					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
 					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
@@ -180,7 +177,7 @@ var MIXER = { // player.js, camilla.js
 					if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
 
 					up ? val++ : val--;
-					MIXER[ id ]( val +'%' );
+					MIXER.command( val +'%' );
 					$range.val( val );
 					$rangeval.text( val );
 				}
@@ -204,9 +201,9 @@ var MIXER = { // player.js, camilla.js
 			, oknoreset  : true
 			, ok         : () => {
 				if ( values.db > -2 ) {
-					MIXER[ id ]( '0dB' );
+					MIXER.command( '0dB' );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) MIXER[ id ]( '0dB' );
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) MIXER.command( '0dB' );
 					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
 				$( '.inforange .sub' ).text( '0 dB' );

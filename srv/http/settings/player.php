@@ -41,6 +41,16 @@ $B->camilla$B->equalizer $T->features$L->signalprocessors enabled
 EOF];
 $body      = [
 	[
+		  'id'       => 'device'
+		, 'label'    => 'Device'
+		, 'sub'      => 'aplay'
+		, 'status'   => true
+		, 'input'    => 'device'
+		, 'help'     => <<< EOF
+Note: HDMI may not be available unless connect before boot.
+EOF
+	]
+	, [
 		  'id'       => 'btsender'
 		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'
@@ -51,16 +61,6 @@ $B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
  · Should be set at <c>0dB</c>
  · Use volume control on receiver devices to set level
-EOF
-	]
-	, [
-		  'id'       => 'device'
-		, 'label'    => 'Device'
-		, 'sub'      => 'aplay'
-		, 'status'   => true
-		, 'input'    => 'device'
-		, 'help'     => <<< EOF
-Note: HDMI may not be available unless connect before boot.
 EOF
 	]
 	, [

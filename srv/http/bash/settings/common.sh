@@ -199,11 +199,7 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
-mixer.alsa() {
-	amixer -Mq sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.get
-}
-mixer.bluealsa() {
+mixer.btsender() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
 	[[ $TARGET == 0dB ]] && mixer.get
 }
@@ -218,6 +214,10 @@ mixer.get() {
 	echo '{ "val": '$val', "db": '$db' }'
 	rm -f $dirsystem/volumemute
 	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
+}
+mixer.mixer() {
+	amixer -Mq sset "$CONTROL" $TARGET
+	[[ $TARGET == 0dB ]] && mixer.get
 }
 pushDirCounts() {
 	local tf

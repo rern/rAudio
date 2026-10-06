@@ -27,7 +27,7 @@ var CONFIG   = {
 			}
 		}
 	}
-	, btsender     : values => MIXER.volume( values, SW.id )
+	, btsender     : values => MIXER.volume( SW.id, values )
 	, buffer       : values => {
 		INFO( {
 			  ...SW
@@ -106,7 +106,7 @@ audio_output {
 			} );
 		} );
 	}
-	, mixer        : values => MIXER.volume( values, SW.id )
+	, mixer        : values => MIXER.volume( SW.id, values )
 	, mixertype    : () => {
 		if ( ! S.mixers ) {
 			COMMON.mixerSet( 'software' );

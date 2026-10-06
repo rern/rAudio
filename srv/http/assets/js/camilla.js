@@ -2539,7 +2539,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 } ).on( 'click', '.i-volume', function() {
 	var id = S.btmixer ? 'btsender' : 'mixer';
 	BASH( [ 'mixer.get', id, 'CMD ID' ], values => {
-		MIXER.volume( values, id );
+		MIXER.volume( id, values );
 	}, 'json' );
 } ).press( {
 	  delegate : '.col-l i, .i-plus'
