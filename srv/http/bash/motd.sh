@@ -11,3 +11,4 @@ export PATH=/srv/http/bash:/srv/http/bash/settings:$PATH
 export XDG_CONFIG_HOME=/root/.config
 
 . /srv/http/bash/common.sh
+. /srv/http/bash/settings/common.sh
