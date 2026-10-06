@@ -116,7 +116,7 @@ function htmlSetting( $data ) {
 	$label   = $data->label;
 	$status  = $data->status ?? false;
 	$label   = '<span class="label">'.$label.'</span>';
-	$icon    = $features || $system ? $id : '';
+	$icon    = $data->icon ?? ( $features || $system ? $id : '' );
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;
 	$dstatus = $status ? ' status" data-status="'.$id : '';

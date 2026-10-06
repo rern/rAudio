@@ -44,15 +44,16 @@ $body      = [
 		  'id'       => 'bluealsa'
 		, 'label'    => 'Bluetooth'
 		, 'sub'      => 'bluealsa-cli'
+		, 'icon'     => 'btsender'
 		, 'status'   => true
 		, 'input'    => 'bluealsa'
 	]
 	, [
-		  'id'       => 'btsender'
+		  'id'       => 'btmixer'
 		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'
 		, 'status'   => true
-		, 'input'    => 'btsender'
+		, 'input'    => 'btmixer'
 		, 'help'     => <<< EOF
 $B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
