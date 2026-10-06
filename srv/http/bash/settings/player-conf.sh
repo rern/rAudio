@@ -158,7 +158,7 @@ if [[ -e $dirsystem/mpcupdate.conf ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
-[[ $CAMILLADSP ]] && amixer0dB
+[[ $CAMILLADSP ]] && camillaDSPstart
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 volumeFunction > $dirshm/fn_volume
 pushStatus

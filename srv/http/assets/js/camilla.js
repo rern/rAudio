@@ -1424,14 +1424,11 @@ var RENDER    = {
 	, status      : () => { // onload only
 		playbackIcon();
 		$( '#divvolume' ).removeClass( 'hide' );
-		$( '#divvolume .i-volume' ).toggleClass( 'hide', S.mixer === '' && S.btmixer === '' );
+		var nomixer = S.bluetooth ? ! S.btmixer : ! S.mixer;
+		$( '#divvolume .i-volume' ).toggleClass( 'hide', nomixer );
 		VOLUME.set( S.volume );
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
-		if ( S.bluetooth ) {
-			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
-		} else {
-			$( '#divconfiguration .col-l i' ).remove();
-		}
+		$( '#divconfiguration .i-btsender' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#configuration' )
 			.html( COMMON.select.option( S.ls.configs ) )
 			.val( S.configname );

@@ -20,12 +20,18 @@ for D in Loopback $card; do
 		DEVICE=$D
 		read formats channels sampling < <( bluealsa-aplay -L | sed -n -E '/channel.*Hz$/ {s/.*: | channels*| Hz//g; p}' )
 		CHANNELS+=( $channels )
-		SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
+		SAMPLINGS=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
 	else
 		DEVICE=hw:$D
 		lines=$( timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
-		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' ) )
 		formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
+		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' ) )
+		if [[ $D != Loopback ]]; then
+			ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
+			for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
+				(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
+			done
+		fi
 	fi
 	list_f=
 	list_s=
@@ -46,12 +52,6 @@ for D in Loopback $card; do
 		[[ $f == F* ]] && list_f+=$list || list_s+=$list
 	done
 	FORMATS+=( "{ \"Auto\": null $( sort -d <<< $list_s ) $( sort -d <<< $list_f ) }" )
-	if [[ $c != Loopback ]]; then
-		ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
-		for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
-			(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
-		done
-	fi
 done
 ######## >
 data='
@@ -74,6 +74,7 @@ file_config=$( getVar CONFIG $file_default )
 file_backup=$dircamilladsp/config.backup
 if [[ -e $dirshm/btmixer ]]; then
 	echo "$file_config" > $file_backup
+	mac=$( bluealsa-cli list-pcms | sed -n -E '\|sink$| {s|.*dev_(.*)/a.*|\1|; s/_/:/g; p}' )
 	file_mac=$dircamilladsp/$mac
 	if [[ -e $file_mac ]]; then
 		FILE_CONFIG=$( < $file_mac )

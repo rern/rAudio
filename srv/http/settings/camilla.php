@@ -176,6 +176,7 @@ Processing load
 		  'id'     => 'configuration'
 		, 'label'  => 'Configuration'
 		, 'sub'    => 'current'
+		, 'icon'   => 'btsender'
 		, 'status' => true
 		, 'input'  => 'configuration'
 		, 'help'   => $B->gear.' Configuration files'
