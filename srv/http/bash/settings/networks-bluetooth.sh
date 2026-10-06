@@ -73,8 +73,10 @@ notifyState() {
 	notify $TYPE "$NAME" "$1"
 }
 refreshPages() {
-	pushRefresh networks
-	pushRefresh system
+	local page
+	for page in camilla networks system; do
+		pushRefresh $page
+	done
 	btConnected > $dirshm/Connected
 }
 
