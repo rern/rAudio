@@ -89,7 +89,7 @@ else
 	cpus=${lscpu[@]:1:2}
 	speed=${lscpu[3]/.*}
 	(( $cores > 1 )) && cpus+=" x $cores"
-	(( $mhz < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
+	(( $speed < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
