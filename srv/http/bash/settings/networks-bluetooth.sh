@@ -76,14 +76,6 @@ refreshPages() {
 	pushRefresh networks
 	pushRefresh system
 	btConnected > $dirshm/Connected
-	[[ ! -e $dirsystem/camilladsp ]] && return
-#...............................................................................
-	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-devices.sh && return
-#...............................................................................
-	file_default=/etc/default/camilladsp
-	getVar CONFIG $file_default > $dircamilladsp/$MAC
-	file_config=$( < $dircamilladsp/file_config )
-	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
 }
 
 args2var "$1"
