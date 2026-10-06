@@ -50,10 +50,7 @@ camilladsp )
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	if [[ $ON ]]; then
-		amixer0dB
-		volumeCamilla $VOLUME
-	else
+	if [[ ! $ON ]]; then
 		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
 	fi
