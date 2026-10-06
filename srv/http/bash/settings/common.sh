@@ -6,7 +6,7 @@ amixer0dB() {
 }
 camillaDSPstart() {
 	systemctl start camilladsp
-	if systemctl -q is-active camilladsp; then
+	if websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null; then
 		pushRefresh camilla
 	else
 		systemctl stop camilladsp
