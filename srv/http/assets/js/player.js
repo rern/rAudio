@@ -243,10 +243,12 @@ function renderPage() {
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	var bluetooth = S.btmixer !== false;
 	if ( bluetooth ) {
-		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$( '#divbtsender' ).removeClass( 'hide' );
+		$( '#bluealsa' ).html( '<option>BlueALSA</option>' );
+		$( '#btsender' ).html( '<option>'+ S.btmixer +'</option>' );
+		$( '#divbluealsa, #divbtsender' ).removeClass( 'hide' );
+		if ( ! $( '#divbluealsa i' ).length ) $( '#divbluealsa .col-l' ).append( ICON( 'btsender' ) );
 	} else {
-		$( '#divbtsender' ).addClass( 'hide' );
+		$( '#divbluetooth, #divbtsender' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
@@ -256,15 +258,13 @@ function renderPage() {
 		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
 		$( '#divbitperfect' ).addClass( 'hide' );
 	} else {
-		var devicehide = bluetooth && ! S.devicewithbt;
 		var novolume   = ! [ 'camilladsp', 'crossfade', 'equalizer', 'mixertype', 'normalization', 'replaygain', 'soxr' ].some( k => S[ k ] );
 		$( '#divoutput' ).removeClass( 'hide' );
 		$( '#divbitperfect' ).toggleClass( 'hide', bluetooth && ! S.devicewithbt );
-		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', devicehide );
 		$( '#device' )
 			.html( COMMON.select.option( Object.keys( S.devices ) ) )
 			.val( S.output.NAME );
-		if ( ! devicehide && S.mixers ) {
+		if ( S.mixers ) {
 			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
 			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
 			$( '#divmixer' ).removeClass( 'hide' );

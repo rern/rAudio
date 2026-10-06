@@ -22,6 +22,10 @@ audio )
 <bll># aplay -l | grep bcm2835</bll>
 $( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
+bluealsa )
+	dbuspath=$( bluealsa-cli list-pcms | grep /sink$ )
+	statusCmd "bluealsa-cli info $dbuspath"
+	;;
 bluetooth )
 	statusCmd "rfkill | grep '^I\|bluetooth'"
 	echo
