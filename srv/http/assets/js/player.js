@@ -27,7 +27,7 @@ var CONFIG   = {
 			}
 		}
 	}
-	, btsender     : values => MIXER.volume( SW.id, values )
+	, btmixer     : values => MIXER.volume( SW.id, values )
 	, buffer       : values => {
 		INFO( {
 			  ...SW
@@ -244,11 +244,10 @@ function renderPage() {
 	var bluetooth = S.btmixer !== false;
 	if ( bluetooth ) {
 		$( '#bluealsa' ).html( '<option>BlueALSA</option>' );
-		$( '#btsender' ).html( '<option>'+ S.btmixer +'</option>' );
-		$( '#divbluealsa, #divbtsender' ).removeClass( 'hide' );
-		if ( ! $( '#divbluealsa i' ).length ) $( '#divbluealsa .col-l' ).append( ICON( 'btsender' ) );
+		$( '#btmixer' ).html( '<option>'+ S.btmixer +'</option>' );
+		$( '#divbluealsa, #divbtmixer' ).removeClass( 'hide' );
 	} else {
-		$( '#divbluetooth, #divbtsender' ).addClass( 'hide' );
+		$( '#divbluealsa, #divbtmixer' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
@@ -260,18 +259,22 @@ function renderPage() {
 	} else {
 		var novolume   = ! [ 'camilladsp', 'crossfade', 'equalizer', 'mixertype', 'normalization', 'replaygain', 'soxr' ].some( k => S[ k ] );
 		$( '#divoutput' ).removeClass( 'hide' );
-		$( '#divbitperfect' ).toggleClass( 'hide', bluetooth && ! S.devicewithbt );
-		$( '#device' )
-			.html( COMMON.select.option( Object.keys( S.devices ) ) )
-			.val( S.output.NAME );
-		if ( S.mixers ) {
-			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
-			$( '#divmixer' ).removeClass( 'hide' );
-			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
-			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
+		if ( bluetooth && ! S.devicewithbt ) {
+			$( '#divdevice, #divmixer, #divbitperfect' ).addClass( 'hide' );
 		} else {
-			$( '#divmixer' ).addClass( 'hide' );
+			$( '#divdevice, #divmixer, #divbitperfect' ).removeClass( 'hide' );
+			$( '#device' )
+				.html( COMMON.select.option( Object.keys( S.devices ) ) )
+				.val( S.output.NAME );
+			if ( S.mixers ) {
+				$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
+				$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
+				$( '#divmixer' ).removeClass( 'hide' );
+				$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
+				if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
+			} else {
+				$( '#divmixer' ).addClass( 'hide' );
+			}
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );

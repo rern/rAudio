@@ -31,7 +31,7 @@ bluetooth )
 	echo
 	statusCmd 'bluetoothctl show'
 	;;
-btsender )
+btmixer )
 	statusCmd 'amixer -MD bluealsa'
 	;;
 device )

@@ -199,7 +199,7 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
-mixer.btsender() {
+mixer.btmixer() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
 	[[ $TARGET == 0dB ]] && mixer.get
 }

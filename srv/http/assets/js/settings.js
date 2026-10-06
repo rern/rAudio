@@ -147,7 +147,7 @@ var MIXER = { // player.js, camilla.js
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
 	, volume   : ( id, values ) => {
-		var bt    = id === 'btsender';
+		var bt    = id === 'btmixer';
 		V.control = bt ? S.btmixer : S.mixer || S.output.MIXER;
 		V.id      = id;
 		INFO( {

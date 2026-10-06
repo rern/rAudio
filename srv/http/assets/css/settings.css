@@ -695,11 +695,11 @@ circle.on {
 	margin-right: 5px;
 	color: var( --cw );
 }
-#setting-btsender::before,
+#setting-btmixer::before,
 #setting-mixer::before {
 	content: '\F516';
 }
-#divbtsender {
+#divbtmixer {
 	margin-bottom: 10px;
 	border-bottom: 1px solid var( --cg );
 }

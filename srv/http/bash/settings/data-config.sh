@@ -26,7 +26,7 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable' }'
 	;;
-btsender | mixer )
+btmixer | mixer )
 	mixer.get $ID
 	;;
 buffer|outputbuffer )
