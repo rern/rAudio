@@ -567,7 +567,7 @@ volume() {
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$FN_VOLUME $TARGET% "$CONTROL"
+		$FN_VOLUME $TARGET "$CONTROL"
 		[[ ! $DRAG_PRESS ]] && volumeGet push
 	else
 		pushData volume '{ "val": '$TARGET' }'
@@ -575,20 +575,20 @@ volume() {
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$FN_VOLUME $val% "$CONTROL"
+			$FN_VOLUME $val "$CONTROL"
 			sleep 0.2
 		done
 		[[ $TYPE != mute && $FN_VOLUME == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
 	[[ $FN_VOLUME == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # camilla with mixer control only
-	amixer -Mq sset "$2" $1
+volumeAmixer() { # %
+	amixer -Mq sset "$2" $1%
 }
-volumeBlueAlsa() { # value control
-	amixer -MqD bluealsa sset "$2" $1
+volumeBlueAlsa() { # %
+	amixer -MqD bluealsa sset "$2" $1%
 }
-volumeCamilla() { # camilla without mixer control
+volumeCamilla() {
 	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
 			BEGIN {
 				min *= 100; max *= 100               # to centidB
@@ -666,5 +666,5 @@ volumeLines2val() {
 	val=${val%%\%*}
 }
 volumeMpd() {
-	mpc -q volume ${1/\%}
+	mpc -q volume $1
 }

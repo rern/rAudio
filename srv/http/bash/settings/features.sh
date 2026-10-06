@@ -46,22 +46,18 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	. $dirshm/output
-	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
-	if [[ $ON ]]; then
-		amixer0dB
-	else
-		if [[ $mixer ]]; then
-			volumeAmixer $VOLUME% "$mixer"
-		else
-			echo software > "$dirsystem/mixertype-$name" # no mixers
-		fi
-		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmier )"
-	fi
+	echo ---$VOLUME---
+	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
-	[[ $ON ]] && volumeCamilla $VOLUME # after camilladsp started
+	if [[ $ON ]]; then
+		amixer0dB
+		volumeCamilla $VOLUME
+	else
+		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa "$( < $dirshm/btmixer )" $VOLUME%
+		volumeMpd $VOLUME
+	fi
 	;;
 dabradio )
 	enableFlagSet

@@ -66,7 +66,7 @@ else
 	file_config=$( getVar CONFIG /etc/default/camilladsp )
 	if [[ ! $file_config ]]; then
 		file_config=$dircamilladsp/configs/camilladsp.yml
-		sed -i "/^(file_config=).*/\1$file_config/" /etc/default/camilladsp
+		sed -i -E "s|^(file_config=).*|\1$file_config|" /etc/default/camilladsp
 	fi
 	[[ ! -e $file_config ]] && cp /etc/camilladsp/configs/camilladsp.yml "$file_config"
 	card=$( getVar playback.device "$file_config" )
