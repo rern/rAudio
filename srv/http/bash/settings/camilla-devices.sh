@@ -4,19 +4,19 @@
 if [[ ! $dirbash ]]; then # if run directly
 	. /srv/http/bash/common.sh 
 	. $dirshm/output
-	CARD=$card
-	NAME=$name
 fi
 
 modprobe snd_aloop
 
-if grep -q -m1 configs-bt /etc/default/camilladsp; then
-	DEVICES=( '{ "Bluez": "bluez" }' '{ "blueALSA": "bluealsa" }' )
+DEVICES=( '{ "Loopback": "hw:Loopback,0" }' )
+if [[ -e $dirshm/btmixer ]]; then
+	DEVICES+=( '{ "blueALSA": "bluealsa" }' )
 else
-	DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
+	DEVICES+=( "$( < $dirshm/devices )" )
 fi
-for c in Loopback $CARD; do
-	lines=$( timeout 0.1 aplay --dump-hw-params -D hw:$c /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
+for D in Loopback $card; do
+	DEVICE=hw:$D
+	lines=$( timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
 	CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' ) )
 	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 	list_f=
@@ -69,8 +69,8 @@ else
 		sed -i -E "s|^(file_config=).*|\1$file_config|" /etc/default/camilladsp
 	fi
 	[[ ! -e $file_config ]] && cp /etc/camilladsp/configs/camilladsp.yml "$file_config"
-	card=$( getVar playback.device "$file_config" )
-	[[ $card != hw:$CARD ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$CARD,0/" "$file_config"
+	device=$( getVar playback.device "$file_config" )
+	[[ $device != $DEVICE ]] && sed -i -E "/playback:/,/device:/ s/(device: ).*/\1$DEVICE/" "$file_config"
 	for dev in capture playback; do
 		format=$( getVar $dev.format "$file_config" )
 		formats=$( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null )
