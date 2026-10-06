@@ -47,7 +47,6 @@ brightness )
 	;;
 camilladsp )
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
-	echo ---$VOLUME---
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
