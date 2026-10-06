@@ -78,7 +78,7 @@ refreshPages() {
 	btConnected > $dirshm/Connected
 	[[ ! -e $dirsystem/camilladsp ]] && return
 #...............................................................................
-	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $TYPE $MAC && return
+	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-devices.sh && return
 #...............................................................................
 	file_default=/etc/default/camilladsp
 	getVar CONFIG $file_default > $dircamilladsp/$MAC

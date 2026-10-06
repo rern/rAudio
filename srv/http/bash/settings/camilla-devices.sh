@@ -10,15 +10,23 @@ modprobe snd_aloop
 
 DEVICES=( '{ "Loopback": "hw:Loopback,0" }' )
 if [[ -e $dirshm/btmixer ]]; then
-	DEVICES+=( '{ "blueALSA": "bluealsa" }' )
+	card=bluealsa
+	DEVICES+=( '{ "BlueALSA": "bluealsa" }' )
 else
 	DEVICES+=( "$( < $dirshm/devices )" )
 fi
 for D in Loopback $card; do
-	DEVICE=hw:$D
-	lines=$( timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
-	CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' ) )
-	formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
+	if [[ $D == bluealsa ]] then
+		DEVICE=$D
+		read formats channels sampling < <( bluealsa-aplay -L | sed -n -E '/channel.*Hz$/ {s/.*: | channels*| Hz//g; p}' )
+		CHANNELS+=( $channels )
+		SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
+	else
+		DEVICE=hw:$D
+		lines=$( timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
+		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' ) )
+		formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
+	fi
 	list_f=
 	list_s=
 	for f in $formats; do
@@ -60,32 +68,47 @@ data='
 }'
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
+
+file_default=/etc/default/camilladsp
+file_config=$( getVar CONFIG $file_default )
+file_backup=$dircamilladsp/config.backup
 if [[ -e $dirshm/btmixer ]]; then
-	$dirsettings/camilla-bluetooth.sh btsender
+	echo "$file_config" > $file_backup
+	file_mac=$dircamilladsp/$mac
+	if [[ -e $file_mac ]]; then
+		FILE_CONFIG=$( < $file_mac )
+	else
+		FILE_CONFIG=$dircamilladsp/configs-bt/camilladsp.yml
+		echo $FILE_CONFIG > $file_mac
+	fi
 else
-	file_config=$( getVar CONFIG /etc/default/camilladsp )
-	if [[ ! $file_config ]]; then
-		file_config=$dircamilladsp/configs/camilladsp.yml
-		sed -i -E "s|^(file_config=).*|\1$file_config|" /etc/default/camilladsp
+	if [[ -e $file_backup ]]; then
+		FILE_CONFIG=$( < $file_backup )
+		rm $file_backup
+	else
+		FILE_CONFIG=$file_config
 	fi
-	[[ ! -e $file_config ]] && cp /etc/camilladsp/configs/camilladsp.yml "$file_config"
-	device=$( getVar playback.device "$file_config" )
-	[[ $device != $DEVICE ]] && sed -i -E "/playback:/,/device:/ s/(device: ).*/\1$DEVICE/" "$file_config"
-	for dev in capture playback; do
-		format=$( getVar $dev.format "$file_config" )
-		formats=$( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null )
-		F=
-		for f in $formats; do
-			[[ $f == $format ]] && F=1 && break
-		done
-		[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" "$file_config"
+fi
+[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+
+[[ $file_config != $FILE_CONFIG ]] && sed -i -E "s|^(CONFIG=).*|\1$FILE_CONFIG|" $file_default
+
+device=$( getVar playback.device "$FILE_CONFIG" )
+[[ $device != $DEVICE ]] && sed -i -E "/playback:/,/device:/ s/(device: ).*/\1$DEVICE/" "$FILE_CONFIG"
+for dev in capture playback; do
+	format=$( getVar $dev.format "$FILE_CONFIG" )
+	formats=$( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null )
+	F=
+	for f in $formats; do
+		[[ $f == $format ]] && F=1 && break
 	done
-	errors=$( camilladsp -c "$file_config" 2>&1 | grep ^error )
-	if [[ $errors ]]; then
-		errors=$( sed 's/$/<br>/' <<< $error )
-		pushData error '{ "page": "features", "msg": "'$errors'" }'
-		exit
-# --------------------------------------------------------------------
-	fi
+	[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" "$FILE_CONFIG"
+done
+
+errors=$( camilladsp -c "$FILE_CONFIG" 2>&1 | grep ^error )
+if [[ $errors ]]; then
+	errors=$( sed 's/$/<br>/' <<< $error )
+	pushData error '{ "page": "features", "msg": "'$errors'" }'
+else
 	camillaDSPstart
 fi
