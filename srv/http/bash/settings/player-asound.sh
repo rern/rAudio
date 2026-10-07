@@ -18,6 +18,9 @@ fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	CAMILLADSP=1
 	modprobe snd_aloop
+	for i in {0..3}; do
+		lsmod | grep -q snd_aloop && break || sleep 1
+	done
 	CONFIG=$( getVar CONFIG /etc/default/camilladsp )
 	channels=$( getVar capture.channels "$CONFIG" )
 	format=$( getVar capture.format "$CONFIG" )
