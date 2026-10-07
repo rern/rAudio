@@ -6,8 +6,6 @@ if [[ ! $dirbash ]]; then # if run directly
 	. $dirshm/output
 fi
 
-modprobe snd_aloop
-
 DEVICES=( '{ "Loopback": "hw:Loopback,0" }' )
 if [[ -e $dirshm/btmixer ]]; then
 	card=bluealsa
@@ -87,7 +85,7 @@ else
 		FILE_CONFIG=$( < $file_backup )
 		rm $file_backup
 	else
-		FILE_CONFIG=$file_config
+		FILE_CONFIG=$( compgen -G $dircamilladsp/configs/* )
 	fi
 fi
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
@@ -108,8 +106,20 @@ done
 
 errors=$( camilladsp -c "$FILE_CONFIG" 2>&1 | grep ^error )
 if [[ $errors ]]; then
-	errors=$( sed 's/$/<br>/' <<< $error )
-	pushData error '{ "page": "features", "msg": "'$errors'" }'
+	sed 's/$/<br>/' <<< $error
 else
-	camillaDSPstart
+	file_volume=$dirshm/volume
+	[[ -e $file_volume ]] && volume=$( < $file_volume ) && rm $file_volume
+	systemctl restart camilladsp
+	if websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null; then
+		touch $dirsystem/camilladsp
+		pushRefresh camilla
+		amixer0dB
+		[[ $volume ]] && volumeCamilla $volume
+	else
+		echo 'Start failed!'
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
+	fi
 fi

@@ -54,13 +54,13 @@ if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
 fi
 
 # outputs -----------------------------------------------------------------------------
-if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from player-asound.sh)
+if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/devicewithbt ]] && BT_ONLY=1
 	hw=bluealsa
 	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
-	pcm=$( bluealsa-cli list-pcms | tail -n 1 )
+	pcm=$( bluealsa-cli list-pcms | grep /sink$ )
 	if [[ $pcm ]]; then
 		info=$( bluealsa-cli info $pcm | grep -E '^(Channels|Format|Sampling)' )
 		if [[ $info ]]; then
@@ -158,7 +158,6 @@ if [[ -e $dirsystem/mpcupdate.conf ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
-[[ $CAMILLADSP ]] && camillaDSPstart
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 volumeFunction > $dirshm/fn_volume
 pushStatus
