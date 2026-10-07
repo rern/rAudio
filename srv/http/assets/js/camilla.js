@@ -5,6 +5,7 @@ W.refresh     = data => {
 	V.debounce = setTimeout( () => {
 		COMMON.json.update( S, data );
 		CONFIG.valuesAssign();
+		RENDER.status();
 		RENDER[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
 		BANNER_HIDE();
 	}, 300 );
