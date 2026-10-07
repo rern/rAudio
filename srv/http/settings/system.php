@@ -126,7 +126,7 @@ EOF
 		, 'disabled' => $L->bluetooth.' is currently connected.'
 		, 'help'     => <<< EOF
 $B->gear
-■ Sampling 16bit - Bluetooth receivers with fixed sampling
+■ Discoverable timeout: 3 minutes
 EOF
 	]
 	, [
