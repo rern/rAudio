@@ -5,13 +5,14 @@ amixer0dB() {
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
 }
 camillaDSPstart() {
-	volume=$( volumeGet )
+	file_volume=$dirshm/volume
+	[[ -e $file_volume ]] && volume=$( < $file_volume ) && rm $file_volume
 	systemctl restart camilladsp
 	if websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null; then
 		touch $dirsystem/camilladsp
 		pushRefresh camilla
 		amixer0dB
-		volumeCamilla $volume
+		[[ $volume ]] && volumeCamilla $volume
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp

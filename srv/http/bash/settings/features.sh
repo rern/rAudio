@@ -47,12 +47,13 @@ brightness )
 	;;
 camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
-	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
+	[[ ! $VOLUME ]] && VOLUME=$( volumeGet | tee $dirshm/volume )
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
 	if [[ ! $ON ]]; then
 		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
+		rm -f $dirshm/volume
 	fi
 	;;
 dabradio )
