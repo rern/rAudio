@@ -138,7 +138,7 @@ for dev in capture playback; do
 	for f in $formats; do
 		[[ $f == $format ]] && F=1 && break
 	done
-	[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" "$FILE_CONFIG"
+	[[ ! $F ]] && sed -i -E "/  $dev:/,/    format:/ s/(format:).*/\1 $f/" "$FILE_CONFIG"
 done
 
 failed_exit() {
