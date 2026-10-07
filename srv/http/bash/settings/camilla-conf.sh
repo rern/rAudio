@@ -111,7 +111,7 @@ s/(samplerate: ).*/\1'$sampling'/
 s/(chunksize:).*/\1 4096/
 s/(enable_rate_adjust:).*/\1 true/
 s/(target_level:).*/\1 8000/
-s/(adjust_period:).*/\1 3
+s/(adjust_period:).*/\1 3/
 ' -e '/  capture:$/,/    playback:$/ c\
   capture:\
     type: Bluez\
@@ -155,7 +155,7 @@ grep -q 'Config is not valid' <<< $validate && failed_exit ${validate//$'\n'/<br
 #-------------------------------------------------------------------------------
 systemctl -q is-active camilladsp && ACTIVE=1
 systemctl restart camilladsp
-for i on {0..3; do
+for i in {0..3}; do
 	sleep 1
 	websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && break
 	[[ $i == 3 ]] && failed_exit 'Start failed!'
