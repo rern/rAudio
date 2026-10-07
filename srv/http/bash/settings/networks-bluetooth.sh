@@ -72,13 +72,6 @@ notifyACTION() {
 notifyState() {
 	notify $TYPE "$NAME" "$1"
 }
-refreshPages() {
-	local page
-	for page in camilla networks system; do
-		pushRefresh $page
-	done
-	btConnected > $dirshm/Connected
-}
 
 args2var "$1"
 
@@ -145,7 +138,10 @@ blueAlsaMixer
 playerStop
 $dirsettings/player-conf.sh
 [[ $connected ]] && notifyState Ready
-refreshPages
+for page in camilla networks system; do
+	pushRefresh $page
+done
+btConnected > $dirshm/Connected
 if [[ $connected ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
