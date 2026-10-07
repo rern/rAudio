@@ -29,9 +29,7 @@ def property_changed( interface, changed, invalidated, path ):
         # Status    : paused | playing | stopped                    >>> state change
         # Track     : metadata                                      >>> status change
         # Type      : dest playerX
-        if name == 'Player':
-            open( '/srv/http/data/shm/btc_sender', 'w').close() 
-        elif name == 'Position' or name == 'Track':
+        if name == 'Position' or name == 'Track':
             statusPush()
         elif name == 'Status':
             if not active and value == 'playing': Popen( [ '/srv/http/bash/cmd.sh', 'playerbluetooth' ] )

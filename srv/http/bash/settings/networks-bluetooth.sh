@@ -3,7 +3,6 @@
 . /srv/http/bash/common.sh
 
 blueAlsaMixer() {
-	rm -f $dirshm/btmixer
 	[[ $ACTION != connect ]] && return
 #...............................................................................
 	for i in {1..3}; do
@@ -25,9 +24,12 @@ blueAlsaMixer() {
 # ------------------------------------------------------------------------------
 		fi
 	fi
-	if [[ $( bluealsa-cli list-pcms ) == *sink ]]; then
+	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+	if [[ $dbuspath == *sink ]]; then
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+	else
+		touch $dirshm/btcsource
 	fi
 }
 btAction() {
@@ -95,7 +97,7 @@ if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, no
 	done
 	if [[ $d ]]; then
 		[[ $ACTION == connect ]] && connected=1
-		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
+		MAC=$( cut -d' ' -f2 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		NAME_TYPE
 	fi
 	notifyState "${ACTION^}ed"
@@ -133,6 +135,12 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notifyState Forgotten
 	fi
+	[[ -e $dirsystem/camilladsp ]] && getVar CONFIG /etc/default/camilladsp > $dircamilladsp/$MAC
+	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+	for path in $dbuspath; do
+		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
+	done
+	rm -f $dirshm/{btmixer,btsource}
 fi
 blueAlsaMixer
 playerStop

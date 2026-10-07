@@ -5,6 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
+file=/lib/systemd/system/camilladsp.service
+grep -q 'CONFIG ' $file && restart+=' camilladsp' && sed -i 's/CONFIG/{&}/' $file
+
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 [[ -e $dirshm/bluetoothdest ]] && touch $dirshm/btc_sender
 [[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume

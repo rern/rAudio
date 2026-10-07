@@ -7,7 +7,8 @@ if [[ ! $dirbash ]]; then # if run directly
 fi
 
 # capture
-if [[ -e $dirshm/btc_sender ]]; then # send from source client
+if [[ -e $dirshm/btsource ]]; then # send from source client
+	BT_SOURCE=1
 	DEVICES=( '{ "BlueALSA": "Bluez" }' )
 	DEV=bluealsa
 else
@@ -16,6 +17,7 @@ else
 fi
 # playback
 if [[ -e $dirshm/btmixer ]]; then # send from rAudio
+	BT_MIXER=1
 	DEVICES+=( '{ "BlueALSA": "bluealsa" }' )
 	DEV+=' bluealsa'
 else
@@ -76,36 +78,26 @@ data='
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 
-file_default=/etc/default/camilladsp
-file_config=$( getVar CONFIG $file_default )
-file_backup="$dircamilladsp/$( getContent $dirshm/amixercontrol none )"
-if [[ -e $dirshm/btmixer || -e $dirshm/btc_sender ]]; then
-	echo "$file_config" > $file_backup
-	dbuspath=$( bluealsa-cli list-pcms )
-	mac=$( sed -E 's|.*dev_(.*)/a.*|\1|; s/_/:/g' <<< $dbuspath )
-	file_mac=$dircamilladsp/$mac
-	if [[ -e $file_mac ]]; then # existing
-		FILE_CONFIG=$( < $file_mac )
-	else
-		NEW_CONFIG=1
-		FILE_CONFIG=$dircamilladsp/configs-bt/camilladsp.yml
-		echo $FILE_CONFIG > $file_mac
-	fi
+alsa_mixer=$( getContent $dirshm/amixercontrol none )
+if [[ $BT_MIXER || $BT_SOURCE ]]; then
+	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+	file_config="$dircamilladsp/$mac"
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 else
-	if [[ -e $file_backup ]]; then # existing
-		FILE_CONFIG=$( < $file_backup )
-		rm $file_backup
-	else
-		NEW_CONFIG=1
-		FILE_CONFIG=$( compgen -G $dircamilladsp/configs/* )
-	fi
+	name=$alsa_mixer
+	file_config="$dircamilladsp/$name"
 fi
+[[ -e $file_config ]] && FILE_CONFIG=$( < "$file_config" ) || FILE_CONFIG="$dircamilladsp/configs/$name.yml"
+
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
-[[ $file_config != $FILE_CONFIG ]] && sed -i -E "s|^(CONFIG=).*|\1$FILE_CONFIG|" $file_default
-
-if [[ $NEW_CONFIG ]]; then
-	if [[ -e $dirshm/btc_sender ]]; then
+file_current=$( getVar CONFIG /etc/default/camilladsp )
+if [[ $file_current != $FILE_CONFIG ]]; then
+	! grep -qE 'device: bluealsa|type: Bluez' "$file_current" && echo $file_current > "$dircamilladsp/$alsa_mixer"
+	# bt: save by networks-bluetooth.sh on disconnect
+	sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
+	if [[ $BT_SOURCE ]]; then
 		sed -i -E -e '
 s/(samplerate: ).*/\1'$sampling'/
 s/(chunksize:).*/\1 4096/
@@ -149,7 +141,6 @@ failed_exit() {
 	exit
 #-------------------------------------------------------------------------------
 }
-
 validate=$( camilladsp -c "$FILE_CONFIG" )
 grep -q 'Config is not valid' <<< $validate && failed_exit ${validate//$'\n'/<br>}
 #-------------------------------------------------------------------------------
