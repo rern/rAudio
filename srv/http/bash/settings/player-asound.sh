@@ -15,6 +15,19 @@ if [[ -e $dirshm/btmixer ]]; then
 else
 	systemctl stop bluetoothbutton
 fi
+if [[ $BLUETOOTH ]]; then
+########
+	ASOUNDCONF+='
+pcm.bluealsa {
+	type plug
+	slave.pcm {
+		type bluealsa
+		device 00:00:00:00:00:00
+		profile "a2dp"
+	}
+}
+'
+fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	CAMILLADSP=1
 	modprobe snd_aloop
@@ -26,7 +39,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	format=$( getVar capture.format "$CONFIG" )
 	rate=$( getVar devices.samplerate "$CONFIG" )
 ########
-	ASOUNDCONF='
+	ASOUNDCONF+='
 pcm.!default { 
 	type plug
 	slave.pcm camilladsp
@@ -54,25 +67,12 @@ ctl.camilladsp {
 }
 '
 else
-	ASOUNDCONF='
+	ASOUNDCONF+='
 defaults.pcm.card '$CARD'
 defaults.ctl.card '$CARD'
 '
 	systemctl stop camilladsp &> /dev/null
 	rmmod snd-aloop &> /dev/null
-	if [[ $BLUETOOTH ]]; then
-########
-		ASOUNDCONF+='
-pcm.bluealsa {
-	type plug
-	slave.pcm {
-		type bluealsa
-		device 00:00:00:00:00:00
-		profile "a2dp"
-	}
-}
-'
-	fi
 	if [[ -e $dirsystem/equalizer ]]; then
 		if [[ $BLUETOOTH ]]; then
 			slavepcm=bluealsa
