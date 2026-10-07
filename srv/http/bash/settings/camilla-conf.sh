@@ -33,7 +33,7 @@ for D in Loopback $card; do
 	fi
 	list_f=
 	list_s=
-	for f in $formats; do
+	for f in $formats; do # S16_LE S24_3_LE S24_4_LE S32_LE F32_LE F64_LE
 		[[ $f != S*LE ]] && continue
 		
 		case $f in
@@ -104,22 +104,27 @@ for dev in capture playback; do
 	[[ ! $F ]] && sed -i -E "/$dev:/,/format:/ s/(format: ).*/\1$f/" "$FILE_CONFIG"
 done
 
-errors=$( camilladsp -c "$FILE_CONFIG" 2>&1 | grep ^error )
-if [[ $errors ]]; then
-	sed 's/$/<br>/' <<< $error
-else
-	file_volume=$dirshm/volume
-	[[ -e $file_volume ]] && volume=$( < $file_volume ) && rm $file_volume
-	systemctl restart camilladsp
-	if websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null; then
-		touch $dirsystem/camilladsp
-		pushRefresh camilla
-		amixer0dB
-		[[ $volume ]] && volumeCamilla $volume
-	else
-		echo 'Start failed!'
-		systemctl stop camilladsp
-		rm -f $dirsystem/camilladsp
-		$dirsettings/player-conf.sh
-	fi
+failed_exit() {
+	systemctl stop camilladsp
+	echo "$1"
+	rm -f $dirsystem/camilladsp
+	$dirsettings/player-conf.sh
+	exit
+#-------------------------------------------------------------------------------
+}
+
+validate=$( camilladsp -c "$FILE_CONFIG" )
+grep -q 'Config is not valid' <<< $validate && failed_exit ${validate//$'\n'/<br>}
+#-------------------------------------------------------------------------------
+systemctl -q is-active camilladsp && ACTIVE=1
+systemctl restart camilladsp
+! websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && failed_exit 'Start failed!'
+#-------------------------------------------------------------------------------
+touch $dirsystem/camilladsp
+pushRefresh camilla
+if [[ ! $ACTIVE ]]; then
+	amixer0dB
+	volume=$( getContent $dirshm/volume )
+	[[ $volume ]] && volumeCamilla $volume
 fi
+rm -f $dirshm/volume
