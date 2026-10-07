@@ -116,7 +116,7 @@ s/(adjust_period:).*/\1 3
   capture:\
     type: Bluez\
     dbus_path: '$dbuspath'\
-    channels: '${CHANNELS[0]}'\
+    channels: 2\
     format: '${FORMATS[0]}'\
   playback:
 ' "$FILE_CONFIG"
@@ -124,7 +124,7 @@ s/(adjust_period:).*/\1 3
 		sed -i '/  playback:$/,/    format:/ c\
   playback:\
     type: Alsa\
-    channels: '${CHANNELS[1]}'\
+    channels: 2\
     device: '$DEVICE'\
     format: '${FORMATS[1]}'
 ' "$FILE_CONFIG"
@@ -155,8 +155,12 @@ grep -q 'Config is not valid' <<< $validate && failed_exit ${validate//$'\n'/<br
 #-------------------------------------------------------------------------------
 systemctl -q is-active camilladsp && ACTIVE=1
 systemctl restart camilladsp
-! websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && failed_exit 'Start failed!'
+for i on {0..3; do
+	sleep 1
+	websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && break
+	[[ $i == 3 ]] && failed_exit 'Start failed!'
 #-------------------------------------------------------------------------------
+done
 touch $dirsystem/camilladsp
 pushRefresh camilla
 if [[ ! $ACTIVE ]]; then
