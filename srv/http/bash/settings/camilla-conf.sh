@@ -6,14 +6,23 @@ if [[ ! $dirbash ]]; then # if run directly
 	. $dirshm/output
 fi
 
-DEVICES=( '{ "Loopback": "hw:Loopback,0" }' )
-if [[ -e $dirshm/btmixer ]]; then
-	card=bluealsa
+# capture
+if [[ -e $dirshm/btc_sender ]]; then # send from source client
+	DEVICES=( '{ "BlueALSA": "Bluez" }' )
+	DEV=bluealsa
+else
+	DEVICES=( '{ "Loopback": "hw:Loopback,0" }' )
+	DEV=Loopback
+fi
+# playback
+if [[ -e $dirshm/btmixer ]]; then # send from rAudio
 	DEVICES+=( '{ "BlueALSA": "bluealsa" }' )
+	DEV+=' bluealsa'
 else
 	DEVICES+=( "$( < $dirshm/devices )" )
+	DEV+=" $card"
 fi
-for D in Loopback $card; do
+for D in $DEV; do
 	if [[ $D == bluealsa ]] then
 		DEVICE=$D
 		read formats channels sampling < <( bluealsa-aplay -L | sed -n -E '/channel.*Hz$/ {s/.*: | channels*| Hz//g; p}' )
@@ -69,22 +78,25 @@ echo "{ $data }" | jq > $dirshm/hwparams
 
 file_default=/etc/default/camilladsp
 file_config=$( getVar CONFIG $file_default )
-file_backup=$dircamilladsp/config.backup
-if [[ -e $dirshm/btmixer ]]; then
+file_backup="$dircamilladsp/$( getContent $dirshm/amixercontrol none )"
+if [[ -e $dirshm/btmixer || -e $dirshm/btc_sender ]]; then
 	echo "$file_config" > $file_backup
-	mac=$( bluealsa-cli list-pcms | sed -n -E '\|sink$| {s|.*dev_(.*)/a.*|\1|; s/_/:/g; p}' )
+	dbuspath=$( bluealsa-cli list-pcms )
+	mac=$( sed -E 's|.*dev_(.*)/a.*|\1|; s/_/:/g' <<< $dbuspath )
 	file_mac=$dircamilladsp/$mac
-	if [[ -e $file_mac ]]; then
+	if [[ -e $file_mac ]]; then # existing
 		FILE_CONFIG=$( < $file_mac )
 	else
+		NEW_CONFIG=1
 		FILE_CONFIG=$dircamilladsp/configs-bt/camilladsp.yml
 		echo $FILE_CONFIG > $file_mac
 	fi
 else
-	if [[ -e $file_backup ]]; then
+	if [[ -e $file_backup ]]; then # existing
 		FILE_CONFIG=$( < $file_backup )
 		rm $file_backup
 	else
+		NEW_CONFIG=1
 		FILE_CONFIG=$( compgen -G $dircamilladsp/configs/* )
 	fi
 fi
@@ -92,8 +104,33 @@ fi
 
 [[ $file_config != $FILE_CONFIG ]] && sed -i -E "s|^(CONFIG=).*|\1$FILE_CONFIG|" $file_default
 
-device=$( getVar playback.device "$FILE_CONFIG" )
-[[ $device != $DEVICE ]] && sed -i -E "/playback:/,/device:/ s/(device: ).*/\1$DEVICE/" "$FILE_CONFIG"
+if [[ $NEW_CONFIG ]]; then
+	if [[ -e $dirshm/btc_sender ]]; then
+		sed -i -E -e '
+s/(samplerate: ).*/\1'$sampling'/
+s/(chunksize:).*/\1 4096/
+s/(enable_rate_adjust:).*/\1 true/
+s/(target_level:).*/\1 8000/
+s/(adjust_period:).*/\1 3
+' -e '/  capture:$/,/    playback:$/ c\
+  capture:\
+    type: Bluez\
+    dbus_path: '$dbuspath'\
+    channels: '${CHANNELS[0]}'\
+    format: '${FORMATS[0]}'\
+  playback:
+' "$FILE_CONFIG"
+	else # alsa / bluealsa
+		sed -i '/  playback:$/,/    format:/ c\
+  playback:\
+    type: Alsa\
+    channels: '${CHANNELS[1]}'\
+    device: '$DEVICE'\
+    format: '${FORMATS[1]}'
+' "$FILE_CONFIG"
+	fi
+fi
+# format validate
 for dev in capture playback; do
 	format=$( getVar $dev.format "$FILE_CONFIG" )
 	formats=$( jq -r .$dev.formats.[] $dirshm/hwparams | grep -v null )
