@@ -20,12 +20,13 @@ else
 	volume=$( volumeGetCamilla )
 	volumemute=0
 fi
+file_config=$( getVar CONFIG /etc/default/camilladsp )
 volumemax=$( volumeMaxGet )
 ##########
 data='
 , "bluetooth"   : '$bluetooth'
 , "btmixer"     : "'$btmixer'"
-, "configname"  : "'$( basename "$( getVar CONFIG /etc/default/camilladsp )" )'"
+, "configname"  : "'$( basename "$file_config" )'"
 , "control"     : "'$mixer'"
 , "devices"     : '$( < $dirshm/hwparams )'
 , "mixer"       : "'$mixer'"
@@ -37,15 +38,15 @@ data='
 , "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
 , "volumemax"   : '$volumemax'
 , "volumemute"  : '$volumemute
-dirs=$( ls $dircamilladsp )
-for d in $dirs; do
+for d in coeffs configs raw; do
 	if [[ $d == coeffs ]]; then
 		dirs=$( ls $dircamilladsp/$d | grep -v '\.wav$' )
 		ls+=', "'$d'": '$( line2array "$dirs" )
 		dirs=$( ls $dircamilladsp/$d | grep '\.wav$' )
 		ls+=', "coeffswav": '$( line2array "$dirs" )
 	else
-		dirs=$( ls $dircamilladsp/$d )
+		[[ $d == configs ]] && dir=$( dirname "$file_config" ) || dir=$dircamilladsp/$d
+		dirs=$( ls "$dir" )
 		dirs=$( line2array "$dirs" )
 		ls+=', "'$d'": '$dirs
 		[[ $d == configs ]] && list=$dirs
