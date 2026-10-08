@@ -46,8 +46,7 @@ for d in coeffs configs raw; do
 		ls+=', "coeffswav": '$( line2array "$dirs" )
 	else
 		[[ $d == configs ]] && dir=$( dirname "$file_config" ) || dir=$dircamilladsp/$d
-		dirs=$( ls "$dir" )
-		dirs=$( line2array "$dirs" )
+		dirs=$( line2array "$( ls "$dir" )" )
 		ls+=', "'$d'": '$dirs
 		[[ $d == configs ]] && list=$dirs
 	fi
