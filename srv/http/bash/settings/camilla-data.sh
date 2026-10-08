@@ -40,15 +40,15 @@ data='
 , "volumemute"  : '$volumemute
 for d in coeffs configs raw; do
 	if [[ $d == coeffs ]]; then
-		dirs=$( ls $dircamilladsp/$d | grep -v '\.wav$' )
-		ls+=', "'$d'": '$( line2array "$dirs" )
-		dirs=$( ls $dircamilladsp/$d | grep '\.wav$' )
-		ls+=', "coeffswav": '$( line2array "$dirs" )
+		files=$( ls $dircamilladsp/$d | grep -v '\.wav$' )
+		ls+=', "'$d'": '$( line2array "$files" )
+		files=$( ls $dircamilladsp/$d | grep '\.wav$' )
+		ls+=', "coeffswav": '$( line2array "$files" )
 	else
 		[[ $d == configs ]] && dir=$( dirname "$file_config" ) || dir=$dircamilladsp/$d
-		dirs=$( line2array "$( ls "$dir" )" )
-		ls+=', "'$d'": '$dirs
-		[[ $d == configs ]] && list=$dirs
+		files=$( line2array "$( ls "$dir" )" )
+		ls+=', "'$d'": '$files
+		[[ $d == configs ]] && list=$files
 	fi
 done
 ########
