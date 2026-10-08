@@ -5,12 +5,32 @@ amixer0dB() {
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
 }
 bluetoothProperty() {
+	local dev path_mac
+	if [[ $2 ]]; then
+		path_mac=/dev_${2//:/_}
+		dev=Device1
+	else
+		dev=Adapter1
+	fi
 	busctl --system get-property --json=short \
 			org.bluez \
-			/org/bluez/hci0 \
-			org.bluez.Adapter1 \
+			/org/bluez/hci0$path_mac \
+			org.bluez.$dev \
 			$1 \
-		| jq .data
+		| jq -r .data
+}
+bluetoothSinkSource() {
+	local UUIDs
+	UUIDs=$( bluetoothProperty UUIDs $1 )
+	[[ ! $UUIDs ]] && echo bluetooth && return
+#...............................................................................
+	if grep -q 0000110a- <<< $UUIDs; then
+		echo btsource
+	elif grep -q 0000110b- <<< $UUIDs; then
+		echo btsink
+	else
+		echo bluetooth
+	fi
 }
 conf2json() {
 	local file json k keys only l lines v

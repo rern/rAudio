@@ -78,23 +78,31 @@ data='
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 
-alsa_mixer=$( getContent $dirshm/amixercontrol none )
 if [[ $BT_MIXER || $BT_SOURCE ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
-	file_config="$dircamilladsp/$mac"
-	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	file_config=$dircamilladsp/$mac
+	bt_alias=$( bluetoothProperty Alias $mac )
 else
-	name=$alsa_mixer
 	file_config="$dircamilladsp/$name"
 fi
-[[ -e $file_config ]] && FILE_CONFIG=$( < "$file_config" ) || FILE_CONFIG="$dircamilladsp/configs/$name.yml"
+if [[ -e $file_config ]]; then
+	FILE_CONFIG=$( < "$file_config" )
+else
+	if [[ $bt_alias ]]; then
+		dir="$dircamilladsp/configs/$bt_alias"
+		mkdir -p "$dir"
+		FILE_CONFIG="$dir/camilladsp.yml"
+	else
+		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
+	fi
+fi
 
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 if [[ $file_current != $FILE_CONFIG ]]; then
-	! grep -qE 'device: bluealsa|type: Bluez' "$file_current" && echo $file_current > "$dircamilladsp/$alsa_mixer"
+	[[ $( dirname "$file_current" ) == */configs ]] && echo $file_current > "$dircamilladsp/$name" # from $dirshm/output
 	# bt: save by networks-bluetooth.sh on disconnect
 	sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 	if [[ $BT_SOURCE ]]; then

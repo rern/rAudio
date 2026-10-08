@@ -24,8 +24,7 @@ blueAlsaMixer() {
 # ------------------------------------------------------------------------------
 		fi
 	fi
-	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
-	if [[ $dbuspath == *sink ]]; then
+	if [[ $TYPE == btsink ]]; then
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
 	else
@@ -39,7 +38,7 @@ btConnect() {
 	btAction connect
 	for i in {1..5}; do
 		sleep 1
-		btInfo Connected && connected=1 && break
+		[[ $( bluetoothProperty Connected $MAC ) == true ]] && connected=1 && break
 	done
 	[[ ! $connected ]] && notifyState 'Connect failed' && exit
 # ------------------------------------------------------------------------------
@@ -54,19 +53,9 @@ btConnect() {
 btConnected() {
 	bluetoothctl devices Connected | sort
 }
-btInfo() {
-	local regex
-	regex=$1:
-	[[ ${1:0:1} != U ]] && regex+=' yes'
-	btAction info | grep -q -m1 "$regex" && return 0
-}
 NAME_TYPE() {
-	alias=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ $alias ]] && NAME=$alias
-	sink_source=$( btAction info | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
-	[[ ! $sink_source ]] && return
-	
-	[[ $sink_source == Sink ]] && TYPE=btreceiver || TYPE=btsender
+	NAME=$( bluetoothProperty Alias $MAC )
+	TYPE=$( bluetoothSinkSource $MAC )
 }
 notifyACTION() {
 	notify "$TYPE blink" "$NAME" "${ACTION^} ..."
@@ -77,8 +66,8 @@ notifyState() {
 
 args2var "$1"
 
-TYPE=bluetooth
 NAME=Bluetooth
+TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
 	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
@@ -97,7 +86,7 @@ if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, no
 	done
 	if [[ $d ]]; then
 		[[ $ACTION == connect ]] && connected=1
-		MAC=$( cut -d' ' -f2 <<< $d ) # < Device 41:42:56:12:21:71 NAME
+		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		NAME_TYPE
 	fi
 	notifyState "${ACTION^}ed"
@@ -109,7 +98,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		btAction pair
 		for i in {1..5}; do
 			sleep 1
-			btInfo Paired && paired=1 && break
+			[[ $( bluetoothProperty Paired $MAC ) == true ]] && paired=1 && break
 		done
 		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
@@ -124,7 +113,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
 			sleep 1
-			! btInfo Connected && break
+			[[ $( bluetoothProperty Connected $MAC ) == false ]] && break
 		done
 		notifyState Disconnected
 	else
@@ -136,7 +125,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		notifyState Forgotten
 	fi
 	[[ -e $dirsystem/camilladsp ]] && getVar CONFIG /etc/default/camilladsp > $dircamilladsp/$MAC
-	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+	dbuspath=$( bluealsa-cli list-pcms )
 	for path in $dbuspath; do
 		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
 	done
