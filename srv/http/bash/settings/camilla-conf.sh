@@ -163,7 +163,7 @@ for i in {0..3}; do
 #-------------------------------------------------------------------------------
 done
 touch $dirsystem/camilladsp
-pushRefresh camilla
+pushDataPages camilla features player
 if [[ ! $ACTIVE ]]; then
 	amixer0dB
 	volume=$( getContent $dirshm/volume )

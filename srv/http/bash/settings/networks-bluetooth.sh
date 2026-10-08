@@ -143,6 +143,4 @@ btConnected > $dirshm/Connected
 if [[ $connected ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
-for page in camilla networks system; do
-	pushRefresh $page
-done
+pushDataPages camilla networks system
