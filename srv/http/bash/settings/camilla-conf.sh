@@ -102,7 +102,7 @@ fi
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 if [[ $file_current != $FILE_CONFIG ]]; then
-	[[ $( dirname "$file_current" ) == */configs ]] && echo $file_current > "$dircamilladsp/$name" # from $dirshm/output
+	! grep -qE 'type: Bluez|device: bluealsa' "$file_current" && echo $file_current > "$dircamilladsp/$name" # from $dirshm/output
 	# bt: save by networks-bluetooth.sh on disconnect
 	sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 	if [[ $BT_SOURCE ]]; then
