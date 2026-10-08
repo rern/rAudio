@@ -4,6 +4,14 @@ amixer0dB() {
 	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
 }
+bluetoothProperty() {
+	busctl --system get-property --json=short \
+			org.bluez \
+			/org/bluez/hci0 \
+			org.bluez.Adapter1 \
+			$1 \
+		| jq .data
+}
 conf2json() {
 	local file json k keys only l lines v
 	file=$1

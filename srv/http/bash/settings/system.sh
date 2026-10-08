@@ -23,18 +23,13 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	enableFlagSet
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
-		btdiscoverable=$dirsystem/btdiscoverable
-		if [[ $DISCOVERABLE ]]; then
-			[[ ! -e $btdiscoverable ]] && discov=yes && touch $btdiscoverable
-		else
-			[[ -e $btdiscoverable ]] && discov=no && rm -f $btdiscoverable
-		fi
-		if systemctl -q is-active bluetooth; then
-			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
-		else
+		[[ $DISCOVERABLE ]] && yn=yes || yn=no
+		bluetoothctl discoverable $yn
+		[[ $TIMEOUT ]] && timeout=180 || timeout=0
+		bluetoothctl discoverable-timeout $timeout
+		if ! systemctl -q is-active bluetooth; then
 			modprobe hci_uart
 			for i in {0..3}; do
 				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
@@ -44,13 +39,12 @@ bluetooth )
 	else
 		systemctl stop bluetooth
 		rmmod hci_uart 2> /dev/null
-		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		rm -f $dirshm/{btmixer,btsource}
 		if [[ -e $dirmpdconf/output.conf ]]; then
 			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
 	fi
-	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
-	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
+	pushData refresh '{ "page": "networks", "activebt": '$TF' }'
 	rm $dirshm/btonboard
 	pushRefresh
 	;;

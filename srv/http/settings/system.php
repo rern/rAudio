@@ -126,7 +126,7 @@ EOF
 		, 'disabled' => $L->bluetooth.' is currently connected.'
 		, 'help'     => <<< EOF
 $B->gear
-■ Discoverable timeout: 3 minutes
+■ Discoverable to sender devices
 EOF
 	]
 	, [

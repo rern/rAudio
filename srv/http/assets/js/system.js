@@ -110,7 +110,10 @@ var CONFIG        = {
 	, bluetooth     : values => {
 		INFO( {
 			  ...SW
-			, list         : [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
+			, list         : [
+				  [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
+				, [ 'Timeout <gr>(3 minutes)</gr>',     'checkbox' ]
+			]
 			, values       : values
 			, checkchanged : S.bluetooth
 			, cancel       : SWITCH.cancel
