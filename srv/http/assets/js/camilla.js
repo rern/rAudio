@@ -8,7 +8,7 @@ W.refresh     = data => {
 		RENDER.status();
 		RENDER[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
 		BANNER_HIDE();
-		if ( ! $( '#codeconfiguration' ).hasClass( 'hide' ) ) STATUS( 'configuration' );
+		SWITCH.set();
 	}, 300 );
 }
 // variables //////////////////////////////////////////////////////////////////////////////
