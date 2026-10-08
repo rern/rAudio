@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### included by <<< features.sh
+### included by <<< player-asound.sh
 if [[ ! $dirbash ]]; then # if run directly
 	. /srv/http/bash/common.sh 
 	. $dirshm/output

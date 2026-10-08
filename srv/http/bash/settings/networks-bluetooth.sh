@@ -28,7 +28,7 @@ blueAlsaMixer() {
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
 	else
-		touch $dirshm/btcsource
+		touch $dirshm/btsource
 	fi
 }
 btAction() {
@@ -53,6 +53,13 @@ btConnect() {
 btConnected() {
 	bluetoothctl devices Connected | sort
 }
+dbusDisconnect() {
+	dbuspath=$( bluealsa-cli list-pcms )
+	for path in $dbuspath; do
+		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
+	done
+	rm -f $dirshm/{btmixer,btsource}
+}
 NAME_TYPE() {
 	NAME=$( bluetoothProperty Alias $MAC )
 	TYPE=$( bluetoothSinkSource $MAC )
@@ -69,7 +76,7 @@ args2var "$1"
 NAME=Bluetooth
 TYPE=bluetooth
 
-if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
+if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, notify > setup
 	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
 		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
 		exit
@@ -90,6 +97,7 @@ if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, no
 		NAME_TYPE
 	fi
 	notifyState "${ACTION^}ed"
+	[[ $ACTION == disconnect ]] && dbusDisconnect
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	NAME_TYPE
 	if [[ $ACTION == pair ]]; then
@@ -125,11 +133,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		notifyState Forgotten
 	fi
 	[[ -e $dirsystem/camilladsp ]] && getVar CONFIG /etc/default/camilladsp > $dircamilladsp/$MAC
-	dbuspath=$( bluealsa-cli list-pcms )
-	for path in $dbuspath; do
-		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
-	done
-	rm -f $dirshm/{btmixer,btsource}
+	dbusDisconnect
 fi
 blueAlsaMixer
 playerStop
