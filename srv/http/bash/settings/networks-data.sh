@@ -4,7 +4,7 @@
 
 if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
 	devicebt=true
-	devices=$( bluetoothctl devices Trusted | sort -k3 -fh  )
+	devices=$( bluetoothctl devices | sort -k3 -fh  )
 fi
 if [[ $devices ]]; then
 	while read dev; do

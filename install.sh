@@ -6,7 +6,24 @@ alias=r1
 
 # 20261010
 file=/lib/systemd/system/camilladsp.service
-grep -q 'CONFIG ' $file && restart+=' camilladsp' && sed -i 's/CONFIG/{&}/' $file
+if grep -q 'CONFIG ' $file; then
+	sed -i 's/CONFIG/{&}/' $file
+	restart+=camilladsp$'\n'
+fi
+if [[ -e $dirsystem/camilladsp ]]; then
+	systemctl stop camilladsp
+	file_current=$( getVar CONFIG /etc/default/camilladsp )
+	if [[ $file_current == */configs-bt/* ]]; then
+		dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+		mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+		bt_alias=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+		FILE_CONFIG=$( sed "s|/configs|&/$bt_alias|" <<< $file_current )
+		mkdir -p "$( dirname "$FILE_CONFIG" )"
+		mv $file_current "$FILE_CONFIG"
+		sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
+		restart+=camilladsp$'\n'
+	fi
+fi
 
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 [[ -e $dirshm/bluetoothdest ]] && touch $dirshm/btc_sender
@@ -22,7 +39,7 @@ if [[ -e /bin/camilladsp ]]; then
 ' -e '/^GAIN\|^MUTE/ d
 ' $file
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
-		restart+=' camilladsp'
+		restart+=camilladsp$'\n'
 	fi
 	file=$dircamilladsp/configs/camilladsp.yml
 	grep -q 'volume_ramp_time: 400' $file && sed -i -E 's/(volume_ramp_time: ).*/\10.0/' $file
@@ -33,7 +50,7 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	file=/lib/systemd/system/mpd_oled.service
 	if grep -q ^ExecStop $file; then
 		sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-		restart+=' mpd_oled'
+		restart+=mpd_oled$'\n'
 	fi
 fi
 
@@ -41,14 +58,14 @@ fi
 file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
 	sed -i 's|spotifyd.sh|status-&|' $file
-	restart+=' spotifyd'
+	restart+=spotifyd$'\n'
 	sed -i -E '/^control|^mixer/ d' $file
 fi
 
 file=/etc/systemd/system/shairport.service
 if ! grep -q status-shairport $file; then
 	sed -i 's|shairport.sh|status-&|' $file
-	restart+=' shairport'
+	restart+=shairport$'\n'
 	
 	file=/etc/shairport-sync.conf
 	name=$( getVar name $file )
@@ -76,8 +93,8 @@ fi
 # 20260909
 touch /root/{.bash,.php,.python}_history
 
-! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=' websocket'
-! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=' rotaryencoder'
+! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=websocket$'\n'
+! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
 
 [[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
 
@@ -128,9 +145,10 @@ else
 fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
+
 if [[ $restart ]]; then
 	systemctl daemon-reload
-	systemctl try-restart $restart
+	systemctl try-restart $( sort -u <<< $restart )
 fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
@@ -140,5 +158,6 @@ $dirbash/webradio-convert.sh
 
 # 20260929
 [[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp
+
 
 installfinish
