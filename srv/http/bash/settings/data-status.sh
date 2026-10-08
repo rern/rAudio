@@ -57,8 +57,8 @@ infobluetooth )
 	statusCmd "bluetoothctl info $2"
 	;;
 infocamilla | configuration )
-	[[ $2 ]] && CONFIG="$dircamilladsp/configs/$2" || . <( grep ^CONFIG /etc/default/camilladsp )
-	statusCmd "cat $CONFIG"
+	[[ $2 ]] && CONFIG="$dircamilladsp/configs/$2" || CONFIG=$( getVar CONFIG /etc/default/camilladsp )
+	statusCmd "cat \"$CONFIG\""
 	;;
 infostorage )
 	DEV=$2
