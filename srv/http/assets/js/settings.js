@@ -237,6 +237,8 @@ var SWITCH  = {
 	}
 	, set    : () => {
 		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+		if ( PAGE === 'camilla' ) return
+
 		BANNER_HIDE();
 		var $switch = $( '.switch' );
 		if ( ! $switch.length ) return
