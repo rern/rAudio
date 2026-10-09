@@ -64,7 +64,7 @@ s/(adjust_period:).*/\1 3/
 fi
 failed_exit() {
 	systemctl stop camilladsp
-	echo "$1"
+	echo "$@"
 	rm -f $dirsystem/camilladsp
 	$dirsettings/player-conf.sh
 	exit
