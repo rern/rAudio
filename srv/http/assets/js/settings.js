@@ -494,7 +494,7 @@ $( '.switch' ).on( 'click', function() {
 						, message : error
 					} );
 				}
-			}, 'text' );
+			} );
 			$( '.col-r' ).css( 'pointer-events', 'none' );
 		}
 	} else {
