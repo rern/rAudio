@@ -79,7 +79,7 @@ echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 
 if [[ $BT_MIXER || $BT_SOURCE ]]; then
-	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac
 	bt_alias=$( bluetoothProperty Alias $mac )

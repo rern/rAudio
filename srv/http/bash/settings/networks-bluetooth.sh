@@ -11,10 +11,10 @@ blueAlsaMixer() {
 		[[ $btmixer ]] && break
 	done
 	if [[ ! $btmixer ]]; then
-		if [[ ! $retry ]]; then # some might be broken on 1st connect
+		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
 			notify "$TYPE blink" "$NAME" 'Mixer ...'
-			retry=1
-			connected=
+			RETRIED=1
+			CONNECTED=
 			touch $dirshm/btretry
 			btAction disconnect
 			btConnect
@@ -38,9 +38,9 @@ btConnect() {
 	btAction connect
 	for i in {1..5}; do
 		sleep 1
-		[[ $( bluetoothProperty Connected $MAC ) == true ]] && connected=1 && break
+		[[ $( bluetoothProperty Connected $MAC ) == true ]] && CONNECTED=1 && break
 	done
-	[[ ! $connected ]] && notifyState 'Connect failed' && exit
+	[[ ! $CONNECTED ]] && notifyState 'Connect failed' && exit
 # ------------------------------------------------------------------------------
 	if [[ $TYPE == bluetooth ]]; then # non-audio
 		notifyState Ready
@@ -48,7 +48,7 @@ btConnect() {
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	[[ $retry ]] && blueAlsaMixer || notifyState Connected
+	[[ $RETRIED ]] && blueAlsaMixer || notifyState Connected
 }
 btConnected() {
 	bluetoothctl devices Connected | sort
@@ -92,9 +92,12 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, 
 		[[ $d ]] && break
 	done
 	if [[ $d ]]; then
-		[[ $ACTION == connect ]] && connected=1
 		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
 		NAME_TYPE
+		if [[ $ACTION == connect ]]; then
+			CONNECTED=1
+			btAction trust
+		fi
 	fi
 	notifyState "${ACTION^}ed"
 	[[ $ACTION == disconnect ]] && dbusDisconnect
@@ -106,12 +109,12 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		btAction pair
 		for i in {1..5}; do
 			sleep 1
-			[[ $( bluetoothProperty Paired $MAC ) == true ]] && paired=1 && break
+			[[ $( bluetoothProperty Paired $MAC ) == true ]] && PAIRED=1 && break
 		done
-		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
+		[[ ! $PAIRED ]] && notifyState 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
+		btAction trust
 	fi
-	btAction trust
 	notifyACTION
 	btConnect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
@@ -138,9 +141,9 @@ fi
 blueAlsaMixer
 playerStop
 $dirsettings/player-conf.sh
-[[ $connected ]] && notifyState Ready
+[[ $CONNECTED ]] && notifyState Ready
 btConnected > $dirshm/Connected
-if [[ $connected ]]; then
+if [[ $CONNECTED ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
 pushRefresh networks system
