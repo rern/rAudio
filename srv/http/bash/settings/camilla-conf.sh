@@ -6,7 +6,7 @@ if [[ ! $dirbash ]]; then # if run directly
 	. $dirshm/output
 fi
 
-if [[ $BT_MIXER || $BT_SOURCE ]]; then
+if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac
@@ -25,17 +25,24 @@ else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
 fi
-
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
-if [[ $file_current != $FILE_CONFIG ]]; then
+if [[ "$file_current" != "$FILE_CONFIG" ]]; then
 	if [[ $bt_alias ]] && ! grep -qE 'type: Bluez|device: bluealsa' "$file_current"; then
 		echo $file_current > "$dircamilladsp/$name" # from $dirshm/output
 													# bt: save by networks-bluetooth.sh on disconnect
 	fi
 	sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-	if [[ $BT_SOURCE ]]; then
+	if [[ -e $dirshm/btmixer ]]; then # alsa / bluealsa
+		sed -i '/  playback:$/,/    format:/ c\
+  playback:\
+    type: Alsa\
+    channels: 2\
+    device: bluealsa\
+    format: null
+' "$FILE_CONFIG"
+	else                              # btsource
 		sed -i -E -e '
 s/(samplerate: ).*/\1'$sampling'/
 s/(chunksize:).*/\1 4096/
@@ -50,17 +57,8 @@ s/(adjust_period:).*/\1 3/
     format: null\
   playback:
 ' "$FILE_CONFIG"
-	else # alsa / bluealsa
-		sed -i '/  playback:$/,/    format:/ c\
-  playback:\
-    type: Alsa\
-    channels: 2\
-    device: '$DEVICE'\
-    format: null
-' "$FILE_CONFIG"
 	fi
 fi
-
 failed_exit() {
 	systemctl stop camilladsp
 	echo "$1"

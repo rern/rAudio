@@ -42,7 +42,6 @@ sampling )
 	declare -A CHANNELS DEVICES FORMATS SAMPLINGS
 	# capture
 	if [[ -e $dirshm/btsource ]]; then # send from source client
-		BT_SOURCE=1
 		DEVICES[c]='{ "BlueALSA": "Bluez" }'
 		DEV=bluealsa
 	else
@@ -51,7 +50,6 @@ sampling )
 	fi
 	# playback
 	if [[ -e $dirshm/btmixer ]]; then # send from rAudio
-		BT_MIXER=1
 		DEVICES[p]='{ "BlueALSA": "bluealsa" }'
 		DEV+=' bluealsa'
 	else

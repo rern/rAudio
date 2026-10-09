@@ -5,6 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
+file=/etc/camilladsp/configs/camilladsp.yml
+! grep -q 'format: null' $file && sed -i -E 's/(format:).*/\1 null/' $file
+
 file=/lib/systemd/system/camilladsp.service
 if grep -q 'CONFIG ' $file; then
 	sed -i 's/CONFIG/{&}/' $file
