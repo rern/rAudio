@@ -242,13 +242,6 @@ pushDirCounts() {
 	[[ $( compgen -G /mnt/MPD/${1^^}/*/ | grep -v $dirshareddata/ ) ]] && tf=true || tf=false
 	pushData counts '{ "'$1'": '$tf' }'
 }
-pushDataPages() {
-	for page in $@; do
-		[[ page == camilla && ! -e $dirsystem/camilladsp ]] && continue
-		
-		$dirsettings/$page-data.sh push
-	done
-}
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD

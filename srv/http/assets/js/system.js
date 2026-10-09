@@ -107,19 +107,7 @@ var CONFIG        = {
 		}
 		, shareddata    : () => UTIL.mount.mount()
 	}
-	, bluetooth     : values => {
-		INFO( {
-			  ...SW
-			, list         : [
-				  [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
-				, [ 'Timeout <gr>(3 minutes)</gr>',     'checkbox' ]
-			]
-			, values       : values
-			, checkchanged : S.bluetooth
-			, cancel       : SWITCH.cancel
-			, ok           : SWITCH.enable
-		} );
-	}
+	, bluetooth     : values => BLUETOOTH( values )
 	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
 			UTIL.wm5102();

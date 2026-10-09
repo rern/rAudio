@@ -362,6 +362,10 @@ $( '.i-search' ).on( 'click', function() {
 		.find( 'i' ).eq( 0 ).addClass( 'blink' );
 	SCAN[ type ]();
 } );
+$( '#divbluetooth .i-eye' ).on( 'click', function() {
+	SW = {} // placeholder
+	BASH( 'data-config.sh bluetooth', values => BLUETOOTH( values ), 'json' );
+} );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
 	if ( $this.parent()[ 0 ].id === 'scanbluetooth' ) {

@@ -5,6 +5,20 @@ Naming must be the same for:
 	bash   - cmd=NAME, save to NAME.conf
 */
 $MENU       = $( '#menu' );
+function BLUETOOTH( values ) {
+	INFO( {
+		  icon         : 'bluetooth'
+		, title        : 'Bluetooth'
+		, list         : [
+			  [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
+			, [ 'Timeout <gr>(3 minutes)</gr>',     'checkbox' ]
+		]
+		, values       : values
+		, checkchanged : true
+		, cancel       : SWITCH.cancel
+		, ok           : SWITCH.enable
+	} );
+}
 function CONTENT() {
 	var $select = $( '.container select' );
 	if ( $select.length ) {

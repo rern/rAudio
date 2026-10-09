@@ -465,11 +465,11 @@ pushPlaylist() {
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRefresh() {
-	local page push
-	page=${1:-$( basename $0 .sh )}
-	push=${2:-push}
-	[[ $page == networks ]] && sleep 2
-	$dirsettings/$page-data.sh $push
+	local page pages
+	pages=${@:-$( basename $0 .sh )}
+	for page in $pages; do
+		$dirsettings/$page-data.sh push
+	done
 }
 pushStatus() {
 	$dirbash/status-push.sh

@@ -35,8 +35,7 @@ ap )
 		systemctl stop iwd
 		rm -f $dirsystem/{ap,ap.conf}
 	fi
-	pushRefresh
-	pushRefresh networks
+	pushRefresh features networks
 	;;
 audiocd | autoplay | lyrics | scrobble )
 	enableFlagSet
@@ -82,8 +81,7 @@ equalizer )
 httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
-	pushRefresh
-	pushRefresh player
+	pushRefresh features player
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2

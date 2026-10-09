@@ -13,7 +13,7 @@ commonVariables( [
 $head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => 'search'
+	, 'button' => [ 'search', 'eye' ]
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
