@@ -135,7 +135,6 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notifyState Forgotten
 	fi
-	[[ -e $dirsystem/camilladsp ]] && getVar CONFIG /etc/default/camilladsp > $dircamilladsp/$MAC
 	dbusDisconnect
 fi
 blueAlsaMixer
