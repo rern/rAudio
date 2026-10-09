@@ -868,9 +868,9 @@ hr {
 }
 .infomessage p {
 	margin: 0 auto;
-	width: max-content;
 	padding: 0 15px;
 	text-align: left;
+	white-space: pre-line;
 }
 .infoimgname {
 	text-align: center !important;
