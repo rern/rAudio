@@ -48,13 +48,6 @@ bluetooth )
 	rm $dirshm/btonboard
 	pushRefresh
 	;;
-bluetoothstart )
-	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && discov=yes || discov=no
-	bluetoothctl discoverable $discov &> /dev/null
-	bluetoothctl discoverable-timeout 0 &> /dev/null
-	bluetoothctl pairable yes &> /dev/null
-	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd
 	dir=${MOUNTPOINT:9:3}
