@@ -28,7 +28,6 @@ data='
 , "btmixer"     : "'$btmixer'"
 , "configname"  : "'$( basename "$file_config" )'"
 , "control"     : "'$mixer'"
-, "devices"     : '$( < $dirshm/hwparams )'
 , "mixer"       : "'$mixer'"
 , "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"

@@ -358,7 +358,7 @@ D0.list       = {
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',               'select', {} ] // ^
-	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > hwparams
+	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > $( '#devices' ).on( 'click'...
 	, deviceP            : [ 'Device',             'select', {} ]                                    // ^
 	, formatC            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
 	, formatP            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
@@ -1127,17 +1127,6 @@ var CONFIG    = {
 		[ 'devices', 'filters', 'mixers', 'pipeline', 'processors' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
-		var dev                            = S.devices;
-		var samplings                      = dev.playback.samplings;
-		D0.samplerate                      = Object.values( samplings );
-		D.main[ 0 ][ 2 ].kv                = samplings;
-		D0.list.capture_samplerate[ 2 ].kv = samplings;
-		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
-		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
-		D0.list.deviceC[ 2 ]               = dev.capture.device;
-		D0.list.deviceP[ 2 ]               = dev.playback.device;
-		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
-		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
@@ -1730,6 +1719,24 @@ var SETTING   = {
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
+	, format        : ( device, type ) => {
+		if ( D0.samplerate.length ) {
+			SETTING[ device ]( type );
+		} else {
+			BASH( [ 'sampling' ], dev => {
+				D0.samplerate                      = Object.values( dev.playback.samplings );
+				D.main[ 0 ][ 2 ].kv                = dev.playback.samplings;
+				D0.list.capture_samplerate[ 2 ].kv = dev.capture.samplings;
+				D0.list.formatC[ 2 ].kv            = dev.capture.formats;
+				D0.list.formatP[ 2 ].kv            = dev.playback.formats;
+				D0.list.deviceC[ 2 ]               = dev.capture.device;
+				D0.list.deviceP[ 2 ]               = dev.playback.device;
+				D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
+				D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
+				SETTING[ device ]( type );
+			}, 'json' );
+		}
+	}
 	, main          : () => {
 		var values   = {};
 		D0.main.forEach( k => {
@@ -3029,10 +3036,10 @@ $( '#processors, #pipeline' ).on( 'click', 'li', function( e ) {
 } );
 // devices --------------------------------------------------------------------------------
 $( '#divdevices heading .i-gear' ).on( 'click', function() {
-	SETTING.main();
+	SETTING.format( 'main' );
 } );
 $( '#devices' ).on( 'click', 'li', function() {
-	SETTING.device( $( this ).data( 'type' ) );
+	SETTING.format( 'device', $( this ).data( 'type' ) );
 } );
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
