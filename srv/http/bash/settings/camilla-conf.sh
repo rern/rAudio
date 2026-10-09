@@ -11,6 +11,7 @@ if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac
 	bt_alias=$( bluetoothProperty Alias $mac )
+	samplerate=$( bluealsa-aplay -L | awk '/Hz$/ {print $(NF-1)}' )
 else
 	file_config="$dircamilladsp/$name"
 fi
@@ -35,16 +36,18 @@ if [[ "$file_current" != "$FILE_CONFIG" ]]; then
 	fi
 	sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 	if [[ -e $dirshm/btmixer ]]; then # alsa / bluealsa
-		sed -i '/  playback:$/,/    format:/ c\
+		sed -i -E -e '/  playback:$/,/    format:/ c\
   playback:\
     type: Alsa\
     channels: 2\
     device: bluealsa\
-    format: null
+    format: ~
+' -e '
+s/(samplerate: ).*/\1'$samplerate'/
 ' "$FILE_CONFIG"
 	else                              # btsource
 		sed -i -E -e '
-s/(samplerate: ).*/\1'$sampling'/
+s/(samplerate: ).*/\1'$samplerate'/
 s/(chunksize:).*/\1 4096/
 s/(enable_rate_adjust:).*/\1 true/
 s/(target_level:).*/\1 8000/
@@ -54,7 +57,7 @@ s/(adjust_period:).*/\1 3/
     type: Bluez\
     dbus_path: '$dbuspath'\
     channels: 2\
-    format: null\
+    format: ~\
   playback:
 ' "$FILE_CONFIG"
 	fi

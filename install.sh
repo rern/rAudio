@@ -5,13 +5,15 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
-file=/etc/camilladsp/configs/camilladsp.yml
-! grep -q 'format: null' $file && sed -i -E 's/(format:).*/\1 null/' $file
+if [[ -e /bin/camilladsp ]]; then
+	file=/etc/camilladsp/configs/camilladsp.yml
+	! grep -q 'format: ~' $file && sed -i -E 's/(format:).*/\1 ~/' $file
 
-file=/lib/systemd/system/camilladsp.service
-if grep -q 'CONFIG ' $file; then
-	sed -i 's/CONFIG/{&}/' $file
-	restart+=camilladsp$'\n'
+	file=/lib/systemd/system/camilladsp.service
+	if grep -q 'CONFIG ' $file; then
+		sed -i 's/CONFIG/{&}/' $file
+		restart+=camilladsp$'\n'
+	fi
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	systemctl stop camilladsp
@@ -45,7 +47,7 @@ if [[ -e /bin/camilladsp ]]; then
 		restart+=camilladsp$'\n'
 	fi
 	file=$dircamilladsp/configs/camilladsp.yml
-	grep -q 'volume_ramp_time: 400' $file && sed -i -E 's/(volume_ramp_time: ).*/\10.0/' $file
+	! grep -q 'volume_ramp_time: 0.0' $file && sed -i -E 's/(volume_ramp_time:).*/\1 0.0/' $file
 fi
 
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
