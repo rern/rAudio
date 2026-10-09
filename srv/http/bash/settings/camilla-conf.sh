@@ -11,7 +11,7 @@ for i in {0..3}; do
 	lsmod | grep -q snd_aloop && break || sleep 1
 done
 
-declare -A CHANNELS DEVICES FORMAT FORMATS SAMPLINGS
+declare -A CHANNELS DEVICES FORMATS SAMPLINGS
 # capture
 if [[ -e $dirshm/btsource ]]; then # send from source client
 	BT_SOURCE=1
@@ -70,7 +70,6 @@ for D in $DEV; do
 		[[ $f == F* ]] && list_f+=$list || list_s+=$list
 	done
 	FORMATS[$c_p]="{ \"Auto\": null $( sort -d <<< $list_s ) $( sort -d <<< $list_f ) }"
-	FORMAT[$c_p]=$format_list
 done
 ######## >
 data='
@@ -97,7 +96,7 @@ if [[ $BT_MIXER || $BT_SOURCE ]]; then
 else
 	file_config="$dircamilladsp/$name"
 fi
-if [[ -e $file_config ]]; then
+if [[ -e $file_config ]]; then # existing
 	FILE_CONFIG=$( < "$file_config" )
 else
 	if [[ $bt_alias ]]; then
@@ -130,7 +129,7 @@ s/(adjust_period:).*/\1 3/
     type: Bluez\
     dbus_path: '$dbuspath'\
     channels: 2\
-    format: '${FORMAT[c]/ *}'\
+    format: null\
   playback:
 ' "$FILE_CONFIG"
 	else # alsa / bluealsa
@@ -139,7 +138,7 @@ s/(adjust_period:).*/\1 3/
     type: Alsa\
     channels: 2\
     device: '$DEVICE'\
-    format: '${FORMAT[p]/ *}'
+    format: null
 ' "$FILE_CONFIG"
 	fi
 fi
