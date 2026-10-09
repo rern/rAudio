@@ -32,6 +32,17 @@ bluetoothSinkSource() {
 		echo bluetooth
 	fi
 }
+camillaConfigValidate() {
+	config_validate=$( $dirsettings/camilla-conf.sh )
+	if grep -q 'Config is not valid' <<< $config_validate; then
+		echo "$config_validate"
+		rm -f $dirshm/volume $dirsystem/camilladsp
+		return 1
+#...............................................................................
+	fi
+	touch $dirsystem/camilladsp
+	return 0
+}
 conf2json() {
 	local file json k keys only l lines v
 	file=$1

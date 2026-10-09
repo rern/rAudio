@@ -48,14 +48,8 @@ camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet | tee $dirshm/volume )
 	if [[ $ON ]]; then
-		config_validate=$( $dirsettings/camilla-conf.sh )
-		if grep -q 'Config is not valid' <<< $config_validate; then
-			echo "$config_validate"
-			rm -f $dirshm/volume
-			exit
-		fi
-		touch $dirsystem/camilladsp
-		$dirsettings/player-conf.sh
+		camillaConfigValidate && $dirsettings/player-conf.sh || exit
+#-------------------------------------------------------------------------------
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp

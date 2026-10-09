@@ -11,6 +11,8 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+[[ -e $dirsystem/camilladsp ]] && camillaConfigValidate # switch alsa / bluetooth
+
 pushVolumeNone() {
 	pushData display '{ "volumenone": '$1' }'
 	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
