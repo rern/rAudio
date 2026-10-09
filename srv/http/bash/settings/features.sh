@@ -47,13 +47,25 @@ brightness )
 camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet | tee $dirshm/volume )
-	enableFlagSet
-	pushRestartMpd camilladsp $TF
-	if [[ ! $ON ]]; then
+	if [[ $ON ]]; then
+		config_validate=$( $dirsettings/camilla-conf.sh )
+		if grep -q 'Config is not valid' <<< $config_validate; then
+			echo "$config_validate"
+			rm -f $dirshm/volume
+			exit
+		fi
+		touch $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
+	else
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
 		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
-		rm -f $dirshm/volume
 	fi
+	rm -f $dirshm/volume
+	pushSubmenu camilladsp $( [[ -e $dirsystem/camilladsp ]] && echo true || echo false )
+	pushRefresh camilla features
 	;;
 dabradio )
 	enableFlagSet

@@ -122,5 +122,3 @@ pcm.writeFile {
 fi
 ######## >
 echo "$ASOUNDCONF" > /etc/asound.conf
-
-[[ $CAMILLADSP ]] && . $dirsettings/camilla-conf.sh

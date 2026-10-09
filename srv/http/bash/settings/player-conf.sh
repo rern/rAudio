@@ -47,6 +47,28 @@ mixertype=' > $dirshm/output
 fi
 
 . $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
+if [[ $CAMILLADSP ]]; then
+	systemctl -q is-active camilladsp && ACTIVE=1
+	systemctl restart camilladsp
+	for i in {0..3}; do
+		sleep 1
+		websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && break
+	done
+	if [[ $i == 3 ]]; then
+		CAMILLADSP=
+		echo 'Start failed!'
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		. $dirsettings/player-asound.sh
+	else
+		if [[ ! $ACTIVE ]]; then
+			amixer0dB
+			volume=$( getContent $dirshm/volume )
+			[[ $volume ]] && volumeCamilla $volume
+		fi
+	fi
+fi
+
 
 if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
 	. <( grep ^name $dirshm/output )

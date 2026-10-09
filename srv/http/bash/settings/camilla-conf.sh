@@ -1,10 +1,8 @@
 #!/bin/bash
 
-### included by <<< player-asound.sh
-if [[ ! $dirbash ]]; then # if run directly
-	. /srv/http/bash/common.sh 
-	. $dirshm/output
-fi
+. /srv/http/bash/common.sh
+
+name=$( getVar name $dirshm/output )
 
 if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
@@ -62,30 +60,5 @@ s/(adjust_period:).*/\1 3/
 ' "$FILE_CONFIG"
 	fi
 fi
-failed_exit() {
-	systemctl stop camilladsp
-	echo "$@"
-	rm -f $dirsystem/camilladsp
-	$dirsettings/player-conf.sh
-	exit
-#-------------------------------------------------------------------------------
-}
-validate=$( camilladsp -c "$FILE_CONFIG" )
-grep -q 'Config is not valid' <<< $validate && failed_exit ${validate//$'\n'/<br>}
-#-------------------------------------------------------------------------------
-systemctl -q is-active camilladsp && ACTIVE=1
-systemctl restart camilladsp
-for i in {0..3}; do
-	sleep 1
-	websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && break
-	[[ $i == 3 ]] && failed_exit 'Start failed!'
-#-------------------------------------------------------------------------------
-done
-touch $dirsystem/camilladsp
-pushRefresh camilla features player
-if [[ ! $ACTIVE ]]; then
-	amixer0dB
-	volume=$( getContent $dirshm/volume )
-	[[ $volume ]] && volumeCamilla $volume
-fi
-rm -f $dirshm/volume
+
+camilladsp -c "$FILE_CONFIG"

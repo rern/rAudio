@@ -55,6 +55,9 @@ function NOTIFY_COMMON( message ) {
 	}
 	BANNER( SW.icon +' blink', SW.title, message, -1 );
 }
+function POINTER_EVENTS( css ) {
+	$( '.col-r' ).css( 'pointer-events', css || '' );
+}
 function REFRESHDATA() {
 	if ( PAGE === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
@@ -246,7 +249,7 @@ var SWITCH  = {
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 		if ( V.debug ) return
 
-		$( '.col-r' ).css( 'pointer-events', 'none' );
+		POINTER_EVENTS( 'none' );
 		delete SW;
 	}
 	, set    : () => {
@@ -279,7 +282,7 @@ W.refresh   = data => { // except camilla
 		COMMON.json.update( S, data );
 		SWITCH.set();
 		renderPage();
-		$( '.col-r' ).css( 'pointer-events', '' );
+		POINTER_EVENTS();
 		COMMON.statusToggle( 'refresh' );
 	}, 300 );
 }
@@ -472,7 +475,7 @@ $( '.switch' ).on( 'click', function() {
 		} );
 		return
 	}
-
+	
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id );
 	if ( checked ) {
@@ -491,11 +494,12 @@ $( '.switch' ).on( 'click', function() {
 					BANNER_HIDE();
 					INFO( {
 						  ...SW
-						, message : error
+						, message : '<p>'+ ICON( 'warning yl' ) +' '+ error +'</p>'
 					} );
+					POINTER_EVENTS();
 				}
 			} );
-			$( '.col-r' ).css( 'pointer-events', 'none' );
+			POINTER_EVENTS( 'none' );
 		}
 	} else {
 		$setting.addClass( 'hide' );
@@ -504,7 +508,7 @@ $( '.switch' ).on( 'click', function() {
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );
 			BASH( [ id, 'OFF' ] );
-			$( '.col-r' ).css( 'pointer-events', 'none' );
+			POINTER_EVENTS( 'none' );
 		}
 	}
 } );
