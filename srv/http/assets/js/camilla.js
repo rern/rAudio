@@ -1546,7 +1546,7 @@ var SETTING   = {
 		$.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
 		var title       = UTIL.key2label( dev );
 		INFO( {
-			  icon         : V.tab
+			  icon         : dev === 'capture' ? 'input' : 'output'
 			, title        : title
 			, list         : D[ dev ][ type ]
 			, values       : values
