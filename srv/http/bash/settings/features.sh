@@ -59,7 +59,6 @@ camilladsp )
 	fi
 	rm -f $dirshm/volume
 	pushSubmenu camilladsp $( [[ -e $dirsystem/camilladsp ]] && echo true || echo false )
-	pushRefresh camilla features
 	;;
 dabradio )
 	enableFlagSet

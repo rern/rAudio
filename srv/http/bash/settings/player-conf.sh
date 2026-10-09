@@ -186,6 +186,7 @@ fi
 volumeFunction > $dirshm/fn_volume
 pushStatus
 pushRefresh player
+[[ $CAMILLADSP ]] && pushRefresh camilla features
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
