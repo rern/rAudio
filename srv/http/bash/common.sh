@@ -93,9 +93,6 @@ audioCDplClear() {
 		pushPlaylist
 	fi
 }
-camillaWebsocket() {
-	 websocat --text ws://127.0.0.1:1234
-}
 color() {
 	filecss=/srv/http/assets/css/colors.css
 	css=$( < $filecss )
@@ -608,7 +605,7 @@ volumeCamilla() {
 				}
 				printf "%.1f\n", db / 100
 			}' ) # % > db
-	camillaWebsocket <<< '{ "SetVolume": '$db' }' &> /dev/null
+	$dirbash/status -c '{ "SetVolume": '$db' }' &> /dev/null
 }
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
@@ -646,7 +643,7 @@ volumeGet() {
 	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }
 volumeGetCamilla() {
-	db=$( camillaWebsocket <<< '"GetVolume"' | jq .GetVolume.value )
+	db=$( $dirbash/status -c GetVolume | jq .GetVolume.value )
 	awk -v db=$db -v min=-60 -v max=0 '
 		BEGIN {
 			min *= 100; max *= 100; db *= 100   # to centidB

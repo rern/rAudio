@@ -114,7 +114,7 @@ mute )
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 saveconfig )
-	camillaWebsocket <<< '"GetConfig"' | jq -r .GetConfig.value > "$FILECONFIG"
+	$dirbash/status -c GetConfig | jq -r .GetConfig.value > "$FILECONFIG"
 	;;
 	
 esac

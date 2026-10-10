@@ -52,8 +52,7 @@ if [[ $CAMILLADSP ]]; then
 	systemctl -q is-active camilladsp && ACTIVE=1
 	systemctl restart camilladsp
 	for i in {0..3}; do
-		sleep 1
-		camillaWebsocket <<< '"GetVolume"' &> /dev/null && break
+		$dirbash/status -c GetVolume &> /dev/null && break || sleep 1
 	done
 	if [[ $i == 3 ]]; then
 		CAMILLADSP=
