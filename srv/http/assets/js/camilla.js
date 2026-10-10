@@ -2211,21 +2211,18 @@ var SETTING   = {
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
-		var title   = 'Add File';
-		var message = 'Upload <wh>'+ ( filters ? 'coefficient' : 'configuration' ) +'</wh> file:';
-		var dir     = filters ? 'coeffs' : 'configs';
-		if ( dir === 'configs' && S.bluetooth ) dir += S.fileconfig.spli( '/' ).at( -2 );
+		var title   = COMMON.capitalize( V.tab );
 		INFO( {
 			  icon    : V.tab
 			, title   : title
-			, message : message
-			, file    : { oklabel: ICON( 'file' ) +'Upload', type: dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml' }
+			, message : 'Upload <wh>'+ ( filters ? 'coefficient' : 'configuration' ) +'</wh> file:'
+			, file    : { oklabel: ICON( 'file' ) +'Upload', type: filters ? '.dbl,.pcm,.raw,.wav' : '.yml' }
 			, cancel  : UTIL.webSocket
 			, ok      : () => {
 				NOTIFY( V.tab, title, 'Upload ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'camilla' );
-				formdata.append( 'dir', dir );
+				formdata.append( 'dir', filters ? '/srv/http/data/camilladsp/coeffs' : COMMON.dirName( S.fileconfig ) );
 				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
