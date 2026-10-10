@@ -21,38 +21,32 @@ else
 	volumemute=0
 fi
 file_config=$( getVar CONFIG /etc/default/camilladsp )
+dir_configs=$( dirname "$file_config" )
+files=$( find $dir_configs -maxdepth 1 -type f -printf '%f\n' ) # .../configs/..., ../configs/XX:XX:XX...
+ls+=', "configs": '$( line2array "$files" )
+files=$( ls $dircamilladsp/coeffs | grep -v '\.wav$' )
+ls+=', "coeffs": '$( line2array "$files" )
+files=$( ls $dircamilladsp/coeffs | grep '\.wav$' )
+ls+=', "coeffswav": '$( line2array "$files" )
+files=$( ls $dircamilladsp/raw )
+ls+=', "raw": '$( line2array "$files" )
 volumemax=$( volumeMaxGet )
+[[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && volumelimit=true
 ##########
 data='
 , "bluetooth"   : '$bluetooth'
 , "btmixer"     : "'$btmixer'"
 , "configname"  : "'$( basename "$file_config" )'"
 , "control"     : "'$mixer'"
+, "ls"          : { '${ls:1}' }
 , "mixer"       : "'$mixer'"
 , "play"        : '$( jq .play $dirshm/status.json )'
 , "player"      : "'$( < $dirshm/player )'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"      : '$volume'
-, "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
+, "volumelimit" : '$volumelimit'
 , "volumemax"   : '$volumemax'
 , "volumemute"  : '$volumemute
-for d in coeffs configs raw; do
-	if [[ $d == coeffs ]]; then
-		files=$( ls $dircamilladsp/$d | grep -v '\.wav$' )
-		ls+=', "'$d'": '$( line2array "$files" )
-		files=$( ls $dircamilladsp/$d | grep '\.wav$' )
-		ls+=', "coeffswav": '$( line2array "$files" )
-	else
-		[[ $d == configs ]] && dir=$( dirname "$file_config" ) || dir=$dircamilladsp/$d
-		files=$( line2array "$( ls "$dir" )" )
-		ls+=', "'$d'": '$files
-		[[ $d == configs ]] && list=$files
-	fi
-done
-########
-	data+='
-, "list"       : { "camilla": '$list' }
-, "ls"         : { '${ls:1}' }'
 
 data2json "$data" $1
