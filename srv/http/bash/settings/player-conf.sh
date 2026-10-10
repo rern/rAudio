@@ -53,7 +53,7 @@ if [[ $CAMILLADSP ]]; then
 	systemctl restart camilladsp
 	for i in {0..3}; do
 		sleep 1
-		websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' &> /dev/null && break
+		camillaWebsocket <<< '"GetVolume"' &> /dev/null && break
 	done
 	if [[ $i == 3 ]]; then
 		CAMILLADSP=

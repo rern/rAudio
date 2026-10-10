@@ -114,7 +114,7 @@ mute )
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 saveconfig )
-	websocat --text ws://127.0.0.1:1234 <<< '"GetConfig"' | jq -r .GetConfig.value > "$FILECONFIG"
+	camillaWebsocket <<< '"GetConfig"' | jq -r .GetConfig.value > "$FILECONFIG"
 	;;
 	
 esac
