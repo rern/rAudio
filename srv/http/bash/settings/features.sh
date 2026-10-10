@@ -56,6 +56,7 @@ camilladsp )
 		$dirsettings/player-conf.sh
 		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
+		pushRefresh
 	fi
 	rm -f $dirshm/volume
 	pushSubmenu camilladsp $( [[ -e $dirsystem/camilladsp ]] && echo true || echo false )

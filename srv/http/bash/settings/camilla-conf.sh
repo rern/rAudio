@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-name=$( getVar name $dirshm/output )
+. $dirshm/output # $card, $name
 
 if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
@@ -25,6 +25,8 @@ else
 	fi
 fi
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+
+! grep -qE 'bluealsa|Bluez' "$FILE_CONFIG" && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 [[ "$file_current" == "$FILE_CONFIG" ]] && exit

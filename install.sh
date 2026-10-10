@@ -67,8 +67,9 @@ if [[ -e /bin/camilladsp ]]; then
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
 		restart+=camilladsp$'\n'
 	fi
-	file=$dircamilladsp/configs/camilladsp.yml
-	! grep -q 'volume_ramp_time: 0.0' $file && sed -i -E 's/(volume_ramp_time:).*/\1 0.0/' $file
+	for file in /etc/camilladsp/configs/camilladsp.yml $dircamilladsp/configs/camilladsp.yml; do
+		! grep -q 'volume_ramp_time: 0.0' $file && sed -i -E 's/(volume_ramp_time:).*/\1 0.0/' $file
+	done
 fi
 
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then

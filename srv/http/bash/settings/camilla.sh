@@ -113,6 +113,10 @@ sampling )
 	}'
 	echo "{ $data }"
 	;;
+saveconfig )
+	file_config=$( getVar CONFIG /etc/default/camilladsp )
+	websocat --text ws://127.0.0.1:1234 <<< '"GetConfig"' | jq -r .GetConfig.value > "$file_config"
+	;;
 	
 esac
 
