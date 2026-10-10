@@ -112,26 +112,23 @@ STATUS.radioParadise() {
 }
 metaData() {
 	sleep $1
-	JSON=$( $FN_JSON )
-	if ! jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null; then
-		(( i++ ))
-		if [[ $i == 1 ]]; then
-			notify "$icon blink" Metadata 'Retry ...'
-		elif [[ $i == 10 ]]; then
-			NOMETA=1
-			notify $icon Metadata 'Not available'
-			systemctl stop radio
-		fi
-		metaData 1
-		return
-# ..............................................................................
+	if ! metaGet; then
+		notify "$icon blink" Metadata 'Retry ...' -1
+		for (( i=0; i < 3; i++ )); do
+			metaGet && break || sleep 1
+		done
+		(( $i == 3 )) && NO_META=1
 	fi
-	STATUS=$( $FN_STATUS )
-	keys=.Artist,.Title,.Album
-	[[ $( jq -jr $keys <<< $STATUS ) == $( jq -jr $keys $dirshm/status.json ) ]] && metaData 5 && return
+	if [[ $NO_META ]]; then
+		STATUS='{ Album : "", Artist: "", coverart: "", Title: ""'
+	else
+		STATUS=$( $FN_STATUS )
+		keys=.Artist,.Title,.Album
+		[[ $( jq -jr $keys <<< $STATUS ) == $( jq -jr $keys $dirshm/status.json ) ]] && metaData 5 && return
 # ..............................................................................
-	timeleft=$( jq .timeleft <<< $STATUS )
-	STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
+		timeleft=$( jq .timeleft <<< $STATUS )
+		STATUS=$( sed -E '/"timeleft":|^}/ d' <<< $STATUS )
+	fi
 	STATUS+='
 , "elapsed"   : '$( mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}' )'
 , "file"      : "'$file'"
@@ -144,10 +141,19 @@ metaData() {
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"
-	[[ $NOMETA ]] && exit
+	if [[ $NO_META ]]; then
+		notify $icon Metadata 'Not available'
+		systemctl stop radio
+		exit
 #-------------------------------------------------------------------
-	timeleft=${meta[4]}
+	fi
 	metaData $(( timeleft + 5 )) # add 5s delay
+}
+metaGet() {
+	JSON=$( $FN_JSON )
+	jq -e 'type == "object" and .error == null' <<< $JSON &>/dev/null && return 0
+	
+	return 1
 }
 
 metaData 0
