@@ -108,7 +108,7 @@ mixer )
 	cmd='amixer scontents'
 	devices="\
 <bll># $cmd</bll>"
-	card=$( < $dirsystem/asoundcard )
+	card=$( getVar card $dirshm/output )
 	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 	if [[ $aplayname != RPi-Cirrus ]]; then
 		mixers=$( $cmd )

@@ -13,8 +13,8 @@ mixers=$( getContent $dirshm/mixers )
 volumemax=$( volumeMaxGet )
 ##########
 data+='
-, "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
-, "btmixer"     : '$( [[ -e $dirshm/btmixer ]] && echo '"'$( < $dirshm/btmixer )'"' )'
+, "asoundcard"  : '$( getVar card $dirshm/output )'
+, "btmixer"     : "'$( getContent $dirshm/btmixer )'"
 , "counts"      : '$( < $dirmpd/counts )'
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'

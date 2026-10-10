@@ -21,8 +21,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	if [[ $file_current == */configs-bt/* ]]; then
 		dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
 		mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
-		bt_alias=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-		FILE_CONFIG=$( sed "s|/configs|&/$bt_alias|" <<< $file_current )
+		FILE_CONFIG=$( sed "s|/configs|&/$mac|" <<< $file_current )
 		mkdir -p "$( dirname "$FILE_CONFIG" )"
 		mv $file_current "$FILE_CONFIG"
 		sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp

@@ -110,6 +110,5 @@ mixer="$MIXER"
 mixertype=$MIXERTYPE
 EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
-echo $CARD > $dirsystem/asoundcard
 file=$dirsystem/mixernone
 [[ $MIXERTYPE == none || ( ! $MIXER && -e $dirsystem/camilladsp ) ]] && touch $file || rm -f $file

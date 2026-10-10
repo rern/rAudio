@@ -39,7 +39,6 @@ else
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	CARD=-1
 	NAME='(None)'
-	echo $CARD > $dirsystem/asoundcard
 	echo '
 card='$CARD'
 name=
