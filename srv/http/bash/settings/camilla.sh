@@ -31,14 +31,7 @@ confrename )
 confswitch )
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
-mixer.* ) # hw volume
-	$CMD
-	;;
-mute )
-	file_volumemute=$dirsystem/volumemute
-	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
-	;;
-sampling )
+devices )
 	declare -A CHANNELS DEVICES FORMATS SAMPLINGS
 	# capture
 	if [[ -e $dirshm/btsource ]]; then # send from source client
@@ -112,6 +105,13 @@ sampling )
 		, "samplings" : { '${SAMPLINGS[p]:1}' }
 	}'
 	echo "{ $data }"
+	;;
+mixer.* ) # hw volume
+	$CMD
+	;;
+mute )
+	file_volumemute=$dirsystem/volumemute
+	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 saveconfig )
 	websocat --text ws://127.0.0.1:1234 <<< '"GetConfig"' | jq -r .GetConfig.value > "$FILECONFIG"

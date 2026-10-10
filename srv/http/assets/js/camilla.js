@@ -1723,7 +1723,7 @@ var SETTING   = {
 		if ( D0.samplerate.length ) {
 			SETTING[ device ]( type );
 		} else {
-			BASH( [ 'sampling' ], dev => {
+			BASH( [ 'devices' ], dev => {
 				D0.samplerate                      = Object.values( dev.playback.samplings );
 				D.main[ 0 ][ 2 ].kv                = dev.playback.samplings;
 				D0.list.capture_samplerate[ 2 ].kv = dev.capture.samplings;
