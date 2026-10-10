@@ -118,10 +118,9 @@ metaData() {
 		if [[ $i == 1 ]]; then
 			notify "$icon blink" Metadata 'Retry ...'
 		elif [[ $i == 10 ]]; then
+			NOMETA=1
 			notify $icon Metadata 'Not available'
 			systemctl stop radio
-			exit
-# ------------------------------------------------------------------------------
 		fi
 		metaData 1
 		return
@@ -145,6 +144,8 @@ metaData() {
 , "webradio"  : true
 }'
 	$dirbash/status-push.sh "$STATUS"
+	[[ $NOMETA ]] && exit
+#-------------------------------------------------------------------
 	timeleft=${meta[4]}
 	metaData $(( timeleft + 5 )) # add 5s delay
 }
