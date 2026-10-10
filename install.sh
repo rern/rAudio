@@ -33,7 +33,7 @@ if [[ -e /bin/camilladsp ]]; then
 		restart+=camilladsp$'\n'
 	fi
 	
-	if [[ $( ls $dir_bt ) ]]; then
+	if [[ $( ls $dir_bt 2> /dev/null ) ]]; then
 		devices=$( bluetoothctl devices | cut -d' ' -f2- )
 		if (( $( wc -l <<< $devices ) > 1 )); then
 			warning="
