@@ -2168,7 +2168,7 @@ var SETTING   = {
 				LOCAL();
 				GRAPH.refresh();
 				SETTING.statusPush();
-				BASH( [ 'saveconfig' ] );
+				BASH( [ 'saveconfig', S.fileconfig, 'CMD FILECONFIG' ] );
 				if ( V.tab === 'devices' ) RENDER.devices();
 				$( '.switch' ).removeClass( 'disabled' );
 			}, 1000 );

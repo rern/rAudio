@@ -38,6 +38,7 @@ data='
 , "btmixer"     : "'$btmixer'"
 , "configname"  : "'$( basename "$file_config" )'"
 , "control"     : "'$mixer'"
+, "fileconfig"  : "'$file_config'"
 , "ls"          : { '${ls:1}' }
 , "mixer"       : "'$mixer'"
 , "play"        : '$( jq .play $dirshm/status.json )'
