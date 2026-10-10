@@ -5,6 +5,24 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
+dir_bt=$dircamilladsp/configs/configs-bt
+if [[ -e $dirsystem/camilladsp ]]; then # running with bluetooth
+	file_current=$( getVar CONFIG /etc/default/camilladsp )
+	if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
+		systemctl stop camilladsp
+		dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+		mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+		sed -i "s|/configs-bt/|/configs/$mac/|" /etc/default/camilladsp
+		restart+=camilladsp$'\n'
+		dir_new=$dircamilladsp/configs/$mac
+		if (( $( bluetoothctl devices | wc -l ) == 1 )); then
+			mv $dir_bt $dir_new
+		else
+			mkdir -p $dir
+			mv "$file_current" $dir_new
+		fi
+	fi
+fi
 if [[ -e /bin/camilladsp ]]; then
 	file=/etc/camilladsp/configs/camilladsp.yml
 	! grep -q 'format: ~' $file && sed -i -E 's/(format:).*/\1 ~/' $file
@@ -14,18 +32,22 @@ if [[ -e /bin/camilladsp ]]; then
 		sed -i 's/CONFIG/{&}/' $file
 		restart+=camilladsp$'\n'
 	fi
-fi
-if [[ -e $dirsystem/camilladsp ]]; then
-	systemctl stop camilladsp
-	file_current=$( getVar CONFIG /etc/default/camilladsp )
-	if [[ $file_current == */configs-bt/* ]]; then
-		dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
-		mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
-		FILE_CONFIG=$( sed "s|/configs|&/$mac|" <<< $file_current )
-		mkdir -p "$( dirname "$FILE_CONFIG" )"
-		mv $file_current "$FILE_CONFIG"
-		sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-		restart+=camilladsp$'\n'
+	
+	if [[ $( ls $dir_bt ) ]]; then
+		devices=$( bluetoothctl devices | cut -d' ' -f2- )
+		if (( $( wc -l <<< $devices ) > 1 )); then
+			warning="
+$warn CamillaDSP for Bluetooth:
+- Configuration files need to be moved manually.
+- Create and move files to each directory:
+
+$( sed "s|^|$dircamilladsp/configs/|; s| [^ ]| ---&|" <<< $devices )
+"
+		else
+			dir_new=$dircamilladsp/configs/$( cut -d' ' -f1 <<< $devices )
+			mkdir -p $dir_new
+			mv $dir_bt $dir_new
+		fi
 	fi
 fi
 
@@ -160,8 +182,7 @@ fi
 # 20260909
 $dirbash/webradio-convert.sh
 
-# 20260929
-[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp
-
-
 installfinish
+
+# 202621010
+[[ $warning ]] && echo "$warning"

@@ -30,16 +30,13 @@ file_current=$( getVar CONFIG /etc/default/camilladsp )
 [[ "$file_current" == "$FILE_CONFIG" ]] && exit
 #-------------------------------------------------------------------------------
 dir=$( dirname "$file_current" )
-if [[ $dir == *configs ]]; then
-	echo $file_current > "$dircamilladsp/$name" # from $dirshm/output
-else
-	echo $file_current > "$dircamilladsp/$( basename "$dir" )"
-fi
+[[ $dir != *configs ]] && name=$( basename "$dir" ) # mac
+echo $file_current > "$dircamilladsp/$name"
 sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 [[ $EXISTING ]] && exit
 #-------------------------------------------------------------------------------
 if [[ -e $dirshm/btmixer ]]; then
-	sed -i -E -e '/  playback:$/,/    format:/ c\
+	sed -i -E -e '/playback:/,/format:/ c\
   playback:\
     type: Alsa\
     channels: 2\
@@ -55,7 +52,7 @@ s/(chunksize:).*/\1 4096/
 s/(enable_rate_adjust:).*/\1 true/
 s/(target_level:).*/\1 8000/
 s/(adjust_period:).*/\1 3/
-' -e '/  capture:$/,/    format:/ c\
+' -e '/capture:/,/format:/ c\
   capture:\
     type: Bluez\
     dbus_path: '$dbuspath'\
