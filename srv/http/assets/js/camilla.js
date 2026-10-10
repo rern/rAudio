@@ -2212,13 +2212,9 @@ var SETTING   = {
 	, upload        : () => {
 		var filters = V.tab === 'filters';
 		var title   = 'Add File';
-		if ( filters ) {
-			var dir     = 'coeffs';
-			var message = 'Upload <wh>coefficient</wh> file:';
-		} else {
-			var dir     = S.bluetooth ? 'configs-bt' : 'configs';
-			var message = 'Upload <wh>configuration</wh> file:'
-		}
+		var message = 'Upload <wh>'+ ( filters ? 'coefficient' : 'configuration' ) +'</wh> file:';
+		var dir     = filters ? 'coeffs' : 'configs';
+		if ( dir === 'configs' && S.bluetooth ) dir += S.fileconfig.spli( '/' ).at( -2 );
 		INFO( {
 			  icon    : V.tab
 			, title   : title

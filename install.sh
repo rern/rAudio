@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
-dir_bt=$dircamilladsp/configs/configs-bt
+dir_bt=$dircamilladsp/configs-bt
 if [[ -e $dirsystem/camilladsp ]]; then # running with bluetooth
 	file_current=$( getVar CONFIG /etc/default/camilladsp )
 	if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
