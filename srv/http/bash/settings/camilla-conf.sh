@@ -22,8 +22,8 @@ else
 	else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
+	[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 fi
-[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 [[ ! $mac ]] && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
 
