@@ -26,7 +26,7 @@ else
 fi
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
-[[ $( dirname "$FILE_CONFIG" ) == *configs ]] && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
+[[ ! $mac ]] && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 [[ "$file_current" == "$FILE_CONFIG" ]] && exit
@@ -34,6 +34,7 @@ file_current=$( getVar CONFIG /etc/default/camilladsp )
 dir=$( dirname "$file_current" )
 [[ $dir != *configs ]] && name=$( basename "$dir" ) # mac
 echo $file_current > "$dircamilladsp/$name"
+
 sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 [[ $EXISTING ]] && exit
 #-------------------------------------------------------------------------------
