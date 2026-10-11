@@ -18,8 +18,13 @@ audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
 	;;
 bluetooth )
-	discoverable=$( bluetoothProperty Discoverable )
-	(( $( bluetoothProperty DiscoverableTimeout ) == 0 )) && timeout=false || timeout=true
+	if systemctl -q is-active bluetooth; then
+		discoverable=$( bluetoothProperty Discoverable )
+		(( $( bluetoothProperty DiscoverableTimeout ) == 0 )) && timeout=false || timeout=true
+	else
+		discoverable=false
+		timeout=true
+	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "TIMEOUT": '$timeout' }'
 	;;
 btmixer | mixer )

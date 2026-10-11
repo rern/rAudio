@@ -14,7 +14,7 @@ function BLUETOOTH( values ) {
 			, [ 'Timeout <gr>(3 minutes)</gr>',     'checkbox' ]
 		]
 		, values       : values
-		, checkchanged : true
+		, checkchanged : S.bluetooth
 		, cancel       : SWITCH.cancel
 		, ok           : SWITCH.enable
 	} );

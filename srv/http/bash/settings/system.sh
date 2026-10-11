@@ -25,10 +25,6 @@ dtparam=audio=on"
 bluetooth )
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
-		[[ $DISCOVERABLE ]] && yn=yes || yn=no
-		bluetoothctl discoverable $yn
-		[[ $TIMEOUT ]] && timeout=180 || timeout=0
-		bluetoothctl discoverable-timeout $timeout
 		if ! systemctl -q is-active bluetooth; then
 			modprobe hci_uart
 			for i in {0..3}; do
@@ -36,6 +32,10 @@ bluetooth )
 			done
 			systemctl start bluetooth
 		fi
+		[[ $DISCOVERABLE ]] && yn=yes || yn=no
+		bluetoothctl discoverable $yn
+		[[ $TIMEOUT ]] && timeout=180 || timeout=0
+		bluetoothctl discoverable-timeout $timeout
 	else
 		systemctl stop bluetooth
 		rmmod hci_uart 2> /dev/null
