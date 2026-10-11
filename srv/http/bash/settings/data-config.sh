@@ -19,8 +19,9 @@ audio-wm5102 )
 	;;
 bluetooth )
 	if systemctl -q is-active bluetooth; then
-		discoverable=$( bluetoothProperty Discoverable )
-		(( $( bluetoothProperty DiscoverableTimeout ) == 0 )) && timeout=false || timeout=true
+		info=$( bluetoothctl show )
+		grep -q 'Discoverable: yes' <<< $info && discoverable=true || discoverable=false
+		grep -q 'DiscoverableTimeout: 0x000000b4' <<< $info && timeout=true || timeout=false
 	else
 		discoverable=false
 		timeout=true

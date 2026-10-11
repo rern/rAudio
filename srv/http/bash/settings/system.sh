@@ -30,7 +30,7 @@ bluetooth )
 			for i in {0..3}; do
 				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
 			done
-			systemctl start bluetooth
+			systemctl start bluetooth bluealsa-aplay
 		fi
 		[[ $DISCOVERABLE ]] && yn=yes || yn=no
 		bluetoothctl discoverable $yn
