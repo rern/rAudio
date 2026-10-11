@@ -26,7 +26,7 @@ else
 fi
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
-! grep -qE 'bluealsa|Bluez' "$FILE_CONFIG" && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
+! grep -qE 'device: bluealsa|type: Bluez' "$FILE_CONFIG" && sed -i -E "/playback:/,/device:/ s/(device:).*/\1 hw:$card/" "$FILE_CONFIG"
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 [[ "$file_current" == "$FILE_CONFIG" ]] && exit
