@@ -6,7 +6,7 @@
 [[ -e $dirshm/btmixer ]] && SINK=1
 [[ -e $dirshm/btsource ]] && SOURCE=1
 
-if [[ ( $SINK || $SOURCE ) && ! -e $dirsystem/devicewithbt ]]; then
+if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac

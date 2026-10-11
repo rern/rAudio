@@ -30,14 +30,16 @@ pcm.bluealsa {
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	CAMILLADSP=1
-	modprobe snd_aloop
-	for i in {0..3}; do
-		lsmod | grep -q snd_aloop && break || sleep 1
-	done
-	CONFIG=$( getVar CONFIG /etc/default/camilladsp )
-	channels=$( getVar capture.channels "$CONFIG" )
-	format=$( getVar capture.format "$CONFIG" )
-	rate=$( getVar devices.samplerate "$CONFIG" )
+	file_config=$( getVar CONFIG /etc/default/camilladsp )
+	if grep -q device: hw:Loopback "$file_config"; then
+		modprobe snd_aloop
+		for i in {0..3}; do
+			lsmod | grep -q snd_aloop && break || sleep 1
+		done
+	fi
+	channels=$( getVar capture.channels "$file_config" )
+	format=$( getVar capture.format "$file_config" )
+	rate=$( getVar devices.samplerate "$file_config" )
 ########
 	ASOUNDCONF+='
 pcm.!default { 
