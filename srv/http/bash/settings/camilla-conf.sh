@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-
 . $dirshm/output # $card, $name
 
 if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
