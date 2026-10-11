@@ -3,7 +3,10 @@
 . /srv/http/bash/common.sh
 . $dirshm/output # $card, $name
 
-if [[ -e $dirshm/btmixer || -e $dirshm/btsource ]]; then
+[[ -e $dirshm/btmixer ]] && SINK=1
+[[ -e $dirshm/btsource ]] && SOURCE=1
+
+if [[ ( $SINK || $SOURCE ) && ! -e $dirsystem/devicewithbt ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac
@@ -34,11 +37,10 @@ dir_current=$( dirname "$file_current" )
 dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
-
 sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 [[ $EXISTING ]] && exit
 #-------------------------------------------------------------------------------
-if [[ -e $dirshm/btmixer ]]; then
+if [[ $SINK ]]; then
 	sed -i -E -e '/playback:/,/format:/ c\
   playback:\
     type: Alsa\
@@ -48,20 +50,20 @@ if [[ -e $dirshm/btmixer ]]; then
 ' -e '
 s/(samplerate: ).*/\1'$samplerate'/
 ' "$FILE_CONFIG"
-elif [[ -e $dirshm/btsource ]]; then
-	sed -i -E -e '
-s/(samplerate: ).*/\1'$samplerate'/
-s/(chunksize:).*/\1 4096/
-s/(enable_rate_adjust:).*/\1 true/
-s/(target_level:).*/\1 8000/
-s/(adjust_period:).*/\1 3/
-' -e '/capture:/,/format:/ c\
+elif [[ $SOURCE ]]; then
+	sed -i -E -e '/capture:/,/format:/ c\
   capture:\
     type: Bluez\
     dbus_path: '$dbuspath'\
     channels: 2\
     format: ~\
   playback:
+' -e '
+s/(adjust_period:).*/\1 3/
+s/(chunksize:).*/\1 4096/
+s/(enable_rate_adjust:).*/\1 true/
+s/(samplerate: ).*/\1'$samplerate'/
+s/(target_level:).*/\1 8000/
 ' "$FILE_CONFIG"
 fi
 
