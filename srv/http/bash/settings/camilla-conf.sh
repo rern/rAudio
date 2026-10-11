@@ -31,7 +31,8 @@ file_current=$( getVar CONFIG /etc/default/camilladsp )
 [[ "$file_current" == "$FILE_CONFIG" ]] && exit
 #-------------------------------------------------------------------------------
 dir_current=$( dirname "$file_current" )
-[[ $dir_current != *configs ]] && name=$( basename "$dir_current" ) # mac
+dir_name=$( basename "$dir_current" )
+[[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 
 sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
