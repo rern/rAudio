@@ -11,7 +11,7 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-[[ -e $dirsystem/camilladsp ]] && camillaConfigValidate # switch alsa / bluetooth
+[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-conf.sh
 
 pushVolumeNone() {
 	pushData display '{ "volumenone": '$1' }'
@@ -56,7 +56,10 @@ if [[ $CAMILLADSP ]]; then
 	done
 	if [[ $i == 3 ]]; then
 		CAMILLADSP=
-		echo 'Start failed!'
+		file_log=$( getVar LOG /etc/default/camilladsp )
+		echo "\
+Start failed!
+$( cat $file_log )"
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
 		. $dirsettings/player-asound.sh

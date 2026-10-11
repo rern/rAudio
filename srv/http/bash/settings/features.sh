@@ -48,8 +48,8 @@ camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volumeGet | tee $dirshm/volume )
 	if [[ $ON ]]; then
-		camillaConfigValidate && $dirsettings/player-conf.sh || exit
-#-------------------------------------------------------------------------------
+		touch $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
@@ -59,7 +59,7 @@ camilladsp )
 		pushRefresh
 	fi
 	rm -f $dirshm/volume
-	pushSubmenu camilladsp $( [[ -e $dirsystem/camilladsp ]] && echo true || echo false )
+	pushSubmenu camilladsp $( systemctl -q is-active camilladsp && echo true || echo false )
 	;;
 dabradio )
 	enableFlagSet

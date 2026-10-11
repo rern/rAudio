@@ -850,6 +850,7 @@ hr {
 	font-family: Inconsolata;
 	color: var( --cg60 );
 	background: none;
+	overflow: auto;
 }
 #infoList .menu {
 	position: relative;

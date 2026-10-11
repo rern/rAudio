@@ -494,7 +494,8 @@ $( '.switch' ).on( 'click', function() {
 					BANNER_HIDE();
 					INFO( {
 						  ...SW
-						, message : '<p>'+ ICON( 'warning yl' ) +' '+ error +'</p>'
+						, width   : 650
+						, message : '<pre>'+ ICON( 'warning yl' ) +' '+ error +'</pre>'
 					} );
 					POINTER_EVENTS();
 				}
