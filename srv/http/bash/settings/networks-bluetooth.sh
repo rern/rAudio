@@ -152,4 +152,3 @@ if [[ $CONNECTED ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
 pushRefresh networks system
-[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
