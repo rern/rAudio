@@ -36,7 +36,7 @@ def property_changed( interface, changed, invalidated, path ):
         elif name == 'Position':
             statusPush()
         elif name == 'Track':
-            time.sleep( 1 )
+            time.sleep( 1 ) # delay to pass: stopped > playing on track changed
             statusPush()
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( filesink ):
