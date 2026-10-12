@@ -83,8 +83,7 @@ args2var "$1"
 ALIAS=Bluetooth
 TYPE=bluetooth
 
-if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
-	# - no connect/disconnect run, only notify > setup
+if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/disconnect run, only notify > setup
 	systemctl start bluealsa-dbus # must be started on source connect to get bluetoothdest (stop later if not source)
 	ACTION=$1 # for notify only
 	notify.action
@@ -106,6 +105,7 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
 	fi
 	notify.state "${ACTION^}ed"
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
+	systemctl start bluealsa-dbus
 	ALIAS_TYPE
 	if [[ $ACTION == pair ]]; then
 		bluetoothctl agent NoInputNoOutput # force no credential
