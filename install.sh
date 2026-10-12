@@ -5,35 +5,34 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261010
-dir_bt=$dircamilladsp/configs-bt
-if [[ -e $dirsystem/camilladsp ]]; then # running with bluetooth
-	file_current=$( getVar CONFIG /etc/default/camilladsp )
-	if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
-		systemctl stop camilladsp
-		dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
-		mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
-		sed -i "s|/configs-bt/|/configs/$mac/|" /etc/default/camilladsp
-		restart+=camilladsp$'\n'
-		dir_new=$dircamilladsp/configs/$mac
-		if (( $( bluetoothctl devices | wc -l ) == 1 )); then
-			mv $dir_bt $dir_new
-		else
-			mkdir -p $dir
-			mv "$file_current" $dir_new
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if grep -q bluealsa-aplay $file; then
+	sed -i 's/ bluealsa-aplay.*//' $file
+	restart+=bluetooth$'\n'
+fi
+
+if [[ -e /bin/camilladsp ]]; then
+	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
+	dir_bt=$dircamilladsp/configs-bt
+	if systemctl -q is-active camilladsp; then # running with bluetooth
+		CAMILLA=1
+		file_current=$( getVar CONFIG /etc/default/camilladsp )
+		if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
+			systemctl stop camilladsp
+			dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+			mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+			sed -i "s|/configs-bt/|/configs/$mac/|" /etc/default/camilladsp
+			restart+=camilladsp$'\n'
+			dir_new=$dircamilladsp/configs/$mac
+			if (( $( bluetoothctl devices | wc -l ) == 1 )); then
+				mv $dir_bt $dir_new
+			else
+				mkdir -p $dir
+				mv "$file_current" $dir_new
+			fi
 		fi
 	fi
-fi
-if [[ -e /bin/camilladsp ]]; then
-	file=/etc/camilladsp/configs/camilladsp.yml
-	! grep -q 'format: ~' $file && sed -i -E 's/(format:).*/\1 ~/' $file
-
-	file=/lib/systemd/system/camilladsp.service
-	if grep -q 'CONFIG ' $file; then
-		sed -i 's/CONFIG/{&}/' $file
-		restart+=camilladsp$'\n'
-	fi
-	
-	if [[ $( ls $dir_bt 2> /dev/null ) ]]; then
+	if [[ $( ls $dir_bt 2> /dev/null ) ]]; then # not exactly which is sink / source
 		devices=$( bluetoothctl devices | cut -d' ' -f2- )
 		if (( $( wc -l <<< $devices ) > 1 )); then
 			warning="
@@ -186,4 +185,5 @@ $dirbash/webradio-convert.sh
 installfinish
 
 # 202621010
+[[ $CAMILLA ]] && systemctl start camilladsp
 [[ $warning ]] && echo "$warning"

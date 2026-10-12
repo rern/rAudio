@@ -2,78 +2,79 @@
 
 . /srv/http/bash/common.sh
 
-blueAlsaMixer() {
+ALIAS_TYPE() {
+	ALIAS=$( bluetoothProperty Alias )
+	TYPE=$( bluetoothSinkSource )
+}
+bt.action() {
+	bluetoothctl $1 $MAC
+}
+bt.clear() {
+	while read path; do
+		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
+	done < <( bluealsa-cli list-pcms )
+	systemctl stop bluealsa-dbus bluealsa-aplay
+	rm -f $dirshm/{btmixer,btsource}
+}
+bt.connect() {
+	bt.action connect
+	for i in {1..5}; do
+		sleep 1
+		[[ $( bluetoothProperty Connected ) == true ]] && CONNECTED=1 && break
+	done
+	[[ ! $CONNECTED ]] && notify.state 'Connect failed' && exit
+# ------------------------------------------------------------------------------
+	if [[ $TYPE == bluetooth ]]; then # non-audio
+		notify.state Ready
+		pushRefresh networks
+		exit
+# ------------------------------------------------------------------------------
+	fi
+	[[ $RETRIED ]] && bt.ready || notify.state Connected
+}
+bt.connected() {
+	bluetoothctl devices Connected | sort
+}
+bt.ready() {
 	[[ $ACTION != connect ]] && return
 #...............................................................................
 	for i in {1..3}; do
 		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
+		pcms=$( bluealsa-cli list-pcms )
+		[[ $pcms ]] && break
 	done
-	if [[ ! $btmixer ]]; then
+	if [[ ! $pcms ]]; then
 		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
-			notify "$TYPE blink" "$NAME" 'Mixer ...'
+			notify "$TYPE blink" "$ALIAS" 'Mixer ...' -1
 			RETRIED=1
 			CONNECTED=
 			touch $dirshm/btretry
-			btAction disconnect
-			btConnect
+			bt.action disconnect
+			bt.connect
 		else
-			notifyState 'Failed: Mixer'
+			notify.state 'Failed: Mixer not available.'
 			exit
 # ------------------------------------------------------------------------------
 		fi
 	fi
 	if [[ $TYPE == btsink ]]; then
-		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
+		echo "$ALIAS A2DP" > $dirshm/btmixer
+		systemctl stop bluealsa-aplay bluealsa-dbus
 	else
 		touch $dirshm/btsource
+		systemctl start bluealsa-aplay bluealsa-dbus
 	fi
 }
-btAction() {
-	bluetoothctl $1 $MAC
+notify.action() {
+	notify "$TYPE blink" "$ALIAS" "${ACTION^} ..." -1
 }
-btConnect() {
-	btAction connect
-	for i in {1..5}; do
-		sleep 1
-		[[ $( bluetoothProperty Connected $MAC ) == true ]] && CONNECTED=1 && break
-	done
-	[[ ! $CONNECTED ]] && notifyState 'Connect failed' && exit
-# ------------------------------------------------------------------------------
-	if [[ $TYPE == bluetooth ]]; then # non-audio
-		notifyState Ready
-		pushRefresh networks
-		exit
-# ------------------------------------------------------------------------------
-	fi
-	[[ $RETRIED ]] && blueAlsaMixer || notifyState Connected
-}
-btConnected() {
-	bluetoothctl devices Connected | sort
-}
-dbusDisconnect() {
-	dbuspath=$( bluealsa-cli list-pcms )
-	for path in $dbuspath; do
-		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
-	done
-	rm -f $dirshm/{btmixer,btsource}
-}
-NAME_TYPE() {
-	NAME=$( bluetoothProperty Alias $MAC )
-	TYPE=$( bluetoothSinkSource $MAC )
-}
-notifyACTION() {
-	notify "$TYPE blink" "$NAME" "${ACTION^} ..."
-}
-notifyState() {
-	notify $TYPE "$NAME" "$1"
+notify.state() {
+	notify $TYPE "$ALIAS" "$1"
 }
 
 args2var "$1"
 
-NAME=Bluetooth
+ALIAS=Bluetooth
 TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, notify > setup
@@ -83,65 +84,67 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, 
 # ------------------------------------------------------------------------------
 	fi
 	ACTION=$1 # for notify only
-	notifyACTION
+	notify.action
 	prev=$( cat $dirshm/Connected 2> /dev/null )
 	for i in {1..5}; do
 		sleep 1
-		Connected=$( btConnected )
+		Connected=$( bt.connected )
 		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
 		[[ $d ]] && break
 	done
 	if [[ $d ]]; then
 		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
-		NAME_TYPE
+		ALIAS_TYPE
 		if [[ $ACTION == connect ]]; then
 			CONNECTED=1
-			btAction trust
+			bt.action trust
 		fi
 	fi
-	notifyState "${ACTION^}ed"
-	[[ $ACTION == disconnect ]] && dbusDisconnect
+	notify.state "${ACTION^}ed"
+	[[ $ACTION == disconnect ]] && bt.clear
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
-	NAME_TYPE
+	ALIAS_TYPE
 	if [[ $ACTION == pair ]]; then
 		bluetoothctl agent NoInputNoOutput # force no credential
-		notifyACTION
-		btAction pair
+		notify.action
+		bt.action pair
 		for i in {1..5}; do
 			sleep 1
-			[[ $( bluetoothProperty Paired $MAC ) == true ]] && PAIRED=1 && break
+			[[ $( bluetoothProperty Paired ) == true ]] && PAIRED=1 && break
 		done
-		[[ ! $PAIRED ]] && notifyState 'Failed: Pair' && exit
+		[[ ! $PAIRED ]] && notify.state 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
-		btAction trust
+		bt.action trust
 	fi
-	notifyACTION
-	btConnect
+	notify.action
+	bt.connect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	NAME_TYPE
-	notifyACTION
-	btAction disconnect &> /dev/null
+	ALIAS_TYPE
+	notify.action
+	bt.action disconnect &> /dev/null
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
 			sleep 1
-			[[ $( bluetoothProperty Connected $MAC ) == false ]] && break
+			[[ $( bluetoothProperty Connected ) == false ]] && break
 		done
-		notifyState Disconnected
+		notify.state Disconnected
 	else
-		btAction remove &> /dev/null
+		bt.action remove &> /dev/null
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
-		notifyState Forgotten
+		notify.state Forgotten
 	fi
-	dbusDisconnect
+	bt.clear
 fi
-blueAlsaMixer
+
+bt.ready
 playerStop
+
 $dirsettings/player-conf.sh
-[[ $CONNECTED ]] && notifyState Ready
-btConnected > $dirshm/Connected
+[[ $CONNECTED ]] && notify.state Ready
+bt.connected > $dirshm/Connected
 if [[ $CONNECTED ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
