@@ -28,33 +28,27 @@ else
 	[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 fi
 
-[[ ! $mac ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
+[[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
 
 if [[ ! $EXISTING ]]; then
 	if [[ $SINK ]]; then
-		sed -i -E -e '/playback:/,/format:/ c\
-	  playback:\
-		type: Alsa\
-		channels: 2\
-		device: bluealsa\
-		format: ~
-	' -e '
-	s/(samplerate: ).*/\1'$samplerate'/
-	' "$FILE_CONFIG"
+		sed -i -E -e '/playback:/,/format:/ s/(device:).*/\1 bluealsa/
+				' -e 's/  (samplerate: ).*/\1'$samplerate'/
+				' "$FILE_CONFIG"
 	elif [[ $SOURCE ]]; then
 		sed -i -E -e '/capture:/,/format:/ c\
-	  capture:\
-		type: Alsa\
-		channels: 2\
-		device: '$( bluealsa-aplay -L | head -n 1 )'\
-		format: ~
-	' -e '
-	s/(adjust_period:).*/\1 3/
-	s/(chunksize:).*/\1 4096/
-	s/(enable_rate_adjust:).*/\1 true/
-	s/(samplerate: ).*/\1'$samplerate'/
-	s/(target_level:).*/\1 8000/
-	' "$FILE_CONFIG"
+  capture:\
+    type: Bluez\
+    channels: 2\
+    dbus_path: '$dbuspath'\
+    format: S16_LE
+				' -e '
+					s/(adjust_period:).*/\1 3/
+					s/(capture_samplerate: ).*/\1'$samplerate'/
+					s/(chunksize:).*/\1 4096/
+					s/(enable_rate_adjust:).*/\1 true/
+					s/(target_level:).*/\1 8000/
+				' "$FILE_CONFIG"
 	fi
 fi
 
