@@ -54,12 +54,12 @@ devices=$( bluetoothctl devices \
 [[ ! $devices ]] && exit
 # --------------------------------------------------------------------
 while read dev; do
-	mac=$( cut -d' ' -f2 <<< $dev )
+	MAC=$( cut -d' ' -f2 <<< $dev ) # MAC - fixed var name
 	data+=',{
-  "mac"     : "'$mac'"
-, "name"    : "'$( bluetoothProperty Alias $mac )'"
-, "current" : '$( bluetoothProperty Connected $mac )'
-, "paired"  : '$( bluetoothProperty Paired $mac )'
+  "mac"     : "'$MAC'"
+, "name"    : "'$( bluetoothProperty Alias )'"
+, "current" : '$( bluetoothProperty Connected )'
+, "paired"  : '$( bluetoothProperty Paired )'
 }'
 done <<< $devices
 

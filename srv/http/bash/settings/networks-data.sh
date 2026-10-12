@@ -8,12 +8,12 @@ if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
 fi
 if [[ $devices ]]; then
 	while read dev; do
-		mac=$( cut -d' ' -f2 <<< $dev )
+		MAC=$( cut -d' ' -f2 <<< $dev ) # MAC - fixed var name
 		listbluetooth+=',{
-  "mac"       : "'$mac'"
-, "name"      : "'$( bluetoothProperty Alias $mac )'"
-, "connected" : '$( bluetoothProperty Connected $mac )'
-, "type"      : "'$( bluetoothSinkSource $mac )'"
+  "mac"       : "'$MAC'"
+, "name"      : "'$( bluetoothProperty Alias )'"
+, "connected" : '$( bluetoothProperty Connected )'
+, "type"      : "'$( bluetoothSinkSource )'"
 }'
 	done <<< $devices
 	listbluetooth='[ '${listbluetooth:1}' ]'
