@@ -11,6 +11,15 @@ if grep -q bluealsa-aplay $file; then
 	restart+=bluetooth$'\n'
 fi
 
+file=/etc/systemd/system/bluealsa.service.d/override.conf
+if ! grep -q ^ExecStartPost $file; then
+	exec='ExecStartPost=/usr/bin/systemctl start --no-block bluealsa-aplay.service'
+	echo "\
+$exec
+${exec/aplay/dbus}" >> $file
+	restart+=bluetooth$'\n'
+fi
+
 if [[ -e /bin/camilladsp ]]; then
 	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
 	dir_bt=$dircamilladsp/configs-bt
