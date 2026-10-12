@@ -4,6 +4,7 @@
 
 if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
 	devicebt=true
+	bluetoothctl show | grep -q 'Discoverable: yes' && discoverable=true
 	devices=$( bluetoothctl devices Trusted | sort -k3 -fh  )
 fi
 if [[ $devices ]]; then
@@ -73,13 +74,14 @@ data='
 	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
 	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
 }
-, "ap"        : '$( exists $dirsystem/ap )'
-, "apconf"    : '$apconf'
-, "apstartup" : '$( exists $dirshm/apstartup )'
-, "gateway"   : "'$gateway'"
-, "hostname"  : "'$( hostname )'.local"
-, "ip"        : "'$ip'"
-, "list"      : {
+, "ap"           : '$( exists $dirsystem/ap )'
+, "apconf"       : '$apconf'
+, "apstartup"    : '$( exists $dirshm/apstartup )'
+, "discoverable" : '$discoverable'
+, "gateway"      : "'$gateway'"
+, "hostname"     : "'$( hostname )'.local"
+, "ip"           : "'$ip'"
+, "list"         : {
 	  "bluetooth" : '$listbluetooth'
 	, "lan"       : '$listlan'
 	, "wlan"      : '$listwlan'

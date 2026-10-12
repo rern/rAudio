@@ -23,30 +23,7 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	touch $dirshm/btonboard
-	if [[ $ON ]]; then
-		if ! systemctl -q is-active bluetooth; then
-			modprobe hci_uart
-			for i in {0..3}; do
-				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
-			done
-			systemctl start bluetooth bluealsa-aplay
-		fi
-		[[ $DISCOVERABLE ]] && yn=yes || yn=no
-		bluetoothctl discoverable $yn
-		[[ $TIMEOUT ]] && timeout=180 || timeout=0
-		bluetoothctl discoverable-timeout $timeout
-	else
-		systemctl stop bluetooth
-		rmmod hci_uart 2> /dev/null
-		rm -f $dirshm/{btmixer,btsource}
-		if [[ -e $dirmpdconf/output.conf ]]; then
-			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-		fi
-	fi
-	pushData refresh '{ "page": "networks", "activebt": '$TF' }'
-	rm $dirshm/btonboard
-	pushRefresh
+	bluetooth
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd

@@ -30,6 +30,9 @@ netctlSwitch() {
 
 case $CMD in
 
+bluetooth )
+	bluetooth
+	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
 	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer

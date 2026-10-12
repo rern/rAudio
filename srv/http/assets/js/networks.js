@@ -210,6 +210,7 @@ var RENDER = {
 			} );
 		}
 		LIST.render( 'bluetooth', html );
+		$( '#divbluetooth .i-eye' ).toggleClass( 'wh', S.discoverable );
 		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
 	, lan       : () => {
@@ -363,7 +364,8 @@ $( '.i-search' ).on( 'click', function() {
 	SCAN[ type ]();
 } );
 $( '#divbluetooth .i-eye' ).on( 'click', function() {
-	SW = {} // placeholder
+	SW = { id: 'bluetooth', title: 'Bluetooth' }
+	S.bluetooth = true;
 	BASH( 'data-config.sh bluetooth', values => BLUETOOTH( values ), 'json' );
 } );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
