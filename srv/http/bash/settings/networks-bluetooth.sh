@@ -11,10 +11,12 @@ bt.action() {
 }
 bt.clear() {
 	while read path; do
-		busctl --system call org.bluez ${path%/*/*} org.bluez.Device1 Disconnect
+		path=${path%/*/*}
+		mac=${path/*dev_}
+		bluetoothctl disconnect ${mac//_/:}
+		busctl --system call org.bluez $path org.bluez.Device1 Disconnect
 	done < <( bluealsa-cli list-pcms )
-	systemctl stop bluealsa-dbus bluealsa-aplay
-	rm -f $dirshm/{btmixer,btsource}
+	rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
 }
 bt.connect() {
 	bt.action connect
@@ -59,10 +61,8 @@ bt.ready() {
 	fi
 	if [[ $TYPE == btsink ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
-		systemctl stop bluealsa-aplay bluealsa-dbus
 	else
 		touch $dirshm/btsource
-		systemctl start bluealsa-aplay bluealsa-dbus
 	fi
 }
 notify.action() {
@@ -77,7 +77,8 @@ args2var "$1"
 ALIAS=Bluetooth
 TYPE=bluetooth
 
-if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, notify > setup
+if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
+	# - no connect/disconnect run, only notify > setup
 	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
 		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
 		exit
@@ -85,6 +86,7 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, 
 	fi
 	ACTION=$1 # for notify only
 	notify.action
+	bt.clear
 	prev=$( cat $dirshm/Connected 2> /dev/null )
 	for i in {1..5}; do
 		sleep 1
@@ -101,7 +103,6 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no actions, 
 		fi
 	fi
 	notify.state "${ACTION^}ed"
-	[[ $ACTION == disconnect ]] && bt.clear
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	ALIAS_TYPE
 	if [[ $ACTION == pair ]]; then
@@ -115,6 +116,8 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		[[ ! $PAIRED ]] && notify.state 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
 		bt.action trust
+	else # connect
+		bt.clear
 	fi
 	notify.action
 	bt.connect

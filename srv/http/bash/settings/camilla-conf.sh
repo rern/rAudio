@@ -54,16 +54,20 @@ fi
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )
 validate=$( camilladsp -c "$FILE_CONFIG" )
-if [[ $validate == 'Config is valid' ]]; then
-	dir_current=$( dirname "$file_current" )
-	dir_name=$( basename "$dir_current" )
-	[[ $dir_name != configs ]] && name=$dir_name # mac
-	echo $file_current > "$dircamilladsp/$name"
-	[[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-	exit 0
+if [[ $validate != 'Config is valid' ]]; then
+	echo "\
+$validate
+
+(config moved to $file_current.failed)"
+	rm -f $dirshm/volume $dirsystem/camilladsp
+	mv "$file_current"{,.failed}
+	exit 1
 fi
 
-echo "$validate"
-rm -f $dirshm/volume $dirsystem/camilladsp
-mv "$file_current"{,.failed}
-exit 1
+dir_current=$( dirname "$file_current" )
+dir_name=$( basename "$dir_current" )
+[[ $dir_name != configs ]] && name=$dir_name # mac
+echo $file_current > "$dircamilladsp/$name"
+[[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
+[[ $SOURCE ]] && systemctl stop bluealsa-aplay
+exit 0
