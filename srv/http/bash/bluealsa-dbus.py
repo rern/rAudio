@@ -11,6 +11,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import os
+import time
 from gi.repository import GLib
 from subprocess import Popen
 
@@ -32,7 +33,10 @@ def property_changed( interface, changed, invalidated, path ):
         # Type      : dest playerX
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
-        elif name == 'Position' or name == 'Track':
+        elif name == 'Position':
+            statusPush()
+        elif name == 'Track':
+            time.sleep( 1 )
             statusPush()
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( filesink ):
