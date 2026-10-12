@@ -9,16 +9,8 @@ ALIAS_TYPE() {
 bt.action() {
 	bluetoothctl $1 $MAC
 }
-bt.clear() {
-	while read path; do
-		path=${path%/*/*}
-		mac=${path/*dev_}
-		bluetoothctl disconnect ${mac//_/:}
-		busctl --system call org.bluez $path org.bluez.Device1 Disconnect
-	done < <( bluealsa-cli list-pcms )
-	rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
-}
 bt.connect() {
+	bt.set
 	bt.action connect
 	for i in {1..5}; do
 		sleep 1
@@ -47,10 +39,9 @@ bt.ready() {
 	done
 	if [[ ! $pcms ]]; then
 		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
-			notify "$TYPE blink" "$ALIAS" 'Mixer ...' -1
+			notify "$TYPE blink" "$ALIAS" 'Retry ...' -1
 			RETRIED=1
 			CONNECTED=
-			touch $dirshm/btretry
 			bt.action disconnect
 			bt.connect
 		else
@@ -59,10 +50,15 @@ bt.ready() {
 # ------------------------------------------------------------------------------
 		fi
 	fi
+}
+bt.set() {
+	rm -f $dirshm/{btmixer,btsource,bluetoothplay}
 	if [[ $TYPE == btsink ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
+		systemctl stop bluealsa-aplay
 	else
 		touch $dirshm/btsource
+		systemctl start bluealsa-aplay
 	fi
 }
 notify.action() {
@@ -79,14 +75,8 @@ TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
 	# - no connect/disconnect run, only notify > setup
-	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
-		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
-		exit
-# ------------------------------------------------------------------------------
-	fi
 	ACTION=$1 # for notify only
 	notify.action
-	bt.clear
 	prev=$( cat $dirshm/Connected 2> /dev/null )
 	for i in {1..5}; do
 		sleep 1
@@ -100,6 +90,7 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
 		if [[ $ACTION == connect ]]; then
 			CONNECTED=1
 			bt.action trust
+			bt.set
 		fi
 	fi
 	notify.state "${ACTION^}ed"
@@ -116,8 +107,6 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 		[[ ! $PAIRED ]] && notify.state 'Failed: Pair' && exit
 # ------------------------------------------------------------------------------
 		bt.action trust
-	else # connect
-		bt.clear
 	fi
 	notify.action
 	bt.connect
@@ -139,10 +128,10 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notify.state Forgotten
 	fi
-	bt.clear
 fi
 
 bt.ready
+[[ $ACTION == disconnect || $ACTION == forget ]] && rm -f $dirshm/{btmixer,btsource,bluetoothplay}
 playerStop
 
 $dirsettings/player-conf.sh
