@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# bluetooth.servicc      - bluez
+# bluealsa.service       - alsa (sink and source)
+
+# bluealsa-aplay.service - source stream
+# bluealsa-dbus.service  - source state/track change (dbus bluetoothdest)
+
+# camilladsp
+#	sink   - bluealsa.service (no changes)
+#	source - dbus stream (without bluealsa-aplay) + bluealsa-dbus
+
 . /srv/http/bash/common.sh
 
 ALIAS_TYPE() {
@@ -55,7 +65,7 @@ bt.set() {
 	rm -f $dirshm/{btmixer,btsource,bluetoothplay}
 	if [[ $TYPE == btsink ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
-		systemctl stop bluealsa-aplay
+		systemctl stop bluealsa-aplay bluealsa-dbus
 	else
 		touch $dirshm/btsource
 		systemctl start bluealsa-aplay
@@ -75,6 +85,7 @@ TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules
 	# - no connect/disconnect run, only notify > setup
+	systemctl start bluealsa-dbus # must be started on source connect to get bluetoothdest (stop later if not source)
 	ACTION=$1 # for notify only
 	notify.action
 	prev=$( cat $dirshm/Connected 2> /dev/null )
