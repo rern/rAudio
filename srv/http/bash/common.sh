@@ -360,7 +360,7 @@ playerStart() {
 	mpc -q stop
 	case $player in
 		airplay )   service=shairport-sync;;
-		bluetooth ) service=bluetoothhd;;
+#		bluetooth ) service=bluetoothd;;
 		spotify )   service=spotifyd;;
 		upnp )
 					service=upmpdcli

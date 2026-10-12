@@ -350,8 +350,8 @@ password )
 	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
-playerbluetooth )
-	playerStart bluetooth
+playerstart )
+	playerStart
 	;;
 playerstop )
 	playerStop

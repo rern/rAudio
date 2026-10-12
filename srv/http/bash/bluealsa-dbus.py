@@ -14,25 +14,30 @@ import os
 from gi.repository import GLib
 from subprocess import Popen
 
-active          = True
+AGENT_INTERFACE = 'org.bluez.Agent1'
 path            = '/test/autoagent'
+filesink        = '/srv/http/data/shm/bluetoothplay'
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
 
 def property_changed( interface, changed, invalidated, path ):
     for name, value in changed.items():
-        # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX >>> on connect (sink not emit this data)
-        # Connected : 1 | 0 (udev rules)
-        # Position  : elapsed                                       >>> status change
+        # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (on connect - sink not emit this data)
+        # Connected : 1 | 0
+        # Position  : elapsed
         # State     : active | idle | pending
-        # Status    : paused | playing | stopped                    >>> state change
-        # Track     : metadata                                      >>> status change
+        # Status    : paused | playing | stopped
+        # Track     : metadata
         # Type      : dest playerX
-        if name == 'Position' or name == 'Track':
+        if name == 'Player':
+            with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
+        elif name == 'Position' or name == 'Track':
             statusPush()
         elif name == 'Status':
-            if not active and value == 'playing': Popen( [ '/srv/http/bash/cmd.sh', 'playerbluetooth' ] )
+            if value == 'playing' and not os.path.isfile( filesink ):
+                open( filesink, 'a' )
+                with open( '/srv/http/data/shm/player', 'w' ) as f: f.write( 'bluetooth' )
             statusPush()
 
 if __name__ == '__main__':
@@ -43,5 +48,5 @@ if __name__ == '__main__':
                              signal_name='PropertiesChanged',
                              path_keyword='path' )
     mainloop = GLib.MainLoop()
-    obj      = bus.get_object( 'org.bluez', '/org/bluez' )
     mainloop.run()
+    
