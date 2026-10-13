@@ -5,17 +5,32 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261013
-file=/etc/bluetooth/main.conf
-if [[ -e $file ]]; then
-	sed -i 's/#*\(AlwaysPairable *=\).*/\1 true/' $file
+[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
-	file=/etc/systemd/system/bluetooth.service.d/override.conf
-	if grep -q bluealsa-aplay $file; then
-		sed -i 's/ bluealsa-aplay.*//' $file
-		restart+=bluetooth$'\n'
-	fi
-	
-	[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
+file=/etc/systemd/system/bluealsa.service.d/override.conf
+if ! grep -q volume $file; then
+	sed -i -e 's/source/source --a2dp-volume/' $file
+	restart+=bluetooth$'\n'
+fi
+
+file=/etc/systemd/system/bluealsa-volume.service
+[[ ! -e $file ]] && echo "\
+[Unit]
+Description=BlueALSA volume monitor
+After=bluealsa.service
+Requires=bluealsa.service
+BindTo=bluealsa.service
+
+[Service]
+ExecStart=/srv/http/bash/bluealsa-volume.sh" > $file
+
+file=/etc/bluetooth/main.conf
+sed -i 's/#*\(AlwaysPairable *=\).*/\1 true/' $file
+
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if grep -q bluealsa-aplay $file; then
+	sed -i 's/ bluealsa-aplay.*//' $file
+	restart+=bluetooth$'\n'
 fi
 
 if [[ -e /bin/camilladsp ]]; then

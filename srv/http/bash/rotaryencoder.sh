@@ -25,20 +25,25 @@ case $fn_volume in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
+		FN() {
+			mpc -q volume $1
+		}
 		;;
-	volumeCamilla )
-		CAMILLA=1
-		dn=-$step
-		up=+$step
-		;;
-	* )
+	volumeBlueAlsa )
 		dn=$step%-
 		up=$step%+
-		if [[ $fn_volume == volumeAmixer ]]; then
-			mixer=$( < $dirshm/amixercontrol )
-		else
-			mixer=$( < $dirshm/btmixer )
-		fi
+		mixer=$( < $dirshm/btmixer )
+		FN() {
+			amixer -MqD bluealsa sset "$mixer" $1
+		}
+		;;
+	volumeCamilla )
+		dn=-$step
+		up=+$step
+		FN() {
+			val=$( volumeGetCamilla )
+			volumeCamilla $(( val + $1 ))
+		}
 		;;
 esac
 
@@ -80,11 +85,6 @@ evtest ${dev[rotary]} | while read line; do
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
 	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
-	if [[ $CAMILLA ]]; then
-		val=$( volumeGetCamilla )
-		volumeCamilla $(( val + updn ))
-	else
-		$fn_volume $updn "$mixer"
-	fi
+	FN $updn
 	volumeGet push
 done
