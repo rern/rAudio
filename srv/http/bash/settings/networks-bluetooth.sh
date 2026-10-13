@@ -1,39 +1,41 @@
 #!/bin/bash
 
-# bluetooth.servicc      - bluez
-# bluealsa.service       - alsa (sink and source)
+# bluetooth.servicc (Bluez)
+# bluealsa.service
+#
+# sink   :
+	# (nothing more)
+# source :
+	# bluealsa-dbus.service  - changes for push
+	# bluealsa-aplay.service - stream:
+		# normal  - dbus path Player ( busctl --list tree org.bluez | grep -E '/player[0-9]+$' )
+		# camilla - dbus_path pcm    ( bluealsa-cli list-pcms )
 
-# bluealsa-aplay.service - source stream
-# bluealsa-dbus.service  - source state/track change
-
-# camilladsp
-#	sink   - bluealsa.service (no changes)
-#	source - dbus stream (without bluealsa-aplay) + bluealsa-dbus
 [[ -e /dev/shm/bt ]] && exit
 # ------------------------------------------------------------------------------
-touch /dev/shm/bt
-trap 'sleep 3 && rm -f /dev/shm/bt' EXIT SIGINT
+touch /dev/shm/bt # suppress disconnect existing
+trap 'sleep 5 && rm -f /dev/shm/bt' EXIT SIGINT
 
 . /srv/http/bash/common.sh
-
-playerStop
 
 ALIAS_TYPE() {
 	ALIAS=$( bluetoothProperty Alias )
 	TYPE=$( bluetoothSinkSource )
-	
+	[[ $ACTION != connect ]] && return
+#...............................................................................
 	rm -f $dirshm/{btmixer,btsource}
-	connected=$( getContent $dirshm/Connected )
+	connected=$( getContent $dirshm/Connected | grep -v $MAC )
 	[[ ! $connected ]] && return
 #...............................................................................
+	playerStop
 	while read mac; do # disconnect others
 		type=$( bluetoothSinkSource $mac )
-		[[ $type == bluetooth ]] && continue
-		
-		bluetoothctl disconnect $mac
-		alias=$( bluetoothProperty Alias $mac )
-		notify $type "$alias" Disconnected
-		sed -i "/$mac/ d" $dirshm/Connected
+		if [[ $type != bluetooth ]]; then
+			bluetoothctl disconnect $mac
+			sed -i "/$mac/ d" $dirshm/Connected
+			notify $type "$( bluetoothProperty Alias $mac )" Disconnected
+			sleep 3
+		fi
 	done < <( cut -d' ' -f2 <<< $connected )
 }
 bt.action() {
@@ -95,7 +97,7 @@ TYPE=bluetooth
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/disconnect run, only notify > setup
 	ACTION=$1 # for notify only
 	notify.action
-	prev=$( cat $dirshm/Connected 2> /dev/null )
+	prev=$( getContent $dirshm/Connected )
 	for i in {1..5}; do
 		sleep 1
 		Connected=$( bt.connected )
@@ -114,7 +116,6 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/d
 		fi
 	fi
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
-	systemctl start bluealsa-dbus
 	ALIAS_TYPE
 	if [[ $ACTION == pair ]]; then
 		bluetoothctl agent NoInputNoOutput # force no credential
@@ -157,10 +158,11 @@ if [[ $ACTION == connect ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
 	else
 		systemctl start bluealsa-aplay bluealsa-dbus
-		echo -e 'menu player\nlist' | bluetoothctl | awk '/^Player/ {print $2}' > $dirshm/btsource
+		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi
 
+playerStop
 $dirsettings/player-conf.sh
 
 bt.connected > $dirshm/Connected
