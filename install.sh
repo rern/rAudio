@@ -4,11 +4,18 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261010
-file=/etc/systemd/system/bluetooth.service.d/override.conf
-if grep -q bluealsa-aplay $file; then
-	sed -i 's/ bluealsa-aplay.*//' $file
-	restart+=bluetooth$'\n'
+# 20261013
+file=/etc/bluetooth/main.conf
+if [[ -e $file ]]; then
+	sed -i 's/#*\(AlwaysPairable *=\).*/\1 true/' $file
+
+	file=/etc/systemd/system/bluetooth.service.d/override.conf
+	if grep -q bluealsa-aplay $file; then
+		sed -i 's/ bluealsa-aplay.*//' $file
+		restart+=bluetooth$'\n'
+	fi
+	
+	[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 fi
 
 if [[ -e /bin/camilladsp ]]; then
@@ -50,8 +57,6 @@ $( sed "s|^|$dircamilladsp/configs/|; s| [^ ]| ---&|" <<< $devices )
 	fi
 fi
 
-[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
-[[ -e $dirshm/bluetoothdest ]] && touch $dirshm/btc_sender
 [[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume
 
 # 20261003

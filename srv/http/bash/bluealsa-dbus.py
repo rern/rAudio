@@ -17,7 +17,7 @@ from subprocess import Popen
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path            = '/test/autoagent'
-filesink        = '/srv/http/data/shm/bluetoothplay'
+filesink        = '/srv/http/data/shm/bt_play'
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )

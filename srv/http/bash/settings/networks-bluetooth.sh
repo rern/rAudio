@@ -4,12 +4,15 @@
 # bluealsa.service       - alsa (sink and source)
 
 # bluealsa-aplay.service - source stream
-# bluealsa-dbus.service  - source state/track change (dbus bluetoothdest)
+# bluealsa-dbus.service  - source state/track change
 
 # camilladsp
 #	sink   - bluealsa.service (no changes)
 #	source - dbus stream (without bluealsa-aplay) + bluealsa-dbus
-[[ -e /dev/shm/btdisconnect ]] && exit
+[[ -e /dev/shm/bt ]] && exit
+# ------------------------------------------------------------------------------
+touch /dev/shm/bt
+trap 'rm -f /dev/shm/bt' EXIT SIGINT
 
 . /srv/http/bash/common.sh
 
@@ -19,15 +22,13 @@ ALIAS_TYPE() {
 	ALIAS=$( bluetoothProperty Alias )
 	TYPE=$( bluetoothSinkSource )
 	
-	rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
+	rm -f $dirshm/{btmixer,btsource,bt_play}
 	pcms=$( bluealsa-cli list-pcms | grep -v ${MAC//:/_} )
 	[[ ! $pcms ]] && return
 #...............................................................................
-	touch $dirshm/btdisconnect
 	while read mac; do # disconnect others
 		bluetoothctl disconnect ${mac//_/:}
 	done < <( sed -E 's|.*/dev_([^/]*).*|\1|' <<< $pcms )
-	( sleep 5 && rm -f $dirshm/btdisconnect ) &
 }
 bt.action() {
 	bluetoothctl $1 $MAC &> /dev/null
@@ -146,12 +147,11 @@ fi
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	if [[ $TYPE == btsink ]]; then
-		echo "$ALIAS A2DP" > $dirshm/btmixer
 		systemctl stop bluealsa-aplay bluealsa-dbus
+		echo "$ALIAS A2DP" > $dirshm/btmixer
 	else
-		touch $dirshm/btsource
 		systemctl start bluealsa-aplay bluealsa-dbus
-		echo -e 'menu player\nlist' | bluetoothctl | awk '/^Player/ {print $2}' > $dirshm/bluetoothdest
+		echo -e 'menu player\nlist' | bluetoothctl | awk '/^Player/ {print $2}' > $dirshm/btsource
 	fi
 fi
 
