@@ -12,7 +12,7 @@
 [[ -e /dev/shm/bt ]] && exit
 # ------------------------------------------------------------------------------
 touch /dev/shm/bt
-trap 'rm -f /dev/shm/bt' EXIT SIGINT
+trap 'sleep 3 && rm -f /dev/shm/bt' EXIT SIGINT
 
 . /srv/http/bash/common.sh
 
@@ -27,7 +27,13 @@ ALIAS_TYPE() {
 	[[ ! $connected ]] && return
 #...............................................................................
 	while read mac; do # disconnect others
-		bluetoothctl info $mac | grep -qE 'UUID: Audio (Sink|Source)' && bluetoothctl disconnect $mac
+		type=$( bluetoothSinkSource $mac )
+		[[ $type == bluetooth ]] && continue
+		
+		bluetoothctl disconnect $mac
+		alias=$( bluetoothProperty Alias $mac )
+		notify $type "$alias" Disconnected
+		sed -i "/$mac/ d" $dirshm/Connected
 	done < <( cut -d' ' -f2 <<< $connected )
 }
 bt.action() {
@@ -62,7 +68,7 @@ bt.pcm() {
 		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
 			RETRIED=1
 			CONNECTED=
-			notify "$TYPE blink" "$ALIAS" 'Retry ...' -1
+			notify "$TYPE blink" "$ALIAS" 'Retry ...' 6000
 			bt.action disconnect
 			bt.connect
 		else
@@ -72,7 +78,7 @@ bt.pcm() {
 	fi
 }
 notify.action() {
-	notify "$TYPE blink" "$ALIAS" "${ACTION^} ..." -1
+	notify "$TYPE blink" "$ALIAS" "${ACTION^} ..." 6000
 }
 notify.failed() {
 	notify $TYPE "$ALIAS" "<i class='i-warning yl'></i> Failed: $1" 6000

@@ -32,6 +32,7 @@ bluetooth() {
 }
 bluetoothProperty() {
 	local value
+	[[ $2 ]] && MAC=$2
 	value=$( bluetoothctl info $MAC | sed -n "/^\s*$1: / {s/.*: //; p}" )
 	case $value in
 		yes ) echo true;;
@@ -41,6 +42,7 @@ bluetoothProperty() {
 }
 bluetoothSinkSource() {
 	local info
+	[[ $1 ]] && MAC=$1
 	info=$( bluetoothctl info $MAC )
 	if grep -q 'UUID: Audio Sink' <<< $info; then
 		echo btsink
