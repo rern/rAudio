@@ -23,12 +23,12 @@ ALIAS_TYPE() {
 	TYPE=$( bluetoothSinkSource )
 	
 	rm -f $dirshm/{btmixer,btsource}
-	pcms=$( bluealsa-cli list-pcms | grep -v ${MAC//:/_} )
-	[[ ! $pcms ]] && return
+	connected=$( getContent $dirshm/Connected )
+	[[ ! $connected ]] && return
 #...............................................................................
 	while read mac; do # disconnect others
-		bluetoothctl disconnect ${mac//_/:}
-	done < <( sed -E 's|.*/dev_([^/]*).*|\1|' <<< $pcms )
+		bluetoothctl info $mac | grep -qE 'UUID: Audio (Sink|Source)' && bluetoothctl disconnect $mac
+	done < <( cut -d' ' -f2 <<< $connected )
 }
 bt.action() {
 	bluetoothctl $1 $MAC &> /dev/null
