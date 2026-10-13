@@ -168,7 +168,7 @@ var MIXER = { // player.js, camilla.js
 		V.control = bt ? S.btmixer : S.mixer || S.output.MIXER;
 		V.id      = id;
 		INFO( {
-			  icon       : id
+			  icon       : 'volume'
 			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
 			, list       : [ bt ? 'BlueALSA' : ( S.mixer || S.output.MIXER ), 'range' ]
 			, footer     : '<br>'+ MIXER.warning
