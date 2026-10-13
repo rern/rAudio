@@ -15,13 +15,13 @@ def statusPush():
 def property_changed( interface, changed, invalidated, path ):
     global STARTED
     for name, value in changed.items():
-        # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (on connect - sink not emit this data)
-        # Connected : 1 | 0
-        # Position  : elapsed
-        # State     : active | idle | pending
-        # Status    : paused | playing | stopped
-        # Track     : metadata
-        # Type      : dest playerX
+        #   Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX
+        #   Connected : 1 | 0
+        # Position    : elapsed
+        #   State     : active | idle | pending
+        # Status      : paused | playing | stopped
+        # Track       : metadata
+        #   Type      : dest playerX
         if name == 'Position':
             statusPush()
         elif name == 'Track':
