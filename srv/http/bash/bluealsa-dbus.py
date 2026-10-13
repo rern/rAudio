@@ -34,8 +34,6 @@ def property_changed( interface, changed, invalidated, path ):
             statusPush()
 
 def main():
-    agent_interface = 'org.bluez.Agent1'
-    agent_path      = '/test/autoagent'
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
     bus = dbus.SystemBus()
     bus.add_signal_receiver( property_changed, bus_name='org.bluez',
