@@ -9,7 +9,6 @@
 # camilladsp
 #	sink   - bluealsa.service (no changes)
 #	source - dbus stream (without bluealsa-aplay) + bluealsa-dbus
-
 . /srv/http/bash/common.sh
 
 ALIAS_TYPE() {
@@ -17,10 +16,9 @@ ALIAS_TYPE() {
 	TYPE=$( bluetoothSinkSource )
 }
 bt.action() {
-	bluetoothctl $1 $MAC
+	bluetoothctl $1 $MAC &> /dev/null
 }
 bt.connect() {
-	bt.set
 	bt.action connect
 	for i in {1..5}; do
 		sleep 1
@@ -34,45 +32,35 @@ bt.connect() {
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	[[ $RETRIED ]] && bt.ready || notify.state Connected
+	[[ ! $RETRIED ]] && notify.action || bt.pcm
 }
 bt.connected() {
 	bluetoothctl devices Connected | sort
 }
-bt.ready() {
-	[[ $ACTION != connect ]] && return
-#...............................................................................
+bt.pcm() {
 	for i in {1..3}; do
 		sleep 1
-		pcms=$( bluealsa-cli list-pcms )
-		[[ $pcms ]] && break
+		pcm=$( bluealsa-cli list-pcms | grep ${MAC//:/_} )
+		[[ $pcm ]] && break
 	done
-	if [[ ! $pcms ]]; then
+	if [[ ! $pcm ]]; then
 		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
-			notify "$TYPE blink" "$ALIAS" 'Retry ...' -1
 			RETRIED=1
 			CONNECTED=
+			notify "$TYPE blink" "$ALIAS" 'Retry ...' -1
 			bt.action disconnect
 			bt.connect
 		else
-			notify.state 'Failed: Mixer not available.'
-			exit
+			notify.failed 'Mixer not available.' && exit
 # ------------------------------------------------------------------------------
 		fi
 	fi
 }
-bt.set() {
-	rm -f $dirshm/{btmixer,btsource,bluetoothplay}
-	if [[ $TYPE == btsink ]]; then
-		echo "$ALIAS A2DP" > $dirshm/btmixer
-		systemctl stop bluealsa-aplay bluealsa-dbus
-	else
-		touch $dirshm/btsource
-		systemctl start bluealsa-aplay
-	fi
-}
 notify.action() {
 	notify "$TYPE blink" "$ALIAS" "${ACTION^} ..." -1
+}
+notify.failed() {
+	notify $TYPE "$ALIAS" "<i class='i-warning yl'></i> Failed: $1" 6000
 }
 notify.state() {
 	notify $TYPE "$ALIAS" "$1"
@@ -100,10 +88,11 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/d
 		if [[ $ACTION == connect ]]; then
 			CONNECTED=1
 			bt.action trust
-			bt.set
+			notify.action
+		else
+			notify.state Disconnected
 		fi
 	fi
-	notify.state "${ACTION^}ed"
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	systemctl start bluealsa-dbus
 	ALIAS_TYPE
@@ -115,7 +104,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 			sleep 1
 			[[ $( bluetoothProperty Paired ) == true ]] && PAIRED=1 && break
 		done
-		[[ ! $PAIRED ]] && notify.state 'Failed: Pair' && exit
+		[[ ! $PAIRED ]] && notify.failed Pair && exit
 # ------------------------------------------------------------------------------
 		bt.action trust
 	fi
@@ -124,7 +113,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	ALIAS_TYPE
 	notify.action
-	bt.action disconnect &> /dev/null
+	bt.action disconnect
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
 			sleep 1
@@ -132,7 +121,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 		done
 		notify.state Disconnected
 	else
-		bt.action remove &> /dev/null
+		bt.action remove
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
@@ -141,13 +130,24 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	fi
 fi
 
-bt.ready
-[[ $ACTION == disconnect || $ACTION == forget ]] && rm -f $dirshm/{btmixer,btsource,bluetoothplay}
-playerStop
-
+rm -f $dirshm/{btmixer,btsource,bluetoothplay}
+if [[ $ACTION == connect ]]; then
+	bt.pcm
+	while read mac; do # disconnect others
+		bluetoothctl disconnect ${mac//_/:}
+	done < <( bluealsa-cli list-pcms | grep -v ${MAC//:/_} | sed -E 's|.*/dev_([^/]*).*|\1|' )
+	if [[ $TYPE == btsink ]]; then
+		echo "$ALIAS A2DP" > $dirshm/btmixer
+		systemctl stop bluealsa-aplay bluealsa-dbus
+	else
+		touch $dirshm/btsource
+		systemctl start bluealsa-aplay
+	fi
+fi
 $dirsettings/player-conf.sh
 [[ $CONNECTED ]] && notify.state Ready
-bt.connected > $dirshm/Connected
+connected=$( bt.connected )
+[[ $connected ]] && echo "$connected" > $dirshm/Connected || rm -f $dirshm/Connected
 if [[ $CONNECTED ]]; then
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi

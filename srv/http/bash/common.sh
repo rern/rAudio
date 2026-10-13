@@ -103,7 +103,7 @@ color() {
   "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
 , "custom" : '$( exists $dirsystem/color )'
 , "ml"     : [ '${ml:1}' ]
-}' && exit
+}' && return
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
@@ -281,7 +281,7 @@ mpcPlayback() {
 		[[ $ACTION == stop ]] && scrobbleOnStop mpd
 		mpc -q $ACTION
 	fi
-	[[ ! -e $dirsystem/snapclientserver ]] && exit
+	[[ ! -e $dirsystem/snapclientserver ]] && return
 # --------------------------------------------------------------------
 	# snapclient
 	if [[ $ACTION == play ]]; then
@@ -338,9 +338,9 @@ notify() { # icon title message delayms
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 playback() {
-	! playerActive mpd && playerStop && exit
+	! playerActive mpd && playerStop && return
 # --------------------------------------------------------------------
-	(( $( mpc status %length% ) == 0 )) && exit
+	(( $( mpc status %length% ) == 0 )) && return
 # --------------------------------------------------------------------
 	if [[ $1 ]]; then
 		ACTION=$1
@@ -448,7 +448,7 @@ pushNfsServer() {
 }
 pushPlaylist() {
 	local b buffer data
-	[[ -e $dirshm/pushplaylist ]] && exit
+	[[ -e $dirshm/pushplaylist ]] && return
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
