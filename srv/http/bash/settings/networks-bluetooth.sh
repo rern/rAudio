@@ -11,23 +11,22 @@
 		# normal  - dbus path Player ( busctl --list tree org.bluez | grep -E '/player[0-9]+$' )
 		# camilla - dbus_path pcm    ( bluealsa-cli list-pcms )
 
-[[ -e /dev/shm/bt ]] && exit
-# ------------------------------------------------------------------------------
-touch /dev/shm/bt # suppress disconnect existing
-trap 'sleep 5 && rm -f /dev/shm/bt' EXIT SIGINT
-
 . /srv/http/bash/common.sh
+
+rm -f $dirshm/{btmixer,btsource}
+playerStop
 
 ALIAS_TYPE() {
 	ALIAS=$( bluetoothProperty Alias )
 	TYPE=$( bluetoothSinkSource )
 	[[ $ACTION != connect ]] && return
 #...............................................................................
-	rm -f $dirshm/{btmixer,btsource}
 	connected=$( getContent $dirshm/Connected | grep -v $MAC )
 	[[ ! $connected ]] && return
 #...............................................................................
-	playerStop
+	file_udev=/etc/udev/rules.d/bluetooth.rules
+	mv $file_udev{,.backup}
+	udevadm control --reload
 	while read mac; do # disconnect others
 		type=$( bluetoothSinkSource $mac )
 		if [[ $type != bluetooth ]]; then
@@ -37,6 +36,8 @@ ALIAS_TYPE() {
 			sleep 3
 		fi
 	done < <( cut -d' ' -f2 <<< $connected )
+	mv $file_udev{.backup,}
+	udevadm control --reload
 }
 bt.action() {
 	bluetoothctl $1 $MAC &> /dev/null
@@ -162,7 +163,6 @@ if [[ $ACTION == connect ]]; then
 	fi
 fi
 
-playerStop
 $dirsettings/player-conf.sh
 
 bt.connected > $dirshm/Connected
