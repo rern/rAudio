@@ -31,9 +31,7 @@ def property_changed( interface, changed, invalidated, path ):
         # Status    : paused | playing | stopped
         # Track     : metadata
         # Type      : dest playerX
-        if name == 'Player':
-            with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
-        elif name == 'Position':
+        if name == 'Position':
             statusPush()
         elif name == 'Track':
             time.sleep( 1 ) # delay to pass: stopped > playing on track changed

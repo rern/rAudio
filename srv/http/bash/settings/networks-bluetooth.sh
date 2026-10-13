@@ -9,11 +9,25 @@
 # camilladsp
 #	sink   - bluealsa.service (no changes)
 #	source - dbus stream (without bluealsa-aplay) + bluealsa-dbus
+[[ -e /dev/shm/btdisconnect ]] && exit
+
 . /srv/http/bash/common.sh
+
+playerStop
 
 ALIAS_TYPE() {
 	ALIAS=$( bluetoothProperty Alias )
 	TYPE=$( bluetoothSinkSource )
+	
+	rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
+	pcms=$( bluealsa-cli list-pcms | grep -v ${MAC//:/_} )
+	[[ ! $pcms ]] && return
+#...............................................................................
+	touch $dirshm/btdisconnect
+	while read mac; do # disconnect others
+		bluetoothctl disconnect ${mac//_/:}
+	done < <( sed -E 's|.*/dev_([^/]*).*|\1|' <<< $pcms )
+	( sleep 5 && rm -f $dirshm/btdisconnect ) &
 }
 bt.action() {
 	bluetoothctl $1 $MAC &> /dev/null
@@ -129,12 +143,8 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	fi
 fi
 
-rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
 if [[ $ACTION == connect ]]; then
 	bt.pcm
-	while read mac; do # disconnect others
-		bluetoothctl disconnect ${mac//_/:}
-	done < <( bluealsa-cli list-pcms | grep -v ${MAC//:/_} | sed -E 's|.*/dev_([^/]*).*|\1|' )
 	if [[ $TYPE == btsink ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
 		systemctl stop bluealsa-aplay bluealsa-dbus
