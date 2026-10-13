@@ -72,7 +72,6 @@ ALIAS=Bluetooth
 TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/disconnect run, only notify > setup
-	systemctl start bluealsa-dbus # must be started on source connect to get bluetoothdest (stop later if not source)
 	ACTION=$1 # for notify only
 	notify.action
 	prev=$( cat $dirshm/Connected 2> /dev/null )
@@ -130,7 +129,7 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	fi
 fi
 
-rm -f $dirshm/{btmixer,btsource,bluetoothplay}
+rm -f $dirshm/{btmixer,btsource,bluetoothdest,bluetoothplay}
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	while read mac; do # disconnect others
@@ -141,14 +140,16 @@ if [[ $ACTION == connect ]]; then
 		systemctl stop bluealsa-aplay bluealsa-dbus
 	else
 		touch $dirshm/btsource
-		systemctl start bluealsa-aplay
+		systemctl start bluealsa-aplay bluealsa-dbus
+		echo -e 'menu player\nlist' | bluetoothctl | awk '/^Player/ {print $2}' > $dirshm/bluetoothdest
 	fi
 fi
+
 $dirsettings/player-conf.sh
-[[ $CONNECTED ]] && notify.state Ready
-connected=$( bt.connected )
-[[ $connected ]] && echo "$connected" > $dirshm/Connected || rm -f $dirshm/Connected
+
+bt.connected > $dirshm/Connected
 if [[ $CONNECTED ]]; then
+	notify.state Ready
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
 pushRefresh networks system
