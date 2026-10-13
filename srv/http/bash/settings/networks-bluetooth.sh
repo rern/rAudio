@@ -162,10 +162,10 @@ if [[ $ACTION == connect ]]; then
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi
+bt.connected > $dirshm/Connected
 
 $dirsettings/player-conf.sh
 
-bt.connected > $dirshm/Connected
 if [[ $CONNECTED ]]; then
 	notify.state Ready
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
