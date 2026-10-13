@@ -22,7 +22,7 @@ ALIAS_TYPE() {
 	ALIAS=$( bluetoothProperty Alias )
 	TYPE=$( bluetoothSinkSource )
 	
-	rm -f $dirshm/{btmixer,btsource,bt_play}
+	rm -f $dirshm/{btmixer,btsource}
 	pcms=$( bluealsa-cli list-pcms | grep -v ${MAC//:/_} )
 	[[ ! $pcms ]] && return
 #...............................................................................

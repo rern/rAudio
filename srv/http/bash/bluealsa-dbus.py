@@ -1,28 +1,19 @@
 #!/bin/python
 
-# RPi as renderer - bluealsa-dbus.service > this:
-#   - start: set Player dest file
-#   - connect/disconnect: networks-bluetooth.sh
-#   - status: dbus emits events and data
-#       start play - cmd.sh playerstart
-#       changed - status-push.sh
-
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-import os
 import time
 from gi.repository import GLib
 from subprocess import Popen
 
-AGENT_INTERFACE = 'org.bluez.Agent1'
-path            = '/test/autoagent'
-filesink        = '/srv/http/data/shm/bt_play'
+STARTED = False
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
 
 def property_changed( interface, changed, invalidated, path ):
+    global STARTED
     for name, value in changed.items():
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (on connect - sink not emit this data)
         # Connected : 1 | 0
@@ -37,18 +28,22 @@ def property_changed( interface, changed, invalidated, path ):
             time.sleep( 1 ) # delay to pass: stopped > playing on track changed
             statusPush()
         elif name == 'Status':
-            if value == 'playing' and not os.path.isfile( filesink ):
-                open( filesink, 'a' )
+            if value == 'playing' and not STARTED:
+                STARTED = True
                 with open( '/srv/http/data/shm/player', 'w' ) as f: f.write( 'bluetooth' )
             statusPush()
 
-if __name__ == '__main__':
+def main():
+    agent_interface = 'org.bluez.Agent1'
+    agent_path      = '/test/autoagent'
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
-    bus      = dbus.SystemBus()
+    bus = dbus.SystemBus()
     bus.add_signal_receiver( property_changed, bus_name='org.bluez',
                              dbus_interface='org.freedesktop.DBus.Properties',
                              signal_name='PropertiesChanged',
                              path_keyword='path' )
-    mainloop = GLib.MainLoop()
-    mainloop.run()
+    GLib.MainLoop().run()
+
+if __name__ == '__main__':
+    main()
     
