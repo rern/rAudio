@@ -114,6 +114,7 @@ mute )
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 saveconfig )
+	[[ ! $FILECONFIG ]] && FILECONFIG=$( getVar CONFIG /etc/default/camilladsp )
 	$dirbash/status -c GetConfig | jq -r .GetConfig.value > "$FILECONFIG"
 	;;
 	

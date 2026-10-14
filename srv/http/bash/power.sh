@@ -24,7 +24,13 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-[[ -e $dirshm/btmixer ]] && bluetoothctl devices Connected | cut -d' ' -f2 > $dirsystem/btc_receiver
+[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla.sh saveconfig
+if [[ -s $dirshm/Connected ]]; then
+	while read mac; do
+		[[ $( bluetoothSinkSource $mac ) != btsource ]] && connected+=$mac$'\n'
+	done < <( cut -d' ' -f2 $dirshm/Connected )
+	[[ $connected ]] && echo "$connected" > $dirsystem/btconnected
+fi
 [[ $CMD == reboot || $1 == reboot ]] && REBOOT=1
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
