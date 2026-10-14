@@ -159,12 +159,11 @@ if [[ $ACTION == connect ]]; then
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi
+systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume
 if [[ -e $dirshm/btmixer ]]; then
-	systemctl stop bluealsa-aplay bluealsa-dbus
 	systemctl start bluealsa-volume
 elif [[ -e $dirshm/btsource ]]; then
 	systemctl start bluealsa-aplay bluealsa-dbus
-	systemctl stop bluealsa-volume
 fi
 bt.connected > $dirshm/Connected
 
