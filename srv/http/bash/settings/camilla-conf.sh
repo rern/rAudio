@@ -26,26 +26,7 @@ else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
 fi
-if [[ ! -e $FILE_CONFIG ]]; then
-	file_default=/etc/camilladsp/configs/camilladsp.yml
-	if [[ $EXISTING ]]; then
-		dir=$( dirname "$FILE_CONFIG" )
-		name_miss=$( basename "$FILE_CONFIG" )
-		file=$( compgen -G "$dir"/*.yml )
-		if [[ $file ]]; then
-			name_replace=$( basename "$file" )
-		else
-			file=$file_default
-			name_replace='(default)'
-		fi
-		cp "$file" "$FILE_CONFIG"
-		echo "\
-<i class='i-warning yl'></i> Missing Config: <wh>$name_miss</wh>
-Run with <wh>$name_replace</wh> instead." > $dirshm/missing_config
-	else
-		cp $file_default "$FILE_CONFIG"
-	fi
-fi
+[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
 
@@ -71,18 +52,18 @@ if [[ ! $EXISTING ]]; then
 	fi
 fi
 
-file_current=$( getVar CONFIG /etc/default/camilladsp )
 validate=$( camilladsp -c "$FILE_CONFIG" )
 if [[ $validate != 'Config is valid' ]]; then
 	echo "\
 $validate
 
-(config moved to $file_current.failed)"
+(config moved to $FILE_CONFIG.failed)"
 	rm -f $dirshm/volume $dirsystem/camilladsp
-	mv "$file_current"{,.failed}
+	mv "$FILE_CONFIG"{,.failed}
 	exit 1
 fi
 
+file_current=$( getVar CONFIG /etc/default/camilladsp )
 dir_current=$( dirname "$file_current" )
 dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
