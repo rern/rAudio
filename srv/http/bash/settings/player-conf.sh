@@ -11,8 +11,6 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-conf.sh
-
 pushVolumeNone() {
 	pushData display '{ "volumenone": '$1' }'
 	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
@@ -33,7 +31,7 @@ rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
-	. $dirsettings/player-devices.sh # >>> $CARD
+	. $dirsettings/player-devices.sh # >>>>>>>>>>>>>>> $CARD
 else
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
@@ -47,7 +45,8 @@ mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
+. $dirsettings/player-asound.sh # >>>>>>>>>>>>>>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
+
 if [[ $CAMILLADSP ]]; then
 	systemctl -q is-active camilladsp && ACTIVE=1
 	systemctl restart camilladsp

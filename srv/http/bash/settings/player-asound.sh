@@ -30,6 +30,7 @@ pcm.bluealsa {
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	CAMILLADSP=1
+	$dirsettings/camilla-conf.sh
 	file_config=$( getVar CONFIG /etc/default/camilladsp )
 	if grep -q device: hw:Loopback "$file_config"; then
 		modprobe snd_aloop
