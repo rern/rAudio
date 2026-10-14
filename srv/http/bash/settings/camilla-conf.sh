@@ -27,8 +27,8 @@ else
 	fi
 fi
 if [[ ! -e $FILE_CONFIG ]]; then
-	[[ $EXISTING ]] && notify 'camilla blink' CamillaDSP 'Missing Config - Restore to default.'
 	cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+	[[ $EXISTING ]] && notify 'camilla blink' CamillaDSP '<i class="i-warning yl"></i> Missing Config - Restore default.'
 fi
 
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
