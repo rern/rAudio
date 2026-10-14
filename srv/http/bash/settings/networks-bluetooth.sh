@@ -97,7 +97,6 @@ TYPE=bluetooth
 
 if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/disconnect run, only notify > setup
 	ACTION=$1 # for notify only
-	notify.action
 	prev=$( getContent $dirshm/Connected )
 	for i in {1..5}; do
 		sleep 1
