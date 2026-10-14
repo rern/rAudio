@@ -12,7 +12,7 @@ bluetooth() {
 			for i in {0..3}; do
 				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
 			done
-			systemctl start bluetooth bluealsa-aplay
+			systemctl start bluetooth
 		fi
 		[[ $DISCOVERABLE ]] && yn=yes || yn=no
 		bluetoothctl discoverable $yn
@@ -20,7 +20,7 @@ bluetooth() {
 		bluetoothctl discoverable-timeout $timeout
 	else
 		systemctl stop bluetooth
-		rmmod hci_uart 2> /dev/null
+		rmmod hci_uart &> /dev/null
 		rm -f $dirshm/{btmixer,btsource}
 		if [[ -e $dirmpdconf/output.conf ]]; then
 			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh

@@ -17,9 +17,6 @@ file=/etc/systemd/system/bluealsa-volume.service
 [[ ! -e $file ]] && echo "\
 [Unit]
 Description=BlueALSA volume monitor
-After=bluealsa.service
-Requires=bluealsa.service
-BindTo=bluealsa.service
 
 [Service]
 ExecStart=/srv/http/bash/bluealsa-volume.sh" > $file

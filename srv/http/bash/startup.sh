@@ -49,7 +49,12 @@ elif [[ -e /boot/accesspoint ]]; then
 fi
 # pre-configure <<<-----------------------------------------------------------
 logoLcdOled
-[[ -e $dirsystem/bluetooth ]] && modprobe hci_uart
+if [[ -e $dirsystem/bluetooth ]]; then
+	modprobe hci_uart
+	systemctl start bluetooth
+else
+	rmmod hci_uart &> /dev/null
+fi
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then

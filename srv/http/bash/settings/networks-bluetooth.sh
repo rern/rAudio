@@ -7,9 +7,14 @@
 	# (nothing more)
 # source :
 	# bluealsa-dbus.service  - changes for push
-	# bluealsa-aplay.service - stream:
+	# bluealsa-aplay.service
 		# normal  - dbus path Player ( busctl --list tree org.bluez | grep -E '/player[0-9]+$' )
 		# camilla - dbus_path pcm    ( bluealsa-cli list-pcms )
+
+[[ -e /dev/shm/bt ]] && exit
+# ------------------------------------------------------------------------------
+trap 'rm -f /dev/shm/bt' EXIT
+touch /dev/shm/bt
 
 . /srv/http/bash/common.sh
 
@@ -24,9 +29,6 @@ ALIAS_TYPE() {
 	connected=$( getContent $dirshm/Connected | grep -v $MAC )
 	[[ ! $connected ]] && return
 #...............................................................................
-	file_udev=/etc/udev/rules.d/bluetooth.rules
-	mv $file_udev{,.backup}
-	udevadm control --reload
 	while read mac; do # disconnect others
 		type=$( bluetoothSinkSource $mac )
 		if [[ $type != bluetooth ]]; then
@@ -36,8 +38,6 @@ ALIAS_TYPE() {
 			sleep 3
 		fi
 	done < <( cut -d' ' -f2 <<< $connected )
-	mv $file_udev{.backup,}
-	udevadm control --reload
 }
 bt.action() {
 	bluetoothctl $1 $MAC &> /dev/null
@@ -101,8 +101,7 @@ if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/d
 	prev=$( getContent $dirshm/Connected )
 	for i in {1..5}; do
 		sleep 1
-		Connected=$( bt.connected )
-		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+	d=$( diff <( echo "$prev" ) <( bt.connected ) | grep -E '^[<>]' )
 		[[ $d ]] && break
 	done
 	if [[ $d ]]; then
@@ -155,12 +154,17 @@ fi
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	if [[ $TYPE == btsink ]]; then
-		systemctl stop bluealsa-aplay bluealsa-dbus
 		echo "$ALIAS A2DP" > $dirshm/btmixer
 	else
-		systemctl start bluealsa-aplay bluealsa-dbus
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
+fi
+if [[ -e $dirshm/btmixer ]]; then
+	systemctl stop bluealsa-aplay bluealsa-dbus
+	systemctl start bluealsa-volume
+elif [[ -e $dirshm/btsource ]]; then
+	systemctl start bluealsa-aplay bluealsa-dbus
+	systemctl stop bluealsa-volume
 fi
 bt.connected > $dirshm/Connected
 
