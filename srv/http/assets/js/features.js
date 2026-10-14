@@ -29,20 +29,7 @@ var CONFIG       = {
 			} );
 		}
 	}
-	, _prompt      : {
-		camilladsp : () => {
-			$( '#camilladsp' ).prop( 'checked', true ); // suppress default set as false 
-			NOTIFY_COMMON( true );
-			BASH( [ 'camilladsp' ], std => {
-				if ( std ) {
-					INFO( {
-						  ...SW
-						, message : '<pre>'+ std +'</pre>'
-					} );
-				}
-			} );
-		}
-	}
+	, _prompt      : {}
 	, ap           : values => {
 		INFO( {
 			  ...SW
