@@ -582,11 +582,11 @@ volume() {
 	fi
 	[[ $FN_VOLUME == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
-volumeAmixer() { # %
+volumeAmixer() {
 	amixer -Mq sset "$2" $1%
 }
-volumeBlueAlsa() { # %
-	amixer -MqD bluealsa sset "$2" $1%
+volumeBlueAlsa() {
+	amixer -MqD bluealsa sset "$2" $1
 }
 volumeCamilla() {
 	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
@@ -617,22 +617,22 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card lines mixer val
+	local card FN_VOLUME lines mixer val
 	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
 	case $FN_VOLUME in
 		volumeCamilla )  val=$( volumeGetCamilla );;
 		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
 		volumeBlueAlsa )
 			lines=$( amixer -MD bluealsa 2> /dev/null )
-			val=$( volumeLines2val $lines )
+			val=$( volumeLines2val "$lines" )
 			;;
 		* )
-			. $dirshm/output
+			mixer=$( getVar mixer $dirshm/output )
 			for i in {1..5}; do # some usb might not be ready
 				lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
 				[[ $lines ]] && break || sleep 1
 			done
-			val=$( volumeLines2val $lines )
+			val=$( volumeLines2val "$lines" )
 			;;
 	esac
 	if [[ $1 == push ]]; then
@@ -662,8 +662,9 @@ volumeGetCamilla() {
 		}' # db > %
 }
 volumeLines2val() {
-	val=${1#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
-	val=${val%%\%*}
+	val=$( tail -n 1 <<< $1 )
+	val=${val#*[} # last line: ...: Playback 0 [86%] [0.00dB] [on]
+	echo ${val%%\%*}
 }
 volumeMpd() {
 	mpc -q volume $1

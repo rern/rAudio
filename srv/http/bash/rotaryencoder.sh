@@ -20,8 +20,8 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-fn_volume=$( volumeFunction )
-case $fn_volume in
+FN_VOLUME=$( volumeFunction )
+case $FN_VOLUME in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
@@ -84,7 +84,6 @@ evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
-	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
-	FN $updn
+	[[ $line == *-1 ]] && FN $dn || FN $up
 	volumeGet push
 done
