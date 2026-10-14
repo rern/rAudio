@@ -586,7 +586,7 @@ volumeAmixer() {
 	amixer -Mq sset "$2" $1%
 }
 volumeBlueAlsa() {
-	amixer -MqD bluealsa sset "$2" $1
+	amixer -MqD bluealsa sset "$2" $1%
 }
 volumeCamilla() {
 	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
