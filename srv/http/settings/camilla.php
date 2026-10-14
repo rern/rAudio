@@ -1,7 +1,8 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'code',   'drag',   'edit', 'filters', 'flowchart', 'folderfilter', 'gear', 'graph',  'input', 'inverted'
-				   , 'linear', 'mixers', 'mute', 'output',  'pause',     'play',         'plus', 'remove', 'set0',  'stop', 'volume' ]
+	  'buttons' => [ 'code',  'drag',  'edit',  'filters',  'flowchart', 'folderfilter'
+				   , 'gear',  'graph', 'input', 'inverted', 'linear',    'mixers', 'output'
+				   , 'pause', 'play',  'plus',  'remove',   'set0',      'stop',   'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
@@ -168,7 +169,8 @@ Processing load
 	<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
-<span class="helpblock hide">'.$B->volume.$B->mute.' Mute · Unmute
+<span class="helpblock hide"><c> N </c> Mute · Unmute
+'.$B->volume.' Hardware volume
 '.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
 	)
