@@ -242,19 +242,19 @@ mixer.btmixer() {
 	[[ $TARGET == 0dB ]] && mixer.get
 }
 mixer.get() {
-	if [[ $ID == mixer ]]; then
+	if [[ -e $dirshm/btsource ]]; then
+		val_db=$( amixer -MD bluealsa )
+	else
 		. $dirshm/output
 		val_db=$( amixer -c $card -M sget "$mixer" )
-	else
-		val_db=$( amixer -MD bluealsa )
 	fi
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
-	rm -f $dirsystem/volumemute
-	pushData volume '{ "type": "unmute", "val": '$( volumeGet )' }'
+	pushData volume '{ "type": "unmute", "val": '$val' }'
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
+	rm -f $dirsystem/volumemute
 	[[ $TARGET == 0dB ]] && mixer.get
 }
 pushDirCounts() {

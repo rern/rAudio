@@ -1415,8 +1415,7 @@ var RENDER    = {
 	, status      : () => { // onload only
 		playbackIcon();
 		$( '#divvolume' ).removeClass( 'hide' );
-		var nomixer = S.bluetooth ? ! S.btmixer : ! S.mixer;
-		$( '#divvolume .i-volume' ).toggleClass( 'hide', nomixer );
+		$( '#divvolume .i-volume' ).toggleClass( 'hide', ! S.btsource || S.mixer === '' );
 		VOLUME.set( S.volume );
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		$( '#divconfiguration .i-btsender' ).toggleClass( 'hide', ! S.bluetooth );

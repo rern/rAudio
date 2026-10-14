@@ -28,7 +28,7 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "TIMEOUT": '$timeout' }'
 	;;
-btmixer | mixer )
+mixer )
 	mixer.get $ID
 	;;
 buffer|outputbuffer )

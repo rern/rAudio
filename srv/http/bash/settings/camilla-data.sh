@@ -36,6 +36,7 @@ volumemax=$( volumeMaxGet )
 data='
 , "bluetooth"   : '$bluetooth'
 , "btmixer"     : "'$btmixer'"
+, "btsource"    : '$( exists $dirshm/btsource )'
 , "configname"  : "'$( basename "$file_config" )'"
 , "control"     : "'$mixer'"
 , "fileconfig"  : "'$file_config'"

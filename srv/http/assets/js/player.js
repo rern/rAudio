@@ -27,7 +27,6 @@ var CONFIG   = {
 			}
 		}
 	}
-	, btmixer     : values => MIXER.volume( SW.id, values )
 	, buffer       : values => {
 		INFO( {
 			  ...SW
