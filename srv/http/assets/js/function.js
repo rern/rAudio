@@ -1644,7 +1644,7 @@ var PLAYBACK  = {
 			UTIL.intervalClear( 'elapsed' );
 			PROGRESS.set( 0 );
 		}
-		VOLUME.set();
+		VOLUME.set( 'refresh' );
 		PLAYBACK.button.controls();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
@@ -2516,7 +2516,7 @@ var VOLUME    = {
 		VOLUME.command();
 		VOLUME.set();
 	}
-	, set     : () => {
+	, set     : refresh => {
 		if ( S.volumemute === false ) return // suppress value false on track changed (sometimes)
 		
 		var $bar     = $( '#volume-bar' );
@@ -2539,10 +2539,10 @@ var VOLUME    = {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( V.updn ) {
-			var ms    = 100;
-		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
+		if ( refresh || V.drag ) {
 			var ms    = 0;
+		} else if ( V.updn ) {
+			var ms    = 100;
 		} else {
 			var ms    = Math.abs( S.volume - vol_prev ) * 50; // 1%:50ms
 			V.animate = true;
@@ -2552,10 +2552,8 @@ var VOLUME    = {
 				VOLUME.barHide( ms + 5000 );
 			}
 		}
-		var ms_knob = VOLUME.visible() ? ms : 0;
-		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
-		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
-		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms_bar +'ms' );
+		$( '#vol, #vol .point' ).css( 'transition-duration', ms +'ms' );
+		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms +'ms' );
 		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
