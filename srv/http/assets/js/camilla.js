@@ -2455,7 +2455,6 @@ var VOLUME    = {
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
-		$( '#divvolume .i-volume' ).toggleClass( 'mute', mute );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', target === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', target === 100 );
 		if ( V.drag || vol_prev === '' ) { // onload - empty
