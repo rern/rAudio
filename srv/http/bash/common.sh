@@ -617,22 +617,24 @@ volumeFunction() {
 	fi
 }
 volumeGet() {
-	local card FN_VOLUME lines mixer val
+	local card line mixer val
 	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
 	case $FN_VOLUME in
 		volumeCamilla )  val=$( volumeGetCamilla );;
 		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
 		volumeBlueAlsa )
-			lines=$( amixer -MD bluealsa 2> /dev/null )
-			val=$( volumeLines2val "$lines" )
+			line=$( amixer -MD bluealsa | grep -m1 % ) # ...: Playback 0 [86%] [0.00dB] [on]
+			val=${line#*[}
+			val=${val%%\%*}
 			;;
 		* )
 			mixer=$( getVar mixer $dirshm/output )
 			for i in {1..5}; do # some usb might not be ready
-				lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
-				[[ $lines ]] && break || sleep 1
+				line=$( amixer -M sget "$mixer" | grep -m1 % )
+				[[ $line ]] && break || sleep 1
 			done
-			val=$( volumeLines2val "$lines" )
+			val=${line#*[}
+			val=${val%%\%*}
 			;;
 	esac
 	if [[ $1 == push ]]; then
@@ -660,11 +662,6 @@ volumeGetCamilla() {
 			p = norm * 100
 			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
 		}' # db > %
-}
-volumeLines2val() {
-	val=$( tail -n 1 <<< $1 )
-	val=${val#*[} # last line: ...: Playback 0 [86%] [0.00dB] [on]
-	echo ${val%%\%*}
 }
 volumeMpd() {
 	mpc -q volume $1
