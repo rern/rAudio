@@ -1,7 +1,7 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <?php
 commonVariables( [
-	  'buttons' => [ 'add', 'ap', 'bluetooth', 'btsender', 'lan', 'search', 'wifi', 'wifi1' ]
+	  'buttons' => [ 'add', 'ap', 'bluetooth', 'btsender', 'eye', 'lan', 'search', 'wifi', 'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
@@ -17,7 +17,7 @@ $head = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
-$B->bluetooth$B->btsender Context menu
+$B->eye Discoverable
 	
 <wh>rAudio as sender:</wh>
  • Pair:
@@ -39,6 +39,8 @@ $B->bluetooth$B->btsender Context menu
 Note:
  • Forget / remove should be done on both rAudio and sender.
  • Non-audio devices should be able to pair as well.
+
+$B->bluetooth$B->btsender Context menu
 EOF
 ];
 $body = [ '<ul id="bluetooth" class="entries"></ul>' ];
@@ -52,11 +54,12 @@ $head = [
 	, 'help'   => <<< EOF
 $B->add Manual connect
 $B->search Available networks
-$B->wifi$B->ap Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar $B->wifi1 might be unstable.
+
+$B->wifi$B->ap Context menu
 EOF
 ];
 $body = [ '<ul id="wlan" class="entries"></ul>' ];
