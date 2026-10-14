@@ -236,7 +236,7 @@ localBrowserOff() {
 mixer.0dB() {
 	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-	mixer.get push
+	[[ ! $CAMILLADSP ]] && mixer.get push
 }
 mixer.get() {
 	. $dirshm/output

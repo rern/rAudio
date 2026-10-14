@@ -25,7 +25,10 @@ else
 	else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
-	[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+fi
+if [[ ! -e $FILE_CONFIG ]]; then
+	[[ $EXISTING ]] && notify 'camilla blink' CamillaDSP 'Missing Config - Restore to default.'
+	cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 fi
 
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
