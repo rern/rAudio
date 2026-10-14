@@ -22,7 +22,7 @@ else
 fi
 file_config=$( getVar CONFIG /etc/default/camilladsp )
 dir_configs=$( dirname "$file_config" )
-files=$( find $dir_configs -maxdepth 1 -type f -printf '%f\n' ) # .../configs/..., ../configs/XX:XX:XX...
+files=$( find $dir_configs -maxdepth 1 -type f -name *.yml -printf '%f\n' ) # .../configs/..., ../configs/XX:XX:XX...
 ls+=', "configs": '$( line2array "$files" )
 files=$( ls $dircamilladsp/coeffs | grep -v '\.wav$' )
 ls+=', "coeffs": '$( line2array "$files" )
