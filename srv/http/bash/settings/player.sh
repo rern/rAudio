@@ -96,7 +96,7 @@ mixertype )
 	if [[ $MIXERTYPE == hardware ]]; then
 		rm -f "$filemixertype" $dirsystem/replaygain-hw
 	else
-		amixer0dB
+		mixer.0dB
 		echo $MIXERTYPE > "$filemixertype"
 	fi
 	$dirsettings/player-conf.sh
@@ -105,7 +105,7 @@ mixertype )
 	[[ $TARGET ]] && volume
 	;;
 novolume )
-	amixer0dB
+	mixer.0dB
 	name=$( getContent $dirsystem/audio-output )
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0

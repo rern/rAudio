@@ -2535,7 +2535,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 
 } ).on( 'click', '.i-volume', function() {
 	var id = S.btmixer ? 'btmixer' : 'mixer';
-	BASH( [ 'mixer.get', id, 'CMD ID' ], values => {
+	BASH( [ 'mixer.get' ], values => {
 		MIXER.volume( id, values );
 	}, 'json' );
 } ).press( {

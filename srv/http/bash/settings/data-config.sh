@@ -28,9 +28,6 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "TIMEOUT": '$timeout' }'
 	;;
-mixer )
-	mixer.get $ID
-	;;
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
 	;;
@@ -112,6 +109,9 @@ localbrowser )
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
 	cp $dirsystem/localbrowser.conf /tmp
+	;;
+mixer )
+	mixer.get
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then

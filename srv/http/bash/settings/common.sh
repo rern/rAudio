@@ -1,9 +1,5 @@
 #!/bin/bash
 
-amixer0dB() {
-	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-}
 bluetooth() {
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
@@ -237,25 +233,21 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
-mixer.btmixer() {
-	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.get
+mixer.0dB() {
+	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
+	mixer.get push
 }
 mixer.get() {
-	if [[ -e $dirshm/btsource ]]; then
-		val_db=$( amixer -MD bluealsa )
-	else
-		. $dirshm/output
-		val_db=$( amixer -c $card -M sget "$mixer" )
-	fi
+	. $dirshm/output
+	val_db=$( amixer -c $card -M sget "$mixer" )
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
-	pushData volume '{ "type": "unmute", "val": '$val' }'
+	[[ $PUSH || $1 ]] && pushData volume '{ "type": "unmute", "val": '$val' }'
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
 	rm -f $dirsystem/volumemute
-	[[ $TARGET == 0dB ]] && mixer.get
 }
 pushDirCounts() {
 	local tf

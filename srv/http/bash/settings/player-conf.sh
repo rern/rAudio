@@ -65,7 +65,7 @@ $( cat $file_log )"
 		. $dirsettings/player-asound.sh
 	else
 		if [[ ! $ACTIVE ]]; then
-			amixer0dB
+			mixer.0dB
 			volume=$( getContent $dirshm/volume )
 			[[ $volume ]] && volumeCamilla $volume
 		fi

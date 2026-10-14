@@ -144,12 +144,17 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  command  : val => {
-		BASH( [ 'mixer.'+ V.id, val, V.control, V.id, 'CMD TARGET CONTROL ID' ], values => {
+		if ( val === '0dB' ) {
+			var cmd = [ 'mixer.0dB' ];
+		} else {
+			var cmd = [ 'mixer.'+ V.id, val, V.control, V.id, 'CMD TARGET CONTROL ID' ];
+		}
+		BASH( cmd, values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
 	, refresh  : () => {
-		BASH( [ 'mixer.get', V.id, 'CMD ID' ], values => {
+		BASH( [ 'mixer.get', true, 'CMD PUSH' ], values => {
 			MIXER.set( values );
 		}, 'json' );
 	}
