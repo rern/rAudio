@@ -32,7 +32,7 @@ ALIAS_TYPE() {
 	while read mac; do # disconnect others
 		type=$( bluetoothSinkSource $mac )
 		if [[ $type != bluetooth ]]; then
-			bluetoothctl disconnect $mac
+			bluetoothctl disconnect $mac &> /dev/null
 			sed -i "/$mac/ d" $dirshm/Connected
 			notify $type "$( bluetoothProperty Alias $mac )" Disconnected
 			sleep 3
