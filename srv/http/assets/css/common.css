@@ -787,7 +787,6 @@ hr {
 }
 #infoList {
 	font-size: 16px;
-	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
 #infoList:has( .inforange.vertical ) {
 	padding: 15px;
@@ -1157,12 +1156,6 @@ input[ type=radio ]:disabled {
 	fill: var( --cg60 );
 }
 
-@media ( max-height: 420px ) {
-	#infoList { padding: 10px 5px }
-}
-@media ( max-width: 420px ) {
-	#infoList { padding: 20px 5px 10px 5px }
-}
 @media ( max-width: 330px ) {
 	#infoOverlay {
 		transform: scale( 0.9 );

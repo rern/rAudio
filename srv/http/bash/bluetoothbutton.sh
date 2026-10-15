@@ -8,7 +8,7 @@ for i in {0..3}; do
 	grep -q $mac /proc/bus/input/devices && break || sleep 1
 done
 event=$( sed -E -n "/$mac/,/^H:/ {/^H:/ {s/.*(event[0-9]+).*/\1/; p}}" /proc/bus/input/devices )
-[[ ! $event ]] && systemctl --no-block stop bluetoothbutton && exit  0
+[[ ! $event ]] && systemctl --no-block stop bluetoothbutton && exit 0
 #-------------------------------------------------------------------------------
 # line='Event: time nnnnnnnnnn.nnnnnn, type 1 (EV_KEY), code NNN (KEY_XXXXXX), value N'
 evtest /dev/input/$event | while read line; do

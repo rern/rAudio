@@ -475,6 +475,12 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
+pushVolume() {
+	local val
+	[[ $1 ]] && val=$1 || val=$( volumeGet )
+	$dirbash/status -P '{ "channel": "volume", "data": { "val": '$val' } }'
+	[[ $val -gt 0 && -e $file_volumemute ]] && rm -f $file_volumemute
+}
 pushWebsocket() {
 	local data
 	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
@@ -557,12 +563,11 @@ volume() {
 			val=$CURRENT
 			type=mute
 			echo $CURRENT > $file_volumemute
+			pushData volume '{ "type": "mute", "val": 0 }'
 		else
 			val=$TARGET
-			[[ -e $file_volumemute ]] && type=unmute
-			rm -f $file_volumemute
+			pushVolume $val
 		fi
-		pushData volume '{ "type": "'$type'", "val": '$val' }'
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
@@ -570,7 +575,7 @@ volume() {
 		$FN_VOLUME $TARGET "$CONTROL"
 		[[ ! $DRAG_PRESS ]] && volumeGet push
 	else
-		pushData volume '{ "val": '$TARGET' }'
+		pushVolume $TARGET
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
@@ -638,7 +643,7 @@ volumeGet() {
 			;;
 	esac
 	if [[ $1 == push ]]; then
-		pushData volume '{ "val": '$val' }'
+		pushVolume $val
 	else
 		echo $val
 	fi

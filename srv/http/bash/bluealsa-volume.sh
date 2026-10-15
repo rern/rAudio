@@ -1,12 +1,11 @@
 #!/bin/bash
 
-file_volumemute=/srv/http/data/system/volumemute
+. /srv/http/bash/common.sh
 
 bluealsa-cli monitor -p | while read -r line; do
 	[[ $line != *Volume* ]] && continue
 	
-	lines=$( amixer -MD bluealsa 2> /dev/null )
+	lines=$( amixer -MD bluealsa )
 	val=${lines#*[}
-	/srv/http/bash/status -P '{ "channel": "volume", "data": { "val": '${val%%\%*}' } }'
-	[[ -e $file_volumemute ]] && rm -f $file_volumemute
+	pushVolume ${val%%\%*}
 done

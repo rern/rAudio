@@ -621,7 +621,7 @@ function INFO( json ) {
 		htmls.list     = I.list;
 	} else {
 		var tr_padding = type => {
-			if ( [ 'number', 'password', 'range', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
+			if ( [ 'number', 'password', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
 				htmls.list += '<tr style="height: 5px"></tr>';
 			}
 		}
@@ -658,7 +658,6 @@ function INFO( json ) {
 					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan + width +'>';
 					break;
 				case 'range':
-					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
 					htmls.list += htmls.list.endsWith( 'td>' ) ? '' : '<tr><td>'+ label +'</td>';
@@ -703,12 +702,12 @@ function INFO( json ) {
 					htmls.list += tr ? '' : '</td></tr>';
 					break;
 				case 'range':
-					I.range = true;
+					I.range     = true;
 					htmls.list += '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
 								+ ICON( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ICON( 'plus up' )
-								+'</div></td></tr>';
+								+'</div>';
 					break
 				case 'select':
 					kv          = param.kv || param;
@@ -737,9 +736,8 @@ function INFO( json ) {
 			if ( chk_rad && ! param.sameline && i + 1 < I.list.length ) tr_padding( I.list[ i + 1 ][ 1 ] );
 			type_prev = type;
 		} );
-		htmls.list = '<table>'+ htmls.list +'</table>';
+		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
 	}
-
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
@@ -1724,6 +1722,7 @@ var VOLUME    = {
 		clearInterval( V.interval.volume );
 		VOLUME.barHide();
 		V.local = false;
+		VOLUME.push();
 	}
 	, push     : () => {
 		V.local = true;
