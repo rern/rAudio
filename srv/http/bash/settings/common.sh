@@ -236,7 +236,6 @@ localBrowserOff() {
 mixer.0dB() {
 	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-	mixer.get
 	mixer.push
 }
 mixer.get() {
@@ -244,12 +243,13 @@ mixer.get() {
 	val_db=$( amixer -c $card -M sget "$mixer" )
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
-	[[ $PUSH ]] && mixer.push
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
+	mixer.push
 }
 mixer.push() {
+	mixer.get # return dB
 	[[ $( volumeFunction ) == volumeMpd ]] && pushVolume $( volume.Mpd )
 }
 pushDirCounts() {

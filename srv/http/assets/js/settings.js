@@ -147,15 +147,16 @@ var MIXER = { // player.js, camilla.js
 		if ( val === '0dB' ) {
 			var cmd = [ 'mixer.0dB' ];
 		} else {
-			var cmd = [ 'mixer.'+ V.id, val, V.control, V.id, 'CMD TARGET CONTROL ID' ];
+			var cmd = [ 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ];
 		}
 		BASH( cmd, values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
 	, refresh  : () => {
-		BASH( [ 'mixer.get', true, 'CMD PUSH' ], values => {
+		BASH( [ 'mixer.get' ], values => {
 			MIXER.set( values );
+			VOLUME.push( 'refresh' );
 		}, 'json' );
 	}
 	, set      : values => {
@@ -168,14 +169,11 @@ var MIXER = { // player.js, camilla.js
 		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
-	, volume   : ( id, values ) => {
-		var bt    = id === 'btmixer';
-		V.control = bt ? S.btmixer : S.mixer || S.output.MIXER;
-		V.id      = id;
+	, volume   : values => {
 		INFO( {
 			  icon       : 'volume'
-			, title      : ( bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ bt ? 'BlueALSA' : ( S.mixer || S.output.MIXER ), 'range' ]
+			, title      : 'Device Mixer Volume'
+			, list       : [ S.output.MIXER, 'range' ]
 			, footer     : '<br>'+ MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
@@ -191,7 +189,7 @@ var MIXER = { // player.js, camilla.js
 					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
 					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
 				} ).on( 'touchend, mouseup keyup', function() {
-					MIXER.refresh( id );
+					MIXER.refresh();
 				} );
 				function rangeSet( up ) {
 					var val = +$range.val();
@@ -205,7 +203,7 @@ var MIXER = { // player.js, camilla.js
 				$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
 					clearTimeout( I.timeout.range );
 					if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
-					MIXER.refresh( id );
+					MIXER.refresh();
 				} ).press( e => {
 					var up = $( e.target ).hasClass( 'up' );
 					I.timeout.range = setInterval( () => rangeSet( up ), 100 );

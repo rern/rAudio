@@ -105,7 +105,7 @@ audio_output {
 			} );
 		} );
 	}
-	, mixer        : values => MIXER.volume( SW.id, values )
+	, mixer        : values => MIXER.volume( values )
 	, mixertype    : () => {
 		if ( ! S.mixers ) {
 			COMMON.mixerSet( 'software' );
