@@ -2446,6 +2446,7 @@ var VOLUME    = {
 		run();
 	}
 	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
+	, ready     : () => WSCAMILLA && ! V.animate
 	, set       : target => {
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
@@ -2487,6 +2488,8 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
+	if ( ! VOLUME.ready() ) return
+	
 	var pos = this.getBoundingClientRect();
 	V.volume = {
 		  x : pos.left + 20
@@ -2511,19 +2514,19 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	delete V.volume;
 } );
 $( '#volume-0, #volume-100' ).on( 'click', function() {
-	if ( V.animate ) return
+	if ( ! VOLUME.ready() ) return
 	
 	VOLUME.cmd( this.id === 'volume-0' ? 0 : 100 );
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
-	if ( V.animate ) return
+	if ( ! VOLUME.ready() ) return
 	
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
 } ).on( 'click', '#volume-level, #volume-mute', function() {
-	if ( V.animate ) return
+	if ( ! VOLUME.ready() ) return
 	
 	VOLUME.mute( S.volume );
 	if ( S.volumemute ) {
@@ -2545,6 +2548,8 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 } ).press( {
 	  delegate : '.col-l i, .i-plus'
 	, action   : e => {
+		if ( ! VOLUME.ready() ) return
+		
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.interval.volume = setInterval( () => {
 			var target = up ? S.volume + 1 : S.volume - 1;
@@ -2554,6 +2559,8 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		}, 100 );
 	}
 	, end     : () => {
+		if ( ! VOLUME.ready() ) return
+		
 		clearInterval( V.interval.volume );
 		VOLUME.push();
 	}
