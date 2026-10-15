@@ -180,7 +180,7 @@ var MIXER = { // player.js, camilla.js
 					$rangeval.text( val );
 					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
 					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
-				} ).on( 'touchend, mouseup keyup', function() {
+				} ).on( 'touchend mouseup keyup', function() {
 					MIXER.refresh();
 				} );
 				function rangeSet( up ) {
