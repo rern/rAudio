@@ -54,8 +54,11 @@ camilladsp )
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
-		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME "$( < $dirshm/btmixer )"
 		volumeMpd $VOLUME
+		if [[ -e $dirshm/btmixer ]] ; then
+			volumeBlueAlsa $VOLUME "$( < $dirshm/btmixer )"
+			systemctl start bluealsa-volume
+		fi
 		pushRefresh
 	fi
 	rm -f $dirshm/volume
