@@ -161,7 +161,7 @@ fi
 systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume bluetoothbutton
 if [[ -e $dirshm/btmixer ]]; then
 	systemctl start bluealsa-volume
-	! systemctl -q is-active localbrowser && systemctl start bluetoothbutton
+	! systemctl -q is-active localbrowser && systemctl start bluetoothbutton # localbrowser already has button events
 elif [[ -e $dirshm/btsource ]]; then
 	systemctl start bluealsa-aplay bluealsa-dbus
 fi
