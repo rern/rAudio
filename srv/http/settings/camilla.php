@@ -121,7 +121,7 @@ $desc     = 'A powerful and flexible audio processing tool, designed for applica
 $head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'mpd player', 'play playback' ]
+	, 'button' => [ 'mpd', 'play playback' ]
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 
