@@ -2162,7 +2162,7 @@ var SETTING   = {
 		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
+			WSSEND( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( titlle ) BANNER( V.tab, titlle, msg );
 			V.debounce = setTimeout( () => {
 				LOCAL();
@@ -2176,7 +2176,7 @@ var SETTING   = {
 	}
 	, saveError     : result => {
 		clearTimeout( V.debounce );
-		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
+		setTimeout( () => WSSEND( '"GetConfigJson"' ), 1000 );
 		$( '.switch' ).removeClass( 'disabled' );
 		console.log( result );
 		console.log( S.config );
@@ -2308,7 +2308,7 @@ var UTIL      = {
 						if ( V.local ) return
 						
 						UTIL.wsGetState();
-						if ( DEV.enable_rate_adjust ) WSCAMILLA.send( '"GetRateAdjust"' );
+						if ( DEV.enable_rate_adjust ) WSSEND( '"GetRateAdjust"' );
 					}, 1000 );
 				}
 			}, 100 );
@@ -2380,7 +2380,7 @@ var UTIL      = {
 							V.signal = true;
 							RENDER.vuBarToggle();
 						}
-						V.interval.vu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
+						V.interval.vu = setInterval( () => WSSEND( '"GetSignalLevels"' ), 100 );
 					}
 					break;
 				case 'GetConfigJson':
@@ -2389,7 +2389,7 @@ var UTIL      = {
 					RENDER.status();
 					RENDER.tab();
 					CONTENT();
-					WSCAMILLA.send( '"GetSupportedDeviceTypes"' );
+					WSSEND( '"GetSupportedDeviceTypes"' );
 					if ( V.confswitch ) {
 						delete V.confswitch;
 						$( '.divgraph' ).remove();
@@ -2420,13 +2420,13 @@ var UTIL      = {
 	}
 	, wsGetConfig  : () => {
 		setTimeout( () => {
-			WSCAMILLA.send( '"GetConfigJson"' );
+			WSSEND( '"GetConfigJson"' );
 		}, WSCAMILLA.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState   : () => {
 		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
 		if ( S.config && DEV.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
-		getstate.forEach( k => WSCAMILLA.send( '"'+ k +'"' ) );
+		getstate.forEach( k => WSSEND( '"'+ k +'"' ) );
 	}
 }
 var VOLUME    = {
@@ -2471,13 +2471,16 @@ var VOLUME    = {
 		} );
 		if ( ! mute ) VOLUME.mute( 0 );
 	}
-	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
+	, volume    : val => WSSEND( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
 	, xy        : e => {
 		var posX  = COMMON.pageX( e ) - V.volume.x;
 		var w     = V.volume.w;
 		posX      = posX < 0 ? 0 : ( posX > w ? w : posX );
 		VOLUME.cmd( Math.round( posX / w * 100 ) );
 	}
+}
+var WSSEND    = msg => {
+	if ( WSCAMILLA && ! V.debug ) WSCAMILLA.send( msg );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -2597,7 +2600,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	LOCAL( 2000 );
 	$( '.divclipped' ).addClass( 'hide' );
-	WSCAMILLA.send( '"ResetClippedSamples"' );
+	WSSEND( '"ResetClippedSamples"' );
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
@@ -2606,8 +2609,8 @@ $( '#configuration' ).on( 'input', function() {
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	BASH( [ 'confswitch', path, 'CMD CONFIG' ], () => {
 		V.confswitch = true;
-		WSCAMILLA.send( '{ "SetConfigFilePath": "'+ path +'" }' );
-		WSCAMILLA.send( '"Reload"' );
+		WSSEND( '{ "SetConfigFilePath": "'+ path +'" }' );
+		WSSEND( '"Reload"' );
 		S.configname = name;
 		setTimeout( () => UTIL.wsGetConfig(), 300 );
 	} );
