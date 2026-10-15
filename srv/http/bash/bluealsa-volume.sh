@@ -7,6 +7,6 @@ bluealsa-cli monitor -p | while read -r line; do
 	
 	lines=$( amixer -MD bluealsa 2> /dev/null )
 	val=${lines#*[}
-	/srv/http/bash/status -P '{ "channel": "volume", "data": { "type": "unmute", "val": '${val%%\%*}' } }'
+	/srv/http/bash/status -P '{ "channel": "volume", "data": { "val": '${val%%\%*}' } }'
 	[[ -e $file_volumemute ]] && rm -f $file_volumemute
 done

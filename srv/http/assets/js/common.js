@@ -8,6 +8,153 @@ V    = {
 	, red       : '#bb2828'
 	, touch     : navigator.maxTouchPoints > 0
 }
+//-----------------------------------------------------------------------------------------------------------------
+W             = {  // from websocket.py (server)
+	  bluetooth : data => {
+		if ( PAGE === 'networks' ) {
+			S.listbt = data;
+			renderBluetooth();
+		} else if ( ! data ) {
+			if ( PAGE === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
+		} else if ( 'connected' in data ) {
+			if ( PAGE === 'features' ) {
+				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+			} else if ( PAGE === 'system' ) {
+				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+			}
+		}
+		BANNER_HIDE();
+	}
+	, color     : data => {
+		V.color = data;
+		COLOR.cssSet( data.hsl );
+		if ( V.ctx ) {
+			V.ctx.hsl  = data.hsl;
+			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
+		}
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
+		$( '#loader rect' ).css( 'fill', data.cm );
+		$( '#loader path' ).css( 'fill', data.cg );
+		delete V.color;
+	}
+	, notify    : data => {
+		if ( V.relayssequense ) return
+
+		if ( data === false ) {
+			BANNER_HIDE();
+			return
+		}
+
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		if ( ! PAGE ) {
+			if ( message === 'Change track ...' ) { // audiocd
+				UTIL.intervalClear();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '.mode.latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
+		BANNER( icon, title, message, delay );
+		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
+	}
+	, power     : data => {
+		var action  = data.type;
+		V[ action ] = true;
+		WS          = null;
+		COMMON.loader();
+		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
+		if ( action === 'off' ) {
+			$( '#loader' ).css( 'opacity', 1 );
+			$( 'body' ).children().not( '#banner, #loader' ).remove();
+			setTimeout( () => {
+				$( '#banner' ).addClass( 'hide' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
+			}, 12000 );
+		} else { // reconnect after reboot
+			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
+		}
+	}
+	, relays    : data => {
+		if ( 'countdown' in data ) {
+			INFO( {
+				  icon        : 'relays'
+				, title       : 'Equipments Off'
+				, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+				, buttonlabel : ICON( 'relays' ) +'Off'
+				, buttoncolor : V.red
+				, button      : () => BASH( [ 'relays.sh', 'off' ] )
+				, oklabel     : ICON( 'set0' ) +'Reset'
+				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
+			} );
+			var delay        = 59;
+			V.intervalrelays = setInterval( () => {
+				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
+			}, 1000 );
+		} else if ( 'countdownreset' in data ) {
+			$( '#infoX' ).trigger( 'click' );
+			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
+		} else if ( 'sequence' in data ) {
+			V.relayssequense = true;
+			if ( $( '#banner' ).hasClass( 'hide' ) ) {
+				$( '#infoX' ).trigger( 'click' );
+				BANNER( 'relays blink', '', data.sequence, -1 );
+			} else {
+				$( '#bannerMessage' ).html( data.sequence );
+			}
+		} else if ( 'sequencedone' in data ) {
+			S.relayson = data.sequencedone;
+			delete V.relayssequense;
+			COMMON.relaysToggle();
+		}
+	}
+	, reload    : () => {
+		if ( V.localhost ) location.reload();
+	}
+	, restore   : data => {
+		if ( data.restore === 'done' ) {
+			BANNER( 'restore', 'Restore Settings', 'Done' );
+			setTimeout( () => location.href = '/', 2000 );
+		} else {
+			COMMON.loader();
+			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
+		}
+	}
+	, nfsserver : data => {
+		if ( data.online ) {
+			COMMON.loaderHide();
+			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
+		} else {
+			COMMON.loader();
+		}
+		BANNER( 'nfsserver'+ ( data.online ? '' : ' blink' )
+			  , 'Server rAudio'
+			  , data.online ? 'Online' : 'Offline'
+			  , data.online ? 9000 : -1
+		);
+	}
+	, volume    : data => {
+		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
+
+		if ( ! PAGE && 'volumenone' in data ) {
+			D.volumenone = data.volumenone;
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
+			return
+		}
+
+		if ( data.type === 'mute' ) {
+			S.volume     = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volume     = data.val;
+			S.volumemute = 0;
+		}
+		if ( 'set' in VOLUME ) VOLUME.set();
+	}
+}
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
 function BANNER( icon, title, message, delay ) {
@@ -311,153 +458,6 @@ var SWIPE     = () => {
 		}
 		$( '#'+ pages[ i ] ).trigger( 'click' );
 	} );
-}
-//-----------------------------------------------------------------------------------------------------------------
-W             = {  // from websocket.py (server)
-	  bluetooth : data => {
-		if ( PAGE === 'networks' ) {
-			S.listbt = data;
-			renderBluetooth();
-		} else if ( ! data ) {
-			if ( PAGE === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
-		} else if ( 'connected' in data ) {
-			if ( PAGE === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( PAGE === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		}
-		BANNER_HIDE();
-	}
-	, color     : data => {
-		V.color = data;
-		COLOR.cssSet( data.hsl );
-		if ( V.ctx ) {
-			V.ctx.hsl  = data.hsl;
-			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
-		}
-		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
-		$( '#loader rect' ).css( 'fill', data.cm );
-		$( '#loader path' ).css( 'fill', data.cg );
-		delete V.color;
-	}
-	, notify    : data => {
-		if ( V.relayssequense ) return
-
-		if ( data === false ) {
-			BANNER_HIDE();
-			return
-		}
-
-		var icon    = data.icon;
-		var title   = data.title;
-		var message = data.message;
-		var delay   = data.delay;
-		if ( ! PAGE ) {
-			if ( message === 'Change track ...' ) { // audiocd
-				UTIL.intervalClear();
-			} else if ( title === 'Latest' ) {
-				C.latest = 0;
-				$( '.mode.latest gr' ).empty();
-				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-			}
-		}
-		BANNER( icon, title, message, delay );
-		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
-	}
-	, power     : data => {
-		var action  = data.type;
-		V[ action ] = true;
-		WS          = null;
-		COMMON.loader();
-		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
-		if ( action === 'off' ) {
-			$( '#loader' ).css( 'opacity', 1 );
-			$( 'body' ).children().not( '#banner, #loader' ).remove();
-			setTimeout( () => {
-				$( '#banner' ).addClass( 'hide' );
-				$( '#loader svg' ).css( 'animation', 'unset' );
-			}, 12000 );
-		} else { // reconnect after reboot
-			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
-		}
-	}
-	, relays    : data => {
-		if ( 'countdown' in data ) {
-			INFO( {
-				  icon        : 'relays'
-				, title       : 'Equipments Off'
-				, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
-				, buttonlabel : ICON( 'relays' ) +'Off'
-				, buttoncolor : V.red
-				, button      : () => BASH( [ 'relays.sh', 'off' ] )
-				, oklabel     : ICON( 'set0' ) +'Reset'
-				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
-			} );
-			var delay        = 59;
-			V.intervalrelays = setInterval( () => {
-				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
-			}, 1000 );
-		} else if ( 'countdownreset' in data ) {
-			$( '#infoX' ).trigger( 'click' );
-			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
-		} else if ( 'sequence' in data ) {
-			V.relayssequense = true;
-			if ( $( '#banner' ).hasClass( 'hide' ) ) {
-				$( '#infoX' ).trigger( 'click' );
-				BANNER( 'relays blink', '', data.sequence, -1 );
-			} else {
-				$( '#bannerMessage' ).html( data.sequence );
-			}
-		} else if ( 'sequencedone' in data ) {
-			S.relayson = data.sequencedone;
-			delete V.relayssequense;
-			COMMON.relaysToggle();
-		}
-	}
-	, reload    : () => {
-		if ( V.localhost ) location.reload();
-	}
-	, restore   : data => {
-		if ( data.restore === 'done' ) {
-			BANNER( 'restore', 'Restore Settings', 'Done' );
-			setTimeout( () => location.href = '/', 2000 );
-		} else {
-			COMMON.loader();
-			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
-		}
-	}
-	, nfsserver : data => {
-		if ( data.online ) {
-			COMMON.loaderHide();
-			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
-		} else {
-			COMMON.loader();
-		}
-		BANNER( 'nfsserver'+ ( data.online ? '' : ' blink' )
-			  , 'Server rAudio'
-			  , data.online ? 'Online' : 'Offline'
-			  , data.online ? 9000 : -1
-		);
-	}
-	, volume    : data => {
-		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
-
-		if ( ! PAGE && 'volumenone' in data ) {
-			D.volumenone = data.volumenone;
-			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
-			return
-		}
-
-		if ( data.type === 'mute' ) {
-			S.volume     = 0;
-			S.volumemute = data.val;
-		} else {
-			S.volume     = data.val;
-			S.volumemute = 0;
-		}
-		if ( 'set' in VOLUME ) VOLUME.set();
-	}
 }
 // info ----------------------------------------------------------------------
 // usage: long-press head icon
