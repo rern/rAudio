@@ -21,7 +21,7 @@ if [[ $1 ]]; then
 	touch $dirshm/usbdac_rules
 	if [[ $usbdac == add ]]; then
 		touch $dirshm/usbdac
-		alsactl restore # store - saved by cmd.sh - volumeGet push
+		alsactl restore # store - saved by cmd.sh - volume.value push
 	else
 		rm -f $dirshm/usbdac
 	fi

@@ -46,7 +46,7 @@ brightness )
 	;;
 camilladsp )
 	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
-	[[ ! $VOLUME ]] && VOLUME=$( volumeGet | tee $dirshm/volume )
+	[[ ! $VOLUME ]] && VOLUME=$( volume.value | tee $dirshm/volume )
 	if [[ $ON ]]; then
 		touch $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
@@ -335,7 +335,7 @@ stoptimer )
 	;;
 volumelimit )
 	enableFlagSet
-	(( $( volumeGet ) > $MAX )) && volumeLimit max
+	(( $( volume.value ) > $MAX )) && volumeLimit max
 	pushRefresh
 	;;
 

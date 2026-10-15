@@ -431,7 +431,7 @@ volume )
 	volume
 	;;
 volumepush )
-	volumeGet push
+	volume.value push
 	;;
 webradiodelete )
 	rm -rf "$DIR"

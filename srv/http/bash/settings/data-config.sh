@@ -384,7 +384,7 @@ wlanprofile )
 }';;
 			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }';;
 			volumelimit )
-				volume=$( volumeGet )
+				volume=$( volume.value )
 				[[ $volume == 0 || ! $volume ]] && volume=50
 				echo '{ "STARTUP": '$volume', "MAX": 100 }';;
 			* )             echo false;;

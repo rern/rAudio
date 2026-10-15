@@ -85,5 +85,5 @@ evtest ${dev[rotary]} | while read line; do
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
 	[[ $line == *-1 ]] && FN $dn || FN $up
-	volumeGet push
+	volume.value push
 done

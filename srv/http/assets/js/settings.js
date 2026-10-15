@@ -148,7 +148,11 @@ var MIXER = { // player.js, camilla.js
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
-	, refresh  : () => BASH( [ 'mixer.get' ], values => MIXER.set( values ), 'json' )
+	, refresh  : () => {
+		setTimeout( () => {
+			BASH( [ 'mixer.get' ], values => MIXER.set( values ), 'json' );
+		}, 300 );
+	}
 	, set      : values => {
 		S.volume = values.val;
 		VOLUME.push( 'refresh' );

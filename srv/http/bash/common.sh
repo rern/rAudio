@@ -554,7 +554,7 @@ statePlay() {
 }
 volume() {
 	local diff type val values
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
+	[[ ! $CURRENT ]] && CURRENT=$( volume.value )
 	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
 	if [[ ! $DRAG_PRESS ]]; then
 		if [[ $TYPE == mute && $TARGET == 0 ]]; then
@@ -571,7 +571,7 @@ volume() {
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$FN_VOLUME $TARGET "$CONTROL"
-		[[ ! $DRAG_PRESS ]] && volumeGet push
+		[[ ! $DRAG_PRESS ]] && volume.value push
 	else
 		pushVolume $TARGET
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
@@ -581,7 +581,7 @@ volume() {
 			$FN_VOLUME $val "$CONTROL"
 			sleep 0.2
 		done
-		[[ $TYPE != mute && $FN_VOLUME == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
+		[[ $TYPE != mute && $FN_VOLUME == volumeAmixer ]] && volume.value push # some dac cannot set exactly on some 1% increments
 	fi
 	[[ $FN_VOLUME == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
@@ -619,23 +619,8 @@ volumeFunction() {
 		echo volumeMpd
 	fi
 }
-volumeGet() {
-	local card line mixer val
-	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
-	val=$( ${FN_VOLUME/volume/&.} )
-	if [[ ! $val ]]; then
-		for i in {0..3}; do # some usb might not be ready
-			val=$( ${FN_VOLUME/volume/&.} )
-			[[ $val ]] && break || sleep 1
-		done
-		[[ ! $val ]] && val=-1
-	fi
-	if [[ $1 == push ]]; then
-		pushVolume $val
-	else
-		echo $val
-	fi
-	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+volumeMpd() {
+	mpc -q volume $1
 }
 volume.BlueAlsa() {
 	local line val
@@ -665,6 +650,21 @@ volume.Camilla() {
 volume.Mpd() {
 	mpc status %volume% | tr -d %
 }
-volumeMpd() {
-	mpc -q volume $1
+volume.value() {
+	local card line mixer val
+	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
+	val=$( ${FN_VOLUME/volume/&.} )
+	if [[ ! $val ]]; then
+		for i in {0..3}; do # some usb might not be ready
+			val=$( ${FN_VOLUME/volume/&.} )
+			[[ $val ]] && break || sleep 1
+		done
+		[[ ! $val ]] && val=-1
+	fi
+	if [[ $1 == push ]]; then
+		pushVolume $val
+	else
+		echo $val
+	fi
+	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }

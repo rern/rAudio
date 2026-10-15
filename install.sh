@@ -5,6 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261013
+! grep -q volume.value $dirsettings/rotaryencoder.sh && restart+=rotaryencoder$'\n'
+! grep -q volume.value $dirbash/mpdidle.sh && restart+=mpd$'\n'
+
+
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
 file=/etc/systemd/system/bluealsa.service.d/override.conf
