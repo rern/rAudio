@@ -364,7 +364,7 @@ $( '.i-search' ).on( 'click', function() {
 	SCAN[ type ]();
 } );
 $( '#divbluetooth .i-eye' ).on( 'click', function() {
-	SW = { id: 'bluetooth', title: 'Bluetooth' }
+//	SW = { id: 'bluetooth', title: 'Bluetooth' }
 	BASH( 'data-config.sh bluetooth', values => BLUETOOTH( values ), 'json' );
 } );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
