@@ -110,7 +110,6 @@ mixer.* ) # hw volume
 	$CMD
 	;;
 mute )
-	file_volumemute=$dirsystem/volumemute
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute
 	;;
 saveconfig )

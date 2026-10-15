@@ -11,6 +11,7 @@ for d in NAS SD USB; do
 done
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
+file_volumemute=$dirsystem/volumemute
 while read dir; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done < <( ls $dirdata )
@@ -548,11 +549,10 @@ statePlay() {
 	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
 }
 volume() {
-	local diff file_volumemute type val values
+	local diff type val values
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
 	if [[ ! $DRAG_PRESS ]]; then
-		file_volumemute=$dirsystem/volumemute
 		if [[ $TYPE == mute && $TARGET == 0 ]]; then
 			val=$CURRENT
 			type=mute

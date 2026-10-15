@@ -12,7 +12,6 @@ else
 	bluetooth=false
 	mixer=$( getVar mixer $dirshm/output )
 fi
-file_volumemute=$dirsystem/volumemute
 if [[ -e $file_volumemute ]]; then
 	volume=0
 	volumemute=$( < $file_volumemute )
