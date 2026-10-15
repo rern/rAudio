@@ -58,6 +58,7 @@ i {
 .i-star::before            { content: '\F550' }
 .i-bluealsa::before,
 .i-bluetooth::before,
+.i-volume.bluetooth::before,
 .i-btreceiver::before,
 .i-btsink::before          { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }

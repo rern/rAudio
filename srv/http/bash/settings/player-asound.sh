@@ -10,12 +10,6 @@ fi
 
 if [[ -e $dirshm/btmixer ]]; then
 	BLUETOOTH=1
-	systemctl -q is-active localbrowser && action=stop || action=start
-	systemctl $action bluetoothbutton
-else
-	systemctl stop bluetoothbutton
-fi
-if [[ $BLUETOOTH ]]; then
 ########
 	ASOUNDCONF+='
 pcm.bluealsa {

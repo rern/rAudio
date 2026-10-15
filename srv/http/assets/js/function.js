@@ -2532,11 +2532,11 @@ var VOLUME    = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 		$( '#vol .point' ).toggleClass( 'bgr60', mute );
-		$( '#volmute' ).removeClass( 'btsender camilla mute' );
+		$( '#volmute' ).removeClass( 'bluetooth camilla mute' );
 		if ( S.fnvolume === 'volumeCamilla' ) {
 			$( '#volmute' ).addClass( 'camilla' );
-		} else if ( S.btsource ) {
-			$( '#volmute' ).addClass( 'btsource' );
+		} else if ( S.btsender ) {
+			$( '#volmute' ).addClass( 'bluetooth' );
 		} else if ( mute ) {
 			$( '#volmute' ).addClass( 'mute' );
 		}

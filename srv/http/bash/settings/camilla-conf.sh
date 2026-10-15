@@ -73,5 +73,4 @@ dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-[[ $SINK ]] && systemctl stop bluealsa-volume
 exit 0

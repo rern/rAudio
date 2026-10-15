@@ -158,9 +158,10 @@ if [[ $ACTION == connect ]]; then
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi
-systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume
+systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume bluetoothbutton
 if [[ -e $dirshm/btmixer ]]; then
 	systemctl start bluealsa-volume
+	! systemctl -q is-active localbrowser && systemctl start bluetoothbutton
 elif [[ -e $dirshm/btsource ]]; then
 	systemctl start bluealsa-aplay bluealsa-dbus
 fi
