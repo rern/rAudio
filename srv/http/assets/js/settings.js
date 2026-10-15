@@ -239,6 +239,8 @@ var MIXER = { // player.js, camilla.js
 }
 var SWITCH  = {
 	  cancel : () => {
+		if ( typeof SW === 'undefined' ) return
+		
 		$( '#'+ SW.id )
 			.prop( 'checked', S[ SW.id ] )
 			.toggleClass( 'disabled', SW.disabled );
