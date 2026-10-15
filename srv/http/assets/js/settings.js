@@ -144,36 +144,28 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  command  : val => {
-		if ( val === '0dB' ) {
-			var cmd = [ 'mixer.0dB' ];
-		} else {
-			var cmd = [ 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ];
-		}
-		BASH( cmd, values => {
+		BASH( [ 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
-	, refresh  : () => {
-		BASH( [ 'mixer.get' ], values => {
-			MIXER.set( values );
-			VOLUME.push( 'refresh' );
-		}, 'json' );
-	}
+	, refresh  : () => BASH( [ 'mixer.get' ], values => MIXER.set( values ), 'json' )
 	, set      : values => {
-		var val = values.val;
-		var db  = values.db;
+		S.volume = values.val;
+		VOLUME.push( 'refresh' );
+		var db   = values.db;
 		$( '#infoList' ).removeClass( 'hide' );
 		$( '.confirm' ).addClass( 'hide' );
-		$( '.inforange .value' ).text( val );
-		$( '.inforange input' ).val( val );
+		$( '.inforange .value' ).text( S.volume );
+		$( '.inforange input' ).val( S.volume );
 		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
 	, volume   : values => {
+		V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
 		INFO( {
 			  icon       : 'volume'
 			, title      : 'Device Mixer Volume'
-			, list       : [ S.output.MIXER, 'range' ]
+			, list       : [ V.control, 'range' ]
 			, footer     : '<br>'+ MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
@@ -219,12 +211,12 @@ var MIXER = { // player.js, camilla.js
 			, oklabel    : ICON( 'set0' ) +'0dB'
 			, oknoreset  : true
 			, ok         : () => {
-				if ( values.db > -2 ) {
+				if ( parseFloat( $( '.inforange .sub' ).text() ) > -2 ) {
 					MIXER.command( '0dB' );
 				} else {
 					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) MIXER.command( '0dB' );
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				}
+				$( '.inforange, .infofooter' ).toggleClass( 'hide' );
 				$( '.inforange .sub' ).text( '0 dB' );
 			}
 		} );

@@ -233,11 +233,6 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
-mixer.0dB() {
-	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-	mixer.push
-}
 mixer.get() {
 	. $dirshm/output
 	val_db=$( amixer -c $card -M sget "$mixer" )
@@ -246,11 +241,7 @@ mixer.get() {
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
-	mixer.push
-}
-mixer.push() {
-	mixer.get # return dB
-	[[ $( volumeFunction ) == volumeMpd ]] && pushVolume $( volume.Mpd )
+	[[ $TARGET == 0dB ]] && mixer.get
 }
 pushDirCounts() {
 	local tf
