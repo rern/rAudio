@@ -237,17 +237,20 @@ mixer.0dB() {
 	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
 	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
 	mixer.get
-	pushVolume
+	mixer.push
 }
 mixer.get() {
 	. $dirshm/output
 	val_db=$( amixer -c $card -M sget "$mixer" )
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
-	[[ $PUSH ]] && pushVolume
+	[[ $PUSH ]] && mixer.push
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
+}
+mixer.push() {
+	[[ $( volumeFunction ) == volumeMpd ]] && pushVolume $( volume.Mpd )
 }
 pushDirCounts() {
 	local tf

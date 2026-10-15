@@ -476,10 +476,8 @@ pushStatus() {
 	$dirbash/status-push.sh
 }
 pushVolume() {
-	local val
-	[[ $1 ]] && val=$1 || val=$( volumeGet )
-	$dirbash/status -P '{ "channel": "volume", "data": { "val": '$val' } }'
-	[[ $val -gt 0 && -e $file_volumemute ]] && rm -f $file_volumemute
+	$dirbash/status -P '{ "channel": "volume", "data": { "val": '$1' } }'
+	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
 }
 pushWebsocket() {
 	local data
@@ -624,24 +622,14 @@ volumeFunction() {
 volumeGet() {
 	local card line mixer val
 	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
-	case $FN_VOLUME in
-		volumeCamilla )  val=$( volumeGetCamilla );;
-		volumeMpd )      val=$( mpc status %volume% | tr -d % );;
-		volumeBlueAlsa )
-			line=$( amixer -MD bluealsa | grep -m1 % ) # ...: Playback 0 [86%] [0.00dB] [on]
-			val=${line#*[}
-			val=${val%%\%*}
-			;;
-		* )
-			mixer=$( getVar mixer $dirshm/output )
-			for i in {1..5}; do # some usb might not be ready
-				line=$( amixer -M sget "$mixer" | grep -m1 % )
-				[[ $line ]] && break || sleep 1
-			done
-			val=${line#*[}
-			val=${val%%\%*}
-			;;
-	esac
+	val=$( ${FN_VOLUME/volume/&.} )
+	if [[ ! $val ]]; then
+		for i in {0..3}; do # some usb might not be ready
+			val=$( ${FN_VOLUME/volume/&.} )
+			[[ $val ]] && break || sleep 1
+		done
+		[[ ! $val ]] && val=-1
+	fi
 	if [[ $1 == push ]]; then
 		pushVolume $val
 	else
@@ -649,7 +637,13 @@ volumeGet() {
 	fi
 	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }
-volumeGetCamilla() {
+volume.BlueAlsa() {
+	local line val
+	line=$( amixer -MD bluealsa | grep -m1 % ) # ...: Playback 0 [86%] [0.00dB] [on]
+	val=${line#*[}
+	echo ${val%%\%*}
+}
+volume.Camilla() {
 	db=$( $dirbash/status -c GetVolume | jq .GetVolume.value )
 	awk -v db=$db -v min=-60 -v max=0 '
 		BEGIN {
@@ -667,6 +661,9 @@ volumeGetCamilla() {
 			p = norm * 100
 			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
 		}' # db > %
+}
+volume.Mpd() {
+	mpc status %volume% | tr -d %
 }
 volumeMpd() {
 	mpc -q volume $1

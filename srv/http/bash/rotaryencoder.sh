@@ -26,7 +26,7 @@ case $FN_VOLUME in
 		dn=-$step # 1 or 2
 		up=+$step
 		FN() {
-			mpc -q volume $1
+			volumeMpd $1
 		}
 		;;
 	volumeBlueAlsa )
@@ -34,14 +34,14 @@ case $FN_VOLUME in
 		up=$step%+
 		mixer=$( < $dirshm/btmixer )
 		FN() {
-			amixer -MqD bluealsa sset "$mixer" $1
+			amixer -MqD bluealsa sset "$mixer" $1 # volumeBlueAlsa not handle +/-
 		}
 		;;
 	volumeCamilla )
 		dn=-$step
 		up=+$step
 		FN() {
-			val=$( volumeGetCamilla )
+			val=$( volume.Camilla )
 			volumeCamilla $(( val + $1 ))
 		}
 		;;

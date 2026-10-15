@@ -16,7 +16,7 @@ if [[ -e $file_volumemute ]]; then
 	volume=0
 	volumemute=$( < $file_volumemute )
 else
-	volume=$( volumeGetCamilla )
+	volume=$( volume.Camilla )
 	volumemute=0
 fi
 file_config=$( getVar CONFIG /etc/default/camilladsp )
