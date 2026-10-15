@@ -496,12 +496,6 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#volmute' ).removeClass( 'btsender camilla' );
-		if ( S.fnvolume = 'volumeCamilla' ) {
-			$( '#volmute' ).addClass( 'camilla' );
-		} else if ( S.btsource ) {
-			$( '#volmute' ).addClass( 'btsource' );
-		}
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
@@ -2538,7 +2532,15 @@ var VOLUME    = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 		$( '#vol .point' ).toggleClass( 'bgr60', mute );
-		$( '#volmute' ).toggleClass( 'mute active', mute );
+		$( '#volmute' ).removeClass( 'btsender camilla mute' );
+		if ( S.fnvolume = 'volumeCamilla' ) {
+			$( '#volmute' ).addClass( 'camilla' );
+		} else if ( S.btsource ) {
+			$( '#volmute' ).addClass( 'btsource' );
+		} else if ( mute ) {
+			$( '#volmute' ).addClass( 'mute' );
+		}
+		$( '#volmute' ).toggleClass( 'active', mute );
 		$( '#ti-mute, #mi-mute' ).addClass( 'hide' );
 		if ( mute && ! VOLUME.visible() ) {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
