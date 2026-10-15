@@ -75,7 +75,7 @@ bt.pcm() {
 			bt.action disconnect
 			bt.connect
 		else
-			notify.failed 'Mixer not available.' && exit
+			notify.failed 'BlueALSA mixer not found.' && exit
 # ------------------------------------------------------------------------------
 		fi
 	fi

@@ -8,6 +8,8 @@
 
 if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
+	[[ ! $dbuspath ]] && echo 'BlueALSA mixer not found.' && exit 1
+#-------------------------------------------------------------------------------
 	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 	file_config=$dircamilladsp/$mac
 	samplerate=$( bluealsa-aplay -L | awk '/Hz$/ {print $(NF-1)}' )
@@ -26,6 +28,7 @@ else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
 fi
+notify 'camilla blink' Config "${FILE_CONFIG/$dircamilladsp/..}"
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
@@ -61,6 +64,7 @@ $validate
 	rm -f $dirshm/volume $dirsystem/camilladsp
 	mv "$FILE_CONFIG"{,.failed}
 	exit 1
+#-------------------------------------------------------------------------------
 fi
 
 file_current=$( getVar CONFIG /etc/default/camilladsp )

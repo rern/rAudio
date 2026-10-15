@@ -28,7 +28,7 @@ pcm.bluealsa {
 }
 '
 fi
-if [[ -e $dirsystem/camilladsp && $dirsettings/camilla-conf.sh ]]; then
+if [[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-conf.sh; then
 	CAMILLADSP=1
 	file_config=$( getVar CONFIG /etc/default/camilladsp )
 	if grep -q device: hw:Loopback "$file_config"; then

@@ -50,8 +50,6 @@ camilladsp )
 	if [[ $ON ]]; then
 		touch $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
-		file=$dirshm/missing_config
-		[[ -e $file ]] && cat $file && rm $file
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
