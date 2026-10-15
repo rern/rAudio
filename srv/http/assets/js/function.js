@@ -2533,7 +2533,7 @@ var VOLUME    = {
 			.toggleClass( 'bll', S.volumemute > 0 );
 		$( '#vol .point' ).toggleClass( 'bgr60', mute );
 		$( '#volmute' ).removeClass( 'btsender camilla mute' );
-		if ( S.fnvolume = 'volumeCamilla' ) {
+		if ( S.fnvolume === 'volumeCamilla' ) {
 			$( '#volmute' ).addClass( 'camilla' );
 		} else if ( S.btsource ) {
 			$( '#volmute' ).addClass( 'btsource' );
