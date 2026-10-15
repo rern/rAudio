@@ -66,8 +66,10 @@ i {
 .i-volume.btsender::before { content: '\F51B' }
 .i-bypass::before          { content: '\F56F' }
 .i-camilla::before,
+.i-volume.camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
+.i-volume.camilla::after,
 .i-camilladsp::after       { content: '\F59C'; }
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }

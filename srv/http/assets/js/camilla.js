@@ -1414,7 +1414,7 @@ var RENDER    = {
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
 		playbackIcon();
-		$( 'heading i' ).eq( 0 ).prop( 'class', S.btsource ? 'i-btsource' : 'i-mpd' );
+		$( 'heading i' ).eq( 0 ).prop( 'class', 'i-'+ S.player );
 		$( '#divvolume' ).removeClass( 'hide' );
 		$( '#divvolume .i-volume' ).toggleClass( 'hide', ! S.btsource && S.mixer === '' );
 		VOLUME.set( S.volume );

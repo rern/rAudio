@@ -298,7 +298,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function playbackIcon() {
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
-			.toggleClass( 'disabled', S.pllength === 0 || ( ! S.play && S.player !== 'mpd' ) );
+			.toggleClass( 'disabled', S.pllength === 0 || ( ! S.play && ( S.btsource || S.player !== 'mpd' ) ) );
 	}
 	W = {
 		  ...W // from common.js

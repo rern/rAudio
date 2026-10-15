@@ -496,7 +496,12 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
+		$( '#volmute' ).removeClass( 'btsender camilla' );
+		if ( S.fnvolume = 'volumeCamilla' ) {
+			$( '#volmute' ).addClass( 'camilla' );
+		} else if ( S.btsource ) {
+			$( '#volmute' ).addClass( 'btsource' );
+		}
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
