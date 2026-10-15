@@ -1643,7 +1643,8 @@ var PLAYBACK  = {
 			UTIL.intervalClear( 'elapsed' );
 			PROGRESS.set( 0 );
 		}
-		VOLUME.set( 'refresh' );
+		V.refresh = true;
+		VOLUME.set();
 		PLAYBACK.button.controls();
 		PLAYBACK.button.options();
 		$( '#qr' ).remove();
@@ -2515,7 +2516,7 @@ var VOLUME    = {
 		VOLUME.command();
 		VOLUME.set();
 	}
-	, set     : refresh => {
+	, set     : () => {
 		if ( S.volumemute === false ) return // suppress value false on track changed (sometimes)
 		
 		var $bar     = $( '#volume-bar' );
@@ -2546,7 +2547,7 @@ var VOLUME    = {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( refresh || V.drag ) {
+		if ( V.refresh || V.drag ) {
 			var ms    = 0;
 		} else if ( V.updn ) {
 			var ms    = 100;
@@ -2566,6 +2567,7 @@ var VOLUME    = {
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$bar.css( 'width', S.volume +'%' );
 		$( '#volume-bar-point' ).css( 'left', S.volume +'%' );
+		delete V.refresh;
 	}
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return

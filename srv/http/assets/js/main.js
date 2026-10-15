@@ -352,6 +352,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		PROGRESS[ V.time.type ]( e );
 	}
 } ).on( 'touchend mouseup', function( e ) {
+	var drag = V.drag;
 	delete V.drag;
 	if ( V.time ) {
 		PROGRESS.seek();
@@ -362,7 +363,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		} else {
 			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow( 'hide' ) : VOLUME.bar( e );
 		}
-		VOLUME.push();
+		VOLUME.push( drag ? 'refresh' : '' );
 		delete V.volume;
 	}
 } );
@@ -380,6 +381,8 @@ $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'touchstart mousedown', function() {
 	V.updn = true;
+} ).on( 'touchend mouseup', function() {
+	setTimeout( () => delete V.updn, 300 );
 } ).on( 'click', function() {
 	setTimeout( () => delete V.updn, 300 );
 	if ( V.animate ) return

@@ -2459,7 +2459,7 @@ var VOLUME    = {
 			.toggleClass( 'hide', ! mute );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', target === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', target === 100 );
-		if ( V.drag || vol_prev === '' ) { // onload - empty
+		if ( V.refresh || V.drag || vol_prev === '' ) { // onload - empty
 			var ms   = 0;
 		} else {
 			var ms    = Math.abs( target - vol_prev ) * 40;
@@ -2471,6 +2471,7 @@ var VOLUME    = {
 			, left                  : target +'%'
 		} );
 		if ( ! mute ) VOLUME.mute( 0 );
+		delete V.refresh;
 	}
 	, volume    : val => WSSEND( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
 	, xy        : e => {
@@ -2510,6 +2511,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		VOLUME.mute( 0 );
 	}
 	VOLUME.xy( e );
+	VOLUME.push( V.drag ? 'refresh' : '' );
 	delete V.drag;
 	delete V.volume;
 } );
@@ -2554,7 +2556,6 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		V.interval.volume = setInterval( () => {
 			var target = up ? S.volume + 1 : S.volume - 1;
 			VOLUME.cmd( target );
-			VOLUME.set( target );
 			if ( target === 0 || target === 100 ) clearInterval( V.interval.volume );
 		}, 100 );
 	}
@@ -2562,7 +2563,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		if ( ! VOLUME.ready() ) return
 		
 		clearInterval( V.interval.volume );
-		VOLUME.push();
+		VOLUME.push( 'refresh' );
 	}
 } );
 $( '#divvolume' ).on( 'keydown', function( e ) {

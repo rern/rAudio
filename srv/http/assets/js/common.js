@@ -137,7 +137,7 @@ W             = {  // from websocket.py (server)
 		);
 	}
 	, volume    : data => {
-		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
+		if ( V.animate || V.drag || V.volume || ! ( 'set' in VOLUME ) ) return
 
 		if ( ! PAGE && 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
@@ -152,7 +152,8 @@ W             = {  // from websocket.py (server)
 			S.volume     = data.val;
 			S.volumemute = 0;
 		}
-		if ( 'set' in VOLUME ) VOLUME.set();
+		V.refresh = data.type === 'refresh';
+		VOLUME.set( S.volume ); // S.volume for camilla.js
 	}
 }
 WS   = null;
@@ -1721,12 +1722,11 @@ var VOLUME    = {
 	, pressEnd : up => {
 		clearInterval( V.interval.volume );
 		VOLUME.barHide();
-		V.local = false;
-		VOLUME.push();
+		VOLUME.push( 'refresh' );
 	}
-	, push     : () => {
+	, push     : refresh => {
 		V.local = true;
-		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
+		WS.send( '{ "channel": "volume", "data": { "type": "'+ refresh +'", "val": '+ S.volume +' } }' );
 	}
 	, toggle   : () => {
 		if ( S.volumemute ) {
