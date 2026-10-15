@@ -239,7 +239,7 @@ var MIXER = { // player.js, camilla.js
 }
 var SWITCH  = {
 	  cancel : () => {
-		if ( typeof SW === 'undefined' ) return
+		if ( PAGE === 'networks' ) return
 		
 		$( '#'+ SW.id )
 			.prop( 'checked', S[ SW.id ] )
