@@ -31,6 +31,9 @@ bluetooth )
 buffer|outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
 	;;
+btmixer | mixer )
+	mixer.get
+	;;
 crossfade )
 	echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
 	;;
@@ -109,9 +112,6 @@ localbrowser )
 , "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
 }'
 	cp $dirsystem/localbrowser.conf /tmp
-	;;
-mixer )
-	mixer.get
 	;;
 monitor )
 	if grep -q -m1 dsi-ili9881-5inch $file_config; then

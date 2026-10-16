@@ -105,6 +105,7 @@ audio_output {
 			} );
 		} );
 	}
+	, btmixer      : values => MIXER.volume( values )
 	, mixer        : values => MIXER.volume( values )
 	, mixertype    : () => {
 		if ( ! S.mixers ) {
@@ -266,7 +267,7 @@ function renderPage() {
 				.val( S.output.NAME );
 			if ( S.mixers ) {
 				$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-				$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
+				$( '#setting-mixer' ).toggleClass( 'hide', novolume );
 				$( '#divmixer' ).removeClass( 'hide' );
 				$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
 				if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
