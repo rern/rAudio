@@ -55,10 +55,12 @@ $body      = [
 		, 'status'   => true
 		, 'input'    => 'btmixer'
 		, 'help'     => <<< EOF
-$B->volume Sender volume level
 <i class="i-btsender"></i> rAudio as Bluetooth sender:
+ · Receiver buttons can be used for start/stop/skip and volume
+ 
+<i class="i-camilla"></i> &nbsp;CamillaDSP $B->volume Sender volume level
  · Should be set at <c>0dB</c>
- · Use volume control on receiver devices to set level
+ · Use rAudio to control CamillaDSP volume
 EOF
 	]
 	, [
