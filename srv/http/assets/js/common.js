@@ -137,7 +137,7 @@ W             = {  // from websocket.py (server)
 		);
 	}
 	, volume    : data => {
-		if ( V.animate || V.drag || V.volume || ! ( 'set' in VOLUME ) ) return
+		if ( V.local || V.animate || V.drag || V.volume || ! ( 'set' in VOLUME ) ) return
 
 		if ( ! PAGE && 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
@@ -1725,7 +1725,7 @@ var VOLUME    = {
 		VOLUME.push( 'refresh' );
 	}
 	, push     : refresh => {
-		V.local = true;
+		LOCAL();
 		WS.send( '{ "channel": "volume", "data": { "type": "'+ refresh +'", "val": '+ S.volume +' } }' );
 	}
 	, toggle   : () => {
