@@ -28,7 +28,7 @@ else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
 fi
-notify 'camilla blink' Config "${FILE_CONFIG/$dircamilladsp/..}"
+notify 'camilla blink' Config "${FILE_CONFIG/*configs\/}"
 [[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
