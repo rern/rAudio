@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'copy', 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
+	  'buttons' => [ 'copy', 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'snapcast', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  'Equalizer'     => 'equalizer'
 		, 'DSP'           => 'camilladsp'
@@ -20,7 +20,7 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B->snapcast.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with Snapcast streaming renderer'."\n";
 $mapdrive     = <<< EOF
 · Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
 		<btn>Map network drive...</btn>
