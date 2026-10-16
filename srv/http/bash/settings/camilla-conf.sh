@@ -16,22 +16,20 @@ if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
 else
 	file_config="$dircamilladsp/$name"
 fi
+
 if [[ -e $file_config ]]; then # existing
-	EXISTING=1
 	FILE_CONFIG=$( < "$file_config" )
 else
-	if [[ $mac ]]; then
-		dir="$dircamilladsp/configs/$mac"
-		FILE_CONFIG="$dir/camilladsp.yml"
-	else
-		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
-	fi
+	FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
+	[[ $mac ]] && FILE_CONFIG=${FILE_CONFIG/configs/&\/$mac}
 fi
-[[ $icon ]] && icon='<i class="i-'$icon'"></i> '
+
+[[ $icon ]] && icon='<i class="i-'$icon'"></i>'
 notify 'camilla blink' "$icon Config" "${FILE_CONFIG/*configs\/}"
 
-if [[ ! -e $FILE_CONFIG ]]; then
-	EXISTING=
+if [[ -e $FILE_CONFIG ]]; then
+	EXISTING=1
+else
 	mkdir -p $( dirname "$FILE_CONFIG" )
 	cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
 fi
