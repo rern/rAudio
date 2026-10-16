@@ -45,7 +45,6 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
 	[[ ! $VOLUME ]] && VOLUME=$( volume.value | tee $dirshm/volume )
 	if [[ $ON ]]; then
 		touch $dirsystem/camilladsp
