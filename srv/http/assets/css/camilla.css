@@ -217,11 +217,12 @@ i.bypassed {
 	margin-top: 10px;
 }
 .section hr {
+	margin: 5px 0;
 	border-bottom-color: var( --cga );
 }
 .col-r hr {
-	margin-left: 0;
-	max-width: 230px;
+	margin-left: -15px;
+	max-width: 245px;
 }
 .tablemapping {
 	border-collapse: collapse !important;
