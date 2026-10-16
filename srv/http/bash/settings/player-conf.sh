@@ -68,6 +68,7 @@ $( cat $file_log )"
 			volume=$( getContent $dirshm/volume )
 			[[ $volume ]] && volumeCamilla $volume
 		fi
+		[[ -e $dirshm/btsource ]] && echo bluetooth > $dirshm/player
 	fi
 fi
 
@@ -106,7 +107,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 		playerStop
 		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	fi
-	if [[ $CAMILLADSP ]]; then
+	if [[ $CAMILLADSP && ! -e $dirshm/btsource ]]; then
 		hw=hw:Loopback,1
 		hwspotifyd=plughw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
@@ -171,11 +172,7 @@ fi
 ### mpd restart ##########################################################################
 killProcess cmdlist
 systemctl restart mpd
-
-for pid in $( pgrep mpd ); do # set priority
-	ionice -c 0 -n 0 -p $pid &> /dev/null
-	renice -n -19 -p $pid &> /dev/null
-done
+serviceIO mpd
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate

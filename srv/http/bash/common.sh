@@ -367,12 +367,7 @@ playerStart() {
 					service=upmpdcli
 					touch $dirshm/upnp;;
 	esac
-	if [[ $service ]]; then
-		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
+	[[ $service ]] && serviceIO $service
 }
 playerStop() {
 	local player
@@ -520,6 +515,12 @@ scrobbleOnStop() {
 	[[ $1 != mpd ]] && grep -q $1=$ $dirsystem/scrobble.conf && return
 	
 	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
+}
+serviceIO() {
+	for pid in $( pgrep $1 ); do
+		ionice -c 0 -n 0 -p $pid &> /dev/null
+		renice -n -19 -p $pid &> /dev/null
+	done
 }
 skip() {
 	! playerActive mpd && return
