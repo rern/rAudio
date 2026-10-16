@@ -1,8 +1,8 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'code',  'drag',  'edit',  'filters',  'flowchart', 'folderfilter'
-				   , 'gear',  'graph', 'input', 'inverted', 'linear',    'mixers', 'output'
-				   , 'pause', 'play',  'plus',  'remove',   'set0',      'stop',   'volume' ]
+	  'buttons' => [ 'code',  'btsource', 'drag',  'edit',     'filters', 'flowchart', 'folderfilter'
+				   , 'gear',  'graph',    'input', 'inverted', 'linear',   'mixers',   'output'
+				   , 'pause', 'play',     'plus',  'remove',   'set0',     'stop',     'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
@@ -171,6 +171,8 @@ Processing load
 </div>
 <span class="helpblock hide"><c> N </c> Mute · Unmute
 '.$B->volume.' Hardware volume
+        · Should be set at <c>0dB</c>
+        · Use rAudio to control CamillaDSP volume
 '.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
 	)
@@ -181,7 +183,10 @@ Processing load
 		, 'icon'   => 'btsender'
 		, 'status' => true
 		, 'input'  => 'configuration'
-		, 'help'   => $B->gear.' Configuration files'
+		, 'help'   => <<< EOF
+$B->btsource rAudio as Bluetooth sender:
+$B->gear Configuration files
+EOF
 	]
 ];
 htmlSection( $head, $body, 'status' );

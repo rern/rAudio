@@ -4,7 +4,6 @@ commonVariables( [
 	, 'labels'  => [ 
 		  'DAB Radio'         => 'dabradio'
 		, 'Device'            => ''
-		, 'DSP'               => 'camilla'
 		, 'Equalizer'         => 'equalizer'
 		, 'Mixer'             => ''
 		, 'Shared Data'       => 'networks'
@@ -55,12 +54,12 @@ $body      = [
 		, 'status'   => true
 		, 'input'    => 'btmixer'
 		, 'help'     => <<< EOF
-<i class="i-btsender"></i> rAudio as Bluetooth sender:
+$B->bluetooth rAudio as Bluetooth sender:
  · Receiver buttons can be used for start/stop/skip and volume
  
-<i class="i-camilla"></i> &nbsp;CamillaDSP $B->volume Sender volume level
- · Should be set at <c>0dB</c>
- · Use rAudio to control CamillaDSP volume
+$B->camilla CamillaDSP $B->volume Sender volume level
+        · Should be set at <c>0dB</c>
+        · Use rAudio to control CamillaDSP volume
 EOF
 	]
 	, [
@@ -90,8 +89,8 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · DAC hardware $L->mixer : Good (if available)
- · MPD software: Basic
+	· DAC hardware $L->mixer : Good (if available)
+	· MPD software: Basic
  
 Note:
 Should be disabled for best sound quality
@@ -173,10 +172,9 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-$B->gear
-■ Gain control - Mixer device:
- · <c>replay_gain_handler "mixer"</c>
- · Available when Volume Control = MPD software
+$B->gear Gain control - Mixer device:
+	· <c>replay_gain_handler "mixer"</c>
+	· Available when Volume Control = MPD software
 EOF
 	]
 ];
