@@ -1793,25 +1793,26 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	}
 }
 // page visibility -----------------------------------------------------------------
-document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
-window.onblur     = pageInactive;
-window.onfocus    = pageActive;
-window.onpagehide = pageInactive;
-window.onpageshow = pageActive;
-function pageActive() {
+document.addEventListener( 'visibilitychange', () => document.hidden ? pageInactive() : pageActive() );
+window.addEventListener( 'pagehide', pageInactive );
+window.addEventListener( 'pageshow', e => pageActive( e.persisted ) );
+
+function pageActive( restored ) {
 	if ( V.pageactive || V.off ) return
 
 	V.pageactive = true;
-	if ( WS && WS.readyState === 1 ) {                                            // on wakeup and ws still ready
-		WS.send( '"ping"' );                                                      // - send      'ping'
-		V.timeoutreload = setTimeout( location.reload, 300 );                     // - wait 0.3s for 'pong' or reload page
-	} else {                                                                      // on page load or ws already closed
-		WEBSOCKET.connect();                                                      // - connect
+	clearTimeout( V.timeoutreload );                                  // never stack timers
+	if ( ! restored && WS && WS.readyState === WebSocket.OPEN ) {     // on wakeup and ws still open
+		WS.send( '"ping"' );                                          // - send 'ping'
+		V.timeoutreload = setTimeout( () => location.reload(), 300 ); // - no 'pong' in 0.3s: reload
+	} else {                                                          // page load, closed ws, or restored from bfcache
+		WEBSOCKET.connect();                                          // - connect
 	}
 }
 function pageInactive() {
 	if ( V.local || V.debug ) return
 
+	clearTimeout( V.timeoutreload );                                  // don't reload a hidden page
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
