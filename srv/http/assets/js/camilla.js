@@ -1417,7 +1417,7 @@ var RENDER    = {
 		$( 'heading i' ).eq( 0 ).prop( 'class', 'i-'+ S.player );
 		$( '#divvolume' ).removeClass( 'hide' );
 		$( '#divvolume .i-volume' ).toggleClass( 'hide', ! S.btsource && S.mixer === '' );
-		VOLUME.set( S.volume );
+		VOLUME.set();
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		$( '#divconfiguration .i-btsender' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#configuration' )
@@ -2448,6 +2448,7 @@ var VOLUME    = {
 	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
 	, ready     : () => WSCAMILLA && ! V.animate
 	, set       : target => {
+		if ( ! target ) target = S.volume;
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute > 0;

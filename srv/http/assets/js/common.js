@@ -153,7 +153,7 @@ W             = {  // from websocket.py (server)
 			S.volumemute = 0;
 		}
 		V.refresh = data.type === 'refresh';
-		VOLUME.set( S.volume ); // S.volume for camilla.js
+		VOLUME.set();
 	}
 }
 WS   = null;
