@@ -1,11 +1,16 @@
 #!/bin/bash
 
 # bluetooth:
-#	- as sender   - device volume = bluealsa volume (sync - no 0dB setting)
-#	- as receiver - device volume > bluealsa volume
+#	- as sender   - device volume = bluealsa volume (no 0dB)
+#		- bluealsa-volume: sync
+#	- as receiver - device volume > bluealsa volume | alsa 0dB
+#		- bluealsa-aplay: stream
+#		- bluealsa-dbus : state/changes
 # bluetooth + camilladsp:
-#	- as sender   - device volume < camilla volume < bluealsa volume
-#	- as receiver - device volume > bluealsa dbus  > camilla volume
+#	- as sender   - device volume < camilla volume  | bluealsa 0dB
+#	- as receiver - device volume > camilla volume  | alsa 0dB
+#		- bluez         : dbus stream
+#		- bluealsa-dbus : state/changes
 
 ### included by <<< player-conf.sh
 if [[ ! $dirbash ]]; then # if run directly

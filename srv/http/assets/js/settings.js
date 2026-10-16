@@ -171,8 +171,8 @@ var MIXER = { // player.js, camilla.js
 			V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
 		}
 		INFO( {
-			  icon       : 'volume'
-			, title      : 'Device Mixer Volume'
+			  icon       : S.btmixer ? 'bluetooth' : 'volume'
+			, title      : ( S.btmixer ? 'Bluetooth' : 'Device' ) +' Mixer Volume'
 			, list       : [ V.control.replace( ' A2DP', '' ), 'range' ]
 			, footer     : '<br>'+ MIXER.warning
 			, beforeshow : () => {
