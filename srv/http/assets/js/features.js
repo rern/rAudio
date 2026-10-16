@@ -346,14 +346,6 @@ var CONFIG       = {
 			BASH( [ SW.id ] );
 		}
 	}
-	, snapserver   : () => {
-		if ( S.snapserver ) {
-			window.open( 'http://'+ S.ip +':1780', '_blank' );
-		} else {
-			NOTIFY_COMMON( true );
-			BASH( [ SW.id ] );
-		}
-	}
 	, spotifyd     : spotifykey => {
 		if ( ! S.spotifyd && spotifykey ) {
 			BASH( [ 'spotifyd' ] );
