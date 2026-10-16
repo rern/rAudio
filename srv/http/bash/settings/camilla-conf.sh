@@ -75,7 +75,8 @@ dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-
+playerStop
+timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 > $dirshm/heparams
 bluealsaServices
 
 exit 0
