@@ -1656,7 +1656,6 @@ var PLAYBACK  = {
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		V.timehms      = S.Time ? COMMON.second2HMS( S.Time ) : '';
-		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		if ( S.stop ) {
@@ -1664,20 +1663,22 @@ var PLAYBACK  = {
 			return
 		}
 
-		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
-		if ( S.elapsed ) {
-			htmlelapsed += ' / ';
-		} else {
-			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
+		var htmlelapsed = ICON( S.state );
+		if ( ! S.webradio || D.radioelapsed ) {
+			if ( S.elapsed ) {
+				var elapsedhms = COMMON.second2HMS( S.elapsed );
+				htmlelapsed   += '<span>'+ elapsedhms +'</span>';
+				if ( S.Time ) htmlelapsed += ' / ';
+			}
+			htmlelapsed +=  V.timehms;
 		}
-		htmlelapsed +=  V.timehms;
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
 		if ( ( S.webradio && ! D.radioelapsed ) || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
-			$( '#elapsed, #total, #progress' ).empty();
+			$( '#elapsed, #total' ).empty();
 			if ( S.play ) {
 				$( '#elapsed' ).html( S.play ? V.blinkdot : '' );
 				if ( D.radioelapsed ) {
