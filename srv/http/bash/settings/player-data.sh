@@ -10,6 +10,7 @@ data+=$( settingsEnabled \
 			
 mixers=$( getContent $dirshm/mixers )
 [[ ! $mixers && -e $dirsystem/camilladsp ]] && mixers='[ "CamillaDSP" ]'
+[[ -e $dirshm/btsource && -e $dirsystem/camilladsp ]] && player=bluetooth || player=$( < $dirshm/player )
 volumemax=$( volumeMaxGet )
 ##########
 data+='
@@ -29,7 +30,7 @@ data+='
 , "mixertype"   : '$( ! grep -q mixertype=none $dirshm/output && echo true )'
 , "output"      : '$( conf2json $dirshm/output )'
 , "play"        : '$( jq .play $dirshm/status.json )'
-, "player"      : "'$( < $dirshm/player )'"
+, "player"      : "'$player'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+bluealsaServices() {
+	systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume
+	if [[ -e $dirshm/btmixer ]]; then
+		systemctl start bluealsa-volume
+	elif [[ -e $dirshm/btsource ]]; then
+		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
+		systemctl start bluealsa-dbus
+	fi
+}
 bluetooth() {
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then

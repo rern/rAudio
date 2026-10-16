@@ -29,6 +29,7 @@ files=$( ls $dircamilladsp/coeffs | grep '\.wav$' )
 ls+=', "coeffswav": '$( line2array "$files" )
 files=$( ls $dircamilladsp/raw )
 ls+=', "raw": '$( line2array "$files" )
+[[ -e $dirshm/btsource ]] && player=bluetooth || player=$( < $dirshm/player )
 volumemax=$( volumeMaxGet )
 [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && volumelimit=true
 ##########
@@ -42,7 +43,7 @@ data='
 , "ls"          : { '${ls:1}' }
 , "mixer"       : "'$mixer'"
 , "play"        : '$( jq .play $dirshm/status.json )'
-, "player"      : "'$( < $dirshm/player )'"
+, "player"      : "'$player'"
 , "pllength"    : '$( mpc status %length% )'
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"      : '$volume'

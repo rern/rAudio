@@ -3,8 +3,8 @@
 . /srv/http/bash/common.sh
 . $dirshm/output # $card, $name
 
-[[ -e $dirshm/btmixer ]] && SINK=1
-[[ -e $dirshm/btsource ]] && SOURCE=1
+[[ -e $dirshm/btmixer ]] && SINK=1 && icon=bluetooth
+[[ -e $dirshm/btsource ]] && SOURCE=1 && icon=btsender
 
 if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
 	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
@@ -22,15 +22,19 @@ if [[ -e $file_config ]]; then # existing
 else
 	if [[ $mac ]]; then
 		dir="$dircamilladsp/configs/$mac"
-		mkdir -p "$dir"
 		FILE_CONFIG="$dir/camilladsp.yml"
 	else
 		FILE_CONFIG=$dircamilladsp/configs/camilladsp.yml
 	fi
 fi
-notify 'camilla blink' Config "${FILE_CONFIG/*configs\/}"
-[[ ! -e $FILE_CONFIG ]] && cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+[[ $icon ]] && icon='<i class="i-'$icon'"></i> '
+notify 'camilla blink' "$icon Config" "${FILE_CONFIG/*configs\/}"
 
+if [[ ! -e $FILE_CONFIG ]]; then
+	EXISTING=
+	mkdir -p $( dirname "$FILE_CONFIG" )
+	cp /etc/camilladsp/configs/camilladsp.yml "$FILE_CONFIG"
+fi
 [[ ! $SINK ]] && sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card/" "$FILE_CONFIG"
 
 if [[ ! $EXISTING ]]; then
@@ -73,5 +77,7 @@ dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-[[ $SINK ]] && systemctl stop bluealsa-volume
+
+bluealsaServices
+
 exit 0
