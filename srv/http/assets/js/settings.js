@@ -385,8 +385,9 @@ document.title = PAGE === 'camilla' ? 'CamillaDSP' : COMMON.capitalize( PAGE );
 V.localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ PAGE ).addClass( 'active' );
 
-$( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
+$( '.container' ).on( 'click', '.status .headtitle, .col-l.status a', function( e ) {
 	var $this = $( this );
+	if ( e.target.closest( 'a' ) ) $this = $this.parent();
 	var id    = $this.data( 'status' );
 	var $code = $( '#code'+ id );
 	if ( $code.hasClass( 'hide' ) ) {
@@ -395,7 +396,6 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	} else {
 		$code.addClass( 'hide' );
 	}
-	$this.toggleClass( 'active' );
 	$MENU.addClass( 'hide' );
 } );
 $( '.head .i-gear' ).on( 'click', function() {
