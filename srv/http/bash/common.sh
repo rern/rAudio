@@ -11,10 +11,10 @@ for d in NAS SD USB; do
 done
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
-file_volumemute=$dirsystem/volumemute
 while read dir; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done < <( ls $dirdata )
+file_volumemute=$dirsystem/volumemute
 https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 # args2var "\
 #	command
