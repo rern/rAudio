@@ -561,7 +561,7 @@ volume() {
 			val=$CURRENT
 			type=mute
 			echo $CURRENT > $file_volumemute
-			pushData volume '{ "type": "mute", "val": 0 }'
+			pushData volume '{ "type": "mute", "val": '$val' }'
 		else
 			val=$TARGET
 			pushVolume $val
