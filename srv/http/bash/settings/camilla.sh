@@ -59,7 +59,7 @@ devices )
 			SAMPLINGS[$c_p]=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
 		else
 			DEVICE=hw:$D
-			lines=$( timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 | sed -n '/^ACCESS.*MMAP/,/^TICK/ p' )
+			lines=$( sed -n '/^ACCESS.*MMAP/,/^TICK/ p' $dirshm/hwparams )
 			formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 			CHANNELS[$c_p]=$( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' )
 			ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
