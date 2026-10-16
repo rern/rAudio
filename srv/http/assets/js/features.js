@@ -608,3 +608,6 @@ $( '.i-snapcalient, .i-snapserver' ).on( 'click', function( e ) {
 		window.open( 'http://'+ S.ip +':1780', '_blank' );
 	}
 } );
+$( '.i-scrobble' ).on( 'click', function( e ) {
+	window.open( 'https://www.last.fm/', '_blank' );
+} );

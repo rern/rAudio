@@ -271,11 +271,12 @@ EOF
 		  'id'       => 'scrobble'
 		, 'label'    => 'Scrobbler'
 		, 'help'     => <<< EOF
+$B->lastfm Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
+
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
  · Web Radio must be manually scrobbled: Playing title &raquo; $B->lastfm Scrobble
- · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
 EOF
 	]
 	, [
