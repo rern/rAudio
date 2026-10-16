@@ -605,8 +605,14 @@ $( '.i-copy' ).on( 'click', function() {
 	COMMON.dataCopy( $( this ).prev().text() );
 } );
 $( '.i-camilladsp' ).on( 'click', function() {
-	if ( S.camilladsp ) location.href = 'settings.php?p=camilla';
+	if ( S.camilladsp ) {
+		e.stopPropagation();
+		location.href = 'settings.php?p=camilla';
+	}
 } );
 $( '.i-snapcalient, .i-snapserver' ).on( 'click', function( e ) {
-	if ( S.snapserver ) window.open( 'http://'+ S.ip +':1780', '_blank' );
+	if ( S.snapserver ) {
+		e.stopPropagation();
+		window.open( 'http://'+ S.ip +':1780', '_blank' );
+	}
 } );
