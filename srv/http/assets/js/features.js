@@ -596,7 +596,7 @@ function renderPage() {
 $( '.i-copy' ).on( 'click', function() {
 	COMMON.dataCopy( $( this ).prev().text() );
 } );
-$( '.i-camilladsp' ).on( 'click', function() {
+$( '.i-camilladsp' ).on( 'click', function( e ) {
 	if ( S.camilladsp ) {
 		e.stopPropagation();
 		location.href = 'settings.php?p=camilla';
