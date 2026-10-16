@@ -243,7 +243,8 @@ function renderPage() {
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
 	if ( S.btmixer ) {
 		$( '#bluealsa' ).html( '<option>BlueALSA</option>' );
-		$( '#btmixer' ).html( '<option>'+ S.btmixer +'</option>' );
+		$( '#btmixer' ).html( '<option>'+ S.btmixer.replace( ' A2DP', '' ) +'</option>' );
+		$( '#setting-btmixer' ).toggleClass( 'hide', ! S.camilladsp );
 		$( '#divbluealsa, #divbtmixer' ).removeClass( 'hide' );
 	} else {
 		$( '#divbluealsa, #divbtmixer' ).addClass( 'hide' );

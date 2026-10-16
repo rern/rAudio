@@ -144,7 +144,7 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  command  : val => {
-		BASH( [ 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ], values => {
+		BASH( [ S.btmixer ? 'mixer.btmixer' : 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ], values => {
 			if ( values ) MIXER.set( values );
 		}, 'json' );
 	}
@@ -165,11 +165,15 @@ var MIXER = { // player.js, camilla.js
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	}
 	, volume   : values => {
-		V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
+		if ( S.btmixer ) {
+			V.control = S.btmixer;
+		} else {
+			V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
+		}
 		INFO( {
 			  icon       : 'volume'
 			, title      : 'Device Mixer Volume'
-			, list       : [ V.control, 'range' ]
+			, list       : [ V.control.replace( ' A2DP', '' ), 'range' ]
 			, footer     : '<br>'+ MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );

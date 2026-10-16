@@ -28,7 +28,7 @@ bluetooth )
 	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "TIMEOUT": '$timeout' }'
 	;;
-buffer|outputbuffer )
+buffer | outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
 	;;
 btmixer | mixer )

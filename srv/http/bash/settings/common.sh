@@ -233,9 +233,17 @@ localBrowserOff() {
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
+mixer.btmixer() {
+	amixer -MqD bluealsa sset "$CONTROL" $TARGET
+	[[ $TARGET == 0dB ]] && mixer.get
+}
 mixer.get() {
-	. $dirshm/output
-	val_db=$( amixer -c $card -M sget "$mixer" )
+	if [[ -e $dirshm/btmixer ]]; then
+		val_db=$( amixer -MD bluealsa )
+	else
+		. $dirshm/output
+		val_db=$( amixer -c $card -M sget "$mixer" )
+	fi
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
 }
