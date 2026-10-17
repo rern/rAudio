@@ -41,8 +41,9 @@ $B->eye Discoverable
 	· On rAudio: $B->stop Stop - Disconnect
 	
 Note:
- • Forget / remove should be done on both rAudio and sender.
- • Non-audio devices should be able to pair as well.
+ · Change app on connected sender - Auto disconnect. Reconnect to continue.
+ · Forget / remove should be done on both rAudio and sender.
+ · Non-audio devices should be able to pair as well.
 
 $B->bluetooth$B->btsender Context menu
 EOF
