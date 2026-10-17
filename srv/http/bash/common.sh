@@ -551,7 +551,7 @@ splashRotate() {
 		$dirimg/splash.png
 }
 statePlay() {
-	[[ $( jq -r .state $dirshm/status.json ) == play ]] && return 0
+	test $( jq .play $dirshm/status.json ) == true
 }
 volume() {
 	local diff type val values
