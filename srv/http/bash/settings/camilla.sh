@@ -57,7 +57,7 @@ devices )
 			CHANNELS[$c_p]=$channels
 			SAMPLINGS[$c_p]=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
 		else
-			lines=$( sed -n '/^ACCESS.*MMAP/,/^TICK/ p' $dirshm/hwparams )
+			lines=$( < $dirshm/hwparams )
 			formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 			CHANNELS[$c_p]=$( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' )
 			ratemax=$( awk -F'[][ ]+' '/^RATE/ {print $3}' <<< $lines )
