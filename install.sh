@@ -35,17 +35,18 @@ if grep -q bluealsa-aplay $file; then
 fi
 
 if [[ -e /bin/camilladsp ]]; then
+	if systemctl -q is-active camilladsp; then
+		CAMILLA=1
+		systemctl stop camilladsp
+	fi
 	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
 	dir_bt=$dircamilladsp/configs-bt
 	if systemctl -q is-active camilladsp; then # running with bluetooth
-		CAMILLA=1
 		file_current=$( getVar CONFIG /etc/default/camilladsp )
 		if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
-			systemctl stop camilladsp
 			dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
 			mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
 			sed -i "s|/configs-bt/|/configs/$mac/|" /etc/default/camilladsp
-			restart+=camilladsp$'\n'
 			dir_new=$dircamilladsp/configs/$mac
 			if (( $( bluetoothctl devices | wc -l ) == 1 )); then
 				mv $dir_bt $dir_new
@@ -71,13 +72,7 @@ $( sed "s|^|$dircamilladsp/configs/|; s| [^ ]| ---&|" <<< $devices )
 			mv $dir_bt $dir_new
 		fi
 	fi
-fi
-
-[[ ! -e $dirshm/fn_volume ]] && volumeFunction > $dirshm/fn_volume
-
-# 20261003
-if [[ -e /bin/camilladsp ]]; then
-	systemctl stop camilladsp
+	
 	file=/etc/default/camilladsp
 	if ! grep -q ^STATE $file; then
 		sed -i -e 's/FILE//
@@ -85,7 +80,6 @@ if [[ -e /bin/camilladsp ]]; then
 ' -e '/^GAIN\|^MUTE/ d
 ' $file
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
-		restart+=camilladsp$'\n'
 	fi
 	for file in /etc/camilladsp/configs/camilladsp.yml $dircamilladsp/configs/camilladsp.yml; do
 		! grep -q 'volume_ramp_time: 0.0' $file && sed -i -E 's/(volume_ramp_time:).*/\1 0.0/' $file
@@ -206,5 +200,6 @@ $dirbash/webradio-convert.sh
 installfinish
 
 # 202621010
-[[ $CAMILLA ]] && systemctl start camilladsp
+volumeFunction > $dirshm/fn_volume
+[[ $CAMILLA ]] && $dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"
