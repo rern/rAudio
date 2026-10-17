@@ -45,22 +45,16 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	[[ ! $VOLUME ]] && VOLUME=$( volume.value | tee $dirshm/volume )
 	if [[ $ON ]]; then
 		touch $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
+		bluealsaServices
 		$dirsettings/player-conf.sh
-		volumeMpd $VOLUME
-		if [[ -e $dirshm/btmixer ]] ; then
-			volumeBlueAlsa $VOLUME "$( < $dirshm/btmixer )"
-			systemctl start bluealsa-volume
-		fi
 		pushRefresh
 	fi
-	rm -f $dirshm/volume
 	pushSubmenu camilladsp $( systemctl -q is-active camilladsp && echo true || echo false )
 	;;
 dabradio )

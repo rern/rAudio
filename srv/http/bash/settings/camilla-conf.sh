@@ -65,7 +65,7 @@ if [[ $validate != 'Config is valid' ]]; then
 $validate
 
 (config moved to $FILE_CONFIG.failed)"
-	rm -f $dirshm/volume $dirsystem/camilladsp
+	rm -f $dirsystem/camilladsp
 	mv "$FILE_CONFIG"{,.failed}
 	exit 1
 #-------------------------------------------------------------------------------
@@ -77,7 +77,6 @@ dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-[[ $( jq -r .state $dirshm/status.json ) != stop ]] && playerStop
 card=$( getVar card $dirshm/output )
 hwparams=$( timeout 0.1 aplay -D hw:$card --dump-hw-params /dev/zero 2>&1 \
 				| sed -n -E '/^ACCESS.*MMAP/,/^TICK/ {/^(FORMAT|CHANNELS|RATE)/ p}' )

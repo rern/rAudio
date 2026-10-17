@@ -16,6 +16,8 @@ pushVolumeNone() {
 	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
 }
 
+[[ $( jq -r .state $dirshm/status.json ) != stop ]] && playerStop
+
 if [[ $1 ]]; then
 	usbdac=$1
 	touch $dirshm/usbdac_rules
@@ -63,11 +65,7 @@ $( cat $file_log )"
 		rm -f $dirsystem/camilladsp
 		. $dirsettings/player-asound.sh
 	else
-		if [[ ! $ACTIVE ]]; then
-			mixer.0dB
-			volume=$( getContent $dirshm/volume )
-			[[ $volume ]] && volumeCamilla $volume
-		fi
+		[[ ! $ACTIVE ]] && mixer.0dB
 		[[ -e $dirshm/btsource ]] && echo bluetooth > $dirshm/player
 	fi
 fi
@@ -103,10 +101,7 @@ if [[ $CARD == -1 ]]; then # no audio devices
 elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
-	if [[ $usbdac ]]; then
-		playerStop
-		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
-	fi
+	[[ $usbdac ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	if [[ $CAMILLADSP && ! -e $dirshm/btsource ]]; then
 		hw=hw:Loopback,1
 		hwspotifyd=plughw:Loopback,1
@@ -173,6 +168,14 @@ fi
 killProcess cmdlist
 systemctl restart mpd
 serviceIO mpd
+volume=$( volume.value )
+if [[ -e $dirsystem/volumelimit ]]; then
+	max=$( getVar max $dirsystem/volumelimit.conf )
+	(( $volume > $max )) && WARNING=1
+else
+	(( $volume > 50 )) && WARNING=1
+fi
+[[ $WARNING ]] && notify volume "Volume: $volume" '<i class="i-warning yl"></i> Verify before play' 9000
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
