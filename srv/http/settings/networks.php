@@ -1,13 +1,13 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <?php
 commonVariables( [
-	  'buttons' => [ 'add', 'ap', 'bluetooth', 'btsender', 'eye', 'lan', 'search', 'wifi', 'wifi1' ]
+	  'buttons' => [ 'add', 'ap', 'eye', 'bluetooth', 'btsender', 'eye', 'lan', 'search', 'stop', 'wifi', 'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head = [
@@ -19,22 +19,27 @@ $head = [
 $B->search Available devices
 $B->eye Discoverable
 	
-<wh>rAudio as sender:</wh>
- • Pair:
+<i class="i-btsender"></i> <wh>rAudio as sender:</wh>
+ • Unpaired receiver:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: $B->search Scan to connect &raquo; Select to pair
- • Connect / Disconnect:
+	· On rAudio: $B->search Scan &raquo; Select - Pair and connect
+ • Paired receiver:
 	· On receiver: Turn on / off
+	· On rAudio: Connect / Disconnect:
  • Playback controls with buttons:
 	· Main - Play / Pause
+	· Up / Down - Volume
 	· Up / Down (long-press) - Previous / Next
 
-<wh>rAudio as receiver:</wh>
- • Pair:
-	· On rAudio: $T->system$L->bluetooth ■ Discoverable by senders
-	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
- • Connect / Disconnect:
+<i class="i-bluetooth"></i> <wh>rAudio as receiver:</wh>
+ • Unpaired sender:
+	· On rAudio: $B->eye &raquo; Enable Discoverable
+	· On sender: Search &raquo; Select <wh>rAudio</wh> - Pair and connect
+ • Paired sender:
 	· On sender
+		• Select <wh>rAudio</wh> - Connect / Disconnect
+		· Change app - Disconnect and reconnect again 
+	· On rAudio: $B->stop Stop - Disconnect
 	
 Note:
  • Forget / remove should be done on both rAudio and sender.
