@@ -220,13 +220,9 @@ var MIXER = { // player.js, camilla.js
 			, oklabel    : ICON( 'set0' ) +'0dB'
 			, oknoreset  : true
 			, ok         : () => {
-				if ( parseFloat( $( '.inforange .sub' ).text() ) > -2 ) {
-					MIXER.command( '0dB' );
-				} else if ( $( '.infofooter' ).hasClass( 'hide' ) ) {
-					$( '.inforange, .infofooter' ).toggleClass( 'hide' );
-				} else {
-					MIXER.command( '0dB' );
-				}
+				if ( ! $( '.infofooter' ).hasClass( 'hide' )
+					|| parseFloat( $( '.inforange .sub' ).text() ) > -2 ) MIXER.command( '0dB' );
+				$( '.inforange, .infofooter' ).toggleClass( 'hide' );
 			}
 		} );
 	}
