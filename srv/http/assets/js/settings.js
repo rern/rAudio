@@ -178,7 +178,9 @@ var MIXER = { // player.js, camilla.js
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				MIXER.set( values );
-				$( '.infofooter' ).addClass( 'hide' );
+				$( '.infofooter' )
+					.css( 'padding', '0 0 3px 0' )
+					.addClass( 'hide' );
 				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 				var $range    = $( '.inforange input' );
 				var $rangeval = $( '.inforange .value' );
@@ -211,9 +213,8 @@ var MIXER = { // player.js, camilla.js
 			}
 			, cancel     : () => {
 				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
-					LOCAL();
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-					setTimeout( () => I.oknoreset = true, 300 );
+					$( '.inforange, .infofooter' ).toggleClass( 'hide' );
+					I.oknoreset = true; // restore after deleted by default
 				}
 			}
 			, oklabel    : ICON( 'set0' ) +'0dB'
@@ -221,11 +222,11 @@ var MIXER = { // player.js, camilla.js
 			, ok         : () => {
 				if ( parseFloat( $( '.inforange .sub' ).text() ) > -2 ) {
 					MIXER.command( '0dB' );
+				} else if ( $( '.infofooter' ).hasClass( 'hide' ) ) {
+					$( '.inforange, .infofooter' ).toggleClass( 'hide' );
 				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) MIXER.command( '0dB' );
+					MIXER.command( '0dB' );
 				}
-				$( '.inforange, .infofooter' ).toggleClass( 'hide' );
-				$( '.inforange .sub' ).text( '0 dB' );
 			}
 		} );
 	}
