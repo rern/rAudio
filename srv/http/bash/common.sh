@@ -260,7 +260,7 @@ mkdirRW() {
 }
 mpcPlayback() {
 	if [[ ! $ACTION ]]; then
-		[[ $( jq -r .state $dirshm/status.json ) == play ]] && ACTION=pause || ACTION=play 
+		statePlay && ACTION=pause || ACTION=play 
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
@@ -550,8 +550,11 @@ splashRotate() {
 		-extent 1920x1080 \
 		$dirimg/splash.png
 }
+state() {
+	jq -r .state $dirshm/status.json
+}
 statePlay() {
-	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
+	[[ $( state ) == play ]] && return 0
 }
 volume() {
 	local diff type val values

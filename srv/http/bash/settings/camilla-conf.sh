@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# run by player-asound.sh
+
 . /srv/http/bash/common.sh
 . $dirshm/output # $card, $name
 
@@ -75,7 +77,7 @@ dir_name=$( basename "$dir_current" )
 [[ $dir_name != configs ]] && name=$dir_name # mac
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
-playerStop
+[[ $( state ) != stop ]] && playerStop
 card=$( getVar card $dirshm/output )
 hwparams=$( timeout 0.1 aplay -D hw:$card --dump-hw-params /dev/zero 2>&1 \
 				| sed -n -E '/^ACCESS.*MMAP/,/^TICK/ {/^(FORMAT|CHANNELS|RATE)/ p}' )
