@@ -2448,7 +2448,7 @@ var VOLUME    = {
 	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
 	, ready     : () => WSCAMILLA && ! V.animate
 	, set       : target => {
-		if ( typeof target === 'undefined' ) target = S.volume;
+		if ( target === undefined ) target = S.volume;
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute > 0;

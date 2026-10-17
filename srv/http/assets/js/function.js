@@ -2373,7 +2373,7 @@ var UTIL      = {
 		} );
 	}
 	, intervalClear   : elpased => {
-		if ( typeof elapsed !== 'undefined' ) {
+		if ( elapsed !== undefined ) {
 			clearInterval( V.interval.elapsed );
 		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );

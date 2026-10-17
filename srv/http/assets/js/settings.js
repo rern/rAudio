@@ -156,13 +156,13 @@ var MIXER = { // player.js, camilla.js
 	, set      : values => {
 		S.volume = values.val;
 		VOLUME.push( 'refresh' );
-		var db   = values.db;
 		$( '#infoList' ).removeClass( 'hide' );
 		$( '.confirm' ).addClass( 'hide' );
 		$( '.inforange .value' ).text( S.volume );
 		$( '.inforange input' ).val( S.volume );
-		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
-		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
+		var db   = values.db !== undefined ? values.db : '-';
+		$( '.inforange .sub' ).text( db +' dB' );
+		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '-' );
 	}
 	, volume   : values => {
 		if ( S.btmixer ) {
