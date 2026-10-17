@@ -2372,7 +2372,7 @@ var UTIL      = {
 			, okno        : true
 		} );
 	}
-	, intervalClear   : elpased => {
+	, intervalClear   : elapsed => {
 		if ( elapsed !== undefined ) {
 			clearInterval( V.interval.elapsed );
 		} else {
