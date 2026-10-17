@@ -9,6 +9,7 @@ commonVariables( [
 	, 'menus'   => []
 	, 'tabs'    => [ 'features' ]
 ] );
+$hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'Bluetooth'
@@ -34,10 +35,10 @@ $B->eye Discoverable
 <i class="i-bluetooth"></i> <wh>rAudio as receiver:</wh>
  • Unpaired sender:
 	· On rAudio: $B->eye &raquo; Enable Discoverable
-	· On sender: Search &raquo; Select <wh>rAudio</wh> - Pair and connect
+	· On sender: Search &raquo; Select $hostname - Pair and connect
  • Paired sender:
 	· On sender
-		• Select <wh>rAudio</wh> - Connect / Disconnect
+		· Select $hostname - Connect / Disconnect
 		· Change app - Disconnect and reconnect again 
 	· On rAudio: $B->stop Stop - Disconnect
 	

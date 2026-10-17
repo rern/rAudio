@@ -2386,6 +2386,11 @@ var UTIL      = {
 		BASH( [ 'snapclient.sh', ip ], () => BANNER_HIDE() );
 	}
 	, statusUpdate    : status => {
+		if ( ! status.state && status.player === 'bluetooth' ) {
+			_INFO.warning( 'btsender', 'Bluetooth Sender', 'App changed.<br>Disconnect and reconnect again.' );
+			return
+		}
+		
 		if ( 'counts' in status ) {
 			COMMON.json.update( C, status.counts );
 			delete status.counts;
