@@ -41,7 +41,6 @@ $B->eye Discoverable
 	· On rAudio: $B->stop Stop - Disconnect
 	
 Note:
- · Change app on connected sender - Auto disconnect. Reconnect to continue.
  · Forget / remove should be done on both rAudio and sender.
  · Non-audio devices should be able to pair as well.
 
