@@ -169,13 +169,8 @@ killProcess cmdlist
 systemctl restart mpd
 serviceIO mpd
 volume=$( volume.value )
-if [[ -e $dirsystem/volumelimit ]]; then
-	max=$( getVar max $dirsystem/volumelimit.conf )
-	(( $volume > $max )) && WARNING=1
-else
-	(( $volume > 50 )) && WARNING=1
-fi
-[[ $WARNING ]] && notify volume "Volume: $volume" '<i class="i-warning yl"></i> Verify before play' 9000
+[[ -e $dirsystem/volumelimit ]] && max=$( getVar max $dirsystem/volumelimit.conf ) || max=50
+(( $volume > $max )) && notify volume "Volume: $volume" '<i class="i-warning yl"></i> Verify before play' 9000
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
