@@ -174,12 +174,12 @@ var MIXER = { // player.js, camilla.js
 			  icon       : S.btmixer ? 'bluetooth' : 'volume'
 			, title      : ( S.btmixer ? 'Bluetooth' : 'Device' ) +' Mixer Volume'
 			, list       : [ V.control.replace( ' A2DP', '' ), 'range' ]
-			, footer     : '<br>'+ MIXER.warning
+			, footer     : MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				MIXER.set( values );
 				$( '.infofooter' )
-					.css( 'padding', '0 0 3px 0' )
+					.css( 'padding-top', '22px' )
 					.addClass( 'hide' );
 				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 				var $range    = $( '.inforange input' );
