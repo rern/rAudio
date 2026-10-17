@@ -150,18 +150,16 @@ elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	fi
 fi
 
-systemctl stop bluetoothbutton
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	if [[ $TYPE == btsink ]]; then
 		echo "$ALIAS A2DP" > $dirshm/btmixer
-		! systemctl -q is-active localbrowser && systemctl start bluetoothbutton # localbrowser already has button events
 	else
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi
 
-[[ ! -e $dirsystem/camilladsp ]] && bluealsaServices
+[[ ! -e $dirsystem/camilladsp ]] && bluealsaServices # camilla: run by camilla-conf.sh
 
 bt.connected > $dirshm/Connected
 

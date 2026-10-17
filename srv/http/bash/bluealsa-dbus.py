@@ -7,15 +7,20 @@ import time
 from gi.repository import GLib
 from subprocess import Popen
 
-STARTED = False
+file_btsource = '/srv/http/data/shm/btsource'
+file_player   = '/srv/http/data/shm/player'
+STARTED       = False
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
+    
+def fileWrite( file, text ):
+    with open( file, 'w' ) as f: f.write( str( text ) )
 
 def property_changed( interface, changed, invalidated, path ):
     global STARTED
     for name, value in changed.items():
-        #   Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX
+        # Player      : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX
         #   Connected : 1 | 0
         # Position    : elapsed
         #   State     : active | idle | pending
@@ -24,16 +29,16 @@ def property_changed( interface, changed, invalidated, path ):
         #   Type      : dest playerX
         if name == 'Position':
             statusPush()
-        elif name == 'Player':
-            with open( '/srv/http/data/shm/btsource', 'w' ) as f: f.write( value )
         elif name == 'Track':
             time.sleep( 1 ) # delay to pass: stopped > playing on track changed
             statusPush()
         elif name == 'Status':
             if value == 'playing' and not STARTED:
                 STARTED = True
-                with open( '/srv/http/data/shm/player', 'w' ) as f: f.write( 'bluetooth' )
+                fileWrite( file_player, 'bluetooth' )
             statusPush()
+        elif name == 'Player':
+            fileWrite( file_btsource, value )
 
 def main():
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
