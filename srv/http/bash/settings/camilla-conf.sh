@@ -76,7 +76,8 @@ dir_name=$( basename "$dir_current" )
 echo $file_current > "$dircamilladsp/$name"
 [[ "$file_current" != "$FILE_CONFIG" ]] && sed -i -E "s|^(CONFIG=).*|\1\"$FILE_CONFIG\"|" /etc/default/camilladsp
 playerStop
-timeout 0.1 aplay --dump-hw-params -D $DEVICE /dev/zero 2>&1 > $dirshm/heparams
+card=$( getVar card $dirshm/output )
+timeout 0.1 aplay -D hw:$card --dump-hw-params /dev/zero 2>&1 > $dirshm/hwparams
 bluealsaServices
 
 exit 0

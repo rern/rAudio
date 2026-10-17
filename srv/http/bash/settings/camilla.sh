@@ -53,12 +53,10 @@ devices )
 	for D in $DEV; do
 		[[ ! $c_p ]] && c_p=c || c_p=p
 		if [[ $D == bluealsa ]] then
-			DEVICE=$D
 			read formats channels sampling < <( bluealsa-aplay -L | sed -n -E '/channel.*Hz$/ {s/.*: | channels*| Hz//g; p}' )
 			CHANNELS[$c_p]=$channels
 			SAMPLINGS[$c_p]=', "'$( sed 's/...$/,&/' <<< $sampling )'": '$sampling
 		else
-			DEVICE=hw:$D
 			lines=$( sed -n '/^ACCESS.*MMAP/,/^TICK/ p' $dirshm/hwparams )
 			formats=$( awk -F':' '/^FORMAT/ {print $2}' <<< $lines )
 			CHANNELS[$c_p]=$( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']' )
