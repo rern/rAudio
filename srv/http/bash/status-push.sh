@@ -19,6 +19,13 @@ Title=${lines[1]}
 Album=${lines[2]}
 coverart=${lines[3]}
 state=${lines[4]}
+if [[ ! $state && -e $dirshm/btsource ]]; then
+	mac=$( sed 's|.*dev_||; s|/.*||; s|_|:|g' $dirshm/btsource )
+	notify btsource Sender 'App changed.'
+	bluetoothctl disconnect $mac
+	exit
+# ------------------------------------------------------------------------------
+fi
 [[ $state == play ]] && PLAY=1
 [[ ${lines[5]} == true ]] && WEBRADIO=1
 player=$( < $dirshm/player )
