@@ -2387,7 +2387,8 @@ var UTIL      = {
 	}
 	, statusUpdate    : status => {
 		if ( ! status.state && status.player === 'bluetooth' ) {
-			_INFO.warning( 'btsender', 'Bluetooth Sender', 'App changed.<br>Disconnect and reconnect again.' );
+			_INFO.warning( 'btsender', 'Bluetooth Sender', 'App on sender changed.<br>Reconnect to continue.' );
+			$( '#stop' ).trigger( 'click' );
 			return
 		}
 		
