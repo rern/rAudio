@@ -37,9 +37,7 @@ $B->eye Discoverable
 	· On rAudio: $B->eye &raquo; Enable Discoverable
 	· On sender: Search &raquo; Select $hostname - Pair and connect
  • Paired sender:
-	· On sender
-		· Select $hostname - Connect / Disconnect
-		· Change app - Disconnect and reconnect again 
+	· On sender: Select $hostname - Connect / Disconnect
 	· On rAudio: $B->stop Stop - Disconnect
 	
 Note:
