@@ -2,6 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-bluealsa-cli monitor -p | while read -r line; do
+gdbus monitor --system --dest org.bluez | while read -r line; do
 	[[ $line == *Volume* ]] && pushVolume $( volume.BlueAlsa )
 done
