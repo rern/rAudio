@@ -244,11 +244,11 @@ localBrowserOff() {
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
 mixer.0dB() {
-	if [[ -e $dirshm/btmixer ]]; then
-		amixer -MqD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-	else
-		amixer -Mq sset "$( getVar mixer $dirshm/output )" 0dB
-	fi
+	local mixer
+	mixer=$( getVar mixer $dirshm/output )
+	[[ $mixer ]] && amixer -Mq sset "$mixer" 0dB
+	mixer=$( amixer -D bluealsa scontrols | grep -m1 A2DP | cut -d"'" -f2 )
+	[[ $mixer ]] && amixer -MqD bluealsa sset "$( < $dirshm/btmixer )" 0dB
 }
 mixer.btmixer() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
