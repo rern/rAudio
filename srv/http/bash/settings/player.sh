@@ -84,6 +84,7 @@ dop )
 	;;
 mixer.* ) # hw volume
 	$CMD
+	[[ $CMD == mixer.0dB ]] && mixer.value
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"

@@ -244,15 +244,17 @@ localBrowserOff() {
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
 }
 mixer.0dB() {
-	local mixer
-	mixer=$( getVar mixer $dirshm/output )
-	[[ $mixer ]] && amixer -Mq sset "$mixer" 0dB
-	mixer=$( amixer -D bluealsa scontrols | grep -m1 A2DP | cut -d"'" -f2 )
-	[[ $mixer ]] && amixer -MqD bluealsa sset "$( < $dirshm/btmixer )" 0dB
+	TARGET=0dB
+	CONTROL=$( getVar mixer $dirshm/output )
+	[[ $CONTROL ]] && mixer.mixer
+	CONTROL=$( amixer -D bluealsa scontrols | grep -m1 A2DP | cut -d"'" -f2 )
+	[[ $CONTROL ]] && mixer.btmixer
 }
 mixer.btmixer() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.value
+}
+mixer.mixer() {
+	amixer -Mq sset "$CONTROL" $TARGET
 }
 mixer.value() {
 	if [[ -e $dirshm/btmixer ]]; then
@@ -263,10 +265,6 @@ mixer.value() {
 	fi
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
-}
-mixer.mixer() {
-	amixer -Mq sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.value
 }
 pushDirCounts() {
 	local tf

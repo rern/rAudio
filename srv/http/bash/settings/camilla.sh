@@ -106,6 +106,7 @@ devices )
 	;;
 mixer.* ) # hw volume
 	$CMD
+	[[ $CMD == mixer.0dB ]] && mixer.value
 	;;
 mute )
 	(( $VOLUME > 0 )) && echo $VOLUME > $file_volumemute || rm -f $file_volumemute

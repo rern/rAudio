@@ -144,14 +144,10 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  command  : val => {
-		BASH( [ S.btmixer ? 'mixer.btmixer' : 'mixer.mixer', val, V.control, 'CMD TARGET CONTROL' ], values => {
-			if ( values ) MIXER.set( values );
-		}, 'json' );
+		BASH( [ S.btmixer ? 'mixer.btmixer' : 'mixer.mixer', val +'%', V.control, 'CMD TARGET CONTROL' ] );
 	}
 	, refresh  : () => {
-		setTimeout( () => {
-			BASH( [ 'mixer.value' ], values => MIXER.set( values ), 'json' );
-		}, 300 );
+		setTimeout( () => BASH( [ 'mixer.value' ], values => MIXER.set( values ), 'json' ), 300 );
 	}
 	, set      : values => {
 		S.volume = values.val;
@@ -185,7 +181,7 @@ var MIXER = { // player.js, camilla.js
 				var $rangeval = $( '.inforange .value' );
 				$range.on( 'input', function() {
 					var val = this.value;
-					MIXER.command( val +'%' );
+					MIXER.command( val );
 					$rangeval.text( val );
 					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
 					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
@@ -197,7 +193,7 @@ var MIXER = { // player.js, camilla.js
 					if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
 
 					up ? val++ : val--;
-					MIXER.command( val +'%' );
+					MIXER.command( val );
 					$range.val( val );
 					$rangeval.text( val );
 				}
@@ -219,8 +215,9 @@ var MIXER = { // player.js, camilla.js
 			, oklabel    : ICON( 'set0' ) +'0dB'
 			, oknoreset  : true
 			, ok         : () => {
-				if ( ! $( '.infofooter' ).hasClass( 'hide' )
-					|| parseFloat( $( '.inforange .sub' ).text() ) > -2 ) MIXER.command( '0dB' );
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) || parseFloat( $( '.inforange .sub' ).text() ) > -2 ) {
+					BASH( [ 'mixer.0dB' ], values => MIXER.set( values ), 'json' );
+				}
 				$( '.inforange, .infofooter' ).toggleClass( 'hide' );
 			}
 		} );
