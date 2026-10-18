@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261013
-! grep -q volume.value $dirsettings/rotaryencoder.sh && restart+=rotaryencoder$'\n'
+! grep -q volume.value $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
 ! grep -q volume.value $dirbash/mpdidle.sh && restart+=mpd$'\n'
 
 
@@ -20,7 +20,7 @@ fi
 file=/etc/systemd/system/bluealsa-dbus.service
 if [[ -e $file ]]; then
 	sed -i 's/bluealsa/bluez/' $file
-	mv ${file/bluealsa/bluez}
+	mv $file ${file/bluealsa/bluez}
 fi
 
 file=/etc/systemd/system/bluez-volume.service
