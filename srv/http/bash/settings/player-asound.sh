@@ -1,16 +1,18 @@
 #!/bin/bash
 
+# Bluez always reads connected device volume
+
 # bluetooth:
 #	- as sender   - device volume = bluealsa volume (no 0dB)
-#		- bluealsa-volume: sync
+#		- bluez-volume: sync
 #	- as receiver - device volume > bluealsa volume | alsa 0dB
 #		- bluealsa-aplay: stream
-#		- bluealsa-dbus : state/changes
+#		- bluez-dbus    : state/changes
 # bluetooth + camilladsp:
 #	- as sender   - device volume < camilla volume  | bluealsa 0dB
 #	- as receiver - device volume > camilla volume  | alsa 0dB
-#		- bluez         : dbus stream
-#		- bluealsa-dbus : state/changes
+#		- bluez      : dbus stream
+#		- bluez-dbus : state/changes
 
 ### included by <<< player-conf.sh
 if [[ ! $dirbash ]]; then # if run directly

@@ -609,7 +609,7 @@ volumeCamilla() {
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
 		echo volumeCamilla
-	elif [[ -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ]]; then
+	elif [[ -e $dirshm/btmixer_source || ( -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ) ]]; then
 		echo volumeBlueAlsa
 	else
 		echo volumeMpd

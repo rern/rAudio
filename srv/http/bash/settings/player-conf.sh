@@ -68,8 +68,9 @@ $( cat $file_log )"
 		[[ ! $ACTIVE ]] && mixer.0dB
 		[[ -e $dirshm/btsource ]] && echo bluetooth > $dirshm/player
 	fi
+elif [[ -e $dirshm/btmixer_source ]]; then
+	mixer.0dB
 fi
-
 
 if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
 	. <( grep ^name $dirshm/output )

@@ -6,7 +6,7 @@
 # sink   :
 	# (nothing more)
 # source :
-	# bluealsa-dbus.service  - changes for push
+	# bluez-dbus.service  - changes for push
 	# bluealsa-aplay.service
 		# normal  - dbus path Player ( busctl --list tree org.bluez | grep -E '/player[0-9]+$' )
 		# camilla - dbus_path pcm    ( bluealsa-cli list-pcms )
@@ -18,7 +18,7 @@ touch /dev/shm/bt
 
 . /srv/http/bash/common.sh
 
-rm -f $dirshm/{btmixer,btsource}
+rm -f $dirshm/{btmixer,btmixer_source,btsource}
 playerStop
 
 ALIAS_TYPE() {
@@ -152,9 +152,11 @@ fi
 
 if [[ $ACTION == connect ]]; then
 	bt.pcm
+	mixer="$ALIAS A2DP"
 	if [[ $TYPE == btsink ]]; then
-		echo "$ALIAS A2DP" > $dirshm/btmixer
+		echo $mixer > $dirshm/btmixer
 	else
+		echo $mixer > $dirshm/btmixer_source
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 	fi
 fi

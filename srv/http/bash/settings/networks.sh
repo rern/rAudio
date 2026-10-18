@@ -35,7 +35,7 @@ bluetooth )
 	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
-	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
+	bluetoothControl > $dirshm/btmixer
 	pushRefresh netowrks player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;

@@ -1,14 +1,14 @@
 #!/bin/bash
 
 bluealsaServices() {
-	systemctl stop bluealsa-aplay bluealsa-dbus bluealsa-volume bluetoothbutton
+	systemctl stop bluealsa-aplay bluez-dbus bluez-volume bluetooth-button
 	if [[ -e $dirshm/btmixer ]]; then
-		systemctl start bluealsa-volume
-		! systemctl -q is-active localbrowser && systemctl start bluetoothbutton # localbrowser already has button events
+		! systemctl -q is-active localbrowser && systemctl start bluetooth-button # localbrowser already has button events
 	elif [[ -e $dirshm/btsource ]]; then
 		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
-		systemctl start bluealsa-dbus
+		systemctl start bluez-dbus
 	fi
+	[[ $( bluealsa-cli list-pcms ) ]] && systemctl start bluez-volume
 }
 bluetooth() {
 	touch $dirshm/btonboard
@@ -35,6 +35,9 @@ bluetooth() {
 	pushData refresh '{ "page": "networks", "activebt": '$TF' }'
 	rm $dirshm/btonboard
 	pushRefresh
+}
+bluetoothControl() {
+	amixer -D bluealsa scontrols | grep -m1 A2DP | cut -d"'" -f2
 }
 bluetoothProperty() {
 	local value
@@ -241,13 +244,13 @@ localBrowserOff() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
+	[[ -e $dirshm/btmixer ]] && systemctl start bluetooth-button
 }
 mixer.0dB() {
 	TARGET=0dB
 	CONTROL=$( getVar mixer $dirshm/output )
 	[[ $CONTROL ]] && mixer.mixer
-	CONTROL=$( amixer -D bluealsa scontrols | grep -m1 A2DP | cut -d"'" -f2 )
+	CONTROL=$( bluetoothControl )
 	[[ $CONTROL ]] && mixer.btmixer
 }
 mixer.btmixer() {

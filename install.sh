@@ -17,13 +17,16 @@ if ! grep -q volume $file; then
 	restart+=bluetooth$'\n'
 fi
 
-file=/etc/systemd/system/bluealsa-volume.service
+file=/etc/systemd/system/bluealsa-dbus.service
+[[ -e $file ]] && mv ${file/bluealsa/bluez}
+
+file=/etc/systemd/system/bluez-volume.service
 [[ ! -e $file ]] && echo "\
 [Unit]
 Description=BlueALSA volume monitor
 
 [Service]
-ExecStart=/srv/http/bash/bluealsa-volume.sh" > $file
+ExecStart=/srv/http/bash/bluez-volume.sh" > $file
 
 file=/etc/bluetooth/main.conf
 sed -i 's/#*\(AlwaysPairable *=\).*/\1 true/' $file
