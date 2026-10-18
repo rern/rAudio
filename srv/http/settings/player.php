@@ -10,6 +10,7 @@ commonVariables( [
 		, 'Signal Processors' => ''
 		, 'SoX Resampler'     => ''
 		, 'Volume Control'    => ''
+		, 'Volume Limit'      => 'volumelimit'
 	]
 	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
@@ -80,7 +81,8 @@ EOF
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
 $B->volume DAC hardware volume level
- · $L->volumecontrol$B->gear If MPD software, this should be set at <c>0dB</c>
+	· $L->volumecontrol$B->gear If MPD software, this should be set at <c>0dB</c>
+	· Can be higher than $T->features$L->volumelimit
 EOF
 	]
 	, [

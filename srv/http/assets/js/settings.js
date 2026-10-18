@@ -181,7 +181,6 @@ var MIXER = { // player.js, camilla.js
 				$( '.infofooter' )
 					.css( 'padding-top', '22px' )
 					.addClass( 'hide' );
-				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 				var $range    = $( '.inforange input' );
 				var $rangeval = $( '.inforange .value' );
 				$range.on( 'input', function() {

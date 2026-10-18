@@ -10,7 +10,6 @@ data+=$( settingsEnabled \
 			
 mixers=$( getContent $dirshm/mixers )
 [[ ! $mixers && -e $dirsystem/camilladsp ]] && mixers='[ "CamillaDSP" ]'
-volumemax=$( volumeMaxGet )
 ##########
 data+='
 , "asoundcard"  : '$( getVar card $dirshm/output )'
@@ -34,8 +33,7 @@ data+='
 , "state"       : "'$( jq -r .state $dirshm/status.json )'"
 , "updatetime"  : "'$( getContent $dirmpd/updatetime )'"
 , "updating"    : '$( statusUpdating )'
-, "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
-, "volumemax"   : '$volumemax
+, "version"     : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
+data+=$( volumeLimit )
 
 data2json "$data" $1

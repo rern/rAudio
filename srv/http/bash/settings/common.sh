@@ -367,14 +367,12 @@ usbMaxCurrent() {
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
 }
-volumeMaxGet() {
+volumeLimit() {
 	local max
-	if [[ -e  $dirsystem/volumelimit ]]; then
-		. <( grep ^max $dirsystem/volumelimit.conf )
-	else
-		max=100
-	fi
-	echo $max
+	[[ -e  $dirsystem/volumelimit ]] && . <( grep ^max $dirsystem/volumelimit.conf ) || max=100
+	echo '
+, "volumelimit" : '$( (( $max < 100 )) && echo true || echo false )'
+, "volumemax"   : '$max
 }
 wlanOnboardDisable() {
 	local mod
