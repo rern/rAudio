@@ -11,9 +11,15 @@ alias=r1
 
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
+file=/etc/systemd/system/bluetoothbutton.service
+if grep -q bluetoothbutton $file; then
+	sed -i 's/bluetoothbutton/bluetooth-button/' $file
+	mc $file ${file/bluetoothbutton/bluetooth-button}
+fi
+
 file=/etc/systemd/system/bluealsa.service.d/override.conf
 if ! grep -q volume $file; then
-	sed -i -e 's/source/source --a2dp-volume/' $file
+	sed -i 's/source/source --a2dp-volume/' $file
 	restart+=bluetooth$'\n'
 fi
 
