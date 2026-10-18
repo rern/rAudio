@@ -26,7 +26,7 @@ fi
 file=/etc/systemd/system/bluez-volume.service
 [[ ! -e $file ]] && echo "\
 [Unit]
-Description=BlueALSA volume monitor
+Description=BlueZ volume monitor
 
 [Service]
 ExecStart=/srv/http/bash/bluez-volume.sh" > $file
