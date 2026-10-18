@@ -367,17 +367,6 @@ usbMaxCurrent() {
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
 }
-volumeLimit() {
-	local fn_volume mixer val
-	val=$( getVar $1 $dirsystem/volumelimit.conf )
-	if [[ -e $dirshm/btmixer ]]; then
-		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output
-	fi
-	fn_volume=$( volumeFunction )
-	$fn_volume $val% "$mixer" $card
-}
 volumeMaxGet() {
 	local max
 	if [[ -e  $dirsystem/volumelimit ]]; then

@@ -121,7 +121,7 @@ $dirsettings/player-conf.sh &> /dev/null
 touch $dirshm/{startup,status.json}
 pushStatus
 
-[[ -e $dirsystem/volumelimit ]] && volumeLimit startup
+[[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate

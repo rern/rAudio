@@ -582,12 +582,7 @@ volume() {
 			$FN_VOLUME $val "$CONTROL"
 			sleep 0.2
 		done
-		[[ $TYPE != mute && $FN_VOLUME == volumeAmixer ]] && volume.value push # some dac cannot set exactly on some 1% increments
 	fi
-	[[ $FN_VOLUME == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
-}
-volumeAmixer() {
-	amixer -Mq sset "$2" $1%
 }
 volumeBlueAlsa() {
 	amixer -MqD bluealsa sset "$2" $1%
@@ -650,6 +645,14 @@ volume.Camilla() {
 }
 volume.Mpd() {
 	mpc status %volume% | tr -d %
+}
+volume.set() {
+	FN_VOLUME=$( volumeFunction )
+	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
+		amixer -MqD bluealsa sset "$( < $dirshm/btmixer )" $1
+	else
+		$FN_VOLUME $1
+	fi
 }
 volume.value() {
 	local card line mixer val

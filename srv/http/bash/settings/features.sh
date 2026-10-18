@@ -328,7 +328,7 @@ stoptimer )
 	;;
 volumelimit )
 	enableFlagSet
-	(( $( volume.value ) > $MAX )) && volumeLimit max
+	(( $( volume.value ) > $MAX )) && volume.set $MAX
 	pushRefresh
 	;;
 
