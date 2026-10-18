@@ -66,10 +66,7 @@ $( cat $file_log )"
 		. $dirsettings/player-asound.sh
 	else
 		[[ ! $ACTIVE ]] && mixer.0dB
-		[[ -e $dirshm/btsource ]] && echo bluetooth > $dirshm/player
 	fi
-elif [[ -e $dirshm/btmixer_source ]]; then
-	mixer.0dB
 fi
 
 if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then

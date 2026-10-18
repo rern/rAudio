@@ -131,6 +131,7 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	notify.action
 	bt.connect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
+	DISCONNECT_FORGET=1
 	ALIAS_TYPE
 	notify.action
 	bt.action disconnect
@@ -157,8 +158,12 @@ if [[ $ACTION == connect ]]; then
 		echo $mixer > $dirshm/btmixer
 	else
 		echo $mixer > $dirshm/btmixer_source
+		echo bluetooth > $dirshm/player
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
+		mixer.0dB
 	fi
+elif [[ $DISCONNECT_FORGET ]]; then
+	volumeMpdRestore
 fi
 
 [[ ! -e $dirsystem/camilladsp ]] && bluealsaServices # camilla: run by camilla-conf.sh

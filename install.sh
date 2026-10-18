@@ -18,7 +18,10 @@ if ! grep -q volume $file; then
 fi
 
 file=/etc/systemd/system/bluealsa-dbus.service
-[[ -e $file ]] && mv ${file/bluealsa/bluez}
+if [[ -e $file ]]; then
+	sed -i 's/bluealsa/bluez/' $file
+	mv ${file/bluealsa/bluez}
+fi
 
 file=/etc/systemd/system/bluez-volume.service
 [[ ! -e $file ]] && echo "\

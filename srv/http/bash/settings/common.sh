@@ -247,11 +247,14 @@ localBrowserOff() {
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetooth-button
 }
 mixer.0dB() {
+	volume.Mpd > $dirshm/volume
 	TARGET=0dB
 	CONTROL=$( getVar mixer $dirshm/output )
 	[[ $CONTROL ]] && mixer.mixer
-	CONTROL=$( bluetoothControl )
-	[[ $CONTROL ]] && mixer.btmixer
+	if [[ -e $dirsystem/camilladsp ]]; then
+		CONTROL=$( bluetoothControl )
+		[[ $CONTROL ]] && mixer.btmixer
+	fi
 }
 mixer.btmixer() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
