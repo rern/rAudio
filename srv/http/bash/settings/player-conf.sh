@@ -183,16 +183,6 @@ if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 fi
-volume=$( volume.value )
-if [[ -e $dirsystem/volumelimit ]]; then
-	max=$( getVar max $dirsystem/volumelimit.conf )
-	(( $volume > $max )) && volume.set $max
-elif (( $volume > 50 )) && [[ -e $dirshm/startup ]]; then
-	(
-		[[ -e $dirshm/btmixer ]] && sleep 3
-		notify volume "Volume: $volume" '<i class="i-warning yl"></i> Lower if too high.' 9000
-	) &
-fi
 [[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
 # renderers
