@@ -168,9 +168,6 @@ fi
 killProcess cmdlist
 systemctl restart mpd
 serviceIO mpd
-volume=$( volume.value )
-[[ -e $dirsystem/volumelimit ]] && max=$( getVar max $dirsystem/volumelimit.conf ) || max=50
-(( $volume > $max )) && notify volume "Volume: $volume" '<i class="i-warning yl"></i> Verify before play' 9000
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
@@ -185,6 +182,16 @@ pushRefresh player
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
+fi
+volume=$( volume.value )
+if [[ -e $dirsystem/volumelimit ]]; then
+	max=$( getVar max $dirsystem/volumelimit.conf )
+	(( $volume > $max )) && volume.set $max
+elif (( $volume > 50 )) && [[ -e $dirshm/startup ]]; then
+	(
+		[[ -e $dirshm/btmixer ]] && sleep 3
+		notify volume "Volume: $volume" '<i class="i-warning yl"></i> Lower if too high.' 9000
+	) &
 fi
 [[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
