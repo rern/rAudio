@@ -32,7 +32,7 @@ buffer | outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
 	;;
 btmixer | mixer )
-	mixer.get
+	mixer.value
 	;;
 crossfade )
 	echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'

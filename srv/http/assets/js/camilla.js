@@ -2544,7 +2544,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
 } ).on( 'click', '.i-volume', function() {
-	BASH( [ 'mixer.get' ], values => {
+	BASH( [ 'mixer.value' ], values => {
 		MIXER.volume( values );
 	}, 'json' );
 } ).press( {

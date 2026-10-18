@@ -252,9 +252,9 @@ mixer.0dB() {
 }
 mixer.btmixer() {
 	amixer -MqD bluealsa sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.get
+	[[ $TARGET == 0dB ]] && mixer.value
 }
-mixer.get() {
+mixer.value() {
 	if [[ -e $dirshm/btmixer ]]; then
 		val_db=$( amixer -MD bluealsa )
 	else
@@ -266,7 +266,7 @@ mixer.get() {
 }
 mixer.mixer() {
 	amixer -Mq sset "$CONTROL" $TARGET
-	[[ $TARGET == 0dB ]] && mixer.get
+	[[ $TARGET == 0dB ]] && mixer.value
 }
 pushDirCounts() {
 	local tf

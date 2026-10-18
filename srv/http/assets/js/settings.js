@@ -150,7 +150,7 @@ var MIXER = { // player.js, camilla.js
 	}
 	, refresh  : () => {
 		setTimeout( () => {
-			BASH( [ 'mixer.get' ], values => MIXER.set( values ), 'json' );
+			BASH( [ 'mixer.value' ], values => MIXER.set( values ), 'json' );
 		}, 300 );
 	}
 	, set      : values => {
