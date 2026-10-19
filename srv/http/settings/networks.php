@@ -56,7 +56,7 @@ Note:
  · $i_btreceiver Non-audio devices can be connected as well.
  · $i_btsender Sender device:
 	· Forget - Both must forget each oher before reconnect.
-	· Volume displays <c>100</c> until an app is active.
+	· On connect, volume displays <c>100</c> until an app is active.
 
 $B->bluetooth$B->btsender Context menu
 EOF
