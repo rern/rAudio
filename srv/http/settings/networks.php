@@ -47,7 +47,7 @@ $i_raudio rAudio:
 	· $B->volume Volume
 $i_btreceiver Receiver buttons:
 	· <c>&#x25C9;</c> » {$B->play}Play / {$B->pause}Pause
-	· $updn » {$B->volume}Volume
+	· $updn » {$B->volume}Volume (after first play)
 	· $updn (long-press) » {$B->previous}Previous {$B->next}Next
 $i_btsender Sender:
 	· App controls

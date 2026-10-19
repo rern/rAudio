@@ -2,7 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-control=$( < $dirshm/btmixer )
 mac=$( bluetoothctl show | sed -E -n '1 {s/.* (.*) .*/\L\1/; p}' )
 for i in {0..3}; do
 	grep -q $mac /proc/bus/input/devices && break || sleep 1
