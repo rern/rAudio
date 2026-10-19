@@ -11,6 +11,11 @@ commonVariables( [
 ] );
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
+$controls = <<< EOF
+	On rAudio:
+		· $B->stop Stop - Disconnect
+		· Volume
+EOF;
 $head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
@@ -33,9 +38,7 @@ $B->eye Discoverable
 		· Main - Play / Pause
 		· Up / Down - Volume
 		· Up / Down (long-press) - Previous / Next
-	On rAudio:
-		· $B->stop Stop - Disconnect
-		· Volume
+$controls
 </pre><!--
 --><i class="i-bluetooth"></i> <a class="textdropdown wh">rAudio as receiver:</a>
 <pre class="hide">
@@ -48,9 +51,7 @@ $B->eye Discoverable
  • Playback controls:
 	On sender:
 		· Apps
-	On rAudio:
-		· $B->stop Stop - Disconnect
-		· Volume
+$controls
 </pre>
 Note:
  · Forget / remove should be done on both rAudio and sender.
