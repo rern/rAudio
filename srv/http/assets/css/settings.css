@@ -269,6 +269,11 @@ heading.status .headtitle::after,
 	content: '\F605';
 	color: var( --cg60 );
 }
+.helpblock .textdropdown::after {
+	margin-left: 5px;
+	content: '\F560';
+	font-size: 16px;
+}
 heading.status .headtitle::after {
 	width: 40px;
 	font-size: 22px;
