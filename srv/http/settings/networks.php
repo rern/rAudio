@@ -1,8 +1,8 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <?php
 commonVariables( [
-	  'buttons' => [ 'add',   'ap',   'eye',      'bluetooth', 'btsender', 'eye',   'lan',   'next'
-				   , 'pause', 'play', 'previous', 'search',    'stop',     'volume', 'wifi', 'wifi1' ]
+	  'buttons' => [ 'add',   'ap',   'eye',      'bluetooth', 'btsender', 'eye',    'forget', 'lan', 'next'
+				   , 'pause', 'play', 'previous', 'search',    'stop',     'volume', 'wifi',   'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
@@ -46,17 +46,16 @@ $i_raudio rAudio:
 	· $B->stop Stop - Disconnect
 	· $B->volume Volume
 $i_btreceiver Receiver buttons:
-	· <c>&#x25C9;</c> » {$B->play}Play / {$B->pause}Pause
-	· $updn » {$B->volume}Volume (after first play)
-	· $updn (long-press) » {$B->previous}Previous {$B->next}Next
+	· <c>&#x25C9;</c> » $B->play Play / $B->pause Pause
+	· $updn » $B->volume Volume (after first play)
+	· $updn (long-press) » $B->previous Previous $B->next Next
 $i_btsender Sender:
 	· App controls
+	· rAudio volume displays <c>100</c> until an app is active.
 
 Note:
- · $i_btreceiver Non-audio devices can be connected as well.
- · $i_btsender Sender device:
-	· Forget - Both must forget each oher before reconnect.
-	· On connect, volume displays <c>100</c> until an app is active.
+ · Non-audio devices can be connected as well.
+ · $B->forget Forget $i_btsender Sender: Both must forget each oher before reconnect.
 
 $B->bluetooth$B->btsender Context menu
 EOF
