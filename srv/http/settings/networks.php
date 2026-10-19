@@ -50,11 +50,12 @@ $B->eye Discoverable
 		· Apps
 	On rAudio:
 		· $B->stop Stop - Disconnect
-		· Volume (Show <c>100</c> if not yet played.)
+		· Volume
 </pre>
 Note:
  · Forget / remove should be done on both rAudio and sender.
  · Non-audio devices should be able to pair as well.
+ · <i class="i-bluetooth"></i> rAudio as receiver: Volume displays <c>100</c> if not yet played.
 
 $B->bluetooth$B->btsender Context menu
 EOF
