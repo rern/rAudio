@@ -1,18 +1,20 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <?php
 commonVariables( [
-	  'buttons' => [ 'add', 'ap', 'eye', 'bluetooth', 'btsender', 'eye', 'lan', 'search', 'stop', 'wifi', 'wifi1' ]
+	  'buttons' => [ 'add',   'ap',   'eye',      'bluetooth', 'btsender', 'eye',   'lan',   'next'
+				   , 'pause', 'play', 'previous', 'search',    'stop',     'volume', 'wifi', 'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features' ]
+	, 'tabs'    => [ 'features', 'playback' ]
 ] );
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
 foreach( [ 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.$i} = icon( $i );
-$head       = [
+$updn     = '<c>˄</c> <c>˅</c>';
+$head     = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => [ 'search', 'eye' ]
@@ -39,16 +41,16 @@ $i_btsender <a class="textdropdown wh">rAudio as sender:</a>
 		· On sender: Select $hostname - Connect / Disconnect
 		· On rAudio: Connect / Disconnect
 </div>
- • Playback controls:
-	On $i_raudio rAudio:
-		· $B->stop Stop - Disconnect
-		· Volume
-	On $i_btreceiver receiver - buttons:
-		· Main - Play / Pause
-		· Up / Down - Volume
-		· Up / Down (long-press) - Previous / Next
-	On $i_btsender sender:
-		· App controls
+$T->playback
+$i_raudio rAudio:
+	· $B->stop Stop - Disconnect
+	· $B->volume Volume
+$i_btreceiver Receiver buttons:
+	· <c>●</c> » {$B->play}Play / {$B->pause}Pause
+	· $updn » {$B->volume}Volume
+	· $updn (long-press) » {$B->previous}Previous {$B->next}Next
+$i_btsender Sender:
+	· App controls
 
 Note:
  · Forget $i_btsender sender device - The sender must forget $hostname before reconnect.
