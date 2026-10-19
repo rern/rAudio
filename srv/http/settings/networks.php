@@ -51,7 +51,6 @@ $i_btreceiver Receiver buttons:
 	· $updn (long-press) » $B->previous Previous $B->next Next
 $i_btsender Sender:
 	· App controls
-	· rAudio volume displays <c>100</c> until an app is active.
 
 Note:
  · Non-audio devices can be connected as well.
