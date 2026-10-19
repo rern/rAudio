@@ -39,17 +39,18 @@ $B->eye Discoverable
 		· On rAudio: Connect / Disconnect
 </div>
  • Playback controls:
+	On rAudio:
+		· $B->stop Stop - Disconnect
+		· Volume
 	On receiver - buttons:
 		· Main - Play / Pause
 		· Up / Down - Volume
 		· Up / Down (long-press) - Previous / Next
 	On sender:
-		· Apps
-	On rAudio:
-		· $B->stop Stop - Disconnect
-		· Volume
+		· App controls
+
 Note:
- · Forget / remove should be done on both rAudio and sender.
+ · Forget sender device - Should be done on both rAudio and the sender.
  · Non-audio devices should be able to pair as well.
  · <i class="i-bluetooth"></i> rAudio as receiver: Volume displays <c>100</c> until an app is active.
 
