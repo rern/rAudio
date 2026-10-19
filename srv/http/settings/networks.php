@@ -13,7 +13,7 @@ commonVariables( [
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
 foreach( [ 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.$i} = icon( $i );
-$updn     = '<c>˄</c> <c>˅</c>';
+$updn     = '<c>△</c> <c>▽</c>';
 $head     = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
@@ -46,7 +46,7 @@ $i_raudio rAudio:
 	· $B->stop Stop - Disconnect
 	· $B->volume Volume
 $i_btreceiver Receiver buttons:
-	· <c>●</c> » {$B->play}Play / {$B->pause}Pause
+	· <c>&#x25C9;</c> » {$B->play}Play / {$B->pause}Pause
 	· $updn » {$B->volume}Volume
 	· $updn (long-press) » {$B->previous}Previous {$B->next}Next
 $i_btsender Sender:
