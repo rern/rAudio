@@ -174,6 +174,30 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 volumeFunction > $dirshm/fn_volume
+if [[ ! $CAMILLADSP && -e $dirshm/btsource ]]; then
+	mac=$( dbuspath2mac $( < $dirshm/btsource ) )
+	if [[ -e $dirsystem/$mac ]]; then
+		db_saved=$( < $dirsystem/$mac )
+		db_set=$( awk -v db=$db_saved '
+					BEGIN { s = int(127 * 2^(db / 1000) + 0.5); if (s > 127) s = 127; if (s < 0) s = 0 }
+					s >= $1 && s <= $2 {
+					if ($5 && s == $1) print "-inf"
+					else printf "%.2f\n", $3 + (s - $1) * $4
+					exit }' <<< '
+0 1 -96.00 26.12 0
+2 3 -59.88 5.85 0
+4 5 -49.88 3.22 0
+6 8 -43.99 2.075 0
+9 13 -38.06 1.3225 0
+14 21 -31.63 0.832857 0
+22 35 -25.04 0.513077 0
+36 59 -17.88 0.307391 0
+60 100 -10.48 0.18275 0
+101 127 -3.24 0.124615 0
+' )
+		amixer -D bluealsa sset "$( < $dirshm/btmixer_source )" -- ${db_set}dB
+	fi
+fi
 pushStatus
 pushRefresh player
 [[ $CAMILLADSP ]] && pushRefresh camilla features

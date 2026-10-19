@@ -108,6 +108,9 @@ data2jsonPatch() {
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
 }
+dbuspath2mac() {
+	sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $1
+}
 enableFlagSet() {
 	local file
 	file=$dirsystem/$CMD

@@ -623,6 +623,9 @@ volumeMpdRestore() {
 	file_volume=$dirsystem/volume
 	[[ -e $file_volume && ! -e $dirsystem/camilladsp ]] && volumeMpd $( < $file_volume )
 	rm -f $file_volume
+	[[ $TYPE != btsource ]] && return
+	
+	sed -n -E '/source]$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
 }
 volume.BlueAlsa() {
 	local line val
