@@ -56,7 +56,7 @@ $controls
 Note:
  · Forget / remove should be done on both rAudio and sender.
  · Non-audio devices should be able to pair as well.
- · <i class="i-bluetooth"></i> rAudio as receiver: Volume displays <c>100</c> if not yet played.
+ · <i class="i-bluetooth"></i> rAudio as receiver: Volume displays <c>100</c> until an app is active.
 
 $B->bluetooth$B->btsender Context menu
 EOF
