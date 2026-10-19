@@ -210,7 +210,7 @@ var RENDER = {
 			} );
 		}
 		LIST.render( 'bluetooth', html );
-		$( '#divbluetooth .i-eye' ).toggleClass( 'bl', S.discoverable );
+		$( 'heading .i-eye' ).toggleClass( 'bl', S.discoverable );
 		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
 	, lan       : () => {
