@@ -11,7 +11,8 @@ commonVariables( [
 ] );
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
-$head = [
+foreach( [ 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.$i} = icon( $i );
+$head       = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => [ 'search', 'eye' ]
@@ -20,7 +21,7 @@ $head = [
 $B->search Available devices
 $B->eye Discoverable
 	
-<i class="i-btsender"></i> <a class="textdropdown wh">rAudio as sender:</a>
+$i_btsender <a class="textdropdown wh">rAudio as sender:</a>
 <div class="drop hide">
 	 • Unpaired receiver:
 		· On receiver: Turn on Discovery / Pairing mode
@@ -29,7 +30,7 @@ $B->eye Discoverable
 		· On receiver: Turn on / off
 		· On rAudio: Connect / Disconnect
 </div><!--
---><i class="i-bluetooth"></i> <a class="textdropdown wh">rAudio as receiver:</a>
+-->$i_btreceiver <a class="textdropdown wh">rAudio as receiver:</a>
 <div class="drop hide">
 	 • Unpaired sender:
 		· On rAudio: $B->eye &raquo; Enable Discoverable
@@ -39,20 +40,20 @@ $B->eye Discoverable
 		· On rAudio: Connect / Disconnect
 </div>
  • Playback controls:
-	On rAudio:
+	On $i_raudio rAudio:
 		· $B->stop Stop - Disconnect
 		· Volume
-	On receiver - buttons:
+	On $i_btreceiver receiver - buttons:
 		· Main - Play / Pause
 		· Up / Down - Volume
 		· Up / Down (long-press) - Previous / Next
-	On sender:
+	On $i_btsender sender:
 		· App controls
 
 Note:
- · Forget sender device - Must be done on both rAudio and the sender.
- · Non-audio devices should be able to pair as well.
- · <i class="i-bluetooth"></i> rAudio as receiver: Volume displays <c>100</c> until an app is active.
+ · Forget $i_btsender sender device - The sender must forget $hostname before reconnect.
+ · Non-audio devices can pair as well.
+ · Volume displays <c>100</c> until an app is active.
 
 $B->bluetooth$B->btsender Context menu
 EOF
