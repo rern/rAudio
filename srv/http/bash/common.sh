@@ -655,7 +655,8 @@ volume.Mpd() {
 volume.set() {
 	FN_VOLUME=$( volumeFunction )
 	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
-		amixer -MqD bluealsa sset "$( < $dirshm/btmixer )" $1
+		[[ -e $dirshm/btmixer ]] && mixer=$( < $dirshm/btmixer ) || mixer=$( < $dirshm/btmixer_source )
+		amixer -MqD bluealsa sset "$mixer" $1
 	else
 		$FN_VOLUME $1
 	fi
