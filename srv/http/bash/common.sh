@@ -620,7 +620,7 @@ volumeMpd() {
 	mpc -q volume $1
 }
 volumeMpdRestore() {
-	file_volume=$dirshm/volume
+	file_volume=$dirsystem/volume
 	[[ -e $file_volume && ! -e $dirsystem/camilladsp ]] && volumeMpd $( < $file_volume )
 	rm -f $file_volume
 }

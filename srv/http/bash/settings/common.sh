@@ -247,7 +247,7 @@ localBrowserOff() {
 	[[ -e $dirshm/btmixer ]] && systemctl start bluetooth-button
 }
 mixer.0dB() {
-	volume.Mpd > $dirshm/volume
+	volume.Mpd > $dirsystem/volume # for volumeMpdRestore
 	TARGET=0dB
 	CONTROL=$( getVar mixer $dirshm/output )
 	[[ $CONTROL ]] && mixer.mixer
