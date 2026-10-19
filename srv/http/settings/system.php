@@ -77,9 +77,8 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add <a class="textdropdown">Add network or local storage</a>
-	· » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
-	· Windows shares without password: <c>net user guest /active:yes</c>
-<pre class="hide">
+<div class="drop hide">
+<pre>
 <g># backend commands</g>
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
@@ -90,7 +89,11 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
-</pre>
+</pre><!--
+-->Note:
+ · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+ · Windows shares without password: <c>net user guest /active:yes</c>
+</div>
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>

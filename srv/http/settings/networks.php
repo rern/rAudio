@@ -11,11 +11,6 @@ commonVariables( [
 ] );
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
-$controls = <<< EOF
-	On rAudio:
-		· $B->stop Stop - Disconnect
-		· Volume
-EOF;
 $head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
@@ -26,33 +21,33 @@ $B->search Available devices
 $B->eye Discoverable
 	
 <i class="i-btsender"></i> <a class="textdropdown wh">rAudio as sender:</a>
-<pre class="hide">
- • Unpaired receiver:
-	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: $B->search Scan &raquo; Select - Pair and connect
- • Paired receiver:
-	· On receiver: Turn on / off
-	· On rAudio: Connect / Disconnect
+<div class="drop hide">
+	 • Unpaired receiver:
+		· On receiver: Turn on Discovery / Pairing mode
+		· On rAudio: $B->search Scan &raquo; Select - Pair and connect
+	 • Paired receiver:
+		· On receiver: Turn on / off
+		· On rAudio: Connect / Disconnect
+</div><!--
+--><i class="i-bluetooth"></i> <a class="textdropdown wh">rAudio as receiver:</a>
+<div class="drop hide">
+	 • Unpaired sender:
+		· On rAudio: $B->eye &raquo; Enable Discoverable
+		· On sender: Search &raquo; Select $hostname - Pair and connect
+	 • Paired sender:
+		· On sender: Select $hostname - Connect / Disconnect
+		· On rAudio: Connect / Disconnect
+</div>
  • Playback controls:
 	On receiver - buttons:
 		· Main - Play / Pause
 		· Up / Down - Volume
 		· Up / Down (long-press) - Previous / Next
-$controls
-</pre><!--
---><i class="i-bluetooth"></i> <a class="textdropdown wh">rAudio as receiver:</a>
-<pre class="hide">
- • Unpaired sender:
-	· On rAudio: $B->eye &raquo; Enable Discoverable
-	· On sender: Search &raquo; Select $hostname - Pair and connect
- • Paired sender:
-	· On sender: Select $hostname - Connect / Disconnect
-	· On rAudio: Connect / Disconnect
- • Playback controls:
 	On sender:
 		· Apps
-$controls
-</pre>
+	On rAudio:
+		· $B->stop Stop - Disconnect
+		· Volume
 Note:
  · Forget / remove should be done on both rAudio and sender.
  · Non-audio devices should be able to pair as well.
