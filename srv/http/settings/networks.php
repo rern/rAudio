@@ -12,8 +12,8 @@ commonVariables( [
 ] );
 $hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
-foreach( [ 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.$i} = icon( $i );
-$updn     = '<c>△</c> <c>▽</c>';
+foreach( [ 'chevron-down', 'chevron-up', 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.str_replace( '-', '', $i)} = icon( $i );
+$updn     = '<c>'.$i_chevronup.'</c> <c>'.$i_chevrondown.'</c>';
 $head     = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'

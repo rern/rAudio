@@ -703,6 +703,9 @@ circle.on {
 	margin-right: 5px;
 	color: var( --cw );
 }
+#divbluetooth .helpblock c i {
+	width: 12px;
+}
 #setting-btmixer::before,
 #setting-mixer::before {
 	content: '\F516';
