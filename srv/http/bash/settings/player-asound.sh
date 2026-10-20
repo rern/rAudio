@@ -9,19 +9,18 @@
 # normal + camilladsp:
 #	- CONTROL: volumeCamilla
 #	- hardware mixer alsa/mpd = 0dB
-# bluetooth:
-#	- as sender   - CONTROL: device volume <sync> volumeBlueAlsa
-#		- on connect: sink set from saved $dirsystem/$MAC
-#		- bluez-volume: sync
-#	- as receiver - CONTROL: device volume <sync> volumeBlueAlsa
-#		- on connect: alsa/mpd = 0dB and source set from saved $dirsystem/$MAC
+# bluetooth: CONTROL - device volume == volumeBlueAlsa (synced by bluez-volume)
+#	- as sender
+#		- on connect: sink   = $dirsystem/$MAC, alsa/mpd [no set]
+#	- as receiver
+#		- on connect: source = $dirsystem/$MAC, alsa/mpd = 0dB
 #		- bluealsa-aplay: stream
 #		- bluez-dbus    : state/changes
-# bluetooth + camilladsp:
-#	- as sender   - CONTROL: device volume [not sync] volumeCamilla
-#		- on connect: sink and alsa/mpd = 0dB
-#	- as receiver - CONTROL: device volume [not sync] volumeCamilla
-#		- on connect: alsa/mpd = 0dB (source is not bluealsa - no 0dB)
+# bluetooth + camilladsp: CONTROL - device volume != volumeCamilla (no sync)
+#	- as sender
+#		- on connect: sink   = 100,      alsa/mpd = 0dB
+#	- as receiver
+#		- on connect: source = [no set], alsa/mpd = 0dB
 #		- bluez      : dbus stream
 #		- bluez-dbus : state/changes
 
