@@ -10,7 +10,6 @@ commonVariables( [
 		, 'Signal Processors' => ''
 		, 'SoX Resampler'     => ''
 		, 'Volume Control'    => ''
-		, 'Volume Limit'      => 'volumelimit'
 	]
 	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'library', 'playback', 'system' ]
@@ -58,9 +57,7 @@ $body      = [
 $B->bluetooth rAudio as Bluetooth sender:
  · Receiver buttons can be used for start/stop/skip and volume
  
-$B->camilla CamillaDSP $B->volume Sender volume level
-        · Should be set at <c>0dB</c>
-        · Use rAudio to control CamillaDSP volume
+$B->camilla$B->volume Sender volume level - Set at <c>0dB</c> for better quality.
 EOF
 	]
 	, [
@@ -80,9 +77,7 @@ EOF
 		, 'status'   => true
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
-$B->volume DAC hardware volume level
-	· $L->volumecontrol$B->gear If MPD software, this should be set at <c>0dB</c>
-	· Can be higher than $T->features$L->volumelimit
+$B->volume Hardware volume level
 EOF
 	]
 	, [
@@ -92,7 +87,7 @@ EOF
 		, 'help'     => <<< EOF
 $B->gear Type:
 	· DAC hardware $L->mixer : Good (if available)
-	· MPD software: Basic
+	· MPD software: Basic (Set $L->mixer at <c>0dB</c> for better quality.)
  
 Note:
 Should be disabled for best sound quality

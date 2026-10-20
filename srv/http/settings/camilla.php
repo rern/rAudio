@@ -170,9 +170,7 @@ Processing load
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
 <span class="helpblock hide"><c> N </c> Mute · Unmute
-'.$B->volume.' Hardware volume
-	· Should be set at <c>0dB</c>
-	· Can be higher than $T->features$L->volumelimit
+'.$B->volume.' Hardware volume - Should be set at <c>0dB</c>
 	· Use rAudio to control CamillaDSP volume
 '.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
