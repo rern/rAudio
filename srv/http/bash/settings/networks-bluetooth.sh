@@ -153,13 +153,13 @@ fi
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	mixer="$ALIAS A2DP"
-	[[ ! -e $dirsystem/$MAC ]] && volume.value > $dirshm/volume
 	if [[ $TYPE == btsink ]]; then
 		echo $mixer > $dirshm/btmixer
 	else
 		echo $mixer > $dirshm/btmixer_source
 		echo bluetooth > $dirshm/player
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
+		[[ ! -e $dirsystem/$MAC ]] && volume.value > $dirshm/volume
 		mixer.0dB
 	fi
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
