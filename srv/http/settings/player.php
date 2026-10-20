@@ -6,9 +6,12 @@ commonVariables( [
 		, 'Device'            => ''
 		, 'Equalizer'         => 'equalizer'
 		, 'Mixer'             => ''
+		, 'Options'           => ''
+		, 'Output'            => ''
 		, 'Shared Data'       => 'networks'
 		, 'Signal Processors' => ''
 		, 'SoX Resampler'     => ''
+		, 'Volume'            => ''
 		, 'Volume Control'    => ''
 	]
 	, 'menus'   => []
@@ -117,12 +120,12 @@ $body      = [
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
- · Mixer device volume set at <c>0dB</c>
+ · Mixer hardware volume set at <c>0dB</c>
  · Disable:
-	· Output $L->volumecontrol
-	· Volume - All options
-	· Options  $L->soxresampler
-	· $T->features$L->dsp $L->equalizer
+	· $L->output$L->volumecontrol
+	· $L->volume All options
+	· $L->options$L->soxresampler
+	· $T->features$L->dsp$L->signalprocessors
 EOF
 	]
 	, [
