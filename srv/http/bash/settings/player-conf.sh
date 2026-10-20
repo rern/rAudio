@@ -175,7 +175,25 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 volumeFunction > $dirshm/fn_volume
-[[ ! $CAMILLADSP && $( bluealsa-cli list-pcms ) ]] && . $dirsettings/player-bt_volume.sh
+
+if [[ ! $CAMILLADSP && $( bluealsa-cli list-pcms ) ]]; then # restore bluetooth saved volume
+	mac=$( dbuspath_mac mac )
+	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
+		percent=$( < $dirsystem/$mac )
+	elif [[ -e $dirshm/volume ]]; then
+		percent=$( < $dirshm/volume )
+		rm -f $dirshm/volume
+	elif [[ -e $dirsystem/volumelimit ]]; then
+		percent=$( getVar startup $dirsystem/volumelimit.conf )
+	else
+		percent=$( volume.value )
+		(( $percent > 30 )) && percent=30
+	fi
+	systemctl stop bluez-volume
+	amixer -MqD bluealsa sset "$( bluetoothControl )" $percent%
+	pushData volume $percent refresh
+	systemctl start bluez-volume
+fi
 pushStatus
 pushRefresh player
 [[ $CAMILLADSP ]] && pushRefresh camilla features
