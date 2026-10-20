@@ -108,8 +108,10 @@ data2jsonPatch() {
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
 }
-dbuspath2mac() {
-	sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $1
+dbuspath_mac() {
+	dbuspath=$( bluealsa-cli list-pcms ) # only 1 audio device allowed at a time
+	mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+	[[ $1 ]] && echo $mac || echo $dbuspath $mac
 }
 enableFlagSet() {
 	local file

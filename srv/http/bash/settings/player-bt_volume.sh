@@ -3,7 +3,7 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
-mac=$( dbuspath2mac $( < $dirshm/btsource ) )
+mac=$( dbuspath_mac mac )
 if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 	db_saved=$( < $dirsystem/$mac )
 	percent=$( awk -v db_saved=$db_saved '
@@ -49,5 +49,5 @@ else
 fi
 systemctl stop bluez-volume
 amixer -MqD bluealsa sset "$( bluetoothControl )" $percent%
-pushDataVolume $percent refresh
+pushData volume $percent refresh
 systemctl start bluez-volume

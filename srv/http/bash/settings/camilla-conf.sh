@@ -9,10 +9,9 @@
 [[ -e $dirshm/btsource ]] && SOURCE=1 && icon=btsender
 
 if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
-	dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|source)$' )
+	read dbuspath mac < <( dbuspath_mac )
 	[[ ! $dbuspath ]] && echo 'BlueALSA mixer not found.' && exit 1
 #-------------------------------------------------------------------------------
-	mac=$( dbuspath2mac $dbuspath )
 	file_config=$dircamilladsp/$mac
 	samplerate=$( bluealsa-aplay -L | awk '/Hz$/ {print $(NF-1)}' )
 else
