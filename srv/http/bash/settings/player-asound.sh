@@ -2,19 +2,26 @@
 
 # Bluez always reads connected device volume
 
+# normal:
+#	- CONTROL: volumeMpd
+#		- mixer hardware - default
+#		- mixer software - alsa/mpd = 0dB
+# normal + camilladsp:
+#	- CONTROL: volumeCamilla
+#	- hardware mixer alsa/mpd = 0dB
 # bluetooth:
-#	- as sender   - device volume <sync> volumeBlueAlsa
-#		- on connect: set volume sink from saved $dirsystem/$MAC
+#	- as sender   - CONTROL: device volume <sync> volumeBlueAlsa
+#		- on connect: sink set from saved $dirsystem/$MAC
 #		- bluez-volume: sync
-#	- as receiver - device volume <sync> volumeBlueAlsa
-#		- on connect: set volume alsa/mpd = 0dB and source from saved $dirsystem/$MAC
+#	- as receiver - CONTROL: device volume <sync> volumeBlueAlsa
+#		- on connect: alsa/mpd = 0dB and source set from saved $dirsystem/$MAC
 #		- bluealsa-aplay: stream
 #		- bluez-dbus    : state/changes
 # bluetooth + camilladsp:
-#	- as sender   - device volume <not sync> volumeCalmilla
-#		- on connect: set volume sink and alsa/mpd = 0dB
-#	- as receiver - device volume <not sync> volumeCalmilla
-#		- on connect: set alsa/mpd = 0dB (source is not bluealsa, no 0dB)
+#	- as sender   - CONTROL: device volume [not sync] volumeCamilla
+#		- on connect: sink and alsa/mpd = 0dB
+#	- as receiver - CONTROL: device volume [not sync] volumeCamilla
+#		- on connect: alsa/mpd = 0dB (source is not bluealsa, no 0dB)
 #		- bluez      : dbus stream
 #		- bluez-dbus : state/changes
 
