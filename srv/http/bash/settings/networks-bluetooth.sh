@@ -13,7 +13,7 @@
 
 [[ -e /dev/shm/bt ]] && exit
 # ------------------------------------------------------------------------------
-trap 'sleep 3; rm -f /dev/shm/bt' EXIT
+trap 'rm -f /dev/shm/bt' EXIT
 touch /dev/shm/bt
 
 . /srv/http/bash/common.sh

@@ -21,7 +21,7 @@
 #	- as sender   - CONTROL: device volume [not sync] volumeCamilla
 #		- on connect: sink and alsa/mpd = 0dB
 #	- as receiver - CONTROL: device volume [not sync] volumeCamilla
-#		- on connect: alsa/mpd = 0dB (source is not bluealsa, no 0dB)
+#		- on connect: alsa/mpd = 0dB (source is not bluealsa - no 0dB)
 #		- bluez      : dbus stream
 #		- bluez-dbus : state/changes
 
