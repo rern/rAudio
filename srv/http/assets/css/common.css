@@ -775,10 +775,15 @@ hr {
 #infoTab a {
 	display: inline-block;
 	border-radius: 6px 6px 0 0;
-	box-shadow: 2px -4px 4px #000000;
 }
 #infoTab a.active {
 	background: var( --cga );
+}
+#infoTab a:first-child:not( .active ) {
+	box-shadow: inset -2px -2px 4px #000000;
+}
+#infoTab a:not( .active ) {
+	box-shadow: inset 2px -2px 4px #000000;
 }
 #infoTab i {
 	font-size: 20px;
