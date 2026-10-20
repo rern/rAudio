@@ -168,7 +168,7 @@ var MIXER = { // player.js, camilla.js
 		}
 		INFO( {
 			  icon       : S.btmixer ? 'bluetooth' : 'volume'
-			, title      : ( S.btmixer ? 'Bluetooth' : 'Device' ) +' Mixer Volume'
+			, title      : S.btmixer ? 'Bluetooth Volume' : 'Mixer Volume'
 			, list       : [ V.control.replace( ' A2DP', '' ), 'range' ]
 			, footer     : MIXER.warning
 			, beforeshow : () => {
@@ -519,15 +519,15 @@ $( '.setting' ).on( 'click', function() {
 	}
 } );
 $( '.textdropdown' ).on( 'click', function() {
-	var $pre = $( this ).nextAll( 'pre' ).first();
-	if ( $pre.is( ':empty' ) ) {
+	var $drop = $( this ).nextAll( '.drop' ).first();
+	if ( $drop.is( ':empty' ) ) {
 		BASH( [ 'filetype' ], data => {
-			$pre
+			$drop
 				.html( data )
 				.toggleClass( 'hide' );
 		} );
 	} else {
-		$pre.toggleClass( 'hide' );
+		$drop.toggleClass( 'hide' );
 	}
 	$( this ).toggleClass( 'active' );
 } );

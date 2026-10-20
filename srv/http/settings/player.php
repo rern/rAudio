@@ -77,7 +77,7 @@ EOF
 		, 'status'   => true
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
-$B->volume Hardware volume level
+$B->volume Mixer hardware volume
 EOF
 	]
 	, [
