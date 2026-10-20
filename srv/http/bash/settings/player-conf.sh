@@ -117,6 +117,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
 		hw=hw:$card
+		[[ $mixertype == software && ( $CAMILLADSP || $( bluealsa-cli list-pcms ) ) ]] && mixertype=hardware
 #---------------< normal
 		AUDIOOUTPUT='
 	name           "'$name'"
