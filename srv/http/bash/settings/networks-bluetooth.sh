@@ -163,7 +163,7 @@ if [[ $ACTION == connect ]]; then
 		mixer.0dB
 	fi
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	volumeMpdRestore
+	[[ ! -e $dirsystem/camilladsp ]] && volumeMpdRestore
 fi
 
 [[ ! -e $dirsystem/camilladsp ]] && bluetoothServices # camilla: run by camilla-conf.sh

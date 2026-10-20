@@ -621,11 +621,12 @@ volumeMpd() {
 	mpc -q volume $1
 }
 volumeMpdRestore() {
-	[[ -e $dirsystem/camilladsp ]] && CAMILLADSP=1
+	[[ -e $dirsystem/camilladsp ]] && return
+	
 	file_volume=$dirsystem/volume
-	[[ -e $file_volume && ! $CAMILLADSP ]] && volumeMpd $( < $file_volume )
+	[[ -e $file_volume ]] && volumeMpd $( < $file_volume )
 	rm -f $file_volume
-	[[ ! $MAC || $CAMILLADSP )]] && return
+	[[ ! $MAC )]] && return
 	
 	sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
 }
