@@ -624,8 +624,7 @@ volumeMpdRestore() {
 	[[ -e $dirsystem/camilladsp ]] && return
 	
 	file_volume=$dirsystem/volume
-	[[ -e $file_volume ]] && volumeMpd $( < $file_volume )
-	rm -f $file_volume
+	[[ -e $file_volume ]] && volumeMpd $( < $file_volume ) && rm -f $file_volume
 	[[ ! $MAC )]] && return
 	
 	sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
