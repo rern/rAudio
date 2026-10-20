@@ -294,7 +294,7 @@ heading i {
 	height: 35px;
 	font-size: 22px;
 	text-align: center;
-	color: var( --cg60 );
+	color: var( --cw );
 	letter-spacing: normal;
 }
 heading i.back {
@@ -303,10 +303,6 @@ heading i.back {
 }
 heading i.help {
 	float: right;
-}
-heading .i-add,
-heading .i-search {
-	color: var( --cw );
 }
 heading i.disabled {
 	color: var( --cg ) !important;
