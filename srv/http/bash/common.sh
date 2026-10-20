@@ -625,7 +625,7 @@ volumeMpdRestore() {
 	
 	file_volume=$dirsystem/volume
 	[[ -e $file_volume ]] && volumeMpd $( < $file_volume ) && rm -f $file_volume
-	[[ ! $MAC )]] && return
+	[[ ! $MAC]] && return
 	
 	sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
 }
