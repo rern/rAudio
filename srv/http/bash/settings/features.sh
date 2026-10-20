@@ -51,7 +51,7 @@ camilladsp )
 	else
 		systemctl stop camilladsp
 		rm -f $dirsystem/camilladsp
-		bluealsaServices
+		bluetoothServices
 		$dirsettings/player-conf.sh
 		pushRefresh
 	fi

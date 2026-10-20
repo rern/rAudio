@@ -131,7 +131,6 @@ elif [[ $ACTION == connect || $ACTION == pair ]]; then
 	notify.action
 	bt.connect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	DISCONNECT_FORGET=1
 	ALIAS_TYPE
 	notify.action
 	bt.action disconnect
@@ -154,6 +153,7 @@ fi
 if [[ $ACTION == connect ]]; then
 	bt.pcm
 	mixer="$ALIAS A2DP"
+	[[ ! -e $dirsystem/$MAC ]] && volume.value > $dirshm/volume
 	if [[ $TYPE == btsink ]]; then
 		echo $mixer > $dirshm/btmixer
 	else
@@ -162,11 +162,11 @@ if [[ $ACTION == connect ]]; then
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
 		mixer.0dB
 	fi
-elif [[ $DISCONNECT_FORGET ]]; then
+elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
 	volumeMpdRestore
 fi
 
-[[ ! -e $dirsystem/camilladsp ]] && bluealsaServices # camilla: run by camilla-conf.sh
+[[ ! -e $dirsystem/camilladsp ]] && bluetoothServices # camilla: run by camilla-conf.sh
 
 bt.connected > $dirshm/Connected
 

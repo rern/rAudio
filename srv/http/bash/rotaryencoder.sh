@@ -32,7 +32,7 @@ case $FN_VOLUME in
 	volumeBlueAlsa )
 		dn=$step%-
 		up=$step%+
-		mixer=$( < $dirshm/btmixer )
+		mixer=$( bluetoothControl )
 		FN() {
 			amixer -MqD bluealsa sset "$mixer" $1 # volumeBlueAlsa not handle +/-
 		}

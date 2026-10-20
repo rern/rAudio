@@ -1,15 +1,5 @@
 #!/bin/bash
 
-bluealsaServices() {
-	systemctl stop bluealsa-aplay bluez-dbus bluez-volume bluetooth-button
-	if [[ -e $dirshm/btmixer ]]; then
-		! systemctl -q is-active localbrowser && systemctl start bluetooth-button # localbrowser already has button events
-	elif [[ -e $dirshm/btsource ]]; then
-		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
-		systemctl start bluez-dbus
-	fi
-	[[ $( bluealsa-cli list-pcms ) ]] && systemctl start bluez-volume
-}
 bluetooth() {
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
@@ -48,6 +38,16 @@ bluetoothProperty() {
 		no )  echo false;;
 		* )   echo $value;;
 	esac
+}
+bluetoothServices() {
+	systemctl stop bluealsa-aplay bluetooth-button bluez-dbus bluez-volume
+	if [[ -e $dirshm/btmixer ]]; then
+		! systemctl -q is-active localbrowser && systemctl start bluetooth-button # localbrowser already has button events
+	elif [[ -e $dirshm/btsource ]]; then
+		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
+		systemctl start bluez-dbus
+	fi
+	[[ $( bluealsa-cli list-pcms ) ]] && systemctl start bluez-volume
 }
 bluetoothSinkSource() {
 	local info

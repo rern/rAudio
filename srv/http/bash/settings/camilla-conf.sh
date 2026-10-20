@@ -81,6 +81,6 @@ card=$( getVar card $dirshm/output )
 hwparams=$( timeout 0.1 aplay -D hw:$card --dump-hw-params /dev/zero 2>&1 \
 				| sed -n -E '/^ACCESS.*MMAP/,/^TICK/ {/^(FORMAT|CHANNELS|RATE)/ p}' )
 echo "$hwparams" > $dirshm/hwparams
-bluealsaServices
+bluetoothServices
 
 exit 0

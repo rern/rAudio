@@ -472,7 +472,8 @@ pushStatus() {
 	$dirbash/status-push.sh
 }
 pushVolume() {
-	$dirbash/status -P '{ "channel": "volume", "data": { "val": '$1' } }'
+	[[ $2 ]] && refresh='"type": "refresh", '
+	$dirbash/status -P '{ "channel": "volume", "data": { '$refresh'"val": '$1$' } }'
 	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
 }
 pushWebsocket() {
@@ -623,9 +624,9 @@ volumeMpdRestore() {
 	file_volume=$dirsystem/volume
 	[[ -e $file_volume && ! -e $dirsystem/camilladsp ]] && volumeMpd $( < $file_volume )
 	rm -f $file_volume
-	[[ $TYPE != btsource ]] && return
+	[[ ! $MAC ]] && return
 	
-	sed -n -E '/source]$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
+	sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC > $dirsystem/$MAC
 }
 volume.BlueAlsa() {
 	local line val
@@ -658,8 +659,7 @@ volume.Mpd() {
 volume.set() {
 	FN_VOLUME=$( volumeFunction )
 	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
-		[[ -e $dirshm/btmixer ]] && mixer=$( < $dirshm/btmixer ) || mixer=$( < $dirshm/btmixer_source )
-		amixer -MqD bluealsa sset "$mixer" $1
+		amixer -MqD bluealsa sset "$( bluetoothControl )" $1
 	else
 		$FN_VOLUME $1
 	fi
