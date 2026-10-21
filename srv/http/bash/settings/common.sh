@@ -58,16 +58,6 @@ bluetoothSinkSource() {
 		echo bluetooth
 	fi
 }
-bluetooth_volumeStatus() {
-	local max
-	[[ -e  $dirsystem/volumelimit ]] && . <( grep ^max $dirsystem/volumelimit.conf ) || max=100
-	echo '
-, "sink"       : "'$( getContent $dirshm/sink )'"
-, "sinkmixer"  : "'$( [[ -e $dirshm/sink ]] && amixer -D bluealsa | head -n 1 | cut -d"'" -f2 )'"
-, "source"     : '$( exists $dirshm/source )'
-, "volumelimit" : '$( (( $max < 100 )) && echo true || echo false )'
-, "volumemax"   : '$max
-}
 conf2json() {
 	local file json k keys only l lines v
 	file=$1
@@ -114,6 +104,20 @@ data2jsonPatch() {
 		s/,\s*,/, false,/g;  # ..., , ... > , false,
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
+}
+dataCamilla_Player() {
+	local max
+	[[ -e  $dirsystem/volumelimit ]] && max=$( getVar max $dirsystem/volumelimit.conf ) || max=100
+	echo '
+, "play"        : '$( jq .play $dirshm/status.json )'
+, "player"      : "'$( < $dirshm/player )'"
+, "pllength"    : '$( mpc status %length% )'
+, "sink"        : "'$( getContent $dirshm/sink )'"
+, "sinkmixer"   : "'$( [[ -e $dirshm/sink ]] && amixer -D bluealsa | head -n 1 | cut -d"'" -f2 )'"
+, "source"      : '$( exists $dirshm/source )'
+, "state"       : "'$( jq -r .state $dirshm/status.json )'"
+, "volumelimit" : '$( (( $max < 100 )) && echo true || echo false )'
+, "volumemax"   : '$max
 }
 enableFlagSet() {
 	local file

@@ -36,6 +36,6 @@ data='
 , "state"      : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
-data+=$( bluetooth_volumeStatus )
+data+=$( dataCamilla_Player )
 
 data2json "$data" $1
