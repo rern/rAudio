@@ -36,6 +36,7 @@ data='
 , "state"      : "'$( jq -r .state $dirshm/status.json )'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
-data+=$( dataCamilla_Player )
+##########
+data+=$( dataPlayback )
 
 data2json "$data" $1

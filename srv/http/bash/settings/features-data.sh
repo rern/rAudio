@@ -8,8 +8,10 @@
 
 . /srv/http/bash/common.sh
 
-data+=$( settingsActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
-data+=$( settingsEnabled \
+##########
+data+=$( dataActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
+##########
+data+=$( dataEnabled \
 			$dirmpdconf httpd.conf \
 			$dirsystem ap audiocd autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )

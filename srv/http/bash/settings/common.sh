@@ -105,7 +105,25 @@ data2jsonPatch() {
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
 }
-dataCamilla_Player() {
+dataActive() {
+	local data pkg
+	for pkg in $@; do
+		data+='
+, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
+	done
+	echo "$data"
+}
+dataEnabled() {
+	local data dir file
+	for file in $@; do
+		[[ ${file:0:1} == / ]] && dir=$file && continue
+
+		data+='
+, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
+	done
+	echo "$data"
+}
+dataPlayback() {
 	local max
 	[[ -e  $dirsystem/volumelimit ]] && max=$( getVar max $dirsystem/volumelimit.conf ) || max=100
 	echo '
@@ -291,24 +309,6 @@ pushDirCounts() {
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
-}
-settingsActive() {
-	local data pkg
-	for pkg in $@; do
-		data+='
-, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
-	done
-	echo "$data"
-}
-settingsEnabled() {
-	local data dir file
-	for file in $@; do
-		[[ ${file:0:1} == / ]] && dir=$file && continue
-
-		data+='
-, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
-	done
-	echo "$data"
 }
 sharedData() {
 	[[ ! -e $filesharedip ]] && echo false && return

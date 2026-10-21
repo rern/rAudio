@@ -105,8 +105,10 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
-data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
-data+=$( settingsEnabled \
+##########
+data+=$( dataActive bluetooth nfs-server rotaryencoder smb )
+##########
+data+=$( dataEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
 if pgrep mkfs &> /dev/null; then
@@ -141,14 +143,11 @@ data+='
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "updating"       : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
-	ifwlan0=
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )
-##########
-	data+='
-, "btconnected"    : '$( [[ -e $dirshm/sink || -e $dirshm/source ]] && echo true )
+, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )'
+, "btconnected"    : '$( [[ $( bluetoothctl devices Connected ) ]] && echo true )
 fi
 
 data2json "$data" $1
