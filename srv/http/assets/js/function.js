@@ -1389,7 +1389,7 @@ var PLAYBACK  = {
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 			var time = PROGRESS.visible();
 			var prefix = time ? 'ti' : 'mi';
-			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btsender );
+			$( '#'+ prefix +'-sink' ).toggleClass( 'hide', ! S.sink );
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {
@@ -2535,7 +2535,7 @@ var VOLUME    = {
 		$( '#volmute' ).removeClass( 'bluetooth camilla mute' );
 		if ( S.fnvolume === 'volumeCamilla' ) {
 			$( '#volmute' ).addClass( 'camilla' );
-		} else if ( S.btsender ) {
+		} else if ( S.sink ) {
 			$( '#volmute' ).addClass( 'bluetooth' );
 		} else if ( mute ) {
 			$( '#volmute' ).addClass( 'mute' );

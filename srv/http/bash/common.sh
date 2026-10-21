@@ -381,7 +381,7 @@ playerStop() {
 			rm -f $dirshm/{coverart,elapsed,timestamp}
 			;;
 		bluetooth )
-			rm -f $dirshm/btsource
+			rm -f $dirshm/{sink,source,source_dbus}
 			systemctl restart bluetooth
 			volumeMpdRestore
 			;;
@@ -587,7 +587,7 @@ volume() {
 	fi
 }
 volumeBlueAlsa() {
-	amixer -MqD bluealsa sset "$2" $1%
+	amixer -MqD bluealsa:$2 sset A2DP $1%
 }
 volumeCamilla() {
 	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
@@ -611,7 +611,7 @@ volumeCamilla() {
 volumeFunction() {
 	if [[ -e $dirsystem/camilladsp ]]; then
 		echo volumeCamilla
-	elif [[ -e $dirshm/btmixer_source || ( -e $dirshm/btmixer && ! -e $dirsystem/devicewithbt ) ]]; then
+	elif [[ -e $dirshm/source || ( -e $dirshm/sink && ! -e $dirsystem/devicewithbt ) ]]; then
 		echo volumeBlueAlsa
 	else
 		echo volumeMpd
@@ -692,7 +692,7 @@ volume.Mpd() {
 volume.set() {
 	FN_VOLUME=$( volumeFunction )
 	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
-		amixer -MqD bluealsa sset "$( bluetoothControl )" $1
+		volumeBlueAlsa $1 $( < $dirshm/sink )
 	else
 		$FN_VOLUME $1
 	fi

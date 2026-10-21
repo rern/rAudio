@@ -137,7 +137,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librandom'
-			, 'mute',   'btsender', 'libupdate', 'addons',  'relays',  'stoptimer' ];
+			, 'mute',   'sink',     'libupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
 	$blink    = $localhost || $id !== 'libupdate' ? '' : ' blink';

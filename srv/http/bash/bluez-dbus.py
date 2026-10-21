@@ -7,7 +7,7 @@ import time
 from gi.repository import GLib
 from subprocess import Popen
 
-file_btsource = '/srv/http/data/shm/btsource'
+file_dbus = '/srv/http/data/shm/source_dbus'
 file_player   = '/srv/http/data/shm/player'
 STARTED       = False
 
@@ -38,7 +38,7 @@ def property_changed( interface, changed, invalidated, path ):
                 fileWrite( file_player, 'bluetooth' )
             statusPush()
         elif name == 'Player':
-            fileWrite( file_btsource, value )
+            fileWrite( file_dbus, value )
 
 def main():
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )

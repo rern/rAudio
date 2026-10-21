@@ -1,6 +1,6 @@
 <?php
 $hreficon  = 'href="/assets/img/icon.png?v=1787386245"';
-$hash      = '?v=1787386245'; // for css and js
+$hash      = '?v='.time();
 $dirassets = '/srv/http/assets/';
 $dirdata   = '/srv/http/data/';
 $dirsystem = $dirdata.'system/';

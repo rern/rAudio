@@ -47,7 +47,7 @@ mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh # >>>>>>>>>>>>>>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
+. $dirsettings/player-asound.sh # >>>>>>>>>>>>>>> $BT_SINK, $CAMILLADSP, $EQUALIZER
 
 if [[ $CAMILLADSP ]]; then
 	systemctl -q is-active camilladsp && ACTIVE=1
@@ -69,17 +69,16 @@ $( cat $file_log )"
 	fi
 fi
 
-if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
+if [[ -e $dirshm/startup && ! $BT_SINK ]]; then
 	. <( grep ^name $dirshm/output )
 	[[ $name != $NAME ]] && notify output 'Output Device' "$NAME"
 fi
 
 # outputs -----------------------------------------------------------------------------
-if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then
-	# no mac address needed - bluealsa already includes mac of latest connected device
+if [[ $BT_SINK && ! $CAMILLADSP ]]; then
 	[[ ! -e $dirsystem/devicewithbt ]] && BT_ONLY=1
 	hw=bluealsa
-	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+#	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
 	pcm=$( bluealsa-cli list-pcms | grep /sink$ )
 	if [[ $pcm ]]; then
@@ -100,12 +99,12 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	[[ $usbdac ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
-	if [[ $CAMILLADSP && ! -e $dirshm/btsource ]]; then
+	if [[ $CAMILLADSP && ! -e $dirshm/source ]]; then
 		hw=hw:Loopback,1
-		hwspotifyd=plughw:Loopback,1
+#		hwspotifyd=plughw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $EQUALIZER ]]; then
-		[[ $BLUETOOTH ]] && mixertype=software
+		[[ $BT_SINK ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
 		AUDIOOUTPUT='
@@ -176,8 +175,8 @@ fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 volumeFunction > $dirshm/fn_volume
 
-if [[ ! $CAMILLADSP && $( bluealsa-cli list-pcms ) ]]; then # restore bluetooth saved volume
-	mac=$( dbuspath_mac mac )
+if [[ ! $CAMILLADSP && ( -e $dirshm/sink || -e $dirshm/source ) ]]; then # restore bluetooth saved volume
+	[[ -e $dirshm/sink ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
 	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 		percent=$( < $dirsystem/$mac )
 	elif [[ -e $dirshm/volume ]]; then
@@ -190,7 +189,7 @@ if [[ ! $CAMILLADSP && $( bluealsa-cli list-pcms ) ]]; then # restore bluetooth 
 		(( $percent > 30 )) && percent=30
 	fi
 	systemctl stop bluez-volume
-	amixer -MqD bluealsa sset "$( bluetoothControl )" $percent%
+	amixer -MqD bluealsa:$mac sset A2DP $percent%
 	pushData volume $percent refresh
 	systemctl start bluez-volume
 fi
@@ -201,10 +200,10 @@ if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 fi
-[[ $CARD == -1 && ! $BLUETOOTH ]] && exit
+[[ $CARD == -1 && ! $BT_SINK ]] && exit
 # --------------------------------------------------------------------
 # renderers
-[[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && MIXER_NO=1
+[[ ! $mixer || $BT_SINK || $CAMILLADSP || $EQUALIZER ]] && MIXER_NO=1
 
 if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf

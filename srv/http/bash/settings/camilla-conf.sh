@@ -5,13 +5,14 @@
 . /srv/http/bash/common.sh
 . $dirshm/output # $card, $name
 
-[[ -e $dirshm/btmixer ]] && SINK=1 && icon=bluetooth
-[[ -e $dirshm/btsource ]] && SOURCE=1 && icon=btsender
+[[ -e $dirshm/sink ]] && SINK=1 && icon=bluetooth
+[[ -e $dirshm/source ]] && SOURCE=1 && icon=btsender
 
 if [[ ( $SINK && ! -e $dirsystem/devicewithbt ) || $SOURCE ]]; then
-	read dbuspath mac < <( dbuspath_mac )
-	[[ ! $dbuspath ]] && echo 'BlueALSA mixer not found.' && exit 1
+	dbus_path=$( bluealsa-cli list-pcms | grep a2dpsrc )
+	[[ ! $dbus_path ]] && echo 'BlueALSA mixer not found.' && exit 1
 #-------------------------------------------------------------------------------
+	[[ $SINK ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
 	file_config=$dircamilladsp/$mac
 	samplerate=$( bluealsa-aplay -L | awk '/Hz$/ {print $(NF-1)}' )
 else
@@ -46,7 +47,7 @@ if [[ ! $EXISTING ]]; then
   capture:\
     type: Bluez\
     channels: 2\
-    dbus_path: '$dbuspath'\
+    dbus_path: '$dbus_path'\
     format: S16_LE
 				' -e '
 					s/(adjust_period:).*/\1 3/

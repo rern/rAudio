@@ -60,10 +60,10 @@ i {
 .i-bluetooth::before,
 .i-volume.bluetooth::before,
 .i-btreceiver::before,
-.i-btsink::before          { content: '\F51A' }
+.i-sink::before          { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }
 .i-btsender::before,
-.i-btsource::before,
+.i-source::before,
 .i-volume.btsender::before { content: '\F51B' }
 .i-bypass::before          { content: '\F56F' }
 .i-camilla::before,

@@ -35,7 +35,6 @@ bluetooth )
 	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
-	bluetoothControl > $dirshm/btmixer
 	pushRefresh netowrks player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;

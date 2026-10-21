@@ -148,7 +148,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )
 ##########
 	data+='
-, "btconnected"    : '$( [[ -e $dirshm/btmixer || -e $dirshm/btsource ]] && echo true )
+, "btconnected"    : '$( [[ -e $dirshm/sink || -e $dirshm/source ]] && echo true )
 fi
 
 data2json "$data" $1

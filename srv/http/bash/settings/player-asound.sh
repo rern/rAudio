@@ -36,8 +36,8 @@ if [[ ! $dirbash ]]; then # if run directly
 	NAME=$name
 fi
 
-if [[ -e $dirshm/btmixer ]]; then
-	BLUETOOTH=1
+if [[ -e $dirshm/sink ]]; then
+	BT_SINK=1
 ########
 	ASOUNDCONF+='
 pcm.bluealsa {
@@ -98,7 +98,7 @@ defaults.ctl.card '$CARD'
 	systemctl stop camilladsp &> /dev/null
 	rmmod snd-aloop &> /dev/null
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $BLUETOOTH ]]; then
+		if [[ $BT_SINK ]]; then
 			slavepcm=bluealsa
 		elif [[ $CARD != -1 ]]; then
 			slavepcm='"plughw:'$CARD',0"'

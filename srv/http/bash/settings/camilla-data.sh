@@ -5,13 +5,6 @@
 . /srv/http/bash/common.sh
 . $dirshm/output
 
-if [[ -e $dirshm/btmixer ]]; then
-	bluetooth=true
-	btmixer=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
-else
-	bluetooth=false
-	mixer=$( getVar mixer $dirshm/output )
-fi
 if [[ -e $file_volumemute ]]; then
 	volume=0
 	volumemute=$( < $file_volumemute )
@@ -31,20 +24,18 @@ files=$( ls $dircamilladsp/raw )
 ls+=', "raw": '$( line2array "$files" )
 ##########
 data='
-, "bluetooth"   : '$bluetooth'
-, "btmixer"     : "'$btmixer'"
-, "btsource"    : '$( exists $dirshm/btsource )'
-, "configname"  : "'$( basename "$file_config" )'"
-, "control"     : "'$mixer'"
-, "fileconfig"  : "'$file_config'"
-, "ls"          : { '${ls:1}' }
-, "mixer"       : "'$mixer'"
-, "play"        : '$( jq .play $dirshm/status.json )'
-, "player"      : "'$( < $dirshm/player )'"
-, "pllength"    : '$( mpc status %length% )'
-, "state"       : "'$( jq -r .state $dirshm/status.json )'"
-, "volume"      : '$volume'
-, "volumemute"  : '$volumemute
-data+=$( volumeLimit )
+, "bluetooth"  : '$( exists $dirshm/sink )'
+, "configname" : "'$( basename "$file_config" )'"
+, "control"    : "'$mixer'"
+, "fileconfig" : "'$file_config'"
+, "ls"         : { '${ls:1}' }
+, "mixer"      : "'$( getVar mixer $dirshm/output )'"
+, "play"       : '$( jq .play $dirshm/status.json )'
+, "player"     : "'$( < $dirshm/player )'"
+, "pllength"   : '$( mpc status %length% )'
+, "state"      : "'$( jq -r .state $dirshm/status.json )'"
+, "volume"     : '$volume'
+, "volumemute" : '$volumemute
+data+=$( bluetooth_volumeStatus )
 
 data2json "$data" $1

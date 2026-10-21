@@ -18,7 +18,7 @@ touch /dev/shm/bt
 
 . /srv/http/bash/common.sh
 
-rm -f $dirshm/{btmixer,btmixer_source,btsource}
+rm -f $dirshm/{sink,source,source_dbus}
 playerStop
 
 ALIAS_TYPE() {
@@ -152,13 +152,10 @@ fi
 
 if [[ $ACTION == connect ]]; then
 	bt.pcm
-	mixer="$ALIAS A2DP"
-	if [[ $TYPE == btsink ]]; then
-		echo $mixer > $dirshm/btmixer
-	else
-		echo $mixer > $dirshm/btmixer_source
+	echo $MAC > $dirshm/$TYPE
+	if [[ $TYPE == source ]]; then
 		echo bluetooth > $dirshm/player
-		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/btsource
+		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/source_dbus
 		[[ ! -e $dirsystem/$MAC ]] && volume.value > $dirshm/volume
 		mixer.0dB
 	fi

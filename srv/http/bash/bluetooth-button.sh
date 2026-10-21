@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-mac=$( bluetoothctl show | sed -E -n '1 {s/.* (.*) .*/\L\1/; p}' )
+mac=$( bluetoothctl list | awk '/default]$/ {print $2}' )
 for i in {0..3}; do
 	grep -q $mac /proc/bus/input/devices && break || sleep 1
 done

@@ -1164,7 +1164,7 @@ var RENDER    = {
 			var dev = DEV[ d ];
 			var data = COMMON.json.clone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ ( S.btmixer || S.mixer );
+			if ( d === 'playback' ) device += ' - '+ ( S.sinkmixer || S.mixer );
 			if ( data.format === null ) data.format = '(auto)';
 			[ 'device', 'labels', 'link_mute_control', 'link_volume_control', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ICON( d === 'capture' ? 'input' : 'output' )
@@ -1416,7 +1416,7 @@ var RENDER    = {
 		playbackIcon();
 		$( 'heading i' ).eq( 0 ).prop( 'class', 'i-'+ S.player );
 		$( '#divvolume' ).removeClass( 'hide' );
-		$( '#divvolume .i-volume' ).toggleClass( 'hide', ! S.btsource && S.mixer === '' );
+		$( '#divvolume .i-volume' ).toggleClass( 'hide', S.mixer === '' && S.sink === '' && ! S.source );
 		VOLUME.set();
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		$( '#divconfiguration .i-btsender' ).toggleClass( 'hide', ! S.bluetooth );

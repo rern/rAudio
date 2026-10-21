@@ -139,7 +139,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
-	[[ -e $dirshm/btmixer ]] && echo && statusCmd 'bluealsa-aplay -L'
+	[[ -e $dirshm/sink ]] && echo && statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;

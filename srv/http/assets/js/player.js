@@ -241,9 +241,9 @@ function renderPage() {
 		if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
-	if ( S.btmixer ) {
+	if ( S.sink ) {
 		$( '#bluealsa' ).html( '<option>BlueALSA</option>' );
-		$( '#btmixer' ).html( '<option>'+ S.btmixer.replace( ' A2DP', '' ) +'</option>' );
+		$( '#btmixer' ).html( '<option>'+ S.sinkmixer +'</option>' );
 		$( '#setting-btmixer' ).toggleClass( 'hide', ! S.camilladsp );
 		$( '#divbluealsa, #divbtmixer' ).removeClass( 'hide' );
 	} else {
@@ -254,12 +254,12 @@ function renderPage() {
 		if ( S[ k ] ) $( '#divoutput heading' ).prepend( ICON( k ) );
 	} );
 	if ( S.asoundcard === -1 ) {
-		$( '#divoutput' ).toggleClass( 'hide', S.btmixer === '' );
+		$( '#divoutput' ).toggleClass( 'hide', S.sink === '' );
 		$( '#divbitperfect' ).addClass( 'hide' );
 	} else {
 		var novolume   = ! [ 'camilladsp', 'crossfade', 'equalizer', 'mixertype', 'normalization', 'replaygain', 'soxr' ].some( k => S[ k ] );
 		$( '#divoutput' ).removeClass( 'hide' );
-		if ( S.btmixer && ! S.devicewithbt ) {
+		if ( S.sink && ! S.devicewithbt ) {
 			$( '#divdevice, #divmixer, #divbitperfect' ).addClass( 'hide' );
 		} else {
 			$( '#divdevice, #divmixer, #divbitperfect' ).removeClass( 'hide' );

@@ -144,7 +144,7 @@ function STATUS( id, arg, info ) {
 }
 var MIXER = { // player.js, camilla.js
 	  command  : val => {
-		BASH( [ S.btmixer ? 'mixer.btmixer' : 'mixer.mixer', val +'%', V.control, 'CMD TARGET CONTROL' ] );
+		BASH( [ S.sink ? 'mixer.sink' : 'mixer.mixer', val +'%', V.control, 'CMD TARGET CONTROL' ] );
 	}
 	, refresh  : () => {
 		setTimeout( () => BASH( [ 'mixer.value' ], values => MIXER.set( values ), 'json' ), 300 );
@@ -161,15 +161,15 @@ var MIXER = { // player.js, camilla.js
 		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '-' );
 	}
 	, volume   : values => {
-		if ( S.btmixer ) {
-			V.control = S.btmixer;
+		if ( S.sink ) {
+			V.control = S.sink;
 		} else {
 			V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
 		}
 		INFO( {
-			  icon       : S.btmixer ? 'bluetooth' : 'volume'
-			, title      : S.btmixer ? 'Bluetooth Volume' : 'Mixer Volume'
-			, list       : [ V.control.replace( ' A2DP', '' ), 'range' ]
+			  icon       : S.sink ? 'bluetooth' : 'volume'
+			, title      : S.sink ? 'Bluetooth Volume' : 'Mixer Volume'
+			, list       : [ S.sinkmixer || S.mixer, 'range' ]
 			, footer     : MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
@@ -290,7 +290,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function playbackIcon() {
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
-			.toggleClass( 'disabled', S.pllength === 0 || ( ! S.play && ( S.btsource || S.player !== 'mpd' ) ) );
+			.toggleClass( 'disabled', S.pllength === 0 || ( ! S.play && ( S.source || S.player !== 'mpd' ) ) );
 	}
 	W = {
 		  ...W // from common.js

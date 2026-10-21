@@ -27,7 +27,7 @@ fi
 [[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla.sh saveconfig
 if [[ -s $dirshm/Connected ]]; then
 	while read mac; do
-		[[ $( bluetoothSinkSource $mac ) != btsource ]] && connected+=$mac$'\n'
+		[[ $( bluetoothSinkSource $mac ) != source ]] && connected+=$mac$'\n'
 	done < <( cut -d' ' -f2 $dirshm/Connected )
 	[[ $connected ]] && echo "$connected" > $dirsystem/btconnected
 fi

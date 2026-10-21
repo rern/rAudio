@@ -34,7 +34,7 @@ confswitch )
 devices )
 	declare -A CHANNELS DEVICES FORMATS SAMPLINGS
 	# capture
-	if [[ -e $dirshm/btsource ]]; then # send from source client
+	if [[ -e $dirshm/source ]]; then # send from source client
 		DEVICES[c]='{ "BlueALSA": "Bluez" }'
 		DEV=bluealsa
 	else
@@ -42,7 +42,7 @@ devices )
 		DEV=Loopback
 	fi
 	# playback
-	if [[ -e $dirshm/btmixer ]]; then # send from rAudio
+	if [[ -e $dirshm/sink ]]; then # send from rAudio
 		DEVICES[p]='{ "BlueALSA": "bluealsa" }'
 		DEV+=' bluealsa'
 	else
