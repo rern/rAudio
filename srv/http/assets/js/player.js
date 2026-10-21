@@ -253,7 +253,7 @@ function renderPage() {
 	[ 'camilladsp', 'equalizer' ].some( k => {
 		if ( S[ k ] ) $( '#divoutput heading' ).prepend( ICON( k ) );
 	} );
-	if ( S.asoundcard === -1 ) {
+	if ( S.nosound ) {
 		$( '#divoutput' ).toggleClass( 'hide', S.sink === '' );
 		$( '#divbitperfect' ).addClass( 'hide' );
 	} else {

@@ -12,7 +12,6 @@ mixers=$( getContent $dirshm/mixers )
 [[ ! $mixers && -e $dirsystem/camilladsp ]] && mixers='[ "CamillaDSP" ]'
 ##########
 data+='
-, "asoundcard" : '$( getVar card $dirshm/output )'
 , "counts"     : '$( < $dirmpd/counts )'
 , "crossfade"  : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "devices"    : '$( getContent $dirshm/devices )'
@@ -25,6 +24,7 @@ data+='
 }
 , "mixers"     : '$mixers'
 , "mixertype"  : '$( ! grep -q mixertype=none $dirshm/output && echo true )'
+, "nosound"    : '$( exists $dirshm/nosound )'
 , "output"     : '$( conf2json $dirshm/output )'
 , "updatetime" : "'$( getContent $dirmpd/updatetime )'"
 , "updating"   : '$( statusUpdating )'
