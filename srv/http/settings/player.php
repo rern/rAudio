@@ -104,7 +104,7 @@ EOF
 		, 'label'    => 'Device + Bluetooth'
 		, 'help'     => <<< EOF
  · Also output to $L->device when Bluetooth connected.
- · $T->playback volume - $L->mixer volume
+ · $T->playback $B->volume » $L->mixer $B->volume
  · Should be disabled if not used simultaneously
 EOF
 	]
