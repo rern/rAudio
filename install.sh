@@ -14,7 +14,7 @@ alias=r1
 file=/etc/systemd/system/bluetoothbutton.service
 if grep -q bluetoothbutton $file; then
 	sed -i 's/bluetoothbutton/bluetooth-button/' $file
-	mc $file ${file/bluetoothbutton/bluetooth-button}
+	mv $file ${file/bluetoothbutton/bluetooth-button}
 fi
 
 file=/etc/systemd/system/bluealsa.service.d/override.conf
