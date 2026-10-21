@@ -169,7 +169,7 @@ var MIXER = { // player.js, camilla.js
 		INFO( {
 			  icon       : S.sink ? 'bluetooth' : 'volume'
 			, title      : S.sink ? 'Bluetooth Volume' : 'Mixer Volume'
-			, list       : [ S.sinkmixer || S.mixer, 'range' ]
+			, list       : [ S.sinkmixer || V.control, 'range' ]
 			, footer     : MIXER.warning
 			, beforeshow : () => {
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
