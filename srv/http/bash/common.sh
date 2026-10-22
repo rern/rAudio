@@ -455,7 +455,7 @@ EOF
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
-pushOutput() {
+pushPlayer() {
 	$dirbash/status -p
 	pushRefresh player
 }

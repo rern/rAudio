@@ -190,10 +190,7 @@ elif [[ $FN_VOLUME == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 			(( $percent > 30 )) && percent=30
 		fi
 	fi
-	systemctl stop bluez-volume
 	amixer -MqD bluealsa:$mac sset A2DP $percent%
-	pushData volume $percent refresh
-	systemctl start bluez-volume
 fi
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
@@ -204,9 +201,10 @@ if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
 fi
 if [[ $udev_usb == add ]]; then # fix: volumeMpd return -1%
 	pushData output '{ "usb": true }'
-else
+elif [[ $udev_usb == remove ]]; then
 	$dirbash/status -p
-	pushRefresh player
+else
+	$dirbash/status-push.sh
 fi
 [[ $CAMILLADSP ]] && pushRefresh camilla features
 [[ $CARD == -1 && ! $BT_SINK ]] && exit

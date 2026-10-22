@@ -118,8 +118,8 @@ OFF"
 	$dirsettings/player-conf.sh
 	pushData display '{ "volumenone": true }'
 	;;
-pushoutput )
-	pushOutput
+pushplayer )
+	pushPlayer
 	;;
 replaygain )
 	if [[ $ON ]]; then

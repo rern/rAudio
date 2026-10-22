@@ -363,8 +363,8 @@ playlist )
 	[[ $PLAY || $REPLACE ]] && pushStatus
 	pushPlaylist
 	;;
-pushoutput )
-	pushOutput
+pushplayer )
+	pushPlayer
 	;;
 remount )
 	mount -a
