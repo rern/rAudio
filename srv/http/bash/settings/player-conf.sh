@@ -174,7 +174,14 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 ### reset volume
-fn_volume=$( volumeFunction | tee $dirshm/fn_volume )
+if [[ -e $dirsystem/camilladsp ]]; then
+	fn_volume=volumeCamilla
+elif [[ -e $dirshm/source || ( -e $dirshm/sink && ! -e $dirsystem/devicewithbt ) ]]; then
+	fn_volume=volumeBlueAlsa
+else
+	fn_volume=volumeMpd
+fi
+echo $fn_volume > $dirshm/fn_volume
 if [[ $fn_volume == volumeMpd ]]; then
 	volumeMpdRestore
 elif [[ $fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume

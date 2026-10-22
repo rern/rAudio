@@ -154,7 +154,7 @@ if [[ $ACTION == connect ]]; then
 	bt.pcm
 	echo $MAC > $dirshm/$TYPE
 	if [[ $TYPE == source ]]; then
-		[[ $( volumeFunction ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
+		[[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
 		echo bluetooth > $dirshm/player
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/source_dbus
 		mixer.0dB

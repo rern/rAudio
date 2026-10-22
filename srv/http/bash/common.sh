@@ -608,15 +608,6 @@ volumeCamilla() {
 			}' ) # % > db
 	$dirbash/status -c '{ "SetVolume": '$db' }' &> /dev/null
 }
-volumeFunction() {
-	if [[ -e $dirsystem/camilladsp ]]; then
-		echo volumeCamilla
-	elif [[ -e $dirshm/source || ( -e $dirshm/sink && ! -e $dirsystem/devicewithbt ) ]]; then
-		echo volumeBlueAlsa
-	else
-		echo volumeMpd
-	fi
-}
 volumeMpd() {
 	mpc -q volume $1
 }
@@ -696,7 +687,7 @@ volume.Mpd() {
 	mpc status %volume% | tr -cd '0-9'
 }
 volume.set() {
-	FN_VOLUME=$( volumeFunction )
+	FN_VOLUME=$( < $dirshm/fn_volume )
 	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
 		volumeBlueAlsa $1 $( < $dirshm/sink )
 	else
@@ -705,7 +696,7 @@ volume.set() {
 }
 volume.value() {
 	local card line mixer val
-	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( volumeFunction )
+	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( < $dirshm/fn_volume )
 	val=$( ${FN_VOLUME/volume/&.} )
 	if [[ ! $val ]]; then
 		for i in {0..3}; do # some usb might not be ready

@@ -20,8 +20,7 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-FN_VOLUME=$( volumeFunction )
-case $FN_VOLUME in
+case $( < $dirshm/fn_volume ) in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
