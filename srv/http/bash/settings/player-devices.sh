@@ -55,7 +55,7 @@ done <<< $proccardn
 if [[ $usbcard ]]; then
 	CARD=$usbcard
 	NAME=$usbname
-elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
+elif [[ $outputdevice ]]; then # otherwise last card
 	c_n=$( grep "$outputdevice$" <<< $card_name )
 	if [[ $c_n ]]; then
 		CARD=${c_n/^*}

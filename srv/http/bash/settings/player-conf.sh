@@ -20,9 +20,9 @@ pushVolumeNone() {
 mixer_current=$( getVar name $dirshm/output )
 
 if [[ $1 ]]; then
-	usbdac=$1
+	udev_usb=$1
 	touch $dirshm/usbdac_rules
-	if [[ $usbdac == add ]]; then
+	if [[ $udev_usb == add ]]; then
 		touch $dirshm/usbdac
 		alsactl restore # store - saved by cmd.sh - volume.value push
 	else
@@ -89,11 +89,11 @@ fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
-	[[ $usbdac == remove ]] && pushVolumeNone true
+	[[ $udev_usb == remove ]] && pushVolumeNone true
 elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
-	[[ $usbdac ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
+	[[ $udev_usb ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	if [[ $CAMILLADSP && ! -e $dirshm/source ]]; then
 		hw=hw:Loopback,1
 #		hwspotifyd=plughw:Loopback,1
@@ -207,7 +207,7 @@ fi
 if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
 	notify output "Output Device" "$NAME"
 fi
-if [[ $usbdac == add ]]; then
+if [[ $udev_usb == add ]]; then
 	pushData output '{ "usb": true }'
 else
 	$dirbash/status -p
