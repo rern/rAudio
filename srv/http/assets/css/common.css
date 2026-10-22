@@ -140,8 +140,7 @@ i {
 .i-httpd::before,
 .i-webradio::before        { content: '\F55D' }
 .i-info::before            { content: '\F561' }
-.i-input::before,
-.i-source::before          { content: '\F529' }
+.i-input::before           { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before,
