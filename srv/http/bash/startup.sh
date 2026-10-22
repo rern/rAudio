@@ -49,7 +49,9 @@ elif [[ -e /boot/accesspoint ]]; then
 fi
 # pre-configure <<<-----------------------------------------------------------
 file_state=/var/lib/alsa/asound.state # move to ram (/dev/shm)
-cp $file_state.backup $dirshm/asound.state
+[[ ! -e $file_state ]] && mv $file_state{.backup,} # hard power off
+cp $file_state $dirshm/asound.state
+mv $file_state{,.backup}
 ln -s $dirshm/asound.state $file_state
 
 logoLcdOled
