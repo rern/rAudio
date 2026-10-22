@@ -22,13 +22,8 @@ mixer_current=$( getVar name $dirshm/output )
 if [[ $1 ]]; then
 	udev_usb=$1
 	touch $dirshm/usbdac_rules
-	if [[ $udev_usb == add ]]; then
-		touch $dirshm/usbdac
-		alsactl restore # store - saved by cmd.sh - volume.value push
-	else
-		rm -f $dirshm/usbdac
-	fi
 	( sleep 3; rm -f $dirshm/usbdac_rules ) &
+	[[ $udev_usb == add ]] && alsactl restore
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 

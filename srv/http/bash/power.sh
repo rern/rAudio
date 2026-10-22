@@ -24,6 +24,8 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
+cp $dirshm/asound.state /var/lib/alsa/asound.state.backup
+
 [[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla.sh saveconfig
 if [[ -s $dirshm/Connected ]]; then
 	while read mac; do

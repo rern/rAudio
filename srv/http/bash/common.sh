@@ -589,6 +589,7 @@ volume() {
 			sleep 0.2
 		done
 	fi
+	[[ $FN_VOLUME == volumeMpd ]] && alsactl store
 }
 volumeBlueAlsa() {
 	amixer -MqD bluealsa:$2 sset A2DP $1%

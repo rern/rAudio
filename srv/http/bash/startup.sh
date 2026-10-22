@@ -48,6 +48,10 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
+file_state=/var/lib/alsa/asound.state
+cp $file_state.backup $dirshm/asound.state
+ln -s $dirshm/asound.state $file_state
+
 logoLcdOled
 if [[ -e $dirsystem/bluetooth ]]; then
 	modprobe hci_uart
