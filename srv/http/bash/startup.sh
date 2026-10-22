@@ -48,7 +48,7 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-file_state=/var/lib/alsa/asound.state
+file_state=/var/lib/alsa/asound.state # move to ram (/dev/shm)
 cp $file_state.backup $dirshm/asound.state
 ln -s $dirshm/asound.state $file_state
 
