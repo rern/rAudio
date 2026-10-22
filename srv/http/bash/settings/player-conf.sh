@@ -23,7 +23,7 @@ if [[ $1 ]]; then
 	udev_usb=$1
 	touch $dirshm/usbdac_rules
 	( sleep 3; rm -f $dirshm/usbdac_rules ) &
-	[[ $udev_usb == add ]] && alsactl restore
+	[[ $udev_usb == add ]] && alsactl restore # store with volume()
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
