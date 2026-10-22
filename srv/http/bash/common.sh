@@ -455,10 +455,6 @@ EOF
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
-pushPlayer() {
-	$dirbash/status -p
-	pushRefresh player
-}
 pushPlaylist() {
 	local b buffer data
 	[[ -e $dirshm/pushplaylist ]] && return
@@ -489,7 +485,7 @@ pushStatus() {
 }
 pushVolume() {
 	[[ $2 ]] && refresh='"type": "refresh", '
-	$dirbash/status -P '{ "channel": "volume", "data": { '$refresh'"val": '$1$' } }'
+	pushData volume '{ '$refresh'"val": '$1' } }'
 	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
 }
 pushWebsocket() {
@@ -580,11 +576,12 @@ volume() {
 			val=$CURRENT
 			type=mute
 			echo $CURRENT > $file_volumemute
-			pushData volume '{ "type": "mute", "val": '$val' }'
 		else
 			val=$TARGET
+			type=unmute
 			pushVolume $val
 		fi
+		pushData volume '{ "type": "'$type'", "val": '$val' }'
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
@@ -636,7 +633,7 @@ volumeMpdRestore() {
 	if [[ -e $file_volume ]]; then
 		val=$( < $file_volume )
 		volumeMpd $val
-		pushData volume $val refresh
+		pushVolume $val refresh
 		rm -f $file_volume
 	fi
 	[[ ! $MAC ]] && return

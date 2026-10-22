@@ -61,7 +61,6 @@ W             = {  // from websocket.py (server)
 		BANNER( icon, title, message, delay );
 		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
 	}
-	, output    : data => setTimeout( () => BASH( [ 'pushplayer' ] ), 1000 )
 	, power     : data => {
 		var action  = data.type;
 		V[ action ] = true;

@@ -118,9 +118,6 @@ OFF"
 	$dirsettings/player-conf.sh
 	pushData display '{ "volumenone": true }'
 	;;
-pushplayer )
-	pushPlayer
-	;;
 replaygain )
 	if [[ $ON ]]; then
 		echo 'replaygain  "'$MODE'"' > $dirmpdconf/conf/replaygain.conf
