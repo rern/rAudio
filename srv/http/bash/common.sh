@@ -484,8 +484,10 @@ pushStatus() {
 	$dirbash/status-push.sh
 }
 pushVolume() {
+	local data refresh
 	[[ $2 ]] && refresh='"type": "refresh", '
-	pushData volume '{ '$refresh'"val": '$1' } }'
+	data='{ "channel": "volume", "data": { '$refresh'"val": '$1' } }'
+	$dirbash/status -P "$data"
 	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
 }
 pushWebsocket() {
