@@ -24,10 +24,6 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
-file_state=/var/lib/alsa/asound.state
-cp $dirshm/asound.state $file_state.backup
-mv $file_state{.backup,}
-
 [[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla.sh saveconfig
 if [[ -s $dirshm/Connected ]]; then
 	while read mac; do
@@ -57,5 +53,6 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 	DISPLAY=:0 sudo xset dpms force off
 fi
 logoLcdOled
+alsaStateSymLink
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $REBOOT ]] && reboot || poweroff

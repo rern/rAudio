@@ -48,12 +48,7 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-file_state=/var/lib/alsa/asound.state # move to ram (/dev/shm)
-[[ ! -e $file_state ]] && mv $file_state{.backup,} # hard power off
-cp $file_state $dirshm/asound.state
-mv $file_state{,.backup}
-ln -s $dirshm/asound.state $file_state
-
+alsaStateSymLink
 logoLcdOled
 if [[ -e $dirsystem/bluetooth ]]; then
 	modprobe hci_uart
