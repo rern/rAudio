@@ -154,13 +154,11 @@ if [[ $ACTION == connect ]]; then
 	bt.pcm
 	echo $MAC > $dirshm/$TYPE
 	if [[ $TYPE == source ]]; then
+		[[ $( volumeFunction ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
 		echo bluetooth > $dirshm/player
 		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/source_dbus
-		[[ ! -e $dirsystem/$MAC ]] && volume.value > $dirshm/volume
 		mixer.0dB
 	fi
-elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	[[ ! -e $dirsystem/camilladsp ]] && volumeMpdRestore
 fi
 
 [[ ! -e $dirsystem/camilladsp ]] && bluetoothServices # camilla: run by camilla-conf.sh

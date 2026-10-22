@@ -623,8 +623,14 @@ volumeMpd() {
 volumeMpdRestore() {
 	[[ -e $dirsystem/camilladsp ]] && return
 	
+	local db file_volume
 	file_volume=$dirsystem/volume
-	[[ -e $file_volume ]] && volumeMpd $( < $file_volume ) && rm -f $file_volume
+	if [[ -e $file_volume ]]; then
+		val=$( < $file_volume )
+		volumeMpd $val
+		pushData volume $val refresh
+		rm -f $file_volume
+	fi
 	[[ ! $MAC ]] && return
 	 # save bluetooth volume
 	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC )
@@ -687,7 +693,7 @@ volume.Camilla() {
 		}' # db > %
 }
 volume.Mpd() {
-	mpc status %volume% | tr -d %
+	mpc status %volume% | tr -cd '0-9'
 }
 volume.set() {
 	FN_VOLUME=$( volumeFunction )

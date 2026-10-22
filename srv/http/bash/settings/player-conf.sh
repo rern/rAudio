@@ -173,20 +173,24 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
-volumeFunction > $dirshm/fn_volume
-
-if [[ ! $CAMILLADSP && ( -e $dirshm/sink || -e $dirshm/source ) ]]; then # restore bluetooth saved volume
+fn_volume=$( volumeFunction | tee $dirshm/fn_volume )
+if [[ fn_volume == volumeMpd ]]; then
+	volumeMpdRestore
+elif [[ fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 	[[ -e $dirshm/sink ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
 	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 		percent=$( < $dirsystem/$mac )
-	elif [[ -e $dirshm/volume ]]; then
-		percent=$( < $dirshm/volume )
-		rm -f $dirshm/volume
-	elif [[ -e $dirsystem/volumelimit ]]; then
-		percent=$( getVar startup $dirsystem/volumelimit.conf )
 	else
-		percent=$( volume.value )
-		(( $percent > 30 )) && percent=30
+		file_volume=$dirsystem/volume
+		if [[ -e $file_volume ]]; then # use current volume
+			percent=$( < $file_volume )
+			rm -f $file_volume
+		elif [[ -e ${file_volume}limit ]]; then
+			percent=$( getVar startup ${file_volume}limit.conf )
+		else
+			percent=$( volume.value )
+			(( $percent > 30 )) && percent=30
+		fi
 	fi
 	systemctl stop bluez-volume
 	amixer -MqD bluealsa:$mac sset A2DP $percent%
