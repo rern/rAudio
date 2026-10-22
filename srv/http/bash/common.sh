@@ -443,6 +443,10 @@ EOF
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
+pushOutput() {
+	$dirbash/status -p
+	pushRefresh player
+}
 pushPlaylist() {
 	local b buffer data
 	[[ -e $dirshm/pushplaylist ]] && return
@@ -698,17 +702,9 @@ volume.value() {
 	local card line mixer val
 	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( < $dirshm/fn_volume )
 	val=$( ${FN_VOLUME/volume/&.} )
-	if [[ ! $val ]]; then
-		for i in {0..3}; do # some usb might not be ready
-			val=$( ${FN_VOLUME/volume/&.} )
-			[[ $val ]] && break || sleep 1
-		done
-		[[ ! $val ]] && val=-1
-	fi
 	if [[ $1 == push ]]; then
 		pushVolume $val
 	else
 		echo $val
 	fi
-	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 }

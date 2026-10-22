@@ -267,7 +267,7 @@ var SWITCH  = {
 	}
 }
 W.refresh   = data => { // except camilla
-	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
+	if ( PAGE === 'features' && 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 	
 	if ( 'scrobblekey' in data ) {
 		$( '#scrobble' ).trigger( 'click' );

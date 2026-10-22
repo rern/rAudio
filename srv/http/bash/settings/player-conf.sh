@@ -17,6 +17,7 @@ pushVolumeNone() {
 }
 
 [[ $( jq -r .state $dirshm/status.json ) != stop ]] && playerStop
+mixer_current=$( getVar name $dirshm/output )
 
 if [[ $1 ]]; then
 	usbdac=$1
@@ -68,12 +69,6 @@ $( cat $file_log )"
 		[[ ! $ACTIVE ]] && mixer.0dB
 	fi
 fi
-
-if [[ -e $dirshm/startup && ! $BT_SINK ]]; then
-	. <( grep ^name $dirshm/output )
-	[[ $name != $NAME ]] && notify output 'Output Device' "$NAME"
-fi
-
 # outputs -----------------------------------------------------------------------------
 if [[ $BT_SINK && ! $CAMILLADSP ]]; then
 	[[ ! -e $dirsystem/devicewithbt ]] && BT_ONLY=1
@@ -128,7 +123,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			AUDIOOUTPUT+='
 	mixer_control  "'$mixer'"
-	mixer_device   "hw:'$card'"'
+	mixer_device   "'$hw'"'
 			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
 				AUDIOOUTPUT+='
 	replay_gain_handler "mixer"'
@@ -175,16 +170,16 @@ fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 ### reset volume
 if [[ -e $dirsystem/camilladsp ]]; then
-	fn_volume=volumeCamilla
+	FN_VOLUME=volumeCamilla
 elif [[ -e $dirshm/source || ( -e $dirshm/sink && ! -e $dirsystem/devicewithbt ) ]]; then
-	fn_volume=volumeBlueAlsa
+	FN_VOLUME=volumeBlueAlsa
 else
-	fn_volume=volumeMpd
+	FN_VOLUME=volumeMpd
 fi
-echo $fn_volume > $dirshm/fn_volume
-if [[ $fn_volume == volumeMpd ]]; then
+echo $FN_VOLUME > $dirshm/fn_volume
+if [[ $FN_VOLUME == volumeMpd ]]; then
 	volumeMpdRestore
-elif [[ $fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume
+elif [[ $FN_VOLUME == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 	[[ -e $dirshm/sink ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
 	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 		percent=$( < $dirsystem/$mac )
@@ -205,13 +200,20 @@ elif [[ $fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 	pushData volume $percent refresh
 	systemctl start bluez-volume
 fi
-pushStatus
-pushRefresh player
-[[ $CAMILLADSP ]] && pushRefresh camilla features
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 fi
+if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
+	notify output "Output Device" "$NAME"
+fi
+if [[ $usbdac == add ]]; then
+	pushData output '{ "usb": true }'
+else
+	$dirbash/status -p
+	pushRefresh player
+fi
+[[ $CAMILLADSP ]] && pushRefresh camilla features
 [[ $CARD == -1 && ! $BT_SINK ]] && exit
 # --------------------------------------------------------------------
 # renderers
