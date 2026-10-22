@@ -202,7 +202,7 @@ fi
 if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
 	notify output "Output Device" "$NAME"
 fi
-if [[ $udev_usb == add ]]; then
+if [[ $udev_usb == add ]]; then # fix: volumeMpd return -1%
 	pushData output '{ "usb": true }'
 else
 	$dirbash/status -p
