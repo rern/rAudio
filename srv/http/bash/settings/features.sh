@@ -46,6 +46,7 @@ brightness )
 	;;
 camilladsp )
 	if [[ $ON ]]; then
+		[[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
 		touch $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
 	else

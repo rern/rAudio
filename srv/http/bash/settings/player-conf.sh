@@ -173,10 +173,11 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
+### reset volume
 fn_volume=$( volumeFunction | tee $dirshm/fn_volume )
-if [[ fn_volume == volumeMpd ]]; then
+if [[ $fn_volume == volumeMpd ]]; then
 	volumeMpdRestore
-elif [[ fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume
+elif [[ $fn_volume == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 	[[ -e $dirshm/sink ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
 	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 		percent=$( < $dirsystem/$mac )
