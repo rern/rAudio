@@ -205,7 +205,7 @@ fi
 if [[ $udev_usb ]]; then # output and volume changed
 	( sleep 1 # fix: alsa for usb takes more time to be ready
 	  pushVolume $( volume.Mpd ) refresh
-	  pushRefresh player ) &> /dev/null &
+	  pushRefresh player ) &
 else
 	$dirbash/status-push.sh
 fi
