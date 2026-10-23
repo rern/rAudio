@@ -38,7 +38,7 @@ https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
-alsaStateSymLink() { # from startup.sh, power.sh
+alsaSymLink() { # from startup.sh, power.sh
 	local dir_alsa var_alsa var_backup
 	dir_alsa=$dirshm/alsa
 	var_alsa=/var/lib/alsa
