@@ -20,16 +20,16 @@ pushVolumeNone() {
 mixer_current=$( getVar name $dirshm/output )
 
 if [[ $1 ]]; then
-	udev_usb=$1
+	UDEV=$1
 	touch $dirshm/usbdac_rules
 	( sleep 3; rm -f $dirshm/usbdac_rules ) &
-	[[ $udev_usb == add ]] && alsactl restore # store with volume()
+	[[ $UDEV == add ]] && alsactl restore # store with volume()
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
-	. $dirsettings/player-devices.sh # >>>>>>>>>>>>>>> $CARD
+	. $dirsettings/player-devices.sh # >>>>>>>>>>>>>>> $card, $name, $mixer, $mixertype
 else
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
@@ -84,11 +84,11 @@ fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
-	[[ $udev_usb == remove ]] && pushVolumeNone true
+	[[ $UDEV == remove ]] && pushVolumeNone true
 elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
-	[[ $udev_usb ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
+	[[ $UDEV ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
 	if [[ $CAMILLADSP && ! -e $dirshm/source ]]; then
 		hw=hw:Loopback,1
 #		hwspotifyd=plughw:Loopback,1
@@ -201,9 +201,9 @@ fi
 if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
 	notify output "Output Device" "$NAME"
 fi
-if [[ $udev_usb ]]; then # output and volume changed
+if [[ $UDEV ]]; then # output and volume changed
 	( 
-		[[ $udev_usb == add ]] && sleep 0.5 # needs more time to be ready
+		[[ $UDEV == add ]] && sleep 0.5 # needs more time to be ready
 		volume.push $( volume.Mpd ) refresh
 		pushRefresh player
 	) & # fix: missing volume if foreground
