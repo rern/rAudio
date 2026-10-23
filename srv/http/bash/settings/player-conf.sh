@@ -190,7 +190,6 @@ elif [[ $FN_VOLUME == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 			(( $percent > 30 )) && percent=30
 		fi
 	fi
-	systemctl stop bluez-volume
 	amixer -MqD bluealsa:$mac sset A2DP $percent%
 	volume.push $percent refresh
 	systemctl start bluez-volume

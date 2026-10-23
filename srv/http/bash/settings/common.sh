@@ -37,14 +37,13 @@ bluetoothProperty() {
 	esac
 }
 bluetoothServices() {
-	systemctl stop bluealsa-aplay bluetooth-button bluez-dbus bluez-volume
+	systemctl stop bluealsa-aplay bluetooth-button bluez-dbus bluez-volume # bluez-volume - player-conf.sh
 	if [[ -e $dirshm/sink ]]; then
 		! systemctl -q is-active localbrowser && systemctl start bluetooth-button # localbrowser already has button events
 	elif [[ -e $dirshm/source ]]; then
 		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
 		systemctl start bluez-dbus
 	fi
-	[[ $( bluealsa-cli list-pcms ) ]] && systemctl start bluez-volume
 }
 bluetoothSinkSource() {
 	local info
