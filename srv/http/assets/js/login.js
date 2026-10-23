@@ -2,6 +2,19 @@ V = { localhost : location.hostname === 'localhost' }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+WS           = new WebSocket( 'ws://'+ location.host +':8080' );
+WS.onopen    = () => {
+	var interval = setInterval( () => {
+		if ( WS.readyState === 1 ) {
+			clearInterval( interval );
+			WS.send( '{ "client": "add" }' );
+		}
+	}, 100 );
+}
+WS.onmessage = message => {
+	if ( JSON.parse( message.data ).channel === 'startup' ) location.reload();
+}
+
 function blink() {
 	if ( V.localhost ) {
 		setInterval( () => E.logo.css( 'opacity', E.logo.css( 'opacity' ) == 0 ? 1 : 0 ), 1000 );
@@ -23,11 +36,6 @@ V.password  = V.type === 'password';
 
 if ( ! V.password ) $( '#message' ).remove();
 E.input.attr( 'spellcheck', 'false' );
-WS           = new WebSocket( 'ws://'+ location.host +':8080' );
-WS.onopen    = () => WS.send( '{ "client": "add" }' );
-WS.onmessage = message => {
-	if ( JSON.parse( message.data ).channel === 'startup' ) location.reload();
-}
 if ( V.type === 'boot' ) { // boot
 	blink();
 	return
