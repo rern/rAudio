@@ -206,7 +206,7 @@ if [[ $udev_usb ]]; then # output and volume changed
 		[[ $udev_usb == add ]] && sleep 0.5 # needs more time to be ready
 		volume.push $( volume.Mpd ) refresh
 		pushRefresh player
-	) &
+	) & # fix: missing volume if foreground
 else
 	$dirbash/status-push.sh
 fi
