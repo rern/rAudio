@@ -45,10 +45,9 @@ alsaSymLink() { # from startup.sh, power.sh
 	var_backup=$var_alsa.backup
 	if [[ $0 == *startup.sh ]]; then
 		mkdir $dir_alsa
-		[[ ! -e $var_backup ]] && cp -r $var_alsa $var_backup # hard power off
+		[[ ! -e $var_backup ]] && cp -r $var_alsa $var_backup
 		cp $var_backup/asound.state $dir_alsa
-		rm -rf $var_alsa
-		ln -sfn $dir_alsa $var_alsa
+		ln -sf $dir_alsa $var_alsa
 	elif [[ $0 == *power.sh ]]; then
 		cmp -s $dir_alsa/asound.state $var_backup/asound.state && return
 #...............................................................................
