@@ -300,6 +300,7 @@ mixer.value() {
 	fi
 	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
 	echo '{ "val": '$val', "db": '$db' }'
+	alsactl store
 }
 pushDirCounts() {
 	local tf

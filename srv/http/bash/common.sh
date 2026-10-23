@@ -442,15 +442,9 @@ pushData() { # send to websocket.py (server)
 	elif [[ $channel == mpdupdate && $data != '{ "updating": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
-		data=$( tr -d '\n' <<< $data )
-		data=$( pushDataSet $channel "$data" )
+		data='{ "channel": "'$channel'", "data": '$( tr -d '\n' <<< $data )' }'
 	fi
 	$dirbash/status -B "$data"
-}
-pushDataSet() {
-	cat << EOF
-{ "channel": "$1", "data": $2 }
-EOF
 }
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
@@ -465,8 +459,7 @@ pushPlaylist() {
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data=$( php /srv/http/playlist.php current )
-		data=$( pushDataSet playlist "$data" )
+		data='{ "channel": "playlist", "data": '$( php /srv/http/playlist.php current )' }'
 		bytes=$( printf '%s' "$data" | wc -c )
 		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
 		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
@@ -483,17 +476,9 @@ pushRefresh() {
 pushStatus() {
 	$dirbash/status-push.sh
 }
-pushVolume() {
-	local data refresh
-	[[ $2 ]] && refresh='"type": "refresh", '
-	data='{ "channel": "volume", "data": { '$refresh'"val": '$1' } }'
-	$dirbash/status -P "$data"
-	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
-}
 pushWebsocket() {
 	local data
-	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
-	data=$( pushDataSet $1 "$data" )
+	data='{ "channel": "'$1'", "data": '$( tr -d '\n' <<< ${@:2} )' }'
 	$dirbash/status -P "$data"
 }
 quoteEscape() { # backtick ` - no need to escape for json
@@ -581,17 +566,15 @@ volume() {
 		else
 			val=$TARGET
 			type=unmute
-			pushVolume $val
+			volume.push $val
 		fi
-		pushData volume '{ "type": "'$type'", "val": '$val' }'
+		volume.push $val $type
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		$FN_VOLUME $TARGET "$CONTROL"
-		[[ ! $DRAG_PRESS ]] && volume.value push
 	else
-		pushVolume $TARGET
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
@@ -635,7 +618,7 @@ volumeMpdRestore() {
 	if [[ -e $file_volume ]]; then
 		val=$( < $file_volume )
 		volumeMpd $val
-		pushVolume $val refresh
+		volume.push $val refresh
 		rm -f $file_volume
 	fi
 	[[ ! $MAC ]] && return
@@ -702,6 +685,15 @@ volume.Camilla() {
 volume.Mpd() {
 	mpc status %volume% | tr -cd '0-9'
 }
+volume.push() {
+	local data type
+	[[ $2 ]] && type='"type": "'$2'", '
+	data='{ "channel": "volume", "data": { '$type'"val": '$1' } }'
+	$dirbash/status -P "$data"
+	[[ $2 == mute ]] && return
+	
+	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
+}
 volume.set() {
 	FN_VOLUME=$( < $dirshm/fn_volume )
 	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
@@ -714,8 +706,8 @@ volume.value() {
 	local card line mixer val
 	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( < $dirshm/fn_volume )
 	val=$( ${FN_VOLUME/volume/&.} )
-	if [[ $1 == push ]]; then
-		pushVolume $val
+	if [[ $1 ]]; then
+		volume.push $val $1
 	else
 		echo $val
 	fi
