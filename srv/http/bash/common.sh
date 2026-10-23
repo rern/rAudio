@@ -39,15 +39,20 @@ alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
 alsaStateSymLink() { # from startup.sh, power.sh
-	file_state=/var/lib/alsa/asound.state # move to ram (/dev/shm)
+	local dir_alsa var_alsa var_backup
+	dir_alsa=$dirshm/alsa
+	var_alsa=/var/lib/alsa
+	var_backup=$var_alsa.backup
 	if [[ $0 == *startup.sh ]]; then
-		[[ ! -e $file_state ]] && mv $file_state{.backup,} # hard power off
-		cp $file_state $dirshm/asound.state
-		mv $file_state{,.backup}
-		ln -s $dirshm/asound.state $file_state
+		mkdir $dir_alsa
+		[[ ! -e $var_backup ]] && cp -r $var_alsa $var_backup # hard power off
+		cp $var_backup/asound.state $dir_alsa
+		rm -rf $var_alsa
+		ln -sfn $dir_alsa $var_alsa
 	elif [[ $0 == *power.sh ]]; then
-		cp $dirshm/asound.state $file_state.backup
-		mv $file_state{.backup,}
+		cmp -s $dir_alsa/asound.state $var_backup/asound.state && return
+#...............................................................................
+		cp $dir_alsa/asound.state $var_backup
 	fi
 }
 appendSortUnique() {
