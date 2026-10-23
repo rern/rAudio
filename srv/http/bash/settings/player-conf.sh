@@ -202,9 +202,11 @@ if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
 	notify output "Output Device" "$NAME"
 fi
 if [[ $udev_usb ]]; then # output and volume changed
-	( sleep 1 # fix: alsa for usb takes more time to be ready
-	  volume.push $( volume.Mpd ) refresh
-	  pushRefresh player ) &
+	( 
+		[[ $udev_usb == add ]] && sleep 0.5 # needs more time to be ready
+		volume.push $( volume.Mpd ) refresh
+		pushRefresh player
+	) &
 else
 	$dirbash/status-push.sh
 fi
