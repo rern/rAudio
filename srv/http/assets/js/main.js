@@ -761,7 +761,9 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 
-	if ( V.search ) {
+	if ( V.search && V.query.length < 2 ) { // back to search list (search > artist > album: back to artist below)
+		V.mode  = '';
+		V.query = [];
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );
 		$( '#lib-title' ).html( ICON( 'search' ) + $( '#lib-search-input' ).val() );
@@ -1064,7 +1066,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! V.search && V.mode.endsWith( 'artist' ) ) {
+	} else if ( ( V.search ? l_mode : V.mode ).endsWith( 'artist' ) ) {
+		if ( V.search ) V.mode = l_mode; // for lsmode album > tracks
 		var query     = { // artist, albumartist
 			  library : 'findartist'
 			, mode    : V.mode
