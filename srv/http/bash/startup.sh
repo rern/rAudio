@@ -48,7 +48,8 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-alsaSymLink
+mv /var/lib/alsa $dirshm/alsa # move to ram
+ln -s $dirshm/alsa /var/lib
 logoLcdOled
 if [[ -e $dirsystem/bluetooth ]]; then
 	modprobe hci_uart

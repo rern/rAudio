@@ -53,6 +53,7 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 	DISPLAY=:0 sudo xset dpms force off
 fi
 logoLcdOled
-alsaSymLink
+rm -rf /var/lib/alsa
+mv $dirshm/alsa /var/lib
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $REBOOT ]] && reboot || poweroff

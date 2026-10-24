@@ -38,23 +38,6 @@ https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 alphaNumeric() {
 	tr -dc [:alnum:] <<< ${@,,}
 }
-alsaSymLink() { # from startup.sh, power.sh
-	local dir_alsa var_alsa var_backup
-	dir_alsa=$dirshm/alsa
-	var_alsa=/var/lib/alsa
-	var_backup=$var_alsa.backup
-	if [[ $0 == *startup.sh ]]; then
-		mkdir $dir_alsa
-		[[ ! -e $var_backup ]] && cp -r $var_alsa $var_backup
-		cp $var_backup/asound.state $dir_alsa
-		rm -rf $var_alsa
-		ln -s $dir_alsa $var_alsa
-	elif [[ $0 == *power.sh ]]; then
-		cmp -s $dir_alsa/asound.state $var_backup/asound.state && return
-#...............................................................................
-		cp $dir_alsa/asound.state $var_backup
-	fi
-}
 appendSortUnique() {
 	local data file lines
 	file=$1

@@ -179,15 +179,9 @@ elif [[ $FN_VOLUME == volumeBlueAlsa ]]; then # restore bluetooth saved volume
 	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
 		percent=$( < $dirsystem/$mac )
 	else
-		file_volume=$dirsystem/volume
-		if [[ -e $file_volume ]]; then # use current volume
-			percent=$( < $file_volume )
-			rm -f $file_volume
-		elif [[ -e ${file_volume}limit ]]; then
-			percent=$( getVar startup ${file_volume}limit.conf )
-		else
-			percent=$( volume.value )
-			(( $percent > 30 )) && percent=30
+		percent=$( volume.value )
+		if (( $percent > 30 )) && [[ ! -e $dirsystem/volumelimit ]]; then
+			percent=30
 		fi
 	fi
 	amixer -MqD bluealsa:$mac sset A2DP $percent%
