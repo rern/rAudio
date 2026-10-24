@@ -87,4 +87,4 @@ mv -f /tmp/{addons,camilladsp,mpdconf} $dirdata
 [[ $KEEPLIBRARY ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
 $dirbash/cmd-list.sh
 
-$dirbash/power.sh reboot
+$dirbash/shutdown.sh reboot

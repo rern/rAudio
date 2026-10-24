@@ -50,4 +50,4 @@ rm -rf $dir_config $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,t
 [[ -e $dirwebradio/img ]] && $dirbash/webradio-convert.sh
 chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
 
-$dirbash/power.sh reboot
+$dirbash/shutdown.sh reboot

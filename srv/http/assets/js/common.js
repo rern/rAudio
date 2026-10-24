@@ -1541,7 +1541,7 @@ var COMMON    = {
 		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
 		COMMON.loader();
-		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
+		BASH( [ 'shutdown.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
 			if ( ! std ) return
 
 			$( '#loader' ).addClass( 'hide' );

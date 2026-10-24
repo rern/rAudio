@@ -24,7 +24,7 @@ CURRENT=0
 volume
 
 if [[ $poweroff ]]; then
-	$dirbash/power.sh
+	$dirbash/shutdown.sh
 elif [[ -e $dirshm/relayson ]]; then
 	$dirbash/relays.sh off
 fi
