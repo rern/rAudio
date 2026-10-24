@@ -105,13 +105,18 @@ data2jsonPatch() {
 	' <<< $1
 }
 dataActive() {
-	local data pkg
+	local data pkg state tf i
+	state=$( systemctl is-active $@ )
+	tf=${state//inactive/false}
+	tf=( ${tf//active/true} )
 	for pkg in $@; do
 		data+='
-, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
+, "'${pkg/-}'": '${tf[i]}
+		(( i++ ))
 	done
 	echo "$data"
 }
+
 dataEnabled() {
 	local data dir file
 	for file in $@; do
