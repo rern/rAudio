@@ -761,14 +761,16 @@ $( '#lib-search-input' ).on( 'input', function() {
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.query.slice( -1 )[ 0 ] === 'trackinfo' ) {
 		$( '#playlist' ).trigger( 'click' );
+		V.query.pop();
 		return
 	}
 
-	if ( V.search ) {
+	if ( V.search && V.query.length < 2 ) {
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );
 		$( '#lib-title' ).html( ICON( 'search' ) + $( '#lib-search-input' ).val() );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
+		V.query = [];
 		return
 	}
 	
@@ -1044,8 +1046,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 
 	if ( ! V.search ) $LI.addClass( 'active' );
-	var libpath    = $( '#lib-path' ).text();
-	var path       = $LI.find( '.lipath' ).text();
+	var libpath  = $( '#lib-path' ).text();
+	var path     = $LI.find( '.lipath' ).text();
+	var V_l_mode = V.search ? l_mode : V.mode;
 	if ( l_modefile ) {
 		if ( MODE.file_radio() ) {
 			var query     = {
@@ -1067,10 +1070,10 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! V.search && V.mode.endsWith( 'artist' ) ) {
+	} else if ( V_l_mode.endsWith( 'artist' ) ) {
 		var query     = { // artist, albumartist
 			  library : 'findartist'
-			, mode    : V.mode
+			, mode    : V_l_mode
 			, string  : path
 			, format  : [ 'album', 'file' ]
 		}
@@ -1083,7 +1086,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query     = {
 			  library : 'findmode'
-			, mode    : V.search ? l_mode : V.mode
+			, mode    : V_l_mode
 			, string  : path
 			, format  : format
 		}

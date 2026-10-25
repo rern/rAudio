@@ -90,7 +90,7 @@ case 'findartist': // artist, albumartist
 		$path      = $each->path;
 		$icon      = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$html     .= '
-<li data-mode="lsmode"'.$dataindex.'>
+<li data-mode="album"'.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
