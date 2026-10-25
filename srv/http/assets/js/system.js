@@ -480,7 +480,7 @@ var UTIL          = {
 			if ( nfs ) list.splice( 4, 2 );
 			INFO( {
 				  ...SW
-				, tablabel   : shareddata ? UTIL.mount.tab : [ 'CIFS', 'NFS' ]
+				, tablabel   : shareddata ? UTIL.mount.tab : [ 'SMB<gr> / CIFS</gr>', 'NFS' ]
 				, tab        : tab
 				, list       : list
 				, values     : values
@@ -547,7 +547,7 @@ var UTIL          = {
 				}
 			} );
 		}
-		, tab     : [ 'CIFS', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
+		, tab     : [ 'SMB<gr> / CIFS</gr>', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
 	}
 	, option        : {
 		  i2smodule : () => {

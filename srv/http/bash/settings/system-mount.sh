@@ -18,6 +18,7 @@ if [[ $PROTOCOL ]]; then
 		[[ ! $USR ]] && USR=quest
 		source="//$IP/$share"
 		options="username=$USR,password=$PASSWORD"
+		[[ $OPTIONS != *noperm* ]] && options+=',noperm'
 		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),$opt_common"
 	else
 		source="$IP:/$share"

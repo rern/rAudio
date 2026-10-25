@@ -99,6 +99,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
  · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>
  · <i class="i-server"></i> <i class="i-client"></i> Server / Client
  · Full path: <c>/mnt/MPD/...</c>
+ · For Windows shares, use <c> SMB / CIFS </c>.
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
