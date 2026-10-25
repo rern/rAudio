@@ -4,13 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261013
-file=$dirshm/asound.state
-if [[ ! -e $file ]]; then
-	file_state=/var/lib/alsa/asound.state
-	cp $file_state $dirshm/asound.state
-	mv $file_state{,.backup}
-	ln -s $dirshm/asound.state $file_state
+# 20261025
+if [[ ! -e $dirshm/alsa ]]; then
+	mv /var/lib/alsa $dirshm/alsa
+	ln -s $dirshm/alsa /var/lib
 fi
 
 ! grep -q volume.value $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
