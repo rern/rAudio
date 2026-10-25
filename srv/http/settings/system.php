@@ -82,24 +82,26 @@ $B->add <a class="textdropdown">Add network or local storage</a>
 <g># backend commands</g>
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
-<g># CIFS: no user - username=guest, no password - password=""</g>
+<g># SMB / CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
 
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
-</pre><!--
--->Note:
- · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
- · Windows shares without password: <c>net user guest /active:yes</c>
+</pre>
 </div>
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>
  · <i class="i-server"></i> <i class="i-client"></i> Server / Client
  · Full path: <c>/mnt/MPD/...</c>
- · For Windows shares, use <c> SMB / CIFS </c>.
+
+Note:
+ · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+ · Windows shares:
+	· Use <c> SMB / CIFS </c> tab
+	· Without password: <c>net user guest /active:yes</c> <g>(Windows console)</g>
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
