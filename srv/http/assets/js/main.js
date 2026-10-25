@@ -1126,7 +1126,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
-	query.gmode            = V.mode;
+	query.gmode            = V.search && l_mode === 'lsmode' ? 'artist' : V.mode;
 	LIST( query, function( html ) {
 		if ( ! html ) {
 			$LI
