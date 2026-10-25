@@ -291,19 +291,18 @@ var CONTEXT  = {
 		}
 	}
 	, tag          : () => {
-		var name   = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
-		if ( V.list.licover ) name.splice( 0, 2 );
-		var format = name.map( el => el.toLowerCase() );
+		var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
+		if ( ! V.list.licover ) name = [ 'Track', 'Title', ...name ];
 		var list   = [];
-		format.forEach( ( el, i ) => {
+		name.forEach( ( el, i ) => {
 			var n = name[ i ];
 			if ( n === 'AlbumArtist' ) n = 'Album Artist';
-			list.push( [ '<gr>'+ n +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
+			list.push( [ '<gr>'+ n +' </gr><i class="i-'+ n.toLowerCase() +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
 		var file   = V.list.path;
-		var cmd    = [ 'tageditor.sh', 'get', file, format.join( ' ' ) ];
+		var cmd    = [ 'tageditor.sh', 'get', file, name.join( ' ' ).toLowerCase() ];
 		var CMD    = 'CMD FILE TAGS';
 		if ( 'track' in V.list ) {
 			file         = file.replace( /\.cue\/track.*$/, '.cue' );
