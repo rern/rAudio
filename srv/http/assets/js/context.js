@@ -294,10 +294,11 @@ var CONTEXT  = {
 		var name   = [ 'Track', 'Title', 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
 		if ( V.list.licover ) name.splice( 0, 2 );
 		var format = name.map( el => el.toLowerCase() );
-		name[ 3 ]  = 'Album Artist';
 		var list   = [];
 		format.forEach( ( el, i ) => {
-			list.push( [ '<gr>'+ name[ i ] +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
+			var n = name[ i ];
+			if ( n === 'AlbumArtist' ) n = 'Album Artist';
+			list.push( [ '<gr>'+ n +' </gr><i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
