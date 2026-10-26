@@ -85,12 +85,13 @@ case 'findartist': // artist, albumartist
 		$array[]    = $each;
 	}
 	sortList( $array );
+	$mode = $GMODE ? 'lsmode' : 'album'; // normal : search
 	foreach( $array as $each ) {
 		$dataindex = dataIndex( $each->sort );
 		$path      = $each->path;
 		$icon      = iconThumb( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$html     .= '
-<li data-mode="lsmode"'.$dataindex.'>
+<li data-mode="'.$mode.'"'.$dataindex.'>
 	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
