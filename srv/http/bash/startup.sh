@@ -121,7 +121,6 @@ fi
 
 $dirsettings/player-conf.sh &> /dev/null
 touch $dirshm/{startup,status.json}
-pushStatus
 
 [[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volumeMpdRestore
 [[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
@@ -134,6 +133,7 @@ else
 	touch $dirshm/updatedone
 fi
 
+pushStatus
 $dirbash/status -B '{ "channel": "startup" }'
 
 if [[ -e $dirsystem/autoplay ]]; then
