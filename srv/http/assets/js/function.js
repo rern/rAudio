@@ -1917,6 +1917,7 @@ var PLAYLIST  = {
 			}, 'json' );
 		}
 		, list : name => { // V.playlisttrack
+			var top         = V.playlisttrack && $( '#pl-title .lipath' ).text() === name ? $( window ).scrollTop() : 0; // refresh: keep position
 			V.playlisthome  = false;
 			V.playlistlist  = false;
 			V.playlisttrack = true;
@@ -1927,7 +1928,7 @@ var PLAYLIST  = {
 				$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
-					DISPLAY.pageScroll( 0 );
+					DISPLAY.pageScroll( top );
 					COMMON.draggable( id );
 				} );
 			}, 'json' );
