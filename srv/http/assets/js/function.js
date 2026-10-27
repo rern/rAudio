@@ -2047,7 +2047,7 @@ var PLAYLIST  = {
 				return
 			}
 
-			[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
+			[ 'consume', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 			$( '#pl-home-title' ).html( 'PLAYLIST '+ data.counthtml );
 			$( '.pllength' ).removeClass( 'disabled' );
 			$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
