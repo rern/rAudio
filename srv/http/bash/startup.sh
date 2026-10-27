@@ -134,7 +134,7 @@ else
 	touch $dirshm/updatedone
 fi
 
-pushData startup true
+$dirbash/status -B '{ "channel": "startup" }'
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && playback play
