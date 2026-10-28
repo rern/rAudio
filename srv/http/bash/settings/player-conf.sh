@@ -202,6 +202,7 @@ if [[ $UDEV ]]; then # output and volume changed
 		pushRefresh player
 	) & # fix: missing volume if foreground
 else
+	pushRefresh player
 	$dirbash/status-push.sh
 fi
 [[ $CAMILLADSP ]] && pushRefresh camilla features
