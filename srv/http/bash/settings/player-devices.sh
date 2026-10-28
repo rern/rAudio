@@ -31,6 +31,7 @@ while read path; do
 	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
 	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
 	CARD=${path: -1}
+	LISTDEVICE+=', "'$name'": "hw:'$CARD'"'
 	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
 		NAME=$outputdevice
 	else
@@ -48,7 +49,6 @@ while read path; do
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
-	LISTDEVICE+=', "'$NAME'": "hw:'$CARD'"'
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
