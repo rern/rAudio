@@ -58,7 +58,7 @@ custom )
 	fi
 	;;
 device )
-	echo $DEVICE > $dirsystem/output-device
+	echo $DEVICE > $dirsystem/audio-output
 	$dirsettings/player-conf.sh
 	;;
 devicewithbt )
