@@ -1137,7 +1137,7 @@ var LIBRARY   = {
 			if ( V.albumlist ) {
 				if ( $( '.licover' ).length ) {
 					$( '.liinfo .lialbum' ).addClass( 'hide' );
-				} else {
+				} else if ( V.mode === 'album' ) {
 					$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 						$( '#mode-title' ).append( '<span id="thumbupdate"><img src="'+ $( this ).attr( 'src' ) +'"><i class="i-refresh-overlay"></i></span>' );
 					} );
