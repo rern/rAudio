@@ -1925,12 +1925,13 @@ var PLAYLIST  = {
 			V.playlisttrack = true;
 			MENU.hide();
 			LIST( { playlist: 'get', name: name }, function( data ) {
+				var name_prev = $( '#pl-title .lipath' ).text();
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
 				$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
-					DISPLAY.pageScroll( 0 );
+					if ( name !== name_prev ) DISPLAY.pageScroll( 0 );
 					COMMON.draggable( id );
 				} );
 			}, 'json' );
