@@ -778,10 +778,22 @@ hr {
 #infoTab a.active {
 	background: var( --cga );
 }
+#infoTab a.active:first-child {
+	box-shadow: 2px -4px 4px #000000;
+}
+#infoTab a.active:last-child {
+	box-shadow: -2px -4px 4px #000000;
+}
 #infoTab a:first-child:not( .active ) {
 	box-shadow: inset -2px -2px 4px #000000;
 }
-#infoTab a:not( .active ) {
+#infoTab a:not( :first-child, :last-child ):not( .active ) {
+	box-shadow: inset 2px -2px 4px #000000;
+}
+#infoTab a:first-child:not( .active ) + a:not( .active ) {
+	box-shadow: inset 0 -2px 4px #000000;
+}
+#infoTab a:last-child:not( .active ) {
 	box-shadow: inset 2px -2px 4px #000000;
 }
 #infoTab i {
