@@ -102,7 +102,7 @@ color() {
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
 	[[ $LIST ]] && echo '{
   "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "custom" : '$( exists $dirsystem/color )'
+, "custom" : '$( [[ -e $dirsystem/color ]] && echo true || echo false )'
 , "ml"     : [ '${ml:1}' ]
 }' && return
 # --------------------------------------------------------------------
