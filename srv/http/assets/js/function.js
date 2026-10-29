@@ -1254,6 +1254,8 @@ var MENU      = {
 		
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
+		var mode_file = MODE.file();
+		var track     = $LI.find( '.i-music.li-icon' ).length;
 		if ( V.list.licover ) {
 			var menutop = UTIL.barVisible( 310, 270 );
 		} else {
@@ -1277,7 +1279,7 @@ var MENU      = {
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
-			if ( ! V.list.licover && MODE.file() ) {
+			if ( ! V.list.licover && mode_file && ! track ) {
 				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
 					$thumbnail.toggleClass( 'hide', coverart !== '' );
 					MENU.scroll( $menu, menutop );
@@ -1287,7 +1289,7 @@ var MENU      = {
 				MENU.scroll( $menu, menutop );
 			}
 		}
-		if ( ! MODE.file() || $LI.hasClass( 'nodata' ) ) return
+		if ( ! mode_file || track || $LI.hasClass( 'nodata' ) ) return
 
 		BASH( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
 			if ( ! data ) {
