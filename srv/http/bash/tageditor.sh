@@ -6,7 +6,7 @@ args2var "$1"
 
 if [[ $CMD == get ]]; then
 	format=%${TAGS// /%^%}%
-	lines=$( mpc ls -f $format "$FILE" )
+	lines=$( mpc ls -f $format "$FILE" | grep -Ev '\.m3u8*$|\.pls$' )
 	if [[ $FILE == *.cue ]]; then
 		lines=$( grep '\^' <<< $lines )
 		[[ $TRACK ]] && values=$( sed -n ${TRACK}p <<< $lines ) # track
@@ -37,6 +37,7 @@ if [[ $CMD == get ]]; then
 	done
 	jq -n "${arg[@]}" "{ ${json:1} }"
 	exit
+#-------------------------------------------------------------------------------
 fi
 
 path="/mnt/MPD/$FILE"
