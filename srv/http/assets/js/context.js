@@ -301,19 +301,16 @@ var CONTEXT  = {
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
-		var file   = V.list.path;
-		var cmd    = [ 'tageditor.sh', 'get', file, name.join( ' ' ).toLowerCase() ];
-		var CMD    = 'CMD FILE TAGS';
-		if ( 'track' in V.list ) {
-			file         = file.replace( /\.cue\/track.*$/, '.cue' );
-			var fileicon = 'file-playlists';
-			cmd.push( V.list.track );
-			CMD += ' TRACK';
+		var lipath  = $( '.licover .lipath' ).text();
+		if ( lipath.endsWith( '.cue' ) ) {
+			var file   = lipath;
+			var f_icon = 'file-playlist gr';
 		} else {
-			var fileicon = 'file-music';
+			var file   = V.list.path;
+			var f_icon = 'file-music gr';
 		}
-		cmd.push( CMD );
-		BASH( cmd, values => {
+		var tags    = name.map( s => s.toLocaleLowerCase() );
+		LIST( { library: 'tag', string: file, tags: tags }, values => {
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
@@ -324,7 +321,7 @@ var CONTEXT  = {
 			var dir     = V.list.licover ? file : COMMON.dirName( file );
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
+			message    += V.list.licover ? '</div>' : '<br>'+ ICON( f_icon ) +' '+ COMMON.baseName( file ) +'</div>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'

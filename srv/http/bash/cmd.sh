@@ -226,9 +226,6 @@ mpccrop )
 mpclibrandom )
 	plAddRandom
 	;;
-mpcls )
-	mpc ls "$DIR" 2> /dev/null | wc -l
-	;;
 mpcmove )
 	mpc -q move $FROM $TO
 	pushPlaylist

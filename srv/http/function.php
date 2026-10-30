@@ -64,6 +64,26 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
+function mpd( $cmd, $target = '' ) {
+	require_once 'MphpD/MphpD.php';
+	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
+	$mpd->connect();
+	switch( $cmd ) {
+		case 'find':      return $mpd->db()->find( mpdFilter( $target ) );
+		case 'list':      return $mpd->db()->list( $target );
+		case 'ls':        return $mpd->db()->ls( $target, true ); // true - metadata
+		case 'playlist':  return $mpd->playlist( $target )->get_songs( true ); // saved playlist
+		case 'playlists': return $mpd->playlists();
+		case 'queue':     return $mpd->queue()->get();
+		case 'search':    return $mpd->db()->search( mpdFilter( $target ) );
+		case 'status':    return $mpd->status();
+	}
+}
+function mpdFilter( $target ) {
+	if ( count( $target ) === 3 ) return new \FloFaber\MphpD\Filter( ...$target );
+	
+	return new \FloFaber\MphpD\Filter( ...$target[ 0 ] )->and( ...$target[ 1 ] );
+}
 function radioDir( $url ) {
 	static $map = null;
 

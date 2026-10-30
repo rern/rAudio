@@ -1264,6 +1264,7 @@ var MENU      = {
 		if ( $LI.hasClass( 'nodata' ) ) {
 			$menu.find( 'a, .submenu' ).addClass( 'hide' );
 			$menu.find( '.exclude, .update' ).removeClass( 'hide' );
+			MENU.scroll( $menu, menutop );
 		} else {
 			var album_file_radio = MODE.file_radio() || [ 'album', 'latest' ].includes( mode );
 			var radio            = MODE.radio();
@@ -1289,14 +1290,6 @@ var MENU      = {
 				MENU.scroll( $menu, menutop );
 			}
 		}
-		if ( ! mode_file || track || $LI.hasClass( 'nodata' ) ) return
-
-		BASH( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
-			if ( ! data ) {
-				$LI.addClass( 'nodata' );
-				MENU.library( $target );
-			}
-		}, 'json' );
 	}
 	, playlist : $target => {
 		$LI           = $target.closest( 'li' );
@@ -1912,7 +1905,7 @@ var PLAYLIST  = {
 			V.playlisthome  = false;
 			V.playlistlist  = true;
 			V.playlisttrack = false;
-			LIST( { playlist: 'list' }, data => {
+			LIST( { playlist: 'playlists' }, data => {
 				DISPLAY.pageScroll( 0 );
 				$( '#pl-title' ).html( ICON( 'playlists wh' ) +'PLAYLISTS' );
 				$( '#page-playlist .index' ).remove();
@@ -1924,7 +1917,7 @@ var PLAYLIST  = {
 			V.playlistlist  = false;
 			V.playlisttrack = true;
 			MENU.hide();
-			LIST( { playlist: 'get', name: name }, function( data ) {
+			LIST( { playlist: 'playlist', name: name }, function( data ) {
 				var name_prev = $( '#pl-title .lipath' ).text();
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
