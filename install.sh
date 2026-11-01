@@ -17,7 +17,7 @@ fi
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
 file=/etc/systemd/system/bluetoothbutton.service
-if grep -q bluetoothbutton $file; then
+if [[ -e $file ]]; then
 	sed -i 's/bluetoothbutton/bluetooth-button/' $file
 	mv $file ${file/bluetoothbutton/bluetooth-button}
 fi
