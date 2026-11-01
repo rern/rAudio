@@ -77,13 +77,12 @@ $head        = [
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add <a class="textdropdown">Add network or local storage</a>
-	· » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
-	· Windows shares without password: <c>net user guest /active:yes</c>
-<pre class="hide">
+<div class="drop hide">
+<pre>
 <g># backend commands</g>
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
-<g># CIFS: no user - username=guest, no password - password=""</g>
+<g># SMB / CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
 
@@ -91,11 +90,18 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,bg,soft,timeo=5
 </pre>
+</div>
  · $B->usbdrive USB: Mounted automatically.
  · $B->nvme$B->sata NVMe, SATA: To be mounted manually.
  · $B->nfsserver Server rAudio - All local storage moved to <c>/mnt</c>
  · <i class="i-server"></i> <i class="i-client"></i> Server / Client
  · Full path: <c>/mnt/MPD/...</c>
+
+Note:
+ · » <c>Name</c> - Reserved: <c>data</c> <c>NVME</c> <c>SATA</c> <c>SD</c> <c>USB</c>
+ · Windows shares:
+	· Use <c> SMB / CIFS </c> tab
+	· Without password: <c>net user guest /active:yes</c> <g>(Windows console)</g>
 
 $B->microsd$B->usbdrive$B->nvme$B->sata$B->networks Context menu
 	· $B->format Format: <c>ext4</c> for unformatted / unpartitioned devices <g>(cannot be used on Windows)</g>
@@ -125,8 +131,7 @@ EOF
 		, 'exist'    => $onboardwlan
 		, 'disabled' => $L->bluetooth.' is currently connected.'
 		, 'help'     => <<< EOF
-$B->gear
-■ Sampling 16bit - Bluetooth receivers with fixed sampling
+$B->gear Discoverable to sender devices
 EOF
 	]
 	, [
@@ -137,11 +142,10 @@ EOF
 		, 'exist'    => $onboardwlan
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-$B->gear
-Country of Wi-Fi regulatory domain:
-<c>00</c> Least common denominator settings
-	· Channels and transmit power permitted in all countries.
-■ Auto start Access Point - On failed connection or no router
+$B->gear Country of Wi-Fi regulatory domain:
+	· <c>00</c> Least common denominator settings
+		(Channels and transmit power permitted in all countries.)
+	· Auto start Access Point - On failed connection or no router
 
 Not applicable: Devices which have it hardcoded into EEPROM.
 EOF
@@ -153,8 +157,8 @@ $helpi2s     = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · I²S devices with EEPROM might be automatically detected.
  · See  if it's already set: $T->player$L->device
-$B->gear
-Option to disable I²S EEPROM read for I²S devices with obsolete EEPROM
+$B->gear Option to disable I²S EEPROM read
+		(for I²S devices with obsolete EEPROM)
 EOF;
 $head        = [ 'title' => 'GPIO Devices' ];
 $body        = [
@@ -179,8 +183,8 @@ $body        = [
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 $B->gear
- · On - Fixed to pin <c>5</c>
- · Off - Default: pin <c>5</c> (single pin on+off)
+	· On - Fixed to pin <c>5</c>
+	· Off - Default: pin <c>5</c> (single pin on+off)
 EOF
 	]
 	, [
@@ -286,8 +290,7 @@ EOF
 		, 'status'   => true
 		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
-$B->gear
-Servers for time sync and package mirror
+$B->gear Servers for time sync and package mirror
 EOF
 	]
 	, [
@@ -295,17 +298,17 @@ EOF
 		, 'label'    => 'Sound Profile'
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
-$B->gear
- · Swapiness (default: <c>60</c>)
-	· Balance between swap disk vs system memory cache
-	· Low - less swap
- · Maximum Transmission Unit (default: <c>1500</c> bytes)
-	· Maximum size of one packet that can be transmitted
-	· High - less overhead more efficiency
-	· Low - less delay
- · Transmit Queue Length (default: <c>1000</c>)
-	· Number of packets allowed per kernel transmit queue
-	· High - improve performance under high load
+$B->gear Properties:
+	 · Swapiness (default: <c>60</c>)
+		· Balance between swap disk vs system memory cache
+		· Low - less swap
+	 · Maximum Transmission Unit (default: <c>1500</c> bytes)
+		· Maximum size of one packet that can be transmitted
+		· High - less overhead more efficiency
+		· Low - less delay
+	 · Transmit Queue Length (default: <c>1000</c>)
+		· Number of packets allowed per kernel transmit queue
+		· High - improve performance under high load
 EOF
 	]
 	, [

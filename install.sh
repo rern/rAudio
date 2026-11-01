@@ -4,9 +4,92 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261002
+# 20261025
+if [[ ! -e $dirshm/alsa ]]; then
+	mv /var/lib/alsa $dirshm/alsa
+	ln -s $dirshm/alsa /var/lib
+fi
+
+! grep -q volume.value $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
+! grep -q volume.value $dirbash/mpdidle.sh && restart+=mpd$'\n'
+
+
+[[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
+
+file=/etc/systemd/system/bluetoothbutton.service
+if grep -q bluetoothbutton $file; then
+	sed -i 's/bluetoothbutton/bluetooth-button/' $file
+	mv $file ${file/bluetoothbutton/bluetooth-button}
+fi
+
+file=/etc/systemd/system/bluealsa.service.d/override.conf
+if ! grep -q volume $file; then
+	sed -i 's/source/source --a2dp-volume/' $file
+	restart+=bluetooth$'\n'
+fi
+
+file=/etc/systemd/system/bluealsa-dbus.service
+if [[ -e $file ]]; then
+	sed -i 's/bluealsa/bluez/' $file
+	mv $file ${file/bluealsa/bluez}
+fi
+
+file=/etc/systemd/system/bluez-volume.service
+[[ ! -e $file ]] && echo "\
+[Unit]
+Description=BlueZ volume monitor
+
+[Service]
+ExecStart=/srv/http/bash/bluez-volume.sh" > $file
+
+file=/etc/bluetooth/main.conf
+sed -i 's/#*\(AlwaysPairable *=\).*/\1 true/' $file
+
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if grep -q bluealsa-aplay $file; then
+	sed -i 's/ bluealsa-aplay.*//' $file
+	restart+=bluetooth$'\n'
+fi
+
 if [[ -e /bin/camilladsp ]]; then
-	systemctl stop camilladsp
+	if systemctl -q is-active camilladsp; then
+		CAMILLA=1
+		systemctl stop camilladsp
+	fi
+	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
+	dir_bt=$dircamilladsp/configs-bt
+	if systemctl -q is-active camilladsp; then # running with bluetooth
+		file_current=$( getVar CONFIG /etc/default/camilladsp )
+		if [[ $( dirname "$file_current" ) == $dir_bt ]]; then
+			dbuspath=$( bluealsa-cli list-pcms | grep -E '(sink|sourcs)$' )
+			mac=$( sed -E 's|.*/dev_([^/]*).*|\1|; s|_|:|g' <<< $dbuspath )
+			sed -i "s|/configs-bt/|/configs/$mac/|" /etc/default/camilladsp
+			dir_new=$dircamilladsp/configs/$mac
+			if (( $( bluetoothctl devices | wc -l ) == 1 )); then
+				mv $dir_bt $dir_new
+			else
+				mkdir -p $dir
+				mv "$file_current" $dir_new
+			fi
+		fi
+	fi
+	if [[ $( ls $dir_bt 2> /dev/null ) ]]; then # not exactly which is sink / source
+		devices=$( bluetoothctl devices | cut -d' ' -f2- )
+		if (( $( wc -l <<< $devices ) > 1 )); then
+			warning="
+$warn CamillaDSP for Bluetooth:
+- Configuration files need to be moved manually.
+- Create and move files to each directory:
+
+$( sed "s|^|$dircamilladsp/configs/|; s| [^ ]| ---&|" <<< $devices )
+"
+		else
+			dir_new=$dircamilladsp/configs/$( cut -d' ' -f1 <<< $devices )
+			mkdir -p $dir_new
+			mv $dir_bt $dir_new
+		fi
+	fi
+	
 	file=/etc/default/camilladsp
 	if ! grep -q ^STATE $file; then
 		sed -i -e 's/FILE//
@@ -14,10 +97,10 @@ if [[ -e /bin/camilladsp ]]; then
 ' -e '/^GAIN\|^MUTE/ d
 ' $file
 		sed -i 's/LOGFILE.*/LOG -s $STATE/' /lib/systemd/system/camilladsp.service
-		restart+=' camilladsp'
 	fi
-	file=$dircamilladsp/configs/camilladsp.yml
-	grep -q 'volume_ramp_time: 400' $file && sed -i -E 's/(volume_ramp_time: ).*/\10.0/' $file
+	for file in /etc/camilladsp/configs/camilladsp.yml $dircamilladsp/configs/camilladsp.yml; do
+		! grep -q 'volume_ramp_time: 0.0' $file && sed -i -E 's/(volume_ramp_time:).*/\1 0.0/' $file
+	done
 fi
 
 if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
@@ -25,7 +108,7 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	file=/lib/systemd/system/mpd_oled.service
 	if grep -q ^ExecStop $file; then
 		sed -i '/^ExecStartPost\|^ExecStop/ d' $file
-		restart+=' mpd_oled'
+		restart+=mpd_oled$'\n'
 	fi
 fi
 
@@ -33,14 +116,14 @@ fi
 file=/etc/spotifyd.conf
 if ! grep -q status-spotifyd $file; then
 	sed -i 's|spotifyd.sh|status-&|' $file
-	restart+=' spotifyd'
+	restart+=spotifyd$'\n'
 	sed -i -E '/^control|^mixer/ d' $file
 fi
 
 file=/etc/systemd/system/shairport.service
 if ! grep -q status-shairport $file; then
 	sed -i 's|shairport.sh|status-&|' $file
-	restart+=' shairport'
+	restart+=shairport$'\n'
 	
 	file=/etc/shairport-sync.conf
 	name=$( getVar name $file )
@@ -68,8 +151,8 @@ fi
 # 20260909
 touch /root/{.bash,.php,.python}_history
 
-! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=' websocket'
-! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=' rotaryencoder'
+! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=websocket$'\n'
+! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
 
 [[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
 
@@ -120,9 +203,10 @@ else
 fi
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 rm -f $dirshm/system
+
 if [[ $restart ]]; then
 	systemctl daemon-reload
-	systemctl try-restart $restart
+	systemctl try-restart $( sort -u <<< $restart )
 fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
@@ -130,7 +214,9 @@ fi
 # 20260909
 $dirbash/webradio-convert.sh
 
-# 20260929
-[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp
-
 installfinish
+
+# 202621010
+volumeFunction > $dirshm/fn_volume
+[[ $CAMILLA ]] && $dirsettings/player-conf.sh
+[[ $warning ]] && echo "$warning"

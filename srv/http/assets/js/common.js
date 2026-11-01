@@ -8,6 +8,154 @@ V    = {
 	, red       : '#bb2828'
 	, touch     : navigator.maxTouchPoints > 0
 }
+//-----------------------------------------------------------------------------------------------------------------
+W             = {  // from websocket.py (server)
+	  bluetooth : data => {
+		if ( PAGE === 'networks' ) {
+			S.listbt = data;
+			renderBluetooth();
+		} else if ( ! data ) {
+			if ( PAGE === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
+		} else if ( 'connected' in data ) {
+			if ( PAGE === 'features' ) {
+				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+			} else if ( PAGE === 'system' ) {
+				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+			}
+		}
+		BANNER_HIDE();
+	}
+	, color     : data => {
+		V.color = data;
+		COLOR.cssSet( data.hsl );
+		if ( V.ctx ) {
+			V.ctx.hsl  = data.hsl;
+			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
+		}
+		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
+		$( '#loader rect' ).css( 'fill', data.cm );
+		$( '#loader path' ).css( 'fill', data.cg );
+		delete V.color;
+	}
+	, notify    : data => {
+		if ( V.relayssequense ) return
+
+		if ( data === false ) {
+			BANNER_HIDE();
+			return
+		}
+
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		if ( ! PAGE ) {
+			if ( message === 'Change track ...' ) { // audiocd
+				UTIL.intervalClear();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '.mode.latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
+		BANNER( icon, title, message, delay );
+		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
+	}
+	, power     : data => {
+		var action  = data.type;
+		V[ action ] = true;
+		WS          = null;
+		COMMON.loader();
+		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
+		if ( action === 'off' ) {
+			$( '#loader' ).css( 'opacity', 1 );
+			$( 'body' ).children().not( '#banner, #loader' ).remove();
+			setTimeout( () => {
+				$( '#banner' ).addClass( 'hide' );
+				$( '#loader svg' ).css( 'animation', 'unset' );
+			}, 12000 );
+		} else { // reconnect after reboot
+			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
+		}
+	}
+	, relays    : data => {
+		if ( 'countdown' in data ) {
+			INFO( {
+				  icon        : 'relays'
+				, title       : 'Equipments Off'
+				, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+				, buttonlabel : ICON( 'relays' ) +'Off'
+				, buttoncolor : V.red
+				, button      : () => BASH( [ 'relays.sh', 'off' ] )
+				, oklabel     : ICON( 'set0' ) +'Reset'
+				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
+			} );
+			var delay        = 59;
+			V.intervalrelays = setInterval( () => {
+				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
+			}, 1000 );
+		} else if ( 'countdownreset' in data ) {
+			$( '#infoX' ).trigger( 'click' );
+			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
+		} else if ( 'sequence' in data ) {
+			V.relayssequense = true;
+			if ( $( '#banner' ).hasClass( 'hide' ) ) {
+				$( '#infoX' ).trigger( 'click' );
+				BANNER( 'relays blink', '', data.sequence, -1 );
+			} else {
+				$( '#bannerMessage' ).html( data.sequence );
+			}
+		} else if ( 'sequencedone' in data ) {
+			S.relayson = data.sequencedone;
+			delete V.relayssequense;
+			COMMON.relaysToggle();
+		}
+	}
+	, reload    : () => {
+		if ( V.localhost ) location.reload();
+	}
+	, restore   : data => {
+		if ( data.restore === 'done' ) {
+			BANNER( 'restore', 'Restore Settings', 'Done' );
+			setTimeout( () => location.href = '/', 2000 );
+		} else {
+			COMMON.loader();
+			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
+		}
+	}
+	, nfsserver : data => {
+		if ( data.online ) {
+			COMMON.loaderHide();
+			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
+		} else {
+			COMMON.loader();
+		}
+		BANNER( 'nfsserver'+ ( data.online ? '' : ' blink' )
+			  , 'Server rAudio'
+			  , data.online ? 'Online' : 'Offline'
+			  , data.online ? 9000 : -1
+		);
+	}
+	, volume    : data => {
+		if ( V.local || V.animate || V.drag || V.volume || ! ( 'set' in VOLUME ) ) return
+
+		if ( ! PAGE && 'volumenone' in data ) {
+			D.volumenone = data.volumenone;
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
+			return
+		}
+
+		if ( data.type === 'mute' ) {
+			S.volume     = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volume     = data.val;
+			S.volumemute = 0;
+		}
+		V.refresh = data.type === 'refresh';
+		VOLUME.set();
+	}
+}
 WS   = null;
 //-----------------------------------------------------------------------------------------------------------------
 function BANNER( icon, title, message, delay ) {
@@ -312,153 +460,6 @@ var SWIPE     = () => {
 		$( '#'+ pages[ i ] ).trigger( 'click' );
 	} );
 }
-//-----------------------------------------------------------------------------------------------------------------
-W             = {  // from websocket.py (server)
-	  bluetooth : data => {
-		if ( PAGE === 'networks' ) {
-			S.listbt = data;
-			renderBluetooth();
-		} else if ( ! data ) {
-			if ( PAGE === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
-		} else if ( 'connected' in data ) {
-			if ( PAGE === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( PAGE === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		}
-		BANNER_HIDE();
-	}
-	, color     : data => {
-		V.color = data;
-		COLOR.cssSet( data.hsl );
-		if ( V.ctx ) {
-			V.ctx.hsl  = data.hsl;
-			V.ctx.hsl0 = COMMON.json.clone( data.hsl );
-		}
-		$( 'link[rel=icon]' )[ 0 ].href = '/assets/img/icon.png'+ COMMON.versionHash();
-		$( '#loader rect' ).css( 'fill', data.cm );
-		$( '#loader path' ).css( 'fill', data.cg );
-		delete V.color;
-	}
-	, notify    : data => {
-		if ( V.relayssequense ) return
-
-		if ( data === false ) {
-			BANNER_HIDE();
-			return
-		}
-
-		var icon    = data.icon;
-		var title   = data.title;
-		var message = data.message;
-		var delay   = data.delay;
-		if ( ! PAGE ) {
-			if ( message === 'Change track ...' ) { // audiocd
-				UTIL.intervalClear();
-			} else if ( title === 'Latest' ) {
-				C.latest = 0;
-				$( '.mode.latest gr' ).empty();
-				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-			}
-		}
-		BANNER( icon, title, message, delay );
-		if ( title === 'Server rAudio' && PAGE === 'system' ) $( 'li[data-mountpoint="/mnt/MPD/NAS"]' ).toggleClass( 'current profile' );
-	}
-	, power     : data => {
-		var action  = data.type;
-		V[ action ] = true;
-		WS          = null;
-		COMMON.loader();
-		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
-		if ( action === 'off' ) {
-			$( '#loader' ).css( 'opacity', 1 );
-			$( 'body' ).children().not( '#banner, #loader' ).remove();
-			setTimeout( () => {
-				$( '#banner' ).addClass( 'hide' );
-				$( '#loader svg' ).css( 'animation', 'unset' );
-			}, 12000 );
-		} else { // reconnect after reboot
-			setTimeout( WEBSOCKET.connect, data.startup + 8000 ); // add shutdown 8s
-		}
-	}
-	, relays    : data => {
-		if ( 'countdown' in data ) {
-			INFO( {
-				  icon        : 'relays'
-				, title       : 'Equipments Off'
-				, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
-				, buttonlabel : ICON( 'relays' ) +'Off'
-				, buttoncolor : V.red
-				, button      : () => BASH( [ 'relays.sh', 'off' ] )
-				, oklabel     : ICON( 'set0' ) +'Reset'
-				, ok          : () => BASH( [ 'relays.sh', 'reset' ] )
-			} );
-			var delay        = 59;
-			V.intervalrelays = setInterval( () => {
-				delay ? $( '.infomessage a' ).text( delay-- ) : COMMON.relaysToggle();
-			}, 1000 );
-		} else if ( 'countdownreset' in data ) {
-			$( '#infoX' ).trigger( 'click' );
-			BANNER( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.countdownreset +'m' );
-		} else if ( 'sequence' in data ) {
-			V.relayssequense = true;
-			if ( $( '#banner' ).hasClass( 'hide' ) ) {
-				$( '#infoX' ).trigger( 'click' );
-				BANNER( 'relays blink', '', data.sequence, -1 );
-			} else {
-				$( '#bannerMessage' ).html( data.sequence );
-			}
-		} else if ( 'sequencedone' in data ) {
-			S.relayson = data.sequencedone;
-			delete V.relayssequense;
-			COMMON.relaysToggle();
-		}
-	}
-	, reload    : () => {
-		if ( V.localhost ) location.reload();
-	}
-	, restore   : data => {
-		if ( data.restore === 'done' ) {
-			BANNER( 'restore', 'Restore Settings', 'Done' );
-			setTimeout( () => location.href = '/', 2000 );
-		} else {
-			COMMON.loader();
-			BANNER( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
-		}
-	}
-	, nfsserver : data => {
-		if ( data.online ) {
-			COMMON.loaderHide();
-			BASH( [ 'cmd.sh', 'remount', 'CMD' ] );
-		} else {
-			COMMON.loader();
-		}
-		BANNER( 'nfsserver'+ ( data.online ? '' : ' blink' )
-			  , 'Server rAudio'
-			  , data.online ? 'Online' : 'Offline'
-			  , data.online ? 9000 : -1
-		);
-	}
-	, volume    : data => {
-		if ( V.animate || V.drag || V.volume || ( PAGE && PAGE !== 'camilla' ) ) return
-
-		if ( ! PAGE && 'volumenone' in data ) {
-			D.volumenone = data.volumenone;
-			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
-			return
-		}
-
-		if ( data.type === 'mute' ) {
-			S.volume     = 0;
-			S.volumemute = data.val;
-		} else {
-			S.volume     = data.val;
-			S.volumemute = 0;
-		}
-		if ( 'set' in VOLUME ) VOLUME.set();
-	}
-}
 // info ----------------------------------------------------------------------
 // usage: long-press head icon
 function INFO( json ) {
@@ -621,7 +622,7 @@ function INFO( json ) {
 		htmls.list     = I.list;
 	} else {
 		var tr_padding = type => {
-			if ( [ 'number', 'password', 'range', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
+			if ( [ 'number', 'password', 'select', 'text', 'textarea', ' ' ].includes( type ) ) {
 				htmls.list += '<tr style="height: 5px"></tr>';
 			}
 		}
@@ -658,7 +659,6 @@ function INFO( json ) {
 					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan + width +'>';
 					break;
 				case 'range':
-					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
 					htmls.list += htmls.list.endsWith( 'td>' ) ? '' : '<tr><td>'+ label +'</td>';
@@ -703,12 +703,12 @@ function INFO( json ) {
 					htmls.list += tr ? '' : '</td></tr>';
 					break;
 				case 'range':
-					I.range = true;
+					I.range     = true;
 					htmls.list += '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
 								+ ICON( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ICON( 'plus up' )
-								+'</div></td></tr>';
+								+'</div>';
 					break
 				case 'select':
 					kv          = param.kv || param;
@@ -737,9 +737,8 @@ function INFO( json ) {
 			if ( chk_rad && ! param.sameline && i + 1 < I.list.length ) tr_padding( I.list[ i + 1 ][ 1 ] );
 			type_prev = type;
 		} );
-		htmls.list = '<table>'+ htmls.list +'</table>';
+		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
 	}
-
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
@@ -785,37 +784,6 @@ function INFO( json ) {
 		I.notchange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
 		_INFO.check.set();
-		if ( I.range ) {
-			var $range    = $( '.inforange input' );
-			var $rangeval = $( '.inforange .value' );
-			var $up       = $( '.inforange .up' );
-			var $dn       = $( '.inforange .dn' );
-			var min       = +$( '.inforange input' ).prop( 'min' );
-			var max       = +$( '.inforange input' ).prop( 'max' );
-			$range.on( 'input', function() {
-				var $this = $( this );
-				var val   = +$this.val();
-				$rangeval.text( val );
-				$up.toggleClass( 'disabled', val === max );
-				$dn.toggleClass( 'disabled', val === min );
-			} );
-			$range.trigger( 'input' );
-			var rangeSet = up => {
-				var val = +$range.val();
-				if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
-
-				up ? val++ : val--;
-				$range.val( val );
-				$rangeval.text( val );
-			}
-			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( I.timeout.range );
-				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
-			} ).press( e => {
-				var up = $( e.target ).hasClass( 'up' );
-				I.timeout.range = setInterval( () => rangeSet( up ), 100 );
-			} );
-		}
 		if ( I.updn.length ) {
 			var max = [];
 			var min = [];
@@ -1573,7 +1541,7 @@ var COMMON    = {
 		if ( ! action ) action = 'reboot';
 		V[ action ] = true;
 		COMMON.loader();
-		BASH( [ 'power.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
+		BASH( [ 'shutdown.sh', action, confirm || false, 'CMD CONFIRM' ], std => {
 			if ( ! std ) return
 
 			$( '#loader' ).addClass( 'hide' );
@@ -1720,7 +1688,8 @@ var VOLUME    = {
 
 		if ( S.volume ) S.volumemute = 0
 		if ( V.drag || V.press ) type = 'dragpress';
-		BASH( [ 'volume', vol_prev, S.volume, S.control, type, 'CMD CURRENT TARGET CONTROL TYPE' ] );
+		BASH( [ 'volume', vol_prev, S.volume, S.control, type, S.fnvolume
+			  , 'CMD CURRENT TARGET CONTROL TYPE FN_VOLUME' ] );
 	}
 	, limit    : () => {
 		if ( S.volumelimit && S.volume > S.volumemax ) {
@@ -1748,16 +1717,16 @@ var VOLUME    = {
 	, press    : up => {
 		clearTimeout( V.volumebar );
 		if ( ! VOLUME.visible() ) $( '#volume-bar, #volume-band-level' ).removeClass( 'hide' );
-		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 300 );
+		V.interval.volume = setInterval( () => VOLUME.upDown( up ), 100 );
 	}
 	, pressEnd : up => {
 		clearInterval( V.interval.volume );
 		VOLUME.barHide();
-		V.local = false;
+		VOLUME.push( 'refresh' );
 	}
-	, push     : () => {
-		V.local = true;
-		WS.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
+	, push     : refresh => {
+		LOCAL();
+		WS.send( '{ "channel": "volume", "data": { "type": "'+ refresh +'", "val": '+ S.volume +' } }' );
 	}
 	, toggle   : () => {
 		if ( S.volumemute ) {
@@ -1775,7 +1744,10 @@ var VOLUME    = {
 }
 var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	  connect : ip => {
-		if ( WS ) WS.close();                                                      // terminate existing
+		if ( WS ) {                                                                // terminate existing
+			WS.onclose = null;
+			WS.close();
+		}
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
 		var interval = null;
 		setTimeout( () => {                                                        // limit polling for ready
@@ -1821,25 +1793,26 @@ var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	}
 }
 // page visibility -----------------------------------------------------------------
-document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
-window.onblur     = pageInactive;
-window.onfocus    = pageActive;
-window.onpagehide = pageInactive;
-window.onpageshow = pageActive;
-function pageActive() {
+document.addEventListener( 'visibilitychange', () => document.hidden ? pageInactive() : pageActive() );
+window.addEventListener( 'pagehide', pageInactive );
+window.addEventListener( 'pageshow', e => pageActive( e.persisted ) );
+
+function pageActive( restored ) {
 	if ( V.pageactive || V.off ) return
 
 	V.pageactive = true;
-	if ( WS && WS.readyState === 1 ) {                                            // on wakeup and ws still ready
-		WS.send( '"ping"' );                                                      // - send      'ping'
-		V.timeoutreload = setTimeout( location.reload, 300 );                     // - wait 0.3s for 'pong' or reload page
-	} else {                                                                      // on page load or ws already closed
-		WEBSOCKET.connect();                                                      // - connect
+	clearTimeout( V.timeoutreload );                                  // never stack timers
+	if ( ! restored && WS && WS.readyState === WebSocket.OPEN ) {     // on wakeup and ws still open
+		WS.send( '"ping"' );                                          // - send 'ping'
+		V.timeoutreload = setTimeout( () => location.reload(), 300 ); // - no 'pong' in 0.3s: reload
+	} else {                                                          // page load, closed ws, or restored from bfcache
+		WEBSOCKET.connect();                                          // - connect
 	}
 }
 function pageInactive() {
 	if ( V.local || V.debug ) return
 
+	clearTimeout( V.timeoutreload );                                  // don't reload a hidden page
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }

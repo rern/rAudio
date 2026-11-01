@@ -346,14 +346,6 @@ var CONFIG       = {
 			BASH( [ SW.id ] );
 		}
 	}
-	, snapserver   : () => {
-		if ( S.snapserver ) {
-			window.open( 'http://'+ S.ip +':1780', '_blank' );
-		} else {
-			NOTIFY_COMMON( true );
-			BASH( [ SW.id ] );
-		}
-	}
 	, spotifyd     : spotifykey => {
 		if ( ! S.spotifyd && spotifykey ) {
 			BASH( [ 'spotifyd' ] );
@@ -603,4 +595,19 @@ function renderPage() {
 
 $( '.i-copy' ).on( 'click', function() {
 	COMMON.dataCopy( $( this ).prev().text() );
+} );
+$( '.i-camilladsp' ).on( 'click', function( e ) {
+	if ( S.camilladsp ) {
+		e.stopPropagation();
+		location.href = 'settings.php?p=camilla';
+	}
+} );
+$( '.i-snapcalient, .i-snapserver' ).on( 'click', function( e ) {
+	if ( S.snapserver ) {
+		e.stopPropagation();
+		window.open( 'http://'+ S.ip +':1780', '_blank' );
+	}
+} );
+$( '.i-scrobble' ).on( 'click', function( e ) {
+	window.open( 'https://www.last.fm/', '_blank' );
 } );

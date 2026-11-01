@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# Bluez always reads connected device volume
+
+# normal: CONTROL: volumeMpd
+#	- mixer hardware - default
+#	- mixer software - alsa/mpd = 0dB
+# normal + camilladsp: CONTROL: volumeCamilla
+#	- mixer hardware - alsa/mpd = 0dB
+
+# bluetooth: CONTROL - device volume == volumeBlueAlsa (synced by bluez-volume)
+#	- as sender
+#		- on connect:    sink < $dirsystem/$MAC, alsa/mpd [--]
+#		- on disconnect: sink > $dirsystem/$MAC, alsa/mpd [--]
+#	- as receiver
+#		- on connect:    source < $dirsystem/$MAC, alsa/mpd = 0dB
+#		- on disconnect: source > $dirsystem/$MAC, alsa/mpd < $dirsystem/volume
+#		- bluealsa-aplay: stream
+#		- bluez-dbus    : state/changes
+
+# bluetooth + camilladsp: CONTROL - device volume != volumeCamilla (no sync)
+#	- as sender
+#		- on connect:    sink = 100, alsa/mpd = 0dB
+#		- on disconnect: sink [--],  alsa/mpd [--]
+#	- as receiver
+#		- on connect:    source [--], alsa/mpd = 0dB
+#		- on disconnect: source [--], alsa/mpd [--]
+#		- bluez      : dbus stream
+#		- bluez-dbus : state/changes
+
 ### included by <<< player-conf.sh
 if [[ ! $dirbash ]]; then # if run directly
 	. /srv/http/bash/common.sh 
@@ -8,22 +36,34 @@ if [[ ! $dirbash ]]; then # if run directly
 	NAME=$name
 fi
 
-if [[ -e $dirshm/btmixer ]]; then
-	BLUETOOTH=1
-	systemctl -q is-active localbrowser && action=stop || action=start
-	systemctl $action bluetoothbutton
-else
-	systemctl stop bluetoothbutton
-fi
-if [[ -e $dirsystem/camilladsp ]]; then
-	. <( grep ^CONFIG /etc/default/camilladsp )
-	channels=$( getVar capture.channels "$CONFIG" )
-	format=$( getVar capture.format "$CONFIG" )
-	rate=$( getVar devices.samplerate "$CONFIG" )
-	CAMILLADSP=1
-	$dirsettings/camilla-devices.sh
+if [[ -e $dirshm/sink ]]; then
+	BT_SINK=1
 ########
-	ASOUNDCONF='
+	ASOUNDCONF+='
+pcm.bluealsa {
+	type plug
+	slave.pcm {
+		type bluealsa
+		device 00:00:00:00:00:00
+		profile "a2dp"
+	}
+}
+'
+fi
+if [[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-conf.sh; then
+	CAMILLADSP=1
+	file_config=$( getVar CONFIG /etc/default/camilladsp )
+	if grep -q device: hw:Loopback "$file_config"; then
+		modprobe snd_aloop
+		for i in {0..3}; do
+			lsmod | grep -q snd_aloop && break || sleep 1
+		done
+	fi
+	channels=$( getVar capture.channels "$file_config" )
+	format=$( getVar capture.format "$file_config" )
+	rate=$( getVar devices.samplerate "$file_config" )
+########
+	ASOUNDCONF+='
 pcm.!default { 
 	type plug
 	slave.pcm camilladsp
@@ -51,27 +91,14 @@ ctl.camilladsp {
 }
 '
 else
-	ASOUNDCONF='
+	ASOUNDCONF+='
 defaults.pcm.card '$CARD'
 defaults.ctl.card '$CARD'
 '
 	systemctl stop camilladsp &> /dev/null
 	rmmod snd-aloop &> /dev/null
-	if [[ $BLUETOOTH ]]; then
-########
-		ASOUNDCONF+='
-pcm.bluealsa {
-	type plug
-	slave.pcm {
-		type bluealsa
-		device 00:00:00:00:00:00
-		profile "a2dp"
-	}
-}
-'
-	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $BLUETOOTH ]]; then
+		if [[ $BT_SINK ]]; then
 			slavepcm=bluealsa
 		elif [[ $CARD != -1 ]]; then
 			slavepcm='"plughw:'$CARD',0"'

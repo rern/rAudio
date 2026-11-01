@@ -352,6 +352,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		PROGRESS[ V.time.type ]( e );
 	}
 } ).on( 'touchend mouseup', function( e ) {
+	var drag = V.drag;
 	delete V.drag;
 	if ( V.time ) {
 		PROGRESS.seek();
@@ -362,7 +363,7 @@ $( '#page-playback' ).on( 'touchmove mousemove', function( e ) { // allow drag o
 		} else {
 			$( '#volume-bar' ).hasClass( 'hide' ) ? VOLUME.barShow( 'hide' ) : VOLUME.bar( e );
 		}
-		VOLUME.push();
+		VOLUME.push( drag ? 'refresh' : '' );
 		delete V.volume;
 	}
 } );
@@ -370,7 +371,7 @@ $( '#volume, #map-volume' ).on( 'wheel', e => {
 	V.drag = true; // suppress on push received
 	clearTimeout( V.timeoutwheel );
 	V.timeoutwheel = setTimeout( () => delete V.drag, 300 );
-	$( e.originalEvent.deltaY > 0 ? '#volup' : '#voldn' ).trigger( 'click' );
+	$( e.originalEvent.deltaY > 0 ? '#voldn' : '#volup' ).trigger( 'click' );
 
 } );
 $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
@@ -380,6 +381,8 @@ $( '#volmute, #volM, #volume-band-level' ).on( 'click', function() {
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'touchstart mousedown', function() {
 	V.updn = true;
+} ).on( 'touchend mouseup', function() {
+	setTimeout( () => delete V.updn, 300 );
 } ).on( 'click', function() {
 	setTimeout( () => delete V.updn, 300 );
 	if ( V.animate ) return
@@ -758,14 +761,16 @@ $( '#lib-search-input' ).on( 'input', function() {
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.query.slice( -1 )[ 0 ] === 'trackinfo' ) {
 		$( '#playlist' ).trigger( 'click' );
+		V.query.pop();
 		return
 	}
 
-	if ( V.search ) {
+	if ( V.search && V.query.length < 2 ) {
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );
 		$( '#lib-title' ).html( ICON( 'search' ) + $( '#lib-search-input' ).val() );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
+		V.query = [];
 		return
 	}
 	
@@ -991,6 +996,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 
 	var l_mode      = $LI.data( 'mode' );
+	var l_modealbum = l_mode === 'album';
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.endsWith( 'radio' ); // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
@@ -1041,8 +1047,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 
 	if ( ! V.search ) $LI.addClass( 'active' );
-	var libpath    = $( '#lib-path' ).text();
-	var path       = $LI.find( '.lipath' ).text();
+	var libpath  = $( '#lib-path' ).text();
+	var path     = $LI.find( '.lipath' ).text();
+	var V_l_mode = V.search ? l_mode : V.mode;
 	if ( l_modefile ) {
 		if ( MODE.file_radio() ) {
 			var query     = {
@@ -1064,15 +1071,15 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! V.search && V.mode.endsWith( 'artist' ) ) {
+	} else if ( ! l_modealbum && V_l_mode.endsWith( 'artist' ) ) {
 		var query     = { // artist, albumartist
 			  library : 'findartist'
-			, mode    : V.mode
+			, mode    : V_l_mode
 			, string  : path
 			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
-	} else if ( l_mode !== 'album' ) { // non-album
+	} else if ( ! l_modealbum ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album', 'file' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
@@ -1080,7 +1087,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query     = {
 			  library : 'findmode'
-			, mode    : V.search ? l_mode : V.mode
+			, mode    : V_l_mode
 			, string  : path
 			, format  : format
 		}
@@ -1104,7 +1111,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				}
 				var modetitle = path;
 			}
-		} else if ( V.search ) {
+		} else if ( l_modealbum ) {
 			var query     = {
 				  library : 'ls'
 				, string  : path

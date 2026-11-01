@@ -6,7 +6,7 @@ mkdir -p /srv/http/data/{addons,audiocd,bookmarks,lyrics,mpd,mpdconf,playlists,s
 
 . /srv/http/bash/common.sh
 
-[[ -e /bin/camilladsp ]] && mkdir -p $dirdata/camilladsp/{coeffs,configs,configs-bt,raw}
+[[ -e /bin/camilladsp ]] && mkdir -p $dirdata/camilladsp/{coeffs,configs,raw}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 # display

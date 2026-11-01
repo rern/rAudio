@@ -26,7 +26,7 @@ case 'bash':
 	echo rtrim( $result );
 	break;
 case 'camilla': // SETTING.upload() from camilla.js
-	fileUploadSave( $dirdata.'camilladsp/'.$post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
+	fileUploadSave( $post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
 case 'datarestore': // CONFIG.restore() from system.js

@@ -18,19 +18,21 @@ audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
 	;;
 bluetooth )
-	if [[ -e $dirsystem/btdiscoverable ]] \
-		|| ( systemctl -q is-active bluetooth && bluetoothctl show | grep -q -m1 'Discoverable: yes' ); then
-		discoverable=true
+	if systemctl -q is-active bluetooth; then
+		info=$( bluetoothctl show )
+		grep -q 'Discoverable: yes' <<< $info && discoverable=true || discoverable=false
+		grep -q 'DiscoverableTimeout: 0x000000b4' <<< $info && timeout=true || timeout=false
 	else
 		discoverable=false
+		timeout=true
 	fi
-	echo '{ "DISCOVERABLE": '$discoverable' }'
+	echo '{ "DISCOVERABLE": '$discoverable', "TIMEOUT": '$timeout' }'
 	;;
-btsender | mixer | volume )
-	volumeGetDb $ID
-	;;
-buffer|outputbuffer )
+buffer | outputbuffer )
 	conf2json $dirmpdconf/conf/$ID.conf
+	;;
+btmixer | mixer )
+	mixer.value
 	;;
 crossfade )
 	echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
@@ -52,9 +54,6 @@ gpiostate )
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
 	[[ $apm ]] && echo $apm || echo false
-	;;
-hwparams )
-	cat $dirshm/hwparams
 	;;
 i2seeprom )
 	grep -q -m1 ^force_eeprom_read=0 $file_config && echo true || echo false
@@ -385,7 +384,7 @@ wlanprofile )
 }';;
 			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false, "ONPLAY": false }';;
 			volumelimit )
-				volume=$( volumeGet )
+				volume=$( volume.value )
 				[[ $volume == 0 || ! $volume ]] && volume=50
 				echo '{ "STARTUP": '$volume', "MAX": 100 }';;
 			* )             echo false;;

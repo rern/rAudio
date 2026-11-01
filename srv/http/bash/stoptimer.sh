@@ -14,7 +14,7 @@ sleep $(( min * 60 ))
 notify stoptimer 'Stop Timer' 'Stop ...'
 rm $dirshm/pidstoptimer
 [[ ! $onplay ]] && rm $dirsystem/stoptimer
-CURRENT=$( volumeGet )
+CURRENT=$( volume.value )
 TARGET=0
 volume
 playerStop
@@ -24,7 +24,7 @@ CURRENT=0
 volume
 
 if [[ $poweroff ]]; then
-	$dirbash/power.sh
+	$dirbash/shutdown.sh
 elif [[ -e $dirshm/relayson ]]; then
 	$dirbash/relays.sh off
 fi

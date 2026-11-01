@@ -6,3 +6,7 @@ PS1='\[\e[38;5;242m\]\h\[\e[0m\]\
 \[\e[30m\e[46m\] \$ \[\e[0m\] '
 export DISPLAY=:0
 export XDG_CONFIG_HOME=$HOME/.config
+
+grepr() {
+	grep --color --exclude-dir plugin -Inr "$@" /srv
+}

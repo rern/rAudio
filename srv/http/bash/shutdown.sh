@@ -24,6 +24,13 @@ if [[ -e $filesharedip ]]; then
 	ipaddress=$( ipAddress )
 	sed -i "/$ipaddress/ d" $filesharedip
 fi
+[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla.sh saveconfig
+if [[ -s $dirshm/Connected ]]; then
+	while read mac; do
+		[[ $( bluetoothSinkSource $mac ) != source ]] && connected+=$mac$'\n'
+	done < <( cut -d' ' -f2 $dirshm/Connected )
+	[[ $connected ]] && echo "$connected" > $dirsystem/btconnected
+fi
 [[ $CMD == reboot || $1 == reboot ]] && REBOOT=1
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 [[ -e $dirshm/audiocd ]] && audioCDplClear
@@ -46,5 +53,7 @@ elif [[ -e $dirsystem/localbrowser ]]; then
 	DISPLAY=:0 sudo xset dpms force off
 fi
 logoLcdOled
+rm -rf /var/lib/alsa
+mv $dirshm/alsa /var/lib
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $REBOOT ]] && reboot || poweroff

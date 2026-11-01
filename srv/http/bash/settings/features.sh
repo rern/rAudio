@@ -35,8 +35,7 @@ ap )
 		systemctl stop iwd
 		rm -f $dirsystem/{ap,ap.conf}
 	fi
-	pushRefresh
-	pushRefresh networks
+	pushRefresh features networks
 	;;
 audiocd | autoplay | lyrics | scrobble )
 	enableFlagSet
@@ -46,22 +45,18 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	. $dirshm/output
-	[[ $( jq .state $dirshm/status.json ) != stop ]] && playerStop # must stop for aplay --dump-hw-params
-	[[ ! $VOLUME ]] && VOLUME=$( volumeGet )
 	if [[ $ON ]]; then
-		amixer0dB
+		[[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
+		touch $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
 	else
-		if [[ $mixer ]]; then
-			volumeAmixer $VOLUME% "$mixer"
-		else
-			echo software > "$dirsystem/mixertype-$name" # no mixers
-		fi
-		[[ -e $dirshm/btmixer ]] && volumeBlueAlsa $VOLUME% "$( < $dirshm/btmier )"
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		bluetoothServices
+		$dirsettings/player-conf.sh
+		pushRefresh
 	fi
-	enableFlagSet
-	pushRestartMpd camilladsp $TF
-	[[ $ON ]] && volumeCamilla $VOLUME # after camilladsp started
+	pushSubmenu camilladsp $( systemctl -q is-active camilladsp && echo true || echo false )
 	;;
 dabradio )
 	enableFlagSet
@@ -89,8 +84,7 @@ equalizer )
 httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
-	pushRefresh
-	pushRefresh player
+	pushRefresh features player
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
@@ -335,7 +329,7 @@ stoptimer )
 	;;
 volumelimit )
 	enableFlagSet
-	(( $( volumeGet ) > $MAX )) && volumeLimit max
+	(( $( volume.value ) > $MAX )) && volume.set $MAX
 	pushRefresh
 	;;
 

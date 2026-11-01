@@ -14,6 +14,7 @@ filesharedip=$dirshareddata/sharedip
 while read dir; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done < <( ls $dirdata )
+file_volumemute=$dirsystem/volumemute
 https_addonslist=https://github.com/rern/rAudio-addons/raw/main/addonslist.json
 # args2var "\
 #	command
@@ -101,9 +102,9 @@ color() {
 	ml=$( sed -n '/^\t*--ml/ {s/.*ml/,/; s/ .*//; p}' <<< $css )
 	[[ $LIST ]] && echo '{
   "cd"     : { "h": '${cd[0]}', "s": '${cd[1]}', "l": '${cd[2]}' }
-, "custom" : '$( exists $dirsystem/color )'
+, "custom" : '$( [[ -e $dirsystem/color ]] && echo true || echo false )'
 , "ml"     : [ '${ml:1}' ]
-}' && exit
+}' && return
 # --------------------------------------------------------------------
 	filecolor=$dirsystem/color
 	if [[ $HSL ]]; then
@@ -219,9 +220,6 @@ equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
 }
-grepr() {
-	grep --color --exclude-dir plugin -Inr "$@" /srv
-}
 imageCacheBust() {
 	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
 }
@@ -262,7 +260,7 @@ mkdirRW() {
 }
 mpcPlayback() {
 	if [[ ! $ACTION ]]; then
-		[[ $( jq -r .state $dirshm/status.json ) == play ]] && ACTION=pause || ACTION=play 
+		statePlay && ACTION=pause || ACTION=play 
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
@@ -284,7 +282,7 @@ mpcPlayback() {
 		[[ $ACTION == stop ]] && scrobbleOnStop mpd
 		mpc -q $ACTION
 	fi
-	[[ ! -e $dirsystem/snapclientserver ]] && exit
+	[[ ! -e $dirsystem/snapclientserver ]] && return
 # --------------------------------------------------------------------
 	# snapclient
 	if [[ $ACTION == play ]]; then
@@ -341,9 +339,9 @@ notify() { # icon title message delayms
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 playback() {
-	! playerActive mpd && playerStop && exit
+	! playerActive mpd && playerStop && return
 # --------------------------------------------------------------------
-	(( $( mpc status %length% ) == 0 )) && exit
+	(( $( mpc status %length% ) == 0 )) && return
 # --------------------------------------------------------------------
 	if [[ $1 ]]; then
 		ACTION=$1
@@ -363,18 +361,13 @@ playerStart() {
 	mpc -q stop
 	case $player in
 		airplay )   service=shairport-sync;;
-		bluetooth ) service=bluetoothhd;;
+#		bluetooth ) service=bluetoothd;;
 		spotify )   service=spotifyd;;
 		upnp )
 					service=upmpdcli
 					touch $dirshm/upnp;;
 	esac
-	if [[ $service ]]; then
-		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
+	[[ $service ]] && serviceIO $service
 }
 playerStop() {
 	local player
@@ -388,8 +381,9 @@ playerStop() {
 			rm -f $dirshm/{coverart,elapsed,timestamp}
 			;;
 		bluetooth )
-			rm -f $dirshm/{bluetoothdest,bluetoothsink}
+			rm -f $dirshm/{sink,source,source_dbus}
 			systemctl restart bluetooth
+			volumeMpdRestore
 			;;
 		mpd )
 			radioStop
@@ -436,22 +430,16 @@ pushData() { # send to websocket.py (server)
 	elif [[ $channel == mpdupdate && $data != '{ "updating": true }' ]]; then # update done
 		data='{ "filesh": [ "cmd.sh", "shareddataupdate" ] }'
 	else
-		data=$( tr -d '\n' <<< $data )
-		data=$( pushDataSet $channel "$data" )
+		data='{ "channel": "'$channel'", "data": '$( tr -d '\n' <<< $data )' }'
 	fi
 	$dirbash/status -B "$data"
-}
-pushDataSet() {
-	cat << EOF
-{ "channel": "$1", "data": $2 }
-EOF
 }
 pushNfsServer() {
 	$dirbash/status -B '{ "channel": "nfsserver", "data": { "online": '$1' } }'
 }
 pushPlaylist() {
 	local b buffer data
-	[[ -e $dirshm/pushplaylist ]] && exit
+	[[ -e $dirshm/pushplaylist ]] && return
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
@@ -459,8 +447,7 @@ pushPlaylist() {
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data=$( php /srv/http/playlist.php current )
-		data=$( pushDataSet playlist "$data" )
+		data='{ "channel": "playlist", "data": '$( php /srv/http/playlist.php current )' }'
 		bytes=$( printf '%s' "$data" | wc -c )
 		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
 		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
@@ -468,19 +455,18 @@ pushPlaylist() {
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRefresh() {
-	local page push
-	page=${1:-$( basename $0 .sh )}
-	push=${2:-push}
-	[[ $page == networks ]] && sleep 2
-	$dirsettings/$page-data.sh $push
+	local page pages
+	pages=${@:-$( basename $0 .sh )}
+	for page in $pages; do
+		$dirsettings/$page-data.sh push
+	done
 }
 pushStatus() {
 	$dirbash/status-push.sh
 }
 pushWebsocket() {
 	local data
-	data=$( tr -d '\n' <<< ${@:2} ) # remove newlines (<<< preserve spaces)
-	data=$( pushDataSet $1 "$data" )
+	data='{ "channel": "'$1'", "data": '$( tr -d '\n' <<< ${@:2} )' }'
 	$dirbash/status -P "$data"
 }
 quoteEscape() { # backtick ` - no need to escape for json
@@ -519,6 +505,12 @@ scrobbleOnStop() {
 	
 	scrobble "$( $dirbash/status -s | jq -r .Artist,.Title,.Time,.elapsed,.webradio )"
 }
+serviceIO() {
+	for pid in $( pgrep $1 ); do
+		ionice -c 0 -n 0 -p $pid &> /dev/null
+		renice -n -19 -p $pid &> /dev/null
+	done
+}
 skip() {
 	! playerActive mpd && return
 	
@@ -548,12 +540,11 @@ splashRotate() {
 		$dirimg/splash.png
 }
 statePlay() {
-	[[ $( jq .play $dirshm/status.json ) == true ]] && return 0
+	test $( jq .play $dirshm/status.json ) == true
 }
 volume() {
-	local diff file_volumemute fn_volume type val values
-	file_volumemute=$dirsystem/volumemute
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
+	local diff type val values
+	[[ ! $CURRENT ]] && CURRENT=$( volume.value )
 	[[ $TYPE == dragpress ]] && DRAG_PRESS=1
 	if [[ ! $DRAG_PRESS ]]; then
 		if [[ $TYPE == mute && $TARGET == 0 ]]; then
@@ -562,37 +553,30 @@ volume() {
 			echo $CURRENT > $file_volumemute
 		else
 			val=$TARGET
-			[[ -e $file_volumemute ]] && type=unmute
-			rm -f $file_volumemute
+			type=unmute
+			volume.push $val
 		fi
-		pushData volume '{ "type": "'$type'", "val": '$val' }'
+		volume.push $val $type
 	fi
-	fn_volume=$( volumeFunction )
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$fn_volume $TARGET% "$CONTROL"
-		[[ ! $DRAG_PRESS ]] && volumeGet push
+		$FN_VOLUME $TARGET "$CONTROL"
 	else
-		pushData volume '{ "val": '$TARGET' }'
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$fn_volume $val% "$CONTROL"
+			$FN_VOLUME $val "$CONTROL"
 			sleep 0.2
 		done
-		[[ $TYPE != mute && $fn_volume == volumeAmixer ]] && volumeGet push # some dac cannot set exactly on some 1% increments
 	fi
-	[[ $fn_volume == volumeAmixer && -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
+	[[ $FN_VOLUME == volumeMpd ]] && alsactl store
 }
-volumeAmixer() { # camilla with mixer control only
-	amixer -Mq sset "$2" $1
+volumeBlueAlsa() {
+	amixer -MqD bluealsa:$2 sset A2DP $1%
 }
-volumeBlueAlsa() { # value control
-	amixer -MqD bluealsa sset "$2" $1
-}
-volumeCamilla() { # camilla without mixer control
+volumeCamilla() {
 	db=$( awk -v pct=$1 -v min=-60 -v max=0 '
 			BEGIN {
 				min *= 100; max *= 100               # to centidB
@@ -609,45 +593,66 @@ volumeCamilla() { # camilla without mixer control
 				}
 				printf "%.1f\n", db / 100
 			}' ) # % > db
-	websocat --text ws://127.0.0.1:1234 <<< '{ "SetVolume": '$db' }' &> /dev/null
+	$dirbash/status -c '{ "SetVolume": '$db' }' &> /dev/null
 }
-volumeFunction() {
-	if [[ -e $dirsystem/camilladsp ]]; then
-		echo volumeCamilla
-	elif [[ ! -e $dirshm/btmixer || -e $dirsystemm/devicewithbt ]]; then
-		echo volumeMpd
-	else
-		echo volumeBlueAlsa
+volumeMpd() {
+	mpc -q volume $1
+}
+volumeMpdRestore() {
+	[[ -e $dirsystem/camilladsp ]] && return
+	
+	local db file_volume
+	file_volume=$dirsystem/volume
+	if [[ -e $file_volume ]]; then
+		val=$( < $file_volume )
+		volumeMpd $val
+		volume.push $val refresh
+		rm -f $file_volume
 	fi
+	[[ ! $MAC ]] && return
+	 # save bluetooth volume
+	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC )
+	awk -v db=$db '
+			BEGIN {
+				s = int( 127 * 2^( db / 1000 ) + 0.5 )
+				if ( s > 127 ) s = 127
+				if ( s < 0 )   s = 0
+			}
+			s >= $1 && s <= $2 {
+				db = ( $2 == $1 ) ? $3 : $3 + int( ( $4 - $3 ) * ( s - $1 ) / ( $2 - $1 ) )
+				min = -9600; max = 0
+				if ( db <= min ) { print   0; exit }
+				
+				if ( db >= max ) { print 100; exit }
+				
+				if ( max - min <= 2400 ) {
+					norm = ( db - min ) / ( max - min )
+				} else {
+					nmin =   10 ^ ( ( min - max ) / 6000 )
+					norm = ( 10 ^ ( (  db - max ) / 6000 ) - nmin ) / ( 1 - nmin )
+				}
+				printf "%d\n", norm * 100 + 0.5
+				exit
+			}
+		' <<< '0   1 -9600 -6988
+			   2   3 -5988 -5403
+			   4   5 -4988 -4666
+			   6   8 -4399 -3984
+			   9  13 -3806 -3277
+			  14  21 -3163 -2580
+			  22  35 -2504 -1837
+			  36  59 -1788 -1081
+			  60 100 -1048  -317
+			 101 127  -324     0' > $dirsystem/$MAC # percent
 }
-volumeGet() {
-	local card db fn_volume lines mixer val
-	fn_volume=$( volumeFunction )
-	case $fn_volume in
-		volumeCamilla )  val=$( volumeGetCamilla );;
-		volumeMpd )      val=$( mpc status %volume% | tr -d % );; # no db available
-		volumeBlueAlsa )
-			lines=$( amixer -MD bluealsa 2> /dev/null )
-			val=$( volumeLines2val $lines )
-			;;
-		* )
-			. $dirshm/output
-			for i in {1..5}; do # some usb might not be ready
-				lines=$( amixer -c $card -M sget "$mixer" 2> /dev/null )
-				[[ $lines ]] && break || sleep 1
-			done
-			val=$( volumeLines2val $lines )
-			;;
-	esac
-	if [[ $1 == push ]]; then
-		pushData volume '{ "val": '$val' }'
-	else
-		echo $val
-	fi
-	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+volume.BlueAlsa() {
+	local line val
+	line=$( amixer -MD bluealsa | grep -m1 % ) # ...: Playback 0 [86%] [0.00dB] [on]
+	val=${line#*[}
+	echo ${val%%\%*}
 }
-volumeGetCamilla() {
-	db=$( websocat --text ws://127.0.0.1:1234 <<< '"GetVolume"' | jq .GetVolume.value )
+volume.Camilla() {
+	db=$( $dirbash/status -c GetVolume | jq .GetVolume.value )
 	awk -v db=$db -v min=-60 -v max=0 '
 		BEGIN {
 			min *= 100; max *= 100; db *= 100   # to centidB
@@ -665,10 +670,33 @@ volumeGetCamilla() {
 			printf "%d\n", (p + (p >= 0 ? 0.5 : -0.5))
 		}' # db > %
 }
-volumeLines2val() {
-	val=${1#*[} # last line: Mono: Playback 0 [86%] [0.00dB] [on]
-	val=${val%%\%*}
+volume.Mpd() {
+	mpc status %volume% | tr -cd '0-9'
 }
-volumeMpd() {
-	mpc -q volume ${1/\%}
+volume.push() {
+	local data type
+	[[ $2 ]] && type='"type": "'$2'", '
+	data='{ "channel": "volume", "data": { '$type'"val": '$1' } }'
+	$dirbash/status -P "$data"
+	[[ $2 == mute ]] && return
+	
+	(( $1 > 0 )) && [[ -e $file_volumemute ]] && rm -f $file_volumemute
+}
+volume.set() {
+	FN_VOLUME=$( < $dirshm/fn_volume )
+	if [[ $FN_VOLUME == volumeBlueAlsa ]]; then
+		volumeBlueAlsa $1 $( < $dirshm/sink )
+	else
+		$FN_VOLUME $1
+	fi
+}
+volume.value() {
+	local card line mixer val
+	[[ ! $FN_VOLUME ]] && FN_VOLUME=$( < $dirshm/fn_volume )
+	val=$( ${FN_VOLUME/volume/&.} )
+	if [[ $1 ]]; then
+		volume.push $val $1
+	else
+		echo $val
+	fi
 }

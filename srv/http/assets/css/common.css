@@ -43,6 +43,7 @@ i {
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
 .i-audio::before,
+.i-mixer::before,
 .i-volume::before          { content: '\F516' }
 .i-autoplay::before        { content: '\F53A' }
 .i-back::before            { content: '\F602' }
@@ -57,14 +58,19 @@ i {
 .i-star::before            { content: '\F550' }
 .i-bluealsa::before,
 .i-bluetooth::before,
-.i-btreceiver::before      { content: '\F51A' }
+.i-volume.bluetooth::before,
+.i-btreceiver::before,
+.i-sink::before          { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }
 .i-btsender::before,
+.i-source::before,
 .i-volume.btsender::before { content: '\F51B' }
 .i-bypass::before          { content: '\F56F' }
 .i-camilla::before,
+.i-volume.camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
+.i-volume.camilla::after,
 .i-camilladsp::after       { content: '\F59C'; }
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
@@ -134,8 +140,7 @@ i {
 .i-httpd::before,
 .i-webradio::before        { content: '\F55D' }
 .i-info::before            { content: '\F561' }
-.i-input::before,
-.i-source::before          { content: '\F529' }
+.i-input::before           { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before,
@@ -769,10 +774,27 @@ hr {
 #infoTab a {
 	display: inline-block;
 	border-radius: 6px 6px 0 0;
-	box-shadow: 2px -4px 4px #000000;
 }
 #infoTab a.active {
 	background: var( --cga );
+}
+#infoTab a.active:first-child {
+	box-shadow: 2px -4px 4px #000000;
+}
+#infoTab a.active:last-child {
+	box-shadow: -2px -4px 4px #000000;
+}
+#infoTab a:first-child:not( .active ) {
+	box-shadow: inset -2px -2px 4px #000000;
+}
+#infoTab a:not( :first-child, :last-child ):not( .active ) {
+	box-shadow: inset 2px -2px 4px #000000;
+}
+#infoTab a:first-child:not( .active ) + a:not( .active ) {
+	box-shadow: inset 0 -2px 4px #000000;
+}
+#infoTab a:last-child:not( .active ) {
+	box-shadow: inset 2px -2px 4px #000000;
 }
 #infoTab i {
 	font-size: 20px;
@@ -781,7 +803,6 @@ hr {
 }
 #infoList {
 	font-size: 16px;
-	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
 #infoList:has( .inforange.vertical ) {
 	padding: 15px;
@@ -801,6 +822,9 @@ hr {
 #infoTab + #infoList table:has( tr:first-child select ),
 #infoList table:has( tr:first-child input:is( [ type=checkbox ], [ type=radio ] ) ) {
 	padding-top: 20px;
+}
+#infoList table:has( td:first-child:empty ) {
+	padding-top: 10px;
 }
 #infoList tr {
 	height: 42px;
@@ -847,6 +871,7 @@ hr {
 	font-family: Inconsolata;
 	color: var( --cg60 );
 	background: none;
+	overflow: auto;
 }
 #infoList .menu {
 	position: relative;
@@ -865,9 +890,9 @@ hr {
 }
 .infomessage p {
 	margin: 0 auto;
-	width: max-content;
 	padding: 0 15px;
 	text-align: left;
+	white-space: pre-line;
 }
 .infoimgname {
 	text-align: center !important;
@@ -1150,12 +1175,6 @@ input[ type=radio ]:disabled {
 	fill: var( --cg60 );
 }
 
-@media ( max-height: 420px ) {
-	#infoList { padding: 10px 5px }
-}
-@media ( max-width: 420px ) {
-	#infoList { padding: 20px 5px 10px 5px }
-}
 @media ( max-width: 330px ) {
 	#infoOverlay {
 		transform: scale( 0.9 );

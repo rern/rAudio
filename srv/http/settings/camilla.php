@@ -1,7 +1,8 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'code',   'drag',   'edit', 'filters', 'flowchart', 'folderfilter', 'gear', 'graph',  'input', 'inverted'
-				   , 'linear', 'mixers', 'mute', 'output',  'pause',     'play',         'plus', 'remove', 'set0',  'stop', 'volume' ]
+	  'buttons' => [ 'code',  'btsource', 'drag',  'edit',     'filters', 'flowchart', 'folderfilter'
+				   , 'gear',  'graph',    'input', 'inverted', 'linear',   'mixers',   'output'
+				   , 'pause', 'play',     'plus',  'remove',   'set0',     'stop',     'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
@@ -120,7 +121,7 @@ $desc     = 'A powerful and flexible audio processing tool, designed for applica
 $head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'mpd player', 'play playback' ]
+	, 'button' => [ 'mpd', 'play playback' ]
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 
@@ -168,7 +169,9 @@ Processing load
 	<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
-<span class="helpblock hide">'.$B->volume.$B->mute.' Mute · Unmute
+<span class="helpblock hide"><c> N </c> Mute · Unmute
+'.$B->volume.' Hardware volume - Should be set at <c>0dB</c>
+	· Use rAudio to control CamillaDSP volume
 '.$B->set0.' Reset clipped count <g>(if any)</g>
 </span>'
 	)
@@ -176,9 +179,13 @@ Processing load
 		  'id'     => 'configuration'
 		, 'label'  => 'Configuration'
 		, 'sub'    => 'current'
+		, 'icon'   => 'btsender'
 		, 'status' => true
 		, 'input'  => 'configuration'
-		, 'help'   => $B->gear.' Configuration files'
+		, 'help'   => <<< EOF
+$B->btsource rAudio as Bluetooth sender:
+$B->gear Configuration files
+EOF
 	]
 ];
 htmlSection( $head, $body, 'status' );

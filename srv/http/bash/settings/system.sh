@@ -23,44 +23,7 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	touch $dirshm/btonboard
-	if [[ $ON ]]; then
-		rm -f $dirsystem/btdisable
-		btdiscoverable=$dirsystem/btdiscoverable
-		if [[ $DISCOVERABLE ]]; then
-			[[ ! -e $btdiscoverable ]] && discov=yes && touch $btdiscoverable
-		else
-			[[ -e $btdiscoverable ]] && discov=no && rm -f $btdiscoverable
-		fi
-		if systemctl -q is-active bluetooth; then
-			[[ $discov ]] && bluetoothctl discoverable $discov &> /dev/null
-		else
-			modprobe -a bluetooth bnep btbcm hci_uart
-			lsmod | grep -q -m1 ^hci_uart && configReboot && exit # fix: bluez not reinit hci0
-# --------------------------------------------------------------------
-			sleep 1
-			systemctl start bluetooth
-		fi
-	else
-		touch $dirsystem/btdisable
-		systemctl stop bluetooth
-		rmmod hci_uart btbcm bnep bluetooth 2> /dev/null
-		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		if [[ -e $dirmpdconf/output.conf ]]; then
-			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-		fi
-	fi
-	rfkill | grep -q -m1 bluetooth && tf=true || tf=false
-	pushData refresh '{ "page": "networks", "activebt": '$tf' }'
-	rm $dirshm/btonboard
-	pushRefresh
-	;;
-bluetoothstart )
-	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && discov=yes || discov=no
-	bluetoothctl discoverable $discov &> /dev/null
-	bluetoothctl discoverable-timeout 0 &> /dev/null
-	bluetoothctl pairable yes &> /dev/null
+	bluetooth
 	;;
 forget | mount | unmount )
 	[[ $CMD != mount ]] && systemctl restart mpd

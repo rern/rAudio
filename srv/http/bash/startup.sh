@@ -48,8 +48,15 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
+mv /var/lib/alsa $dirshm/alsa # move to ram
+ln -s $dirshm/alsa /var/lib
 logoLcdOled
-[[ ! -e $dirsystem/btdisable ]] && modprobe -a bluetooth bnep btbcm hci_uart
+if [[ -e $dirsystem/bluetooth ]]; then
+	modprobe hci_uart
+	systemctl start bluetooth
+else
+	rmmod hci_uart &> /dev/null
+fi
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 dirbacklight=/sys/class/backlight/rpi_backlight
 if [[ -d $dirbacklight ]]; then
@@ -101,21 +108,22 @@ if [[ $( ipAddress e ) ]] || (( $( rfkill | grep -c wlan ) > 1 )); then # lan ip
 	pushData refresh '{ "page": "system", "wlan": false, "wlanconnected": false }'
 fi
 [[ $( ipAddress w ) ]] && iw $( netDevice w ) set power_save off
-if [[ -e $dirsystem/btreceiver ]]; then
-	mac=$( < $dirsystem/btreceiver )
-	rm $dirsystem/btreceiver
-	$dirsettings/networks-bluetooth.sh "cmd
+file_btconnected=$dirsystem/btconnected
+if [[ -e $file_btconnected ]]; then
+	while read mac; do
+		$dirsettings/networks-bluetooth.sh "cmd
 connect
 $mac
 CMD ACTION MAC"
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh btreceiver
+	done < $file_btconnected
+	rm $file_btconnected
 fi
 
 $dirsettings/player-conf.sh &> /dev/null
 touch $dirshm/{startup,status.json}
-pushStatus
 
-[[ -e $dirsystem/volumelimit ]] && volumeLimit startup
+[[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volumeMpdRestore
+[[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
@@ -125,7 +133,8 @@ else
 	touch $dirshm/updatedone
 fi
 
-pushData startup true
+pushStatus
+$dirbash/status -B '{ "channel": "startup" }'
 
 if [[ -e $dirsystem/autoplay ]]; then
 	grep -q startup $dirsystem/autoplay.conf && playback play

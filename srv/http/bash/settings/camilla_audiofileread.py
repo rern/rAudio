@@ -8,7 +8,7 @@ from camilla_cooley_tukey import fft
 NUMBERFORMATS = {
     1: "int",
     3: "float",
-    0xFFFE: "extended",
+    0xFFFE: "extended"
 }
 
 SUBFORMAT_FLOAT = (3, 0, 16, 128, 0, 0, 170, 0, 56, 155, 113)
@@ -18,13 +18,13 @@ TYPES_DIRECT = {
     "F64_LE": "<d",
     "F32_LE": "<f",
     "S16_LE": "<h",
-    "S32_LE": "<i",
+    "S32_LE": "<i"
 }
 
 TYPES_INDIRECT = {
     "S24_4_RJ_LE": {"pattern": "sssx", "endian": "little"},
     "S24_4_LJ_LE": {"pattern": "xsss", "endian": "little"},
-    "S24_3_LE": {"pattern": "sss", "endian": "little"},
+    "S24_3_LE": {"pattern": "sss", "endian": "little"}
 }
 
 SCALEFACTOR = {
@@ -34,7 +34,7 @@ SCALEFACTOR = {
     "S24_4_RJ_LE": (2**23),
     "S24_4_LJ_LE": (2**23),
     "S24_3_LE": (2**23),
-    "S32_LE": (2**31),
+    "S32_LE": (2**31)
 }
 
 BYTESPERSAMPLE = {
@@ -44,7 +44,7 @@ BYTESPERSAMPLE = {
     "S24_4_RJ_LE": 4,
     "S24_4_LJ_LE": 4,
     "S24_3_LE": 3,
-    "S32_LE": 4,
+    "S32_LE": 4
 }
 
 

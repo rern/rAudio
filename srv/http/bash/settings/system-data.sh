@@ -89,7 +89,7 @@ else
 	cpus=${lscpu[@]:1:2}
 	speed=${lscpu[3]/.*}
 	(( $cores > 1 )) && cpus+=" x $cores"
-	(( $mhz < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
+	(( $speed < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
@@ -105,8 +105,10 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
-data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
-data+=$( settingsEnabled \
+##########
+data+=$( dataActive bluetooth nfs-server rotaryencoder smb )
+##########
+data+=$( dataEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
 if pgrep mkfs &> /dev/null; then
@@ -141,14 +143,11 @@ data+='
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "updating"       : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
-	ifwlan0=
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )
-##########
-	data+='
-, "btconnected"    : '$( exists $dirshm/btconnected )
+, "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )'
+, "btconnected"    : '$( [[ $( bluetoothctl devices Connected ) ]] && echo true )
 fi
 
 data2json "$data" $1

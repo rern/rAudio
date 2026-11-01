@@ -1,6 +1,6 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'copy', 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'usbdrive', 'warning' ]
+	  'buttons' => [ 'copy', 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'nfsserver', 'snapcast', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  'Equalizer'     => 'equalizer'
 		, 'DSP'           => 'camilladsp'
@@ -20,7 +20,7 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B->snapcast.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with Snapcast streaming renderer'."\n";
 $mapdrive     = <<< EOF
 · Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
 		<btn>Map network drive...</btn>
@@ -271,11 +271,12 @@ EOF
 		  'id'       => 'scrobble'
 		, 'label'    => 'Scrobbler'
 		, 'help'     => <<< EOF
+$B->lastfm Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
+
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
  · Web Radio must be manually scrobbled: Playing title &raquo; $B->lastfm Scrobble
- · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
 EOF
 	]
 	, [

@@ -25,14 +25,13 @@
 
 outputdevice=$( getContent $dirsystem/audio-output )
 proccardn=$( grep -Li loopback /proc/asound/card[0-9]/id | xargs -r -n1 dirname ) # not depend on /etc/asound.conf which might be broken from bad script
-card=${proccardn: -1}
-card_usb=$( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null | wc -l )
-lastcard=$(( card - card_usb )) # last card - not usb
+lastcard=${proccardn: -1}
 while read path; do
 	info=$( sed 's/bcm2835/On-board/' $path/*/info )
 	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
 	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
 	CARD=${path: -1}
+	LISTDEVICE+=', "'$name'": "hw:'$CARD'"'
 	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
 		NAME=$outputdevice
 	else
@@ -50,20 +49,19 @@ while read path; do
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
-	LISTDEVICE+=', "'$NAME'": "hw:'$CARD'"'
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
 if [[ $usbcard ]]; then
 	CARD=$usbcard
 	NAME=$usbname
-elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
+elif [[ $outputdevice ]]; then # otherwise last card
 	c_n=$( grep "$outputdevice$" <<< $card_name )
 	if [[ $c_n ]]; then
 		CARD=${c_n/^*}
 		NAME=$outputdevice
 	else
-		rm -f $dirsystem/output-device # remove if not exist any more
+		rm -f $dirsystem/audio-output # remove if not exist any more
 	fi
 fi
 
@@ -110,6 +108,5 @@ mixer="$MIXER"
 mixertype=$MIXERTYPE
 EOF
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
-echo $CARD > $dirsystem/asoundcard
 file=$dirsystem/mixernone
 [[ $MIXERTYPE == none || ( ! $MIXER && -e $dirsystem/camilladsp ) ]] && touch $file || rm -f $file

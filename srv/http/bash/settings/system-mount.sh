@@ -15,9 +15,10 @@ if [[ $PROTOCOL ]]; then
 	fi
 	share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 	if [[ $PROTOCOL == cifs ]]; then
-		[[ ! $USR ]] && USR=quest
+		[[ ! $USR ]] && USR=guest
 		source="//$IP/$share"
 		options="username=$USR,password=$PASSWORD"
+		[[ $OPTIONS != *noperm* ]] && options+=',noperm'
 		options="${options// /\\040},uid=$( id -u mpd ),gid=$( id -g mpd ),$opt_common"
 	else
 		source="$IP:/$share"

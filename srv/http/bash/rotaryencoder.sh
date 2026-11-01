@@ -20,25 +20,29 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-fn_volume=$( volumeFunction )
-case $fn_volume in
+case $( < $dirshm/fn_volume ) in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
+		FN() {
+			volumeMpd $1
+		}
 		;;
-	volumeCamilla )
-		CAMILLA=1
-		dn=-$step
-		up=+$step
-		;;
-	* )
+	volumeBlueAlsa )
 		dn=$step%-
 		up=$step%+
-		if [[ $fn_volume == volumeAmixer ]]; then
-			mixer=$( < $dirshm/amixercontrol )
-		else
-			mixer=$( < $dirshm/btmixer )
-		fi
+		mac=$( < $dirshm/sink )
+		FN() {
+			amixer -MqD bluealsa:$mac sset A2DP $1 # volumeBlueAlsa not handle +/-
+		}
+		;;
+	volumeCamilla )
+		dn=-$step
+		up=+$step
+		FN() {
+			val=$( volume.Camilla )
+			volumeCamilla $(( val + $1 ))
+		}
 		;;
 esac
 
@@ -79,12 +83,6 @@ evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
-	[[ ${line: -2} == -1 ]] && updn=$dn || updn=$up # ...value -1 / ...value 1
-	if [[ $CAMILLA ]]; then
-		val=$( volumeGetCamilla )
-		volumeCamilla $(( val + updn ))
-	else
-		$fn_volume $updn "$mixer"
-	fi
-	volumeGet push
+	[[ $line == *-1 ]] && FN $dn || FN $up
+	volume.value push
 done

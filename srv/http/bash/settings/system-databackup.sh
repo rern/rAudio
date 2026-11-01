@@ -4,7 +4,6 @@
 
 file_backup=$dirshm/backup.gz
 dir_config=$dirdata/config
-alsactl store
 files=$( cat << EOF
 /boot/cmdline.txt
 /boot/config.txt

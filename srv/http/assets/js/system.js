@@ -107,16 +107,7 @@ var CONFIG        = {
 		}
 		, shareddata    : () => UTIL.mount.mount()
 	}
-	, bluetooth     : values => {
-		INFO( {
-			  ...SW
-			, list         : [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
-			, values       : values
-			, checkchanged : S.bluetooth
-			, cancel       : SWITCH.cancel
-			, ok           : SWITCH.enable
-		} );
-	}
+	, bluetooth     : values => BLUETOOTH( values )
 	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
 			UTIL.wm5102();
@@ -489,7 +480,7 @@ var UTIL          = {
 			if ( nfs ) list.splice( 4, 2 );
 			INFO( {
 				  ...SW
-				, tablabel   : shareddata ? UTIL.mount.tab : [ 'CIFS', 'NFS' ]
+				, tablabel   : shareddata ? UTIL.mount.tab : [ 'SMB<gr> / CIFS</gr>', 'NFS' ]
 				, tab        : tab
 				, list       : list
 				, values     : values
@@ -556,7 +547,7 @@ var UTIL          = {
 				}
 			} );
 		}
-		, tab     : [ 'CIFS', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
+		, tab     : [ 'SMB<gr> / CIFS</gr>', 'NFS', ICON( 'nfsserver' ) +' rAudio' ]
 	}
 	, option        : {
 		  i2smodule : () => {

@@ -16,28 +16,25 @@ pushVolumeNone() {
 	pushData refresh '{ "page": "features", "nosound": '$1', "toggle": true }'
 }
 
+[[ $( jq -r .state $dirshm/status.json ) != stop ]] && playerStop
+mixer_current=$( getVar name $dirshm/output )
+
 if [[ $1 ]]; then
-	usbdac=$1
+	UDEV=$1
 	touch $dirshm/usbdac_rules
-	if [[ $usbdac == add ]]; then
-		touch $dirshm/usbdac
-		alsactl restore # store - saved by cmd.sh - volumeGet push
-	else
-		rm -f $dirshm/usbdac
-	fi
 	( sleep 3; rm -f $dirshm/usbdac_rules ) &
+	[[ $UDEV == add ]] && alsactl restore # store with volume()
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
-	. $dirsettings/player-devices.sh # >>> $CARD
+	. $dirsettings/player-devices.sh # >>>>>>>>>>>>>>> $card, $name, $mixer, $mixertype
 else
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	CARD=-1
 	NAME='(None)'
-	echo $CARD > $dirsystem/asoundcard
 	echo '
 card='$CARD'
 name=
@@ -46,21 +43,34 @@ mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
+. $dirsettings/player-asound.sh # >>>>>>>>>>>>>>> $BT_SINK, $CAMILLADSP, $EQUALIZER
 
-if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
-	. <( grep ^name $dirshm/output )
-	[[ $name != $NAME ]] && notify output 'Output Device' "$NAME"
+if [[ $CAMILLADSP ]]; then
+	systemctl -q is-active camilladsp && ACTIVE=1
+	systemctl restart camilladsp
+	for i in {0..3}; do
+		$dirbash/status -c GetVolume &> /dev/null && break || sleep 1
+	done
+	if [[ $i == 3 ]]; then
+		CAMILLADSP=
+		file_log=$( getVar LOG /etc/default/camilladsp )
+		echo "\
+Start failed!
+$( cat $file_log )"
+		systemctl stop camilladsp
+		rm -f $dirsystem/camilladsp
+		. $dirsettings/player-asound.sh
+	else
+		[[ ! $ACTIVE ]] && mixer.0dB
+	fi
 fi
-
 # outputs -----------------------------------------------------------------------------
-if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from player-asound.sh)
-	# no mac address needed - bluealsa already includes mac of latest connected device
+if [[ $BT_SINK && ! $CAMILLADSP ]]; then
 	[[ ! -e $dirsystem/devicewithbt ]] && BT_ONLY=1
 	hw=bluealsa
-	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+#	hwspotifyd=$( bluealsa-aplay -L | head -n 1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	ln -s $dirmpdconf/{conf/,}bluetooth.conf
-	pcm=$( bluealsa-cli list-pcms | tail -n 1 )
+	pcm=$( bluealsa-cli list-pcms | grep /sink$ )
 	if [[ $pcm ]]; then
 		info=$( bluealsa-cli info $pcm | grep -E '^(Channels|Format|Sampling)' )
 		if [[ $info ]]; then
@@ -74,20 +84,17 @@ fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
-	[[ $usbdac == remove ]] && pushVolumeNone true
+	[[ $UDEV == remove ]] && pushVolumeNone true
 elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
-	if [[ $usbdac ]]; then
-		playerStop
-		pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
-	fi
-	if [[ $CAMILLADSP ]]; then
+	[[ $UDEV ]] && pushVolumeNone $( [[ $mixertype == none ]] && echo true || echo false )
+	if [[ $CAMILLADSP && ! -e $dirshm/source ]]; then
 		hw=hw:Loopback,1
-		hwspotifyd=plughw:Loopback,1
+#		hwspotifyd=plughw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $EQUALIZER ]]; then
-		[[ $BLUETOOTH ]] && mixertype=software
+		[[ $BT_SINK ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
 		AUDIOOUTPUT='
@@ -99,6 +106,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
 		hw=hw:$card
+		[[ $mixertype == software && ( $CAMILLADSP || $( bluealsa-cli list-pcms ) ) ]] && mixertype=hardware
 #---------------< normal
 		AUDIOOUTPUT='
 	name           "'$name'"
@@ -110,7 +118,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			AUDIOOUTPUT+='
 	mixer_control  "'$mixer'"
-	mixer_device   "hw:'$card'"'
+	mixer_device   "'$hw'"'
 			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
 				AUDIOOUTPUT+='
 	replay_gain_handler "mixer"'
@@ -147,30 +155,61 @@ fi
 ### mpd restart ##########################################################################
 killProcess cmdlist
 systemctl restart mpd
-
-for pid in $( pgrep mpd ); do # set priority
-	ionice -c 0 -n 0 -p $pid &> /dev/null
-	renice -n -19 -p $pid &> /dev/null
-done
+serviceIO mpd
 
 if [[ -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh
 fi
-[[ $CAMILLADSP ]] && amixer0db
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
-
-pushStatus
-pushRefresh player
+### reset volume
+if [[ -e $dirsystem/camilladsp ]]; then
+	FN_VOLUME=volumeCamilla
+elif [[ -e $dirshm/source || ( -e $dirshm/sink && ! -e $dirsystem/devicewithbt ) ]]; then
+	FN_VOLUME=volumeBlueAlsa
+else
+	FN_VOLUME=volumeMpd
+fi
+echo $FN_VOLUME > $dirshm/fn_volume
+if [[ $FN_VOLUME == volumeMpd ]]; then
+	volumeMpdRestore
+elif [[ $FN_VOLUME == volumeBlueAlsa ]]; then # restore bluetooth saved volume
+	[[ -e $dirshm/sink ]] && mac=$( < $dirshm/sink ) || mac=$( < $dirshm/source )
+	if [[ -e $dirsystem/$mac ]]; then # saved from volumeMpdRestore()
+		percent=$( < $dirsystem/$mac )
+	else
+		percent=$( volume.value )
+		if (( $percent > 30 )) && [[ ! -e $dirsystem/volumelimit ]]; then
+			percent=30
+		fi
+	fi
+	amixer -MqD bluealsa:$mac sset A2DP $percent%
+	volume.push $percent refresh
+	systemctl start bluez-volume
+fi
 if [[ ! -e $dirshm/btonboard ]]; then
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 fi
-[[ $CARD == -1 && ! $BLUETOOTH ]] && exit
+if [[ -e $dirshm/startup && ! $BT_SINK && $mixer_current != $NAME ]]; then
+	notify output "Output Device" "$NAME"
+fi
+if [[ $UDEV ]]; then # output and volume changed
+	( 
+		[[ $UDEV == add ]] && sleep 0.5 # needs more time to be ready
+		volume.push $( volume.Mpd ) refresh
+		pushRefresh player
+	) & # fix: missing volume if foreground
+else
+	pushRefresh player
+	$dirbash/status-push.sh
+fi
+[[ $CAMILLADSP ]] && pushRefresh camilla features
+[[ $CARD == -1 && ! $BT_SINK ]] && exit
 # --------------------------------------------------------------------
 # renderers
-[[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && MIXER_NO=1
+[[ ! $mixer || $BT_SINK || $CAMILLADSP || $EQUALIZER ]] && MIXER_NO=1
 
 if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf

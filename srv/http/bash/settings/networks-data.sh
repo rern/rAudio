@@ -4,17 +4,17 @@
 
 if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
 	devicebt=true
+	bluetoothctl show | grep -q 'Discoverable: yes' && discoverable=true
 	devices=$( bluetoothctl devices Trusted | sort -k3 -fh  )
 fi
 if [[ $devices ]]; then
 	while read dev; do
-		mac=$( cut -d' ' -f2 <<< $dev )
-		info=$( bluetoothctl info $mac )
+		MAC=$( cut -d' ' -f2 <<< $dev ) # MAC - fixed var name
 		listbluetooth+=',{
-  "mac"       : "'$mac'"
-, "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
-, "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
-, "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
+  "mac"       : "'$MAC'"
+, "name"      : "'$( bluetoothProperty Alias )'"
+, "connected" : '$( bluetoothProperty Connected )'
+, "type"      : "'$( bluetoothSinkSource )'"
 }'
 	done <<< $devices
 	listbluetooth='[ '${listbluetooth:1}' ]'
@@ -74,13 +74,14 @@ data='
 	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
 	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
 }
-, "ap"        : '$( exists $dirsystem/ap )'
-, "apconf"    : '$apconf'
-, "apstartup" : '$( exists $dirshm/apstartup )'
-, "gateway"   : "'$gateway'"
-, "hostname"  : "'$( hostname )'.local"
-, "ip"        : "'$ip'"
-, "list"      : {
+, "ap"           : '$( exists $dirsystem/ap )'
+, "apconf"       : '$apconf'
+, "apstartup"    : '$( exists $dirshm/apstartup )'
+, "discoverable" : '$discoverable'
+, "gateway"      : "'$gateway'"
+, "hostname"     : "'$( hostname )'.local"
+, "ip"           : "'$ip'"
+, "list"         : {
 	  "bluetooth" : '$listbluetooth'
 	, "lan"       : '$listlan'
 	, "wlan"      : '$listwlan'

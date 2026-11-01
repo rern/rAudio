@@ -4,12 +4,14 @@ commonVariables( [
 	, 'labels'  => [ 
 		  'DAB Radio'         => 'dabradio'
 		, 'Device'            => ''
-		, 'DSP'               => 'camilla'
 		, 'Equalizer'         => 'equalizer'
 		, 'Mixer'             => ''
+		, 'Options'           => ''
+		, 'Output'            => ''
 		, 'Shared Data'       => 'networks'
 		, 'Signal Processors' => ''
 		, 'SoX Resampler'     => ''
+		, 'Volume'            => ''
 		, 'Volume Control'    => ''
 	]
 	, 'menus'   => []
@@ -41,23 +43,24 @@ $B->camilla$B->equalizer $T->features$L->signalprocessors enabled
 EOF];
 $body      = [
 	[
-		  'id'       => 'btreceiver'
+		  'id'       => 'bluealsa'
 		, 'label'    => 'Bluetooth'
 		, 'sub'      => 'bluealsa-cli'
+		, 'icon'     => 'btsender'
 		, 'status'   => true
-		, 'input'    => 'btreceiver'
+		, 'input'    => 'bluealsa'
 	]
 	, [
-		  'id'       => 'btsender'
+		  'id'       => 'btmixer'
 		, 'label'    => 'Sender Mixer'
 		, 'sub'      => 'amixer'
 		, 'status'   => true
-		, 'input'    => 'btsender'
+		, 'input'    => 'btmixer'
 		, 'help'     => <<< EOF
-$B->volume Sender volume level
-<i class="i-btsender"></i> rAudio as Bluetooth sender:
- · Should be set at <c>0dB</c>
- · Use volume control on receiver devices to set level
+$B->bluetooth rAudio as Bluetooth sender:
+ · Receiver buttons can be used for start/stop/skip and volume
+ 
+$B->camilla$B->volume Sender volume level - Set at <c>0dB</c> for better quality.
 EOF
 	]
 	, [
@@ -77,8 +80,7 @@ EOF
 		, 'status'   => true
 		, 'input'    => 'mixer'
 		, 'help'     => <<< EOF
-$B->volume DAC hardware volume level
- · $L->volumecontrol$B->gear If MPD software, this should be set at <c>0dB</c>
+$B->volume Mixer hardware volume
 EOF
 	]
 	, [
@@ -87,8 +89,8 @@ EOF
 		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
- · DAC hardware $L->mixer : Good (if available)
- · MPD software: Basic
+	· DAC hardware $L->mixer : Good (if available)
+	· MPD software: Basic (Set $L->mixer at <c>0dB</c> for better quality.)
  
 Note:
 Should be disabled for best sound quality
@@ -102,7 +104,7 @@ EOF
 		, 'label'    => 'Device + Bluetooth'
 		, 'help'     => <<< EOF
  · Also output to $L->device when Bluetooth connected.
- · $T->playback volume - $L->mixer volume
+ · $T->playback $B->volume » $L->mixer $B->volume
  · Should be disabled if not used simultaneously
 EOF
 	]
@@ -118,12 +120,12 @@ $body      = [
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
- · Mixer device volume set at <c>0dB</c>
+ · Mixer hardware volume set at <c>0dB</c>
  · Disable:
-	· Output $L->volumecontrol
-	· Volume - All options
-	· Options  $L->soxresampler
-	· $T->features$L->dsp $L->equalizer
+	· $L->output$L->volumecontrol
+	· $L->volume All options
+	· $L->options$L->soxresampler
+	· $T->features$L->dsp$L->signalprocessors
 EOF
 	]
 	, [
@@ -170,10 +172,9 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-$B->gear
-■ Gain control - Mixer device:
- · <c>replay_gain_handler "mixer"</c>
- · Available when Volume Control = MPD software
+$B->gear Gain control - Mixer device:
+	· <c>replay_gain_handler "mixer"</c>
+	· Available when Volume Control = MPD software
 EOF
 	]
 ];

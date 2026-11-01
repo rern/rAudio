@@ -58,7 +58,7 @@ custom )
 	fi
 	;;
 device )
-	echo $DEVICE > $dirsystem/output-device
+	echo $DEVICE > $dirsystem/audio-output
 	$dirsettings/player-conf.sh
 	;;
 devicewithbt )
@@ -82,6 +82,10 @@ dop )
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh
 	;;
+mixer.* ) # hw volume
+	$CMD
+	[[ $CMD == mixer.0dB ]] && mixer.value
+	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
 	$dirsettings/player-conf.sh
@@ -93,7 +97,7 @@ mixertype )
 	if [[ $MIXERTYPE == hardware ]]; then
 		rm -f "$filemixertype" $dirsystem/replaygain-hw
 	else
-		amixer0dB
+		mixer.0dB
 		echo $MIXERTYPE > "$filemixertype"
 	fi
 	$dirsettings/player-conf.sh
@@ -102,7 +106,7 @@ mixertype )
 	[[ $TARGET ]] && volume
 	;;
 novolume )
-	amixer0dB
+	mixer.0dB
 	name=$( getContent $dirsystem/audio-output )
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
@@ -151,10 +155,6 @@ $data
 	fi
 	systemctl restart mpd
 	pushRefresh
-	;;
-volume )
-	amixer -Mq$BT sset "$CONTROL" $TARGET # BT='D bluealsa'
-	volumeGetDb "$BT"
 	;;
 	
 esac

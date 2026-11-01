@@ -1,44 +1,62 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <?php
 commonVariables( [
-	  'buttons' => [ 'add', 'ap', 'bluetooth', 'btsender', 'lan', 'search', 'wifi', 'wifi1' ]
+	  'buttons' => [ 'add',   'ap',   'eye',      'bluetooth', 'btsender', 'eye',    'forget', 'lan', 'next'
+				   , 'pause', 'play', 'previous', 'search',    'stop',     'volume', 'wifi',   'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
 	]
 	, 'menus'   => []
-	, 'tabs'    => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features', 'playback' ]
 ] );
+$hostname = '<c class="hostname">'.gethostname().'</c>';
 // ----------------------------------------------------------------------------------
-$head = [
+foreach( [ 'chevron-down', 'chevron-up', 'raudio', 'btreceiver', 'btsender' ] as $i ) ${'i_'.str_replace( '-', '', $i)} = icon( $i );
+$updn     = '<c>'.$i_chevronup.'</c> <c>'.$i_chevrondown.'</c>';
+$head     = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => 'search'
+	, 'button' => [ 'search', 'eye' ]
 	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->search Available devices
-$B->bluetooth$B->btsender Context menu
+$B->eye Discoverable
 	
-<wh>rAudio as sender:</wh>
- • Pair:
-	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: $B->search Scan to connect &raquo; Select to pair
- • Connect / Disconnect:
-	· On receiver: Turn on / off
- • Playback controls with buttons:
-	· Main - Play / Pause
-	· Up / Down (long-press) - Previous / Next
+$i_btsender <a class="textdropdown wh">rAudio as sender:</a>
+<div class="drop hide">
+	 • Unpaired receiver:
+		· On receiver: Turn on Discovery / Pairing mode
+		· On rAudio: $B->search Scan &raquo; Select - Pair and connect
+	 • Paired receiver:
+		· On receiver: Turn on / off
+		· On rAudio: Connect / Disconnect
+</div><!--
+-->$i_btreceiver <a class="textdropdown wh">rAudio as receiver:</a>
+<div class="drop hide">
+	 • Unpaired sender:
+		· On rAudio: $B->eye &raquo; Enable Discoverable
+		· On sender: Search &raquo; Select $hostname - Pair and connect
+	 • Paired sender:
+		· On sender: Select $hostname - Connect / Disconnect
+		· On rAudio: Connect / Disconnect
+</div>
+$T->playback
+$i_raudio rAudio:
+	· $B->stop Stop - Disconnect
+	· $B->volume Volume
+$i_btreceiver Receiver buttons:
+	· <c>&#x25C9;</c> » $B->play Play / $B->pause Pause
+	· $updn » $B->volume Volume (after first play)
+	· $updn (long-press) » $B->previous Previous $B->next Next
+$i_btsender Sender:
+	· App controls
 
-<wh>rAudio as receiver:</wh>
- • Pair:
-	· On rAudio: $T->system$L->bluetooth ■ Discoverable by senders
-	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
- • Connect / Disconnect:
-	· On sender
-	
 Note:
- • Forget / remove should be done on both rAudio and sender.
- • Non-audio devices should be able to pair as well.
+ · Non-audio devices can be connected as well.
+ · $B->forget Forget $i_btsender Sender: Both must forget each oher before reconnect.
+
+$B->bluetooth$B->btsender Context menu
 EOF
 ];
 $body = [ '<ul id="bluetooth" class="entries"></ul>' ];
@@ -52,11 +70,12 @@ $head = [
 	, 'help'   => <<< EOF
 $B->add Manual connect
 $B->search Available networks
-$B->wifi$B->ap Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar $B->wifi1 might be unstable.
+
+$B->wifi$B->ap Context menu
 EOF
 ];
 $body = [ '<ul id="wlan" class="entries"></ul>' ];

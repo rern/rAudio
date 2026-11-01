@@ -40,7 +40,7 @@ def _fft4(signal):
         Fe0 + Fo0,
         Fe1 + F11,
         Fe0 - Fo0,
-        Fe1 - F11,
+        Fe1 - F11
     )
 
 
@@ -59,7 +59,7 @@ def _fft8(signal):
         Feven[0] - t0,
         Feven[1] - t1,
         Feven[2] - t2,
-        Feven[3] - t3,
+        Feven[3] - t
     )
 
 

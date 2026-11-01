@@ -5,8 +5,10 @@ W.refresh     = data => {
 	V.debounce = setTimeout( () => {
 		COMMON.json.update( S, data );
 		CONFIG.valuesAssign();
+		RENDER.status();
 		RENDER[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
 		BANNER_HIDE();
+		SWITCH.set();
 	}, 300 );
 }
 // variables //////////////////////////////////////////////////////////////////////////////
@@ -356,7 +358,7 @@ D0.list       = {
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',               'select', {} ] // ^
-	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > hwparams
+	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > $( '#devices' ).on( 'click'...
 	, deviceP            : [ 'Device',             'select', {} ]                                    // ^
 	, formatC            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
 	, formatP            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
@@ -1125,17 +1127,6 @@ var CONFIG    = {
 		[ 'devices', 'filters', 'mixers', 'pipeline', 'processors' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
-		var dev                            = S.devices;
-		var samplings                      = dev.playback.samplings;
-		D0.samplerate                      = Object.values( samplings );
-		D.main[ 0 ][ 2 ].kv                = samplings;
-		D0.list.capture_samplerate[ 2 ].kv = samplings;
-		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
-		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
-		D0.list.deviceC[ 2 ]               = dev.capture.device;
-		D0.list.deviceP[ 2 ]               = dev.playback.device;
-		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
-		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
 		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
 		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
@@ -1173,7 +1164,7 @@ var RENDER    = {
 			var dev = DEV[ d ];
 			var data = COMMON.json.clone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
+			if ( d === 'playback' ) device += ' - '+ ( S.sinkmixer || S.mixer );
 			if ( data.format === null ) data.format = '(auto)';
 			[ 'device', 'labels', 'link_mute_control', 'link_volume_control', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ICON( d === 'capture' ? 'input' : 'output' )
@@ -1423,14 +1414,12 @@ var RENDER    = {
 	} //-----------------------------------------------------------------------------------
 	, status      : () => { // onload only
 		playbackIcon();
+		$( 'heading i' ).eq( 0 ).prop( 'class', 'i-'+ S.player );
 		$( '#divvolume' ).removeClass( 'hide' );
-		VOLUME.set( S.volume );
+		$( '#divvolume .i-volume' ).toggleClass( 'hide', S.mixer === '' && S.sink === '' && ! S.source );
+		VOLUME.set();
 		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
-		if ( S.bluetooth ) {
-			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ICON( 'bluetooth' ) );
-		} else {
-			$( '#divconfiguration .col-l i' ).remove();
-		}
+		$( '#divconfiguration .i-btsender' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#configuration' )
 			.html( COMMON.select.option( S.ls.configs ) )
 			.val( S.configname );
@@ -1512,7 +1501,7 @@ var RENDER    = {
 		} else {
 			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
 			width     = ( width - 100 ) * 2;
-			var left  = width - 2;
+			var left  = width - 3;
 		}
 		if ( rms ) {
 			$( '.rms.'+ cpi ).css( 'width', width +'px' );
@@ -1546,7 +1535,7 @@ var SETTING   = {
 		$.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
 		var title       = UTIL.key2label( dev );
 		INFO( {
-			  icon         : V.tab
+			  icon         : dev === 'capture' ? 'input' : 'output'
 			, title        : title
 			, list         : D[ dev ][ type ]
 			, values       : values
@@ -1730,6 +1719,24 @@ var SETTING   = {
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
+	, format        : ( device, type ) => {
+		if ( D0.samplerate.length ) {
+			SETTING[ device ]( type );
+		} else {
+			BASH( [ 'devices' ], dev => {
+				D0.samplerate                      = Object.values( dev.playback.samplings );
+				D.main[ 0 ][ 2 ].kv                = dev.playback.samplings;
+				D0.list.capture_samplerate[ 2 ].kv = dev.capture.samplings;
+				D0.list.formatC[ 2 ].kv            = dev.capture.formats;
+				D0.list.formatP[ 2 ].kv            = dev.playback.formats;
+				D0.list.deviceC[ 2 ]               = dev.capture.device;
+				D0.list.deviceP[ 2 ]               = dev.playback.device;
+				D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
+				D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
+				SETTING[ device ]( type );
+			}, 'json' );
+		}
+	}
 	, main          : () => {
 		var values   = {};
 		D0.main.forEach( k => {
@@ -2155,13 +2162,13 @@ var SETTING   = {
 		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			WSCAMILLA.send( '{ "SetConfigJson": "'+ config +'" }' );
+			WSSEND( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( titlle ) BANNER( V.tab, titlle, msg );
 			V.debounce = setTimeout( () => {
 				LOCAL();
 				GRAPH.refresh();
 				SETTING.statusPush();
-				BASH( [ 'saveconfig' ] );
+				BASH( [ 'saveconfig', S.fileconfig, 'CMD FILECONFIG' ] );
 				if ( V.tab === 'devices' ) RENDER.devices();
 				$( '.switch' ).removeClass( 'disabled' );
 			}, 1000 );
@@ -2169,7 +2176,7 @@ var SETTING   = {
 	}
 	, saveError     : result => {
 		clearTimeout( V.debounce );
-		setTimeout( () => WSCAMILLA.send( '"GetConfigJson"' ), 1000 );
+		setTimeout( () => WSSEND( '"GetConfigJson"' ), 1000 );
 		$( '.switch' ).removeClass( 'disabled' );
 		console.log( result );
 		console.log( S.config );
@@ -2204,25 +2211,18 @@ var SETTING   = {
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
-		var title   = 'Add File';
-		if ( filters ) {
-			var dir     = 'coeffs';
-			var message = 'Upload <wh>coefficient</wh> file:';
-		} else {
-			var dir     = S.bluetooth ? 'configs-bt' : 'configs';
-			var message = 'Upload <wh>configuration</wh> file:'
-		}
+		var title   = COMMON.capitalize( V.tab );
 		INFO( {
 			  icon    : V.tab
 			, title   : title
-			, message : message
-			, file    : { oklabel: ICON( 'file' ) +'Upload', type: dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml' }
+			, message : 'Upload <wh>'+ ( filters ? 'coefficient' : 'configuration' ) +'</wh> file:'
+			, file    : { oklabel: ICON( 'file' ) +'Upload', type: filters ? '.dbl,.pcm,.raw,.wav' : '.yml' }
 			, cancel  : UTIL.webSocket
 			, ok      : () => {
 				NOTIFY( V.tab, title, 'Upload ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'camilla' );
-				formdata.append( 'dir', dir );
+				formdata.append( 'dir', filters ? '/srv/http/data/camilladsp/coeffs' : COMMON.dirName( S.fileconfig ) );
 				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
@@ -2308,7 +2308,7 @@ var UTIL      = {
 						if ( V.local ) return
 						
 						UTIL.wsGetState();
-						if ( DEV.enable_rate_adjust ) WSCAMILLA.send( '"GetRateAdjust"' );
+						if ( DEV.enable_rate_adjust ) WSSEND( '"GetRateAdjust"' );
 					}, 1000 );
 				}
 			}, 100 );
@@ -2380,7 +2380,7 @@ var UTIL      = {
 							V.signal = true;
 							RENDER.vuBarToggle();
 						}
-						V.interval.vu = setInterval( () => WSCAMILLA.send( '"GetSignalLevels"' ), 100 );
+						V.interval.vu = setInterval( () => WSSEND( '"GetSignalLevels"' ), 100 );
 					}
 					break;
 				case 'GetConfigJson':
@@ -2389,7 +2389,7 @@ var UTIL      = {
 					RENDER.status();
 					RENDER.tab();
 					CONTENT();
-					WSCAMILLA.send( '"GetSupportedDeviceTypes"' );
+					WSSEND( '"GetSupportedDeviceTypes"' );
 					if ( V.confswitch ) {
 						delete V.confswitch;
 						$( '.divgraph' ).remove();
@@ -2420,13 +2420,13 @@ var UTIL      = {
 	}
 	, wsGetConfig  : () => {
 		setTimeout( () => {
-			WSCAMILLA.send( '"GetConfigJson"' );
+			WSSEND( '"GetConfigJson"' );
 		}, WSCAMILLA.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState   : () => {
 		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
 		if ( S.config && DEV.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
-		getstate.forEach( k => WSCAMILLA.send( '"'+ k +'"' ) );
+		getstate.forEach( k => WSSEND( '"'+ k +'"' ) );
 	}
 }
 var VOLUME    = {
@@ -2446,7 +2446,9 @@ var VOLUME    = {
 		run();
 	}
 	, mute      : volume => BASH( [ 'mute', volume, 'CMD VOLUME' ] )
+	, ready     : () => WSCAMILLA && ! V.animate
 	, set       : target => {
+		if ( target === undefined ) target = S.volume;
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
 		var mute     = S.volumemute > 0;
@@ -2456,10 +2458,9 @@ var VOLUME    = {
 		$( '#volume-mute' )
 			.text( S.volumemute )
 			.toggleClass( 'hide', ! mute );
-		$( '#divvolume .i-volume' ).toggleClass( 'mute', mute );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', target === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', target === 100 );
-		if ( V.drag || vol_prev === '' ) { // onload - empty
+		if ( V.refresh || V.drag || vol_prev === '' ) { // onload - empty
 			var ms   = 0;
 		} else {
 			var ms    = Math.abs( target - vol_prev ) * 40;
@@ -2471,8 +2472,9 @@ var VOLUME    = {
 			, left                  : target +'%'
 		} );
 		if ( ! mute ) VOLUME.mute( 0 );
+		delete V.refresh;
 	}
-	, volume    : val => WSCAMILLA.send( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
+	, volume    : val => WSSEND( '{ "SetVolume": '+ VOLUME.percent2db( val ) +' }' )
 	, xy        : e => {
 		var posX  = COMMON.pageX( e ) - V.volume.x;
 		var w     = V.volume.w;
@@ -2480,11 +2482,16 @@ var VOLUME    = {
 		VOLUME.cmd( Math.round( posX / w * 100 ) );
 	}
 }
+var WSSEND    = msg => {
+	if ( WSCAMILLA && ! V.debug ) WSCAMILLA.send( msg );
+}
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
+	if ( ! VOLUME.ready() ) return
+	
 	var pos = this.getBoundingClientRect();
 	V.volume = {
 		  x : pos.left + 20
@@ -2505,23 +2512,24 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		VOLUME.mute( 0 );
 	}
 	VOLUME.xy( e );
+	VOLUME.push( V.drag ? 'refresh' : '' );
 	delete V.drag;
 	delete V.volume;
 } );
 $( '#volume-0, #volume-100' ).on( 'click', function() {
-	if ( V.animate ) return
+	if ( ! VOLUME.ready() ) return
 	
 	VOLUME.cmd( this.id === 'volume-0' ? 0 : 100 );
 } );
 $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
-	if ( V.animate ) return
+	if ( ! VOLUME.ready() ) return
 	
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	VOLUME.cmd( up ? S.volume + 1 : S.volume - 1 );
-} ).on( 'click', '.col-r .i-volume, #volume-level, #volume-mute', function() {
-	if ( V.animate ) return
+} ).on( 'click', '#volume-level, #volume-mute', function() {
+	if ( ! VOLUME.ready() ) return
 	
 	VOLUME.mute( S.volume );
 	if ( S.volumemute ) {
@@ -2535,20 +2543,27 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
+} ).on( 'click', '.i-volume', function() {
+	BASH( [ 'mixer.value' ], values => {
+		MIXER.volume( values );
+	}, 'json' );
 } ).press( {
 	  delegate : '.col-l i, .i-plus'
 	, action   : e => {
+		if ( ! VOLUME.ready() ) return
+		
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.interval.volume = setInterval( () => {
 			var target = up ? S.volume + 1 : S.volume - 1;
 			VOLUME.cmd( target );
-			VOLUME.set( target );
 			if ( target === 0 || target === 100 ) clearInterval( V.interval.volume );
-		}, 300 );
+		}, 100 );
 	}
 	, end     : () => {
+		if ( ! VOLUME.ready() ) return
+		
 		clearInterval( V.interval.volume );
-		VOLUME.push();
+		VOLUME.push( 'refresh' );
 	}
 } );
 $( '#divvolume' ).on( 'keydown', function( e ) {
@@ -2593,7 +2608,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	LOCAL( 2000 );
 	$( '.divclipped' ).addClass( 'hide' );
-	WSCAMILLA.send( '"ResetClippedSamples"' );
+	WSSEND( '"ResetClippedSamples"' );
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
@@ -2602,8 +2617,8 @@ $( '#configuration' ).on( 'input', function() {
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	BASH( [ 'confswitch', path, 'CMD CONFIG' ], () => {
 		V.confswitch = true;
-		WSCAMILLA.send( '{ "SetConfigFilePath": "'+ path +'" }' );
-		WSCAMILLA.send( '"Reload"' );
+		WSSEND( '{ "SetConfigFilePath": "'+ path +'" }' );
+		WSSEND( '"Reload"' );
 		S.configname = name;
 		setTimeout( () => UTIL.wsGetConfig(), 300 );
 	} );
@@ -3024,10 +3039,10 @@ $( '#processors, #pipeline' ).on( 'click', 'li', function( e ) {
 } );
 // devices --------------------------------------------------------------------------------
 $( '#divdevices heading .i-gear' ).on( 'click', function() {
-	SETTING.main();
+	SETTING.format( 'main' );
 } );
 $( '#devices' ).on( 'click', 'li', function() {
-	SETTING.device( $( this ).data( 'type' ) );
+	SETTING.format( 'device', $( this ).data( 'type' ) );
 } );
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {

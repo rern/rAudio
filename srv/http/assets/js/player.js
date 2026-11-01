@@ -27,9 +27,6 @@ var CONFIG   = {
 			}
 		}
 	}
-	, btsender      : values => {
-		UTIL.mixer( values );
-	}
 	, buffer       : values => {
 		INFO( {
 			  ...SW
@@ -108,9 +105,8 @@ audio_output {
 			} );
 		} );
 	}
-	, mixer        : values => {
-		UTIL.mixer( values );
-	}
+	, btmixer      : values => MIXER.volume( values )
+	, mixer        : values => MIXER.volume( values )
 	, mixertype    : () => {
 		if ( ! S.mixers ) {
 			COMMON.mixerSet( 'software' );
@@ -166,56 +162,11 @@ audio_output {
 	}
 }
 var UTIL     = {
-	  mixer        : values => {
-		V.bt  = SW.id === 'btsender';
-		var val = values.val;
-		INFO( {
-			  icon       : V.bt ? 'btsender' : 'volume'
-			, title      : ( V.bt ? 'Sender' : 'Device' ) + ' Mixer Volume'
-			, list       : [ V.bt ? 'BlueALSA' : S.output.MIXER, 'range' ]
-			, footer     : '<br>'+ UTIL.warning
-			, values     : val
-			, beforeshow : () => {
-				if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
-				$( '.infofooter' ).addClass( 'hide' );
-				var $range  = $( '#infoList input' );
-				$( '#infoList' ).css( 'height', '160px' );
-				$( '.inforange' ).append( '<div class="sub gr"></div>' );
-				$range.on( 'input', function() {
-					UTIL.volume( this.value +'%' );
-				} );
-				$( '.inforange i' ).on( 'click', function() {
-					$range
-						.trigger( 'input' )
-						.trigger( 'keyup' );
-				} );
-				UTIL.volumeSet( values );
-			}
-			, cancel     : () => {
-				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
-					LOCAL();
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-					setTimeout( () => I.oknoreset = true, 300 );
-				}
-			}
-			, oklabel    : ICON( 'set0' ) +'0dB'
-			, oknoreset  : true
-			, ok         : () => {
-				if ( values.db > -2 ) {
-					UTIL.volume( '0dB' );
-				} else {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) UTIL.volume( '0dB' );
-					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-				}
-				$( '.inforange .sub' ).text( '0 dB' );
-			}
-		} );
-	}
-	, novolume  : {
+	  novolume  : {
 		  warning : () => {
 			INFO( {
 				  ...SW
-				, message : UTIL.warning
+				, message : MIXER.warning
 				, cancel  : SWITCH.cancel
 				, ok      : UTIL.novolume.set
 			} );
@@ -274,29 +225,6 @@ var UTIL     = {
 			} );
 		}
 	}
-	, volume    : value => {
-		var args = V.bt ? [ S.btmixer, 'D bluealsa' ] : [ S.output.MIXER, '' ];
-		BASH( [ 'volume', value, ...args, 'CMD TARGET CONTROL BLUEALSA' ], data => {
-			UTIL.volumeSet( data );
-		}, 'json' );
-	}
-	, volumeSet : values => {
-		V.local    = false;
-		var volume = SW.id === 'btsender' ? 'volumebt' : 'volume';
-		var val    = values.val;
-		var db     = values.db;
-		$( '#infoList' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		$( '.inforange .value' ).text( val );
-		$( '.inforange input' ).val( val );
-		if ( typeof db !== 'undefined' ) $( '.inforange .sub' ).text( db +' dB' );
-		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
-		if ( ! $( '#code'+ SW.id ).hasClass( 'hide' ) ) STATUS( SW.id );
-	}
-	, warning   : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
-				 +'<gr>Output will be at original level <c>0dB</c>.<br>'
-				 +'Volume controlled via amplifier only.</gr><br>'
-				 +'Beware of too high volume.</wh>'
 }
 
 function renderPage() {
@@ -313,38 +241,40 @@ function renderPage() {
 		if ( count ) htmlstatus += '<a>'+ ICON( k +' gr' ) + count.toLocaleString() +'</a>';
 	} );
 	$( '#divstatus .value' ).html( htmlstatus +'</div>' );
-	var bluetooth = S.btmixer !== false;
-	if ( bluetooth ) {
-		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP/, '' ) +'</option>' );
-		$( '#btsender' ).html( '<option>BlueALSA</option>' );
-		$( '#divbtreceiver, #divbtsender' ).removeClass( 'hide' );
+	if ( S.sink ) {
+		$( '#bluealsa' ).html( '<option>BlueALSA</option>' );
+		$( '#btmixer' ).html( '<option>'+ S.sinkmixer +'</option>' );
+		$( '#setting-btmixer' ).toggleClass( 'hide', ! S.camilladsp );
+		$( '#divbluealsa, #divbtmixer' ).removeClass( 'hide' );
 	} else {
-		$( '#divbtreceiver, #divbtsender' ).addClass( 'hide' );
+		$( '#divbluealsa, #divbtmixer' ).addClass( 'hide' );
 	}
 	$( '#divoutput heading i:first-child' ).remove();
 	[ 'camilladsp', 'equalizer' ].some( k => {
 		if ( S[ k ] ) $( '#divoutput heading' ).prepend( ICON( k ) );
 	} );
-	if ( S.asoundcard === -1 ) {
-		$( '#divoutput' ).toggleClass( 'hide', ! bluetooth );
+	if ( S.nosound ) {
+		$( '#divoutput' ).toggleClass( 'hide', S.sink === '' );
 		$( '#divbitperfect' ).addClass( 'hide' );
 	} else {
-		var devicehide = bluetooth && ! S.devicewithbt;
 		var novolume   = ! [ 'camilladsp', 'crossfade', 'equalizer', 'mixertype', 'normalization', 'replaygain', 'soxr' ].some( k => S[ k ] );
 		$( '#divoutput' ).removeClass( 'hide' );
-		$( '#divbitperfect' ).toggleClass( 'hide', bluetooth && ! S.devicewithbt );
-		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', devicehide );
-		$( '#device' )
-			.html( COMMON.select.option( Object.keys( S.devices ) ) )
-			.val( S.output.NAME );
-		if ( ! devicehide && S.mixers ) {
-			$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
-			$( '#setting-mixer' ).toggleClass( 'hide', novolume || ! S.mixers );
-			$( '#divmixer' ).removeClass( 'hide' );
-			$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
-			if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
+		if ( S.sink && ! S.devicewithbt ) {
+			$( '#divdevice, #divmixer, #divbitperfect' ).addClass( 'hide' );
 		} else {
-			$( '#divmixer' ).addClass( 'hide' );
+			$( '#divdevice, #divmixer, #divbitperfect' ).removeClass( 'hide' );
+			$( '#device' )
+				.html( COMMON.select.option( Object.keys( S.devices ) ) )
+				.val( S.output.NAME );
+			if ( S.mixers ) {
+				$( '#mixer' ).html( COMMON.select.option( S.mixers ) );
+				$( '#setting-mixer' ).toggleClass( 'hide', novolume );
+				$( '#divmixer' ).removeClass( 'hide' );
+				$( '#divmixer .col-l' ).toggleClass( 'single disabled', S.camilladsp );
+				if ( S.camilladsp ) $( '#codemixer' ).addClass( 'hide' );
+			} else {
+				$( '#divmixer' ).addClass( 'hide' );
+			}
 		}
 		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
@@ -353,7 +283,11 @@ function renderPage() {
 			.toggleClass( 'disabled', novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 	}
-	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
+	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => {
+		$( '#'+ k )
+			.next().addBack()
+			.toggleClass( 'hide', ! S.lists[ k ] );
+	} );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	CONTENT();
 	var w          = 0;

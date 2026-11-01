@@ -206,10 +206,11 @@ var RENDER = {
 			S.list.bluetooth.forEach( list => {
 				cls   = list.connected ? ' current' : '';
 				html += '<li class="bt'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
-					  + ICON( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'<dot></dot>'+ list.name +'</li>';
+					  + ICON( list.type ) +'<dot></dot>'+ list.name +'</li>';
 			} );
 		}
 		LIST.render( 'bluetooth', html );
+		$( 'heading .i-eye' ).toggleClass( 'bl', S.discoverable );
 		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
 	, lan       : () => {
@@ -361,6 +362,10 @@ $( '.i-search' ).on( 'click', function() {
 		.removeClass( 'hide' )
 		.find( 'i' ).eq( 0 ).addClass( 'blink' );
 	SCAN[ type ]();
+} );
+$( '#divbluetooth .i-eye' ).on( 'click', function() {
+	SW = { id: 'bluetooth', title: 'Bluetooth' }
+	BASH( 'data-config.sh bluetooth', values => BLUETOOTH( values ), 'json' );
 } );
 $( '.scan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );

@@ -5,6 +5,20 @@ Naming must be the same for:
 	bash   - cmd=NAME, save to NAME.conf
 */
 $MENU       = $( '#menu' );
+function BLUETOOTH( values ) {
+	INFO( {
+		  icon         : 'bluetooth'
+		, title        : 'Bluetooth'
+		, list         : [
+			  [ 'Discoverable <gr>by senders</gr>', 'checkbox' ]
+			, [ 'Timeout <gr>(3 minutes)</gr>',     'checkbox' ]
+		]
+		, values       : values
+		, checkchanged : PAGE === 'networks' || S.bluetooth
+		, cancel       : SWITCH.cancel
+		, ok           : SWITCH.enable
+	} );
+}
 function CONTENT() {
 	var $select = $( '.container select' );
 	if ( $select.length ) {
@@ -40,6 +54,9 @@ function NOTIFY_COMMON( message ) {
 		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	}
 	BANNER( SW.icon +' blink', SW.title, message, -1 );
+}
+function POINTER_EVENTS( css ) {
+	$( '.col-r' ).css( 'pointer-events', css || '' );
 }
 function REFRESHDATA() {
 	if ( PAGE === 'guide' || ( I.active && ! I.rangelabel ) ) return
@@ -125,8 +142,95 @@ function STATUS( id, arg, info ) {
 		delete V.statusclick;
 	} );
 }
+var MIXER = { // player.js, camilla.js
+	  command  : val => {
+		BASH( [ S.sink ? 'mixer.sink' : 'mixer.mixer', val +'%', V.control, 'CMD TARGET CONTROL' ] );
+	}
+	, refresh  : () => {
+		setTimeout( () => BASH( [ 'mixer.value' ], values => MIXER.set( values ), 'json' ), 300 );
+	}
+	, set      : values => {
+		S.volume = values.val;
+		VOLUME.push( 'refresh' );
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
+		$( '.inforange .value' ).text( S.volume );
+		$( '.inforange input' ).val( S.volume );
+		var db   = values.db !== undefined ? values.db : '-';
+		$( '.inforange .sub' ).text( db +' dB' );
+		$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '-' );
+	}
+	, volume   : values => {
+		if ( S.sink ) {
+			V.control = S.sink;
+		} else {
+			V.control = PAGE === 'player' ? S.output.MIXER : S.mixer;
+		}
+		INFO( {
+			  icon       : S.sink ? 'bluetooth' : 'volume'
+			, title      : S.sink ? 'Bluetooth Volume' : 'Mixer Volume'
+			, list       : [ S.sinkmixer || V.control, 'range' ]
+			, footer     : MIXER.warning
+			, beforeshow : () => {
+				$( '.inforange' ).append( '<div class="sub gr"></div>' );
+				MIXER.set( values );
+				$( '.infofooter' )
+					.css( 'padding-top', '22px' )
+					.addClass( 'hide' );
+				var $range    = $( '.inforange input' );
+				var $rangeval = $( '.inforange .value' );
+				$range.on( 'input', function() {
+					var val = this.value;
+					MIXER.command( val );
+					$rangeval.text( val );
+					$( '.inforange .up' ).toggleClass( 'disabled', val >= 100 );
+					$( '.inforange .dn' ).toggleClass( 'disabled', val <= 0 );
+				} ).on( 'touchend mouseup keyup', function() {
+					MIXER.refresh();
+				} );
+				function rangeSet( up ) {
+					var val = +$range.val();
+					if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
+
+					up ? val++ : val--;
+					MIXER.command( val );
+					$range.val( val );
+					$rangeval.text( val );
+				}
+				$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
+					clearTimeout( I.timeout.range );
+					if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
+					MIXER.refresh();
+				} ).press( e => {
+					var up = $( e.target ).hasClass( 'up' );
+					I.timeout.range = setInterval( () => rangeSet( up ), 100 );
+				} );
+			}
+			, cancel     : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
+					$( '.inforange, .infofooter' ).toggleClass( 'hide' );
+					I.oknoreset = true; // restore after deleted by default
+				}
+			}
+			, oklabel    : ICON( 'set0' ) +'0dB'
+			, oknoreset  : true
+			, ok         : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) || parseFloat( $( '.inforange .sub' ).text() ) > -2 ) {
+					BASH( [ 'mixer.0dB' ], values => MIXER.set( values ), 'json' );
+				}
+				$( '.inforange, .infofooter' ).toggleClass( 'hide' );
+			}
+		} );
+	}
+	, warning  : V.i_warning +'<wh>Lower speakers / headphones volume<br><br>'
+				+'<gr>Output will be at original level <c>0dB</c>.<br>'
+				+'Volume controlled via amplifier only.</gr><br>'
+				+'Beware of too high volume.</wh>'
+}
 var SWITCH  = {
 	  cancel : () => {
+		if ( PAGE === 'networks' ) return
+		
 		$( '#'+ SW.id )
 			.prop( 'checked', S[ SW.id ] )
 			.toggleClass( 'disabled', SW.disabled );
@@ -142,13 +246,13 @@ var SWITCH  = {
 		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 		if ( V.debug ) return
 
-		$( '.col-r' ).css( 'pointer-events', 'none' );
+		POINTER_EVENTS( 'none' );
 		delete SW;
 	}
 	, set    : () => {
+		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 		if ( PAGE === 'camilla' ) return
 
-		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 		BANNER_HIDE();
 		var $switch = $( '.switch' );
 		if ( ! $switch.length ) return
@@ -163,7 +267,7 @@ var SWITCH  = {
 	}
 }
 W.refresh   = data => { // except camilla
-	if ( 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
+	if ( PAGE === 'features' && 'nosound' in data && ! ( 'ap' in data ) && S.nosound === data.nosound ) return // features
 	
 	if ( 'scrobblekey' in data ) {
 		$( '#scrobble' ).trigger( 'click' );
@@ -175,7 +279,7 @@ W.refresh   = data => { // except camilla
 		COMMON.json.update( S, data );
 		SWITCH.set();
 		renderPage();
-		$( '.col-r' ).css( 'pointer-events', '' );
+		POINTER_EVENTS();
 		COMMON.statusToggle( 'refresh' );
 	}, 300 );
 }
@@ -186,7 +290,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	function playbackIcon() {
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.play ? 'pause' : 'play' ) )
-			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
+			.toggleClass( 'disabled', S.pllength === 0 || ( ! S.play && ( S.source || S.player !== 'mpd' ) ) );
 	}
 	W = {
 		  ...W // from common.js
@@ -368,7 +472,7 @@ $( '.switch' ).on( 'click', function() {
 		} );
 		return
 	}
-
+	
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id );
 	if ( checked ) {
@@ -387,11 +491,13 @@ $( '.switch' ).on( 'click', function() {
 					BANNER_HIDE();
 					INFO( {
 						  ...SW
-						, message : error
+						, width   : 650
+						, message : '<pre>'+ ICON( 'warning yl' ) +' '+ error +'</pre>'
 					} );
+					POINTER_EVENTS();
 				}
-			}, 'text' );
-			$( '.col-r' ).css( 'pointer-events', 'none' );
+			} );
+			POINTER_EVENTS( 'none' );
 		}
 	} else {
 		$setting.addClass( 'hide' );
@@ -400,7 +506,7 @@ $( '.switch' ).on( 'click', function() {
 		} else {
 			NOTIFY_COMMON( 'Disable ...' );
 			BASH( [ id, 'OFF' ] );
-			$( '.col-r' ).css( 'pointer-events', 'none' );
+			POINTER_EVENTS( 'none' );
 		}
 	}
 } );
@@ -413,15 +519,15 @@ $( '.setting' ).on( 'click', function() {
 	}
 } );
 $( '.textdropdown' ).on( 'click', function() {
-	var $pre = $( this ).nextAll( 'pre' ).first();
-	if ( $pre.is( ':empty' ) ) {
+	var $drop = $( this ).nextAll( '.drop' ).first();
+	if ( $drop.is( ':empty' ) ) {
 		BASH( [ 'filetype' ], data => {
-			$pre
+			$drop
 				.html( data )
 				.toggleClass( 'hide' );
 		} );
 	} else {
-		$pre.toggleClass( 'hide' );
+		$drop.toggleClass( 'hide' );
 	}
 	$( this ).toggleClass( 'active' );
 } );

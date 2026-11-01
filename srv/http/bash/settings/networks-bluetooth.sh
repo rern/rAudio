@@ -1,154 +1,175 @@
 #!/bin/bash
 
+# bluetooth.servicc (Bluez)
+# bluealsa.service
+#
+# sink   :
+	# (nothing more)
+# source :
+	# bluez-dbus.service  - changes for push
+	# bluealsa-aplay.service
+		# normal  - dbus path Player ( busctl --list tree org.bluez | grep -E '/player[0-9]+$' )
+		# camilla - dbus_path pcm    ( bluealsa-cli list-pcms )
+
+[[ -e /dev/shm/bt ]] && exit
+# ------------------------------------------------------------------------------
+trap 'rm -f /dev/shm/bt' EXIT
+touch /dev/shm/bt
+
 . /srv/http/bash/common.sh
 
-blueAlsaMixer() {
-	rm -f $dirshm/btmixer
+rm -f $dirshm/{sink,source,source_dbus}
+playerStop
+
+ALIAS_TYPE() {
+	ALIAS=$( bluetoothProperty Alias )
+	TYPE=$( bluetoothSinkSource )
 	[[ $ACTION != connect ]] && return
 #...............................................................................
-	for i in {1..3}; do
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
-	done
-	if [[ $btmixer ]]; then
-		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
-		cut -d"'" -f2 <<< $btmixer > $dirshm/btmixer
-	elif [[ ! $retry ]]; then # some might be broken on 1st connect
-		notify "$TYPE blink" "$NAME" 'Mixer ...'
-		retry=1
-		connected=
-		touch $dirshm/btretry
-		btAction disconnect
-		btConnect
-	else
-		notifyState 'Failed: Mixer'
-		exit
-# ------------------------------------------------------------------------------
-	fi
+	connected=$( getContent $dirshm/Connected | grep -v $MAC )
+	[[ ! $connected ]] && return
+#...............................................................................
+	while read mac; do # disconnect others
+		type=$( bluetoothSinkSource $mac )
+		if [[ $type != bluetooth ]]; then
+			bluetoothctl disconnect $mac &> /dev/null
+			sed -i "/$mac/ d" $dirshm/Connected
+			notify $type "$( bluetoothProperty Alias $mac )" Disconnected
+			sleep 3
+		fi
+	done < <( cut -d' ' -f2 <<< $connected )
 }
-btAction() {
-	bluetoothctl $1 $MAC
+bt.action() {
+	bluetoothctl $1 $MAC &> /dev/null
 }
-btConnect() {
-	btAction connect
+bt.connect() {
+	bt.action connect
 	for i in {1..5}; do
 		sleep 1
-		btInfo Connected && connected=1 && break
+		[[ $( bluetoothProperty Connected ) == true ]] && CONNECTED=1 && break
 	done
-	[[ ! $connected ]] && notifyState 'Connect failed' && exit
+	[[ ! $CONNECTED ]] && notify.state 'Connect failed' && exit
 # ------------------------------------------------------------------------------
 	if [[ $TYPE == bluetooth ]]; then # non-audio
-		notifyState Ready
+		notify.state Ready
 		pushRefresh networks
 		exit
 # ------------------------------------------------------------------------------
 	fi
-	[[ $retry ]] && blueAlsaMixer || notifyState Connected
+	[[ ! $RETRIED ]] && notify.action || bt.pcm
 }
-btConnected() {
+bt.connected() {
 	bluetoothctl devices Connected | sort
 }
-btInfo() {
-	local regex
-	regex=$1:
-	[[ ${1:0:1} != U ]] && regex+=' yes'
-	btAction info | grep -q -m1 "$regex" && return 0
+bt.pcm() {
+	for i in {1..3}; do
+		sleep 1
+		pcm=$( bluealsa-cli list-pcms | grep ${MAC//:/_} )
+		[[ $pcm ]] && break
+	done
+	if [[ ! $pcm ]]; then
+		if [[ ! $RETRIED ]]; then # some not ready on 1st connect
+			RETRIED=1
+			CONNECTED=
+			notify "$TYPE blink" "$ALIAS" 'Retry ...' 6000
+			bt.action disconnect
+			bt.connect
+		else
+			notify.failed 'BlueALSA mixer not found.' && exit
+# ------------------------------------------------------------------------------
+		fi
+	fi
 }
-NAME_TYPE() {
-	alias=$( btAction info | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ $alias ]] && NAME=$alias
-	sink_source=$( btAction info | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
-	[[ ! $sink_source ]] && return
-	
-	[[ $sink_source == Sink ]] && TYPE=btreceiver || TYPE=btsender
+notify.action() {
+	notify "$TYPE blink" "$ALIAS" "${ACTION^} ..." 6000
 }
-notifyACTION() {
-	notify "$TYPE blink" "$NAME" "${ACTION^} ..."
+notify.failed() {
+	notify $TYPE "$ALIAS" "<i class='i-warning yl'></i> Failed: $1" 6000
 }
-notifyState() {
-	notify $TYPE "$NAME" "$1"
-}
-refreshPages() {
-	pushRefresh networks
-	pushRefresh system
-	btConnected > $dirshm/Connected
-	[[ ! -e $dirsystem/camilladsp ]] && return
-#...............................................................................
-	[[ $ACTION == connect || $ACTION == pair ]] && $dirsettings/camilla-bluetooth.sh $TYPE $MAC && return
-#...............................................................................
-	file_default=/etc/default/camilladsp
-	getVar CONFIG $file_default > $dircamilladsp/$MAC
-	file_config=$( < $dircamilladsp/file_config )
-	sed -i "s|^CONFIG.*|CONFIG=$file_config|" $file_default
+notify.state() {
+	notify $TYPE "$ALIAS" "$1"
 }
 
 args2var "$1"
 
+ALIAS=Bluetooth
 TYPE=bluetooth
-NAME=Bluetooth
 
-if [[ $CMD != cmd ]]; then # paired device from bluetooth.rules - no actions, notify > setup
-	if [[ -e $dirshm/btretry || -e $dirshm/btonboard ]]; then
-		[[ -e $dirshm/btretry && $1 == connect ]] && rm -f $dirshm/btretry
-		exit
-# ------------------------------------------------------------------------------
-	fi
+if [[ $CMD != cmd ]]; then # (paired device) from bluetooth.rules - no connect/disconnect run, only notify > setup
 	ACTION=$1 # for notify only
-	notifyACTION
-	prev=$( cat $dirshm/Connected 2> /dev/null )
+	prev=$( getContent $dirshm/Connected )
 	for i in {1..5}; do
 		sleep 1
-		Connected=$( btConnected )
-		d=$( diff <( echo "$prev" ) <( echo "$Connected" ) | grep -E '^[<>]' )
+	d=$( diff <( echo "$prev" ) <( bt.connected ) | grep -E '^[<>]' )
 		[[ $d ]] && break
 	done
 	if [[ $d ]]; then
-		[[ $ACTION == connect ]] && connected=1
 		MAC=$( cut -d' ' -f3 <<< $d ) # < Device 41:42:56:12:21:71 NAME
-		NAME_TYPE
+		ALIAS_TYPE
+		if [[ $ACTION == connect ]]; then
+			CONNECTED=1
+			bt.action trust
+			notify.action
+		else
+			notify.state Disconnected
+		fi
 	fi
-	notifyState "${ACTION^}ed"
 elif [[ $ACTION == connect || $ACTION == pair ]]; then
-	NAME_TYPE
+	ALIAS_TYPE
 	if [[ $ACTION == pair ]]; then
 		bluetoothctl agent NoInputNoOutput # force no credential
-		notifyACTION
-		btAction pair
+		notify.action
+		bt.action pair
 		for i in {1..5}; do
 			sleep 1
-			btInfo Paired && paired=1 && break
+			[[ $( bluetoothProperty Paired ) == true ]] && PAIRED=1 && break
 		done
-		[[ ! $paired ]] && notifyState 'Failed: Pair' && exit
+		[[ ! $PAIRED ]] && notify.failed Pair && exit
 # ------------------------------------------------------------------------------
+		bt.action trust
 	fi
-	! btInfo Trusted && btAction trust
-	notifyACTION
-	btConnect
+	notify.action
+	bt.connect
 elif [[ $ACTION == disconnect || $ACTION == forget ]]; then
-	NAME_TYPE
-	notifyACTION
-	btAction disconnect &> /dev/null
+	ALIAS_TYPE
+	notify.action
+	bt.action disconnect
 	if [[ $ACTION == disconnect ]]; then
 		for i in {1..5}; do
 			sleep 1
-			! btInfo Connected && break
+			[[ $( bluetoothProperty Connected ) == false ]] && break
 		done
-		notifyState Disconnected
+		notify.state Disconnected
 	else
-		btAction remove &> /dev/null
+		bt.action remove
 		for i in {1..5}; do
 			sleep 1
 			! bluetoothctl devices | grep -q $MAC && break
 		done
-		notifyState Forgotten
+		notify.state Forgotten
 	fi
 fi
-blueAlsaMixer
-playerStop
+
+if [[ $ACTION == connect ]]; then
+	bt.pcm
+	echo $MAC > $dirshm/$TYPE
+	if [[ $TYPE == source ]]; then
+		[[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volume.Mpd > $dirsystem/volume
+		echo bluetooth > $dirshm/player
+		busctl --list tree org.bluez | grep -E '/player[0-9]+$' > $dirshm/source_dbus
+		mixer.0dB
+	fi
+fi
+
+[[ ! -e $dirsystem/camilladsp ]] && bluetoothServices # camilla: run by camilla-conf.sh
+
+bt.connected > $dirshm/Connected
+
 $dirsettings/player-conf.sh
-[[ $connected ]] && notifyState Ready
-refreshPages
-if [[ $connected ]]; then
+
+if [[ $CONNECTED ]]; then
+	notify.state Ready
 	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
 fi
+systemctl try-restart rotaryencoder
+pushRefresh networks system

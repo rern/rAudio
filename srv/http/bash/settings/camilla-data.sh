@@ -4,53 +4,39 @@
 
 . /srv/http/bash/common.sh
 . $dirshm/output
-if grep -q configs-bt /etc/default/camilladsp; then
-	bluetooth=true
-	name=$( sed 's/ *-* A2DP//' $dirshm/btmixer )
-fi
-file_volumemute=$dirsystem/volumemute
+
 if [[ -e $file_volumemute ]]; then
 	volume=0
 	volumemute=$( < $file_volumemute )
 else
-	volume=$( volumeGetCamilla )
+	volume=$( volume.Camilla )
 	volumemute=0
 fi
-volumemax=$( volumeMaxGet )
+file_config=$( getVar CONFIG /etc/default/camilladsp )
+dir_configs=$( dirname "$file_config" )
+files=$( find $dir_configs -maxdepth 1 -type f -name *.yml -printf '%f\n' ) # .../configs/..., ../configs/XX:XX:XX...
+ls+=', "configs": '$( line2array "$files" )
+files=$( ls $dircamilladsp/coeffs | grep -v '\.wav$' )
+ls+=', "coeffs": '$( line2array "$files" )
+files=$( ls $dircamilladsp/coeffs | grep '\.wav$' )
+ls+=', "coeffswav": '$( line2array "$files" )
+files=$( ls $dircamilladsp/raw )
+ls+=', "raw": '$( line2array "$files" )
 ##########
 data='
-, "bluetooth"   : '$bluetooth'
-, "btreceiver"  : '$( exists $dirshm/btmixer )'
-, "cardname"    : "'$name'"
-, "configname"  : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
-, "control"     : "'$mixer'"
-, "devices"     : '$( < $dirshm/hwparams )'
-, "play"        : '$( jq .play $dirshm/status.json )'
-, "player"      : "'$( < $dirshm/player )'"
-, "pllength"    : '$( mpc status %length% )'
-, "state"       : "'$( jq -r .state $dirshm/status.json )'"
-, "volume"      : '$volume'
-, "volumelimit" : '$( [[ $volumemax -lt 100 && -e $dirsystem/volumelimit ]] && echo true )'
-, "volumemax"   : '$volumemax'
-, "volumemute"  : '$volumemute
-dirs=$( ls $dircamilladsp )
-for d in $dirs; do
-	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d
-	if [[ $dir == coeffs ]]; then
-		dirs=$( ls $dircamilladsp/$dir | grep -v '\.wav$' )
-		ls+=', "'$d'": '$( line2array "$dirs" )
-		dirs=$( ls $dircamilladsp/$dir | grep '\.wav$' )
-		ls+=', "coeffswav": '$( line2array "$dirs" )
-	else
-		dirs=$( ls $dircamilladsp/$dir )
-		dirs=$( line2array "$dirs" )
-		ls+=', "'$d'": '$dirs
-		[[ $d == configs ]] && list=$dirs
-	fi
-done
-########
-	data+='
-, "list"       : { "camilla": '$list' }
-, "ls"         : { '${ls:1}' }'
+, "bluetooth"  : '$( exists $dirshm/sink )'
+, "configname" : "'$( basename "$file_config" )'"
+, "control"    : "'$mixer'"
+, "fileconfig" : "'$file_config'"
+, "ls"         : { '${ls:1}' }
+, "mixer"      : "'$( getVar mixer $dirshm/output )'"
+, "play"       : '$( jq .play $dirshm/status.json )'
+, "player"     : "'$( < $dirshm/player )'"
+, "pllength"   : '$( mpc status %length% )'
+, "state"      : "'$( jq -r .state $dirshm/status.json )'"
+, "volume"     : '$volume'
+, "volumemute" : '$volumemute
+##########
+data+=$( dataPlayback )
 
 data2json "$data" $1

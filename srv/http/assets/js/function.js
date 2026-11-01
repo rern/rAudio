@@ -496,7 +496,6 @@ var DISPLAY   = {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ S.state ).addClass( 'active' );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#volmute' ).toggleClass( 'btsender', S.btsender );
 	}
 	, guideHide  : () => {
 		if ( V.guide ) {
@@ -1138,7 +1137,7 @@ var LIBRARY   = {
 			if ( V.albumlist ) {
 				if ( $( '.licover' ).length ) {
 					$( '.liinfo .lialbum' ).addClass( 'hide' );
-				} else {
+				} else if ( V.mode === 'album' ) {
 					$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 						$( '#mode-title' ).append( '<span id="thumbupdate"><img src="'+ $( this ).attr( 'src' ) +'"><i class="i-refresh-overlay"></i></span>' );
 					} );
@@ -1255,6 +1254,8 @@ var MENU      = {
 		
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
+		var mode_file = MODE.file();
+		var track     = $LI.find( '.i-music.li-icon' ).length;
 		if ( V.list.licover ) {
 			var menutop = UTIL.barVisible( 310, 270 );
 		} else {
@@ -1278,7 +1279,7 @@ var MENU      = {
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
-			if ( ! V.list.licover && MODE.file() ) {
+			if ( ! V.list.licover && mode_file && ! track ) {
 				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
 					$thumbnail.toggleClass( 'hide', coverart !== '' );
 					MENU.scroll( $menu, menutop );
@@ -1288,7 +1289,7 @@ var MENU      = {
 				MENU.scroll( $menu, menutop );
 			}
 		}
-		if ( ! MODE.file() || $LI.hasClass( 'nodata' ) ) return
+		if ( ! mode_file || track || $LI.hasClass( 'nodata' ) ) return
 
 		BASH( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
 			if ( ! data ) {
@@ -1390,7 +1391,7 @@ var PLAYBACK  = {
 			$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 			var time = PROGRESS.visible();
 			var prefix = time ? 'ti' : 'mi';
-			$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btsender );
+			$( '#'+ prefix +'-sink' ).toggleClass( 'hide', ! S.sink );
 			$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 			$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 			if ( S.player === 'mpd' ) {
@@ -1644,6 +1645,7 @@ var PLAYBACK  = {
 			UTIL.intervalClear( 'elapsed' );
 			PROGRESS.set( 0 );
 		}
+		V.refresh = true;
 		VOLUME.set();
 		PLAYBACK.button.controls();
 		PLAYBACK.button.options();
@@ -1656,7 +1658,6 @@ var PLAYBACK  = {
 		PLAYBACK.info.set();
 		PLAYBACK.coverart();
 		V.timehms      = S.Time ? COMMON.second2HMS( S.Time ) : '';
-		var elapsedhms = S.elapsed ? COMMON.second2HMS( S.elapsed ) : '';
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		if ( S.stop ) {
@@ -1664,20 +1665,22 @@ var PLAYBACK  = {
 			return
 		}
 
-		var htmlelapsed = ICON( S.state ) +'<span>'+ elapsedhms +'</span>';
-		if ( S.elapsed ) {
-			htmlelapsed += ' / ';
-		} else {
-			setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
+		var htmlelapsed = ICON( S.state );
+		if ( ! S.webradio || D.radioelapsed ) {
+			if ( S.elapsed ) {
+				var elapsedhms = COMMON.second2HMS( S.elapsed );
+				htmlelapsed   += '<span>'+ elapsedhms +'</span>';
+				if ( S.Time ) htmlelapsed += ' / ';
+			}
+			htmlelapsed +=  V.timehms;
 		}
-		htmlelapsed +=  V.timehms;
 		$( '#progress' ).html( htmlelapsed );
 		$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 		$( '#total' ).text( V.timehms );
 		if ( ( S.webradio && ! D.radioelapsed ) || ! S.Time || S.elapsed > S.Time ) {
 			UTIL.intervalClear();
 			$( '#vuneedle' ).css( 'transform', '' );
-			$( '#elapsed, #total, #progress' ).empty();
+			$( '#elapsed, #total' ).empty();
 			if ( S.play ) {
 				$( '#elapsed' ).html( S.play ? V.blinkdot : '' );
 				if ( D.radioelapsed ) {
@@ -1922,12 +1925,13 @@ var PLAYLIST  = {
 			V.playlisttrack = true;
 			MENU.hide();
 			LIST( { playlist: 'get', name: name }, function( data ) {
+				var name_prev = $( '#pl-title .lipath' ).text();
 				$( '#page-playlist .index' ).remove();
 				$( '#pl-title' ).html( data.counthtml );
 				$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 					var id = 'pl-savedlist';
 					PLAYLIST.render.set();
-					DISPLAY.pageScroll( 0 );
+					if ( name !== name_prev ) DISPLAY.pageScroll( 0 );
 					COMMON.draggable( id );
 				} );
 			}, 'json' );
@@ -2046,7 +2050,7 @@ var PLAYLIST  = {
 				return
 			}
 
-			[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
+			[ 'consume', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 			$( '#pl-home-title' ).html( 'PLAYLIST '+ data.counthtml );
 			$( '.pllength' ).removeClass( 'disabled' );
 			$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
@@ -2371,8 +2375,8 @@ var UTIL      = {
 			, okno        : true
 		} );
 	}
-	, intervalClear   : elpased => {
-		if ( typeof elapsed !== 'undefined' ) {
+	, intervalClear   : elapsed => {
+		if ( elapsed !== undefined ) {
 			clearInterval( V.interval.elapsed );
 		} else {
 			$.each( V.interval, ( k, v ) => clearInterval( v ) );
@@ -2517,8 +2521,6 @@ var VOLUME    = {
 		VOLUME.set();
 	}
 	, set     : () => {
-		if ( S.volumemute === false ) return // suppress value false on track changed (sometimes)
-		
 		var $bar     = $( '#volume-bar' );
 		var $level   = $( '#volume-level' );
 		var vol_prev = $level.text();
@@ -2533,16 +2535,24 @@ var VOLUME    = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bll', S.volumemute > 0 );
 		$( '#vol .point' ).toggleClass( 'bgr60', mute );
-		$( '#volmute' ).toggleClass( 'mute active', mute );
+		$( '#volmute' ).removeClass( 'bluetooth camilla mute' );
+		if ( S.fnvolume === 'volumeCamilla' ) {
+			$( '#volmute' ).addClass( 'camilla' );
+		} else if ( S.sink ) {
+			$( '#volmute' ).addClass( 'bluetooth' );
+		} else if ( mute ) {
+			$( '#volmute' ).addClass( 'mute' );
+		}
+		$( '#volmute' ).toggleClass( 'active', mute );
 		$( '#ti-mute, #mi-mute' ).addClass( 'hide' );
 		if ( mute && ! VOLUME.visible() ) {
 			var prefix = PROGRESS.visible() ? 'ti' : 'mi';
 			$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 		}
-		if ( V.updn ) {
-			var ms    = 100;
-		} else if ( V.drag || vol_prev === '' || ! $( '#volume-knob, #volume-bar' ).not( '.hide' ).length ) { // onload - empty
+		if ( V.refresh || V.drag ) {
 			var ms    = 0;
+		} else if ( V.updn ) {
+			var ms    = 100;
 		} else {
 			var ms    = Math.abs( S.volume - vol_prev ) * 50; // 1%:50ms
 			V.animate = true;
@@ -2552,15 +2562,14 @@ var VOLUME    = {
 				VOLUME.barHide( ms + 5000 );
 			}
 		}
-		var ms_knob = VOLUME.visible() ? ms : 0;
-		var ms_bar  = $bar.hasClass( 'hide' ) ? 0 : ms;
-		$( '#vol, #vol .point' ).css( 'transition-duration', ms_knob +'ms' );
-		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms_bar +'ms' );
+		$( '#vol, #vol .point' ).css( 'transition-duration', ms +'ms' );
+		$( '#volume-bar, #volume-bar-point' ).css( 'transition-duration', ms +'ms' );
 		var deg     = 150 + S.volume * 2.4; // (east: 0°) 150°@0% --- 30°@100% >> 240°:100%
 		$( '#vol' ).css( 'transform', 'rotate( '+ deg +'deg' )
 			.find( 'div' ).css( 'transform', 'rotate( -'+ deg +'deg' );
 		$bar.css( 'width', S.volume +'%' );
 		$( '#volume-bar-point' ).css( 'left', S.volume +'%' );
+		delete V.refresh;
 	}
 	, upDown  : up => {
 		if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return

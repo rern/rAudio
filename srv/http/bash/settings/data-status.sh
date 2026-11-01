@@ -22,16 +22,16 @@ audio )
 <bll># aplay -l | grep bcm2835</bll>
 $( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
+bluealsa )
+	dbuspath=$( bluealsa-cli list-pcms | grep /sink$ )
+	statusCmd "bluealsa-cli info $dbuspath"
+	;;
 bluetooth )
 	statusCmd "rfkill | grep '^I\|bluetooth'"
 	echo
 	statusCmd 'bluetoothctl show'
 	;;
-btreceiver )
-	pcm=$( bluealsa-cli list-pcms )
-	statusCmd "bluealsa-cli info $pcm"
-	;;
-btsender )
+btmixer )
 	statusCmd 'amixer -MD bluealsa'
 	;;
 device )
@@ -49,11 +49,16 @@ $( timeout 0.1 $cmd 2>&1 | sed -n '1,/^TICK/ p' )"
 	fi
 	;;
 infobluetooth )
+	dbuspath=$( bluealsa-cli list-pcms | grep ${2//:/_} )
+	if [[ $dbuspath ]]; then
+		statusCmd "bluealsa-cli info $dbuspath"
+		echo
+	fi
 	statusCmd "bluetoothctl info $2"
 	;;
 infocamilla | configuration )
-	[[ $2 ]] && CONFIG="$dircamilladsp/configs/$2" || . <( grep ^CONFIG /etc/default/camilladsp )
-	statusCmd "cat $CONFIG"
+	[[ $2 ]] && CONFIG="$dircamilladsp/configs/$2" || CONFIG=$( getVar CONFIG /etc/default/camilladsp )
+	statusCmd "cat \"$CONFIG\""
 	;;
 infostorage )
 	DEV=$2
@@ -103,7 +108,7 @@ mixer )
 	cmd='amixer scontents'
 	devices="\
 <bll># $cmd</bll>"
-	card=$( < $dirsystem/asoundcard )
+	card=$( getVar card $dirshm/output )
 	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 	if [[ $aplayname != RPi-Cirrus ]]; then
 		mixers=$( $cmd )
@@ -134,7 +139,7 @@ nonutf8 )
 	;;
 output )
 	statusCmd 'aplay -l | grep ^card'
-	[[ -e $dirshm/btmixer ]] && echo && statusCmd 'bluealsa-aplay -L'
+	[[ -e $dirshm/sink ]] && echo && statusCmd 'bluealsa-aplay -L'
 	echo
 	statusCmd 'cat /etc/asound.conf'
 	;;

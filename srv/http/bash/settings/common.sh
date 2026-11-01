@@ -1,17 +1,60 @@
 #!/bin/bash
 
-amixer0dB() {
-	[[ -e $dirshm/btmixer ]] && amixer -qD bluealsa sset "$( < $dirshm/btmixer )" 0dB
-	[[ -e $dirshm/amixercontrol ]] && amixer -q sset "$( getVar mixer $dirshm/output )" 0dB
-}
-camillaDSPstart() {
-	systemctl start camilladsp
-	if systemctl -q is-active camilladsp; then
-		pushRefresh camilla
+bluetooth() {
+	touch $dirshm/btonboard
+	if [[ $ON ]]; then
+		if ! systemctl -q is-active bluetooth; then
+			modprobe hci_uart
+			for i in {0..3}; do
+				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
+			done
+			systemctl start bluetooth
+		fi
+		[[ $DISCOVERABLE ]] && yn=yes || yn=no
+		bluetoothctl discoverable $yn
+		[[ $TIMEOUT ]] && timeout=180 || timeout=0
+		bluetoothctl discoverable-timeout $timeout
 	else
-		systemctl stop camilladsp
-		rm -f $dirsystem/camilladsp
-		$dirsettings/player-conf.sh
+		systemctl stop bluetooth
+		rmmod hci_uart &> /dev/null
+		rm -f $dirshm/{sink,source,source_dbus}
+		if [[ -e $dirmpdconf/output.conf ]]; then
+			grep -q -m1 device.*bluealsa $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+		fi
+	fi
+	pushData refresh '{ "page": "networks", "activebt": '$TF' }'
+	rm $dirshm/btonboard
+	pushRefresh
+}
+bluetoothProperty() {
+	local value
+	[[ $2 ]] && MAC=$2
+	value=$( bluetoothctl info $MAC | sed -n "/^\s*$1: / {s/.*: //; p}" )
+	case $value in
+		yes ) echo true;;
+		no )  echo false;;
+		* )   echo $value;;
+	esac
+}
+bluetoothServices() {
+	systemctl stop bluealsa-aplay bluetooth-button bluez-dbus bluez-volume # bluez-volume - player-conf.sh
+	if [[ -e $dirshm/sink ]]; then
+		! systemctl -q is-active localbrowser && systemctl start bluetooth-button # localbrowser already has button events
+	elif [[ -e $dirshm/source ]]; then
+		[[ ! -e $dirsystem/camilladsp ]] && systemctl start bluealsa-aplay
+		systemctl start bluez-dbus
+	fi
+}
+bluetoothSinkSource() {
+	local info
+	[[ $1 ]] && MAC=$1
+	info=$( bluetoothctl info $MAC )
+	if grep -q 'UUID: Audio Sink' <<< $info; then
+		echo sink
+	elif grep -q 'UUID: Audio Source' <<< $info; then
+		echo source
+	else
+		echo bluetooth
 	fi
 }
 conf2json() {
@@ -60,6 +103,43 @@ data2jsonPatch() {
 		s/,\s*,/, false,/g;  # ..., , ... > , false,
 		s/,\s*]/, false ]/g  # ..., ]     > , false ]
 	' <<< $1
+}
+dataActive() {
+	local data pkg state tf i
+	state=$( systemctl is-active $@ )
+	tf=${state//inactive/false}
+	tf=( ${tf//active/true} )
+	for pkg in $@; do
+		data+='
+, "'${pkg/-}'": '${tf[i]}
+		(( i++ ))
+	done
+	echo "$data"
+}
+
+dataEnabled() {
+	local data dir file
+	for file in $@; do
+		[[ ${file:0:1} == / ]] && dir=$file && continue
+
+		data+='
+, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
+	done
+	echo "$data"
+}
+dataPlayback() {
+	local max
+	[[ -e  $dirsystem/volumelimit ]] && max=$( getVar max $dirsystem/volumelimit.conf ) || max=100
+	echo '
+, "play"        : '$( jq .play $dirshm/status.json )'
+, "player"      : "'$( < $dirshm/player )'"
+, "pllength"    : '$( mpc status %length% )'
+, "sink"        : "'$( getContent $dirshm/sink )'"
+, "sinkmixer"   : "'$( [[ -e $dirshm/sink ]] && amixer -D bluealsa | head -n 1 | cut -d"'" -f2 )'"
+, "source"      : '$( exists $dirshm/source )'
+, "state"       : "'$( jq -r .state $dirshm/status.json )'"
+, "volumelimit" : '$( (( $max < 100 )) && echo true || echo false )'
+, "volumemax"   : '$max
 }
 enableFlagSet() {
 	local file
@@ -197,7 +277,34 @@ localBrowserOff() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/tty3.*/tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btmixer ]] && systemctl start bluetoothbutton
+	[[ -e $dirshm/sink ]] && systemctl start bluetooth-button
+}
+mixer.0dB() {
+	volume.Mpd > $dirsystem/volume # for volumeMpdRestore
+	TARGET=0dB
+	CONTROL=$( getVar mixer $dirshm/output )
+	[[ $CONTROL ]] && mixer.mixer
+	if [[ -e $dirsystem/camilladsp && -e $dirshm/sink ]]; then
+		CONTROL=$( < $dirshm/sink ) # mac
+		mixer.sink
+	fi
+}
+mixer.sink() {
+	amixer -MqD bluealsa:$CONTROL sset A2DP $TARGET
+}
+mixer.mixer() {
+	amixer -Mq sset "$CONTROL" $TARGET
+}
+mixer.value() {
+	if [[ -e $dirshm/sink ]]; then
+		val_db=$( amixer -MD bluealsa )
+	else
+		. $dirshm/output
+		val_db=$( amixer -c $card -M sget "$mixer" )
+	fi
+	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
+	echo '{ "val": '$val', "db": '$db' }'
+	alsactl store
 }
 pushDirCounts() {
 	local tf
@@ -207,24 +314,6 @@ pushDirCounts() {
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
-}
-settingsActive() {
-	local data pkg
-	for pkg in $@; do
-		data+='
-, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
-	done
-	echo "$data"
-}
-settingsEnabled() {
-	local data dir file
-	for file in $@; do
-		[[ ${file:0:1} == / ]] && dir=$file && continue
-
-		data+='
-, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
-	done
-	echo "$data"
 }
 sharedData() {
 	[[ ! -e $filesharedip ]] && echo false && return
@@ -297,37 +386,6 @@ usbMaxCurrent() {
 	elif [[ $BB != 03 || $BB = 04 ]]; then
 		sed -i '/max_usb_current/ d' /boot/config.txt
 	fi
-}
-
-volumeGetDb() {
-	if [[ $1 == bt* || $1 == *bluealsa ]]; then # btmixer || 'D bluealsa'
-		val_db=$( amixer -MD bluealsa )
-	else
-		. $dirshm/output
-		val_db=$( amixer -c $card -M sget "$mixer" )
-	fi
-	read val db < <( awk -F'[][]' '/%/ {print $2, $4}' <<< $val_db | tr -d '%dB' )
-	echo '{ "val": '$val', "db": '$db' }'
-}
-volumeLimit() {
-	local fn_volume mixer val
-	val=$( getVar $1 $dirsystem/volumelimit.conf )
-	if [[ -e $dirshm/btmixer ]]; then
-		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output
-	fi
-	fn_volume=$( volumeFunction )
-	$fn_volume $val% "$mixer" $card
-}
-volumeMaxGet() {
-	local max
-	if [[ -e  $dirsystem/volumelimit ]]; then
-		. <( grep ^max $dirsystem/volumelimit.conf )
-	else
-		max=100
-	fi
-	echo $max
 }
 wlanOnboardDisable() {
 	local mod
