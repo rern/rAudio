@@ -213,6 +213,10 @@ case 'ls':
 		htmlTrack( 'cue' );
 	}
 	break;
+case 'lsdir':
+	exec( 'ls -d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
+	htmlDirectory();
+	break;
 case 'radio':
 	$subdirs = [];
 	$dirs    = [];
