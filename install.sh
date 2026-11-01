@@ -52,10 +52,7 @@ if grep -q bluealsa-aplay $file; then
 fi
 
 if [[ -e /bin/camilladsp ]]; then
-	if systemctl -q is-active camilladsp; then
-		CAMILLA=1
-		systemctl stop camilladsp
-	fi
+	systemctl stop camilladsp
 	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
 	dir_bt=$dircamilladsp/configs-bt
 	if systemctl -q is-active camilladsp; then # running with bluetooth
@@ -217,6 +214,5 @@ $dirbash/webradio-convert.sh
 installfinish
 
 # 202621010
-volumeFunction > $dirshm/fn_volume
-[[ $CAMILLA ]] && $dirsettings/player-conf.sh
+$dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"
