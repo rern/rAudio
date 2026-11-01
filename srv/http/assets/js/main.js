@@ -653,7 +653,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 	} else {
 		var query = {
-			  library : 'lsdir'
+			  library : 'ls'
 			, string  : path
 		}
 	}
@@ -705,6 +705,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 	var query = {
 		  library : 'search'
 		, string  : keyword
+		, format  : [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ]
 	}
 	LIST( query, function( data ) {
 		if ( data == -1 ) {
@@ -781,16 +782,18 @@ $( '#button-lib-back' ).on( 'click', function() {
 	
 	var lidir = $( '#lib-title .lidir' ).length;
 	if ( MODE.radio() && ! lidir ) lidir = 1;
-	if ( lidir && lidir > 1 ) {
-		$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
-		return
+	if ( lidir ) {
+		if ( lidir > 1 ) {
+			$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
+			return
+		}
 	}
 
 	if ( lidir === 1 || V.query.length === 1 ) {
 		$( '#library' ).trigger( 'click' );
 		return
 	}
-	
+
 	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 	V.query.pop();
 	var query = V.query.slice( -1 )[ 0 ];
@@ -822,7 +825,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	// ( coverart, bookmark by other functions )
 	if ( MODE.file() ) { // browse by directory
 		var query = {
-			  library : V.mode === 'nvme' || V.mode === 'sata' ? 'ls' : 'lsdir'
+			  library : 'ls'
 			, string  : path
 		}
 	} else if ( moderadio ) {
@@ -835,6 +838,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var query = {
 			  library : 'list'
 			, mode    : V.mode
+			, format  : [ V.mode ]
 		}
 	}
 	query.gmode = V.mode;
@@ -991,8 +995,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 
-	var libpath     = $( '#lib-path' ).text().trim();
-	var path        = $LI.find( '.lipath' ).text().trim();
 	var l_mode      = $LI.data( 'mode' );
 	var l_modealbum = l_mode === 'album';
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
@@ -1002,10 +1004,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		|| $LI.find( '.i-music' ).length
 		|| l_moderadio
 	) {
-		LIST( { library: 'ls', string: path, count: true }, function( data ) {
-			if ( ! data ) $LI.addClass( 'nodata' );
-			MENU.library( $target );
-		} );
+		MENU.library( $target );
 		return
 	}
 
@@ -1048,13 +1047,23 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 
 	if ( ! V.search ) $LI.addClass( 'active' );
+	var libpath  = $( '#lib-path' ).text();
+	var path     = $LI.find( '.lipath' ).text();
 	var V_l_mode = V.search ? l_mode : V.mode;
 	if ( l_modefile ) {
-		var query     = {
-			  library : 'ls'
-			, string  : path
+		if ( MODE.file_radio() ) {
+			var query     = {
+				  library : 'ls'
+				, string  : path
+			}
+			var modetitle = path;
+		} else {
+			var query     = {
+				  library : 'lsmode'
+				, string  : [ path, libpath ]
+			}
+			var modetitle = libpath; // keep title of non-file modes
 		}
-		var modetitle = path;
 	} else if ( MODE.radio() ) { // dabradio, webradio
 		path          = path;
 		var query     = {
@@ -1062,26 +1071,68 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! l_modealbum ) { // non-album
-		var query     = {
-			  library : 'findmode'
-			, target  : [ V_l_mode, '==', path ]
+	} else if ( ! l_modealbum && V_l_mode.endsWith( 'artist' ) ) {
+		var query     = { // artist, albumartist
+			  library : 'findartist'
+			, mode    : V_l_mode
+			, string  : path
+			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
-	} else { // find V.mode in dir
-		var query     = {
-			  library : 'find'
-			, target  : [ [ 'file', 'starts_with', path ], [ V.mode, '==', libpath ] ]
+	} else if ( ! l_modealbum ) { // non-album
+		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
+			var format = [ 'artist', 'album', 'file' ];
+		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
+			var format = [ 'album', 'artist', 'file' ];
 		}
-		var modetitle = libpath;
+		var query     = {
+			  library : 'findmode'
+			, mode    : V_l_mode
+			, string  : path
+			, format  : format
+		}
+		var modetitle = path;
+	} else { // album
+		var name = $LI.find( '.liname' ).text();
+		if ( MODE.album() ) {
+			if ( name ) { // albums with the same names
+				var query     = {
+					  library : 'find'
+					, mode    : [ 'album', 'artist', 'file' ]
+					, string  : [ name, path ]
+				}
+				var modetitle = name;
+			} else {
+				var query     = {
+					  library : 'findmode'
+					, mode    : 'album'
+					, string  : path
+					, format  : [ 'album', 'artist' ]
+				}
+				var modetitle = path;
+			}
+		} else if ( l_modealbum ) {
+			var query     = {
+				  library : 'ls'
+				, string  : path
+			}
+			var modetitle = '';
+		} else {
+			var query     = {
+				  library : 'find'
+				, mode    : [ 'album', V.mode ]
+				, string  : [ name, libpath ]
+			}
+			var modetitle = libpath;
+		}
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
 	LIST( query, function( html ) {
 		if ( ! html ) {
 			$LI
-				.addClass( 'nodata' )
-				.removeClass( 'active' );
+				.removeClass( 'active' )
+				.addClass( 'nodata' );
 			MENU.library( $target );
 			return
 		}
