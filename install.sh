@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261025
+# 20261101
 if [[ ! -e $dirshm/alsa ]]; then
 	mv /var/lib/alsa $dirshm/alsa
 	ln -s $dirshm/alsa /var/lib
@@ -17,7 +17,7 @@ fi
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
 file=/etc/systemd/system/bluetoothbutton.service
-if grep -q bluetoothbutton $file; then
+if [[ -e $file ]]; then
 	sed -i 's/bluetoothbutton/bluetooth-button/' $file
 	mv $file ${file/bluetoothbutton/bluetooth-button}
 fi
@@ -52,10 +52,7 @@ if grep -q bluealsa-aplay $file; then
 fi
 
 if [[ -e /bin/camilladsp ]]; then
-	if systemctl -q is-active camilladsp; then
-		CAMILLA=1
-		systemctl stop camilladsp
-	fi
+	systemctl stop camilladsp
 	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
 	dir_bt=$dircamilladsp/configs-bt
 	if systemctl -q is-active camilladsp; then # running with bluetooth
@@ -217,6 +214,5 @@ $dirbash/webradio-convert.sh
 installfinish
 
 # 202621010
-volumeFunction > $dirshm/fn_volume
-[[ $CAMILLA ]] && $dirsettings/player-conf.sh
+$dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"
