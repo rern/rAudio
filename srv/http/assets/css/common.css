@@ -254,6 +254,7 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
+	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
 	font-family : Lato;
@@ -681,9 +682,9 @@ hr {
 #infoOverlay {
 	position: absolute;
 	top: 0;
+	bottom: 0;
 	left: 0;
-	width: 100%;
-	min-height: 150vh;
+	right: 0;
 	background: rgba(0, 0, 0, 0.85);
 	text-align: center;
 	overflow: hidden;

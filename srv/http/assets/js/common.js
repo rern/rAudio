@@ -1019,16 +1019,8 @@ var _INFO     = {
 		} );
 	}
 	, toggle        : reset => {
-		if ( reset ) {
-			var height    = '';
-			var overflow  = '';
-			var padding   = I.padding;
-		} else {
+		if ( ! reset ) {
 			I.active      = true;
-			I.padding     = PAGE ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
-			var height    = '150vh';
-			var overflow  = 'hidden';
-			var padding   = 0;
 			$( '#infoOverlay' ).removeClass( 'hide' );
 			if ( I.buttonfit ) return
 
@@ -1042,10 +1034,6 @@ var _INFO     = {
 			$buttonhide.addClass( 'hide' );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 			$( '#infoOverlay' ).trigger( 'focus' );
-		}
-		if ( ! PAGE ) {
-			$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
-			$( '.list' ).css( 'padding-bottom', padding );
 		}
 	}
 	, val           : array => {
