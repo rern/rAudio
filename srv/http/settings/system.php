@@ -424,6 +424,10 @@ $listplugin  = [
 	  , 'A JavaScript library for simplifying HTML DOM tree traversal and manipulation'
 	  , 'https://jquery.com/'
 	],[
+	    'MphpD'
+	  , 'A fully-featured, dependency-free PHP library for MPD'
+	  , 'https://codeberg.org/FloFaber/MphpD'
+	],[
 	    'pica'
 	  , 'Resize image in browser'
 	  , 'https://github.com/nodeca/pica'
