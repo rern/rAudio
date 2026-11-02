@@ -213,7 +213,7 @@ case 'ls':
 		htmlTrack( 'cue' );
 	}
 	break;
-case 'lsdir':
+case 'lsdir': // for including directories not yet in database
 	exec( 'ls -d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
 	htmlDirectory();
 	break;
@@ -481,7 +481,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$totaltime     = second2HMS( $seconds );
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
-			$coverart = '/assets/img/coverart.svg?v=1788510000';
+			$coverart = '/assets/img/coverart.svg';
 			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}

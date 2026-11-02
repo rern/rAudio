@@ -82,7 +82,9 @@ function mpd( $cmd, $target = '' ) {
 function mpdFilter( $target ) {
 	if ( count( $target ) === 3 ) return new \FloFaber\MphpD\Filter( ...$target );
 	
-	return new \FloFaber\MphpD\Filter( ...$target[ 0 ] )->and( ...$target[ 1 ] );
+	$filter = new \FloFaber\MphpD\Filter( ...array_shift( $target ) );
+	foreach ( $target as $t ) $filter->and( ...$t );
+	return $filter;
 }
 function radioDir( $url ) {
 	static $map = null;
