@@ -3,7 +3,9 @@ include 'function.php'; // $hash
 
 $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ]; // current / list
-$fileplaylist = '/srv/http/data/shm/playlist';
+$dirdata      = '/srv/http/data/';
+$dirshm       = $dirdata.'shm/';
+$fileplaylist = $dirshm.'playlist';
 $filecount    = $fileplaylist.'count';
 
 switch( $CMD ) {
@@ -60,7 +62,7 @@ case 'playlists':
 $count    = ( object ) array_fill_keys( [ 'radio', 'song', 'time', 'upnp' ], 0 );
 $song     = 0;
 $duration = 0;
-$upnp     = file_exists( '/srv/http/data/shm/upnp' );
+$upnp     = file_exists( $dirshm.'upnp' );
 $html     = '';
 foreach( $lists as $l ) {
 	$song++;
@@ -83,8 +85,8 @@ foreach( $lists as $l ) {
 	switch ( $l->file[ 0 ] ) {
 		case 'c': // audio cd
 			if ( ! isset( $discid ) ) {
-				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-				$cdfile = '/srv/http/data/audiocd/'.$discid.'/data';
+				$discid = file( $dirshm.'audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+				$cdfile = $dirdata.'audiocd/'.$discid.'/data';
 				if ( file_exists( $cdfile ) ) {
 					$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
 					$cdalbum  = $cdlist[ 0 ];
@@ -190,13 +192,13 @@ function artistAlbum( $artist, $album, $file ) {
 	}
 }
 function output() {
-	global $CMD, $counthtml, $filecount, $fileplaylist, $html;
+	global $CMD, $counthtml, $dirdata, $filecount, $fileplaylist, $html;
 	$status = ( object ) mpd( 'status' );
 	$data = json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
 		, 'consume'   => $status->consume === 1
-		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
+		, 'librandom' => file_exists( $dirdata.'system/librandom' )
 		, 'song'      => $status->song ?? 0
 		, 'add'       => $CMD === 'add'
 	], JSON_NUMERIC_CHECK );

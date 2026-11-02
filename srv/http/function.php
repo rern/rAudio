@@ -26,6 +26,7 @@ function icon(  $icon, $menu = '' ) {
 }
 function iconThumb( $thumbsrc, $menu ) {
 	global $hash;
+	$menu = $menu ?: 'file';
 	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).$hash.'" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
@@ -69,6 +70,7 @@ function mpd( $cmd, $target = '' ) {
 	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
 	$mpd->connect();
 	switch( $cmd ) {
+		case 'addfind':   return $mpd->queue()->add_find( mpdFilter( $target ) );
 		case 'find':      return $mpd->db()->find( mpdFilter( $target ) );
 		case 'list':      return $mpd->db()->list( $target );
 		case 'ls':        return $mpd->db()->ls( $target, true ); // true - metadata
@@ -80,7 +82,7 @@ function mpd( $cmd, $target = '' ) {
 	}
 }
 function mpdFilter( $target ) {
-	if ( count( $target ) === 3 ) return new \FloFaber\MphpD\Filter( ...$target );
+	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );
 	
 	$filter = new \FloFaber\MphpD\Filter( ...array_shift( $target ) );
 	foreach ( $target as $t ) $filter->and( ...$t );

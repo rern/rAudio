@@ -1756,17 +1756,6 @@ var PLAYLIST  = {
 		}
 	}
 	, addCommand  : () => {
-		var mpccmd0   = V.mpccmd[ 0 ];
-		if ( mpccmd0 === 'mpcaddls' ) {
-			var keys = 'DIR';
-		} else if ( [ 'mpcadd', 'mpcaddload', 'mpcaddplaynext' ].includes( mpccmd0 ) ) {
-			var keys = 'FILE';
-		} else if ( mpccmd0 === 'mpcaddfind' ) {
-			var keys = 'MODE STRING';
-			if ( V.mpccmd.length > 3 ) keys += ' MODE2 STRING2';
-			if ( V.mpccmd.length > 5 ) keys += ' MODE3 STRING3';
-		}
-		V.mpccmd.push( V.action, 'CMD '+ keys +' ACTION' );
 		var cmd_title = {
 			  add         : 'Add to Playlist'
 			, playnext    : 'Add to Playlist to play next'
@@ -1776,8 +1765,14 @@ var PLAYLIST  = {
 		}
 		V.title       = cmd_title[ V.action ];
 		BANNER( 'playlist', V.title, V.list.name );
-		var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
-		BASH( cmd );
+		var mpccmd0   = V.mpccmd[ 0 ];
+		if ( Array.isArray( mpccmd0 ) ) {
+			LIST( { library: 'addfind', target: V.mpccmd, play: V.action } );
+		} else {
+			var cmd = mpccmd0 === 'mpcaddls' ? 'CMD DIR ACTION' : 'CMD FILE ACTION';
+			V.mpccmd.push( V.action, cmd );
+			BASH( V.mpccmd );
+		}
 		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
 	, addSimilar  : () => {

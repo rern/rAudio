@@ -11,12 +11,22 @@ $html    = '<ul id="lib-list" class="list">';
 $index0  = '';
 $indexes = [];
 $dirbash     = '/bin/sudo /srv/http/bash/';
-$dirmpd      = '/srv/http/data/mpd/';
-$dirsystem   = '/srv/http/data/system/';
+$dirdata     = '/srv/http/data/';
+$dirmpd      = $dirdata.'mpd/';
+$dirsystem   = $dirdata.'system/';
 $filedisplay = $dirsystem.'display.json';
 
 switch( $CMD ) {
 
+case 'addfind':
+	touch( $dirdata.'shm/addfind' );
+	if ( $post->play === 'play' ) {
+		$pos = mpd( 'status' )[ 'playlistlength' ];
+		$mpd->queue()->add_find( mpdFilter( $post->target ) );
+		$mpd->player()->play( $pos );
+	} else {
+		mpd( 'addfind', $post->target );
+	}
 case 'find':
 	$lists = mpd( 'find', $post->target );
 	if ( count( $post->target ) === 3 ) {
@@ -70,7 +80,7 @@ case 'home':
 </li>';
 	}
 	// bookmarks
-	$dirbk     = '/srv/http/data/bookmarks';
+	$dirbk     = $dirdata.'bookmarks';
 	$files     = array_slice( scandir( $dirbk ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
@@ -269,11 +279,11 @@ case 'search':
 		}
 	}
 	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
-		$dir_radio = '/srv/http/data/'.$radio;
+		$dir_radio = $dirdata.$radio;
 		if ( ! is_dir( $dir_radio ) ) continue;
 		
 		unset( $lists );
-		exec( 'find /srv/http/data/'.$radio.' -type d -iname "*'.$STRING.'*" -printf "%p/"'
+		exec( 'find '.$dir_radio.' -type d -iname "*'.$STRING.'*" -printf "%p/"'
 			, $lists );
 		if ( ! count( $lists ) ) continue;
 		

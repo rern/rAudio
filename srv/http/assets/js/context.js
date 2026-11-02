@@ -662,9 +662,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	// mpccmd:
 	// [ 'mpcadd', path ]
 	// [ 'mpcaddplaynext', path ]
-	// [ 'mpcaddfind', 'multi', V.mode, path, 'album', V.list.album ]
-	// [ 'mpcaddfind', 'multi', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ]
-	// [ 'mpcaddfind',  mode,   path ];
 	// [ 'mpcaddload', path ]
 	// [ 'mpcaddls', path ]
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
@@ -673,7 +670,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			if ( V.list.singletrack || MODE.radio() ) { // single track
 				V.mpccmd = [ 'mpcadd', path ];
 			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
-				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
+				V.mpccmd = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album ] ];
 			} else { // directory / album / saved playlist track
 				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
 			}
@@ -705,13 +702,19 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		default: // MODE
 			var mode = $LI.data( 'mode' );
 			if ( mode === 'album' ) {          // 1st level
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
-				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', $LI.find( '.name' ).text() );
-				V.mpccmd.push( 'album', $LI.find( '.liname' ).text() );
+				V.mpccmd = [
+					[ V.mode,     '==', $( '#lib-path' ).text() ]
+					, [ 'artist', '==', $LI.find( '.name' ).text().trim() ]
+					, [ 'album',  '==', $LI.find( '.liname' ).text().trim() ]
+				];
+				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.splice( 1, 1 );
 			} else if ( mode !== 'lsmode' ) { // intermediat level
-				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+				V.mpccmd = [ V.mode, '==', V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
+				V.mpccmd = [
+					  [ V.mode, '==',          $( '#lib-path' ).text() ]
+					, [ 'file', 'starts_with', V.list.path ]
+				];
 			}
 		break
 	}

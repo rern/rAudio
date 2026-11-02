@@ -175,24 +175,6 @@ mpcaddplaynext )
 	mpc -q insert "$FILE"
 	pushPlaylist
 	;;
-mpcaddfind )
-	pos=$( plAddPosition )
-	if [[ $MODE3 ]]; then
-		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
-	elif [[ $MODE2 ]]; then
-		if [[ $MODE2 == lsmode ]]; then
-			mpc -q ls -f %$MODE%^%file% "$STRING2" \
-				| grep "^$STRING" \
-				| cut -d^ -f2 \
-				| mpc -q add &> /dev/null
-		else
-			mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
-		fi
-	else
-		mpc -q findadd $MODE "$STRING"
-	fi
-	plAddPlay $pos
-	;;
 mpcaddload )
 	pos=$( plAddPosition )
 	mpc -q load "$FILE"
@@ -225,6 +207,9 @@ mpccrop )
 	;;
 mpclibrandom )
 	plAddRandom
+	;;
+mpcls )
+	mpc ls "$DIR" 2> /dev/null | wc -l
 	;;
 mpcmove )
 	mpc -q move $FROM $TO
