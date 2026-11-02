@@ -997,15 +997,21 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var l_modealbum = l_mode === 'album';
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.endsWith( 'radio' ); // radio .dir has no mode
+	var track       = $LI.find( '.i-music' ).length;
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
-		|| $LI.find( '.i-music' ).length
+		|| track
 		|| l_moderadio
 	) {
-		LIST( { library: 'ls', string: path, count: true }, function( data ) {
-			if ( ! data ) $LI.addClass( 'nodata' );
+		if ( V.librarytrack || track || V.search ) {
+
 			MENU.library( $target );
-		} );
+		} else {
+			LIST( { library: 'ls', string: path, count: true }, function( data ) {
+				if ( ! data ) $LI.addClass( 'nodata' );
+				MENU.library( $target );
+			} );
+		}
 		return
 	}
 
