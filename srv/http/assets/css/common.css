@@ -816,7 +816,7 @@ hr {
 	border-spacing: 10px 0;
 }
 #infoList:has( .infomessage ) table,
-#infoList table:not( :has( tr:first-child :is( input, select ) ) ) {
+#infoList table:not( :has( tr:first-child :has( input, select ) ) ) {
 	padding-top: 0;
 }
 #infoTab + #infoList table:has( tr:first-child select ),
