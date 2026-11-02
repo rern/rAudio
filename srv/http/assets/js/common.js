@@ -1033,6 +1033,7 @@ var _INFO     = {
 			} );
 			$buttonhide.addClass( 'hide' );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+			$( window ).scrollTop( 0 );
 			$( '#infoOverlay' ).trigger( 'focus' );
 		}
 	}
