@@ -1767,7 +1767,7 @@ var PLAYLIST  = {
 		BANNER( 'playlist', V.title, V.list.name );
 		var mpccmd0   = V.mpccmd[ 0 ];
 		if ( Array.isArray( mpccmd0 ) ) {
-			LIST( { library: 'addfind', target: V.mpccmd, play: V.action } );
+			LIST( { playlist: 'addfind', target: V.mpccmd, play: V.action } );
 		} else {
 			var cmd = mpccmd0 === 'mpcaddls' ? 'CMD DIR ACTION' : 'CMD FILE ACTION';
 			V.mpccmd.push( V.action, cmd );
@@ -2007,6 +2007,7 @@ var PLAYLIST  = {
 				var v = _INFO.val( 'array' );
 				BASH( [ 'mpcremove', ...v, 'CMD POS TO' ] );
 				$( '#pl-list li' ).slice( v[ 0 ] - 1, v[ 1 ] ).remove();
+				S.pllength = $( '#pl-list li' ).length;
 				clear();
 			}
 		} );

@@ -18,15 +18,6 @@ $filedisplay = $dirsystem.'display.json';
 
 switch( $CMD ) {
 
-case 'addfind':
-	touch( $dirdata.'shm/addfind' );
-	if ( $post->play === 'play' ) {
-		$pos = mpd( 'status' )[ 'playlistlength' ];
-		$mpd->queue()->add_find( mpdFilter( $post->target ) );
-		$mpd->player()->play( $pos );
-	} else {
-		mpd( 'addfind', $post->target );
-	}
 case 'find':
 	$lists = mpd( 'find', $post->target );
 	if ( count( $post->target ) === 3 ) {
