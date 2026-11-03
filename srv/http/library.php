@@ -461,38 +461,36 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	global $dirbash, $filedisplay, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$each0      = ( object ) $lists[ 0 ];
-	$FILE       = isset( $each0->file );
-	$file0      = $FILE ? $each0->file : $each0->name;
+	$file0      = $each0->file ?? $each0->name;
 	$pathinfo0  = pathinfo( $file0 );
 	$ext        = $pathinfo0[ 'extension' ];
 	$hidecover  = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hidecover && ! $search ) {
-		if ( $ext !== 'wav' ) {
-			$albumartist = $each0->albumartist ?? '';
-		} else { // fix - mpd cannot read albumartist from *.wav
-			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $k ) {
+			if ( ! isset( $each0->$k ) ) $each0->$k = '';
 		}
-		if ( $albumartist ) {
-			$artist     = $albumartist;
-			$iconartist = 'albumartist';
+		if ( $ext === 'wav' ) { // fix - mpd cannot read albumartist from *.wav
+			$each0->albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		}
+		if ( $each0->albumartist ) {
+			$each0->artist = $each0->albumartist;
+			$iconartist    = 'albumartist';
 		} else {
-			$artist     = $each0->artist ?? '';
-			$iconartist = 'artist';
+			$iconartist    = 'artist';
 		}
-		$album         = $each0->album ?? '';
-		$hidealbum     = $album && $GMODE !== 'album' ? '' : ' hide';
-		$hideartist    = $artist && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
-		$hidecomposer  = $each0->composer && $GMODE !== 'composer' ? '' : ' hide';
+		$hidealbum     = $each0->album     && $GMODE !== 'album'     ? '' : ' hide';
+		$hideartist    = $each0->artist    && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
+		$hidecomposer  = $each0->composer  && $GMODE !== 'composer'  ? '' : ' hide';
 		$hideconductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
-		$hidegenre     = $each0->genre && $GMODE !== 'genre' ? '' : ' hide';
-		$hidedate      = $each0->date && $GMODE !== 'date' ? '' : ' hide';
+		$hidegenre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
+		$hidedate      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
 		$mpdpath       = dirname( $file0 );
 		$seconds       = array_sum( array_column( $lists, 'time' ) );
 		$totaltime     = second2HMS( $seconds );
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $album, $artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $each0->album, $each0->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
@@ -510,8 +508,8 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	<a class="lipath">'.$lipath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
-	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
-	<div class="liartist'.$hideartist.'">'.icon( $iconartist ).$artist.'</div>
+	<div class="lialbum name'.$hidealbum.'">'.$each0->album.'</div>
+	<div class="liartist'.$hideartist.'">'.icon( $iconartist ).$each0->artist.'</div>
 	<div class="licomposer'.$hidecomposer.'">'.icon(  'composer' ).$each0->composer.'</div>
 	<div class="liconductor'.$hideconductor.'">'.icon(  'conductor' ).$each0->conductor.'</div>
 	<span class="ligenre'.$hidegenre.'">'.icon(  'genre' ).$each0->genre.'&emsp;</span>
@@ -527,7 +525,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$each  = ( object ) $each;
 		if ( ! isset( $each->time ) ) continue;
 		
-		$file  = $FILE ? $each->file : $each->name;
+		$file  = $each->file ?? $each->name;
 		$title = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {

@@ -653,11 +653,12 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 	} else {
 		var query = {
-			  library : 'lsdir'
+			  library : 'ls'
 			, string  : path
 		}
 	}
 	query.gmode = V.mode;
+	console.log(query)
 	LIST( query, function( html ) {
 		var data = {
 			  html      : html
@@ -822,7 +823,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	// ( coverart, bookmark by other functions )
 	if ( MODE.file() ) { // browse by directory
 		var query = {
-			  library : V.mode === 'nvme' || V.mode === 'sata' ? 'ls' : 'lsdir'
+			  library : 'lsdir' // all dirs, includes not yet in database
 			, string  : path
 		}
 	} else if ( moderadio ) {
