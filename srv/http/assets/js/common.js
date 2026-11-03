@@ -978,12 +978,12 @@ var _INFO     = {
 		if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 	}
 	, reset         : () => {
-		_INFO.toggle( 'reset' );
 		$( '#infoOverlay' )
 			.addClass( 'hide' )
 			.removeAttr( 'style' )
 			.empty();
 		setTimeout( () => {
+			$( window ).scrollTop( I.top );
 			I = { active: false }
 			$( '.focus' ).trigger( 'focus' ); // restore previous focused
 		}, 0 );
@@ -1018,24 +1018,20 @@ var _INFO     = {
 			}
 		} );
 	}
-	, toggle        : reset => {
-		if ( ! reset ) {
-			I.active      = true;
-			$( '#infoOverlay' ).removeClass( 'hide' );
-			if ( I.buttonfit ) return
+	, toggle        : () => {
+		I.active   = true;
+		I.top      = $( window ).scrollTop();
+		$( window ).scrollTop( 0 );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		if ( I.buttonfit ) return
 
-			var $buttonhide = $( '#infoButton a.hide' );
-			$buttonhide.removeClass( 'hide' );
-			var widest = 0;
-			$( '#infoButton a' ).each( ( i, el ) => {
-				var w = $( el ).outerWidth();
-				if ( w > widest ) widest = w;
-			} );
-			$buttonhide.addClass( 'hide' );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
-			$( window ).scrollTop( 0 );
-			$( '#infoOverlay' ).trigger( 'focus' );
-		}
+		var widest = 0;
+		$( '#infoButton a' ).each( ( i, el ) => {
+			var w = $( el ).outerWidth();
+			if ( w > widest ) widest = w;
+		} );
+		if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+		$( '#infoOverlay' ).trigger( 'focus' );
 	}
 	, val           : array => {
 		var $this, type, name, val;
