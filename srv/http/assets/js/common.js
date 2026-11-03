@@ -983,7 +983,6 @@ var _INFO     = {
 			.removeAttr( 'style' )
 			.empty();
 		setTimeout( () => {
-			$( window ).scrollTop( I.top );
 			I = { active: false }
 			$( '.focus' ).trigger( 'focus' ); // restore previous focused
 		}, 0 );
@@ -1020,8 +1019,7 @@ var _INFO     = {
 	}
 	, toggle        : () => {
 		I.active   = true;
-		I.top      = $( window ).scrollTop();
-		$( window ).scrollTop( 0 );
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() +'px' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		if ( I.buttonfit ) return
 

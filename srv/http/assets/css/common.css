@@ -697,7 +697,7 @@ hr {
 #infoBox {
 	position: relative;
 	margin: 50vh auto;
-	transform: translateY( -50% ); /* of #infoBox height */
+	transform: translateY( calc( 50vh - 50% ) ); /* 50% of #infoBox height */
 	width: 400px;
 	max-width: 98%;
 	padding-bottom: 15px;
