@@ -1270,7 +1270,7 @@ var MENU      = {
 			var radio            = MODE.radio();
 			var librarytrack     = V.librarytrack && $( '#lib-title a' ).length > 0;
 			$menu.find( '.playnext, .replace, .wrreplace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
-			$menu.find( '.playnext' ).toggleClass( 'hide', ! S.play );
+			$menu.find( '.playnext' ).toggleClass( 'hide', S.stop );
 			$menu.find( '.update' ).toggleClass( 'hide', ! S.updating );
 			$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! album_file_radio );
 			$menu.find( '.directory' ).toggleClass( 'hide', librarytrack || ! V.list.licover );
@@ -1765,14 +1765,14 @@ var PLAYLIST  = {
 		}
 		V.title       = cmd_title[ V.action ];
 		BANNER( 'playlist', V.title, V.list.name );
-		var mpccmd0   = V.mpccmd[ 0 ];
-		if ( typeof mpccmd0 === 'string' && mpccmd0.startsWith( 'mpc' ) ) {
-			var cmd = mpccmd0 === 'mpcaddls' ? 'CMD DIR ACTION' : 'CMD FILE ACTION';
-			V.mpccmd.push( V.action, cmd );
-			BASH( V.mpccmd );
+		if ( V.action === 'playnext' ) {
+			var cmd = 'playnext';
+		} else if ( typeof V.mpccmd === 'string' ) {
+			var cmd = V.mpccmd.endsWith( '.cue' ) ? 'load' : 'add';
 		} else {
-			LIST( { playlist: 'addfind', target: V.mpccmd, play: V.action } );
+			var cmd = 'addfind';
 		}
+		LIST( { playlist: cmd, target: V.mpccmd, play: V.action } );
 		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
 	, addSimilar  : () => {

@@ -9,7 +9,7 @@ mpc idleloop | while read changed; do
 			;;
 		playlist )
 			[[ ! -e $dirshm/pushplaylist && $( mpc status %consume% ) == on ]] && pushPlaylist
-			[[ -e $dirshm/addfind ]] && rm $dirshm/addfind && pushPlaylist
+			[[ -e $dirshm/add ]] && rm $dirshm/add && pushPlaylist
 			;;
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip && ! -e $dirshm/cdstart ]]; then

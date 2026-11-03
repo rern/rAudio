@@ -20,7 +20,7 @@ switch( $CMD ) {
 
 case 'find':
 	$lists = mpd( 'find', $post->target );
-	if ( count( $post->target ) === 3 ) {
+	if ( isset( $lists[ 'directories' ] ) ) {
 		htmlDirectory();
 	} else {
 		htmlTrack();

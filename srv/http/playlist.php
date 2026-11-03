@@ -10,15 +10,14 @@ $filecount    = $fileplaylist.'count';
 
 switch( $CMD ) {
 
+case 'add':
 case 'addfind':
-	touch( $dirdata.'shm/addfind' );
-	if ( $post->play === 'play' ) {
-		$pos = mpd( 'status' )[ 'playlistlength' ];
-		$mpd->queue()->add_find( mpdFilter( $post->target ) );
-		$mpd->player()->play( $pos );
-	} else {
-		mpd( 'addfind', $post->target );
-	}
+case 'load':
+case 'playnext':
+	touch( $dirdata.'shm/add' );
+	$PLAY   = $post->play === 'play';
+	$target = $post->target ?? '';
+	mpd( $CMD, $post->target );
 case 'current':
 	if ( ! file_exists( $fileplaylist ) ) {
 		$lists     = mpd( 'queue' );

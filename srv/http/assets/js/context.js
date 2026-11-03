@@ -660,25 +660,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	*/
 	var path = V.list.path.trim();
 	// mpccmd:
-	// [ 'mpcadd', path ]
 	// [ 'mpcaddplaynext', path ]
 	// [ 'mpcaddload', path ]
-	// [ 'mpcaddls', path ]
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
 	switch ( mode ) {
 		case '':
-			if ( V.list.singletrack || MODE.radio() ) { // single track
-				V.mpccmd = [ 'mpcadd', path ];
-			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
+			if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
 				V.mpccmd = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album.trim() ] ];
 			} else { // directory / album / saved playlist track
-				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
+				V.mpccmd = path;
 			}
 			break;
 		case 'pl':
 			cmd = cmd.slice( 2 );
 			if ( V.library ) {
-				V.mpccmd    = [ 'mpcaddload', path ];
+				V.mpccmd    = path;
 			} else { // saved playlist
 				var play    = cmd.endsWith( 'play' );
 				var replace = cmd.startsWith( 'replace' );
@@ -691,13 +687,13 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			}
 			break;
 		case 'playnext':
-			V.mpccmd = [ 'mpcaddplaynext', path ];
+			V.mpccmd = path;
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
 			var charset = $LI.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
-			V.mpccmd = [ 'mpcadd', path ];
+			V.mpccmd = path;
 			break;
 		default: // MODE
 			var mode = $LI.data( 'mode' );

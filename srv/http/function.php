@@ -67,10 +67,11 @@ function indexBar( $indexes ) {
 }
 function mpd( $cmd, $target = '' ) {
 	require_once 'MphpD/MphpD.php';
+	global $mpd, $PLAY;
 	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
 	$mpd->connect();
+	if ( $PLAY ) $pos = $mpd->status()[ 'playlistlength' ];
 	switch( $cmd ) {
-		case 'addfind':   return $mpd->queue()->add_find( mpdFilter( $target ) );
 		case 'find':      return $mpd->db()->find( mpdFilter( $target ) );
 		case 'list':      return $mpd->db()->list( $target );
 		case 'ls':        return $mpd->db()->ls( $target, true ); // true - metadata
@@ -79,7 +80,13 @@ function mpd( $cmd, $target = '' ) {
 		case 'queue':     return $mpd->queue()->get();
 		case 'search':    return $mpd->db()->search( mpdFilter( $target ) );
 		case 'status':    return $mpd->status();
+		
+		case 'add':       $mpd->queue()->add( $target );                               break;
+		case 'addfind':   $mpd->queue()->add_find( mpdFilter( $target ) );             break;
+		case 'load':      $mpd->queue()->load( $target );                              break;
+		case 'playnext':  $mpd->queue()->add( $target, $mpd->status()[ 'song' ] + 1 ); break;
 	}
+	if ( $PLAY ) $mpd->player()->play( $pos );
 }
 function mpdFilter( $target ) {
 	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );

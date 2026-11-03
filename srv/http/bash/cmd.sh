@@ -166,32 +166,6 @@ lyrics )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
-mpcadd )
-	pos=$( plAddPosition )
-	mpc -q add "$FILE"
-	plAddPlay $pos
-	;;
-mpcaddplaynext )
-	mpc -q insert "$FILE"
-	pushPlaylist
-	;;
-mpcaddload )
-	pos=$( plAddPosition )
-	mpc -q load "$FILE"
-	plAddPlay $pos
-	;;
-mpcaddls )
-	pos=$( plAddPosition )
-	cuefiles=$( mpc ls "$DIR" | grep '\.cue$' | sort -u )
-	if [[ ! $cuefiles ]]; then
-		mpc ls "$DIR" | mpc -q add &> /dev/null
-	else
-		while read cuefile; do
-			mpc -q load "$cuefile"
-		done <<< $cuefiles
-	fi
-	plAddPlay $pos
-	;;
 mpccrop )
 	if [[ ! $POS ]] && statePlay; then
 		mpc -q crop
