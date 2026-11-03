@@ -998,13 +998,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.endsWith( 'radio' ); // radio .dir has no mode
 	var track       = $LI.find( '.i-music' ).length;
+	var datamenu    = $target.data( 'menu' );
 	if ( $target.is( '.li-icon, .licoverimg' )
-		|| $target.data( 'menu' )
+		|| datamenu
 		|| track
 		|| l_moderadio
 	) {
-		if ( V.librarytrack || track || V.search ) {
-
+		if ( V.librarytrack || track || V.search || datamenu !== 'file' ) {
 			MENU.library( $target );
 		} else {
 			LIST( { library: 'ls', string: path, count: true }, function( data ) {

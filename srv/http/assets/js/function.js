@@ -1766,12 +1766,12 @@ var PLAYLIST  = {
 		V.title       = cmd_title[ V.action ];
 		BANNER( 'playlist', V.title, V.list.name );
 		var mpccmd0   = V.mpccmd[ 0 ];
-		if ( Array.isArray( mpccmd0 ) ) {
-			LIST( { playlist: 'addfind', target: V.mpccmd, play: V.action } );
-		} else {
+		if ( mpccmd0.startsWith( 'mpc' ) ) {
 			var cmd = mpccmd0 === 'mpcaddls' ? 'CMD DIR ACTION' : 'CMD FILE ACTION';
 			V.mpccmd.push( V.action, cmd );
 			BASH( V.mpccmd );
+		} else {
+			LIST( { playlist: 'addfind', target: V.mpccmd, play: V.action } );
 		}
 		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
