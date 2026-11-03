@@ -1766,7 +1766,7 @@ var PLAYLIST  = {
 		V.title       = cmd_title[ V.action ];
 		BANNER( 'playlist', V.title, V.list.name );
 		var mpccmd0   = V.mpccmd[ 0 ];
-		if ( mpccmd0.startsWith( 'mpc' ) ) {
+		if ( typeof mpccmd0 === 'string' && mpccmd0.startsWith( 'mpc' ) ) {
 			var cmd = mpccmd0 === 'mpcaddls' ? 'CMD DIR ACTION' : 'CMD FILE ACTION';
 			V.mpccmd.push( V.action, cmd );
 			BASH( V.mpccmd );
@@ -2038,7 +2038,8 @@ var PLAYLIST  = {
 				DISPLAY.pageScroll( 0 );
 				return
 			}
-
+			
+			S.pllength = data.pllength;
 			[ 'consume', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 			$( '#pl-home-title' ).html( 'PLAYLIST '+ data.counthtml );
 			$( '.pllength' ).removeClass( 'disabled' );
