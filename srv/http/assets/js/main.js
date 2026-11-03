@@ -658,7 +658,6 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 	}
 	query.gmode = V.mode;
-	console.log(query)
 	LIST( query, function( html ) {
 		var data = {
 			  html      : html
