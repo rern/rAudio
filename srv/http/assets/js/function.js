@@ -2039,6 +2039,7 @@ var PLAYLIST  = {
 				return
 			}
 			
+			S.position = data.position;
 			S.pllength = data.pllength;
 			[ 'consume', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 			$( '#pl-home-title' ).html( 'PLAYLIST '+ data.counthtml );
