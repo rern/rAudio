@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261025
+# 20261101
 if [[ ! -e $dirshm/alsa ]]; then
 	mv /var/lib/alsa $dirshm/alsa
 	ln -s $dirshm/alsa /var/lib
@@ -17,7 +17,7 @@ fi
 [[ ! -e $dirsystem/btdisable ]] && touch $dirsystem/bluetooth
 
 file=/etc/systemd/system/bluetoothbutton.service
-if grep -q bluetoothbutton $file; then
+if [[ -e $file ]]; then
 	sed -i 's/bluetoothbutton/bluetooth-button/' $file
 	mv $file ${file/bluetoothbutton/bluetooth-button}
 fi
@@ -52,10 +52,7 @@ if grep -q bluealsa-aplay $file; then
 fi
 
 if [[ -e /bin/camilladsp ]]; then
-	if systemctl -q is-active camilladsp; then
-		CAMILLA=1
-		systemctl stop camilladsp
-	fi
+	systemctl stop camilladsp
 	[[ $( pacman -Q camilladsp ) == 'camilladsp 4.1.3-1' ]] && packages+=' camilladsp'
 	dir_bt=$dircamilladsp/configs-bt
 	if systemctl -q is-active camilladsp; then # running with bluetooth
@@ -148,20 +145,6 @@ alsa = {
 EOF
 fi
 
-# 20260909
-touch /root/{.bash,.php,.python}_history
-
-! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=websocket$'\n'
-! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
-
-[[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
-
-chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
-
-[[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
-
-[[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 
@@ -211,12 +194,8 @@ fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 
-# 20260909
-$dirbash/webradio-convert.sh
-
 installfinish
 
 # 202621010
-volumeFunction > $dirshm/fn_volume
-[[ $CAMILLA ]] && $dirsettings/player-conf.sh
+$dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"
