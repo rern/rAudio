@@ -110,14 +110,6 @@ if [[ ! $albumlist ]]; then # very large database
 	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then
-	dirwav=$( sed -n -E '/\.wav$/ {s/.*\^//; s|/[^/]+$||; p}' <<< $albumlist | sort -u ) # mpd not support *.wav albumartist
-	if [[ $dirwav ]]; then
-		while read dir; do
-			file=$( ls "/mnt/MPD/$dir/"*.wav | head -n 1 )
-			albumartist=$( kid3-cli -c 'get albumartist' "$file" 2> /dev/null )
-			[[ $albumartist ]] && albumlist=$( sed -n '\|\^'$dir'\/.*wav$| {s/[^^]*/'$albumartist'/; p}' <<< $albumlist )
-		done <<< $dirwav
-	fi
 	albumlist=$( sort -u <<< $albumlist )
 ##### latest
 	if [[ -e $file_album ]]; then # skip if initial scan

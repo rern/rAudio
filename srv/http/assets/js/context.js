@@ -658,21 +658,17 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replace
 	_replaceplay
 	*/
-	var path = V.list.path.trim();
-	// mpccmd:
-	// [ 'mpcaddplaynext', path ]
-	// [ 'mpcaddload', path ]
+	var path = V.list.path;
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
 	switch ( mode ) {
 		case '':
 			if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
-				V.mpccmd = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album.trim() ] ];
+				V.mpccmd = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album ] ];
 			} else { // directory / album / saved playlist track
 				V.mpccmd = path;
 			}
 			break;
 		case 'pl':
-			cmd = cmd.slice( 2 );
 			if ( V.library ) {
 				V.mpccmd    = path;
 			} else { // saved playlist
@@ -690,7 +686,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			V.mpccmd = path;
 			break
 		case 'wr':
-			cmd = cmd.slice( 2 );
 			var charset = $LI.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
 			V.mpccmd = path;
@@ -699,21 +694,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			var mode = $LI.data( 'mode' );
 			if ( mode === 'album' ) {          // 1st level
 				V.mpccmd = [
-					  [ V.mode,   '==', $( '#lib-path' ).text().trim() ]
-					, [ 'artist', '==', $LI.find( '.name' ).text().trim() ]
-					, [ 'album',  '==', $LI.find( '.liname' ).text().trim() ]
+					  [ V.mode,   '==', $( '#lib-path' ).text() ]
+					, [ 'artist', '==', $LI.find( '.name' ).text() ]
+					, [ 'album',  '==', $LI.find( '.liname' ).text() ]
 				];
 				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.splice( 1, 1 );
 			} else if ( mode !== 'lsmode' ) { // intermediat level
-				V.mpccmd = [ V.mode, '==', V.list.path.trim() ];
+				V.mpccmd = [ V.mode, '==', V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album
 				V.mpccmd = [
 					  [ V.mode, '==',          $( '#lib-path' ).text() ]
-					, [ 'file', 'starts_with', V.list.path ]
+					, [ 'base', V.list.path ]
 				];
 			}
 		break
 	}
-	V.action = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' ); // add addplay playnext replace replaceplay
+	V.action = cmd.replace( /^pl|^wr|album|artist|composer|conductor|date|genre/g, '' ); // add addplay playnext replace replaceplay
 	PLAYLIST.add();
 } );

@@ -1103,8 +1103,11 @@ var LIBRARY   = {
 			var lidir    = dir0;
 			var iL       = dir.length;
 			for ( let i = 1; i < iL; i++ ) {
-				lidir    += '<wh>/</wh>'+ dir[ i ];
-				html.push( '<a>'+ dir[ i ] +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>' );
+				var d  = dir[ i ];
+				if ( d.endsWith( '.cue' ) ) break
+				
+				lidir += '<wh>/</wh>'+ d;
+				html.push( '<a>'+ d +' <wh>/</wh> <span class="lidir">'+ lidir +'</span></a>' );
 			}
 			if ( MODE.radio() ) html.splice( 0, 4 );
 			var htmlpath = ICON( V.mode ) + html.join( '' );
