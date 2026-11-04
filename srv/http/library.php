@@ -453,34 +453,36 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	}
 	global $dirbash, $filedisplay, $GMODE, $hash, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
-	$each0      = ( object ) $lists[ 0 ];
-	$file0      = $each0->file ?? $each0->name;
-	$pathinfo0  = pathinfo( $file0 );
-	$hidecover  = exec( 'grep "hidecover.*true" '.$filedisplay );
-	if ( ! $hidecover && ! $search ) {
+	$hide        = ( object ) [];
+	$hide->cover = exec( 'grep "hidecover.*true" '.$filedisplay );
+	if ( ! $hide->cover && ! $search ) {
+		$each0         = ( object ) $lists[ 0 ];
+		$file0         = $each0->file ?? $each0->name;
+		$pathinfo0     = pathinfo( $file0 );
 		$mpdpath       = $pathinfo0[ 'dirname' ];
-		$artist        = '';
+		$each0->artist = '';
 		foreach( [ 'albumartist', 'artist' ] as $k ) {
 			$artist = $mpd->db()->list( $k, mpdFilter( [ 'file', 'starts_with', $mpdpath ] ) );
 			if ( $artist && count( $artist ) > 0 ) {
 				if ( count( $artist ) === 1 ) {
-					$artist = $artist[ 0 ];
+					$each0->artist = $artist[ 0 ];
 				} else {
-					$artist = '(Various artists)';
+					$each0->artist = '(Various artists)';
 				}
 				$iconartist = $k;
 				break;
 			}
 		}
+		if ( ! isset( $artist ) ) 
 		foreach( [ 'album', 'composer', 'conductor', 'genre', 'date' ] as $k ) {
 			if ( ! isset( $each0->$k ) ) $each0->$k = '';
 		}
-		$hidealbum     = $each0->album     && $GMODE !== 'album'     ? '' : ' hide';
-		$hideartist    = $artist           && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
-		$hidecomposer  = $each0->composer  && $GMODE !== 'composer'  ? '' : ' hide';
-		$hideconductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
-		$hidegenre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
-		$hidedate      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
+		$hide->album     = $each0->album     && $GMODE !== 'album'     ? '' : ' hide';
+		$hide->artist    = $each0->artist    && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
+		$hide->composer  = $each0->composer  && $GMODE !== 'composer'  ? '' : ' hide';
+		$hide->conductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
+		$hide->genre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
+		$hide->date      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
 		if ( str_ends_with( $mpdpath, '.cue' ) ) {
 			$CUE       = true;
 			$files     = glob( '/mnt/MPD/'.substr( $mpdpath, 0, -4 ).'.*' );
@@ -499,12 +501,12 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $each0->album, $artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $each0->album, $each0->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
 		$seconds       = array_sum( array_column( $lists, 'time' ) );
 		$totaltime     = second2HMS( $seconds );
-		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
+		$br            = ! $hide->genre || ! $hide->date ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		if ( $CUE ) {
 			$lipath  = $pathinfo0[ 'dirname' ].'/'.$pathinfo0[ 'filename' ].'.cue';
@@ -519,12 +521,12 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	<a class="lipath">'.$lipath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
-	<div class="lialbum name'.$hidealbum.'">'.$each0->album.'</div>
-	<div class="liartist'.$hideartist.'">'.icon( $iconartist ).$artist.'</div>
-	<div class="licomposer'.$hidecomposer.'">'.icon(  'composer' ).$each0->composer.'</div>
-	<div class="liconductor'.$hideconductor.'">'.icon(  'conductor' ).$each0->conductor.'</div>
-	<span class="ligenre'.$hidegenre.'">'.icon(  'genre' ).$each0->genre.'&emsp;</span>
-	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
+	<div class="lialbum name'.$hide->album.'">'.$each0->album.'</div>
+	<div class="liartist'.$hide->artist.'">'.icon( $iconartist ).$each0->artist.'</div>
+	<div class="licomposer'.$hide->composer.'">'.icon(  'composer' ).$each0->composer.'</div>
+	<div class="liconductor'.$hide->conductor.'">'.icon(  'conductor' ).$each0->conductor.'</div>
+	<span class="ligenre'.$hide->genre.'">'.icon(  'genre' ).$each0->genre.'&emsp;</span>
+	<span class="lidate'.$hide->date.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
 	'.$icon.count( $lists ).'<gr> • </gr>'.$totaltime.'&emsp;<c>'.strtoupper( $ext ).'</c>'.$exticon.'
@@ -550,7 +552,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
 			$trackname = $CUE ? $each->artist : basename( $file );
-			$track1    = ( $i || $hidecover ) ? '' : ' class="track1"';
+			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
 			$datatrack = $CUE ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
 		}
 		$i++;
