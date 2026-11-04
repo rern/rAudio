@@ -1007,7 +1007,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		if ( V.librarytrack || track || V.search || datamenu !== 'folder' || $LI.hasClass( 'nodata' ) ) {
 			MENU.library( $target );
 		} else {
-			V.debugno = true;
 			LIST( { library: 'ls', string: path, count: true }, function( data ) {
 				if ( ! data ) $LI.addClass( 'nodata' );
 				MENU.library( $target );

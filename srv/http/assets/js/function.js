@@ -1,12 +1,14 @@
 function LIST( query, callback, json ) {
-	if ( V.debug && UTIL.debugNo( query ) ) return
-
-	$.post(
-		  'library' in query  ? 'library.php' : 'playlist.php'
-		, query
-		, callback || null
-		, json || null
-	);
+	if ( V.debug ) {
+		COMMON.debugConsole( JSON.stringify( query ) );
+	} else {
+		$.post(
+			  'library' in query  ? 'library.php' : 'playlist.php'
+			, query
+			, callback || null
+			, json || null
+		);
+	}
 }
 function REFRESHDATA() {
 	if ( I.active || V.menu ) return
@@ -1281,7 +1283,6 @@ var MENU      = {
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
 			if ( ! V.list.licover && mode_file && $icon.data( 'menu' ) === 'folder' ) {
-				V.debugno = true;
 				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
 					$thumbnail.toggleClass( 'hide', coverart !== '' );
 					MENU.scroll( $menu, menutop );
@@ -2254,13 +2255,6 @@ var UTIL      = {
 				}
 			}
 		} );
-	}
-	, debugNo         : data => {
-		COMMON.debugConsole( JSON.stringify( data ) );
-		if ( ! V.debugno ) return false
-		
-		delete V.debugno;
-		return true
 	}
 	, imageReplace    : ( path, name ) => { // name: cover - album/station, coverart - album/bookamrk/folder thumbnail
 		var data = {

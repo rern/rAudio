@@ -227,9 +227,11 @@ function BASH( args, callback, json ) {
 	// php
 	var data = { cmd: 'bash', filesh: filesh }
 	if ( args.length ) data.args = args;
-	if ( V.debug && UTIL.debugNo( data ) ) return
-	
-	$.post( 'cmd.php', data, callback || null, json || null );
+	if ( V.debug ) {
+		COMMON.debugConsole( data );
+	} else {
+		$.post( 'cmd.php', data, callback || null, json || null );
+	}
 }
 function ICON( icon, id, tabindex ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"'+ ( tabindex ? ' tabindex="0"' : '' ) +'></i>';
