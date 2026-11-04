@@ -456,7 +456,6 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	$each0      = ( object ) $lists[ 0 ];
 	$file0      = $each0->file ?? $each0->name;
 	$pathinfo0  = pathinfo( $file0 );
-	$ext        = $pathinfo0[ 'extension' ];
 	$hidecover  = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hidecover && ! $search ) {
 		$mpdpath       = $pathinfo0[ 'dirname' ];
@@ -494,6 +493,8 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 			$pathinfo0 = pathinfo( $mpdpath );
 			$mpdpath   = $pathinfo0[ 'dirname' ];
 			$file0     = $mpdpath; // for coverart
+		} else {
+			$ext       = $pathinfo0[ 'extension' ];
 		}
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
 		if ( ! $coverart ) {
