@@ -473,10 +473,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 				break;
 			}
 		}
-		if ( ! isset( $artist ) ) 
-		foreach( [ 'album', 'composer', 'conductor', 'genre', 'date' ] as $k ) {
-			if ( ! isset( $each0->$k ) ) $each0->$k = '';
-		}
+		foreach( [ 'album', 'composer', 'conductor', 'genre', 'date' ] as $k ) $each0->$k ??= '';
 		$hide->album     = $each0->album     && $GMODE !== 'album'     ? '' : ' hide';
 		$hide->artist    = $each0->artist    && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
 		$hide->composer  = $each0->composer  && $GMODE !== 'composer'  ? '' : ' hide';
