@@ -1,8 +1,5 @@
 function LIST( query, callback, json ) {
-	if ( V.debug ) {
-		COMMON.debugConsole( JSON.stringify( query ) );
-		return
-	}
+	if ( V.debug && UTIL.debugNo( query ) ) return
 
 	$.post(
 		  'library' in query  ? 'library.php' : 'playlist.php'
@@ -1230,10 +1227,11 @@ var MENU      = {
 
 		MENU.hide();
 		var mode           = V.search ? $LI.data( 'mode' ) : V.mode;
-		var $menu          = $( '#menu-'+ $LI.find( '.li-icon' ).data( 'menu' ) );
+		var $icon          = $LI.find( '.li-icon' );
+		var $menu          = $( '#menu-'+ $icon.data( 'menu' ) );
 		V.list             = {};
 		V.list.licover     = $LI.hasClass( 'licover' );
-		V.list.singletrack = ! V.list.licover && $LI.find( '.li-icon' ).hasClass( 'i-music' );
+		V.list.singletrack = ! V.list.licover && $icon.hasClass( 'i-music' );
 		// file modes  - path > path ... > tracks
 		// album mode  - path > tracks
 		// other modes - name > name-album > filtered tracks
@@ -1255,7 +1253,6 @@ var MENU      = {
 		$LI.siblings( 'li' ).removeClass( 'active' );
 		$LI.addClass( 'active' );
 		var mode_file = MODE.file();
-		var track     = $LI.find( '.i-music.li-icon' ).length;
 		if ( V.list.licover ) {
 			var menutop = UTIL.barVisible( 310, 270 );
 		} else {
@@ -1280,7 +1277,8 @@ var MENU      = {
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
 			$thumbnail = $menu.find( '.thumbnail' );
-			if ( ! V.list.licover && mode_file && ! track ) {
+			if ( ! V.list.licover && mode_file && $icon.data( 'menu' ) === 'folder' ) {
+				V.debugno = true;
 				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
 					$thumbnail.toggleClass( 'hide', coverart !== '' );
 					MENU.scroll( $menu, menutop );
@@ -1955,28 +1953,8 @@ var PLAYLIST  = {
 		}
 	}
 	, remove      : $li => {
-		if ( S.pllength === 1 ) {
-			$li.remove();
-			BASH( [ 'mpcremove' ] );
-			return
-		}
-
-		var pos = $li.index() + 1;
-		BASH( [ 'mpcremove', pos, 'CMD POS' ] );
-		if ( $li.hasClass( 'webradio' ) ) {
-			var $count = $( '#pl-radiocount' );
-			$count.text( +$count.text() - 1 );
-		} else {
-			var $count = $( '#pl-trackcount' );
-			var $time  = $( '#pl-time' );
-			$count.text( +$count.text() - 1 );
-			var time = $time.data( 'time' ) - $li.find( '.time' ).data( 'time' );
-			$time
-				.data( 'time', time )
-				.text( COMMON.second2HMS( time ) );
-		}
+		BASH( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
 		$li.remove();
-		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
 	}
 	, removeRange : range => {
 		BANNER_HIDE();
@@ -2273,6 +2251,13 @@ var UTIL      = {
 				}
 			}
 		} );
+	}
+	, debugNo         : data => {
+		COMMON.debugConsole( JSON.stringify( data ) );
+		if ( ! V.debugno ) return false
+		
+		delete V.debugno;
+		return true
 	}
 	, imageReplace    : ( path, name ) => { // name: cover - album/station, coverart - album/bookamrk/folder thumbnail
 		var data = {

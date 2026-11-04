@@ -221,16 +221,13 @@ function BASH( args, callback, json ) {
 			COMMON.debugConsole( data );
 		} else {
 			WS.send( data );
-			return
 		}
+		return
 	}
 	// php
 	var data = { cmd: 'bash', filesh: filesh }
 	if ( args.length ) data.args = args;
-	if ( V.debug ) {
-		COMMON.debugConsole( data );
-		return
-	}
+	if ( V.debug && UTIL.debugNo( data ) ) return
 	
 	$.post( 'cmd.php', data, callback || null, json || null );
 }

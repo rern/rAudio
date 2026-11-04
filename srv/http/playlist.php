@@ -208,7 +208,7 @@ function output() {
 		, 'consume'   => $status->consume === 1
 		, 'librandom' => file_exists( $dirdata.'system/librandom' )
 		, 'pllength'  => $status->playlistlength
-		, 'position'  => isset( $status->song ) ? $status->song + 1 : 0
+		, 'position'  => $status->song ?? 0
 		, 'add'       => $CMD === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;

@@ -182,9 +182,6 @@ mpccrop )
 mpclibrandom )
 	plAddRandom
 	;;
-mpcls )
-	mpc ls "$DIR" 2> /dev/null | wc -l
-	;;
 mpcmove )
 	mpc -q move $FROM $TO
 	pushPlaylist
@@ -198,10 +195,10 @@ mpcplayback )
 	mpcPlayback
 	;;
 mpcremove )
-	[[ ! $POS ]] && plClear && exit
+	pllength=$( mpc status %length% )
+	(( $pllength == 1 )) && plClear && exit
 # --------------------------------------------------------------------
 	songpos=$( mpc status %songpos% )
-	pllength=$( mpc status %length% )
 	if [[ $TO ]]; then
 		if (( $songpos >= $POS && $songpos <= $TO )); then
 			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
