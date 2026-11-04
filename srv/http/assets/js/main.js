@@ -871,8 +871,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$( '#infoList' ).on( 'click', '.menu a, .menu .submenu', function() {
+				V.target = path;
 				V.action = $( this ).data( 'cmd' );
-				V.mpccmd = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
 				PLAYLIST.add();
 			} );
 		}

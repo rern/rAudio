@@ -1017,10 +1017,10 @@ var FILEIMAGE = {
 }
 var LIBRARY   = {
 	  addReplace : () => {
-		V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
+		V.target    = $LI.find( '.lipath' ).text();
 		V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
 		V.list.name = $LI.find( '.name' ).text();
-		PLAYLIST.addCommand();
+		PLAYLIST.add();
 	}
 	, coverart   : () => {
 		if ( D.hidecover ) {
@@ -1751,7 +1751,12 @@ var PLAYBACK  = {
 var PLAYLIST  = {
 	  add         : () => {
 		if ( D.plclear && V.action.startsWith( 'replace' ) ) {
-			PLAYLIST.replace( PLAYLIST.addCommand );
+			INFO( {
+				  icon    : 'playlist'
+				, title   : 'Playlist Replace'
+				, message : 'Replace current playlist?'
+				, ok      : PLAYLIST.addCommand
+			} );
 		} else {
 			$( '#infoX' ).trigger( 'click' );
 			PLAYLIST.addCommand();
@@ -1769,12 +1774,12 @@ var PLAYLIST  = {
 		BANNER( 'playlist', V.title, V.list.name );
 		if ( V.action === 'playnext' ) {
 			var cmd = 'playnext';
-		} else if ( typeof V.mpccmd === 'string' ) {
-			var cmd = V.mpccmd.endsWith( '.cue' ) ? 'load' : 'add';
+		} else if ( typeof V.target === 'string' ) {
+			var cmd = V.playlist || V.mpccmd.endsWith( '.cue' ) ? 'load' : 'add';
 		} else {
 			var cmd = 'addfind';
 		}
-		LIST( { playlist: cmd, target: V.mpccmd, play: V.action } );
+		LIST( { playlist: cmd, target: V.mpccmd, action: V.action } );
 		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
 	, addSimilar  : () => {
@@ -1875,12 +1880,6 @@ var PLAYLIST  = {
 				, ok         : () => PLAYLIST.insert.position( _INFO.val() )
 			} );
 		}
-	}
-	, load        : ( name, play, replace ) => {
-		BANNER( 'playlists', name, 'Load ...' );
-		BASH( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], () => {
-			if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
-		} );
 	}
 	, new         : name => {
 		INFO( {
@@ -2134,14 +2133,6 @@ var PLAYLIST  = {
 				$station.removeClass( 'hide' );
 			}
 		}
-	}
-	, replace     : callback => {
-		INFO( {
-			  icon    : 'playlist'
-			, title   : 'Playlist Replace'
-			, message : 'Replace current playlist?'
-			, ok      : callback
-		} );
 	}
 	, skip        : () => {
 		if ( ! $( '#pl-list li' ).length ) {

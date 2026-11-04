@@ -663,46 +663,35 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	switch ( mode ) {
 		case '':
 			if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
-				V.mpccmd = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album ] ];
+				V.target = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album ] ];
 			} else { // directory / album / saved playlist track
-				V.mpccmd = path;
+				V.target = path;
 			}
 			break;
 		case 'pl':
-			if ( V.library ) {
-				V.mpccmd    = path;
-			} else { // saved playlist
-				var play    = cmd.endsWith( 'play' );
-				var replace = cmd.startsWith( 'replace' );
-				if ( replace ) {
-					PLAYLIST.replace( () => PLAYLIST.load( V.list.path, play, replace ) );
-				} else {
-					PLAYLIST.load( V.list.path, play, replace );
-				}
-				return
-			}
+			V.target = V.library ? path : V.list.path; // saved playlist
 			break;
 		case 'playnext':
-			V.mpccmd = path;
+			V.target = path;
 			break
 		case 'wr':
 			var charset = $LI.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
-			V.mpccmd = path;
+			V.target = path;
 			break;
 		default: // MODE
 			var mode = $LI.data( 'mode' );
 			if ( mode === 'album' ) {          // 1st level
-				V.mpccmd = [
+				V.target = [
 					  [ V.mode,   '==', $( '#lib-path' ).text() ]
 					, [ 'artist', '==', $LI.find( '.name' ).text() ]
 					, [ 'album',  '==', $LI.find( '.liname' ).text() ]
 				];
 				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.splice( 1, 1 );
 			} else if ( mode !== 'lsmode' ) { // intermediat level
-				V.mpccmd = [ V.mode, '==', V.list.path ];
+				V.target = [ V.mode, '==', V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album
-				V.mpccmd = [
+				V.target = [
 					  [ V.mode, '==',          $( '#lib-path' ).text() ]
 					, [ 'base', V.list.path ]
 				];
