@@ -459,9 +459,10 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	$ext        = $pathinfo0[ 'extension' ];
 	$hidecover  = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hidecover && ! $search ) {
-		$artist = '';
+		$mpdpath       = $pathinfo0[ 'dirname' ];
+		$artist        = '';
 		foreach( [ 'albumartist', 'artist' ] as $k ) {
-			$artist = $mpd->db()->list( $k, mpdFilter( [ 'file', 'starts_with', $pathinfo0[ 'dirname' ] ] ) );
+			$artist = $mpd->db()->list( $k, mpdFilter( [ 'file', 'starts_with', $mpdpath ] ) );
 			if ( $artist && count( $artist ) > 0 ) {
 				if ( count( $artist ) === 1 ) {
 					$artist = $artist[ 0 ];
@@ -481,7 +482,6 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$hideconductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
 		$hidegenre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
 		$hidedate      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
-		$mpdpath       = $pathinfo0[ 'dirname' ];
 		if ( str_ends_with( $mpdpath, '.cue' ) ) {
 			$CUE       = true;
 			$files     = glob( '/mnt/MPD/'.substr( $mpdpath, 0, -4 ).'.*' );
