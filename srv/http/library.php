@@ -548,7 +548,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		} else {
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
-			$trackname = $CUE ? $each->artist.' - '.$each->album : basename( $file );
+			$trackname = $CUE ? $each->artist : basename( $file );
 			$track1    = ( $i || $hidecover ) ? '' : ' class="track1"';
 			$datatrack = $CUE ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
 		}
