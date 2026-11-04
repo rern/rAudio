@@ -687,7 +687,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 					, [ 'artist', '==', $LI.find( '.name' ).text() ]
 					, [ 'album',  '==', $LI.find( '.liname' ).text() ]
 				];
-				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.splice( 1, 1 );
+				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.target.splice( 1, 1 );
 			} else if ( mode !== 'lsmode' ) { // intermediat level
 				V.target = [ V.mode, '==', V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album

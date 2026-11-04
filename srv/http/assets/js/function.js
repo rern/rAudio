@@ -1775,11 +1775,11 @@ var PLAYLIST  = {
 		if ( V.action === 'playnext' ) {
 			var cmd = 'playnext';
 		} else if ( typeof V.target === 'string' ) {
-			var cmd = V.playlist || V.mpccmd.endsWith( '.cue' ) ? 'load' : 'add';
+			var cmd = ( V.playlist && V.playlistlist ) || V.target.endsWith( '.cue' ) ? 'load' : 'add';
 		} else {
 			var cmd = 'addfind';
 		}
-		LIST( { playlist: cmd, target: V.mpccmd, action: V.action } );
+		LIST( { playlist: cmd, target: V.target, action: V.action } );
 		if ( D.playbackswitch && V.action.endsWith( 'play' ) ) UTIL.switchPage( 'playback' );
 	}
 	, addSimilar  : () => {
