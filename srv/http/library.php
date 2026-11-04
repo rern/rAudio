@@ -32,6 +32,7 @@ case 'findmode':
 	foreach( $lists as $l ) {
 		$l           = ( object ) $l;
 		$dir_mpd     = dirname( $l->file );
+		if ( str_ends_with( $dir_mpd, '.cue' ) ) $dir_mpd = dirname( $dir_mpd );
 		if ( $dir_mpd === $dir_prev ) continue;
 		
 		$each        = ( object ) [];
