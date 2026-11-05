@@ -383,7 +383,6 @@ playerStop() {
 		bluetooth )
 			rm -f $dirshm/{sink,source,source_dbus}
 			systemctl restart bluetooth
-			volumeMpdRestore
 			;;
 		mpd )
 			radioStop
