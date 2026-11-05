@@ -11,13 +11,24 @@ switch( $CMD ) {
 case 'add':
 case 'addfind':
 case 'load':
+case 'move':
 case 'playnext':
-	$replace = str_starts_with( $post->action, 'replace' );
-	$play    = str_ends_with( $post->action, 'play' );
-	$lists   = mpd( $CMD, $post->target, $play, $replace );
+case 'shuffle':
+	$PUSH    = true;
+	$action  = $post->action ?? '';
+	$target  = $post->target ?? '';
+	$replace = str_starts_with( $action, 'replace' );
+	$play    = str_ends_with( $action, 'play' );
+	$lists   = mpd( $CMD, $target, $play, $replace );
 	break;
 case 'current':
 	$lists = mpd( 'queue' );
+	break;
+case 'consume':
+case 'random':
+case 'repeat':
+case 'single':
+	mpd( $CMD, $post->target === 'true' );
 	break;
 case 'playlist':
 	$name  = $post->name;
@@ -55,6 +66,7 @@ case 'playlists':
 	exit;
 //----------------------------------------------------------------------------------
 	break;
+	
 }
 if ( ! isset( $lists ) ) exit;
 //----------------------------------------------------------------------------------
@@ -186,12 +198,12 @@ $data = json_encode( [
 	, 'position'  => $status->song ?? 0
 	, 'add'       => $CMD === 'add'
 ], JSON_NUMERIC_CHECK );
-if ( isset( $play ) ) {
-	file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
-	exec( '/srv/http/bash/cmd.sh pushplaylist' );
+if ( isset( $PUSH ) ) {
+	wsSend( $data );
 } else { // current
 	echo $data;
 }
+file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
 
 function artistAlbum( $artist, $album, $file ) {
 	$ar_al = '';
@@ -203,4 +215,44 @@ function artistAlbum( $artist, $album, $file ) {
 	} else {
 		return $file;
 	}
+}
+function wsSend( $msg )  {
+	$ip_port = '//127.0.0.1:8080';
+	$fp = @stream_socket_client( "tcp:$ip_port", $errno, $errstr, 2 );
+	if ( ! $fp ) return false;
+	
+	stream_set_timeout( $fp, 2 );
+
+	// handshake
+	$key = base64_encode( random_bytes( 16 ) );
+	fwrite( $fp, "GET / HTTP/1.1\r\n"
+				."Host: $ip_port\r\n"
+				."Upgrade: websocket\r\n"
+				."Connection: Upgrade\r\n"
+				."Sec-WebSocket-Key: $key\r\n"
+				."Sec-WebSocket-Version: 13\r\n\r\n" );
+
+	$status = fgets( $fp );
+	if ( ! $status || ! str_contains( $status, ' 101 ' )) {
+		fclose( $fp );
+		return false;
+	}
+	while ( ( $line = fgets( $fp ) ) !== false && $line !== "\r\n" ); // skip headers
+	
+	$msg = json_encode( [ 'channel' => 'playlist', 'data' => $msg ] );
+	// text frame (client frames must be masked)
+	$len  = strlen( $msg );
+	$head = "\x81"; // FIN + text opcode
+	if ( $len < 126 )        $head .= chr( 0x80 | $len );
+	elseif ( $len < 65536 )  $head .= chr( 0x80 | 126 ) . pack( 'n', $len );
+	else                     $head .= chr( 0x80 | 127 ) . pack( 'J', $len );
+
+	$mask   = random_bytes( 4 );
+	$masked = $msg ^ str_repeat( $mask, intdiv( $len, 4 ) + 1 ); // XOR truncates to $len
+	fwrite( $fp, $head . $mask . $masked );
+
+	// close frame, then disconnect
+	fwrite( $fp, "\x88\x80" . random_bytes( 4 ) );
+	fclose( $fp );
+	return true;
 }

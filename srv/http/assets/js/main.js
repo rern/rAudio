@@ -531,11 +531,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 		case 'repeat':
 			if ( S.repeat ) {
 				if ( S.single ) {
-					[ 'repeat', 'single' ].forEach( option => {
-						S[ option ] = false;
-						BASH( [ 'mpcoption', option, false, 'CMD OPTION TF' ] );
-					} );
-					PLAYBACK.button.options();
+					[ 'repeat', 'single' ].forEach( cmd => PLAYLIST.pushOption( cmd, false ) );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -555,11 +551,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( S.player === 'mpd' && S.state === cmd ) return
 
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
-		var tf   = ! S[ cmd ];
-		S[ cmd ] = tf;
-		BASH( [ 'mpcoption', cmd, tf, 'CMD OPTION TF' ] );
-		PLAYBACK.button.options();
-		LOCAL( 600 );
+		PLAYLIST.pushOption( cmd, ! S[ cmd ] );
 	} else {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
@@ -1147,7 +1139,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
 	BANNER( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
-	BASH( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION TF' ] );
+	PLAYLIST.pushOption( 'consume', S.consume );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );
@@ -1189,7 +1181,7 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
-		, ok      : () => BASH( [ 'mpcshuffle' ] )
+		, ok      : () => LIST( { playlist: 'shuffle' } )
 	} );
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
@@ -1421,8 +1413,7 @@ var sortlist = {
 		COMMON.json.save( 'order', order );
 	}
 	, 'pl-list'       : ( from, to ) => {
-		BASH( [ 'mpcmove', from + 1, to + 1, 'CMD FROM TO' ] );
-		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+		LIST( { playlist: 'move', target: [ from + 1, to + 1 ] } );
 	}
 	, 'pl-savedlist'  : ( from, to ) => {
 		BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', from + 1, to + 1, 'CMD NAME ACTION FROM TO' ] );

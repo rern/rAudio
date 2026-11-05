@@ -1790,14 +1790,6 @@ var PLAYLIST  = {
 			}
 		} );
 	}
-	, blink       : off => {
-		if ( off ) {
-			clearTimeout( V.timeoutpl );
-			$( '#playlist, #button-playlist' ).removeClass( 'blink' );
-		} else {
-			V.timeoutpl = setTimeout( () => $( '#playlist, #button-playlist' ).addClass( 'blink' ), 1000 );
-		}
-	}
 	, get         : () => {
 		if ( ! S.pllength ) {
 			PLAYLIST.render.home();
@@ -1807,9 +1799,7 @@ var PLAYLIST  = {
 		if ( $( '#pl-list' ).is( ':empty' ) && $( '#bar-top' ).hasClass( 'hide' ) ) {
 			NOTIFY( 'playlist', 'Playlist', 'Get ...' );
 		}
-		PLAYLIST.blink();
 		LIST( { playlist: 'current' }, data => {
-			PLAYLIST.blink( 'off' );
 			PLAYLIST.render.home( data );
 			BANNER_HIDE();
 		}, 'json' );
@@ -1947,6 +1937,13 @@ var PLAYLIST  = {
 				, ok          : () => rename ? PLAYLIST.playlists.save( name, oldname, 'replace' ) : PLAYLIST.playlists.save( name, '' , 'replace' )
 			} );
 		}
+	}
+	, pushOption  : ( cmd, tf ) => {
+		LIST( { playlist: cmd, target: tf } );
+		S[ cmd ] = tf;
+		if ( cmd !== 'consume' ) PLAYBACK.button.options();
+		LOCAL();
+		WS.send( '{ "channel": "option", "data": { "'+ cmd +'": '+ tf +' } }' );
 	}
 	, remove      : $li => {
 		BASH( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );

@@ -121,12 +121,6 @@ W = {
 	, playlist  : data => {
 		if ( V.local || V.sort || $( '.pl-remove' ).length ) return
 		
-		if ( 'blink' in data ) {
-			PLAYLIST.blink();
-			return
-		}
-		
-		PLAYLIST.blink( 'off' );
 		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
 			if ( V.playback ) {

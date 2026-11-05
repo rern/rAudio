@@ -182,15 +182,6 @@ mpccrop )
 mpclibrandom )
 	plAddRandom
 	;;
-mpcmove )
-	mpc -q move $FROM $TO
-	pushPlaylist
-	;;
-mpcoption )
-	[[ ! $TF ]] && TF=false
-	mpc -q $OPTION $TF
-	pushData option '{ "'$OPTION'": '$TF' }'
-	;;
 mpcplayback )
 	mpcPlayback
 	;;
@@ -220,10 +211,6 @@ mpcseek )
 	[[ $STOP ]] && mpc -q pause
 	pushStatus
 	rm $dirshm/skip
-	;;
-mpcshuffle )
-	mpc -q shuffle
-	pushPlaylist
 	;;
 mpcsimilar )
 	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
@@ -308,16 +295,6 @@ playerstart )
 	;;
 playerstop )
 	playerStop
-	;;
-playlist )
-	[[ $REPLACE ]] && plClear
-	mpc -q load "$NAME"
-	[[ $PLAY ]] && mpc -q play
-	[[ $PLAY || $REPLACE ]] && pushStatus
-	pushPlaylist
-	;;
-pushplaylist )
-	pushPlaylist
 	;;
 remount )
 	mount -a

@@ -70,6 +70,11 @@ function mpd( $cmd, $target = '', $play = '', $replace = '' ) {
 	global $mpd;
 	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
 	$mpd->connect();
+	if ( in_array( $cmd, [ 'consume', 'random', 'repeat', 'single' ] ) ) {
+		$mpd->player()->$cmd( $target );
+		exit;
+//----------------------------------------------------------------------------------
+	}
 	if ( $replace ) $mpd->queue()->clear();
 	if ( $play ) $pos = $replace ? 1 : $mpd->status()[ 'playlistlength' ];
 	switch( $cmd ) {
@@ -85,7 +90,9 @@ function mpd( $cmd, $target = '', $play = '', $replace = '' ) {
 		case 'add':       $mpd->queue()->add( $target );                               break;
 		case 'addfind':   $mpd->queue()->add_find( mpdFilter( $target ) );             break;
 		case 'load':      $mpd->queue()->load( $target );                              break;
+		case 'move':      $mpd->queue()->move( ...$target );                           break;
 		case 'playnext':  $mpd->queue()->add( $target, $mpd->status()[ 'song' ] + 1 ); break;
+		case 'shuffle':   $mpd->queue()->shuffle();                                    break;
 	}
 	if ( $play ) $mpd->player()->play( $pos );
 	return $mpd->queue()->get();
