@@ -25,6 +25,20 @@ wlanDisable() {
 
 case $CMD in
 
+alsa-tap )
+	# Refuse to replace an existing file or a symlink at the public endpoint.
+	if [[ $ON ]]; then
+		if [[ -L /tmp/alsa-tap.fifo || ( -e /tmp/alsa-tap.fifo && ! -p /tmp/alsa-tap.fifo ) ]]; then
+			notify warning 'ALSA tap' '/tmp/alsa-tap.fifo already exists and is not a FIFO.'
+			pushRefresh
+			exit
+		fi
+		[[ -p /tmp/alsa-tap.fifo ]] || mkfifo -m 666 /tmp/alsa-tap.fifo || exit
+	fi
+	enableFlagSet
+	$dirsettings/player-conf.sh
+	pushRefresh
+	;;
 ap )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
