@@ -106,6 +106,27 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
 		hw=hw:$card
+		# Wrap only the normal DAC path; retain hardware mixer addressing.
+		if [[ -e $dirsystem/alsa-tap && ! $BT_SINK && ! -e $dirmpdconf/snapserver.conf ]]; then
+			if [[ ! -L /tmp/alsa-tap.fifo && ( ! -e /tmp/alsa-tap.fifo || -p /tmp/alsa-tap.fifo ) ]]; then
+				if [[ -p /tmp/alsa-tap.fifo ]] || mkfifo -m 666 /tmp/alsa-tap.fifo; then
+					ALSA_TAP=1
+					cat >> /etc/asound.conf <<EOF
+pcm.alsa-tap {
+	type file
+	slave.pcm "$hw"
+	file "|/bin/python /srv/http/bash/alsa-tap.py %c %b"
+	format "raw"
+}
+pcm.!default {
+	type plug
+	slave.pcm alsa-tap
+}
+EOF
+					hw=alsa-tap
+				fi
+			fi
+		fi
 		[[ $mixertype == software && ( $CAMILLADSP || $( bluealsa-cli list-pcms ) ) ]] && mixertype=hardware
 #---------------< normal
 		AUDIOOUTPUT='
@@ -118,7 +139,7 @@ elif [[ ! $BT_ONLY && ! -e $dirshm/nosound ]]; then
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			AUDIOOUTPUT+='
 	mixer_control  "'$mixer'"
-	mixer_device   "'$hw'"'
+	mixer_device   "hw:'$card'"'
 			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
 				AUDIOOUTPUT+='
 	replay_gain_handler "mixer"'
@@ -215,7 +236,9 @@ if [[ -e /bin/shairport-sync && ! -e $dirmpdconf/snapserver.conf ]]; then
 	fileconf=/etc/shairport-sync.conf
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
-	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
+	mixerdevice0=$( getVar mixer_device $fileconf )
+	if [[ $hw0 != $hw || $mixer0 != $mixer ||
+		( $ALSA_TAP && ! $MIXER_NO && $mixerdevice0 != hw:$card ) ]]; then
 #--------------->
 		CONF=$( sed '/^alsa/,/}/ d' $fileconf )
 		CONF+='
@@ -224,6 +247,9 @@ alsa = {
 	mixer_control_name = "'$mixer'";
 }'
 		[[ $MIXER_NO ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
+		[[ $ALSA_TAP && ! $MIXER_NO ]] && CONF=$( sed '/^alsa = {/ a\
+\tmixer_device = "hw:'$card'";
+' <<< "$CONF" )
 #---------------<
 ######## >
 		echo "$CONF" > /etc/shairport-sync.conf
@@ -245,6 +271,7 @@ if [[ -e /bin/spotifyd && ! -e $dirmpdconf/snapserver.conf ]]; then
 		device=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
 	else
 		device=hw:$card                        # hw=hw:N
+		[[ $ALSA_TAP ]] && device=alsa-tap
 	fi
 	fileconf=/etc/spotifyd.conf
 	device0=$( getVar device $fileconf )

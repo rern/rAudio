@@ -198,6 +198,17 @@ $body         = [
 EOF
 	]
 	, [
+		  'id'       => 'alsa-tap'
+		, 'label'    => 'ALSA tap'
+		, 'icon'     => 'vuled'
+		, 'help'     => <<< EOF
+Let a visualizer or audio analysis tool receive a copy of the playing audio at <c>/tmp/alsa-tap.fifo</c>.
+ · Supports MPD, AirPlay and Spotify using the selected audio output.
+ · Unavailable with DSP, Equalizer, Bluetooth output or SnapServer. Custom output settings may also prevent capture.
+ · Turning this on or off stops playback.
+EOF
+	]
+	, [
 		  'id'       => 'autoplay'
 		, 'label'    => 'AutoPlay'
 		, 'help'     => <<< EOF
