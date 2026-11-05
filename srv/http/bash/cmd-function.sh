@@ -56,7 +56,7 @@ pushRadioList() {
 }
 pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
-		pushData playlists $( php /srv/http/playlist.php list )
+		pushData playlists $( php /srv/http/playlist.php playlists )
 	else
 		pushData playlists '{ "count": 0 }'
 	fi

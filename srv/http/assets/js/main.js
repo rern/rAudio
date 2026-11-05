@@ -988,6 +988,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( V.press ) return
 
 	$LI             = $( this );
+	if ( $LI.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) {
+		MENU.hide();
+		return
+	}
+	
 	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 

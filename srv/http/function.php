@@ -65,12 +65,13 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
-function mpd( $cmd, $target = '' ) {
+function mpd( $cmd, $target = '', $play = '', $replace = '' ) {
 	require_once 'MphpD/MphpD.php';
-	global $mpd, $PLAY;
+	global $mpd;
 	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
 	$mpd->connect();
-	if ( $PLAY ) $pos = $mpd->status()[ 'playlistlength' ];
+	if ( $replace ) $mpd->queue()->clear();
+	if ( $play ) $pos = $replace ? 1 : $mpd->status()[ 'playlistlength' ];
 	switch( $cmd ) {
 		case 'find':      return $mpd->db()->find( mpdFilter( $target ) );
 		case 'list':      return $mpd->db()->list( $target );
@@ -86,7 +87,7 @@ function mpd( $cmd, $target = '' ) {
 		case 'load':      $mpd->queue()->load( $target );                              break;
 		case 'playnext':  $mpd->queue()->add( $target, $mpd->status()[ 'song' ] + 1 ); break;
 	}
-	if ( $PLAY ) $mpd->player()->play( $pos );
+	if ( $play ) $mpd->player()->play( $pos );
 }
 function mpdFilter( $target ) {
 	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );

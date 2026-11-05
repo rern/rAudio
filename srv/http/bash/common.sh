@@ -412,7 +412,7 @@ playerStop() {
 plClear() {
 	radioStop
 	mpc -q clear
-	rm -f $dirsystem/librandom $dirshm/playlist*
+	rm -f $dirsystem/librandom
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 	pushStatus
 }
@@ -443,11 +443,10 @@ pushPlaylist() {
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
-	rm -f $dirshm/playlist*
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data='{ "channel": "playlist", "data": '$( php /srv/http/playlist.php current )' }'
+		data='{ "channel": "playlist", "data": '$( < $dirshm/playlist )' }'
 		bytes=$( printf '%s' "$data" | wc -c )
 		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
 		websocat --text $buffer ws://127.0.0.1:8080 <<< $data

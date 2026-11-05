@@ -1,14 +1,15 @@
 function LIST( query, callback, json ) {
 	if ( V.debug ) {
 		COMMON.debugConsole( JSON.stringify( query ) );
-	} else {
-		$.post(
-			  'library' in query  ? 'library.php' : 'playlist.php'
-			, query
-			, callback || null
-			, json || null
-		);
+		if ( query.library !== 'ls' ) return
 	}
+	
+	$.post(
+		  'library' in query  ? 'library.php' : 'playlist.php'
+		, query
+		, callback || null
+		, json || null
+	);
 }
 function REFRESHDATA() {
 	if ( I.active || V.menu ) return
@@ -1281,16 +1282,8 @@ var MENU      = {
 			$menu.find( '.wrdirrename' ).toggleClass( 'hide', ! radio );
 			$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating );
 			$menu.find( '.savedpladd' ).toggleClass( 'hide', C.playlists === 0 );
-			$thumbnail = $menu.find( '.thumbnail' );
-			if ( ! V.list.licover && mode_file && $icon.data( 'menu' ) === 'folder' ) {
-				BASH( [ 'coverart', V.list.path, 'CMD DIR' ], coverart => {
-					$thumbnail.toggleClass( 'hide', coverart !== '' );
-					MENU.scroll( $menu, menutop );
-				} );
-			} else {
-				$thumbnail.toggleClass( 'hide', $LI.find( '.i-music' ).length > 0 );
-				MENU.scroll( $menu, menutop );
-			}
+			$menu.find( '.thumbnail' ).toggleClass( 'hide', $LI.find( '.i-music' ).length > 0 );
+			MENU.scroll( $menu, menutop );
 		}
 	}
 	, playlist : $target => {
