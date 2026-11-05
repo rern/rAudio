@@ -88,6 +88,7 @@ function mpd( $cmd, $target = '', $play = '', $replace = '' ) {
 		case 'playnext':  $mpd->queue()->add( $target, $mpd->status()[ 'song' ] + 1 ); break;
 	}
 	if ( $play ) $mpd->player()->play( $pos );
+	return $mpd->queue()->get();
 }
 function mpdFilter( $target ) {
 	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );

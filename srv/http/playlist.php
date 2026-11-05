@@ -5,8 +5,6 @@ $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ]; // current / list
 $dirdata      = '/srv/http/data/';
 $dirshm       = $dirdata.'shm/';
-$fileplaylist = $dirshm.'playlist';
-$filecount    = $fileplaylist.'count';
 
 switch( $CMD ) {
 
@@ -14,11 +12,9 @@ case 'add':
 case 'addfind':
 case 'load':
 case 'playnext':
-	touch( $dirdata.'shm/add' );
 	$replace = str_starts_with( $post->action, 'replace' );
 	$play    = str_ends_with( $post->action, 'play' );
-	$target  = $post->target ?? '';
-	mpd( $CMD, $post->target, $play, $replace );
+	$lists   = mpd( $CMD, $post->target, $play, $replace );
 	break;
 case 'current':
 	$lists = mpd( 'queue' );
@@ -180,8 +176,22 @@ if ( $count->song ) {
 }
 if ( $count->radio ) $counthtml.= icon(  'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
 if ( $count->upnp )  $counthtml.= '&emsp;'.icon(  'upnp' );
-
-output();
+$status = ( object ) mpd( 'status' );
+$data = json_encode( [
+	  'html'      => $html
+	, 'counthtml' => $counthtml
+	, 'consume'   => $status->consume === 1
+	, 'librandom' => file_exists( $dirdata.'system/librandom' )
+	, 'pllength'  => $status->playlistlength
+	, 'position'  => $status->song ?? 0
+	, 'add'       => $CMD === 'add'
+], JSON_NUMERIC_CHECK );
+if ( isset( $play ) ) {
+	file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
+	exec( '/srv/http/bash/cmd.sh pushplaylist' );
+} else { // current
+	echo $data;
+}
 
 function artistAlbum( $artist, $album, $file ) {
 	$ar_al = '';
@@ -193,19 +203,4 @@ function artistAlbum( $artist, $album, $file ) {
 	} else {
 		return $file;
 	}
-}
-function output() {
-	global $CMD, $counthtml, $dirdata, $fileplaylist, $html;
-	$status = ( object ) mpd( 'status' );
-	$data = json_encode( [
-		  'html'      => $html
-		, 'counthtml' => $counthtml
-		, 'consume'   => $status->consume === 1
-		, 'librandom' => file_exists( $dirdata.'system/librandom' )
-		, 'pllength'  => $status->playlistlength
-		, 'position'  => $status->song ?? 0
-		, 'add'       => $CMD === 'add'
-	], JSON_NUMERIC_CHECK );
-	echo $data;
-	if ( $CMD === 'current' ) file_put_contents( $fileplaylist, $data ); // for bash pushPlaylist
 }
