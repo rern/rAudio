@@ -68,7 +68,6 @@ W             = {  // from websocket.py (server)
 		COMMON.loader();
 		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
 		if ( action === 'off' ) {
-			$( '#loader' ).css( 'opacity', 1 );
 			$( 'body' ).children().not( '#banner, #loader' ).remove();
 			setTimeout( () => {
 				$( '#banner' ).addClass( 'hide' );
