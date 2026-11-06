@@ -213,7 +213,6 @@ case 'ls':
 			$file  = $p[ 'name' ];
 			if ( ! str_ends_with( $file, '.cue' ) ) continue;
 			
-			$MPD   = MphpD();
 			$list  = $MPD->playlist( $file )->get_songs( true ); // keys: file, ...metadata *** 'file' instead of 'name'
 			$lists = [ ...$lists, ...$list ]; // file, ...metadata
 		}

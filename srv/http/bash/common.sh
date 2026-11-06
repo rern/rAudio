@@ -211,6 +211,16 @@ data2json() {
 		echo "$json"
 	fi
 }
+dir2path() {
+	if [[ $1 == /* ]]; then
+		echo "$1"
+	elif [[ $1 == [NSU]* ]]; then
+		echo "/mnt/MPD/$1"
+	else
+		line=$( grep -m1 ^$1 $dirmpd/radio )
+		echo "${line/*^}"
+	fi
+}
 equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	v=( $VALUES )
@@ -338,6 +348,28 @@ notify() { # icon title message delayms
 	message=$( quoteEscape $3 )
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
+plAddRandom() {
+	local ab cuefile dir dirlast mpcls plL range
+	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
+	if [[ $dir == $dirlast ]]; then # force different album
+		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
+	fi
+	if [[ -s $dirsystem/librandom ]]; then # album
+		mpc -q add "$dir"
+	else
+		mpcls=$( mpc ls "$dir" )
+		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
+		if [[ $cuefile ]]; then
+			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
+			range=$( shuf -i 0-$plL -n 1 )
+			mpc --range=$range load "$cuefile"
+		else
+			mpc -q add "$( shuf -n 1 <<< $mpcls )"
+		fi
+	fi
+}
 playback() {
 	! playerActive mpd && playerStop && return
 # --------------------------------------------------------------------
@@ -458,12 +490,22 @@ pushPlaylist() {
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
+pushRadioList() {
+	pushData radiolist '{ "type": "webradio" }'
+}
 pushRefresh() {
 	local page pages
 	pages=${@:-$( basename $0 .sh )}
 	for page in $pages; do
 		$dirsettings/$page-data.sh push
 	done
+}
+pushSavedPlaylist() {
+	if [[ $( ls $dirdata/playlists ) ]]; then
+		pushData playlists $( php /srv/http/playlist.php playlists )
+	else
+		pushData playlists '{ "count": 0 }'
+	fi
 }
 pushStatus() {
 	$dirbash/status-push.sh
@@ -485,6 +527,12 @@ radioStop() {
 	rm -f $dirshm/radio
 	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
+}
+savedPlCount() {
+	playlists=$( ls $dirplaylists | wc -l )
+	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
+	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
+	pushSavedPlaylist
 }
 scrobble() {
 	readarray -t data <<< $1
@@ -545,6 +593,10 @@ splashRotate() {
 }
 statePlay() {
 	test $( jq .play $dirshm/status.json ) == true
+}
+urldecode() { # for webradio url to filename
+	: "${*//+/ }"
+	echo -e "${_//%/\\x}"
 }
 volume() {
 	local diff type val values
@@ -703,4 +755,11 @@ volume.value() {
 	else
 		echo $val
 	fi
+}
+webradioCount() {
+	local counts
+	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
+	counts+=$( countRadio )
+	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
+	pushRadioList
 }

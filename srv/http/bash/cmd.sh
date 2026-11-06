@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-. $dirbash/cmd-function.sh
 
 args2var "$1" # $2 $3 ... if any, still valid
 

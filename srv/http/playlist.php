@@ -7,6 +7,8 @@ $dirdata      = '/srv/http/data/';
 $dirshm       = $dirdata.'shm/';
 $librandom    = file_exists( $dirdata.'system/librandom' );
 
+$MPD          = MphpD();
+
 switch( $CMD ) {
 
 case 'add':
@@ -20,7 +22,6 @@ case 'shuffle':
 	$target  = $post->target ?? '';
 	$replace = str_starts_with( $action, 'replace' );
 	$play    = str_ends_with( $action, 'play' );
-	$MPD     = MphpD();
 	if ( $replace ) $MPD->queue()->clear();
 	if ( $play ) $pos = $replace ? 1 : $MPD->status()[ 'playlistlength' ];
 	switch( $CMD ) {
@@ -36,7 +37,6 @@ case 'shuffle':
 	break;
 case 'crop':
 	$PUSH   = true;
-	$MPD    = MphpD();
 	$status = $MPD->status();
 	$song   = $status[ 'song' ] ?? 0;
 	$last   = $status[ 'playlistlength' ];
@@ -46,28 +46,43 @@ case 'crop':
 	$lists  = $MPD->queue()->get();
 	break;
 case 'current':
-	$MPD    = MphpD();
 	$lists  = $MPD->queue()->get();
 	break;
 case 'consume':
 case 'random':
 case 'repeat':
 case 'single':
-	$MPD   = MphpD();
 	$MPD->player()->$CMD( $post->target === 'true' );
 	break;
 case 'delete':
-	$PUSH   = true;
-	$MPD    = MphpD();
+	$PUSH  = true;
 	$MPD->queue()->delete( $post->target );
-	$lists  = $MPD->queue()->get();
+	$lists = $MPD->queue()->get();
+	break;
+case 'librandom':
+	$PUSH   = true;
+	$lines  = new SplFileObject( $dirdata.'mpd/album' );
+	$lines->seek( PHP_INT_MAX );
+	$random = random_int( 0, $lines->key() );
+	if ( $random === @file_get_contents( $dirshm.'random' ) ) $random--;
+	file_put_contents( $dirshm.'random', $random );
+	$lines->seek( $random );
+	$line   = rtrim( $lines->current(), "\n" );
+	$dir    = substr( $line, strrpos( $line, '^' ) + 1 );
+	$last   = $MPD->status()[ 'playlistlength' ];
+	if ( filesize( $dirdata.'system/librandom' ) > 0 ) { // random album
+		$MPD->queue()->add( $dir );
+	} else {
+		$ls    = $MPD->db()->ls( $line );
+		$files = array_column( $ls[ 'files' ], 'file' );
+		$MPD->queue()->add( $files[ array_rand( $files ) ] );
+	}
+	$lists = $MPD->queue()->get();
 	break;
 case 'playlist': // saved playlist
-	$MPD   = MphpD();
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
 	break;
 case 'playlists':
-	$MPD   = MphpD();
 	$lists = $MPD->playlists();
 	foreach( $lists as $list ) {
 		$each       = ( object ) [];
@@ -96,7 +111,6 @@ case 'playlists':
 	], JSON_NUMERIC_CHECK );
 	exit;
 //----------------------------------------------------------------------------------
-	break;
 	
 }
 if ( ! isset( $lists ) ) exit;
@@ -247,7 +261,7 @@ function artistAlbum( $artist, $album, $file ) {
 		return $file;
 	}
 }
-function wsSend( $msg )  {
+function wsSend( $channel = 'playlist', $msg )  {
 	$ip_port = '//127.0.0.1:8080';
 	$fp = @stream_socket_client( "tcp:$ip_port", $errno, $errstr, 2 );
 	if ( ! $fp ) return false;
@@ -270,7 +284,7 @@ function wsSend( $msg )  {
 	}
 	while ( ( $line = fgets( $fp ) ) !== false && $line !== "\r\n" ); // skip headers
 	
-	$msg = json_encode( [ 'channel' => 'playlist', 'data' => $msg ] );
+	$msg = json_encode( [ 'channel' => $channel, 'data' => $msg ] );
 	// text frame (client frames must be masked)
 	$len  = strlen( $msg );
 	$head = "\x81"; // FIN + text opcode

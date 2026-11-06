@@ -86,8 +86,5 @@ if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/lo
 		sudo xset +dpms
 	fi
 fi
-if [[ ! $WEBRADIO && -e $dirsystem/librandom ]]; then
-	. $dirbash/cmd-function.sh
-	plAddRandom &
-fi
+[[ ! $WEBRADIO && -e $dirsystem/librandom ]] && plAddRandom &
 [[ $PLAY && $data_scrobble ]] && scrobble "$data_scrobble" # play only (stop: scrobbleOnStop)
