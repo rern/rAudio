@@ -413,7 +413,7 @@ plClear() {
 	radioStop
 	mpc -q clear
 	rm -f $dirsystem/librandom
-	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
+	pushData playlist '{ "blank": true }'
 	pushStatus
 }
 pushData() { # send to websocket.py (server)

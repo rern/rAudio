@@ -65,39 +65,13 @@ function indexBar( $indexes ) {
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
 }
-function mpd( $cmd, $target = '', $play = '', $replace = '' ) {
+function MphpD() {
 	require_once 'MphpD/MphpD.php';
-	global $mpd;
-	$mpd = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
-	$mpd->connect();
-	if ( in_array( $cmd, [ 'consume', 'random', 'repeat', 'single' ] ) ) {
-		$mpd->player()->$cmd( $target );
-		exit;
-//----------------------------------------------------------------------------------
-	}
-	if ( $replace ) $mpd->queue()->clear();
-	if ( $play ) $pos = $replace ? 1 : $mpd->status()[ 'playlistlength' ];
-	switch( $cmd ) {
-		case 'find':      return $mpd->db()->find( mpdFilter( $target ) );
-		case 'list':      return $mpd->db()->list( $target );
-		case 'ls':        return $mpd->db()->ls( $target, true ); // true - metadata
-		case 'playlist':  return $mpd->playlist( $target )->get_songs( true ); // saved playlist
-		case 'playlists': return $mpd->playlists();
-		case 'queue':     return $mpd->queue()->get();
-		case 'search':    return $mpd->db()->search( mpdFilter( $target ) );
-		case 'status':    return $mpd->status();
-		
-		case 'add':       $mpd->queue()->add( $target );                               break;
-		case 'addfind':   $mpd->queue()->add_find( mpdFilter( $target ) );             break;
-		case 'load':      $mpd->queue()->load( $target );                              break;
-		case 'move':      $mpd->queue()->move( ...$target );                           break;
-		case 'playnext':  $mpd->queue()->add( $target, $mpd->status()[ 'song' ] + 1 ); break;
-		case 'shuffle':   $mpd->queue()->shuffle();                                    break;
-	}
-	if ( $play ) $mpd->player()->play( $pos );
-	return $mpd->queue()->get();
+	$MPD = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
+	$MPD->connect();
+	return $MPD;
 }
-function mpdFilter( $target ) {
+function MphpD_filter( $target ) {
 	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );
 	
 	$filter = new \FloFaber\MphpD\Filter( ...array_shift( $target ) );

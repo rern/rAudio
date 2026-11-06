@@ -166,43 +166,12 @@ lyrics )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
-mpccrop )
-	if [[ ! $POS ]] && statePlay; then
-		mpc -q crop
-	else
-		radioStop
-		mpc -q play $POS
-		mpc -q crop
-		mpc -q stop
-	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	pushStatus
-	pushPlaylist
-	;;
 mpclibrandom )
 	plAddRandom
+	pushStatus
 	;;
 mpcplayback )
 	mpcPlayback
-	;;
-mpcremove )
-	pllength=$( mpc status %length% )
-	(( $pllength == 1 )) && plClear && exit
-# --------------------------------------------------------------------
-	songpos=$( mpc status %songpos% )
-	if [[ $TO ]]; then
-		if (( $songpos >= $POS && $songpos <= $TO )); then
-			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
-		fi
-		POS+=-$TO
-	else
-		if [[ $songpos == $POS ]]; then
-			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
-		fi
-	fi
-	mpc -q del $POS
-	[[ $next ]] && mpc -q play $next && mpc -q stop
-	pushPlaylist
 	;;
 mpcseek )
 	touch $dirshm/skip
@@ -295,6 +264,9 @@ playerstart )
 	;;
 playerstop )
 	playerStop
+	;;
+plclear )
+	plClear
 	;;
 remount )
 	mount -a

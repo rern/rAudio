@@ -1186,7 +1186,7 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
-		BASH( [ 'mpcremove' ] );
+		BASH( [ 'plclear' ] );
 		PLAYLIST.render.home();
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
@@ -1223,7 +1223,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 				} );
 			}
 			, ok         : () => {
-				BASH( [ 'mpcremove' ] );
+				BASH( [ 'plclear' ] );
 				PLAYBACK.blank();
 				PLAYLIST.render.home();
 			}

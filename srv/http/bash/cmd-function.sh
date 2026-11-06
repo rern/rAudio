@@ -10,26 +10,8 @@ dir2path() {
 		echo "${line/*^}"
 	fi
 }
-plAddPlay() {
-	if [[ ${ACTION: -4} == play ]]; then
-		playerActive mpd && radioStop || playerStop
-		mpc -q play $1
-	fi
-	pushPlaylist
-}
-plAddPosition() {
-	[[ $ACTION == replaceplay ]] && touch $dirshm/skip
-	if [[ ${ACTION:0:7} == replace ]]; then
-		plClear
-		rm $dirshm/skip
-	fi
-	echo $(( $( mpc status %length% ) + 1 ))
-}
 plAddRandom() {
-	local ab cuefile dir dirlast len_pos mpcls plL range
-	len_pos=( $( mpc status '%length% %songpos%' ) )
-	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
-#...............................................................................
+	local ab cuefile dir dirlast mpcls plL range
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
 	if [[ $dir == $dirlast ]]; then # force different album

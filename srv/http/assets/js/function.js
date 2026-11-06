@@ -1946,7 +1946,7 @@ var PLAYLIST  = {
 		WS.send( '{ "channel": "option", "data": { "'+ cmd +'": '+ tf +' } }' );
 	}
 	, remove      : $li => {
-		BASH( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
+		LIST( { playlist: 'delete', target: $li.index() } );
 		$li.remove();
 	}
 	, removeRange : range => {
@@ -1975,10 +1975,11 @@ var PLAYLIST  = {
 			}
 			, cancel     : clear
 			, ok         : () => {
-				var v = _INFO.val( 'array' );
-				BASH( [ 'mpcremove', ...v, 'CMD POS TO' ] );
-				$( '#pl-list li' ).slice( v[ 0 ] - 1, v[ 1 ] ).remove();
-				S.pllength = $( '#pl-list li' ).length;
+				var v = _INFO.val();
+				var from = v[ 0 ] - 1;
+				var to   = v[ 1 ] - 1;
+				LIST( { playlist: 'delete', target: [ from, to ] } );
+				$( '#pl-list li' ).slice( from, to ).remove();
 				clear();
 			}
 		} );

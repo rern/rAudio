@@ -19,7 +19,8 @@ $filedisplay = $dirsystem.'display.json';
 switch( $CMD ) {
 
 case 'find':
-	$lists = mpd( 'find', $post->target );
+	$MPD      = MphpD();
+	$lists    = $MPD->db()->find( MphpD_filter( $post->target ) );
 	if ( isset( $lists[ 'directories' ] ) ) {
 		htmlDirectory();
 	} else {
@@ -27,7 +28,8 @@ case 'find':
 	}
 	break;
 case 'findmode':
-	$lists    = mpd( 'find', $post->target );
+	$MPD      = MphpD();
+	$lists    = $MPD->db()->find( MphpD_filter( $post->target ) );
 	$dir_prev = '';
 	foreach( $lists as $l ) {
 		$l           = ( object ) $l;
@@ -177,7 +179,8 @@ case 'list':
 	break;
 case 'ls':
 	if ( str_ends_with( $STRING, '.cue' ) ) $STRING = dirname( $STRING );
-	$ls = mpd( 'ls', $STRING );
+	$MPD = MphpD();
+	$ls  = $MPD->db()->ls( $STRING, true );
 	if ( ! $ls ) exit;
 //----------------------------------------------------------------------------------
 	if ( isset( $post->count ) ) { // main.js - .li-icon
@@ -210,7 +213,8 @@ case 'ls':
 			$file  = $p[ 'name' ];
 			if ( ! str_ends_with( $file, '.cue' ) ) continue;
 			
-			$list  = mpd( 'playlist', $file ); // keys: file, ...metadata *** 'file' instead of 'name'
+			$MPD   = MphpD();
+			$list  = $MPD->playlist( $file )->get_songs( true ); // keys: file, ...metadata *** 'file' instead of 'name'
 			$lists = [ ...$lists, ...$list ]; // file, ...metadata
 		}
 		htmlTrack( 'cue' );
@@ -247,7 +251,8 @@ case 'search':
 			exec( 'grep -i "^.^^.*'.$STRING.$suffix.'" '.$dirmpd.$tag
 				, $lists );
 		} else {
-			$lists = mpd( 'search', [ 'title', 'contains', $STRING ] );
+			$MPD   = MphpD();
+			$lists = $MPD->db()->search( MphpD_filter( [ 'title', 'contains', $STRING ] ) );
 		}
 		$c     = count( $lists );
 		if ( ! $c ) continue;
@@ -303,10 +308,11 @@ case 'search':
 	}
 	break;
 case 'tag':
+	$MPD = MphpD();
 	if ( str_ends_with( $STRING, 'cue' ) ) {
-		$lists = mpd( 'playlist', $STRING );
+		$lists = $MPD->playlist( $STRING )->get_songs( true );
 	} else {
-		$lists = mpd( 'ls', $STRING )[ 'files' ];
+		$lists = $MPD->db()->ls( $STRING, true )[ 'files' ]; // true - metadata
 	}
 	$data = [];
 	if ( is_file( '/mnt/MPD/'.$STRING ) ) {
@@ -445,7 +451,7 @@ function htmlRadio() {
 	echo $html;
 }
 function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or search)
-	global $lists, $mpd;
+	global $lists, $MPD;
 	if ( ! count( $lists ) ) {
 		echo -1;
 		exit;
@@ -462,7 +468,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$mpdpath       = $pathinfo0[ 'dirname' ];
 		$each0->artist = '';
 		foreach( [ 'albumartist', 'artist' ] as $k ) {
-			$artist = $mpd->db()->list( $k, mpdFilter( [ 'file', 'starts_with', $mpdpath ] ) );
+			$artist = $MPD->db()->list( $k, MphpD_filter( [ 'file', 'starts_with', $mpdpath ] ) );
 			if ( $artist && count( $artist ) > 0 ) {
 				if ( count( $artist ) === 1 ) {
 					$each0->artist = $artist[ 0 ];

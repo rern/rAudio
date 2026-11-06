@@ -5,6 +5,7 @@ $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ]; // current / list
 $dirdata      = '/srv/http/data/';
 $dirshm       = $dirdata.'shm/';
+$librandom    = file_exists( $dirdata.'system/librandom' );
 
 switch( $CMD ) {
 
@@ -19,25 +20,55 @@ case 'shuffle':
 	$target  = $post->target ?? '';
 	$replace = str_starts_with( $action, 'replace' );
 	$play    = str_ends_with( $action, 'play' );
-	$lists   = mpd( $CMD, $target, $play, $replace );
+	$MPD     = MphpD();
+	if ( $replace ) $MPD->queue()->clear();
+	if ( $play ) $pos = $replace ? 1 : $MPD->status()[ 'playlistlength' ];
+	switch( $CMD ) {
+		case 'add':       $MPD->queue()->add( $target );                               break;
+		case 'addfind':   $MPD->queue()->add_find( MphpD_filter( $target ) );             break;
+		case 'load':      $MPD->queue()->load( $target );                              break;
+		case 'move':      $MPD->queue()->move( ...$target );                           break;
+		case 'playnext':  $MPD->queue()->add( $target, $MPD->status()[ 'song' ] + 1 ); break;
+		case 'shuffle':   $MPD->queue()->shuffle();                                    break;
+	}
+	if ( $play ) $MPD->player()->play( $pos );
+	$lists   = $MPD->queue()->get();
+	break;
+case 'crop':
+	$PUSH   = true;
+	$MPD    = MphpD();
+	$status = $MPD->status();
+	$song   = $status[ 'song' ] ?? 0;
+	$last   = $status[ 'playlistlength' ];
+	if ( $song + 1 < $last ) $MPD->queue()->delete( [ $song + 1, $last ] );
+	if ( $song > 0 )         $MPD->queue()->delete( [ 0, $song ] );
+	if ( $librandom ) exec( '/srv/http/bash/cmd.sh mpclibrandom' );
+	$lists  = $MPD->queue()->get();
 	break;
 case 'current':
-	$lists = mpd( 'queue' );
+	$MPD    = MphpD();
+	$lists  = $MPD->queue()->get();
 	break;
 case 'consume':
 case 'random':
 case 'repeat':
 case 'single':
-	mpd( $CMD, $post->target === 'true' );
+	$MPD   = MphpD();
+	$MPD->player()->$CMD( $post->target === 'true' );
 	break;
-case 'playlist':
-	$name  = $post->name;
-	$lists = mpd( 'playlist', $name );
+case 'delete':
+	$PUSH   = true;
+	$MPD    = MphpD();
+	$MPD->queue()->delete( $post->target );
+	$lists  = $MPD->queue()->get();
+	break;
+case 'playlist': // saved playlist
+	$MPD   = MphpD();
+	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
 	break;
 case 'playlists':
-	$lists = mpd( 'playlists' );
-	if ( ! count( $lists ) ) exit;
-//----------------------------------------------------------------------------------
+	$MPD   = MphpD();
+	$lists = $MPD->playlists();
 	foreach( $lists as $list ) {
 		$each       = ( object ) [];
 		$each->name = $list;
@@ -180,28 +211,28 @@ foreach( $lists as $l ) {
 }
 
 $counthtml = '';
-if ( isset( $name ) ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.icon(  'file-playlist savedlist' ).$name.'</span> <gr>·</gr>';
+if ( $CMD === 'playlist' ) {
+	$counthtml.='<a class="lipath">'.$post->name.'</a><span class="name">'.icon(  'file-playlist savedlist' ).$post->name.'</span> <gr>·</gr>';
 }
 if ( $count->song ) {
 	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.icon(  'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
 }
 if ( $count->radio ) $counthtml.= icon(  'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
 if ( $count->upnp )  $counthtml.= '&emsp;'.icon(  'upnp' );
-$status = ( object ) mpd( 'status' );
-$data = json_encode( [
+$status = ( object ) $MPD->status();
+$data = [
 	  'html'      => $html
 	, 'counthtml' => $counthtml
 	, 'consume'   => $status->consume === 1
-	, 'librandom' => file_exists( $dirdata.'system/librandom' )
+	, 'librandom' => $librandom
 	, 'pllength'  => $status->playlistlength
 	, 'position'  => $status->song ?? 0
 	, 'add'       => $CMD === 'add'
-], JSON_NUMERIC_CHECK );
+];
 if ( isset( $PUSH ) ) {
 	wsSend( $data );
 } else { // current
-	echo $data;
+	echo json_encode( $data, JSON_NUMERIC_CHECK );
 }
 file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
 

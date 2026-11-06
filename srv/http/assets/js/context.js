@@ -117,12 +117,7 @@ var CONTEXT  = {
 						+'<br><br>Remove all other tracks?'
 			, oklabel : ICON( 'crop' ) +'Crop'
 			, ok      : () => {
-				if ( $LI.hasClass( 'active' ) ) {
-					BASH( [ 'mpccrop' ] );
-				} else {
-					BASH( [ 'mpccrop', $LI.index() + 1, 'CMD POS' ] );
-					$LI.addClass( 'active' );
-				}
+				LIST( { playlist: 'crop' } );
 				$( '#pl-list li' ).not( $LI ).remove();
 			}
 		} );
