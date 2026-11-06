@@ -59,26 +59,6 @@ case 'delete':
 	$MPD->queue()->delete( $post->target );
 	$lists = $MPD->queue()->get();
 	break;
-case 'librandom':
-	$PUSH   = true;
-	$lines  = new SplFileObject( $dirdata.'mpd/album' );
-	$lines->seek( PHP_INT_MAX );
-	$random = random_int( 0, $lines->key() );
-	if ( $random === @file_get_contents( $dirshm.'random' ) ) $random--;
-	file_put_contents( $dirshm.'random', $random );
-	$lines->seek( $random );
-	$line   = rtrim( $lines->current(), "\n" );
-	$dir    = substr( $line, strrpos( $line, '^' ) + 1 );
-	$last   = $MPD->status()[ 'playlistlength' ];
-	if ( filesize( $dirdata.'system/librandom' ) > 0 ) { // random album
-		$MPD->queue()->add( $dir );
-	} else {
-		$ls    = $MPD->db()->ls( $line );
-		$files = array_column( $ls[ 'files' ], 'file' );
-		$MPD->queue()->add( $files[ array_rand( $files ) ] );
-	}
-	$lists = $MPD->queue()->get();
-	break;
 case 'playlist': // saved playlist
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
 	break;
