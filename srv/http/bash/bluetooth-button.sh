@@ -17,11 +17,8 @@ evtest /dev/input/$event | while read line; do
 	
 	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//' <<< $line )
 	case $key in
-		PLAY | PAUSE )
+		PLAY | PAUSE | STOP )
 			playback
-			;;
-		STOP )
-			playback stop
 			;;
 		NEXT | PREVIOUS )
 			skip $key

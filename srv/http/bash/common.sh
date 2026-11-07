@@ -290,41 +290,6 @@ mkdirRW() {
 	mkdir $1
 	chmod 777 $1
 }
-mpcPlayback() {
-	if [[ ! $ACTION ]]; then
-		statePlay && ACTION=pause || ACTION=play 
-	fi
-	radioStop
-	if [[ $ACTION == play ]]; then
-		mpc -q play $POS
-		if audioCDtrack; then
-			touch $dirshm/cdstart
-			( sleep 20 && rm -f $dirshm/cdstart ) &
-			notify 'audiocd blink' 'Audio CD' 'Start play ...'
-			for i in {0..20}; do
-				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
-			done
-			rm -f $dirshm/cdstart
-			pushStatus
-		fi
-		if [[ -e $dirshm/relayson ]]; then
-			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
-		fi
-	else
-		[[ $ACTION == stop ]] && scrobbleOnStop mpd
-		mpc -q $ACTION
-	fi
-	[[ ! -e $dirsystem/snapclientserver ]] && return
-# --------------------------------------------------------------------
-	# snapclient
-	if [[ $ACTION == play ]]; then
-		sleep 2 # fix stutter
-		action=start
-		systemctl start snapclient
-	else
-		systemctl stop snapclient
-	fi
-}
 mpcSkip() { # context menu
 	radioStop
 	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
@@ -369,20 +334,50 @@ notify() { # icon title message delayms
 	message=$( quoteEscape $3 )
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
-playback() {
-	! playerActive mpd && playerStop && return
-# --------------------------------------------------------------------
-	(( $( mpc status %length% ) == 0 )) && return
-# --------------------------------------------------------------------
-	if [[ $1 ]]; then
-		ACTION=$1
-	else
-		statePlay && ACTION=pause || ACTION=play
-	fi
-	mpcPlayback
-}
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
+}
+playback() {
+	(( $( mpc status %length% ) == 0 )) && return
+# --------------------------------------------------------------------
+	if ! playerActive mpd; then
+		playerStop
+		return
+# --------------------------------------------------------------------
+	fi
+	if [[ ! $ACTION ]]; then
+		statePlay && ACTION=pause || ACTION=play 
+	fi
+	radioStop
+	if [[ $ACTION == play ]]; then
+		mpc -q play $POS
+		if audioCDtrack; then
+			touch $dirshm/cdstart
+			( sleep 20 && rm -f $dirshm/cdstart ) &
+			notify 'audiocd blink' 'Audio CD' 'Start play ...'
+			for i in {0..20}; do
+				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
+			done
+			rm -f $dirshm/cdstart
+			pushStatus
+		fi
+		if [[ -e $dirshm/relayson ]]; then
+			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
+		fi
+	else
+		[[ $ACTION == stop ]] && scrobbleOnStop mpd
+		mpc -q $ACTION
+	fi
+	[[ ! -e $dirsystem/snapclientserver ]] && return
+# --------------------------------------------------------------------
+	# snapclient
+	if [[ $ACTION == play ]]; then
+		sleep 2 # fix stutter
+		action=start
+		systemctl start snapclient
+	else
+		systemctl stop snapclient
+	fi
 }
 playerStart() {
 	local player service

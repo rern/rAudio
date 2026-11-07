@@ -168,9 +168,6 @@ lyrics )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
-mpcplayback )
-	mpcPlayback
-	;;
 mpcseek )
 	touch $dirshm/skip
 	[[ $STOP ]] && mpc -q play
@@ -256,6 +253,9 @@ password )
 		localBrowserOff
 	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
+	;;
+playback )
+	playback
 	;;
 playerstart )
 	playerStart

@@ -137,7 +137,7 @@ pushStatus
 $dirbash/status -B '{ "channel": "startup" }'
 
 if [[ -e $dirsystem/autoplay ]]; then
-	grep -q startup $dirsystem/autoplay.conf && playback play
+	grep -q startup $dirsystem/autoplay.conf && playback
 fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
