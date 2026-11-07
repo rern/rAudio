@@ -134,7 +134,7 @@ W = {
 		}
 	}
 	, playlists : data => {
-		if ( V.sort ) return
+		if ( ! V.playlist || V.sort ) return
 		
 		PLAYLIST.playlists.addClear();
 		var count   = data.count;
