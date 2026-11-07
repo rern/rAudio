@@ -554,7 +554,6 @@ skip() { # context menu
 	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 	mpc -q play $POS
 	[[ $ACTION != play ]] && mpc -q stop
-	mpc -q play $POS
 	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
 }
 skipNextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
@@ -568,7 +567,7 @@ skipNextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
 	else
 		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
 	fi
-	mpcSkip
+	skip
 }
 splashRotate() {
 	local dirimg rotate
