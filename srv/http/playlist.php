@@ -6,6 +6,7 @@ $CMD          = $post->playlist ?? $argv[ 1 ]; // current / list
 $dirdata      = '/srv/http/data/';
 $dirshm       = $dirdata.'shm/';
 $librandom    = file_exists( $dirdata.'system/librandom' );
+$PUSH         = false;
 
 $MPD          = MphpD();
 
@@ -224,8 +225,8 @@ $data = [
 	, 'position'  => $status->song ?? 0
 	, 'add'       => $CMD === 'add'
 ];
-echo_push( $data, isset( $PUSH ), 'playlist' );
-file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
+echo_push( $data, $PUSH );
+if ( $PUSH ) file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
 
 function artistAlbum( $artist, $album, $file ) {
 	$ar_al = '';
