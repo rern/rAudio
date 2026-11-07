@@ -560,7 +560,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			PLAYBACK.vu();
 			PLAYBACK.info.color();
-			BASH( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
+			BASH( [ 'playback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
 			UTIL.intervalClear( 'elapsed' );
@@ -585,14 +585,14 @@ $( '.btn-cmd' ).on( 'click', function() {
 				return
 			}
 
-			if ( S.pllength ) BASH( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
+			if ( S.pllength ) BASH( [ 'playback', 'stop', 'CMD ACTION' ] );
 		} else if ( cmd === 'pause' ) {
 			if ( S.stop ) return
 
 			S.state = cmd;
 			UTIL.intervalClear( 'elapsed' );
 			PLAYBACK.info.color();
-			BASH( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
+			BASH( [ 'playback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 
