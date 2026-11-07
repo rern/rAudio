@@ -2021,7 +2021,6 @@ var PLAYLIST  = {
 			$( '#pl-list' ).html( data.html ).promise().done( () => {
 				var id = 'pl-list';
 				PLAYLIST.render.set();
-				PLAYLIST.render.scroll();
 				COMMON.draggable( id );
 			} );
 			PLAYLIST.render.set();
@@ -2032,8 +2031,6 @@ var PLAYLIST  = {
 			$( '#pl-savedlist, #pl-list' ).css( 'padding-bottom', 'calc( 100vh - '+ padding +'px )' );
 		}
 		, scroll : () => {
-			if ( ! V.playlist || ! V.playlisthome ) return
-
 			UTIL.intervalClear();
 			if ( V.sort
 				|| [ 'airplay', 'spotify' ].includes( S.player )
@@ -2365,7 +2362,7 @@ var UTIL      = {
 			DISPLAY.playback();
 			PLAYBACK.main();
 			BANNER_HIDE();
-		} else if ( V.playlist ) {
+		} else if ( V.playlist && V.playlisthome ) {
 			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();

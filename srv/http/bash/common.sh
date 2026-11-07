@@ -303,14 +303,13 @@ mpcPlayback() {
 		systemctl stop snapclient
 	fi
 }
-mpcSkip() {
+mpcSkip() { # context menu
 	radioStop
 	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 	mpc -q play $POS
 	[[ $ACTION != play ]] && mpc -q stop
-	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-	[[ $consume == on ]] && mpc -q del $songpos
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
+	mpc -q play $POS
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData mpdplayer '{ "position": '$POS' }'
 }
 mpcUpdate() {
 	[[ $1 ]] && ACTION=$1
@@ -563,12 +562,11 @@ serviceIO() {
 		renice -n -19 -p $pid &> /dev/null
 	done
 }
-skip() {
+skip() { # rotaryencoder.sh, bluetooth-button.sh
 	! playerActive mpd && return
 	
 	local length songpos
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
-	ACTION=${state:0:4} # state: playing, paused, stopped
+	read length songpos < <( mpc status '%length% %songpos%' )
 	if [[ $1 == PREVIOUS ]]; then
 		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
 	else
