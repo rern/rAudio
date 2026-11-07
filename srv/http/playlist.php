@@ -280,5 +280,4 @@ function wsSend( $msg )  {
 	fwrite( $fp, $head . $mask . $masked );
 	fwrite( $fp, "\x88\x80" . random_bytes( 4 ) ); // close frame
 	fclose( $fp );
-	return true;
 }
