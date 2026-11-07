@@ -83,6 +83,16 @@ evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
 	
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
-	[[ $line == *-1 ]] && FN $dn || FN $up
+	if [[ $line == *-1 ]]; then
+		FN $dn
+	else
+		max=100
+		[[ -e $dirsystem/volumelimit ]] && max=$( sed -n '/^max=/ {s/.*=//; p}' $dirsystem/volumelimit.conf )
+		if (( $( volume.value ) + step > max )); then
+			volume.set $max
+		else
+			FN $up
+		fi
+	fi
 	volume.value push
 done
