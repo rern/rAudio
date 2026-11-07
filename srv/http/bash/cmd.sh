@@ -128,6 +128,9 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
+libraryrandom )
+	libraryRandom
+	;;
 lyrics )
 	if [[ ! $ACTION && $FILE == [NSU]* ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
@@ -164,10 +167,6 @@ lyrics )
 		fi
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
-	;;
-mpclibrandom )
-	libraryRandom
-	pushStatus
 	;;
 mpcplayback )
 	mpcPlayback

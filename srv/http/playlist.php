@@ -42,7 +42,7 @@ case 'crop':
 	$last   = $status[ 'playlistlength' ];
 	if ( $song + 1 < $last ) $MPD->queue()->delete( [ $song + 1, $last ] );
 	if ( $song > 0 )         $MPD->queue()->delete( [ 0, $song ] );
-	if ( $librandom ) exec( '/srv/http/bash/cmd.sh mpclibrandom' );
+	if ( $librandom ) exec( '/srv/http/bash/cmd.sh libraryrandom' );
 	$lists  = $MPD->queue()->get();
 	break;
 case 'current':
