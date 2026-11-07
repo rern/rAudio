@@ -84,11 +84,12 @@ case 'playlists':
 ';
 	}
 	$html     .= indexBar( $indexes );
-	echo json_encode( [
+	$data      = [
 		  'html'    => $html
 		, 'indexes' => $indexes
 		, 'count'   => count( $lists )
-	], JSON_NUMERIC_CHECK );
+	];
+	echo_push( $data, isset( $argv[ 2 ] ) );
 	exit;
 //----------------------------------------------------------------------------------
 	
@@ -223,11 +224,7 @@ $data = [
 	, 'position'  => $status->song ?? 0
 	, 'add'       => $CMD === 'add'
 ];
-if ( isset( $PUSH ) ) {
-	wsSend( $data );
-} else { // current
-	echo json_encode( $data, JSON_NUMERIC_CHECK );
-}
+echo_push( $data, isset( $PUSH ), 'playlist' );
 file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
 
 function artistAlbum( $artist, $album, $file ) {
@@ -241,43 +238,47 @@ function artistAlbum( $artist, $album, $file ) {
 		return $file;
 	}
 }
-function wsSend( $channel = 'playlist', $msg )  {
+function echo_push( $data, $PUSH ) {
+	if ( $PUSH ) {
+		wsSend( $data );
+	} else {
+		echo json_encode( $data );
+	}
+}
+function wsSend( $msg )  {
 	$ip_port = '//127.0.0.1:8080';
-	$fp = @stream_socket_client( "tcp:$ip_port", $errno, $errstr, 2 );
+	$fp      = @stream_socket_client( "tcp:$ip_port", $errno, $errstr, 2 );
 	if ( ! $fp ) return false;
-	
+#...............................................................................
 	stream_set_timeout( $fp, 2 );
-
 	// handshake
-	$key = base64_encode( random_bytes( 16 ) );
+	$key     = base64_encode( random_bytes( 16 ) );
 	fwrite( $fp, "GET / HTTP/1.1\r\n"
 				."Host: $ip_port\r\n"
 				."Upgrade: websocket\r\n"
 				."Connection: Upgrade\r\n"
 				."Sec-WebSocket-Key: $key\r\n"
 				."Sec-WebSocket-Version: 13\r\n\r\n" );
-
-	$status = fgets( $fp );
+	$status  = fgets( $fp );
 	if ( ! $status || ! str_contains( $status, ' 101 ' )) {
 		fclose( $fp );
 		return false;
+#...............................................................................
 	}
 	while ( ( $line = fgets( $fp ) ) !== false && $line !== "\r\n" ); // skip headers
-	
-	$msg = json_encode( [ 'channel' => $channel, 'data' => $msg ] );
+	global $CMD;
+	$channel = $CMD === 'playlists' ? 'playlists' : 'playlist';
+	$msg     = json_encode( [ 'channel' => $channel, 'data' => $msg ] );
 	// text frame (client frames must be masked)
-	$len  = strlen( $msg );
-	$head = "\x81"; // FIN + text opcode
+	$len     = strlen( $msg );
+	$head    = "\x81"; // FIN + text opcode
 	if ( $len < 126 )        $head .= chr( 0x80 | $len );
 	elseif ( $len < 65536 )  $head .= chr( 0x80 | 126 ) . pack( 'n', $len );
 	else                     $head .= chr( 0x80 | 127 ) . pack( 'J', $len );
-
-	$mask   = random_bytes( 4 );
-	$masked = $msg ^ str_repeat( $mask, intdiv( $len, 4 ) + 1 ); // XOR truncates to $len
+	$mask    = random_bytes( 4 );
+	$masked  = $msg ^ str_repeat( $mask, intdiv( $len, 4 ) + 1 ); // XOR truncates to $len
 	fwrite( $fp, $head . $mask . $masked );
-
-	// close frame, then disconnect
-	fwrite( $fp, "\x88\x80" . random_bytes( 4 ) );
+	fwrite( $fp, "\x88\x80" . random_bytes( 4 ) ); // close frame
 	fclose( $fp );
 	return true;
 }
