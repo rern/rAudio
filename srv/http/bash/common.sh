@@ -249,6 +249,28 @@ killProcess() {
 		rm $filepid
 	fi
 }
+libraryRandom() {
+	local ab cuefile dir dirlast mpcls plL range
+	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
+	if [[ $dir == $dirlast ]]; then # force different album
+		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
+	fi
+	if [[ -s $dirsystem/librandom ]]; then # album
+		mpc -q add "$dir"
+	else
+		mpcls=$( mpc ls "$dir" )
+		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
+		if [[ $cuefile ]]; then
+			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
+			range=$( shuf -i 0-$plL -n 1 )
+			mpc --range=$range load "$cuefile"
+		else
+			mpc -q add "$( shuf -n 1 <<< $mpcls )"
+		fi
+	fi
+}
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
@@ -309,7 +331,7 @@ mpcSkip() { # context menu
 	mpc -q play $POS
 	[[ $ACTION != play ]] && mpc -q stop
 	mpc -q play $POS
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData mpdplayer '{ "position": '$POS' }'
+	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
 }
 mpcUpdate() {
 	[[ $1 ]] && ACTION=$1
@@ -346,28 +368,6 @@ notify() { # icon title message delayms
 	title=$( quoteEscape $2 )
 	message=$( quoteEscape $3 )
 	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
-}
-plAddRandom() {
-	local ab cuefile dir dirlast mpcls plL range
-	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
-	if [[ $dir == $dirlast ]]; then # force different album
-		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
-		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
-	fi
-	if [[ -s $dirsystem/librandom ]]; then # album
-		mpc -q add "$dir"
-	else
-		mpcls=$( mpc ls "$dir" )
-		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
-		if [[ $cuefile ]]; then
-			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
-			range=$( shuf -i 0-$plL -n 1 )
-			mpc --range=$range load "$cuefile"
-		else
-			mpc -q add "$( shuf -n 1 <<< $mpcls )"
-		fi
-	fi
 }
 playback() {
 	! playerActive mpd && playerStop && return

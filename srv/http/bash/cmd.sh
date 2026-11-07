@@ -122,7 +122,7 @@ librandom )
 		mpc -q random off
 		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
-		plAddRandom
+		libraryRandom
 	else
 		rm -f $dirsystem/librandom
 	fi
@@ -166,7 +166,7 @@ lyrics )
 	fi
 	;;
 mpclibrandom )
-	plAddRandom
+	libraryRandom
 	pushStatus
 	;;
 mpcplayback )
@@ -214,7 +214,7 @@ mpcsimilar )
 	added=$(( $( mpc status %length% ) - plLprev ))
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
-mpcskip )
+mpcskip ) # context menu
 	mpcSkip
 	;;
 mpcupdate )

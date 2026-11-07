@@ -121,6 +121,8 @@ W = {
 	, playlist  : data => {
 		if ( V.local || V.sort || $( '.pl-remove' ).length ) return
 		
+		S.pllength       = data.pllength;
+		S.position       = data.position;
 		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
 			if ( V.playback ) {
@@ -129,8 +131,8 @@ W = {
 				PLAYLIST.render.home();
 			}
 			BANNER_HIDE();
-		} else if ( V.playlist ) {
-			if ( playlisthome ) PLAYLIST.render.home( data );
+		} else if ( playlisthome ) {
+			PLAYLIST.render.home( data );
 		}
 	}
 	, playlists : data => {
