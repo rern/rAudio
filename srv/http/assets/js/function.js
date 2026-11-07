@@ -1945,6 +1945,16 @@ var PLAYLIST  = {
 		LOCAL();
 		WS.send( '{ "channel": "option", "data": { "'+ cmd +'": '+ tf +' } }' );
 	}
+	, radioCover  : src => {
+		if ( ! S.webradio || ! src ) return
+		
+		var $icon = $( '#pl-list li.active .li-icon' );
+		if ( $icon.is( 'i' ) ) {
+			$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
+		} else {
+			$icon.attr( 'src', src );
+		}
+	}
 	, remove      : $li => {
 		LIST( { playlist: 'delete', target: $li.index() } );
 		$li.remove();
@@ -2363,6 +2373,7 @@ var UTIL      = {
 			PLAYBACK.main();
 			BANNER_HIDE();
 		} else if ( V.playlist && V.playlisthome ) {
+			if ( S.stop ) PLAYLIST.radioCover( S.stationart );
 			PLAYLIST.render.scroll();
 		}
 		DISPLAY.controls();

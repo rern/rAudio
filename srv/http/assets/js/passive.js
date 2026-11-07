@@ -18,14 +18,7 @@ W = {
 					}
 				}
 			} else if ( V.playlist && V.playlisthome ) {
-				if ( S.webradio ) {
-					var $icon = $( '#pl-list li.active .li-icon' );
-					if ( $icon.is( 'i' ) ) {
-						$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
-					} else {
-						$icon.attr( 'src', src );
-					}
-				}
+				PLAYLIST.radioCover( src );
 			}
 		} else {
 			if ( data.type === 'thumbnail' && V.playback ) return
