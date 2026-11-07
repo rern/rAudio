@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # track end       - pushStatus
-# stop / prevnext - playback / mpcskip
+# stop / prevnext - playback / skip
 # webradio        - cmd.sh scrobble
 
 . /srv/http/bash/common.sh

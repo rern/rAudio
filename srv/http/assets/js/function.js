@@ -1779,7 +1779,7 @@ var PLAYLIST  = {
 		var icon  = 'lastfm';
 		var title = 'Add Similar';
 		NOTIFY( icon, title, 'Get similar tracks ...' );
-		BASH( [ 'mpcsimilar', V.list.path, 'CMD FILE' ], error => {
+		BASH( [ 'similar', V.list.path, 'CMD FILE' ], error => {
 			if ( error ) {
 				BANNER_HIDE();
 				INFO( {
@@ -2145,7 +2145,7 @@ var PLAYLIST  = {
 			PROGRESS.set( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 		}
-		BASH( [ 'mpcskip', S.position + 1, S.state, 'CMD POS ACTION' ] );
+		BASH( [ 'skip', S.position + 1, S.state, 'CMD POS ACTION' ] );
 	}
 }
 var PROGRESS  = {
@@ -2183,7 +2183,7 @@ var PROGRESS  = {
 		}
 	}
 	, seek    : () => {
-		BASH( [ 'mpcseek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] );
+		BASH( [ 'seek', S.elapsed, S.stop || '', 'CMD ELAPSED STOP' ] );
 		if ( S.stop ) {
 			S.state = 'pause'; 
 			PLAYBACK.button.controls();

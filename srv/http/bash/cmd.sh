@@ -168,51 +168,6 @@ lyrics )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
-mpcseek )
-	touch $dirshm/skip
-	[[ $STOP ]] && mpc -q play
-	mpc -q seek $ELAPSED
-	[[ $STOP ]] && mpc -q pause
-	pushStatus
-	rm $dirshm/skip
-	;;
-mpcsimilar )
-	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
-	artist=${lines[0]}
-	title=${lines[1]}
-	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	lines=$( curl -sfG -m 5 \
-				--data-urlencode "artist=$artist" \
-				--data-urlencode "track=$title" \
-				--data "method=track.getsimilar" \
-				--data "api_key=$apikey" \
-				--data "format=json" \
-				--data "autocorrect=1" \
-				http://ws.audioscrobbler.com/2.0 \
-					| jq .similartracks.track \
-					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
-	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
-# --------------------------------------------------------------------
-	while read line; do
-		if [[ $title ]]; then
-			file=$( mpc find artist "$line" title "$title" )
-			[[ $file ]] && list+="$file"$'\n'
-			title=
-		else
-			title=$line
-		fi
-	done <<< $lines
-	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
-# --------------------------------------------------------------------
-	plLprev=$( mpc status %length% )
-	awk NF <<< $list | mpc -q add
-	pushPlaylist
-	added=$(( $( mpc status %length% ) - plLprev ))
-	notify lastfm 'Add Similar' "$added tracks added."
-	;;
-mpcskip ) # context menu
-	mpcSkip
-	;;
 mpcupdate )
 	[[ $LATEST ]] && touch $dirshm/latest || rm -f $dirshm/latest
 	mpcUpdate
@@ -304,6 +259,14 @@ savedplsave )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
+seek )
+	touch $dirshm/skip
+	[[ $STOP ]] && mpc -q play
+	mpc -q seek $ELAPSED
+	[[ $STOP ]] && mpc -q pause
+	pushStatus
+	rm $dirshm/skip
+	;;
 shairport )
 	systemctl start shairport
 	;;
@@ -311,6 +274,43 @@ shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
 	pushStatus
+	;;
+similar )
+	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
+	artist=${lines[0]}
+	title=${lines[1]}
+	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
+	lines=$( curl -sfG -m 5 \
+				--data-urlencode "artist=$artist" \
+				--data-urlencode "track=$title" \
+				--data "method=track.getsimilar" \
+				--data "api_key=$apikey" \
+				--data "format=json" \
+				--data "autocorrect=1" \
+				http://ws.audioscrobbler.com/2.0 \
+					| jq .similartracks.track \
+					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
+	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
+# --------------------------------------------------------------------
+	while read line; do
+		if [[ $title ]]; then
+			file=$( mpc find artist "$line" title "$title" )
+			[[ $file ]] && list+="$file"$'\n'
+			title=
+		else
+			title=$line
+		fi
+	done <<< $lines
+	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
+# --------------------------------------------------------------------
+	plLprev=$( mpc status %length% )
+	awk NF <<< $list | mpc -q add
+	pushPlaylist
+	added=$(( $( mpc status %length% ) - plLprev ))
+	notify lastfm 'Add Similar' "$added tracks added."
+	;;
+skip ) # context menu
+	skip
 	;;
 snapserverlist )
 	. $dirsettings/common.sh

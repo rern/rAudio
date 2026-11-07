@@ -290,14 +290,6 @@ mkdirRW() {
 	mkdir $1
 	chmod 777 $1
 }
-mpcSkip() { # context menu
-	radioStop
-	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-	mpc -q play $POS
-	[[ $ACTION != play ]] && mpc -q stop
-	mpc -q play $POS
-	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
-}
 mpcUpdate() {
 	[[ $1 ]] && ACTION=$1
 	[[ $2 ]] && PATHMPD=$2
@@ -557,11 +549,20 @@ serviceIO() {
 		renice -n -19 -p $pid &> /dev/null
 	done
 }
-skip() { # rotaryencoder.sh, bluetooth-button.sh
+skip() { # context menu
+	radioStop
+	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+	mpc -q play $POS
+	[[ $ACTION != play ]] && mpc -q stop
+	mpc -q play $POS
+	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
+}
+skipNextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
 	! playerActive mpd && return
 	
 	local length songpos
-	read length songpos < <( mpc status '%length% %songpos%' )
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	[[ $state == playing ]] && ACTION=play
 	if [[ $1 == PREVIOUS ]]; then
 		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
 	else

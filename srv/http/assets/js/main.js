@@ -1324,7 +1324,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		UTIL.intervalClear();
 		$( '.elapsed' ).empty();
-		BASH( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		BASH( [ 'skip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}

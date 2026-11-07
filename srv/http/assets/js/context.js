@@ -164,7 +164,7 @@ var CONTEXT  = {
 		} );
 	}
 	, playback     : {
-		  cmd     : action => BASH( [ 'mpcskip', V.list.index + 1, action, 'CMD POS ACTION' ] )
+		  cmd     : action => BASH( [ 'skip', V.list.index + 1, action, 'CMD POS ACTION' ] )
 		, current : () => CONTEXT.playback.cmd( 'stop' )
 		, pause   : () => $( '#pause' ).trigger( 'click' )
 		, play    : () => CONTEXT.playback.cmd( 'play' )
