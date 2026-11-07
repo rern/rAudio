@@ -502,7 +502,7 @@ pushRefresh() {
 }
 pushSavedPlaylist() {
 	if [[ $( ls $dirdata/playlists ) ]]; then
-		pushData playlists $( php /srv/http/playlist.php playlists )
+		php /srv/http/playlist.php playlists push
 	else
 		pushData playlists '{ "count": 0 }'
 	fi
