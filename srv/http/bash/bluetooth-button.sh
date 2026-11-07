@@ -21,7 +21,7 @@ evtest /dev/input/$event | while read line; do
 			playback
 			;;
 		NEXT | PREVIOUS )
-			skipNextPrevious $key
+			nextPrevious $key
 			;;
 	esac
 done

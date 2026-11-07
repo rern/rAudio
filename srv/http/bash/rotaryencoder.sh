@@ -53,7 +53,7 @@ action() {
 	[[ ! -e $file_dn ]] && return
 	
 	rm -f $file_up $file_dn
-	[[ $1 == click ]] && playback || skipNextPrevious
+	[[ $1 == click ]] && playback || nextPrevious
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
@@ -73,7 +73,7 @@ evtest ${dev[button]} | while read line; do
 			( sleep 0.4 && action click ) &    ##2## CLICK        > before 1s   > OFF ##1##
 		else                            #####3 SET 2nd up
 			rm -f $file_up $file_dn
-			skipNextPrevious PREVIOUS                      ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
+			nextPrevious PREVIOUS                      ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
 		fi
 	fi
 done &

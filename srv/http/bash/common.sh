@@ -311,6 +311,19 @@ mpcUpdate() {
 netDevice() {
 	ls /sys/class/net | grep ^$1 | tail -n 1
 }
+nextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
+	! playerActive mpd && return
+	
+	local length songpos
+	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	[[ $state == playing ]] && ACTION=play
+	if [[ $1 == PREVIOUS ]]; then
+		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
+	else
+		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
+	fi
+	skip
+}
 nfsServerActive() {
 	systemctl -q is-active nfs-server && return 0
 }
@@ -555,19 +568,6 @@ skip() { # context menu
 	mpc -q play $POS
 	[[ $ACTION != play ]] && mpc -q stop
 	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
-}
-skipNextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
-	! playerActive mpd && return
-	
-	local length songpos
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
-	[[ $state == playing ]] && ACTION=play
-	if [[ $1 == PREVIOUS ]]; then
-		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
-	else
-		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
-	fi
-	skip
 }
 splashRotate() {
 	local dirimg rotate
