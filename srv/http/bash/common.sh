@@ -314,13 +314,13 @@ netDevice() {
 nextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
 	! playerActive mpd && return
 	
-	local length songpos
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
+	local length POS
+	read length POS state < <( mpc status '%length% %songpos% %state%' )
 	[[ $state == playing ]] && ACTION=play
 	if [[ $1 == PREVIOUS ]]; then
-		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
+		(( $POS == 1 )) && POS=$length || (( POS-- ))
 	else
-		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
+		(( $POS == $length )) && POS=1 || (( POS++ ))
 	fi
 	skip
 }
