@@ -316,12 +316,12 @@ nextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
 	
 	local length POS
 	read length POS state < <( mpc status '%length% %songpos% %state%' )
-	[[ $state == playing ]] && ACTION=play
 	if [[ $1 == PREVIOUS ]]; then
 		(( $POS == 1 )) && POS=$length || (( POS-- ))
 	else
 		(( $POS == $length )) && POS=1 || (( POS++ ))
 	fi
+	[[ $state == playing ]] && ACTION=play
 	skip
 }
 nfsServerActive() {
@@ -562,7 +562,7 @@ serviceIO() {
 		renice -n -19 -p $pid &> /dev/null
 	done
 }
-skip() { # context menu
+skip() { # context.js, nextPrevious
 	radioStop
 	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 	mpc -q play $POS
