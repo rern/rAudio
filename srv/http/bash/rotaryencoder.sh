@@ -20,7 +20,9 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-case $( < $dirshm/fn_volume ) in
+[[ -e $dirsystem/volumelimit ]] && . <( grep ^max $dirsystem/volumelimit.conf )
+FN_VOLUME=$( < $dirshm/fn_volume )
+case $FN_VOLUME in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
@@ -81,8 +83,18 @@ done &
 # turn -------------------------------------------------------------------------
 evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
-	
+#....................................................................
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
-	[[ $line == *-1 ]] && FN $dn || FN $up
-	volume.value push
+	if [[ $line == *-1 ]]; then
+		FN $dn
+	else
+		if [[ $max ]] && (( $max == $val )); then
+			notify volumelimit 'Volume Limit' "Max: $max"
+			continue
+	#....................................................................
+		fi
+		FN $up
+	fi
+	val=$( volume.value )
+	volume.push $val
 done

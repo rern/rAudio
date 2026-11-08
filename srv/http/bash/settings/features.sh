@@ -329,7 +329,10 @@ stoptimer )
 	;;
 volumelimit )
 	enableFlagSet
-	(( $( volume.value ) > $MAX )) && volume.set $MAX
+	if [[ $ON ]]; then
+		(( $( volume.value ) > $MAX )) && volume.set $MAX
+		systemctl try-restart rotaryencoder
+	fi
 	pushRefresh
 	;;
 
