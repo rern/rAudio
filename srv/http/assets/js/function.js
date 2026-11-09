@@ -398,7 +398,7 @@ var COVERART  = {
 					var ic   = $img.parent()[ 0 ].classList[ 0 ];
 					var icon = '<i class="i-'+ ic +' li-icon" data-menu="filesavedpl"></i>';
 				} else {
-					if ( V.libraryhome ) {
+					if ( $img.hasClass( 'bkcoverart' ) ) { // library home bookmark - V.libraryhome stays true in search results
 						var name = $img.prev().text();
 						var icon = '<i class="i-bookmark bl"></i><a class="label">'+ name +'</a>';
 					} else if ( ! MODE.radio() ) {
