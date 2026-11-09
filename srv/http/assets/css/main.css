@@ -1988,7 +1988,7 @@ li.active .li2 bl {
 		#volume-knob { margin: 20px 0 70px 0 }
 	}
 	@media ( max-width: 700px ) {
-		#lib-title.search,
+		#lib-search:not( .hide ) ~ #lib-title,
 		.liinfo { display: none }
 	}
 	@media ( max-width: 560px ) {
