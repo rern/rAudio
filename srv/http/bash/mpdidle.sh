@@ -16,7 +16,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		update )
-			if [[ ! -e $dirmpd/listing ]]; then
+			if [[ ! -e $dirmpd/listing ]] || ! pgrep -x cmd-list.sh &> /dev/null; then # listing left by an interrupted cmd-list.sh
 				! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
 			fi
 			;;
