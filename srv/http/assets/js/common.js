@@ -1662,22 +1662,17 @@ var COMMON    = {
 }
 var VOLUME    = {
 	  command  : type => { // type: mute / unmute
-		if ( VOLUME.limit() ) return
-		
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 
+		if ( S.volumelimit && S.volume > S.volumemax ) {
+			S.volume = S.volumemax;
+			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+		}
 		if ( S.volume ) S.volumemute = 0
 		if ( V.drag || V.press ) type = 'dragpress';
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, S.fnvolume
 			  , 'CMD CURRENT TARGET CONTROL TYPE FN_VOLUME' ] );
-	}
-	, limit    : () => {
-		if ( S.volumelimit && S.volume > S.volumemax ) {
-			S.volume = S.volumemax;
-			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
-			return true
-		}
 	}
 	, percent2db : pct => {
 		var min  = -60 * 100;              // to centidB
