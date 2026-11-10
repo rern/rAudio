@@ -21,6 +21,7 @@ for dt in gpio-key rotary-encoder; do
 done
 
 [[ -e $dirsystem/volumelimit ]] && . <( grep ^max $dirsystem/volumelimit.conf )
+val=0
 FN_VOLUME=$( < $dirshm/fn_volume )
 case $FN_VOLUME in
 	volumeMpd )
