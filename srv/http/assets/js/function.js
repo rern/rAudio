@@ -323,33 +323,34 @@ var COLOR     = {
 	}
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
+V.canvas      = document.createElement( 'canvas' );
+V.ctx         = V.canvas.getContext( '2d', { willReadFrequently: true } );
 var COVERART  = {
-	  border  : img => {
-		var threshold = 30; // of 0-255
-		var w         = img.naturalWidth;
-		var h         = img.naturalHeight;
-		var limit     = COVERART.rgb[ Math.min( 255, Math.max( 0, Math.round( threshold ) ) ) ];
-		var canvas    = document.createElement( 'canvas' );
-		canvas.width  = w;
-		canvas.height = h;
-		var ctx       = canvas.getContext( '2d', { willReadFrequently: true } );
-		ctx.drawImage( img, 0, 0 );
+	  border  : img => { // threshold 35 of 0-255 (set at line return)
+		var w = img.naturalWidth;
+		var h = img.naturalHeight;
 		return [
-			[ 0,     0,     w, 1 ], // top
-			[ 0,     h - 1, w, 1 ], // bottom
-			[ 0,     1,     1, h ], // left
-			[ w - 1, 1,     1, h ], // right
+			  [ 0,     0,     w, 1 ] // top
+			, [ 0,     h - 1, w, 1 ] // bottom
+			, [ 0,     1,     1, h ] // left
+			, [ w - 1, 1,     1, h ] // right
 		].some( ( [ sx, sy, sw, sh ] ) => {
-			var data = ctx.getImageData( sx, sy, sw, sh ).data;
-			var sum  = 0;
-			for ( let i = 0; i < data.length; i += 4 ) {
-				sum += data[ i + 3 ] / 255 * (
-					  0.2126 * COVERART.rgb[ data[ i ] ]
-					+ 0.7152 * COVERART.rgb[ data[ i + 1 ] ]
-					+ 0.0722 * COVERART.rgb[ data[ i + 2 ] ]
-				);
+			if ( V.canvas.width < sw || V.canvas.height < sh ) {
+				V.canvas.width  = Math.max( V.canvas.width,  sw );
+				V.canvas.height = Math.max( V.canvas.height, sh );
+			} else {
+				V.ctx.clearRect( 0, 0, sw, sh );
 			}
-			return sum / ( sw * sh ) <= limit
+			V.ctx.drawImage( img, sx, sy, sw, sh, 0, 0, sw, sh );
+			var data = V.ctx.getImageData( 0, 0, sw, sh ).data;
+			var sum  = 0;
+			var dL   = data.length;
+			for ( let i = 0; i < dL; i += 4 ) {
+				sum += data[ i + 3 ] * (  0.2126 * data[ i ]
+										+ 0.7152 * data[ i + 1 ]
+										+ 0.0722 * data[ i + 2 ] ); // sum scaled by alpha 0-255
+			}
+			return sum / 255 / ( sw * sh ) < 35;
 		} );
 	}
 	, change  : () =>  {
@@ -442,10 +443,6 @@ var COVERART  = {
 			}
 		}, true ); // useCapture (from parent > target - img onerror not bubble)
 	}
-	, rgb     : new Float32Array( 256 ).map( ( _, i ) => { // linear lookup table - sRGB 0–255
-		var c = i / 255;
-		return c <= 0.04045 ? c / 12.92 : ( ( c + 0.055 ) / 1.055 ) ** 2.4
-	} )
 	, save    : () => {
 		if ( V.playback ) {
 			var src    = $COVERART.attr( 'src' );
