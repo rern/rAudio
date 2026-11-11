@@ -324,7 +324,35 @@ var COLOR     = {
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
 var COVERART  = {
-	  change  : () =>  {
+	  border  : img => {
+		var threshold = 30; // of 0-255
+		var w         = img.naturalWidth;
+		var h         = img.naturalHeight;
+		var limit     = COVERART.rgb[ Math.min( 255, Math.max( 0, Math.round( threshold ) ) ) ];
+		var canvas    = document.createElement( 'canvas' );
+		canvas.width  = w;
+		canvas.height = h;
+		var ctx       = canvas.getContext( '2d', { willReadFrequently: true } );
+		ctx.drawImage( img, 0, 0 );
+		return [
+			[ 0,     0,     w, 1 ], // top
+			[ 0,     h - 1, w, 1 ], // bottom
+			[ 0,     1,     1, h ], // left
+			[ w - 1, 1,     1, h ], // right
+		].some( ( [ sx, sy, sw, sh ] ) => {
+			var data = ctx.getImageData( sx, sy, sw, sh ).data;
+			var sum  = 0;
+			for ( let i = 0; i < data.length; i += 4 ) {
+				sum += data[ i + 3 ] / 255 * (
+					  0.2126 * COVERART.rgb[ data[ i ] ]
+					+ 0.7152 * COVERART.rgb[ data[ i + 1 ] ]
+					+ 0.0722 * COVERART.rgb[ data[ i + 2 ] ]
+				);
+			}
+			return sum / ( sw * sh ) <= limit
+		} );
+	}
+	, change  : () =>  {
 		var radio = MODE.radio();
 		if ( V.playback ) {
 			if ( S.webradio || S.icon === 'audiocd' ) {
@@ -414,6 +442,10 @@ var COVERART  = {
 			}
 		}, true ); // useCapture (from parent > target - img onerror not bubble)
 	}
+	, rgb     : new Float32Array( 256 ).map( ( _, i ) => { // linear lookup table - sRGB 0–255
+		var c = i / 255;
+		return c <= 0.04045 ? c / 12.92 : ( ( c + 0.055 ) / 1.055 ) ** 2.4
+	} )
 	, save    : () => {
 		if ( V.playback ) {
 			var src    = $COVERART.attr( 'src' );
@@ -1462,13 +1494,15 @@ var PLAYBACK  = {
 				if ( local ) src += COMMON.versionHash();
 				$( '#vu' ).addClass( 'hide' );
 				$COVERART
-					.attr( 'src', encodeURI( src ) )
 					.removeClass( 'hide' )
 					.on( 'load', function() {
-						var cover = $COVERART[ 0 ].getBoundingClientRect();
+						var cover0 = $COVERART[ 0 ];
+						var cover = cover0.getBoundingClientRect();
 						$COVERART.css( 'height', cover.bottom > V.wH ? V.wH - cover.top +'px' : '' );
 						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
-					} );
+						$COVERART.toggleClass( 'bordered', COVERART.border( cover0 ) );
+					} )
+					.attr( 'src', encodeURI( src ) );
 			} else {
 				COVERART.default();
 			}

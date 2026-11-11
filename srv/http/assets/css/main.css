@@ -600,7 +600,9 @@ div.pagerefresh {
 #qr svg {
 	margin: 10px auto;
 }
-#coverart,
+#coverart.bordered {
+	border: 1px solid hsl(0,0%,15%);
+}
 #vu,
 #biotitleimg,
 .licover img {
