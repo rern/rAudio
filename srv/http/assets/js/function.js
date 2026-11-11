@@ -326,7 +326,7 @@ var COLOR     = {
 V.canvas      = document.createElement( 'canvas' );
 V.ctx         = V.canvas.getContext( '2d', { willReadFrequently: true } );
 var COVERART  = {
-	  border  : img => { // threshold 35 of 0-255 (set at line return)
+	  border  : img => { // threshold 25 of 0-255 (set at line return)
 		var w = img.naturalWidth;
 		var h = img.naturalHeight;
 		return [
@@ -350,7 +350,7 @@ var COVERART  = {
 										+ 0.7152 * data[ i + 1 ]
 										+ 0.0722 * data[ i + 2 ] ); // sum scaled by alpha 0-255
 			}
-			return sum / 255 / ( sw * sh ) < 35;
+			return sum / 255 / ( sw * sh ) < 25;
 		} );
 	}
 	, change  : () =>  {
