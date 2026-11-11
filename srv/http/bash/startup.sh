@@ -48,6 +48,10 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
+if [[ -L /var/lib/alsa ]]; then # hard power off
+	rm -f /var/lib/alsa
+	alsactl store
+fi
 mv /var/lib/alsa $dirshm # move to ram
 ln -s $dirshm/alsa /var/lib
 logoLcdOled
