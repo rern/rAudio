@@ -323,26 +323,26 @@ var COLOR     = {
 	}
 	, save     : () => BASH( [ 'color', Object.values( V.ctx.hsl ).join( ' ' ), 'CMD HSL' ] )
 }
-V.canvas      = document.createElement( 'canvas' );
-V.ctx         = V.canvas.getContext( '2d', { willReadFrequently: true } );
 var COVERART  = {
 	  border  : img => { // threshold 25 of 0-255 (set at line return)
-		var w = img.naturalWidth;
-		var h = img.naturalHeight;
+		var w      = img.naturalWidth;
+		var h      = img.naturalHeight;
+		var canvas = document.createElement( 'canvas' );
+		var ctx    = canvas.getContext( '2d', { willReadFrequently: true } );
 		return [
 			  [ 0,     0,     w, 1 ] // top
 			, [ 0,     h - 1, w, 1 ] // bottom
 			, [ 0,     1,     1, h ] // left
 			, [ w - 1, 1,     1, h ] // right
 		].some( ( [ sx, sy, sw, sh ] ) => {
-			if ( V.canvas.width < sw || V.canvas.height < sh ) {
-				V.canvas.width  = Math.max( V.canvas.width,  sw );
-				V.canvas.height = Math.max( V.canvas.height, sh );
+			if ( canvas.width < sw || canvas.height < sh ) {
+				canvas.width  = Math.max( canvas.width,  sw );
+				canvas.height = Math.max( canvas.height, sh );
 			} else {
-				V.ctx.clearRect( 0, 0, sw, sh );
+				ctx.clearRect( 0, 0, sw, sh );
 			}
-			V.ctx.drawImage( img, sx, sy, sw, sh, 0, 0, sw, sh );
-			var data = V.ctx.getImageData( 0, 0, sw, sh ).data;
+			ctx.drawImage( img, sx, sy, sw, sh, 0, 0, sw, sh );
+			var data = ctx.getImageData( 0, 0, sw, sh ).data;
 			var sum  = 0;
 			var dL   = data.length;
 			for ( let i = 0; i < dL; i += 4 ) {
