@@ -24,13 +24,14 @@
 # ...
 
 outputdevice=$( getContent $dirsystem/audio-output )
-proccardn=$( grep -Li loopback /proc/asound/card[0-9]/id | xargs -r -n1 dirname ) # not depend on /etc/asound.conf which might be broken from bad script
-lastcard=${proccardn: -1}
-while read path; do
-	info=$( sed 's/bcm2835/On-board/' $path/*/info )
-	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
-	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
-	CARD=${path: -1}
+lines=$( aplay -l \
+			| sed -nE 's/^card ([0-9]+): .*\[([^]]+)\], device.*/\1 \2/p' \
+			| sort -u \
+			| sed 's/bcm2835/On-board/' )
+lastcard=$( tail -n 1 <<< $liness | cut -c 1 )
+while read line; do # 1 On-board Headphones
+	name=${line:2}
+	CARD=${line:0:1}
 	LISTDEVICE+=', "'$name'": "hw:'$CARD'"'
 	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
 		NAME=$outputdevice
@@ -50,7 +51,7 @@ while read path; do
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
 	card_name+="$CARD^$NAME"$'\n'
-done <<< $proccardn
+done <<< $lines
 
 if [[ $usbcard ]]; then
 	CARD=$usbcard
