@@ -74,9 +74,9 @@ else
 			0 ) soc=2835;;
 		esac
 		soc="Broadcom BCM$soc"
-	elif grep -qm1 '^CPU part.*0xc08' /proc/cpuinfo; then
+	elif grep -qm1 '^CPU part.*0xc08' /proc/cpuinfo; then # beaglebone
 		soc='TI AM3358'
-	elif grep -qm1 '^CPU part.*0xc07' /proc/cpuinfo; then
+	elif grep -qm1 '^CPU part.*0xc07' /proc/cpuinfo; then # cubieboard
 		soc='Allwinner A20'
 	fi
 	# cpu
