@@ -61,7 +61,7 @@ else
 	# soc
 	model=$( tr '\0' '\n' < /proc/device-tree/model )
 	if [[ $model == Raspberry* ]]; then
-		soc=$( tr -d '\0' < /proc/device-tree/compatible | sed -E 's/.*,(.*)/\U\1/' )
+		soc=$( tr '\0' '\n' < /proc/device-tree/compatible | sed -n -E '$ {s/.*,(.*)/\U\1/ p}' )
 		revision=$( awk '/^Revision/ {print $NF}' /proc/cpuinfo )
 		case ${revision: -3:2} in # BB
 			12 ) soc=RP3A0;;
@@ -72,13 +72,13 @@ else
 		soc=$( tr '\0' '\n' < /proc/device-tree/compatible )
 		if [[ $model == *BeagleBone* ]]; then   # TI AM335x BeagleBone Black 
 			model=${model/*Beagle/Beagle}
-			soc=$( sed -E 's/,/ /; s/-.*//; s/.*/\U&/' <<< $soc ) # ti,am335x-bone-black > TI AM335X
+			soc=$( sed -n -E '1 {s/,/ /; s/-.*//; s/.*/\U&/ p}' <<< $soc ) # ti,am335x-bone-black > TI AM335X
 		elif [[ $model == Cubietech* ]]; then # Cubietech Cubieboard2
-			soc=$( sed -E 's/^(.*),.*-(.*)/\u\1 \U\2/' <<< $soc ) # allwinner,sun7i-a20  > Allwinner A20
+			soc=$( sed -n -E '$ {s/^(.*),.*-(.*)/\u\1 \U\2/ p}' <<< $soc ) # allwinner,sun7i-a20  > Allwinner A20
 		fi
 	fi
-	cpus=$( tr -d '\0' < /proc/device-tree/cpus/cpu@0/compatible | sed -E  's/^arm,cortex-a/ARM Cortex-A/
-																			s/^arm,(arm.*)/\U\1/' )
+	cpus=$( tr '\0' '\n' < /proc/device-tree/cpus/cpu@0/compatible | sed -E 's/^arm,cortex-a/ARM Cortex-A/
+																			 s/^arm,(arm.*)/\U\1/' )
 	cores=$( nproc --all )
 	(( $cores > 1 )) && cpus+=" x $cores"
 	khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq )
