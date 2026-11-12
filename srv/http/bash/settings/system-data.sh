@@ -57,20 +57,16 @@ fi
 # --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
-	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
 	# soc
 	. <( sed -E -n '/^Revision|^Model/ {s/\s*: /="/; s/$/"/; p}' /proc/cpuinfo )
-	if [[ ${Model/ *} == Raspberry ]]; then
+	if [[ $Model == *Raspberry* ]]; then
 		case ${Revision: -4:1} in         # C
 			4 ) soc=2712;;
 			3 ) soc=2711;;
 			2 ) case ${Revision: -3:2} in # BB
 					12 ) soc=RP3A0;;
-					0d ) soc=2837B0
-						 rpi3plus=true
-						 touch $dirshm/rpi3plus
-						 ;;
+					0d ) soc=2837B0; touch $dirshm/rpi3plus;;
 					04 ) soc=2837;;
 				esac
 				;;
@@ -78,9 +74,9 @@ else
 			0 ) soc=2835;;
 		esac
 		soc="Broadcom BCM$soc"
-	elif [[ $Model == *BeagleBone* ]]; then
+	elif grep -qm1 '^CPU part.*0xc08' /proc/cpuinfo; then
 		soc='TI AM3358'
-	elif [[ $Model == *Cubieboard2* ]]; then
+	elif grep -qm1 '^CPU part.*0xc07' /proc/cpuinfo; then
 		soc='Allwinner A20'
 	fi
 	# cpu
@@ -136,7 +132,7 @@ data+='
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "online"         : '$( ipOnline 8.8.8.8 && echo true )'
-, "rpi3plus"       : '$rpi3plus'
+, "rpi3plus"       : '$( exists $dirshm/rpi3plus )'
 , "shareddata"     : '$( sharedData )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
