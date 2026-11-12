@@ -59,12 +59,13 @@ if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 else
 	# soc
-	. <( sed -E -n '/^Revision|^Model/ {s/\s*: /="/; s/$/"/; p}' /proc/cpuinfo )
-	if [[ $Model == *Raspberry* ]]; then
-		case ${Revision: -4:1} in         # C
+	model=$( tr '\0' '\n' < /proc/device-tree/model )
+	if [[ $model == Raspberry* ]]; then
+		revision=$( awk '/^Revision/ {print $NF}' /proc/cpuinfo )
+		case ${revision: -4:1} in         # C
 			4 ) soc=2712;;
 			3 ) soc=2711;;
-			2 ) case ${Revision: -3:2} in # BB
+			2 ) case ${revision: -3:2} in # BB
 					12 ) soc=RP3A0;;
 					0d ) soc=2837B0; touch $dirshm/rpi3plus;;
 					04 ) soc=2837;;
@@ -74,13 +75,16 @@ else
 			0 ) soc=2835;;
 		esac
 		soc="Broadcom BCM$soc"
-	elif grep -qm1 '^CPU part.*0xc08' /proc/cpuinfo; then # beaglebone
-		soc='TI AM3358'
-	elif grep -qm1 '^CPU part.*0xc07' /proc/cpuinfo; then # cubieboard
-		soc='Allwinner A20'
+	else
+		soc=$( tr '\0' '\n' < /proc/device-tree/compatible )
+		if [[ $model == *BeagleBone* ]]; then # beaglebone
+			soc=$( sed -E  's/^ti,am(335.).*/TI AM\1/' <<< $soc )
+		elif [[ $model == *Cubieboard* ]]; then # cubieboard
+			soc=$( sed -E  's/^allwinner,sun4i-a(.*)/Allwinner A\1/' <<< $soc )
+		fi
 	fi
-	# cpu
-	cpus=$( tr -d '\0' < /proc/device-tree/cpus/cpu@0/compatible | sed -E 's/^arm,cortex-a/ARM Cortex-A/; s/^arm,(arm.*)/\U\1/' )
+	cpus=$( tr -d '\0' < /proc/device-tree/cpus/cpu@0/compatible | sed -E  's/^arm,cortex-a/ARM Cortex-A/
+																			s/^arm,(arm.*)/\U\1/' )
 	cores=$( nproc --all )
 	(( $cores > 1 )) && cpus+=" x $cores"
 	khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq )
@@ -93,7 +97,7 @@ else
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
 $( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
-$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
+$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $model )<br>\
 $soc $dot $( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )<br>\
 $cpus @ $speed"
 	echo $system > $dirshm/system
