@@ -84,12 +84,15 @@ else
 		soc='Allwinner A20'
 	fi
 	# cpu
-	readarray -t lscpu < <( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
-	cores=${lscpu[0]}
-	cpus=${lscpu[@]:1:2}
-	speed=${lscpu[3]/.*}
+	cpus=$( tr -d '\0' < /proc/device-tree/cpus/cpu@0/compatible | sed -E 's/^arm,cortex-a/ARM Cortex-A/; s/^arm,(arm.*)/\U\1/' )
+	cores=$( nproc --all )
 	(( $cores > 1 )) && cpus+=" x $cores"
-	(( $speed < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
+	khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq )
+	if (( $khz < 1000000 )); then
+		speed=$( printf '%d MHz' $(( khz / 1000 )) )
+	else
+		speed=$( printf '%d.%02d GHz' $(( khz / 1000000 )) $(( khz % 1000000 / 10000 )) )
+	fi
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
