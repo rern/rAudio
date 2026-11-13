@@ -58,7 +58,6 @@ fi
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 else
-	# soc
 	model=$( tr '\0' '\n' < /proc/device-tree/model )
 	if [[ $model == Raspberry* ]]; then
 		soc=$( tr '\0' '\n' < /proc/device-tree/compatible | sed -n -E '$ {s/.*,(.*)/\U\1/ p}' )
@@ -70,11 +69,11 @@ else
 		soc="Broadcom $soc"
 	else
 		soc=$( tr '\0' '\n' < /proc/device-tree/compatible )
-		if [[ $model == *BeagleBone* ]]; then   # TI AM335x BeagleBone Black 
+		if [[ $model == *BeagleBone* ]]; then # TI AM335x BeagleBone Black; ti,am335x-bone-black
 			model=${model/*Beagle/Beagle}
-			soc=$( sed -n -E '1 {s/,/ /; s/-.*//; s/.*/\U&/ p}' <<< $soc ) # ti,am335x-bone-black > TI AM335X
-		elif [[ $model == Cubietech* ]]; then # Cubietech Cubieboard2
-			soc=$( sed -n -E '$ {s/^(.*),.*-(.*)/\u\1 \U\2/ p}' <<< $soc ) # allwinner,sun7i-a20  > Allwinner A20
+			[[ $( head -n 1 <<< $soc ) == *bone ]] && soc='TI AM3359' || soc='TI AM3358'
+		elif [[ $model == Cubietech* ]]; then # Cubietech Cubieboard2; allwinner,sun7i-a20
+			soc=$( sed -n -E '$ {s/^(.*),.*-(.*)/\u\1 \U\2/ p}' <<< $soc )
 		fi
 	fi
 	cpus=$( tr '\0' '\n' < /proc/device-tree/cpus/cpu@0/compatible | sed -E 's/^arm,cortex-a/ARM Cortex-A/
