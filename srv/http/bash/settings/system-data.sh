@@ -60,13 +60,11 @@ if [[ -e $dirshm/system ]]; then
 else
 	model=$( tr '\0' '\n' < /proc/device-tree/model )
 	if [[ $model == Raspberry* ]]; then
-		soc=$( tr '\0' '\n' < /proc/device-tree/compatible | sed -n -E '$ {s/.*,(.*)/\U\1/ p}' )
-		revision=$( awk '/^Revision/ {print $NF}' /proc/cpuinfo )
-		case ${revision: -3:2} in # BB
-			12 ) soc=RP3A0;;
-			0d ) soc+=B0; touch $dirshm/rpi3plus;;
+		soc=$( tr '\0' '\n' < /proc/device-tree/compatible | sed -n -E '$ {s/.*,(.*)/Broadcom \U\1/ p}' )
+		case $( awk '/^Revision/ {print $NF}' /proc/cpuinfo ) in
+			902120 ) soc='Broadcom RP3A0';; # zero 2w
+			a020d3 ) soc+=B0; touch $dirshm/rpi3plus;;
 		esac
-		soc="Broadcom $soc"
 	else
 		soc=$( tr '\0' '\n' < /proc/device-tree/compatible )
 		if [[ $model == *BeagleBone* ]]; then # TI AM335x BeagleBone Black; ti,am335x-bone-black
