@@ -2018,7 +2018,7 @@ var PLAYLIST  = {
 			, ok         : () => {
 				var v = _INFO.val();
 				var from = v[ 0 ] - 1;
-				var to   = v[ 1 ] - 1;
+				var to   = v[ 1 ];
 				LIST( { playlist: 'delete', target: [ from, to ] } );
 				$( '#pl-list li' ).slice( from, to ).remove();
 				clear();

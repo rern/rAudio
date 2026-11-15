@@ -1,5 +1,9 @@
 <?php // for library.php, playlist.php
 $hash = '?v=1788510890';
+
+function cueFile( $path ) {
+	return str_ends_with( $path, '.cue' );
+}
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );

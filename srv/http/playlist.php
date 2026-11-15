@@ -34,7 +34,6 @@ case 'shuffle':
 		case 'shuffle':   $MPD->queue()->shuffle();                                    break;
 	}
 	if ( $play ) $MPD->player()->play( $pos );
-	$lists   = $MPD->queue()->get();
 	break;
 case 'crop':
 	$PUSH   = true;
@@ -44,7 +43,6 @@ case 'crop':
 	if ( $song + 1 < $last ) $MPD->queue()->delete( [ $song + 1, $last ] );
 	if ( $song > 0 )         $MPD->queue()->delete( [ 0, $song ] );
 	if ( $librandom ) exec( '/srv/http/bash/cmd.sh libraryrandom' );
-	$lists  = $MPD->queue()->get();
 	break;
 case 'current':
 	$lists  = $MPD->queue()->get();
@@ -54,11 +52,11 @@ case 'random':
 case 'repeat':
 case 'single':
 	$MPD->player()->$CMD( $post->target === 'true' );
-	break;
+	exit;
+//----------------------------------------------------------------------------------
 case 'delete':
 	$PUSH  = true;
 	$MPD->queue()->delete( $post->target );
-	$lists = $MPD->queue()->get();
 	break;
 case 'playlist': // saved playlist
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
@@ -93,10 +91,18 @@ case 'playlists':
 	echo_push( $data, isset( $argv[ 2 ] ) );
 	exit;
 //----------------------------------------------------------------------------------
+case 'random':
+	$PUSH  = true;
+	$lines = file( $dirdata.'mpd/album', FILE_IGNORE_NEW_LINES );
+	$line  = $lines[ array_rand( $lines ) ];
+	$dir   = array_last( explode( '^^', $line ) );
+	$files = $MPD->db()->ls( $dir, true )[ 'files' ];
+	$file  = array_last( $files )[ 'name' ];
+	$MPD->queue()->add( $file );
 	
 }
-if ( ! isset( $lists ) ) exit;
-//----------------------------------------------------------------------------------
+
+$lists    = $lists ?? $MPD->queue()->get();
 $count    = ( object ) array_fill_keys( [ 'radio', 'song', 'time', 'upnp' ], 0 );
 $song     = 0;
 $duration = 0;
@@ -180,19 +186,20 @@ foreach( $lists as $l ) {
 			$count->radio++;
 			break;
 		default: // mpd file
-			$track     = isset( $l->track ) ? preg_replace( '/^#*0*/', '', $l->track ) : '';
-			$artist    = $l->artist ?? ( $l->albumartist ?? '' );
-			$datatrack = '';
-			if ( strpos( $l->file, '.cue/track' ) ) {
-				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-				$l->file   = dirname( $l->file );
+			$pathinfo  = pathinfo( $l->file );
+			$dir       = $pathinfo[ 'dirname' ];
+			if ( cueFile( $dir ) ) {          // ...path/file.cue/track000N
+				$dir       = dirname( $dir ); // ...path
+				$datatrack = 'data-track="'.$l->track.'"'; // for cue in edit
+			} else {
+				$datatrack = '';
 			}
-			$title     = isset( $l->title ) ? pathinfo( $l->file, PATHINFO_FILENAME ) : '';
-			$path      = pathinfo( $l->file, PATHINFO_DIRNAME );
-			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
+			$thumbsrc  = '/mnt/MPD/'.$dir.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = iconThumb( $thumbsrc, 'filesavedpl' );
+			$artist    = $l->artist ?? ( $l->albumartist ?? '' );
+			$title     = $l->title ?? $pathinfo[ 'filename' ];
 			$duration  = ( int ) round( $l->duration );
-			$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $l->album ?? '', $l->file );
+			$li2       = $pos.' • '.$l->track.' - '.artistAlbum( $artist, $l->album ?? '', $l->file );
 			$html     .=
 '<li class="music" '.$datatrack.'>'.
 	'<a class="lipath">'.$l->file.'</a>'.

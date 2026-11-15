@@ -34,7 +34,7 @@ case 'findmode':
 	foreach( $lists as $l ) {
 		$l           = ( object ) $l;
 		$dir_mpd     = dirname( $l->file );
-		if ( str_ends_with( $dir_mpd, '.cue' ) ) $dir_mpd = dirname( $dir_mpd );
+		if ( cueFile( $dir_mpd ) ) $dir_mpd = dirname( $dir_mpd );
 		if ( $dir_mpd === $dir_prev ) continue;
 		
 		$each        = ( object ) [];
@@ -144,7 +144,7 @@ case 'list':
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
-			if ( str_ends_with( $path, '.cue' ) ) $path = dirname( $path );
+			if ( cueFile( $path ) ) $path = dirname( $path );
 			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).'coverart.jpg'.$hash;
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
@@ -178,7 +178,7 @@ case 'list':
 	echo $html;
 	break;
 case 'ls':
-	if ( str_ends_with( $STRING, '.cue' ) ) $STRING = dirname( $STRING );
+	if ( cueFile( $STRING ) ) $STRING = dirname( $STRING );
 	$MPD = MphpD();
 	$ls  = $MPD->db()->ls( $STRING, true );
 	if ( ! $ls ) exit;
@@ -193,7 +193,7 @@ case 'ls':
 		$lists = [];
 		foreach( $ls[ 'directories' ] as $d ) {
 			$dir = $d[ 'name' ];
-			if ( ! str_ends_with( $dir, '.cue' ) ) $lists[] = $dir; // *.cue listed as directory + playlist
+			if ( ! cueFile( $dir ) ) $lists[] = $dir; // *.cue listed as directory + playlist
 		}
 		if ( count( $lists ) ) {
 			if ( $files ) { // keys: last-modified, ...metadata, name
@@ -211,7 +211,7 @@ case 'ls':
 		$lists = [];
 		foreach( $ls[ 'playlists' ] as $p ) { // get *.cue only
 			$file  = $p[ 'name' ];
-			if ( ! str_ends_with( $file, '.cue' ) ) continue;
+			if ( ! cueFile( $file ) ) continue;
 			
 			$list  = $MPD->playlist( $file )->get_songs( true ); // keys: file, ...metadata *** 'file' instead of 'name'
 			$lists = [ ...$lists, ...$list ]; // file, ...metadata
@@ -308,7 +308,7 @@ case 'search':
 	break;
 case 'tag':
 	$MPD = MphpD();
-	if ( str_ends_with( $STRING, 'cue' ) ) {
+	if ( cueFile( $STRING ) ) {
 		$lists = $MPD->playlist( $STRING )->get_songs( true );
 	} else {
 		$lists = $MPD->db()->ls( $STRING, true )[ 'files' ]; // true - metadata
@@ -485,11 +485,11 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$hide->conductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
 		$hide->genre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
 		$hide->date      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
-		if ( str_ends_with( $mpdpath, '.cue' ) ) {
+		if ( cueFile( $mpdpath ) ) {
 			$CUE       = true;
 			$files     = glob( '/mnt/MPD/'.substr( $mpdpath, 0, -4 ).'.*' );
 			foreach( $files as $f ) {
-				if ( ! str_ends_with( $f, '.cue' ) ) {
+				if ( ! cueFile( $f ) ) {
 					$ext = pathinfo( $f, PATHINFO_EXTENSION );
 					break;
 				}
