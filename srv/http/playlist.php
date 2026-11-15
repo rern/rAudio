@@ -26,12 +26,12 @@ case 'shuffle':
 	if ( $replace ) $MPD->queue()->clear();
 	if ( $play ) $pos = $replace ? 1 : $MPD->status()[ 'playlistlength' ];
 	switch( $CMD ) {
-		case 'add':       $MPD->queue()->add( $target );                               break;
-		case 'addfind':   $MPD->queue()->add_find( MphpD_filter( $target ) );             break;
-		case 'load':      $MPD->queue()->load( $target );                              break;
-		case 'move':      $MPD->queue()->move( ...$target );                           break;
-		case 'playnext':  $MPD->queue()->add( $target, $MPD->status()[ 'song' ] + 1 ); break;
-		case 'shuffle':   $MPD->queue()->shuffle();                                    break;
+		case 'add':      $MPD->queue()->add( $target );                               break;
+		case 'addfind':  $MPD->queue()->add_find( MphpD_filter( $target ) );          break;
+		case 'load':     $MPD->queue()->load( $target );                              break;
+		case 'move':     $MPD->queue()->move( ...$target );                           break;
+		case 'playnext': $MPD->queue()->add( $target, $MPD->status()[ 'song' ] + 1 ); break;
+		case 'shuffle':  $MPD->queue()->shuffle();                                    break;
 	}
 	if ( $play ) $MPD->player()->play( $pos );
 	break;
@@ -45,7 +45,7 @@ case 'crop':
 	if ( $librandom ) exec( '/srv/http/bash/cmd.sh libraryrandom' );
 	break;
 case 'current':
-	$lists  = $MPD->queue()->get();
+	$lists = $MPD->queue()->get();
 	break;
 case 'consume':
 case 'random':
@@ -55,14 +55,14 @@ case 'single':
 	exit;
 //----------------------------------------------------------------------------------
 case 'delete':
-	$PUSH  = true;
+	$PUSH = true;
 	$MPD->queue()->delete( $post->target );
 	break;
 case 'playlist': // saved playlist
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
 	break;
 case 'playlists':
-	$lists = $MPD->playlists();
+	$lists   = $MPD->playlists();
 	foreach( $lists as $list ) {
 		$each       = ( object ) [];
 		$each->name = $list;
@@ -70,9 +70,9 @@ case 'playlists':
 		$array[]    = $each;
 	}
 	sortList( $array );
-	$html      = '';
-	$index0    = '';
-	$indexes   = [];
+	$html    = '';
+	$index0  = '';
+	$indexes = [];
 	foreach( $array as $each ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
@@ -82,8 +82,8 @@ case 'playlists':
 '</li>
 ';
 	}
-	$html     .= indexBar( $indexes );
-	$data      = [
+	$html   .= indexBar( $indexes );
+	$data    = [
 		  'html'    => $html
 		, 'indexes' => $indexes
 		, 'count'   => count( $lists )
