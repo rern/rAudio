@@ -213,7 +213,7 @@ case 'ls':
 			$file  = $p[ 'name' ];
 			if ( ! cueFile( $file ) ) continue;
 			
-			$list  = $MPD->playlist( $file )->get_songs( true ); // keys: file, ...metadata *** 'file' instead of 'name'
+			$list  =  $MPD->db()->ls( $file, true )[ 'files' ]; // keys: range, ...metadata, 'name'
 			$lists = [ ...$lists, ...$list ]; // file, ...metadata
 		}
 		htmlTrack( 'cue' );
@@ -462,7 +462,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	$hide->cover = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hide->cover && ! $search ) {
 		$each0         = ( object ) $lists[ 0 ];
-		$file0         = $each0->file ?? $each0->name;
+		$file0         = $each0->name;
 		$pathinfo0     = pathinfo( $file0 );
 		$mpdpath       = $pathinfo0[ 'dirname' ];
 		$each0->artist = '';
@@ -497,7 +497,9 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 			$pathinfo0 = pathinfo( $mpdpath );
 			$mpdpath   = $pathinfo0[ 'dirname' ];
 			$file0     = $mpdpath; // for coverart
+			$exticon   = icon(  'playlists' ).'<c>CUE</c>';
 		} else {
+			$exticon   = '';
 			$ext       = $pathinfo0[ 'extension' ];
 		}
 		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
@@ -510,17 +512,10 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$totaltime     = second2HMS( $seconds );
 		$br            = ! $hide->genre || ! $hide->date ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
-		if ( $CUE ) {
-			$lipath  = $pathinfo0[ 'dirname' ].'/'.$pathinfo0[ 'filename' ].'.cue';
-			$exticon = icon(  'playlists' ).'<c>CUE</c>';
-		} else {
-			$lipath  = $mpdpath;
-			$exticon = '';
-		}
 		$icon          = icon(  'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
-	<a class="lipath">'.$lipath.'</a>
+	<a class="lipath">'.$mpdpath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hide->album.'">'.$each0->album.'</div>

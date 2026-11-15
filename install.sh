@@ -112,42 +112,6 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	fi
 fi
 
-# 20260922
-file=/etc/spotifyd.conf
-if ! grep -q status-spotifyd $file; then
-	sed -i 's|spotifyd.sh|status-&|' $file
-	restart+=spotifyd$'\n'
-	sed -i -E '/^control|^mixer/ d' $file
-fi
-
-file=/etc/systemd/system/shairport.service
-if ! grep -q status-shairport $file; then
-	sed -i 's|shairport.sh|status-&|' $file
-	restart+=shairport$'\n'
-	
-	file=/etc/shairport-sync.conf
-	name=$( getVar name $file )
-	output=$( getVar output_device $file )
-	mixer=$( getVar mixer_control_name $file )
-	cat << EOF > $file
-general = {
-	name = "$name";
-	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
-	dbus_service_bus = "system";
-	volume_control_profile = "flat";
-	volume_range_db = 36;
-};
-sessioncontrol = {
-	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
-	run_this_after_play_ends = "/bin/sudo /srv/http/bash/cmd.sh playerstop";
-};
-alsa = {
-	output_device = "$output";
-	mixer_control_name = "$mixer";
-}
-EOF
-fi
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 

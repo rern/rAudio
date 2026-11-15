@@ -1553,7 +1553,7 @@ var COMMON    = {
 		}
 	}
 	, scrollToView  : $el => {
-		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).offset().top ) {
+		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).position().top ) {
 			$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 		}
 	}
