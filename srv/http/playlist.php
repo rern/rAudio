@@ -12,6 +12,43 @@ $MPD          = MphpD();
 
 switch( $CMD ) {
 
+case 'consume':
+case 'random':
+case 'repeat':
+case 'single':
+	$MPD->player()->$CMD( $post->target === 'true' );
+	exit;
+//----------------------------------------------------------------------------------
+case 'playlists':
+	$lists   = $MPD->playlists();
+	foreach( $lists as $list ) {
+		$each       = ( object ) [];
+		$each->name = $list;
+		$each->sort = stripSort( $list );
+		$array[]    = $each;
+	}
+	sortList( $array );
+	$html    = '';
+	$index0  = '';
+	$indexes = [];
+	foreach( $array as $each ) {
+		$dataindex = dataIndex( $each->sort );
+		$name      = $each->name;
+		$html     .=
+'<li '.$dataindex.'>'.
+	icon(  'file-playlist', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
+'</li>
+';
+	}
+	$html   .= indexBar( $indexes );
+	$data    = [
+		  'html'    => $html
+		, 'indexes' => $indexes
+		, 'count'   => count( $lists )
+	];
+	echo_push( $data, isset( $argv[ 2 ] ) );
+	exit;
+//----------------------------------------------------------------------------------
 case 'add':
 case 'addfind':
 case 'load':
@@ -47,13 +84,6 @@ case 'crop':
 case 'current':
 	$lists = $MPD->queue()->get();
 	break;
-case 'consume':
-case 'random':
-case 'repeat':
-case 'single':
-	$MPD->player()->$CMD( $post->target === 'true' );
-	exit;
-//----------------------------------------------------------------------------------
 case 'delete':
 	$PUSH = true;
 	$MPD->queue()->delete( $post->target );
@@ -61,44 +91,6 @@ case 'delete':
 case 'playlist': // saved playlist
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
 	break;
-case 'playlists':
-	$lists   = $MPD->playlists();
-	foreach( $lists as $list ) {
-		$each       = ( object ) [];
-		$each->name = $list;
-		$each->sort = stripSort( $list );
-		$array[]    = $each;
-	}
-	sortList( $array );
-	$html    = '';
-	$index0  = '';
-	$indexes = [];
-	foreach( $array as $each ) {
-		$dataindex = dataIndex( $each->sort );
-		$name      = $each->name;
-		$html     .=
-'<li '.$dataindex.'>'.
-	icon(  'file-playlist', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
-'</li>
-';
-	}
-	$html   .= indexBar( $indexes );
-	$data    = [
-		  'html'    => $html
-		, 'indexes' => $indexes
-		, 'count'   => count( $lists )
-	];
-	echo_push( $data, isset( $argv[ 2 ] ) );
-	exit;
-//----------------------------------------------------------------------------------
-case 'random':
-	$PUSH  = true;
-	$lines = file( $dirdata.'mpd/album', FILE_IGNORE_NEW_LINES );
-	$line  = $lines[ array_rand( $lines ) ];
-	$dir   = array_last( explode( '^^', $line ) );
-	$files = $MPD->db()->ls( $dir, true )[ 'files' ];
-	$file  = array_last( $files )[ 'name' ];
-	$MPD->queue()->add( $file );
 	
 }
 
