@@ -286,6 +286,7 @@ var CONTEXT  = {
 		}
 	}
 	, tag          : () => {
+		var cue    = $( '.licue' ).length;
 		var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
 		if ( ! V.list.licover ) name = [ 'Track', 'Title', ...name ];
 		var list   = [];
@@ -296,7 +297,7 @@ var CONTEXT  = {
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
-		var file    = V.list.licover && $( '.licue' ).length ? $( '.licue' ).text() : V.list.path;
+		var file    = V.list.licover && cue ? $( '.licue' ).text() : V.list.path;
 		var dir     = V.list.licover ? file : COMMON.dirName( file );
 		var icon    = 'music';
 		var tags    = name.map( s => s.toLocaleLowerCase() );
@@ -308,14 +309,14 @@ var CONTEXT  = {
 				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
-			if ( V.playlist ) {
+			if ( V.playlist || cue ) {
 				file = dir;
 				dir  = COMMON.dirName( dir );
 				icon = 'playlist';
 			}
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( 'file-'+ icon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
+			message    += V.list.licover && ! cue ? '</div>' : '<br>'+ ICON( 'file-'+ icon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
