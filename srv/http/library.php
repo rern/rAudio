@@ -216,7 +216,7 @@ case 'ls':
 			$list  =  $MPD->db()->ls( $file, true )[ 'files' ]; // keys: range, ...metadata, 'name'
 			$lists = [ ...$lists, ...$list ]; // file, ...metadata
 		}
-		htmlTrack( 'cue' );
+		htmlTrack();
 	}
 	break;
 case 'lsdir': // for including directories not yet in database
@@ -449,7 +449,7 @@ function htmlRadio() {
 	$html.= '</ul>'.indexBar( $indexes );
 	echo $html;
 }
-function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or search)
+function htmlTrack() { // track list - no sort
 	global $lists, $MPD;
 	if ( ! count( $lists ) ) {
 		echo -1;
@@ -462,7 +462,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 	$hide->cover = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hide->cover && ! $search ) {
 		$each0         = ( object ) $lists[ 0 ];
-		$file0         = $each0->name;
+		$file0         = $each0->name ?? $each0->file; // name: ls, file: find
 		$pathinfo0     = pathinfo( $file0 );
 		$mpdpath       = $pathinfo0[ 'dirname' ];
 		$each0->artist = '';
@@ -486,7 +486,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$hide->genre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
 		$hide->date      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
 		if ( cueFile( $mpdpath ) ) {
-			$CUE       = true;
+			$licue     = '<a class="licue">'.$mpdpath.'</a>';
 			$files     = glob( '/mnt/MPD/'.substr( $mpdpath, 0, -4 ).'.*' );
 			foreach( $files as $f ) {
 				if ( ! cueFile( $f ) ) {
@@ -499,6 +499,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 			$file0     = $mpdpath; // for coverart
 			$exticon   = icon(  'playlists' ).'<c>CUE</c>';
 		} else {
+			$licue     = '';
 			$exticon   = '';
 			$ext       = $pathinfo0[ 'extension' ];
 		}
@@ -516,6 +517,7 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.$mpdpath.'</a>
+	'.$licue.'
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">
 	<div class="lialbum name'.$hide->album.'">'.$each0->album.'</div>
@@ -548,9 +550,9 @@ function htmlTrack( $CUE = '' ) { // track list - no sort ($string: cuefile or s
 		} else {
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
-			$trackname = $CUE ? $each->artist : basename( $file );
+			$trackname = $licue ? $each->artist : basename( $file );
 			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
-			$datatrack = $CUE ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
+			$datatrack = $licue ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
 		}
 		$i++;
 		$html  .= '

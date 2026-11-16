@@ -296,7 +296,7 @@ var CONTEXT  = {
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
-		var file    = V.list.path;
+		var file    = V.list.licover && $( '.licue' ).length ? $( '.licue' ).text() : V.list.path;
 		var dir     = V.list.licover ? file : COMMON.dirName( file );
 		var icon    = 'music';
 		var tags    = name.map( s => s.toLocaleLowerCase() );
