@@ -550,7 +550,7 @@ function htmlTrack() { // track list - no sort
 		} else {
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
-			$trackname = $licue ? $each->artist : basename( $file );
+			$trackname = $licue ? basename( dirname( $file ) ) : basename( $file );
 			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
 			$datatrack = $licue ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
 		}
