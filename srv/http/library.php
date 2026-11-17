@@ -465,17 +465,16 @@ function htmlTrack() { // track list - no sort
 		$file0         = $each0->name ?? $each0->file; // name: ls, file: find
 		$pathinfo0     = pathinfo( $file0 );
 		$mpdpath       = $pathinfo0[ 'dirname' ];
-		$each0->artist = '';
-		foreach( [ 'albumartist', 'artist' ] as $k ) {
-			$artist = $MPD->db()->list( $k, MphpD_filter( [ 'file', 'starts_with', $mpdpath ] ) );
-			if ( $artist && count( $artist ) > 0 ) {
-				if ( count( $artist ) === 1 ) {
-					$each0->artist = $artist[ 0 ];
-				} else {
-					$each0->artist = '(Various artists)';
-				}
-				$iconartist = $k;
-				break;
+		$mpd_filter    = MphpD_filter( [ 'file', 'starts_with', $mpdpath ] );
+		$albumartist   = $MPD->db()->list( 'albumartist', $mpd_filter );
+		if ( $albumartist ) {
+			$each0->artist = $albumartist[ 0 ];
+			$iconartist    = 'albumartist';
+		} else {
+			$artist        = $MPD->db()->list( 'artist', $mpd_filter );
+			if ( $artist ) {
+				$each0->artist = count( $artist ) > 1 ? '(Various artists)' : $artist[ 0 ];
+				$iconartist    = 'artist';
 			}
 		}
 		foreach( [ 'album', 'composer', 'conductor', 'genre', 'date' ] as $k ) $each0->$k ??= '';
@@ -485,15 +484,20 @@ function htmlTrack() { // track list - no sort
 		$hide->conductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
 		$hide->genre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
 		$hide->date      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
-		if ( cueFile( $mpdpath ) ) {
+		if ( cueFile( $mpdpath ) ) { // ...dir/file.cue
 			$licue     = '<a class="licue">'.$mpdpath.'</a>';
-			$files     = glob( '/mnt/MPD/'.substr( $mpdpath, 0, -4 ).'.*' );
-			foreach( $files as $f ) {
-				if ( ! cueFile( $f ) ) {
-					$ext = pathinfo( $f, PATHINFO_EXTENSION );
+			$file_cue  = glob( '/mnt/MPD/'.dirname( $mpdpath ).'/*.cue' );
+			$cue_src   = [];
+			foreach( $file_cue as $f ) {
+				foreach ( file( $f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) as $l ) {
+					if ( ! str_starts_with( $l, 'FILE' ) ) continue;
+					
+					$src = explode( '"', $l )[ 1 ];
+					$cue_src[ basename( $f ) ] = $src;
 					break;
 				}
 			}
+			$ext       = pathinfo( $src, PATHINFO_EXTENSION );
 			$pathinfo0 = pathinfo( $mpdpath );
 			$mpdpath   = $pathinfo0[ 'dirname' ];
 			$file0     = $mpdpath; // for coverart
@@ -543,16 +547,21 @@ function htmlTrack() { // track list - no sort
 		if ( $search ) {
 			$datamode  = 'title';
 			$icon      = icon(  $tag === 'title' ? 'music' : $tag, 'file' );
-			$trackname = $artist;
-			$trackname.= ' - '.$each->album;
 			$title     = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $title );
 			$track1    = '';
+			$trackname = $artist;
+			$trackname.= ' - '.$each->album;
 		} else {
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
-			$trackname = $licue ? basename( dirname( $file ) ) : basename( $file );
 			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
-			$datatrack = $licue ? ' data-track="'.( int )substr( $file, -4 ).'"' : '';
+			if ( $licue ) {
+				$datatrack = ' data-track="'.( int )substr( $file, -4 ).'"';
+				$trackname = $cue_src[ basename( dirname( $file ) ) ];
+			} else {
+				$datatrack = '';
+				$trackname = basename( $file );
+			}
 		}
 		$i++;
 		$html  .= '
