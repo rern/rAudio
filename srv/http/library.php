@@ -557,7 +557,7 @@ function htmlTrack() { // track list - no sort
 			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
 			if ( $licue ) {
 				$datatrack = ' data-track="'.( int )substr( $file, -4 ).'"';
-				$trackname = $cue_src[ basename( dirname( $file ) ) ];
+				$trackname = $cue_src[ basename( dirname( $file ) ) ].' <g>(cue)</g>';
 			} else {
 				$datatrack = '';
 				$trackname = basename( $file );

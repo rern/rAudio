@@ -1731,6 +1731,9 @@ li.active .li1 bl {
 	font-size: 14px !important;
 	color: var( --cg60 );
 }
+.list .li2 g {
+	color: var( --cg );
+}
 li.webradio .artist::before,
 li.webradio .station::before,
 li.webradio .url::before {
