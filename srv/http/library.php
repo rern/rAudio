@@ -487,13 +487,14 @@ function htmlTrack() { // track list - no sort
 		if ( cueFile( $mpdpath ) ) { // ...dir/file.cue
 			$licue     = '<a class="licue">'.$mpdpath.'</a>';
 			$file_cue  = glob( '/mnt/MPD/'.dirname( $mpdpath ).'/*.cue' );
+			$icon_cue  = icon( 'playlist' );
 			$cue_src   = [];
 			foreach( $file_cue as $f ) {
 				foreach ( file( $f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) as $l ) {
 					if ( ! str_starts_with( $l, 'FILE' ) ) continue;
 					
 					$src = explode( '"', $l )[ 1 ];
-					$cue_src[ basename( $f ) ] = $src;
+					$cue_src[ basename( $f ) ] = $src.$icon_cue;
 					break;
 				}
 			}
@@ -501,7 +502,7 @@ function htmlTrack() { // track list - no sort
 			$pathinfo0 = pathinfo( $mpdpath );
 			$mpdpath   = $pathinfo0[ 'dirname' ];
 			$file0     = $mpdpath; // for coverart
-			$exticon   = icon(  'playlists' ).'<c>CUE</c>';
+			$exticon   = icon( 'file-playlist' ).'<c>CUE</c>';
 		} else {
 			$licue     = '';
 			$exticon   = '';
@@ -557,7 +558,7 @@ function htmlTrack() { // track list - no sort
 			$track1    = ( $i || $hide->cover ) ? '' : ' class="track1"';
 			if ( $licue ) {
 				$datatrack = ' data-track="'.( int )substr( $file, -4 ).'"';
-				$trackname = $cue_src[ basename( dirname( $file ) ) ].' <g>(cue)</g>';
+				$trackname = $cue_src[ basename( dirname( $file ) ) ];
 			} else {
 				$datatrack = '';
 				$trackname = basename( $file );

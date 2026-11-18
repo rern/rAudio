@@ -1522,7 +1522,7 @@ div.pagerefresh {
 	text-align: center;
 	color: var( --cg60 ) !important;
 }
-.liinfo .i-playlists {
+.liinfo .i-file-playlist {
 	margin-right: 0px !important;
 }
 .liinfo c {
@@ -1731,8 +1731,9 @@ li.active .li1 bl {
 	font-size: 14px !important;
 	color: var( --cg60 );
 }
-.list .li2 g {
-	color: var( --cg );
+.list .li2 i {
+	margin-left: 5px;
+	line-height: 10px;
 }
 li.webradio .artist::before,
 li.webradio .station::before,
