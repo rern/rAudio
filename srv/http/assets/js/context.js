@@ -383,13 +383,19 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
+					var cmd  = [ 'tageditor.sh', 'cmd' ];
+					var key  = 'CMD'
 					var val  = _INFO.val();
 					$.each( val, ( k, v ) => {
-						if ( values[ k ] === v ) delete val[ k ];
+						if ( values[ k ] != v ) {
+							cmd.push( v );
+							key += ' '+  k;
+						}
 					} );
-					val.FILE = file;
+					cmd.push( file );
+					key += ' FILE';
 					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
-					BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
+					BASH( [ ...cmd, key ] );
 				}
 			} );
 		}, 'json' );
