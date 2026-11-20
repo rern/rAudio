@@ -163,6 +163,6 @@ fi
 
 installfinish
 
-# 202621010
+# 20261101
 $dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"

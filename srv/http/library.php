@@ -321,7 +321,7 @@ case 'tag':
 	} else {
 		$TAGS  = [];
 		foreach( $lists as $l ) {
-			foreach( $tags as $tag ) $TAGS[ $tag ][] = $l[ $tag ];
+			foreach( $tags as $tag ) $TAGS[ $tag ][] = $l[ $tag ] ?? '';
 		}
 		foreach ( $TAGS as $tag => $values ) {
 			$v            = array_unique( $values );
