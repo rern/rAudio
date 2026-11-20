@@ -314,11 +314,11 @@ case 'tag':
 		$lists = $MPD->db()->ls( $STRING, true )[ 'files' ]; // true - metadata
 	}
 	$data = [];
+	$tags = array_map( 'strtolower', $post->tags );
 	if ( is_file( '/mnt/MPD/'.$STRING ) ) {
 		$lists = $lists[ 0 ];
-		foreach( $post->tags as $tag ) $data[ $tag ] = $lists[ $tag ] ?? '';
+		foreach( $tags as $tag ) $data[ $tag ] = $lists[ $tag ] ?? '';
 	} else {
-		$tags  = $post->tags;
 		$TAGS  = [];
 		foreach( $lists as $l ) {
 			foreach( $tags as $tag ) $TAGS[ $tag ][] = $l[ $tag ];
@@ -328,6 +328,7 @@ case 'tag':
 			$data[ $tag ] = count( $v ) > 1 ? '*' : ( reset( $v ) ?: '' );
 		}
 	}
+	$data = array_change_key_case( $data, CASE_UPPER );
 	echo json_encode( $data );
 	break;
 

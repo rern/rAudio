@@ -287,20 +287,19 @@ var CONTEXT  = {
 	}
 	, tag          : () => {
 		var cue    = $( '.licue' ).length;
-		var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
-		if ( ! V.list.licover ) name = [ 'Track', 'Title', ...name ];
+		var tags   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
+		if ( ! V.list.licover ) tags = [ 'Track', 'Title', ...tags ];
 		var list   = [];
-		name.forEach( ( el, i ) => {
-			var n = name[ i ];
-			if ( n === 'AlbumArtist' ) n = 'Album Artist';
-			list.push( [ '<gr>'+ n +' </gr><i class="i-'+ n.toLowerCase() +'"></i>', 'text' ] );
+		tags.forEach( ( el, i ) => {
+			var t = tags[ i ];
+			if ( t === 'AlbumArtist' ) t = 'Album Artist';
+			list.push( [ '<gr>'+ t +' </gr><i class="i-'+ t.toLowerCase() +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
 		var file    = V.list.licover && cue ? $( '.licue' ).text() : V.list.path;
 		var dir     = V.list.licover ? file : COMMON.dirName( file );
 		var icon    = 'music';
-		var tags    = name.map( s => s.toLocaleLowerCase() );
 		LIST( { library: 'tag', string: file, tags: tags }, values => {
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
@@ -383,19 +382,17 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
-					var cmd  = [ 'tageditor.sh', 'cmd' ];
-					var key  = 'CMD'
+					var cmd  = [ 'tageditor.sh', 'cmd', file ];
+					var key  = 'CMD FILE'
 					var val  = _INFO.val();
 					$.each( val, ( k, v ) => {
-						if ( values[ k ] != v ) {
+						if ( values[ k ] != v ) { // changed only
 							cmd.push( v );
-							key += ' '+  k;
+							key += ' '+ k;
 						}
 					} );
-					cmd.push( file );
-					key += ' FILE';
 					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
-					BASH( [ ...cmd, key ] );
+					BASH( [ ...cmd, key.toUpperCase() ] );
 				}
 			} );
 		}, 'json' );

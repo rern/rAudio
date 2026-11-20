@@ -5,19 +5,17 @@
 args2var "$1"
 
 path="/mnt/MPD/$FILE"
-argslast=${args[@]: -1} # CMD ALBUM ALBUMARTIST ... FILE - omit unchanged
 [[ -f $path ]] && IS_TRACK=1
-
 if [[ $FILE != *.cue ]]; then
-	KEYS=( ${argslast:4:-5} ) # remove CMD and FILE
-	for K in "${KEYS[@]}"; do
-		k=${K,,}
-		v=${!K}
+	argslast=${args[@]: -1}
+	TAGS=( ${argslast/CMD FILE } ) # CMD FILE ALBUM ARTIST ... > ALBUM ARTIST ...
+	for T in "${TAGS[@]}"; do
+		v=${!T}
 		[[ $v == '*' ]] && continue
 		
 		[[ $v ]] && v=$( quoteEscape $v )
 		[[ ! $IS_TRACK ]] && all='/*.*'
-		kid3-cli -c "set $k \"$v\"" "$path"$all
+		kid3-cli -c "set ${T,,} \"$v\"" "$path"$all
 	done
 	[[ $IS_TRACK ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
 else
@@ -32,9 +30,9 @@ n; s/^(\s+PERFORMER).*/\1 "'$ARTIST'"/
 TITLE $ALBUM"
 		[[ $ALBUMARTIST ]] && data+="
 PERFORMER $ALBUMARTIST"
-		for k in COMPOSER CONDUCTOR GENRE DATE; do
+		for T in COMPOSER CONDUCTOR GENRE DATE; do
 			data+="
-REM $k ${!k}"
+REM $T ${!T}"
 		done
 		data+="
 $( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path" )"
