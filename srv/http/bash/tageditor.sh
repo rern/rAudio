@@ -54,8 +54,7 @@ $( head -n 1 <<< $data )
 	tag+="
 $( tail -n 1 <<< $data )"
 	echo "$tag" > $dirshm/tag
-	line=$( sed -n -E '/^\s+TRACK '$TRACK' / {=; q}' "$FILE" )
-	sed -i -E -e "$line e cat $dirshm/tag" -e "$line,/^\s+INDEX/ d" "$FILE"
+	sed -i -E -e "/^\s+TRACK $TRACK /,/^\s+INDEX/ {/^\s+TRACK $TRACK /r $dirshm/tag" -e 'd}' "$FILE"
 fi
 rm $dirshm/tag
 tagUpdate
