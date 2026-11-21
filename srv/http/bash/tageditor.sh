@@ -4,40 +4,52 @@
 
 args2var "$1"
 
-path="/mnt/MPD/$FILE"
-[[ -f $path ]] && IS_TRACK=1
+tagREM() {
+	for T in COMPOSER CONDUCTOR DATE GENRE; do
+		v=${!T}
+		[[ $v ]] && tag+="
+${1}REM $T \"$v\""
+	done
+}
+
 if [[ $FILE != *.cue ]]; then
+	[[ ! $TRACK ]] && all='/*.*'
 	argslast=${args[@]: -1}
 	TAGS=( ${argslast/CMD FILE } ) # CMD FILE ALBUM ARTIST ... > ALBUM ARTIST ...
 	for T in "${TAGS[@]}"; do
 		v=${!T}
-		[[ $v == '*' ]] && continue
-		
 		[[ $v ]] && v=$( quoteEscape $v )
-		[[ ! $IS_TRACK ]] && all='/*.*'
-		kid3-cli -c "set ${T,,} \"$v\"" "$path"$all
+		kid3-cli -c "set ${T,,} \"$v\"" "$FILE"$all
 	done
-	[[ $IS_TRACK ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
+	[[ $TRACK ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
 else
-	if [[ $IS_TRACK ]]; then
-		sed -i -E '/^\s+TRACK '$TRACK'/ {
-n; s/^(\s+TITLE).*/\1 "'$TITLE'"/
-n; s/^(\s+PERFORMER).*/\1 "'$ARTIST'"/
-}
-' "$path"
+	if [[ $TRACK ]]; then
+		(( $TRACK < 10 )) && TRACK=0$TRACK
+		data=$( sed -n -E "/^\s+TRACK $TRACK /,/^\s+INDEX/ p" "$FILE" )
+		tag="\
+$( head -n 1 <<< $data )
+    TITLE \"$TITLE\""
+		[[ $ARTIST ]] && tag+="
+    PERFORMER \"$ARTIST\""
+		tagREM '    '
+		tag+="
+$( tail -n 1 <<< $data )"
+		echo "$tag" > $dirshm/tag
+		line=$( sed -n -E '/^\s+TRACK '$TRACK' /=' "$FILE" )
+		sed -E -e "$line e cat $dirshm/tag" -e "$line,/^\s+INDEX/ d" "$FILE"
 	else
-		[[ $ALBUM ]]       && data="\
-TITLE $ALBUM"
-		[[ $ALBUMARTIST ]] && data+="
-PERFORMER $ALBUMARTIST"
-		for T in COMPOSER CONDUCTOR GENRE DATE; do
-			data+="
-REM $T ${!T}"
-		done
-		data+="
-$( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path" )"
-		echo "$data" > "$path"
+		tagREM
+		[[ $ALBUM ]]       && tag+="
+TITLE \"$ALBUM\""
+		[[ $ALBUMARTIST ]] && tag+="
+PERFORMER \"$ALBUMARTIST\""
+		tag+="
+$( grep ^FILE "$FILE" )"
+		echo "$tag" > $dirshm/tag
+		line=$(( $( sed -n -E '/^\s+TRACK 01 /=' "$FILE" ) - 1 ))
+		sed -e "1 e cat $dirshm/tag" -e "1,$line d" "$FILE"
 	fi
+	rm $dirshm/tag
 	dirupdate=$( dirname "$FILE" )
 fi
 

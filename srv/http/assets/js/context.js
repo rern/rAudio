@@ -287,8 +287,12 @@ var CONTEXT  = {
 	}
 	, tag          : () => {
 		var cue    = $( '.licue' ).length;
-		var tags   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
-		if ( ! V.list.licover ) tags = [ 'Track', 'Title', ...tags ];
+		if ( V.list.licover ) {
+			var tags = [ 'Album', 'AlbumArtist' ];
+		} else {
+			var tags = [ 'Track', 'Title', 'Album', 'Artist' ];
+		}
+		tags       = [ ...tags, 'Composer', 'Conductor', 'Genre', 'Date' ];
 		var list   = [];
 		tags.forEach( ( el, i ) => {
 			var t = tags[ i ];
@@ -333,7 +337,8 @@ var CONTEXT  = {
 					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' );
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' );
 					$( '#infoList .i-tag' ).css( { border: '1px solid', 'border-radius': '50%', color: 'var( --cg60 )' } );
-					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
+					if ( cue && 'TRACK' in values ) $( '#infoList input' ).eq( 0 ).addClass( 'disabled' );
+					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', true );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
 						var $this = $( this );
 						if ( $this.hasClass( 'infomessage' ) ) {
@@ -382,13 +387,21 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
-					var cmd  = [ 'tageditor.sh', 'cmd', file ];
+					var cmd  = [ 'tageditor.sh', 'cmd', '/mnt/MPD/'+ file ];
 					var key  = 'CMD FILE'
 					var val  = _INFO.val();
 					$.each( val, ( k, v ) => {
-						if ( values[ k ] != v ) { // changed only
+						if ( v === '*' ) return
+						
+						if ( cue ) {
 							cmd.push( v );
 							key += ' '+ k;
+						} else {
+							v = v.replace( /"/g, "'" );
+							if ( values[ k ] != v ) { // changed only
+								cmd.push( v );
+								key += ' '+ k;
+							}
 						}
 					} );
 					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );

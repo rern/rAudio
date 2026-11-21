@@ -95,7 +95,12 @@ W = {
 		
 		COMMON.json.update( C, data.counts );
 		if ( V.library ) {
-			V.libraryhome ? DISPLAY.library() : $( '#lib-list li' ).removeClass( 'nodata' );
+			if ( V.libraryhome ) {
+				DISPLAY.library();
+			} else if ( MODE.file() ) {
+				$( '#lib-title a' ).last().trigger( 'click' );
+				$( '#lib-list li' ).removeClass( 'nodata' );
+			}
 		}
 		BANNER( 'refresh-library', 'Library Update', 'Done' );
 	}
