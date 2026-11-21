@@ -387,17 +387,14 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
-					var cmd  = [ 'tageditor.sh', 'cmd', '/mnt/MPD/'+ file ];
-					var key  = 'CMD FILE'
-					var val  = _INFO.val();
+					var cmd = [ 'tageditor.sh', 'cmd', '/mnt/MPD/'+ file ];
+					var key = 'CMD FILE'
+					var val = _INFO.val();
 					$.each( val, ( k, v ) => {
-						if ( v === '*' ) return
-						
 						if ( cue ) {
-							cmd.push( v );
+							cmd.push( v.replace( /"/g, "'" ) ); // cue cannot handle values with "
 							key += ' '+ k;
 						} else {
-							v = v.replace( /"/g, "'" );
 							if ( values[ k ] != v ) { // changed only
 								cmd.push( v );
 								key += ' '+ k;
