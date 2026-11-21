@@ -23,7 +23,7 @@ if [[ $FILE != *.cue ]]; then
 fi
 
 if [[ ! $TRACK ]]; then # album level -------------------------------------
-	for T in COMPOSER CONDUCTOR DATE GENRE; do
+	for T in COMPOSER CONDUCTOR DATE GENRE; do # less priority than in track
 		v=${!T}
 		[[ $v && $v != '*' ]] && tag+="
 REM $T \"$v\""
