@@ -315,7 +315,7 @@ case 'tag':
 	}
 	$data = [];
 	$tags = array_map( 'strtolower', $post->tags );
-	if ( is_file( '/mnt/MPD/'.$STRING ) ) {
+	if ( in_array( 'track', $tags ) ) {
 		$lists = $lists[ 0 ];
 		foreach( $tags as $tag ) $data[ $tag ] = $lists[ $tag ] ?? '';
 	} else {
