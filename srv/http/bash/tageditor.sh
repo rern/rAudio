@@ -35,7 +35,7 @@ PERFORMER \"$ALBUMARTIST\""
 	tag+="
 $( grep ^FILE "$FILE" )"
 	echo "$tag" > $dirshm/tag
-	line=$(( $( sed -n -E '/^\s+TRACK 01 /=; q' "$FILE" ) - 1 ))
+	line=$(( $( sed -n -E '/^\s+TRACK 01 / {=; q}' "$FILE" ) - 1 ))
 	sed -i -e "1 e cat $dirshm/tag
 " -e "1,$line d
 " "$FILE"
@@ -54,7 +54,7 @@ $( head -n 1 <<< $data )
 	tag+="
 $( tail -n 1 <<< $data )"
 	echo "$tag" > $dirshm/tag
-	line=$( sed -n -E '/^\s+TRACK '$TRACK' /=; q' "$FILE" )
+	line=$( sed -n -E '/^\s+TRACK '$TRACK' / {=; q}' "$FILE" )
 	sed -i -E -e "$line e cat $dirshm/tag" -e "$line,/^\s+INDEX/ d" "$FILE"
 fi
 rm $dirshm/tag
