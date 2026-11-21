@@ -25,8 +25,11 @@ fi
 if [[ ! $TRACK ]]; then # album level -------------------------------------
 	for T in COMPOSER CONDUCTOR DATE GENRE; do # less priority than in track
 		v=${!T}
-		[[ $v && $v != '*' ]] && tag+="
+		if [[ $v && $v != '*' ]]; then
+			tag+="
 REM $T \"$v\""
+			del+="|$T"
+		fi
 	done
 	[[ $ALBUM ]]       && tag+="
 TITLE \"$ALBUM\""
@@ -36,8 +39,9 @@ PERFORMER \"$ALBUMARTIST\""
 $( grep ^FILE "$FILE" )"
 	echo "$tag" > $dirshm/tag
 	line=$(( $( sed -n -E '/^\s+TRACK 01 / {=; q}' "$FILE" ) - 1 ))
-	sed -i -e "1 e cat $dirshm/tag
+	sed -i -E -e "1 e cat $dirshm/tag
 " -e "1,$line d
+" -e "/^\s+REM (${del:1})/ d
 " "$FILE"
 else # track level ---------------------------------------------------------
 	(( $TRACK < 10 )) && TRACK=0$TRACK
