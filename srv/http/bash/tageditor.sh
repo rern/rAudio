@@ -22,7 +22,8 @@ if [[ $FILE != *.cue ]]; then
 #-------------------------------------------------------------------------------
 fi
 
-grep -q $'\r' "$FILE" && perl -0777 -pi -e 's/\r\n?/\n/g' "$FILE" # remove \r
+head -c3 "$FILE" | grep -q $'^\xEF\xBB\xBF' && sed -i '1s/^\xEF\xBB\xBF//' "$FILE" # remove bom
+grep -q $'\r' "$FILE" && perl -0777 -pi -e 's/\r\n?/\n/g' "$FILE"                  # remove \r
 if [[ ! $TRACK ]]; then # album level -------------------------------------
 	for T in COMPOSER CONDUCTOR DATE GENRE; do # less priority than in track
 		v=${!T}
