@@ -36,7 +36,7 @@ $( head -n 1 <<< $data )
 $( tail -n 1 <<< $data )"
 		echo "$tag" > $dirshm/tag
 		line=$( sed -n -E '/^\s+TRACK '$TRACK' /=' "$FILE" )
-		sed -E -e "$line e cat $dirshm/tag" -e "$line,/^\s+INDEX/ d" "$FILE"
+		sed -i -E -e "$line e cat $dirshm/tag" -e "$line,/^\s+INDEX/ d" "$FILE"
 	else
 		tagREM
 		[[ $ALBUM ]]       && tag+="
@@ -47,7 +47,7 @@ PERFORMER \"$ALBUMARTIST\""
 $( grep ^FILE "$FILE" )"
 		echo "$tag" > $dirshm/tag
 		line=$(( $( sed -n -E '/^\s+TRACK 01 /=' "$FILE" ) - 1 ))
-		sed -e "1 e cat $dirshm/tag" -e "1,$line d" "$FILE"
+		sed -i -e "1 e cat $dirshm/tag" -e "1,$line d" "$FILE"
 	fi
 	rm $dirshm/tag
 	dirupdate=$( dirname "$FILE" )
