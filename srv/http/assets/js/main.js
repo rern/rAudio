@@ -1066,6 +1066,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = path;
 	} else if ( ! l_modealbum ) { // non-album
+		V.mode        = $LI.data( 'mode' ); // for find
 		var query     = {
 			  library : 'findmode'
 			, target  : [ V_l_mode, '==', path ]
