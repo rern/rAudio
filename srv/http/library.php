@@ -516,7 +516,7 @@ function htmlTrack() { // track list - no sort
 		if ( ! $data->$t || $GMODE === $t ) continue;
 		
 		$icon = $t === 'album' ? '' : icon( $t );
-		$text = $data->$t === '*' ? '(Various '.$t.'s)' : $data->$t;
+		$text = $data->$t === '*' ? '<g>(Various '.$t.'s)</g>' : $data->$t;
 		$html.= '<div class="li'.$t.'">'.$icon.$text.'</div>';
 	}
 	$html.= '<br><div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
