@@ -1747,12 +1747,12 @@ li.webradio .url::before {
 #pl-list .unsaved {
 	color: var( --cw );
 }
-li.active .li-icon,
+li.active:not( .licover ) .li-icon,
+li.active:not( .licover ) gr,
 li.active .li1 i,
 li.active .li2,
 li.active .li2 a,
 li.active .li2 span,
-li.active gr,
 li.active .time {
 	color: var( --cga ) !important;
 }
