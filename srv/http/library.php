@@ -66,7 +66,7 @@ case 'home':
 	$html      = [];
 	foreach( $labels as $label ) {
 		$mode          = strtolower( str_replace( ' ', '', $label ) );
-		$gr            = modeFile( $mode ) ? '' : '<gr></gr>';
+		$gr            = fileMode( $mode ) ? '' : '<gr></gr>';
 		$html[ $mode ] = '
 <li class="mode '.$mode.'">
 	<i class="i-'.$mode.'"></i>'.$gr.'<a class="label">'.$label.'</a>
@@ -319,14 +319,7 @@ case 'tag':
 		$lists = $lists[ 0 ];
 		foreach( $tags as $tag ) $data[ $tag ] = $lists[ $tag ] ?? '';
 	} else {
-		$TAGS  = [];
-		foreach( $lists as $l ) {
-			foreach( $tags as $tag ) $TAGS[ $tag ][] = $l[ $tag ] ?? '';
-		}
-		foreach ( $TAGS as $tag => $values ) {
-			$v            = array_unique( $values );
-			$data[ $tag ] = count( $v ) > 1 ? '*' : ( reset( $v ) ?: '' );
-		}
+		$data = albumMeta( $tags );
 	}
 	$data = array_change_key_case( $data, CASE_UPPER );
 	echo json_encode( $data );
@@ -334,6 +327,19 @@ case 'tag':
 
 }
 
+function albumMeta( $tags ) {
+	global $lists;
+	$data = [];
+	foreach( $lists as $l ) {
+		foreach( $tags as $tag ) $data[ $tag ][] = $l[ $tag ] ?? '';
+	}
+	$meta = [];
+	foreach ( $data as $tag => $values ) {
+		$v            = array_unique( $values );
+		$meta[ $tag ] = count( $v ) > 1 ? '*' : ( reset( $v ) ?: '' );
+	}
+	return $meta;
+}
 function esc( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
@@ -346,7 +352,7 @@ function escape( $string ) { // for passing bash arguments
 
 	return esc( $string );
 }
-function modeFile( $mode ) {
+function fileMode( $mode ) {
 	return in_array( $mode, [ 'nas', 'nvme', 'sata', 'sd', 'usb' ] );
 }
 function htmlDirectory() {
@@ -365,7 +371,7 @@ function htmlDirectory() {
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$dataindex = dataIndex( $each->sort );
-		$name      = modeFile( $GMODE ) ? basename( $path ) : $path;
+		$name      = fileMode( $GMODE ) ? basename( $path ) : $path;
 		$fullpath  = '/mnt/MPD/'.$path;
 		$dir       = is_dir( $fullpath );
 		if ( $dir ) {
@@ -462,79 +468,60 @@ function htmlTrack() { // track list - no sort
 	$hide        = ( object ) [];
 	$hide->cover = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hide->cover && ! $search ) {
-		$each0         = ( object ) $lists[ 0 ];
-		$file0         = $each0->name ?? $each0->file; // name: ls, file: find
-		$pathinfo0     = pathinfo( $file0 );
-		$mpdpath       = $pathinfo0[ 'dirname' ];
-		$mpd_filter    = MphpD_filter( [ 'file', 'starts_with', $mpdpath ] );
-		$albumartist   = $MPD->db()->list( 'albumartist', $mpd_filter );
-		if ( $albumartist ) {
-			$each0->artist = $albumartist[ 0 ];
-			$iconartist    = 'albumartist';
-		} else {
-			$artist        = $MPD->db()->list( 'artist', $mpd_filter );
-			if ( $artist ) {
-				$each0->artist = count( $artist ) > 1 ? '(Various artists)' : $artist[ 0 ];
-				$iconartist    = 'artist';
-			}
-		}
-		foreach( [ 'album', 'composer', 'conductor', 'genre', 'date' ] as $k ) $each0->$k ??= '';
-		$hide->album     = $each0->album     && $GMODE !== 'album'     ? '' : ' hide';
-		$hide->artist    = $each0->artist    && $GMODE !== 'artist' && $GMODE !== 'albumartist' ? '' : ' hide';
-		$hide->composer  = $each0->composer  && $GMODE !== 'composer'  ? '' : ' hide';
-		$hide->conductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
-		$hide->genre     = $each0->genre     && $GMODE !== 'genre'     ? '' : ' hide';
-		$hide->date      = $each0->date      && $GMODE !== 'date'      ? '' : ' hide';
+		
+		$file     = $lists[ 0 ][ 'name' ] ?? $lists[ 0 ][ 'file' ]; // name: ls, file: find
+		$pathinfo = pathinfo( $file );
+		$mpdpath  = $pathinfo[ 'dirname' ];
+		
+		$tags     = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
+		$data     = ( object ) albumMeta( $tags );
 		if ( cueFile( $mpdpath ) ) { // ...dir/file.cue
-			$licue     = '<a class="licue">'.$mpdpath.'</a>';
-			$file_cue  = glob( '/mnt/MPD/'.dirname( $mpdpath ).'/*.cue' );
-			$icon_cue  = icon( 'playlist' );
-			$cue_src   = [];
+			$licue    = '<a class="licue">'.$mpdpath.'</a>';
+			$file_cue = glob( '/mnt/MPD/'.dirname( $mpdpath ).'/*.cue' );
+			$icon_cue = icon( 'playlist' );
+			$cue_src  = [];
 			foreach( $file_cue as $f ) {
 				foreach ( file( $f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) as $l ) {
 					if ( ! str_starts_with( $l, 'FILE' ) ) continue;
 					
-					$src = explode( '"', $l )[ 1 ];
+					$src                       = explode( '"', $l )[ 1 ];
 					$cue_src[ basename( $f ) ] = $src.$icon_cue;
 					break;
 				}
 			}
-			$ext       = pathinfo( $src, PATHINFO_EXTENSION );
-			$pathinfo0 = pathinfo( $mpdpath );
-			$mpdpath   = $pathinfo0[ 'dirname' ];
-			$file0     = $mpdpath; // for coverart
-			$exticon   = icon( 'file-playlist' ).'<c>CUE</c>';
+			$ext      = pathinfo( $src, PATHINFO_EXTENSION );
+			$pathinfo = pathinfo( $mpdpath );
+			$mpdpath  = $pathinfo[ 'dirname' ];
+			$exticon  = icon( 'file-playlist' ).'<c>CUE</c>';
 		} else {
-			$licue     = '';
-			$exticon   = '';
-			$ext       = $pathinfo0[ 'extension' ];
+			$licue    = '';
+			$exticon  = '';
+			$ext      = $pathinfo[ 'extension' ];
 		}
-		$coverart      = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $file0 ).'"' );
+		$coverart = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $mpdpath ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $each0->album, $each0->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
+			$args     = escape( implode( "\n", [ 'cmd', $data->album, $data->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
 			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
 		}
-		$seconds       = array_sum( array_column( $lists, 'time' ) );
-		$totaltime     = second2HMS( $seconds );
-		$br            = ! $hide->genre || ! $hide->date ? '<br>' : '';
-		$mpdpath       = str_replace( '\"', '"', $mpdpath );
-		$icon          = icon(  'music', 'folder' );
-		$html         .= '
+		$seconds   = array_sum( array_column( $lists, 'time' ) );
+		$totaltime = second2HMS( $seconds );
+		$mpdpath   = str_replace( '\"', '"', $mpdpath );
+		$html     .= '
 <li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.$mpdpath.'</a>
 	'.$licue.'
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
-	<div class="liinfo '.$GMODE.'">
-	<div class="lialbum name'.$hide->album.'">'.$each0->album.'</div>
-	<div class="liartist'.$hide->artist.'">'.icon( $iconartist ).$each0->artist.'</div>
-	<div class="licomposer'.$hide->composer.'">'.icon(  'composer' ).$each0->composer.'</div>
-	<div class="liconductor'.$hide->conductor.'">'.icon(  'conductor' ).$each0->conductor.'</div>
-	<span class="ligenre'.$hide->genre.'">'.icon(  'genre' ).$each0->genre.'&emsp;</span>
-	<span class="lidate'.$hide->date.'"><i class="i-date"></i>'.$each0->date.'</span>
-	'.$br.'
-	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
-	'.$icon.count( $lists ).'<gr> • </gr>'.$totaltime.'&emsp;<c>'.strtoupper( $ext ).'</c>'.$exticon.'
+	<div class="liinfo '.$GMODE.'">';
+	foreach( $tags as $t ) {
+		if ( ! $data->$t || $GMODE === $t || ( $t === 'artist' && $data->albumartist ) ) continue;
+		
+		$icon = $t === 'album' ? '' : icon( $t );
+		$text = $data->$t === '*' ? '(Various '.$t.'s)' : $data->$t;
+		$html.= '<div class="li'.$t.'">'.$icon.$text.'</div>';
+	}
+	$html.= '<br><div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
+			'.icon(  'music', 'folder' ).count( $lists ).'<gr> • </gr>'.$totaltime.'&emsp;<c>'.strtoupper( $ext ).'</c>'.$exticon.'
 	</div>
 </li>';
 	}

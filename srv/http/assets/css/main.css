@@ -1510,8 +1510,13 @@ div.pagerefresh {
 }
 .lialbum {
 	padding-left: 2px;
+	color: var( --cw );
 	font-size: 22px;
 	font-weight: normal;
+}
+.lidate,
+.ligenre {
+	display: inline-block;
 }
 .liinfo i {
 	margin: 0 10px 0 0 !important;
@@ -1610,13 +1615,9 @@ li.active .iconthumb {
 .liindex,
 .lisort,
 .licue,
-.liartist,
 .lithumb,
 .liimg {
 	display: none;
-}
-.licover .liartist {
-	display: block;
 }
 #pl-list li.updn {
 	background: var( --cmd );
