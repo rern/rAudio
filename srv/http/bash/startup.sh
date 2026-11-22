@@ -127,7 +127,7 @@ $dirsettings/player-conf.sh &> /dev/null
 touch $dirshm/{startup,status.json}
 
 [[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volumeMpdRestore
-[[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
+[[ -e $dirsystem/volumelimit ]] && volume.set $( sed -n '/^startup/ {s/.*=//; p}' $dirsystem/volumelimit.conf )
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
 	mpcUpdate
