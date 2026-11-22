@@ -526,9 +526,9 @@ function htmlTrack() { // track list - no sort
 	}
 	$i    = 0;
 	foreach( $lists as $each ) {
-		$each  = ( object ) $each;
-		if ( ! isset( $each->time ) ) continue;
+		if ( ! isset( $each[ 'time' ] ) ) continue;
 		
+		$each  = ( object ) $each;
 		$file  = $each->file ?? $each->name;
 		$title = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
