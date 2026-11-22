@@ -468,11 +468,9 @@ function htmlTrack() { // track list - no sort
 	$hide        = ( object ) [];
 	$hide->cover = exec( 'grep "hidecover.*true" '.$filedisplay );
 	if ( ! $hide->cover && ! $search ) {
-		
 		$file     = $lists[ 0 ][ 'name' ] ?? $lists[ 0 ][ 'file' ]; // name: ls, file: find
 		$pathinfo = pathinfo( $file );
 		$mpdpath  = $pathinfo[ 'dirname' ];
-		
 		$tags     = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
 		$data     = ( object ) albumMeta( $tags );
 		if ( cueFile( $mpdpath ) ) { // ...dir/file.cue
@@ -513,8 +511,9 @@ function htmlTrack() { // track list - no sort
 	'.$licue.'
 	<div class="licoverimg"><img id="liimg" src="'.rawurlencode( $coverart ).$hash.'"></div>
 	<div class="liinfo '.$GMODE.'">';
+	if ( $data->albumartist ) array_splice( $tags, 2, 1 );
 	foreach( $tags as $t ) {
-		if ( ! $data->$t || $GMODE === $t || ( $t === 'artist' && $data->albumartist ) ) continue;
+		if ( ! $data->$t || $GMODE === $t ) continue;
 		
 		$icon = $t === 'album' ? '' : icon( $t );
 		$text = $data->$t === '*' ? '(Various '.$t.'s)' : $data->$t;
@@ -535,11 +534,10 @@ function htmlTrack() { // track list - no sort
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
 			$datamode  = 'title';
-			$icon      = icon(  $tag === 'title' ? 'music' : $tag, 'file' );
+			$icon      = icon(  $tag === 'title' ? 'music' : $tag, 'file' ); // $tag from global
 			$title     = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $title );
 			$track1    = '';
-			$trackname = $artist;
-			$trackname.= ' - '.$each->album;
+			$trackname = $each->artist.' - '.$each->album;
 		} else {
 			$datamode  = $GMODE;
 			$icon      = icon(  'music', 'file' );
