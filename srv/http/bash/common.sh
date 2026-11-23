@@ -511,7 +511,7 @@ pushPlaylist() {
 			(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
 			websocat --text $buffer ws://127.0.0.1:8080 <<< $data
 		else
-			php /srv/http/playlist.php current push
+			php /srv/http/playlist.php current
 		fi
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
