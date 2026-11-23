@@ -137,11 +137,14 @@ data+='
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "updating"       : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
+	if rfkill | grep -q -m1 bluetooth; then
+		[[ $( bluetoothctl devices Connected ) ]] && btconnected=true || btconnected=false
+	fi
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )'
-, "btconnected"    : '$( [[ $( bluetoothctl devices Connected ) ]] && echo true )
+, "btconnected"    : '$btconnected
 fi
 
 data2json "$data" $1
