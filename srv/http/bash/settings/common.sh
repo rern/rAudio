@@ -210,33 +210,6 @@ getContent() {
 		echo $2
 	fi
 }
-getVar() { # var=value
-	[[ ! -e $2 ]] && echo false && return
-#...............................................................................
-	case ${2: -4} in
-		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
-		.yml )
-			if [[ $1 != *.* ]]; then
-				sed -n '/^\s*'$1':/ {s/^.*: \+//; p}' "$2"                        # /var: value/ > value
-			else
-				local a b
-				a=${1/.*}
-				b=${1/*.}
-				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p}' "$2" # /var1:/,/var2: value/ > value
-			fi
-			;;
-		* )
-			local data line var
-			data=$( < "$2" )
-			line=$( grep ^$1= <<< $data )                                    # var=
-			[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
-			[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
-			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
-			[[ $var ]] && quoteEscape $var || echo $3
-			;;
-	esac
-}
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
