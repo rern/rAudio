@@ -135,7 +135,7 @@ metaData() {
 , "pllength"  : '$( mpc status %length% )'
 , "play"      : true
 , "state"     : "play"
-, "station"   : "'$( sed -n "\|^$file| {s|.*/||; p}" $dirmpd/radio )'"
+, "station"   : "'$( sed -n "\|^$file| {s|.*/||; p; q}" $dirmpd/radio )'"
 , "Time"      : 0
 , "timestamp" : '$( date +%s%3N )'
 , "webradio"  : true

@@ -31,8 +31,9 @@ while read line; do # 1 On-board Headphones
 	else
 		NAME=$name
 	fi
-	if [[ -e $path/usbmixer ]]; then
-		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
+	file_usbmixer=/proc/asound/card$CARD/usbmixer
+	if [[ -e $file_usbmixer ]]; then
+		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $file_usbmixer )
 		if [[ $usbmixer ]]; then
 			NAME=$usbmixer
 			if [[ $NAME == $outputdevice ]]; then

@@ -248,11 +248,11 @@ getVar() { # var=value
 		* )
 			local data line var
 			data=$( < "$2" )
-			line=$( grep ^$1= <<< $data )                                    # var=
-			[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
-			[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
-			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
+			line=$( grep -m1 ^$1= <<< $data )                                    # var=
+			[[ ! $line ]] && line=$( grep -m1 -E "^${1// /|^}" <<< $data )       # var
+			[[ ! $line ]] && line=$( grep -m1 -E "^\s*${1// /|^\s*}" <<< $data ) #     var
+			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )             # var value > var=value
+			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )        # var=value || var = value || var="value"; > value
 			[[ $var ]] && quoteEscape $var || echo $3
 			;;
 	esac
