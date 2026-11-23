@@ -506,14 +506,13 @@ pushPlaylist() {
 		pushData playlist '{ "blank": true }'
 	else
 		if [[ -e $dirshm/playlist ]]; then
-			data=$( < $dirshm/playlist )
+			data='{ "channel": "playlist", "data": '$( < $dirshm/playlist )' }'
+			bytes=$( printf '%s' "$data" | wc -c )
+			(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+			websocat --text $buffer ws://127.0.0.1:8080 <<< $data
 		else
-			data=$( php /srv/http/playlist.php current )
+			php /srv/http/playlist.php current push
 		fi
-		data='{ "channel": "playlist", "data": '$data' }'
-		bytes=$( printf '%s' "$data" | wc -c )
-		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
-		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
