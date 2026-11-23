@@ -44,7 +44,7 @@ if [[ $ON ]]; then
 	fi
 	systemctl start mpd
 	while read file; do
-		sed -E -i '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
+		sed -i -E '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
 	done < <( ls $dirbookmarks/* $dirplaylists/* )
 	mpcUpdate $action
 else
