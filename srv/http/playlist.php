@@ -82,7 +82,7 @@ case 'crop':
 	if ( $librandom ) exec( '/srv/http/bash/cmd.sh libraryrandom' );
 	break;
 case 'current':
-	$PUSH  = ! file_exists( $dirshm.'playlist' );
+	$PUSH  = isset( $argv[ 2 ] ) || ! file_exists( $dirshm.'playlist' );
 	$lists = $MPD->queue()->get();
 	break;
 case 'delete':
