@@ -280,7 +280,7 @@ similar )
 	artist=${lines[0]}
 	title=${lines[1]}
 	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	lines=$( curl -sfG -m 5 \
+	track=$( curl -sfG -m 5 \
 				--data-urlencode "artist=$artist" \
 				--data-urlencode "track=$title" \
 				--data "method=track.getsimilar" \
@@ -288,26 +288,21 @@ similar )
 				--data "format=json" \
 				--data "autocorrect=1" \
 				http://ws.audioscrobbler.com/2.0 \
-					| jq .similartracks.track \
-					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
-	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
-# --------------------------------------------------------------------
-	while read line; do
-		if [[ $title ]]; then
-			file=$( mpc find artist "$line" title "$title" )
-			[[ $file ]] && list+="$file"$'\n'
-			title=
-		else
-			title=$line
-		fi
-	done <<< $lines
-	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
+					| jq -r .similartracks.track )
+	[[ ! $track ]] && echo 'No similar tracks found in database.' && exit
 # --------------------------------------------------------------------
 	plLprev=$( mpc status %length% )
-	awk NF <<< $list | mpc -q add
-	pushPlaylist
+	while IFS=$'\t' read -r title artist; do
+		mpc findadd artist "$artist" title "$title"
+	done < <( jq -r '.[] | [.name // "-", .artist.name // "-"] | @tsv' <<< $track )
 	added=$(( $( mpc status %length% ) - plLprev ))
-	notify lastfm 'Add Similar' "$added tracks added."
+	if (( $added == 0 )); then
+		echo 'No similar tracks found in database.'
+	else
+		rm -f $dirshm/playlist
+		pushPlaylist
+		notify lastfm 'Add Similar' "$added tracks added."
+	fi
 	;;
 skip ) # context menu
 	skip
