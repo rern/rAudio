@@ -1720,9 +1720,9 @@ var VOLUME    = {
 }
 var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	  connect : ip => {
-		if ( WS ) {                                                                // terminate existing
-			WS.onclose = null;
-			WS.close();
+		if ( WS ) {
+			WS.onopen = WS.onmessage = WS.onerror = WS.onclose = null;
+			if ( WS.readyState <= WebSocket.OPEN ) WS.close(); // connecting or open
 		}
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
 		var interval = null;
