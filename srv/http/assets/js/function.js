@@ -330,10 +330,10 @@ var COVERART  = {
 		var canvas = document.createElement( 'canvas' );
 		var ctx    = canvas.getContext( '2d', { willReadFrequently: true } );
 		return [
-			  [ 0,     0,     w, 1 ] // top
-			, [ 0,     h - 1, w, 1 ] // bottom
-			, [ 0,     1,     1, h ] // left
-			, [ w - 1, 1,     1, h ] // right
+			  [ 0,     0,     w, 1     ] // top
+			, [ 0,     h - 1, w, 1     ] // bottom
+			, [ 0,     1,     1, h - 2 ] // left
+			, [ w - 1, 1,     1, h - 2 ] // right
 		].some( ( [ sx, sy, sw, sh ] ) => {
 			if ( canvas.width < sw || canvas.height < sh ) {
 				canvas.width  = Math.max( canvas.width,  sw );
@@ -1499,6 +1499,7 @@ var PLAYBACK  = {
 						$( '#offset-l, #offset-r' ).toggleClass( 'hide', V.wW - cover.width > 15 );
 						$COVERART.toggleClass( 'bordered', COVERART.border( cover0 ) );
 					} )
+					.prop( 'crossOrigin', 'anonymous' )
 					.attr( 'src', encodeURI( src ) );
 			} else {
 				COVERART.default();
