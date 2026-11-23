@@ -4,7 +4,7 @@ configReboot() {
 	[[ ! $ON ]] && return
 	
 	pushData reboot '{ "id": "'$CMD'" }'
-	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p; q}" /srv/http/settings/system.php )
 	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed

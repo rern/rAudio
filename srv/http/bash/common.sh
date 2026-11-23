@@ -234,21 +234,23 @@ getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 #...............................................................................
 	case ${2: -4} in
-		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
+		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p; q}' "$2";;                   # /var: value/ > value
 		.yml )
 			if [[ $1 != *.* ]]; then
-				sed -n '/^\s*'$1':/ {s/^.*: \+//; p}' "$2"                        # /var: value/ > value
+				sed -n '/^\s*'$1':/ {s/^.*: \+//; p; q}' "$2"                        # /var: value/ > value
 			else
 				local a b
 				a=${1/.*}
 				b=${1/*.}
-				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p}' "$2" # /var1:/,/var2: value/ > value
+				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p; q}' "$2" # /var1:/,/var2: value/ > value
 			fi
 			;;
 		* )
 			local data line var
 			data=$( < "$2" )
 			line=$( grep -m1 ^$1= <<< $data )                                    # var=
+			[[ ! $line ]] && grep -m1 -q [[:alnum:]]= <<< $data && return
+#...............................................................................
 			[[ ! $line ]] && line=$( grep -m1 -E "^${1// /|^}" <<< $data )       # var
 			[[ ! $line ]] && line=$( grep -m1 -E "^\s*${1// /|^\s*}" <<< $data ) #     var
 			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )             # var value > var=value
@@ -686,7 +688,7 @@ volumeMpdRestore() {
 	fi
 	[[ ! $MAC ]] && return
 	 # save bluetooth volume
-	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC )
+	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p; q}}' /var/lib/bluealsa/$MAC )
 	awk -v db=$db '
 			BEGIN {
 				s = int( 127 * 2^( db / 1000 ) + 0.5 )

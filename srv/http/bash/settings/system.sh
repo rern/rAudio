@@ -67,7 +67,7 @@ format )
 	if [[ $UNPART ]]; then
 		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
 		partprobe $DEV
-		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||;p}' )
+		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||; p; q}' )
 	else
 		umount -l $DEV
 	fi
@@ -189,7 +189,7 @@ mpdoled )
 			SPI=1
 		else
 			I2C=1
-			baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+			baud=$( getVar baudrate /boot/config.txt )
 			[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		fi
 		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
