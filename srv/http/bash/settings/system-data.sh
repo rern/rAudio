@@ -137,7 +137,7 @@ data+='
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "updating"       : '$( statusUpdating )
 if [[ -e $dirshm/onboardwlan ]]; then
-	if rfkill | grep -q -m1 bluetooth; then
+	if systemctl -q is-active bluetooth; then
 		[[ $( bluetoothctl devices Connected ) ]] && btconnected=true || btconnected=false
 	fi
 ##########
