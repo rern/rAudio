@@ -501,7 +501,6 @@ pushPlaylist() {
 	[[ -e $dirshm/pushplaylist ]] && return
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
-	pushData playlist '{ "blink": true }'
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
