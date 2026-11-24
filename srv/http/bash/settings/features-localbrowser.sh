@@ -10,7 +10,7 @@
 		if [[ $ROTATE != $rotate ]]; then
 			RESTART=1
 			file_config=/boot/config.txt
-			if grep -E -q 'waveshare|tft35a' $file_config; then # tft
+			if grep -Eq 'waveshare|tft35a' $file_config; then # tft
 				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' $file_config
 				cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
 				appendSortUnique $dirshm/reboot ', "localbrowser": "Browser"'
