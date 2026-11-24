@@ -277,6 +277,7 @@ killProcess() {
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
 	fi
+	[[ $1 == cmdlist ]] && rm -f $dirmpd/listing $dirshm/updatedone
 }
 libraryRandom() {
 	local ab cuefile dir dirlast mpcls plL range
@@ -322,7 +323,7 @@ mkdirRW() {
 mpcUpdate() {
 	[[ $1 ]] && ACTION=$1
 	[[ $2 ]] && PATHMPD=$2
-	rm -f $dirshm/updatedone
+	killProcess cmdlist
 	date +%s > $dirmpd/updatestart
 	pushData mpdupdate '{ "updating": true }'
 	if [[ ! $ACTION ]]; then

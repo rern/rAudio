@@ -175,11 +175,7 @@ mpcupdate )
 mpcupdatestop )
 	notify 'refresh-library blink' 'Library Update' 'Cancel ...' -1
 	systemctl restart mpd
-	if [[ -e $dirmpd/listing ]]; then
-		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating}
-	fi
-	$dirbash/cmd-list.sh
+	killProcess cmdlist
 	;;
 mpdignore )
 	dir=$( basename "$DIR" )

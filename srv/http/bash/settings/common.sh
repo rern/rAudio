@@ -294,7 +294,7 @@ sharedData() {
 	nfsServerActive && echo false || echo true
 }
 sharedDataCopy() {
-	rm -f $dirmpd/{listing,updating}
+	killProcess cmdlist
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
 	file_order=$dirsystem/order.json
 	[[ ! -e $file_order ]] && file_order=

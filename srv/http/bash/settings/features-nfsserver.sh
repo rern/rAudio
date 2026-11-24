@@ -19,8 +19,7 @@ if [[ $ON ]] && nfsServerActive; then
 fi
 
 dirshared=$dirdata/mpdshared
-[[ -e $dirmpd/listing ]] && killall cmd-list.sh
-rm -f $dirmpd/{listing,updating}
+killProcess cmdlist
 plClear
 systemctl stop mpd
 if [[ $ON ]]; then
