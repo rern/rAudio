@@ -340,18 +340,6 @@ function albumMeta( $tags ) {
 	}
 	return $meta;
 }
-function esc( $string ) {
-	return preg_replace( '/(["`])/', '\\\\\1', $string );
-}
-function escape( $string ) { // for passing bash arguments
-	if ( is_array( $string ) ) {
-		$ar = [];
-		foreach( $string as $s ) $ar[] = esc( $s );
-		return $ar;
-	}
-
-	return esc( $string );
-}
 function fileMode( $mode ) {
 	return in_array( $mode, [ 'nas', 'nvme', 'sata', 'sd', 'usb' ] );
 }
@@ -496,11 +484,11 @@ function htmlTrack() { // track list - no sort
 			$exticon  = '';
 			$ext      = $pathinfo[ 'extension' ];
 		}
-		$coverart = exec( $dirbash.'status -C "/mnt/MPD/'.escape( $mpdpath ).'"' );
+		$coverart = exec( $dirbash.'status -C "/mnt/MPD/'.addcslashes( $mpdpath, '"`' ).'"' );
 		if ( ! $coverart ) {
 			$coverart = '/assets/img/coverart.svg';
-			$args     = escape( implode( "\n", [ 'cmd', $data->album, $data->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] ) );
-			exec( $dirbash.'status-coverart.sh "'.$args.'" &> /dev/null &' );
+			$args     = implode( "\n", [ 'cmd', $data->album, $data->artist, $mpdpath, 'CMD ALBUM ARTIST LIPATH' ] );
+			exec( $dirbash.'status-coverart.sh "'.addcslashes( $args, '"`' ).'" &> /dev/null &' );
 		}
 		$seconds   = array_sum( array_column( $lists, 'time' ) );
 		$totaltime = second2HMS( $seconds );

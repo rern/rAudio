@@ -16,11 +16,10 @@ case 'bash':
 	$command = $dirbash.$post->filesh;
 	if ( isset( $post->args ) ) {
 		if ( is_array( $post->args ) ) {
-			$args = escape( implode( "\n", $post->args ) );
-		} else {
-			$args = $post->args;
+			$args       = implode( "\n", $post->args );
+			$post->args = addcslashes( $args, '"`' );
 		}
-		$command.= ' "'.$args.'"';
+		$command.= ' "'.$post->args.'"';
 	}
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
@@ -69,8 +68,8 @@ case 'imagereplace': // UTIL.imageReplace() from function.js
 	} else {
 		rename( $post->data, $file );
 	}
-	$args = escape( implode( "\n", [ $post->name, $file, 'CMD FILE' ] ) );
-	exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
+	$args = implode( "\n", [ $post->name, $file, 'CMD FILE' ] );
+	exec( $dirbash.'cmd-coverart.sh "'.addcslashes( $args, '"`' ).'"' );
 	break;
 case 'login': // CONFIG.login() from features.js
 	$filelogin   = $dirdata.'system/login';
@@ -125,9 +124,6 @@ case 'sort': // from cmd-list.sh
 
 }
 
-function escape( $string ) {
-	return preg_replace( '/(["`])/', '\\\\\1', $string ); // \1 inside function - $1 normal
-}
 function fileUploadSave( $filepath ) {
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 //----------------------------------------------------------------------------------
