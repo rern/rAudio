@@ -216,10 +216,10 @@ ipOnline() {
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( netDevice w )
-	if ! rfkill | grep -q -m1 wlan; then
-		modprobe brcmfmac
-	else
+	if [[ $( rfkill list wlan ) ]]; then
 		ip link set $wlandev down
+	else
+		modprobe brcmfmac
 	fi
 	ip link set $wlandev up
 	systemctl restart iwd

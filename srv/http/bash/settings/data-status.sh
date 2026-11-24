@@ -27,7 +27,7 @@ bluealsa )
 	statusCmd "bluealsa-cli info $dbuspath"
 	;;
 bluetooth )
-	statusCmd "rfkill | grep '^I\|bluetooth'"
+	statusCmd "rfkill | grep -E '^I|bluetooth'"
 	echo
 	statusCmd 'bluetoothctl show'
 	;;
@@ -211,7 +211,7 @@ wl )
 	statusCmd "iwconfig $( netDevice w )"
 	;;
 wlan )
-	statusCmd 'rfkill | grep wlan'
+	statusCmd "rfkill | grep -E '^I|wlan'"
 	echo
 	statusCmd 'iw reg get'
 	echo

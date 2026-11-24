@@ -72,7 +72,7 @@ data='
 , "device"    : {
 	  "bluetooth" : '$devicebt'
 	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
-	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
+	, "wlan"      : '$( [[ $( rfkill list wlan ) ]] && echo true )'
 }
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
