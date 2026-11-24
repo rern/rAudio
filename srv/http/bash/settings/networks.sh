@@ -124,7 +124,7 @@ profileforget )
 usbbluetoothon ) # from usbbluetooth.rules
 	[[ -e $dirshm/btonboard ]] && exit # suppress onboard
 # --------------------------------------------------------------------
-	! systemctl -q is-active bluetooth && systemctl start bluetooth
+	systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	sleep 3
