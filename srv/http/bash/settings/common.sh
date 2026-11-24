@@ -3,7 +3,7 @@
 bluetooth() {
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
-		if ! systemctl -q is-active bluetooth; then
+		if [[ ! $( rfkill list bluetooth ) ]]; then
 			modprobe hci_uart
 			for i in {0..3}; do
 				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
