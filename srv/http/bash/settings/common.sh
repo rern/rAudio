@@ -342,7 +342,7 @@ timezoneAuto() {
 	timedatectl set-timezone $tz
 }
 updating() {
-	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating
+	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		echo true
 	else
 		echo false
