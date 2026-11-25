@@ -46,7 +46,7 @@ updateDone() {
 	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
 	pushStatus
 	pushRefresh player
-	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
+	sleep 5 # suppress mpdidle.sh with small database
 }
 
 touch $dirmpd/listing
