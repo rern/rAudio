@@ -130,11 +130,10 @@ touch $dirshm/{startup,status.json}
 [[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
 
 if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
+	[[ $( getVar latest $dirsystem/mpcupdate.conf ) == true ]] && touch $dirshm/latest
 	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
-else
-	touch $dirshm/updatedone
 fi
 
 pushStatus

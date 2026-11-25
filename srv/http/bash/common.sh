@@ -277,7 +277,6 @@ killProcess() {
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
 	fi
-	[[ $1 == cmdlist ]] && rm -f $dirmpd/listing $dirshm/updatedone
 }
 libraryRandom() {
 	local ab cuefile dir dirlast mpcls plL range

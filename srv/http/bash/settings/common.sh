@@ -333,15 +333,6 @@ snapserverList() {
 		echo '[]'
 	fi
 }
-statusUpdating() {
-	if mpc | grep -q ^Updating; then
-		echo true
-	elif [[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]]; then
-		echo true
-	else
-		echo false
-	fi
-}
 timezoneAuto() {
 	local tz
 	tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )

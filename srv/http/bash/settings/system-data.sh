@@ -135,7 +135,7 @@ data+='
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
-, "updating"       : '$( statusUpdating )
+, "updating"       : '$( mpc | grep -q ^Updating && echo true )
 if [[ -e $dirshm/onboardwlan ]]; then
 	if systemctl -q is-active bluetooth; then
 		[[ $( bluetoothctl devices Connected ) ]] && btconnected=true || btconnected=false
