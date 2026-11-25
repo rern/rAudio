@@ -134,7 +134,7 @@ fi
 ##### mode others
 modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
 modelatest='latest latestbyartist latestbyartist-year'
-for mode in albumartist artist composer conductor date genre; do
+for mode in ${modes/*year }; do
 	data=$( mpc list $mode | awk NF )
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
