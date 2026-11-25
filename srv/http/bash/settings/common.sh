@@ -341,6 +341,13 @@ timezoneAuto() {
 	[[ ! $tz ]] && tz=UTC
 	timedatectl set-timezone $tz
 }
+updating() {
+	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating
+		echo true
+	else
+		echo false
+	fi
+}
 usbMaxCurrent() {
 	local BB revision
 	revision=$( grep ^Revision /proc/cpuinfo )
