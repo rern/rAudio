@@ -43,10 +43,10 @@ updateDone() {
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	counts+=$( countMnt )
-	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
 	pushStatus
 	pushRefresh player
 	sleep 5 # suppress mpdidle.sh with small database
+	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
 }
 
 touch $dirmpd/listing
