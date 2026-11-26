@@ -320,16 +320,17 @@ mkdirRW() {
 	chmod 777 $1
 }
 mpcUpdate() {
-	[[ $1 ]] && ACTION=$1
-	[[ $2 ]] && PATHMPD=$2
 	killProcess cmdlist
 	date +%s > $dirmpd/updatestart
 	pushData mpdupdate '{ "updating": true }'
-	if [[ ! $ACTION ]]; then
-		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
-			. <( cat $dirsystem/mpcupdate.conf )
-			ACTION=$action
-			PATHMPD=$pathmpd
+	if [[ $1 ]]; then
+		[[ $1 ]] && ACTION=$1
+		[[ $2 ]] && PATHMPD=$2
+		echo "$PATHMPD" > $dirmpd/updating
+	else
+		if [[ -s $dirmpd/updating ]]; then # update not finished when reboot
+			ACTION=update
+			PATHMPD=$( < $dirmpd/updating )
 		else
 			ACTION=rescan
 		fi

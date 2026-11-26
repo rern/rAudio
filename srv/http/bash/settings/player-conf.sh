@@ -157,7 +157,7 @@ killProcess cmdlist
 systemctl restart mpd
 serviceIO mpd
 
-if [[ -e $dirsystem/mpcupdate.conf ]]; then
+if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 	mpcUpdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh

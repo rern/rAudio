@@ -184,9 +184,7 @@ mpdignore )
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
 	pushData mpdupdate '{ "updating": true }'
-	echo "\
-action=update
-mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf
+	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath"
 	;;
 multiraudiolist )

@@ -11,7 +11,7 @@
 
 killProcess cmdlist
 echo $$ > $dirshm/pidcmdlist
-trap 'rm -f $dirmpd/listing' EXIT SIGKILL SIGTERM
+trap 'rm -f $dirmpd/listing $dirshm/latest' EXIT SIGKILL SIGTERM
 
 file_album=$dirmpd/albumbyartist-year
 file_latest=$dirmpd/latestbyartist-year
@@ -49,9 +49,9 @@ updateDone() {
 	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
 }
 
-touch $dirmpd/listing
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf $dirshm/latest
+rm -f $dirmpd/{updatestart,updating}
+touch $dirmpd/listing
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
