@@ -1811,7 +1811,7 @@ var PLAYLIST  = {
 		var icon  = 'lastfm';
 		var title = 'Add Similar';
 		NOTIFY( icon, title, 'Get similar tracks ...' );
-		BASH( [ 'similar', V.list.path, 'CMD FILE' ], error => {
+		LIST( { playlist: 'similar', artist: $LI.find( '.artist' ).text(), title: V.list.name }, error => {
 			if ( error ) {
 				BANNER_HIDE();
 				INFO( {

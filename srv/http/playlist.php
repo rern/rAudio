@@ -20,6 +20,7 @@ case 'single':
 	exit;
 //----------------------------------------------------------------------------------
 case 'playlists':
+	$PUSH    = isset( $argv[ 2 ] );
 	$lists   = $MPD->playlists();
 	foreach( $lists as $list ) {
 		$each       = ( object ) [];
@@ -46,7 +47,7 @@ case 'playlists':
 		, 'indexes' => $indexes
 		, 'count'   => count( $lists )
 	];
-	echo_push( $data, isset( $argv[ 2 ] ) );
+	echo_push( $data );
 	exit;
 //----------------------------------------------------------------------------------
 case 'add':
@@ -86,11 +87,58 @@ case 'current':
 	$lists = $MPD->queue()->get();
 	break;
 case 'delete':
-	$PUSH = true;
+	$PUSH  = true;
 	$MPD->queue()->delete( $post->target );
 	break;
 case 'playlist': // saved playlist
 	$lists = $MPD->playlist( $post->name )->get_songs( true ); // true - metadata
+	break;
+case 'similar':
+	$PUSH  = true;
+	foreach ( file( '/srv/http/assets/js/main.js' ) as $line ) {
+		if ( str_contains( $line, 'apikeylastfm' ) ) {
+			$apikey = explode( "'", $line )[ 1 ];
+			break;
+		}
+	}
+	$url   = 'http://ws.audioscrobbler.com/2.0?' . http_build_query( [
+		  'method'      => 'track.getsimilar'
+		, 'api_key'     => $apikey
+		, 'artist'      => $post->artist
+		, 'track'       => $post->title
+		, 'format'      => 'json'
+		, 'autocorrect' => 1
+	], '', '&', PHP_QUERY_RFC3986 );
+	$ch    = curl_init( $url );
+	curl_setopt_array( $ch, [
+		  CURLOPT_RETURNTRANSFER => true
+		, CURLOPT_TIMEOUT        => 5
+		, CURLOPT_FAILONERROR    => true
+	] );
+	$body  = curl_exec( $ch );
+	$data  = json_decode( $body, true );
+	$track = $data[ 'similartracks' ][ 'track' ] ?? '';
+	if ( ! $track ) {
+		echo 'No similar tracks found in database.';
+		exit;
+//------------------------------------------------------------------------------
+	}
+	$MPD   = MphpD();
+	$prevL = ( int ) $MPD->status( [ 'playlistlength' ] );
+	foreach( $track as $t ) {
+		$filter = MphpD_filter( [
+			  [ 'artist', '==', $t[ 'artist' ][ 'name' ] ]
+			, [ 'title',  '==', $t[ 'name' ] ]
+		] );
+		$MPD->queue()->add_find( $filter );
+	}
+	$added = ( int ) $MPD->status( [ 'playlistlength' ] ) - $prevL;
+	if ( $added === 0 ) {
+		echo 'No similar tracks found in database.';
+	} else {
+		$msg = [ 'icon' => 'lastfm', 'title' => 'Add Similar', 'message' => $added.' tracks added.' ];
+		wsSend( $msg, 'notify' );
+	}
 	break;
 	
 }
@@ -225,13 +273,13 @@ $data = [
 	, 'position'  => $status->song ?? 0
 	, 'add'       => $CMD === 'add'
 ];
-echo_push( $data, $PUSH );
+echo_push( $data );
 if ( $PUSH ) file_put_contents( $dirshm.'playlist', $data ); // for bash pushPlaylist
 
 function artistAlbum( $artist, $album, $file ) {
 	$ar_al = '';
 	if ( $artist || $album ) {
-		if ( $artist )           $ar_al.= $artist;
+		if ( $artist )           $ar_al.= '<span class="artist">'.$artist.'</span>';
 		if ( $artist && $album ) $ar_al.= ' - ';
 		if ( $album )            $ar_al.= $album;
 		return '<a class="ar_al">'.$ar_al.'</a>';
@@ -239,14 +287,15 @@ function artistAlbum( $artist, $album, $file ) {
 		return $file;
 	}
 }
-function echo_push( $data, $PUSH ) {
+function echo_push( $data ) {
+	global $CMD, $PUSH;
 	if ( $PUSH ) {
-		wsSend( $data );
+		wsSend( $data, $CMD === 'playlists' ? 'playlists' : 'playlist' );
 	} else {
 		echo json_encode( $data );
 	}
 }
-function wsSend( $msg )  {
+function wsSend( $msg, $channel )  {
 	$ip_port = '//127.0.0.1:8080';
 	$fp      = @stream_socket_client( "tcp:$ip_port", $errno, $errstr, 2 );
 	if ( ! $fp ) return false;
@@ -268,7 +317,6 @@ function wsSend( $msg )  {
 	}
 	while ( ( $line = fgets( $fp ) ) !== false && $line !== "\r\n" ); // skip headers
 	global $CMD;
-	$channel = $CMD === 'playlists' ? 'playlists' : 'playlist';
 	$msg     = json_encode( [ 'channel' => $channel, 'data' => $msg ] );
 	// text frame (client frames must be masked)
 	$len     = strlen( $msg );

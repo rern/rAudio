@@ -268,35 +268,6 @@ shareddataupdate )
 	notify refresh-library 'Library Update' Done
 	pushStatus
 	;;
-similar )
-	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
-	artist=${lines[0]}
-	title=${lines[1]}
-	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	track=$( curl -sfG -m 5 \
-				--data-urlencode "artist=$artist" \
-				--data-urlencode "track=$title" \
-				--data "method=track.getsimilar" \
-				--data "api_key=$apikey" \
-				--data "format=json" \
-				--data "autocorrect=1" \
-				http://ws.audioscrobbler.com/2.0 \
-					| jq -r .similartracks.track )
-	[[ ! $track ]] && echo 'No similar tracks found in database.' && exit
-# --------------------------------------------------------------------
-	plLprev=$( mpc status %length% )
-	while IFS=$'\t' read -r title artist; do
-		mpc findadd artist "$artist" title "$title"
-	done < <( jq -r '.[] | [.name // "-", .artist.name // "-"] | @tsv' <<< $track )
-	added=$(( $( mpc status %length% ) - plLprev ))
-	if (( $added == 0 )); then
-		echo 'No similar tracks found in database.'
-	else
-		rm -f $dirshm/playlist
-		pushPlaylist
-		notify lastfm 'Add Similar' "$added tracks added."
-	fi
-	;;
 skip ) # context menu
 	skip
 	;;
