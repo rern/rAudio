@@ -11,7 +11,7 @@
 
 killProcess cmdlist
 echo $$ > $dirshm/pidcmdlist
-trap 'rm -f $dirmpd/listing' EXIT
+trap 'rm -f $dirmpd/listing' EXIT SIGKILL SIGTERM
 
 file_album=$dirmpd/albumbyartist-year
 file_latest=$dirmpd/latestbyartist-year
