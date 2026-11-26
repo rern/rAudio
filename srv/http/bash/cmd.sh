@@ -187,8 +187,7 @@ mpdignore )
 	echo "\
 action=update
 mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf
-	mpc -q update "$mpdpath" #1 get .mpdignore into database
-	mpc -q update "$mpdpath" #2 after .mpdignore was in database
+	mpc -q update "$mpdpath"
 	;;
 multiraudiolist )
 	echo '{
