@@ -836,11 +836,8 @@ var DISPLAY   = {
 		D.dsp = D.camilladsp || D.equalizer;
 		[ 'dsp', 'lock', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
 			var enabled = el == 'lock' ? D.loginsetting : D[ el ];
-			$( '#'+ el )
-				.toggleClass( 'hide', ! enabled )
-				.prev().toggleClass( 'sub', enabled );
+			$( '#'+ el ).prev().toggleClass( 'sub', enabled );
 		} ); // submenu toggled by css .settings + .submenu
-		if ( V.localhost ) $( '#power' ).addClass( 'sub' );
 	}
 }
 var EQ        = {

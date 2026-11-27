@@ -50,7 +50,7 @@ dir=/sys/class/backlight/rpi_backlight
 if [[ -d $dir ]]; then
 	sudo echo 1 > $dir/bl_power
 elif [[ -e $dirsystem/localbrowser ]]; then
-	DISPLAY=:0 sudo xset dpms force off
+	xExportEnv off
 fi
 logoLcdOled
 rm -rf /var/lib/alsa

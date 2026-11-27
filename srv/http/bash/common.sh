@@ -783,3 +783,8 @@ webradioCount() {
 	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
 	pushRadioList
 }
+xExportEnv() {
+	export DISPLAY=:0
+	export XAUTHORITY=/root/.Xauthority
+	[[ $1 ]] && xset dpms force $1 # on / off
+}

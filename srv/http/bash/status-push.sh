@@ -78,12 +78,12 @@ if [[ -e $dirsystem/stoptimer ]]; then
 	fi
 fi
 if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-	export DISPLAY=:0
+	xExportEnv
 	if [[ $PLAY ]]; then
-		sudo xset dpms force on
-		sudo xset -dpms
+		xset dpms force on
+		xset -dpms
 	else
-		sudo xset +dpms
+		xset +dpms
 	fi
 fi
 [[ ! $WEBRADIO && -e $dirsystem/librandom ]] && libraryRandom &

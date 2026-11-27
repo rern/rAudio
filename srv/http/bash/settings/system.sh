@@ -317,7 +317,8 @@ tftcalibrate )
 	rotate=$( grep rotate $file_config | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$rotate,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
-	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
+	xExportEnv
+	value=$( xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then
 		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser

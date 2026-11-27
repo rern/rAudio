@@ -35,6 +35,7 @@ SWIPE();
 if ( V.localhost ) { // limit animation (high cpu load)
 	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot local ' );
 	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'local' );
+	$( '#power' ).addClass( 'sub' );
 }
 
 $( 'body' ).on( 'click', function( e ) {

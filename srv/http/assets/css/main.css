@@ -115,6 +115,7 @@ a {
 }
 .menu a.sub + .submenu {
 	display: inline-block;
+	height: 40px;
 }
 .menu a {
 	display: inline-block;
@@ -167,9 +168,6 @@ a {
 	height: 18px;
 	background: var( --cg );
 }
-#screenoff {
-	border-left: 1px solid #000000;
-}
 #settings {
 	position: fixed;
 	float: right;
@@ -182,6 +180,9 @@ a {
 }
 #power, #screenoff {
 	background: var( --cga );
+}
+#power.sub {
+	border-color: var( --cgd );
 }
 #settings i.on {
 	color: var( --cml );

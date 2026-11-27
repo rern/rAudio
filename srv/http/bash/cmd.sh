@@ -250,7 +250,7 @@ savedplsave )
 	savedPlCount
 	;;
 screenoff )
-	DISPLAY=:0 xset dpms force off
+	xExportEnv off
 	;;
 seek )
 	touch $dirshm/skip
