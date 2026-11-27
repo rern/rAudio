@@ -284,9 +284,7 @@ function renderPage() {
 		$( '#dop' ).prop( 'checked', S.dop );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => {
-		$( '#'+ k )
-			.next().addBack()
-			.toggleClass( 'hide', ! S.lists[ k ] );
+		$( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] );
 	} );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	CONTENT();

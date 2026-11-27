@@ -12,8 +12,8 @@ file_backup=$dirshm/backup.gz
 dir_config=$dirdata/config
 
 playerStop
-[[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
+killProcess cmdlist
 rm -rf $dirdata/{mpd,playlists,webradio}
 if [[ $LIBRARY_ONLY ]]; then
 	bsdtar xpf $file_backup -C /srv/http data/{mpd,playlists,webradio}

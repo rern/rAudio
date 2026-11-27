@@ -4,79 +4,63 @@
 
 args2var "$1"
 
-if [[ $CMD == get ]]; then
-	format=%${TAGS// /%^%}%
-	lines=$( mpc ls -f $format "$FILE" | grep -Ev '\.m3u8*$|\.pls$' )
-	if [[ $FILE == *.cue ]]; then
-		lines=$( grep '\^' <<< $lines )
-		[[ $TRACK ]] && values=$( sed -n ${TRACK}p <<< $lines ) # track
-	else
-		if [[ -f "/mnt/MPD/$FILE" ]]; then
-			values=$lines                                       # track
-			f=$FILE
-		else
-			f=$( mpc ls "$FILE" | head -n 1 )
-		fi
-		[[ $f == *.wav ]] && wav_albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/$f" )
-	fi
-	if [[ ! $values ]]; then                                    # album
-		i=1
-		for tag in $TAGS; do
-			v=$( cut -d^ -f $i <<< $lines | sort -u )
-			(( $( wc -l <<< $v ) > 1 )) && v=*
-			values+="^$v"
-			(( i++ ))
-		done
-		values=${values:1}
-	fi
-	IFS=^ read -r $TAGS <<< "$values"
-	[[ $wav_albumartist ]] && albumartist=$wav_albumartist
-	for tag in $TAGS; do
-		arg+=( --arg $tag "${!tag}" )
-		json+=", $tag: \$$tag"
+tagUpdate() {
+	[[ -f $FILE ]] && dirupdate=$( dirname "${FILE:9}" ) # /mnt/MPD/path/dir/... > path/dir
+	mpcUpdate update "$dirupdate"
+}
+
+if [[ $FILE != *.cue ]]; then
+	[[ ! $TRACK ]] && all='/*.*'
+	argslast=${args[@]: -1}
+	TAGS=( ${argslast/CMD FILE } ) # CMD FILE ALBUM ARTIST ... > ALBUM ARTIST ...
+	for T in "${TAGS[@]}"; do
+		v=$( quoteEscape ${!T} )
+		kid3-cli -c "set ${T,,} \"$v\"" "$FILE"$all
 	done
-	jq -n "${arg[@]}" "{ ${json:1} }"
+	tagUpdate
 	exit
 #-------------------------------------------------------------------------------
 fi
 
-path="/mnt/MPD/$FILE"
-argslast=${args[@]: -1} # CMD ALBUM ALBUMARTIST ... FILE - omit unchanged
-[[ -f $path ]] && IS_TRACK=1
-
-if [[ $FILE != *.cue ]]; then
-	KEYS=( ${argslast:4:-5} ) # remove CMD and FILE
-	for K in "${KEYS[@]}"; do
-		k=${K,,}
-		v=${!K}
-		[[ $v == '*' ]] && continue
-		
-		[[ $v ]] && v=$( quoteEscape $v )
-		[[ ! $IS_TRACK ]] && all='/*.*'
-		kid3-cli -c "set $k \"$v\"" "$path"$all
+head -c3 "$FILE" | grep -q $'^\xEF\xBB\xBF' && sed -i '1s/^\xEF\xBB\xBF//' "$FILE" # remove bom
+grep -q $'\r' "$FILE" && perl -0777 -pi -e 's/\r\n?/\n/g' "$FILE"                  # remove \r
+if [[ ! $TRACK ]]; then # album level -------------------------------------
+	for T in COMPOSER CONDUCTOR DATE GENRE; do # less priority than in track
+		v=${!T}
+		if [[ $v && $v != '*' ]]; then
+			tag+="
+REM $T \"$v\""
+			del+="|$T"
+		fi
 	done
-	[[ $IS_TRACK ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
-else
-	if [[ $IS_TRACK ]]; then
-		sed -i -E '/^\s+TRACK '$TRACK'/ {
-n; s/^(\s+TITLE).*/\1 "'$TITLE'"/
-n; s/^(\s+PERFORMER).*/\1 "'$ARTIST'"/
-}
-' "$path"
-	else
-		[[ $ALBUM ]]       && data="\
-TITLE $ALBUM"
-		[[ $ALBUMARTIST ]] && data+="
-PERFORMER $ALBUMARTIST"
-		for k in COMPOSER CONDUCTOR GENRE DATE; do
-			data+="
-REM $k ${!k}"
-		done
-		data+="
-$( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path" )"
-		echo "$data" > "$path"
-	fi
-	dirupdate=$( dirname "$FILE" )
+	[[ $ALBUM ]]       && tag+="
+TITLE \"$ALBUM\""
+	[[ $ALBUMARTIST ]] && tag+="
+PERFORMER \"$ALBUMARTIST\""
+	tag+="
+$( grep ^FILE "$FILE" )"
+	echo "$tag" > $dirshm/tag
+	line=$(( $( sed -n -E '/^\s+TRACK 01 / {=; q}' "$FILE" ) - 1 ))
+	sed -i -E -e "1 e cat $dirshm/tag
+" -e "1,$line d
+" -e "/^\s+REM (${del:1})/ d
+" "$FILE"
+else # track level ---------------------------------------------------------
+	(( $TRACK < 10 )) && TRACK=0$TRACK
+	data=$( sed -n -E "/^\s+TRACK $TRACK /,/^\s+INDEX/ p" "$FILE" )
+	tag="\
+$( head -n 1 <<< $data )
+    TITLE \"$TITLE\""
+	[[ $ARTIST ]] && tag+="
+    PERFORMER \"$ARTIST\""
+	for T in COMPOSER CONDUCTOR DATE GENRE; do
+		[[ ${!T} ]] && tag+="
+    REM $T \"${!T}\""
+	done
+	tag+="
+$( tail -n 1 <<< $data )"
+	echo "$tag" > $dirshm/tag
+	sed -i -E -e "/^\s+TRACK $TRACK /,/^\s+INDEX/ {/^\s+TRACK $TRACK /r $dirshm/tag" -e 'd}' "$FILE"
 fi
-
-mpcUpdate update "$dirupdate"
+rm $dirshm/tag
+tagUpdate

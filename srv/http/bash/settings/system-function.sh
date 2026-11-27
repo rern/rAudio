@@ -4,7 +4,7 @@ configReboot() {
 	[[ ! $ON ]] && return
 	
 	pushData reboot '{ "id": "'$CMD'" }'
-	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+	name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p; q}" /srv/http/settings/system.php )
 	appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 }
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
@@ -20,7 +20,7 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 	[[ ! $config ]] && config=$( < $file_config )
 	config=$( grep -Ev '^#|^\s*$' <<< $config )
 	if [[ $I2CSET ]]; then
-		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && TFT=1
+		grep -Eq 'dtoverlay=.*:rotate=' <<< $config && TFT=1
 		[[ -e $dirsystem/lcdchar ]] && I2C_LCDCHAR=1
 		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
 		# $SPI / $I2C - from mpdoled )

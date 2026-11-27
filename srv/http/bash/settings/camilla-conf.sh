@@ -27,7 +27,7 @@ else
 fi
 
 [[ $icon ]] && icon='<i class="i-'$icon'"></i>'
-notify 'camilla blink' "$icon Config" "${FILE_CONFIG/*configs\/}"
+[[ -e $dishm/startup ]] && notify 'camilla blink' "$icon Config" "${FILE_CONFIG/*configs\/}"
 
 if [[ -e $FILE_CONFIG ]]; then
 	EXISTING=1

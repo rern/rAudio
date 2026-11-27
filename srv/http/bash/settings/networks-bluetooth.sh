@@ -169,7 +169,7 @@ $dirsettings/player-conf.sh
 
 if [[ $CONNECTED ]]; then
 	notify.state Ready
-	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback play
+	grep -q -m1 bluetooth=true $dirsystem/autoplay.conf && playback
 fi
 systemctl try-restart rotaryencoder
 pushRefresh networks system

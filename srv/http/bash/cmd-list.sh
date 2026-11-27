@@ -11,6 +11,7 @@
 
 killProcess cmdlist
 echo $$ > $dirshm/pidcmdlist
+trap 'rm -f $dirmpd/listing $dirshm/latest' EXIT SIGKILL SIGTERM
 
 file_album=$dirmpd/albumbyartist-year
 file_latest=$dirmpd/latestbyartist-year
@@ -42,19 +43,15 @@ updateDone() {
 	updatetime="(Scan: $( timeFormat $mpdtime ) · Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	counts+=$( countMnt )
-	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
-	touch $dirshm/updatedone
 	pushStatus
 	pushRefresh player
-	( sleep 5; rm -f $dirmpd/listing )& # debounce mpc idleloop
+	sleep 5 # suppress mpdidle.sh with small database
+	pushData mpdupdate '{ "updating": false, "counts": { '$counts' } }'
 }
 
-touch $dirmpd/listing
-if [[ -e $dirshm/latest ]] || grep -qs ^latest=true $dirsystem/mpcupdate.conf &> /dev/null; then
-	LATEST_APPEND=1
-fi
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/updatestart $dirsystem/mpcupdate.conf $dirshm/latest
+rm -f $dirmpd/{updatestart,updating}
+touch $dirmpd/listing
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
@@ -110,21 +107,13 @@ if [[ ! $albumlist ]]; then # very large database
 	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then
-	dirwav=$( sed -n -E '/\.wav$/ {s/.*\^//; s|/[^/]+$||; p}' <<< $albumlist | sort -u ) # mpd not support *.wav albumartist
-	if [[ $dirwav ]]; then
-		while read dir; do
-			file=$( ls "/mnt/MPD/$dir/"*.wav | head -n 1 )
-			albumartist=$( kid3-cli -c 'get albumartist' "$file" 2> /dev/null )
-			[[ $albumartist ]] && albumlist=$( sed -n '\|\^'$dir'\/.*wav$| {s/[^^]*/'$albumartist'/; p}' <<< $albumlist )
-		done <<< $dirwav
-	fi
 	albumlist=$( sort -u <<< $albumlist )
 ##### latest
 	if [[ -e $file_album ]]; then # skip if initial scan
 		sed -i 's/^...//' $file_album  # remove I^^ leading index for compare
 		latest=$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album )
 					 # suppress if in: [2]only, [3]both -- stdout in: [1]only >> new latest
-		if [[ -e $file_latest && ( ! $latest || $LATEST_APPEND ) ]]; then
+		if [[ -e $file_latest && ( ! $latest || -e $dirshm/latest ) ]]; then
 			sed -i 's/^...//' $file_latest
 			latestprev=$( comm -12 --nocheck-order $file_latest <( echo "$albumlist" ) ) # previous latest - omit removed albums
 							 # suppress if in: [1]only, [2]only -- stdout in: [3]both >> previous latest
@@ -145,7 +134,7 @@ fi
 ##### mode others
 modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
 modelatest='latest latestbyartist latestbyartist-year'
-for mode in albumartist artist composer conductor date genre; do
+for mode in ${modes/*year }; do
 	data=$( mpc list $mode | awk NF )
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done

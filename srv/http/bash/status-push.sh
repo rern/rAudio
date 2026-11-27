@@ -78,16 +78,13 @@ if [[ -e $dirsystem/stoptimer ]]; then
 	fi
 fi
 if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-	export DISPLAY=:0
+	xExportEnv
 	if [[ $PLAY ]]; then
-		sudo xset dpms force on
-		sudo xset -dpms
+		xset dpms force on
+		xset -dpms
 	else
-		sudo xset +dpms
+		xset +dpms
 	fi
 fi
-if [[ ! $WEBRADIO && -e $dirsystem/librandom ]]; then
-	. $dirbash/cmd-function.sh
-	plAddRandom &
-fi
+[[ ! $WEBRADIO && -e $dirsystem/librandom ]] && libraryRandom &
 [[ $PLAY && $data_scrobble ]] && scrobble "$data_scrobble" # play only (stop: scrobbleOnStop)

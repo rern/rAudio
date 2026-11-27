@@ -1,5 +1,9 @@
 <?php // for library.php, playlist.php
 $hash = '?v=1788510890';
+
+function cueFile( $path ) {
+	return str_ends_with( $path, '.cue' );
+}
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
@@ -26,6 +30,7 @@ function icon(  $icon, $menu = '' ) {
 }
 function iconThumb( $thumbsrc, $menu ) {
 	global $hash;
+	$menu = $menu ?: 'file';
 	return '<img class="iconthumb li-icon" loading="lazy" src="'.rawurlencode( $thumbsrc ).$hash.'" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
@@ -63,6 +68,19 @@ function indexBar( $indexes ) {
 	return '</ul>
 <div class="index index0">'.$indexbar.'</div>
 <div class="index index1">'.$indexbar1.'</div>';
+}
+function MphpD() {
+	require_once 'MphpD/MphpD.php';
+	$MPD = new \FloFaber\MphpD\MphpD( [ 'host' => '127.0.0.1', 'port' => 6600 ] );
+	$MPD->connect();
+	return $MPD;
+}
+function MphpD_filter( $target ) {
+	if ( is_string( $target[ 0 ] ) ) return new \FloFaber\MphpD\Filter( ...$target );
+	
+	$filter = new \FloFaber\MphpD\Filter( ...array_shift( $target ) );
+	foreach ( $target as $t ) $filter->and( ...$t );
+	return $filter;
 }
 function radioDir( $url ) {
 	static $map = null;

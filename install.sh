@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20261114
+restart+=rotaryencoder$'\n'
+
 # 20261101
 if [[ ! -e $dirshm/alsa ]]; then
 	mv /var/lib/alsa $dirshm/alsa
@@ -109,56 +112,6 @@ if [[ $( pacman -Q mpd_oled ) < 'mpd_oled 0.04-1' ]]; then
 	fi
 fi
 
-# 20260922
-file=/etc/spotifyd.conf
-if ! grep -q status-spotifyd $file; then
-	sed -i 's|spotifyd.sh|status-&|' $file
-	restart+=spotifyd$'\n'
-	sed -i -E '/^control|^mixer/ d' $file
-fi
-
-file=/etc/systemd/system/shairport.service
-if ! grep -q status-shairport $file; then
-	sed -i 's|shairport.sh|status-&|' $file
-	restart+=shairport$'\n'
-	
-	file=/etc/shairport-sync.conf
-	name=$( getVar name $file )
-	output=$( getVar output_device $file )
-	mixer=$( getVar mixer_control_name $file )
-	cat << EOF > $file
-general = {
-	name = "$name";
-	run_this_when_volume_is_set = "/bin/sudo /srv/http/bash/cmd.sh volumepush";
-	dbus_service_bus = "system";
-	volume_control_profile = "flat";
-	volume_range_db = 36;
-};
-sessioncontrol = {
-	run_this_before_play_begins = "/bin/sudo /bin/systemctl start shairport";
-	run_this_after_play_ends = "/bin/sudo /srv/http/bash/cmd.sh playerstop";
-};
-alsa = {
-	output_device = "$output";
-	mixer_control_name = "$mixer";
-}
-EOF
-fi
-
-# 20260909
-touch /root/{.bash,.php,.python}_history
-
-! grep -m1 -q ^UDP_PORT $dirbash/websocket.py && restart+=websocket$'\n'
-! grep -m1 -q ^declare $dirbash/rotaryencoder.sh && restart+=rotaryencoder$'\n'
-
-[[ $( < $dirshm/player ) == upnp ]] && touch $dirshm/upnp
-
-chown -R http:http $dirdata/{audiocd,webradio,dabradio} &> /dev/null
-
-[[ -e /boot/kernel.img ]] && sed -i 's|/+R||' /etc/pacman.conf
-
-[[ $( pacman -Q audiocd-meta 2> /dev/null ) < 'audiocd-meta 1.0.4-2' ]] && packages+=' audiocd-meta'
-
 #-------------------------------------------------------------------------------
 [[ $packages ]] && pacman -Sy --noconfirm $packages
 
@@ -208,11 +161,8 @@ fi
 
 [[ -e /bin/vapoursynth ]] && pacman -Rdd --noconfirm vapoursynth # fix: armv7h terminal error on open
 
-# 20260909
-$dirbash/webradio-convert.sh
-
 installfinish
 
-# 202621010
+# 20261101
 $dirsettings/player-conf.sh
 [[ $warning ]] && echo "$warning"

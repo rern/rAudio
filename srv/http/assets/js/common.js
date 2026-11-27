@@ -68,7 +68,6 @@ W             = {  // from websocket.py (server)
 		COMMON.loader();
 		BANNER( action +' blink', 'Power', COMMON.capitalize( action ) +' ...', -1 );
 		if ( action === 'off' ) {
-			$( '#loader' ).css( 'opacity', 1 );
 			$( 'body' ).children().not( '#banner, #loader' ).remove();
 			setTimeout( () => {
 				$( '#banner' ).addClass( 'hide' );
@@ -221,18 +220,17 @@ function BASH( args, callback, json ) {
 			COMMON.debugConsole( data );
 		} else {
 			WS.send( data );
-			return
 		}
+		return
 	}
 	// php
 	var data = { cmd: 'bash', filesh: filesh }
 	if ( args.length ) data.args = args;
 	if ( V.debug ) {
 		COMMON.debugConsole( data );
-		return
+	} else {
+		$.post( 'cmd.php', data, callback || null, json || null );
 	}
-	
-	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function ICON( icon, id, tabindex ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"'+ ( tabindex ? ' tabindex="0"' : '' ) +'></i>';
@@ -978,7 +976,6 @@ var _INFO     = {
 		if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 	}
 	, reset         : () => {
-		_INFO.toggle( 'reset' );
 		$( '#infoOverlay' )
 			.addClass( 'hide' )
 			.removeAttr( 'style' )
@@ -1018,35 +1015,19 @@ var _INFO     = {
 			}
 		} );
 	}
-	, toggle        : reset => {
-		if ( reset ) {
-			var height    = '';
-			var overflow  = '';
-			var padding   = I.padding;
-		} else {
-			I.active      = true;
-			I.padding     = PAGE ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
-			var height    = '150vh';
-			var overflow  = 'hidden';
-			var padding   = 0;
-			$( '#infoOverlay' ).removeClass( 'hide' );
-			if ( I.buttonfit ) return
+	, toggle        : () => {
+		I.active   = true;
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() +'px' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		if ( I.buttonfit ) return
 
-			var $buttonhide = $( '#infoButton a.hide' );
-			$buttonhide.removeClass( 'hide' );
-			var widest = 0;
-			$( '#infoButton a' ).each( ( i, el ) => {
-				var w = $( el ).outerWidth();
-				if ( w > widest ) widest = w;
-			} );
-			$buttonhide.addClass( 'hide' );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
-			$( '#infoOverlay' ).trigger( 'focus' );
-		}
-		if ( ! PAGE ) {
-			$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
-			$( '.list' ).css( 'padding-bottom', padding );
-		}
+		var widest = 0;
+		$( '#infoButton a' ).each( ( i, el ) => {
+			var w = $( el ).outerWidth();
+			if ( w > widest ) widest = w;
+		} );
+		if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+		$( '#infoOverlay' ).trigger( 'focus' );
 	}
 	, val           : array => {
 		var $this, type, name, val;
@@ -1572,7 +1553,7 @@ var COMMON    = {
 		}
 	}
 	, scrollToView  : $el => {
-		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).offset().top ) {
+		if ( COMMON.bottom( $el ) > $( '#bar-bottom' ).position().top ) {
 			$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 		}
 	}
@@ -1681,22 +1662,17 @@ var COMMON    = {
 }
 var VOLUME    = {
 	  command  : type => { // type: mute / unmute
-		if ( VOLUME.limit() ) return
-		
 		var vol_prev = +$( '#volume-level' ).text();
 		if ( S.volume === vol_prev ) return
 
+		if ( S.volumelimit && S.volume > S.volumemax ) {
+			S.volume = S.volumemax;
+			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+		}
 		if ( S.volume ) S.volumemute = 0
 		if ( V.drag || V.press ) type = 'dragpress';
 		BASH( [ 'volume', vol_prev, S.volume, S.control, type, S.fnvolume
 			  , 'CMD CURRENT TARGET CONTROL TYPE FN_VOLUME' ] );
-	}
-	, limit    : () => {
-		if ( S.volumelimit && S.volume > S.volumemax ) {
-			S.volume = S.volumemax;
-			BANNER( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
-			return true
-		}
 	}
 	, percent2db : pct => {
 		var min  = -60 * 100;              // to centidB
@@ -1744,9 +1720,9 @@ var VOLUME    = {
 }
 var WEBSOCKET = { // WS.onmessage from / WS.send to - websocket.py (server)
 	  connect : ip => {
-		if ( WS ) {                                                                // terminate existing
-			WS.onclose = null;
-			WS.close();
+		if ( WS ) {
+			WS.onopen = WS.onmessage = WS.onerror = WS.onclose = null;
+			if ( WS.readyState <= WebSocket.OPEN ) WS.close(); // connecting or open
 		}
 		WS           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' ); // init
 		var interval = null;

@@ -211,6 +211,16 @@ data2json() {
 		echo "$json"
 	fi
 }
+dir2path() {
+	if [[ $1 == /* ]]; then
+		echo "$1"
+	elif [[ $1 == [NSU]* ]]; then
+		echo "/mnt/MPD/$1"
+	else
+		line=$( grep -m1 ^$1 $dirmpd/radio )
+		echo "${line/*^}"
+	fi
+}
 equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	v=( $VALUES )
@@ -219,6 +229,35 @@ equalizer() { # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 		band=( "0$i. ${freq[i]} $unit" )
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
+}
+getVar() { # var=value
+	[[ ! -e $2 ]] && echo false && return
+#...............................................................................
+	case ${2: -4} in
+		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p; q}' "$2";;                   # /var: value/ > value
+		.yml )
+			if [[ $1 != *.* ]]; then
+				sed -n '/^\s*'$1':/ {s/^.*: \+//; p; q}' "$2"                        # /var: value/ > value
+			else
+				local a b
+				a=${1/.*}
+				b=${1/*.}
+				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p; q}' "$2" # /var1:/,/var2: value/ > value
+			fi
+			;;
+		* )
+			local data line var
+			data=$( < "$2" )
+			line=$( grep -m1 ^$1= <<< $data )                                    # var=
+			[[ ! $line ]] && grep -m1 -q [[:alnum:]]= <<< $data && return
+#...............................................................................
+			[[ ! $line ]] && line=$( grep -m1 -E "^${1// /|^}" <<< $data )       # var
+			[[ ! $line ]] && line=$( grep -m1 -E "^\s*${1// /|^\s*}" <<< $data ) #     var
+			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )             # var value > var=value
+			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )        # var=value || var = value || var="value"; > value
+			[[ $var ]] && quoteEscape $var || echo $3
+			;;
+	esac
 }
 imageCacheBust() {
 	sed -i -E "s/^(.hash *= ).*/\1'?v=$1';/" /srv/http/function.php
@@ -237,6 +276,28 @@ killProcess() {
 	if [[ -e $filepid ]]; then
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
+	fi
+}
+libraryRandom() {
+	local ab cuefile dir dirlast mpcls plL range
+	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -n 1 )" )
+	if [[ $dir == $dirlast ]]; then # force different album
+		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -n 1 | cut -d^ -f7 )
+	fi
+	if [[ -s $dirsystem/librandom ]]; then # album
+		mpc -q add "$dir"
+	else
+		mpcls=$( mpc ls "$dir" )
+		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
+		if [[ $cuefile ]]; then
+			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
+			range=$( shuf -i 0-$plL -n 1 )
+			mpc --range=$range load "$cuefile"
+		else
+			mpc -q add "$( shuf -n 1 <<< $mpcls )"
+		fi
 	fi
 }
 lineCount() {
@@ -258,7 +319,67 @@ mkdirRW() {
 	mkdir $1
 	chmod 777 $1
 }
-mpcPlayback() {
+mpcUpdate() {
+	killProcess cmdlist
+	date +%s > $dirmpd/updatestart
+	pushData mpdupdate '{ "updating": true }'
+	if [[ $1 ]]; then
+		[[ $1 ]] && ACTION=$1
+		[[ $2 ]] && PATHMPD=$2
+		echo "$PATHMPD" > $dirmpd/updating
+	else
+		if [[ -s $dirmpd/updating ]]; then # update not finished when reboot
+			ACTION=update
+			PATHMPD=$( < $dirmpd/updating )
+		else
+			ACTION=rescan
+		fi
+	fi
+	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
+	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
+}
+netDevice() {
+	ls /sys/class/net | grep ^$1 | tail -n 1
+}
+nextPrevious() { # rotaryencoder.sh, bluetooth-button.sh
+	! playerActive mpd && return
+	
+	local length POS
+	read length POS state < <( mpc status '%length% %songpos% %state%' )
+	if [[ $1 == PREVIOUS ]]; then
+		(( $POS == 1 )) && POS=$length || (( POS-- ))
+	else
+		(( $POS == $length )) && POS=1 || (( POS++ ))
+	fi
+	[[ $state == playing ]] && ACTION=play
+	skip
+}
+nfsServerActive() {
+	systemctl -q is-active nfs-server && return 0
+}
+notify() { # icon title message delayms
+	local data delay icon json message title
+	if [[ $4 ]]; then
+		delay=$4
+	else
+		[[ ${1: -5} == 'blink' ]] && delay=-1 || delay=3000
+	fi
+	icon=$1
+	title=$( quoteEscape $2 )
+	message=$( quoteEscape $3 )
+	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+}
+playerActive() {
+	[[ $( < $dirshm/player ) == $1 ]] && return 0
+}
+playback() {
+	(( $( mpc status %length% ) == 0 )) && return
+# --------------------------------------------------------------------
+	if ! playerActive mpd; then
+		playerStop
+		return
+# --------------------------------------------------------------------
+	fi
 	if [[ ! $ACTION ]]; then
 		statePlay && ACTION=pause || ACTION=play 
 	fi
@@ -293,66 +414,6 @@ mpcPlayback() {
 		systemctl stop snapclient
 	fi
 }
-mpcSkip() {
-	radioStop
-	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-	mpc -q play $POS
-	[[ $ACTION != play ]] && mpc -q stop
-	. <( mpc status 'consume=%consume%; songpos=%songpos%' )
-	[[ $consume == on ]] && mpc -q del $songpos
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
-}
-mpcUpdate() {
-	[[ $1 ]] && ACTION=$1
-	[[ $2 ]] && PATHMPD=$2
-	rm -f $dirshm/updatedone
-	date +%s > $dirmpd/updatestart
-	pushData mpdupdate '{ "updating": true }'
-	if [[ ! $ACTION ]]; then
-		if [[ -e $dirsystem/mpcupdate.conf ]]; then # update not finished when reboot
-			. <( cat $dirsystem/mpcupdate.conf )
-			ACTION=$action
-			PATHMPD=$pathmpd
-		else
-			ACTION=rescan
-		fi
-	fi
-	[[ ! -e $dirmpd/mpd.db ]] && ACTION=rescan
-	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
-}
-netDevice() {
-	ls /sys/class/net | grep ^$1 | tail -n 1
-}
-nfsServerActive() {
-	systemctl -q is-active nfs-server && return 0
-}
-notify() { # icon title message delayms
-	local data delay icon json message title
-	if [[ $4 ]]; then
-		delay=$4
-	else
-		[[ ${1: -5} == 'blink' ]] && delay=-1 || delay=3000
-	fi
-	icon=$1
-	title=$( quoteEscape $2 )
-	message=$( quoteEscape $3 )
-	pushWebsocket notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
-}
-playback() {
-	! playerActive mpd && playerStop && return
-# --------------------------------------------------------------------
-	(( $( mpc status %length% ) == 0 )) && return
-# --------------------------------------------------------------------
-	if [[ $1 ]]; then
-		ACTION=$1
-	else
-		statePlay && ACTION=pause || ACTION=play
-	fi
-	mpcPlayback
-}
-playerActive() {
-	[[ $( < $dirshm/player ) == $1 ]] && return 0
-}
 playerStart() {
 	local player service
 	player=$1
@@ -383,7 +444,6 @@ playerStop() {
 		bluetooth )
 			rm -f $dirshm/{sink,source,source_dbus}
 			systemctl restart bluetooth
-			volumeMpdRestore
 			;;
 		mpd )
 			radioStop
@@ -412,8 +472,8 @@ playerStop() {
 plClear() {
 	radioStop
 	mpc -q clear
-	rm -f $dirsystem/librandom $dirshm/playlist*
-	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
+	rm -f $dirsystem/librandom
+	pushData playlist '{ "blank": true }'
 	pushStatus
 }
 pushData() { # send to websocket.py (server)
@@ -442,17 +502,22 @@ pushPlaylist() {
 	[[ -e $dirshm/pushplaylist ]] && return
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
-	pushData playlist '{ "blink": true }'
-	rm -f $dirshm/playlist*
 	if [[ $( mpc status %length% ) == 0 ]]; then
 		pushData playlist '{ "blank": true }'
 	else
-		data='{ "channel": "playlist", "data": '$( php /srv/http/playlist.php current )' }'
-		bytes=$( printf '%s' "$data" | wc -c )
-		(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
-		websocat --text $buffer ws://127.0.0.1:8080 <<< $data
+		if [[ -e $dirshm/playlist ]]; then
+			data='{ "channel": "playlist", "data": '$( < $dirshm/playlist )' }'
+			bytes=$( printf '%s' "$data" | wc -c )
+			(( $bytes > 65536 )) && buffer="-B $(( bytes + 100 ))"
+			websocat --text $buffer ws://127.0.0.1:8080 <<< $data
+		else
+			php /srv/http/playlist.php current push
+		fi
 	fi
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
+}
+pushRadioList() {
+	pushData radiolist '{ "type": "webradio" }'
 }
 pushRefresh() {
 	local page pages
@@ -460,6 +525,13 @@ pushRefresh() {
 	for page in $pages; do
 		$dirsettings/$page-data.sh push
 	done
+}
+pushSavedPlaylist() {
+	if [[ $( ls $dirdata/playlists ) ]]; then
+		php /srv/http/playlist.php playlists push
+	else
+		pushData playlists '{ "count": 0 }'
+	fi
 }
 pushStatus() {
 	$dirbash/status-push.sh
@@ -481,6 +553,12 @@ radioStop() {
 	rm -f $dirshm/radio
 	pushStatus
 	[[ -e $dirsystem/mpdoled ]] && systemctl stop mpd_oled
+}
+savedPlCount() {
+	playlists=$( ls $dirplaylists | wc -l )
+	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
+	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
+	pushSavedPlaylist
 }
 scrobble() {
 	readarray -t data <<< $1
@@ -511,18 +589,12 @@ serviceIO() {
 		renice -n -19 -p $pid &> /dev/null
 	done
 }
-skip() {
-	! playerActive mpd && return
-	
-	local length songpos
-	read length songpos state < <( mpc status '%length% %songpos% %state%' )
-	ACTION=${state:0:4} # state: playing, paused, stopped
-	if [[ $1 == PREVIOUS ]]; then
-		(( $songpos == 1 )) && POS=$length || POS=$(( songpos - 1 ))
-	else
-		(( $songpos == $length )) && POS=1 || POS=$(( songpos + 1 ))
-	fi
-	mpcSkip
+skip() { # context.js, nextPrevious
+	radioStop
+	[[ $( mpc current ) == cdda* ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+	mpc -q play $POS
+	[[ $ACTION != play ]] && mpc -q stop
+	[[ -e $dirsystem/librandom ]] && libraryRandom || pushData mpdplayer '{ "position": '$POS' }'
 }
 splashRotate() {
 	local dirimg rotate
@@ -541,6 +613,10 @@ splashRotate() {
 }
 statePlay() {
 	test $( jq .play $dirshm/status.json ) == true
+}
+urldecode() { # for webradio url to filename
+	: "${*//+/ }"
+	echo -e "${_//%/\\x}"
 }
 volume() {
 	local diff type val values
@@ -611,7 +687,7 @@ volumeMpdRestore() {
 	fi
 	[[ ! $MAC ]] && return
 	 # save bluetooth volume
-	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p}}' /var/lib/bluealsa/$MAC )
+	db=$( sed -n -E '/'${TYPE/bt}']$/,/^Volume/ {/^Volume/ {s/.*=|;.*//g; p; q}}' /var/lib/bluealsa/$MAC )
 	awk -v db=$db '
 			BEGIN {
 				s = int( 127 * 2^( db / 1000 ) + 0.5 )
@@ -699,4 +775,16 @@ volume.value() {
 	else
 		echo $val
 	fi
+}
+webradioCount() {
+	local counts
+	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
+	counts+=$( countRadio )
+	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
+	pushRadioList
+}
+xExportEnv() {
+	export DISPLAY=:0
+	export XAUTHORITY=/root/.Xauthority
+	[[ $1 ]] && xset dpms force $1 # on / off
 }

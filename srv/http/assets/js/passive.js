@@ -18,14 +18,7 @@ W = {
 					}
 				}
 			} else if ( V.playlist && V.playlisthome ) {
-				if ( S.webradio ) {
-					var $icon = $( '#pl-list li.active .li-icon' );
-					if ( $icon.is( 'i' ) ) {
-						$icon.replaceWith( '<img class="iconthumb li-icon" src="'+ src +'" data-menu="filesavedpl">' );
-					} else {
-						$icon.attr( 'src', src );
-					}
-				}
+				PLAYLIST.radioCover( src );
 			}
 		} else {
 			if ( data.type === 'thumbnail' && V.playback ) return
@@ -102,7 +95,12 @@ W = {
 		
 		COMMON.json.update( C, data.counts );
 		if ( V.library ) {
-			V.libraryhome ? DISPLAY.library() : $( '#lib-list li' ).removeClass( 'nodata' );
+			if ( V.libraryhome ) {
+				DISPLAY.library();
+			} else if ( MODE.file() ) {
+				$( '#lib-title a' ).last().trigger( 'click' );
+				$( '#lib-list li' ).removeClass( 'nodata' );
+			}
 		}
 		BANNER( 'refresh-library', 'Library Update', 'Done' );
 	}
@@ -121,12 +119,8 @@ W = {
 	, playlist  : data => {
 		if ( V.local || V.sort || $( '.pl-remove' ).length ) return
 		
-		if ( 'blink' in data ) {
-			PLAYLIST.blink();
-			return
-		}
-		
-		PLAYLIST.blink( 'off' );
+		S.pllength       = data.pllength;
+		S.position       = data.position;
 		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
 			if ( V.playback ) {
@@ -135,13 +129,12 @@ W = {
 				PLAYLIST.render.home();
 			}
 			BANNER_HIDE();
-		} else {
-			if ( playlisthome ) PLAYLIST.render.home( data );
-			REFRESHDATA();
+		} else if ( playlisthome ) {
+			PLAYLIST.render.home( data );
 		}
 	}
 	, playlists : data => {
-		if ( V.sort ) return
+		if ( ! V.playlist || V.sort ) return
 		
 		PLAYLIST.playlists.addClear();
 		var count   = data.count;

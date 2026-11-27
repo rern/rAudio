@@ -35,6 +35,7 @@ SWIPE();
 if ( V.localhost ) { // limit animation (high cpu load)
 	V.blinkdot = V.blinkdot.replace( /dot /g, 'dot local ' );
 	$( '.page-icon, #bar-bottom i, .i-libupdate' ).addClass( 'local' );
+	$( '#power' ).addClass( 'sub' );
 }
 
 $( 'body' ).on( 'click', function( e ) {
@@ -531,11 +532,7 @@ $( '#map-cover i' ).on( 'click', function( e ) {
 		case 'repeat':
 			if ( S.repeat ) {
 				if ( S.single ) {
-					[ 'repeat', 'single' ].forEach( option => {
-						S[ option ] = false;
-						BASH( [ 'mpcoption', option, false, 'CMD OPTION TF' ] );
-					} );
-					PLAYBACK.button.options();
+					[ 'repeat', 'single' ].forEach( cmd => PLAYLIST.pushOption( cmd, false ) );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -555,11 +552,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( S.player === 'mpd' && S.state === cmd ) return
 
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
-		var tf   = ! S[ cmd ];
-		S[ cmd ] = tf;
-		BASH( [ 'mpcoption', cmd, tf, 'CMD OPTION TF' ] );
-		PLAYBACK.button.options();
-		LOCAL( 600 );
+		PLAYLIST.pushOption( cmd, ! S[ cmd ] );
 	} else {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
@@ -568,7 +561,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			PLAYBACK.vu();
 			PLAYBACK.info.color();
-			BASH( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
+			BASH( [ 'playback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
 			UTIL.intervalClear( 'elapsed' );
@@ -593,14 +586,14 @@ $( '.btn-cmd' ).on( 'click', function() {
 				return
 			}
 
-			if ( S.pllength ) BASH( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
+			if ( S.pllength ) BASH( [ 'playback', 'stop', 'CMD ACTION' ] );
 		} else if ( cmd === 'pause' ) {
 			if ( S.stop ) return
 
 			S.state = cmd;
 			UTIL.intervalClear( 'elapsed' );
 			PLAYBACK.info.color();
-			BASH( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
+			BASH( [ 'playback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 
@@ -705,7 +698,6 @@ $( '#button-lib-search' ).on( 'click', function() {
 	var query = {
 		  library : 'search'
 		, string  : keyword
-		, format  : [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ]
 	}
 	LIST( query, function( data ) {
 		if ( data == -1 ) {
@@ -782,18 +774,16 @@ $( '#button-lib-back' ).on( 'click', function() {
 	
 	var lidir = $( '#lib-title .lidir' ).length;
 	if ( MODE.radio() && ! lidir ) lidir = 1;
-	if ( lidir ) {
-		if ( lidir > 1 ) {
-			$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
-			return
-		}
+	if ( lidir && lidir > 1 ) {
+		$( '#lib-title a' ).eq( lidir - 2 ).trigger( 'click' );
+		return
 	}
 
 	if ( lidir === 1 || V.query.length === 1 ) {
 		$( '#library' ).trigger( 'click' );
 		return
 	}
-
+	
 	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 	V.query.pop();
 	var query = V.query.slice( -1 )[ 0 ];
@@ -825,7 +815,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	// ( coverart, bookmark by other functions )
 	if ( MODE.file() ) { // browse by directory
 		var query = {
-			  library : V.mode === 'nvme' || V.mode === 'sata' ? 'ls' : 'lsdir'
+			  library : 'lsdir' // all dirs, includes not yet in database
 			, string  : path
 		}
 	} else if ( moderadio ) {
@@ -838,7 +828,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var query = {
 			  library : 'list'
 			, mode    : V.mode
-			, format  : [ V.mode ]
 		}
 	}
 	query.gmode = V.mode;
@@ -875,8 +864,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', ! S.play );
 			$( '#infoList' ).on( 'click', '.menu a, .menu .submenu', function() {
+				V.target = path;
 				V.action = $( this ).data( 'cmd' );
-				V.mpccmd = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
 				PLAYLIST.add();
 			} );
 		}
@@ -992,19 +981,35 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( V.press ) return
 
 	$LI             = $( this );
+	if ( $LI.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) {
+		MENU.hide();
+		return
+	}
+	
 	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 
+	var libpath     = $( '#lib-path' ).text().trim();
+	var path        = $LI.find( '.lipath' ).text().trim();
 	var l_mode      = $LI.data( 'mode' );
 	var l_modealbum = l_mode === 'album';
 	var l_modefile  = [ 'lsmode', 'nas', 'nvme', 'sata', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.endsWith( 'radio' ); // radio .dir has no mode
+	var track       = $LI.find( '.i-music' ).length;
+	var datamenu    = $target.data( 'menu' );
 	if ( $target.is( '.li-icon, .licoverimg' )
-		|| $target.data( 'menu' )
-		|| $LI.find( '.i-music' ).length
+		|| datamenu
+		|| track
 		|| l_moderadio
 	) {
-		MENU.library( $target );
+		if ( V.librarytrack || track || V.search || datamenu !== 'folder' || $LI.hasClass( 'nodata' ) ) {
+			MENU.library( $target );
+		} else {
+			LIST( { library: 'ls', string: path, count: true }, function( data ) {
+				if ( ! data ) $LI.addClass( 'nodata' );
+				MENU.library( $target );
+			} );
+		}
 		return
 	}
 
@@ -1047,23 +1052,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 
 	if ( ! V.search ) $LI.addClass( 'active' );
-	var libpath  = $( '#lib-path' ).text();
-	var path     = $LI.find( '.lipath' ).text();
 	var V_l_mode = V.search ? l_mode : V.mode;
 	if ( l_modefile ) {
-		if ( MODE.file_radio() ) {
-			var query     = {
-				  library : 'ls'
-				, string  : path
-			}
-			var modetitle = path;
-		} else {
-			var query     = {
-				  library : 'lsmode'
-				, string  : [ path, libpath ]
-			}
-			var modetitle = libpath; // keep title of non-file modes
+		var query     = {
+			  library : 'ls'
+			, string  : path
 		}
+		var modetitle = path;
 	} else if ( MODE.radio() ) { // dabradio, webradio
 		path          = path;
 		var query     = {
@@ -1071,68 +1066,27 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! l_modealbum && V_l_mode.endsWith( 'artist' ) ) {
-		var query     = { // artist, albumartist
-			  library : 'findartist'
-			, mode    : V_l_mode
-			, string  : path
-			, format  : [ 'album', 'file' ]
-		}
-		var modetitle = path;
-	} else if ( ! l_modealbum ) { // non-album
-		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
-			var format = [ 'artist', 'album', 'file' ];
-		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
-			var format = [ 'album', 'artist', 'file' ];
-		}
+	} else if ( ! l_modealbum ) {
+		V.mode        = $LI.data( 'mode' ); // for find
 		var query     = {
 			  library : 'findmode'
-			, mode    : V_l_mode
-			, string  : path
-			, format  : format
+			, target  : [ V_l_mode, '==', path ]
 		}
 		var modetitle = path;
-	} else { // album
-		var name = $LI.find( '.liname' ).text();
-		if ( MODE.album() ) {
-			if ( name ) { // albums with the same names
-				var query     = {
-					  library : 'find'
-					, mode    : [ 'album', 'artist', 'file' ]
-					, string  : [ name, path ]
-				}
-				var modetitle = name;
-			} else {
-				var query     = {
-					  library : 'findmode'
-					, mode    : 'album'
-					, string  : path
-					, format  : [ 'album', 'artist' ]
-				}
-				var modetitle = path;
-			}
-		} else if ( l_modealbum ) {
-			var query     = {
-				  library : 'ls'
-				, string  : path
-			}
-			var modetitle = '';
-		} else {
-			var query     = {
-				  library : 'find'
-				, mode    : [ 'album', V.mode ]
-				, string  : [ name, libpath ]
-			}
-			var modetitle = libpath;
+	} else { // find V.mode in dir
+		var query     = {
+			  library : 'find'
+			, target  : [ [ 'file', 'starts_with', path ], [ V.mode, '==', libpath ] ]
 		}
+		var modetitle = libpath;
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
 	LIST( query, function( html ) {
 		if ( ! html ) {
 			$LI
-				.removeClass( 'active' )
-				.addClass( 'nodata' );
+				.addClass( 'nodata' )
+				.removeClass( 'active' );
 			MENU.library( $target );
 			return
 		}
@@ -1187,7 +1141,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
 	BANNER( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
-	BASH( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION TF' ] );
+	PLAYLIST.pushOption( 'consume', S.consume );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );
@@ -1229,12 +1183,12 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
-		, ok      : () => BASH( [ 'mpcshuffle' ] )
+		, ok      : () => LIST( { playlist: 'shuffle' } )
 	} );
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
-		BASH( [ 'mpcremove' ] );
+		BASH( [ 'plclear' ] );
 		PLAYLIST.render.home();
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
@@ -1271,7 +1225,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 				} );
 			}
 			, ok         : () => {
-				BASH( [ 'mpcremove' ] );
+				BASH( [ 'plclear' ] );
 				PLAYBACK.blank();
 				PLAYLIST.render.home();
 			}
@@ -1372,7 +1326,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		UTIL.intervalClear();
 		$( '.elapsed' ).empty();
-		BASH( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		BASH( [ 'skip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
@@ -1461,8 +1415,7 @@ var sortlist = {
 		COMMON.json.save( 'order', order );
 	}
 	, 'pl-list'       : ( from, to ) => {
-		BASH( [ 'mpcmove', from + 1, to + 1, 'CMD FROM TO' ] );
-		$( '#pl-list li .pos' ).each( ( i, el ) => $( el ).text( i + 1 ) );
+		LIST( { playlist: 'move', target: [ from + 1, to + 1 ] } );
 	}
 	, 'pl-savedlist'  : ( from, to ) => {
 		BASH( [ 'savedpledit', $( '#pl-title .lipath' ).text(), 'move', from + 1, to + 1, 'CMD NAME ACTION FROM TO' ] );

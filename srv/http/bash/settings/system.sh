@@ -67,7 +67,7 @@ format )
 	if [[ $UNPART ]]; then
 		echo -e "g\nn\np\n1\n\n\nw" | fdisk $DEV &>/dev/null
 		partprobe $DEV
-		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||;p}' )
+		DEV=$( blkid | sed -n '\|^'$DEV'| {s|:.*||; p; q}' )
 	else
 		umount -l $DEV
 	fi
@@ -189,7 +189,7 @@ mpdoled )
 			SPI=1
 		else
 			I2C=1
-			baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+			baud=$( getVar baudrate /boot/config.txt )
 			[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		fi
 		[[ $CHIP != 6 ]] && opts+="-o $CHIP"
@@ -317,7 +317,8 @@ tftcalibrate )
 	rotate=$( grep rotate $file_config | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$rotate,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
-	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
+	xExportEnv
+	value=$( xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then
 		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser

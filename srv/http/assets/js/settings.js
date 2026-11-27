@@ -317,7 +317,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	}
 	$( '.playback' ).on( 'click', function() {
 		if ( PAGE === 'camilla' && ! S.play ) RENDER.statusStop();
-		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'playback' : 'playerstop' ] );
 	} );
 }
 if ( $MENU.length ) {

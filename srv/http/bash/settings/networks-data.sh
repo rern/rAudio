@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
+if systemctl -q is-active bluetooth; then
 	devicebt=true
 	bluetoothctl show | grep -q 'Discoverable: yes' && discoverable=true
 	devices=$( bluetoothctl devices Trusted | sort -k3 -fh  )
@@ -72,7 +72,7 @@ data='
 , "device"    : {
 	  "bluetooth" : '$devicebt'
 	, "lan"       : '$( [[ $( netDevice e ) ]] && echo true )'
-	, "wlan"      : '$( rfkill | grep -q -m1 wlan && echo true )'
+	, "wlan"      : '$( [[ $( rfkill list wlan ) ]] && echo true )'
 }
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'

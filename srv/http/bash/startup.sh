@@ -48,7 +48,11 @@ elif [[ -e /boot/accesspoint ]]; then
 	mv -f /boot/accesspoint $dirsystem/ap
 fi
 # pre-configure <<<-----------------------------------------------------------
-mv /var/lib/alsa $dirshm/alsa # move to ram
+if [[ -L /var/lib/alsa ]]; then # hard power off
+	rm -f /var/lib/alsa
+	alsactl store
+fi
+mv /var/lib/alsa $dirshm # move to ram
 ln -s $dirshm/alsa /var/lib
 logoLcdOled
 if [[ -e $dirsystem/bluetooth ]]; then
@@ -125,19 +129,11 @@ touch $dirshm/{startup,status.json}
 [[ $( < $dirshm/fn_volume ) == volumeMpd ]] && volumeMpdRestore
 [[ -e $dirsystem/volumelimit ]] && volume.set $( getVar startup $dirsystem/volumelimit.conf )
 
-if [[ ! -e $dirmpd/mpd.db || -e $dirsystem/mpcupdate.conf ]]; then
-	mpcUpdate
-elif [[ -e $dirmpd/listing ]]; then
-	$dirbash/cmd-list.sh &> /dev/null &
-else
-	touch $dirshm/updatedone
-fi
-
 pushStatus
 $dirbash/status -B '{ "channel": "startup" }'
 
 if [[ -e $dirsystem/autoplay ]]; then
-	grep -q startup $dirsystem/autoplay.conf && playback play
+	grep -q startup $dirsystem/autoplay.conf && playback
 fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 

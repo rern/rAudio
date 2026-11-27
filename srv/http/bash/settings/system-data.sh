@@ -57,44 +57,38 @@ fi
 # --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
-	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
-	# soc
-	. <( sed -E -n '/^Revision|^Model/ {s/\s*: /="/; s/$/"/; p}' /proc/cpuinfo )
-	if [[ ${Model/ *} == Raspberry ]]; then
-		case ${Revision: -4:1} in         # C
-			4 ) soc=2712;;
-			3 ) soc=2711;;
-			2 ) case ${Revision: -3:2} in # BB
-					12 ) soc=RP3A0;;
-					0d ) soc=2837B0
-						 rpi3plus=true
-						 touch $dirshm/rpi3plus
-						 ;;
-					04 ) soc=2837;;
-				esac
-				;;
-			1 ) soc=2836;;
-			0 ) soc=2835;;
+	soc=$( tr '\0' '\n' < /proc/device-tree/compatible )
+	model=$( tr '\0' '\n' < /proc/device-tree/model )
+	if [[ $model == Raspberry* ]]; then
+		soc=$( sed -n -E '$ {s/.*,(.*)/Broadcom \U\1/ p}' <<< $soc )
+		case $( awk '/^Revision/ {print $NF}' /proc/cpuinfo ) in
+			902120 ) soc='Broadcom RP3A0';; # zero 2w
+			a020d3 ) soc+=B0; touch $dirshm/rpi3plus;;
 		esac
-		soc="Broadcom BCM$soc"
-	elif [[ $Model == *BeagleBone* ]]; then
-		soc='TI AM3358'
-	elif [[ $Model == *Cubieboard2* ]]; then
-		soc='Allwinner A20'
+	else
+		if [[ $model == *BeagleBone* ]]; then # TI AM335x BeagleBone Black; ti,am335x-bone-black
+			model=${model/*Beagle/Beagle}
+			[[ $( head -n 1 <<< $soc ) == *bone ]] && soc='TI AM3359' || soc='TI AM3358'
+		elif [[ $model == Cubietech* ]]; then # Cubietech Cubieboard2; allwinner,sun7i-a20
+			soc=$( sed -n -E '$ {s/^(.*),.*-(.*)/\u\1 \U\2/ p}' <<< $soc )
+		fi
 	fi
-	# cpu
-	readarray -t lscpu < <( lscpu | awk '/^CPU\(s\):|^Vendor|^Model name|^CPU max/ {print $NF}' )
-	cores=${lscpu[0]}
-	cpus=${lscpu[@]:1:2}
-	speed=${lscpu[3]/.*}
+	cpus=$( tr '\0' '\n' < /proc/device-tree/cpus/cpu@0/compatible | sed -E 's/^arm,cortex-a/ARM Cortex-A/
+																			 s/^arm,(arm.*)/\U\1/' )
+	cores=$( nproc --all )
 	(( $cores > 1 )) && cpus+=" x $cores"
-	(( $speed < 1000 )) && speed+=' MHz' || speed="$( printf '%.2f GHz' "$(( speed / 100 ))e-1" )"
+	khz=$( < /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq )
+	if (( $khz < 1000000 )); then
+		speed=$( printf '%d MHz' $(( khz / 1000 )) )
+	else
+		speed=$( printf '%d.%02d GHz' $(( khz / 1000000 )) $(( khz % 1000000 / 10000 )) )
+	fi
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )<br>\
 $( pacman -Q linux-firmware-whence | cut -d' ' -f2 )<br>\
-$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $Model )<br>\
+$( sed -E 's/ Plus/+/; s|(Rev.*)|<gr>\1</gr>|' <<< $model )<br>\
 $soc $dot $( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )<br>\
 $cpus @ $speed"
 	echo $system > $dirshm/system
@@ -133,7 +127,7 @@ data+='
 , "monitor"        : '$( grep -q -m1 -E 'dtoverlay=.*rotate=|dtoverlay=.*ili9881-5inch' /boot/config.txt && echo true )'
 , "monitormodel"   : "'$( grep -q -m1 'dtoverlay=.*ili9881-5inch' /boot/config.txt && echo rpidisplay2 )'"
 , "online"         : '$( ipOnline 8.8.8.8 && echo true )'
-, "rpi3plus"       : '$rpi3plus'
+, "rpi3plus"       : '$( exists $dirshm/rpi3plus )'
 , "shareddata"     : '$( sharedData )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
@@ -141,13 +135,16 @@ data+='
 , "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
-, "updating"       : '$( statusUpdating )
+, "updating"       : '$( updating )
 if [[ -e $dirshm/onboardwlan ]]; then
+	if systemctl -q is-active bluetooth; then
+		[[ $( bluetoothctl devices Connected ) ]] && btconnected=true || btconnected=false
+	fi
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"  : '$( [[ $( ipAddress w ) ]] && echo true )'
-, "btconnected"    : '$( [[ $( bluetoothctl devices Connected ) ]] && echo true )
+, "btconnected"    : '$btconnected
 fi
 
 data2json "$data" $1

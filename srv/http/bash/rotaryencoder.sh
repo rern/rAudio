@@ -20,7 +20,9 @@ for dt in gpio-key rotary-encoder; do
 	done
 done
 
-case $( < $dirshm/fn_volume ) in
+[[ -e $dirsystem/volumelimit ]] && . <( grep ^max $dirsystem/volumelimit.conf )
+FN_VOLUME=$( < $dirshm/fn_volume )
+case $FN_VOLUME in
 	volumeMpd )
 		dn=-$step # 1 or 2
 		up=+$step
@@ -53,7 +55,7 @@ action() {
 	[[ ! -e $file_dn ]] && return
 	
 	rm -f $file_up $file_dn
-	[[ $1 == click ]] && playback || skip
+	[[ $1 == click ]] && playback || nextPrevious
 }
 # button -----------------------------------------------------------------------
 evtest ${dev[button]} | while read line; do
@@ -73,7 +75,7 @@ evtest ${dev[button]} | while read line; do
 			( sleep 0.4 && action click ) &    ##2## CLICK        > before 1s   > OFF ##1##
 		else                            #####3 SET 2nd up
 			rm -f $file_up $file_dn
-			skip PREVIOUS                      ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
+			nextPrevious PREVIOUS                      ##3## DOUBLE CLICK > before 0.4s > OFF ##1##,##2##
 		fi
 	fi
 done &
@@ -81,8 +83,17 @@ done &
 # turn -------------------------------------------------------------------------
 evtest ${dev[rotary]} | while read line; do
 	[[ $line != *value* ]] && continue
-	
+#....................................................................
 	# Event: time 1788345418.446152, type 2 (EV_REL), code 0 (REL_X), value -1
-	[[ $line == *-1 ]] && FN $dn || FN $up
+	if [[ $line == *-1 ]]; then
+		FN $dn
+	else
+		if [[ $max ]] && (( $max == $( volume.value ) )); then
+			notify volumelimit 'Volume Limit' "Max: $max"
+			continue
+	#....................................................................
+		fi
+		FN $up
+	fi
 	volume.value push
 done

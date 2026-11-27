@@ -19,8 +19,7 @@ if [[ $ON ]] && nfsServerActive; then
 fi
 
 dirshared=$dirdata/mpdshared
-[[ -e $dirmpd/listing ]] && killall cmd-list.sh
-rm -f $dirmpd/{listing,updating}
+killProcess cmdlist
 plClear
 systemctl stop mpd
 if [[ $ON ]]; then
@@ -44,7 +43,7 @@ if [[ $ON ]]; then
 	fi
 	systemctl start mpd
 	while read file; do
-		sed -E -i '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
+		sed -i -E '/^(NVME|SATA|SD|USB)/ s|^|NAS/|' "$file" # prepend path
 	done < <( ls $dirbookmarks/* $dirplaylists/* )
 	mpcUpdate $action
 else

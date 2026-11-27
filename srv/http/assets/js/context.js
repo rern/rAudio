@@ -117,12 +117,7 @@ var CONTEXT  = {
 						+'<br><br>Remove all other tracks?'
 			, oklabel : ICON( 'crop' ) +'Crop'
 			, ok      : () => {
-				if ( $LI.hasClass( 'active' ) ) {
-					BASH( [ 'mpccrop' ] );
-				} else {
-					BASH( [ 'mpccrop', $LI.index() + 1, 'CMD POS' ] );
-					$LI.addClass( 'active' );
-				}
+				LIST( { playlist: 'crop' } );
 				$( '#pl-list li' ).not( $LI ).remove();
 			}
 		} );
@@ -169,7 +164,7 @@ var CONTEXT  = {
 		} );
 	}
 	, playback     : {
-		  cmd     : action => BASH( [ 'mpcskip', V.list.index + 1, action, 'CMD POS ACTION' ] )
+		  cmd     : action => BASH( [ 'skip', V.list.index + 1, action, 'CMD POS ACTION' ] )
 		, current : () => CONTEXT.playback.cmd( 'stop' )
 		, pause   : () => $( '#pause' ).trigger( 'click' )
 		, play    : () => CONTEXT.playback.cmd( 'play' )
@@ -291,29 +286,25 @@ var CONTEXT  = {
 		}
 	}
 	, tag          : () => {
-		var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date' ];
-		if ( ! V.list.licover ) name = [ 'Track', 'Title', ...name ];
+		var cue    = $( '.licue' ).length;
+		if ( V.list.licover ) {
+			var tags = [ 'Album', 'AlbumArtist' ];
+		} else {
+			var tags = [ 'Track', 'Title', 'Album', 'Artist' ];
+		}
+		tags       = [ ...tags, 'Composer', 'Conductor', 'Genre', 'Date' ];
 		var list   = [];
-		name.forEach( ( el, i ) => {
-			var n = name[ i ];
-			if ( n === 'AlbumArtist' ) n = 'Album Artist';
-			list.push( [ '<gr>'+ n +' </gr><i class="i-'+ n.toLowerCase() +'"></i>', 'text' ] );
+		tags.forEach( ( el, i ) => {
+			var t = tags[ i ];
+			if ( t === 'AlbumArtist' ) t = 'Album Artist';
+			list.push( [ '<gr>'+ t +' </gr><i class="i-'+ t.toLowerCase() +'"></i>', 'text' ] );
 		} );
 		var various = V.list.licover ? '<gr style="float: right"><c>*</c> Various values in tracks</gr>' : '';
 		list.push( [ '<w>Toggle </w>'+ ICON( 'tag', '', 'tabindex' ), '<gr>(Click each label to search)</gr>'+ various ] );
-		var file   = V.list.path;
-		var cmd    = [ 'tageditor.sh', 'get', file, name.join( ' ' ).toLowerCase() ];
-		var CMD    = 'CMD FILE TAGS';
-		if ( 'track' in V.list ) {
-			file         = file.replace( /\.cue\/track.*$/, '.cue' );
-			var fileicon = 'file-playlists';
-			cmd.push( V.list.track );
-			CMD += ' TRACK';
-		} else {
-			var fileicon = 'file-music';
-		}
-		cmd.push( CMD );
-		BASH( cmd, values => {
+		var file    = V.list.licover && cue ? $( '.licue' ).text() : V.list.path;
+		var dir     = V.list.licover ? file : COMMON.dirName( file );
+		var icon    = 'music';
+		LIST( { library: 'tag', string: file, tags: tags }, values => {
 			if ( V.library ) {
 				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
@@ -321,10 +312,14 @@ var CONTEXT  = {
 				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
-			var dir     = V.list.licover ? file : COMMON.dirName( file );
+			if ( V.playlist || cue ) {
+				file = dir;
+				dir  = COMMON.dirName( dir );
+				icon = 'playlist';
+			}
 			var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 						  +'<div>'+ ICON( 'folder gr' ) +' <a class="path">'+ dir +'</a>';
-			message    += V.list.licover ? '</div>' : '<br>'+ ICON( fileicon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
+			message    += V.list.licover && ! cue ? '</div>' : '<br>'+ ICON( 'file-'+ icon +' gr' ) +' '+ COMMON.baseName( file ) +'</div>';
 			INFO( {
 				  icon         : V.playlist ? 'info' : 'tag'
 				, title        : V.playlist ? 'Track Info' : 'Tag Editor'
@@ -342,7 +337,8 @@ var CONTEXT  = {
 					$( '#infoList td:first-child' ).css( 'cursor', 'pointer' );
 					$( '#infoList' ).find( 'td:last-child, input' ).css( 'width', '100%' );
 					$( '#infoList .i-tag' ).css( { border: '1px solid', 'border-radius': '50%', color: 'var( --cg60 )' } );
-					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
+					if ( cue && 'TRACK' in values ) $( '#infoList input' ).eq( 0 ).addClass( 'disabled' );
+					if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', true );
 					$( '#infoList' ).on( 'click', '.infomessage, td:first-child', function() {
 						var $this = $( this );
 						if ( $this.hasClass( 'infomessage' ) ) {
@@ -391,13 +387,22 @@ var CONTEXT  = {
 				}
 				, okno         : V.playlist
 				, ok           : V.playlist ? '' : () => {
-					var val  = _INFO.val();
+					var cmd = [ 'tageditor.sh', 'cmd', '/mnt/MPD/'+ file ];
+					var key = 'CMD FILE'
+					var val = _INFO.val();
 					$.each( val, ( k, v ) => {
-						if ( values[ k ] === v ) delete val[ k ];
+						if ( cue ) {
+							cmd.push( v.replace( /"/g, "'" ) ); // cue cannot handle values with "
+							key += ' '+ k;
+						} else {
+							if ( values[ k ] != v ) { // changed only
+								cmd.push( v );
+								key += ' '+ k;
+							}
+						}
 					} );
-					val.FILE = file;
 					NOTIFY( 'tag', 'Tag Editor', 'Change ...' );
-					BASH( COMMON.cmd_json2args( 'tageditor.sh', val ) );
+					BASH( [ ...cmd, key.toUpperCase() ] );
 				}
 			} );
 		}, 'json' );
@@ -662,62 +667,45 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replaceplay
 	*/
 	var path = V.list.path;
-	// mpccmd:
-	// [ 'mpcadd', path ]
-	// [ 'mpcaddplaynext', path ]
-	// [ 'mpcaddfind', 'multi', V.mode, path, 'album', V.list.album ]
-	// [ 'mpcaddfind', 'multi', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ]
-	// [ 'mpcaddfind',  mode,   path ];
-	// [ 'mpcaddload', path ]
-	// [ 'mpcaddls', path ]
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
 	switch ( mode ) {
 		case '':
-			if ( V.list.singletrack || MODE.radio() ) { // single track
-				V.mpccmd = [ 'mpcadd', path ];
-			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
-				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
+			if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
+				V.target = [ [ V.mode, '==', path ], [ 'album', '==', V.list.album ] ];
 			} else { // directory / album / saved playlist track
-				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
+				V.target = path;
 			}
 			break;
 		case 'pl':
-			cmd = cmd.slice( 2 );
-			if ( V.library ) {
-				V.mpccmd    = [ 'mpcaddload', path ];
-			} else { // saved playlist
-				var play    = cmd.endsWith( 'play' );
-				var replace = cmd.startsWith( 'replace' );
-				if ( replace ) {
-					PLAYLIST.replace( () => PLAYLIST.load( V.list.path, play, replace ) );
-				} else {
-					PLAYLIST.load( V.list.path, play, replace );
-				}
-				return
-			}
+			V.target = V.library ? path : V.list.path; // saved playlist
 			break;
 		case 'playnext':
-			V.mpccmd = [ 'mpcaddplaynext', path ];
+			V.target = path;
 			break
 		case 'wr':
-			cmd = cmd.slice( 2 );
 			var charset = $LI.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
-			V.mpccmd = [ 'mpcadd', path ];
+			V.target = path;
 			break;
 		default: // MODE
 			var mode = $LI.data( 'mode' );
 			if ( mode === 'album' ) {          // 1st level
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
-				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', $LI.find( '.name' ).text() );
-				V.mpccmd.push( 'album', $LI.find( '.liname' ).text() );
+				V.target = [
+					  [ V.mode,   '==', $( '#lib-path' ).text() ]
+					, [ 'artist', '==', $LI.find( '.name' ).text() ]
+					, [ 'album',  '==', $LI.find( '.liname' ).text() ]
+				];
+				if ( ! [ 'date', 'genre' ].includes( V.mode ) ) V.target.splice( 1, 1 );
 			} else if ( mode !== 'lsmode' ) { // intermediat level
-				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+				V.target = [ V.mode, '==', V.list.path ];
 			} else {                              // last list before track: mode + album || date/genre: mode + artist + album
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
+				V.target = [
+					  [ V.mode, '==',          $( '#lib-path' ).text() ]
+					, [ 'base', V.list.path ]
+				];
 			}
 		break
 	}
-	V.action = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' ); // add addplay playnext replace replaceplay
+	V.action = cmd.replace( /^pl|^wr|album|artist|composer|conductor|date|genre/g, '' ); // add addplay playnext replace replaceplay
 	PLAYLIST.add();
 } );

@@ -28,7 +28,7 @@ data+='
 , "nosound"    : '$( exists $dirshm/nosound )'
 , "output"     : '$( conf2json $dirshm/output )'
 , "updatetime" : "'$( getContent $dirmpd/updatetime )'"
-, "updating"   : '$( statusUpdating )'
+, "updating"   : '$( updating )'
 , "version"    : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 ##########
 data+=$( dataPlayback )

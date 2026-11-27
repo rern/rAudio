@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-. $dirbash/cmd-function.sh
 
 args2var "$1" # $2 $3 ... if any, still valid
 
@@ -123,11 +122,14 @@ librandom )
 		mpc -q random off
 		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
-		plAddRandom
+		libraryRandom
 	else
 		rm -f $dirsystem/librandom
 	fi
 	pushData option '{ "librandom": '$TF' }'
+	;;
+libraryrandom )
+	libraryRandom
 	;;
 lyrics )
 	if [[ ! $ACTION && $FILE == [NSU]* ]]; then
@@ -166,149 +168,6 @@ lyrics )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
-mpcadd )
-	pos=$( plAddPosition )
-	mpc -q add "$FILE"
-	plAddPlay $pos
-	;;
-mpcaddplaynext )
-	mpc -q insert "$FILE"
-	pushPlaylist
-	;;
-mpcaddfind )
-	pos=$( plAddPosition )
-	if [[ $MODE3 ]]; then
-		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
-	elif [[ $MODE2 ]]; then
-		if [[ $MODE2 == lsmode ]]; then
-			mpc -q ls -f %$MODE%^%file% "$STRING2" \
-				| grep "^$STRING" \
-				| cut -d^ -f2 \
-				| mpc -q add &> /dev/null
-		else
-			mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
-		fi
-	else
-		mpc -q findadd $MODE "$STRING"
-	fi
-	plAddPlay $pos
-	;;
-mpcaddload )
-	pos=$( plAddPosition )
-	mpc -q load "$FILE"
-	plAddPlay $pos
-	;;
-mpcaddls )
-	pos=$( plAddPosition )
-	cuefiles=$( mpc ls "$DIR" | grep '\.cue$' | sort -u )
-	if [[ ! $cuefiles ]]; then
-		mpc ls "$DIR" | mpc -q add &> /dev/null
-	else
-		while read cuefile; do
-			mpc -q load "$cuefile"
-		done <<< $cuefiles
-	fi
-	plAddPlay $pos
-	;;
-mpccrop )
-	if [[ ! $POS ]] && statePlay; then
-		mpc -q crop
-	else
-		radioStop
-		mpc -q play $POS
-		mpc -q crop
-		mpc -q stop
-	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	pushStatus
-	pushPlaylist
-	;;
-mpclibrandom )
-	plAddRandom
-	;;
-mpcls )
-	mpc ls "$DIR" 2> /dev/null | wc -l
-	;;
-mpcmove )
-	mpc -q move $FROM $TO
-	pushPlaylist
-	;;
-mpcoption )
-	[[ ! $TF ]] && TF=false
-	mpc -q $OPTION $TF
-	pushData option '{ "'$OPTION'": '$TF' }'
-	;;
-mpcplayback )
-	mpcPlayback
-	;;
-mpcremove )
-	[[ ! $POS ]] && plClear && exit
-# --------------------------------------------------------------------
-	songpos=$( mpc status %songpos% )
-	pllength=$( mpc status %length% )
-	if [[ $TO ]]; then
-		if (( $songpos >= $POS && $songpos <= $TO )); then
-			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
-		fi
-		POS+=-$TO
-	else
-		if [[ $songpos == $POS ]]; then
-			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
-		fi
-	fi
-	mpc -q del $POS
-	[[ $next ]] && mpc -q play $next && mpc -q stop
-	pushPlaylist
-	;;
-mpcseek )
-	touch $dirshm/skip
-	[[ $STOP ]] && mpc -q play
-	mpc -q seek $ELAPSED
-	[[ $STOP ]] && mpc -q pause
-	pushStatus
-	rm $dirshm/skip
-	;;
-mpcshuffle )
-	mpc -q shuffle
-	pushPlaylist
-	;;
-mpcsimilar )
-	readarray -t lines < <( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
-	artist=${lines[0]}
-	title=${lines[1]}
-	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	lines=$( curl -sfG -m 5 \
-				--data-urlencode "artist=$artist" \
-				--data-urlencode "track=$title" \
-				--data "method=track.getsimilar" \
-				--data "api_key=$apikey" \
-				--data "format=json" \
-				--data "autocorrect=1" \
-				http://ws.audioscrobbler.com/2.0 \
-					| jq .similartracks.track \
-					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
-	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
-# --------------------------------------------------------------------
-	while read line; do
-		if [[ $title ]]; then
-			file=$( mpc find artist "$line" title "$title" )
-			[[ $file ]] && list+="$file"$'\n'
-			title=
-		else
-			title=$line
-		fi
-	done <<< $lines
-	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
-# --------------------------------------------------------------------
-	plLprev=$( mpc status %length% )
-	awk NF <<< $list | mpc -q add
-	pushPlaylist
-	added=$(( $( mpc status %length% ) - plLprev ))
-	notify lastfm 'Add Similar' "$added tracks added."
-	;;
-mpcskip )
-	mpcSkip
-	;;
 mpcupdate )
 	[[ $LATEST ]] && touch $dirshm/latest || rm -f $dirshm/latest
 	mpcUpdate
@@ -316,11 +175,7 @@ mpcupdate )
 mpcupdatestop )
 	notify 'refresh-library blink' 'Library Update' 'Cancel ...' -1
 	systemctl restart mpd
-	if [[ -e $dirmpd/listing ]]; then
-		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating}
-	fi
-	$dirbash/cmd-list.sh
+	killProcess cmdlist
 	;;
 mpdignore )
 	dir=$( basename "$DIR" )
@@ -329,11 +184,8 @@ mpdignore )
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
 	pushData mpdupdate '{ "updating": true }'
-	echo "\
-action=update
-mpdpath=\"$mpdpath\"" > $dirsystem/mpcupdate.conf
-	mpc -q update "$mpdpath" #1 get .mpdignore into database
-	mpc -q update "$mpdpath" #2 after .mpdignore was in database
+	echo "$mpdpath" > $dirmpd/updating
+	mpc -q update "$mpdpath"
 	;;
 multiraudiolist )
 	echo '{
@@ -350,18 +202,17 @@ password )
 	fi
 	[[ -e $dirshm/startup ]] && pushData startup { "ready": true }
 	;;
+playback )
+	playback
+	;;
 playerstart )
 	playerStart
 	;;
 playerstop )
 	playerStop
 	;;
-playlist )
-	[[ $REPLACE ]] && plClear
-	mpc -q load "$NAME"
-	[[ $PLAY ]] && mpc -q play
-	[[ $PLAY || $REPLACE ]] && pushStatus
-	pushPlaylist
+plclear )
+	plClear
 	;;
 remount )
 	mount -a
@@ -399,7 +250,15 @@ savedplsave )
 	savedPlCount
 	;;
 screenoff )
-	DISPLAY=:0 xset dpms force off
+	xExportEnv off
+	;;
+seek )
+	touch $dirshm/skip
+	[[ $STOP ]] && mpc -q play
+	mpc -q seek $ELAPSED
+	[[ $STOP ]] && mpc -q pause
+	pushStatus
+	rm $dirshm/skip
 	;;
 shairport )
 	systemctl start shairport
@@ -408,6 +267,9 @@ shareddataupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
 	pushStatus
+	;;
+skip ) # context menu
+	skip
 	;;
 snapserverlist )
 	. $dirsettings/common.sh

@@ -3,42 +3,37 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
-### aplay -l # depend on /etc/asound.conf
+### aplay -l # avoid: depend on /etc/asound.conf
 # card 1: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
-#
+
 ### cat /proc/asound/cards
+# 0 [b1             ]: bcm2835_hdmi - bcm2835 HDMI 1
+#                      bcm2835 HDMI 1
 # 1 [Headphones     ]: bcm2835_headpho - bcm2835 Headphones
 #                      bcm2835 Headphones
-#>C [CARD_ID        ]: DEVICE_ID       - DEVICE_NAME
-#>                     DEVICE_LONG_NAME
+# 2 [Loopback       ]: Loopback - Loopback
+#                      Loopback 1
+# 3 [Device         ]: USB-Audio - Generic USB Audio Device
+#                      Generic USB Audio Device at usb-0000:01:00.0-1.3, full speed
+
+#>N [CARD_ID        ]: DEVICE_ID - NAME
 #>hwaddress=hw:1,0 # or hw:Headphones:0
 
-### cat /proc/asound/card1/id
-# Headphones
-
-### cat /proc/asound/card1/*/info
-# card: 1
-# ...
-# id: bcm2835 Headphones
-# name: bcm2835 Headphones
-# ...
-
 outputdevice=$( getContent $dirsystem/audio-output )
-proccardn=$( grep -Li loopback /proc/asound/card[0-9]/id | xargs -r -n1 dirname ) # not depend on /etc/asound.conf which might be broken from bad script
-lastcard=${proccardn: -1}
-while read path; do
-	info=$( sed 's/bcm2835/On-board/' $path/*/info )
-	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
-	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
-	CARD=${path: -1}
+lines=$( sed -n -E '/^   *|Loopback/! {s/^ |\[.*- //g; s/bcm2835/On-board/; p}' /proc/asound/cards )
+lastcard=$( tail -n 1 <<< $lines | cut -c 1 )
+while read line; do # 1 On-board Headphones
+	name=${line:2}
+	CARD=${line:0:1}
 	LISTDEVICE+=', "'$name'": "hw:'$CARD'"'
 	if [[ $CARD == $lastcard && $outputdevice ]]; then # last card - not on-board
 		NAME=$outputdevice
 	else
 		NAME=$name
 	fi
-	if [[ -e $path/usbmixer ]]; then
-		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
+	file_usbmixer=/proc/asound/card$CARD/usbmixer
+	if [[ -e $file_usbmixer ]]; then
+		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $file_usbmixer )
 		if [[ $usbmixer ]]; then
 			NAME=$usbmixer
 			if [[ $NAME == $outputdevice ]]; then
@@ -50,7 +45,7 @@ while read path; do
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
 	card_name+="$CARD^$NAME"$'\n'
-done <<< $proccardn
+done <<< $lines
 
 if [[ $usbcard ]]; then
 	CARD=$usbcard

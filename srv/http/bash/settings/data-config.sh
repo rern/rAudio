@@ -239,7 +239,7 @@ servermirror )
 	else
 		list=$( < $file )
 	fi
-	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
+	lines=$( sed -n -E '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
 	codelist='"Auto":""'
 	while read line; do
 		if [[ ${line:0:4} == '### ' ]];then
@@ -332,7 +332,7 @@ vuled )
 wlan )
 	codes=$( curl -sL https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt \
 			| awk '/^country/ { printf "|" substr($2, 1, 2)}' ) # latest from source
-	[[ ! $codes ]] && codes=$( sed -nE '/^#W/ {s/.*="(.*)"/|\1/; p}' /etc/conf.d/wireless-regdom | tr -d '\n' )
+	[[ ! $codes ]] && codes=$( sed -n -E '/^#W/ {s/.*="(.*)"/|\1/; p}' /etc/conf.d/wireless-regdom | tr -d '\n' )
 	country_code=$( jq '.["3166-1"]
 							| map({(.name): .alpha_2})
 							| add

@@ -136,9 +136,8 @@ multiraudioreset )
 screentoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	vcgencmd display_power $toggle # hdmi
-	export DISPLAY=:0
-	sudo xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
-	sudo xset dpms force $onoff
+	xset q | grep -m1 -q 'Monitor is On' && onoff=off || onoff=on
+	xExportEnv $onoff
 	echo Screen $onoff
 	;;
 scrobblekey )
@@ -296,13 +295,13 @@ spotifytoken )
 	;;
 startx )
 	. $dirsystem/localbrowser.conf
-	export DISPLAY=:0
+	xExportEnv
+	xset s off
 	off=$(( SCREENOFF * 60 ))
-	sudo xset s off
-	sudo xset dpms $off $off $off
-	[[ $off == 0 ]] && sudo xset -dpms || sudo xset +dpms
+	xset dpms $off $off $off
+	(( $off == 0 )) && xset -dpms || xset +dpms
 	if [[ $ONWHILEPLAY ]]; then
-		statePlay && sudo xset -dpms || sudo xset +dpms
+		statePlay && xset -dpms || xset +dpms
 	fi
 	file=/proc/bus/input/devices
 	if ! grep -q "Handlers=.*mouse" $file \
@@ -329,7 +328,10 @@ stoptimer )
 	;;
 volumelimit )
 	enableFlagSet
-	(( $( volume.value ) > $MAX )) && volume.set $MAX
+	if [[ $ON ]]; then
+		(( $( volume.value ) > $MAX )) && volume.set $MAX
+		systemctl try-restart rotaryencoder
+	fi
 	pushRefresh
 	;;
 

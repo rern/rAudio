@@ -124,7 +124,7 @@ profileforget )
 usbbluetoothon ) # from usbbluetooth.rules
 	[[ -e $dirshm/btonboard ]] && exit # suppress onboard
 # --------------------------------------------------------------------
-	! systemctl -q is-active bluetooth && systemctl start bluetooth
+	systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 # --------------------------------------------------------------------
 	sleep 3
@@ -134,7 +134,7 @@ usbbluetoothon ) # from usbbluetooth.rules
 usbbluetoothoff ) # from usbbluetooth.rules
 	[[ -e $dirshm/btonboard ]] && exit # suppress onboard
 # --------------------------------------------------------------------
-	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
+	! [[ $( rfkill list bluetooth ) ]] && systemctl stop bluetooth
 	notify bluetooth 'USB Bluetooth' Removed
 	pushRefresh
 	;;

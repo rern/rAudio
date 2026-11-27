@@ -3,7 +3,7 @@
 bluetooth() {
 	touch $dirshm/btonboard
 	if [[ $ON ]]; then
-		if ! systemctl -q is-active bluetooth; then
+		if [[ ! $( rfkill list bluetooth ) ]]; then
 			modprobe hci_uart
 			for i in {0..3}; do
 				[[ -e /sys/class/bluetooth/hci0 ]] && break || sleep 1
@@ -210,43 +210,16 @@ getContent() {
 		echo $2
 	fi
 }
-getVar() { # var=value
-	[[ ! -e $2 ]] && echo false && return
-#...............................................................................
-	case ${2: -4} in
-		json ) sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' "$2";;                   # /var: value/ > value
-		.yml )
-			if [[ $1 != *.* ]]; then
-				sed -n '/^\s*'$1':/ {s/^.*: \+//; p}' "$2"                        # /var: value/ > value
-			else
-				local a b
-				a=${1/.*}
-				b=${1/*.}
-				sed -n '/^\s*'$a':/,/^\s*'$b':/ {/'$b'/! d; s/^.*: \+//; p}' "$2" # /var1:/,/var2: value/ > value
-			fi
-			;;
-		* )
-			local data line var
-			data=$( < "$2" )
-			line=$( grep ^$1= <<< $data )                                    # var=
-			[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
-			[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
-			[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-			var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
-			[[ $var ]] && quoteEscape $var || echo $3
-			;;
-	esac
-}
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( netDevice w )
-	if ! rfkill | grep -q wlan; then
-		modprobe brcmfmac
-	else
+	if [[ $( rfkill list wlan ) ]]; then
 		ip link set $wlandev down
+	else
+		modprobe brcmfmac
 	fi
 	ip link set $wlandev up
 	systemctl restart iwd
@@ -321,7 +294,7 @@ sharedData() {
 	nfsServerActive && echo false || echo true
 }
 sharedDataCopy() {
-	rm -f $dirmpd/{listing,updating}
+	killProcess cmdlist
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
 	file_order=$dirsystem/order.json
 	[[ ! -e $file_order ]] && file_order=
@@ -360,15 +333,6 @@ snapserverList() {
 		echo '[]'
 	fi
 }
-statusUpdating() {
-	if mpc | grep -q ^Updating; then
-		echo true
-	elif [[ ! -e $dirshm/updatedone && ( -e $dirmpd/listing || -e $dirsystem/mpcupdate.conf ) ]]; then
-		echo true
-	else
-		echo false
-	fi
-}
 timezoneAuto() {
 	local tz
 	tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )
@@ -376,6 +340,13 @@ timezoneAuto() {
 	[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
 	[[ ! $tz ]] && tz=UTC
 	timedatectl set-timezone $tz
+}
+updating() {
+	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
+		echo true
+	else
+		echo false
+	fi
 }
 usbMaxCurrent() {
 	local BB revision

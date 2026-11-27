@@ -115,6 +115,7 @@ a {
 }
 .menu a.sub + .submenu {
 	display: inline-block;
+	height: 40px;
 }
 .menu a {
 	display: inline-block;
@@ -167,9 +168,6 @@ a {
 	height: 18px;
 	background: var( --cg );
 }
-#screenoff {
-	border-left: 1px solid #000000;
-}
 #settings {
 	position: fixed;
 	float: right;
@@ -182,6 +180,9 @@ a {
 }
 #power, #screenoff {
 	background: var( --cga );
+}
+#power.sub {
+	border-color: var( --cgd );
 }
 #settings i.on {
 	color: var( --cml );
@@ -600,7 +601,9 @@ div.pagerefresh {
 #qr svg {
 	margin: 10px auto;
 }
-#coverart,
+#coverart.bordered {
+	border: 1px solid hsl(0,0%,15%);
+}
 #vu,
 #biotitleimg,
 .licover img {
@@ -1508,8 +1511,13 @@ div.pagerefresh {
 }
 .lialbum {
 	padding-left: 2px;
+	color: var( --cw );
 	font-size: 22px;
 	font-weight: normal;
+}
+.lidate,
+.ligenre {
+	display: inline-block;
 }
 .liinfo i {
 	margin: 0 10px 0 0 !important;
@@ -1520,7 +1528,7 @@ div.pagerefresh {
 	text-align: center;
 	color: var( --cg60 ) !important;
 }
-.liinfo .i-playlists {
+.liinfo .i-file-playlist {
 	margin-right: 0px !important;
 }
 .liinfo c {
@@ -1608,13 +1616,9 @@ li.active .iconthumb {
 .liindex,
 .lisort,
 .licue,
-.liartist,
 .lithumb,
 .liimg {
 	display: none;
-}
-.licover .liartist {
-	display: block;
 }
 #pl-list li.updn {
 	background: var( --cmd );
@@ -1729,6 +1733,10 @@ li.active .li1 bl {
 	font-size: 14px !important;
 	color: var( --cg60 );
 }
+.list .li2 i {
+	margin-left: 5px;
+	line-height: 10px;
+}
 li.webradio .artist::before,
 li.webradio .station::before,
 li.webradio .url::before {
@@ -1740,12 +1748,12 @@ li.webradio .url::before {
 #pl-list .unsaved {
 	color: var( --cw );
 }
-li.active .li-icon,
+li.active:not( .licover ) .li-icon,
+li.active:not( .licover ) gr,
 li.active .li1 i,
 li.active .li2,
 li.active .li2 a,
 li.active .li2 span,
-li.active gr,
 li.active .time {
 	color: var( --cga ) !important;
 }

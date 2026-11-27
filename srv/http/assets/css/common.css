@@ -254,6 +254,7 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
+	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
 	font-family : Lato;
@@ -681,9 +682,9 @@ hr {
 #infoOverlay {
 	position: absolute;
 	top: 0;
+	bottom: 0;
 	left: 0;
-	width: 100%;
-	min-height: 150vh;
+	right: 0;
 	background: rgba(0, 0, 0, 0.85);
 	text-align: center;
 	overflow: hidden;
@@ -696,7 +697,7 @@ hr {
 #infoBox {
 	position: relative;
 	margin: 50vh auto;
-	transform: translateY( -50% ); /* of #infoBox height */
+	transform: translateY( calc( 50vh - 50% ) ); /* 50% of #infoBox height */
 	width: 400px;
 	max-width: 98%;
 	padding-bottom: 15px;
@@ -816,7 +817,7 @@ hr {
 	border-spacing: 10px 0;
 }
 #infoList:has( .infomessage ) table,
-#infoList table:not( :has( tr:first-child :is( input, select ) ) ) {
+#infoList table:not( :has( tr:first-child :has( input, select ) ) ) {
 	padding-top: 0;
 }
 #infoTab + #infoList table:has( tr:first-child select ),
