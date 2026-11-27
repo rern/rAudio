@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20261114
-restart+=rataryencoder$'\n'
+restart+=rotaryencoder$'\n'
 
 # 20261101
 if [[ ! -e $dirshm/alsa ]]; then
