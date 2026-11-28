@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20261114
+# 20261128
 restart+=rotaryencoder$'\n'
 
 # 20261101
@@ -145,7 +145,6 @@ if [[ ! -e /bin/camilladsp ]]; then
 	rm -rf $dircamilladsp
 	find /srv/http -type f -name camilla* -delete
 fi
-[[ ! -e /etc/systemd/system/dab.service ]] && rm $dirbash/dab*
 if [[ -e /bin/firefox ]]; then
 	splashRotate
 else
